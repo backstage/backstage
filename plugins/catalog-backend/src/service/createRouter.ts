@@ -41,7 +41,7 @@ import {
 } from './request';
 import { parseEntityFacetParams } from './request/parseEntityFacetParams';
 import { parseEntityOrderParams } from './request/parseEntityOrderParams';
-import { LocationService, RefreshOptions, RefreshService } from './types';
+import { LocationService, RefreshService } from './types';
 import {
   disallowReadonlyMode,
   encodeCursor,
@@ -50,8 +50,8 @@ import {
 } from './util';
 import { createOpenApiRouter } from '../schema/openapi.generated';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 
 /**
  * Options used by {@link createRouter}.
@@ -68,6 +68,8 @@ export interface RouterOptions {
   logger: Logger;
   config: Config;
   permissionIntegrationRouter?: express.Router;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
 }
 
 /**
@@ -94,6 +96,8 @@ export async function createRouter(
     config,
     logger,
     permissionIntegrationRouter,
+    auth,
+    httpAuth,
   } = options;
 
   const readonlyEnabled =
@@ -104,12 +108,16 @@ export async function createRouter(
 
   if (refreshService) {
     router.post('/refresh', async (req, res) => {
-      const refreshOptions: RefreshOptions = req.body;
-      refreshOptions.authorizationToken = getBearerTokenFromAuthorizationHeader(
-        req.header('authorization'),
-      );
+      const { authorizationToken, ...restBody } = req.body;
 
-      await refreshService.refresh(refreshOptions);
+      const credentials = authorizationToken
+        ? await auth.authenticate(authorizationToken)
+        : await httpAuth.credentials(req);
+
+      await refreshService.refresh({
+        ...restBody,
+        credentials,
+      });
       res.status(200).end();
     });
   }
@@ -126,9 +134,7 @@ export async function createRouter(
           fields: parseEntityTransformParams(req.query),
           order: parseEntityOrderParams(req.query),
           pagination: parseEntityPaginationParams(req.query),
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await httpAuth.credentials(req),
         });
 
         // Add a Link header to the next page
@@ -147,9 +153,7 @@ export async function createRouter(
           await entitiesCatalog.queryEntities({
             limit: req.query.limit,
             ...parseQueryEntitiesParams(req.query),
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
+            credentials: await httpAuth.credentials(req),
           });
 
         res.json({
@@ -169,9 +173,7 @@ export async function createRouter(
         const { uid } = req.params;
         const { entities } = await entitiesCatalog.entities({
           filter: basicEntityFilter({ 'metadata.uid': uid }),
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await httpAuth.credentials(req),
         });
         if (!entities.length) {
           throw new NotFoundError(`No entity with uid ${uid}`);
@@ -181,9 +183,7 @@ export async function createRouter(
       .delete('/entities/by-uid/:uid', async (req, res) => {
         const { uid } = req.params;
         await entitiesCatalog.removeEntityByUid(uid, {
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await httpAuth.credentials(req),
         });
         res.status(204).end();
       })
@@ -195,9 +195,7 @@ export async function createRouter(
             'metadata.namespace': namespace,
             'metadata.name': name,
           }),
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await httpAuth.credentials(req),
         });
         if (!entities.length) {
           throw new NotFoundError(
@@ -212,22 +210,17 @@ export async function createRouter(
           const { kind, namespace, name } = req.params;
           const entityRef = stringifyEntityRef({ kind, namespace, name });
           const response = await entitiesCatalog.entityAncestry(entityRef, {
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
+            credentials: await httpAuth.credentials(req),
           });
           res.status(200).json(response);
         },
       )
       .post('/entities/by-refs', async (req, res) => {
         const request = entitiesBatchRequest(req);
-        const token = getBearerTokenFromAuthorizationHeader(
-          req.header('authorization'),
-        );
         const response = await entitiesCatalog.entitiesBatch({
           entityRefs: request.entityRefs,
           fields: parseEntityTransformParams(req.query, request.fields),
-          authorizationToken: token,
+          credentials: await httpAuth.credentials(req),
         });
         res.status(200).json(response);
       })
@@ -235,9 +228,7 @@ export async function createRouter(
         const response = await entitiesCatalog.facets({
           filter: parseEntityFilterParams(req.query),
           facets: parseEntityFacetParams(req.query),
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await httpAuth.credentials(req),
         });
         res.status(200).json(response);
       });
@@ -256,17 +247,13 @@ export async function createRouter(
         }
 
         const output = await locationService.createLocation(location, dryRun, {
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await httpAuth.credentials(req),
         });
         res.status(201).json(output);
       })
       .get('/locations', async (req, res) => {
         const locations = await locationService.listLocations({
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await httpAuth.credentials(req),
         });
         res.status(200).json(locations.map(l => ({ data: l })));
       })
@@ -274,9 +261,7 @@ export async function createRouter(
       .get('/locations/:id', async (req, res) => {
         const { id } = req.params;
         const output = await locationService.getLocation(id, {
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await httpAuth.credentials(req),
         });
         res.status(200).json(output);
       })
@@ -285,9 +270,7 @@ export async function createRouter(
 
         const { id } = req.params;
         await locationService.deleteLocation(id, {
-          authorizationToken: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await httpAuth.credentials(req),
         });
         res.status(204).end();
       })
@@ -295,11 +278,7 @@ export async function createRouter(
         const { kind, namespace, name } = req.params;
         const output = await locationService.getLocationByEntity(
           { kind, namespace, name },
-          {
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
-          },
+          { credentials: await httpAuth.credentials(req) },
         );
         res.status(200).json(output);
       });

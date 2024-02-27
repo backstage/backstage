@@ -31,6 +31,8 @@ import React, { MouseEventHandler, useState } from 'react';
 import { SupportItem, SupportItemLink, useSupportConfig } from '../../hooks';
 import { HelpIcon } from '../../icons';
 import { Link } from '../Link';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 type SupportButtonProps = {
   title?: string;
@@ -85,6 +87,7 @@ const SupportListItem = ({ item }: { item: SupportItem }) => {
 };
 
 export function SupportButton(props: SupportButtonProps) {
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
   const { title, items, children } = props;
   const { items: configItems } = useSupportConfig();
 
@@ -125,7 +128,7 @@ export function SupportButton(props: SupportButtonProps) {
             onClick={onClickHandler}
             startIcon={<HelpIcon />}
           >
-            Support
+            {t('supportButton.title')}
           </Button>
         )}
       </Box>
@@ -171,7 +174,7 @@ export function SupportButton(props: SupportButtonProps) {
             onClick={popoverCloseHandler}
             aria-label="Close"
           >
-            Close
+            {t('supportButton.close')}
           </Button>
         </DialogActions>
       </Popover>

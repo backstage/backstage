@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-export { createBaseThemeOptions } from './createBaseThemeOptions';
+export {
+  createBaseThemeOptions,
+  defaultTypography,
+} from './createBaseThemeOptions';
 export type { BaseThemeOptionsInput } from './createBaseThemeOptions';
 export { colorVariants, genPageTheme, pageTheme, shapes } from './pageTheme';
 export { palettes } from './palettes';

@@ -1,5 +1,17 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.20-next.0
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/types@1.1.1
+
 ## 0.3.19
 
 ### Patch Changes

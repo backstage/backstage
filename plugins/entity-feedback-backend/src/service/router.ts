@@ -15,16 +15,15 @@
  */
 
 import {
+  createLegacyAuthAdapters,
   errorHandler,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   EntityRatingsData,
   Ratings,
@@ -43,6 +42,8 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   identity: IdentityApi;
   logger: Logger;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 }
 
 /**
@@ -51,9 +52,10 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { database, discovery, identity, logger } = options;
+  const { database, discovery, logger } = options;
 
   logger.info('Initializing Entity Feedback backend');
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const catalogClient = new CatalogClient({ discoveryApi: discovery });
   const db = await database.getClient();
@@ -63,9 +65,10 @@ export async function createRouter(
   router.use(express.json());
 
   router.get('/ratings', async (req, res) => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await httpAuth.credentials(req),
+      targetPluginId: 'catalog',
+    });
 
     const requestedEntities: { [ref: string]: Entity } = {};
     if (req.query.ownerRef) {
@@ -131,11 +134,12 @@ export async function createRouter(
   });
 
   router.post('/ratings/:entityRef', async (req, res) => {
-    const user = await identity.getIdentity({ request: req });
+    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
+
     const rating = req.body.rating;
-    if (!user || !rating) {
+    if (!rating) {
       logger.warn(
-        `Can't save rating because there is not enough info: user=${user}, rating=${rating}`,
+        `Can't save rating because there is not enough info: user=${credentials.principal.userEntityRef}, rating=${rating}`,
       );
       res.status(400).end();
       return;
@@ -144,7 +148,7 @@ export async function createRouter(
     await dbHandler.recordRating({
       entityRef: req.params.entityRef,
       rating,
-      userRef: user.identity.userEntityRef,
+      userRef: credentials.principal.userEntityRef,
     });
 
     res.status(201).end();
@@ -153,9 +157,10 @@ export async function createRouter(
   router.get('/ratings/:entityRef', async (req, res) => {
     const ratings = await dbHandler.getRatings(req.params.entityRef);
 
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await httpAuth.credentials(req),
+      targetPluginId: 'catalog',
+    });
 
     // Filter ratings via user refs to only expose entity refs accessible by current user
     const accessibleEntityRefs = (
@@ -177,9 +182,7 @@ export async function createRouter(
     const entityRatings = (
       await dbHandler.getRatings(req.params.entityRef)
     ).reduce((ratings: Ratings, { rating }) => {
-      ratings[rating] = ratings[rating] ?? 0;
-      ratings[rating]++;
-
+      ratings[rating] = (ratings[rating] ?? 0) + 1;
       return ratings;
     }, {});
 
@@ -187,21 +190,15 @@ export async function createRouter(
   });
 
   router.post('/responses/:entityRef', async (req, res) => {
-    const user = await identity.getIdentity({ request: req });
     const { response, comments, consent } = req.body;
-
-    if (!user) {
-      logger.warn(`Could not identify user to save responses, user=${user}`);
-      res.status(400).end();
-      return;
-    }
+    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
 
     await dbHandler.recordResponse({
       entityRef: req.params.entityRef,
       response,
       comments,
       consent,
-      userRef: user.identity.userEntityRef,
+      userRef: credentials.principal.userEntityRef,
     });
 
     res.status(201).end();
@@ -210,9 +207,10 @@ export async function createRouter(
   router.get('/responses/:entityRef', async (req, res) => {
     const responses = await dbHandler.getResponses(req.params.entityRef);
 
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await httpAuth.credentials(req),
+      targetPluginId: 'catalog',
+    });
 
     // Filter responses via user refs to only expose entity refs accessible by current user
     const accessibleEntityRefs = (

@@ -23,6 +23,8 @@ import Button from '@material-ui/core/Button';
 import React, { useState } from 'react';
 import { isError } from '@backstage/errors';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export type LoginRequestListItemClassKey = 'root';
 
@@ -44,6 +46,7 @@ type RowProps = {
 const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
   const classes = useItemStyles();
   const [error, setError] = useState<string>();
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const handleContinue = async () => {
     setBusy(true);
@@ -68,7 +71,7 @@ const LoginRequestListItem = ({ request, busy, setBusy }: RowProps) => {
         secondary={error && <Typography color="error">{error}</Typography>}
       />
       <Button color="primary" variant="contained" onClick={handleContinue}>
-        Log in
+        {t('oauthRequestDialog.login')}
       </Button>
     </ListItem>
   );

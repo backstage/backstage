@@ -7,6 +7,7 @@
 
 import { AdrDocument } from '@backstage/plugin-adr-common';
 import { AdrFilePathFilterFn } from '@backstage/plugin-adr-common';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CacheClient } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -32,6 +33,7 @@ export type AdrCollatorFactoryOptions = {
   parser?: AdrParser;
   reader: UrlReader;
   tokenManager: TokenManager;
+  auth?: AuthService;
 };
 
 // @public

@@ -15,6 +15,7 @@
  */
 
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
@@ -42,19 +43,17 @@ describe('sentry:project:create action', () => {
     name: string;
     slug?: string;
     authToken?: string;
-  }> => ({
-    workspacePath: './dev/proj',
-    createTemporaryDirectory: jest.fn(),
-    logger: jest.createMockFromModule('winston'),
-    logStream: jest.createMockFromModule('stream'),
-    input: {
-      organizationSlug: 'org',
-      teamSlug: 'team',
-      name: 'test project',
-      authToken: randomBytes(5).toString('hex'),
-    },
-    output: jest.fn(),
-  });
+  }> =>
+    createMockActionContext({
+      workspacePath: './dev/proj',
+      logger: jest.createMockFromModule('winston'),
+      input: {
+        organizationSlug: 'org',
+        teamSlug: 'team',
+        name: 'test project',
+        authToken: randomBytes(5).toString('hex'),
+      },
+    });
 
   it('should request sentry project create with specified parameters.', async () => {
     expect.assertions(3);

@@ -48,6 +48,7 @@ describe('CatalogIdentityClient', () => {
     catalogApi.getEntities.mockResolvedValueOnce({ items: [{} as UserEntity] });
     tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
     const client = new CatalogIdentityClient({
+      discovery: {} as any,
       catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
       tokenManager,
     });
@@ -106,6 +107,7 @@ describe('CatalogIdentityClient', () => {
     tokenManager.getToken.mockResolvedValue({ token: 'my-token' });
 
     const client = new CatalogIdentityClient({
+      discovery: {} as any,
       catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
       tokenManager,
     });

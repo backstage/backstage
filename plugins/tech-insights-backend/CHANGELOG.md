@@ -1,5 +1,24 @@
 # @backstage/plugin-tech-insights-backend
 
+## 0.5.27-next.0
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- d621468: Added support for the new `AuthService`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/plugin-tech-insights-node@0.5.0-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.5.24
 
 ### Patch Changes

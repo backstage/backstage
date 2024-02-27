@@ -21,22 +21,29 @@ import { Config } from '@backstage/config';
 import { LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { LighthouseAuditScheduleImpl } from '../config';
-import { TokenManager } from '@backstage/backend-common';
+import {
+  TokenManager,
+  createLegacyAuthAdapters,
+} from '@backstage/backend-common';
+import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 
 /** @public **/
 export interface CreateLighthouseSchedulerOptions {
   logger: Logger;
   config: Config;
+  discovery: DiscoveryService;
   scheduler?: PluginTaskScheduler;
   catalogClient: CatalogApi;
   tokenManager: TokenManager;
+  auth?: AuthService;
 }
 
 /** @public **/
 export async function createScheduler(
   options: CreateLighthouseSchedulerOptions,
 ) {
-  const { logger, scheduler, catalogClient, config, tokenManager } = options;
+  const { logger, scheduler, catalogClient, config } = options;
+  const { auth } = createLegacyAuthAdapters(options);
   const lighthouseApi = LighthouseRestApi.fromConfig(config);
 
   const lighthouseAuditConfig = LighthouseAuditScheduleImpl.fromConfig(config, {
@@ -78,7 +85,10 @@ export async function createScheduler(
 
         logger.info('Running Lighthouse Audit Task');
 
-        const { token } = await tokenManager.getToken();
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: await auth.getOwnServiceCredentials(),
+          targetPluginId: 'catalog',
+        });
         const websitesWithUrl = await catalogClient.getEntities(
           {
             filter: [filter],

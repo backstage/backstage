@@ -15,10 +15,7 @@
  */
 
 import { AuthenticationError } from '@backstage/errors';
-import {
-  createProxyAuthenticator,
-  getBearerTokenFromAuthorizationHeader,
-} from '@backstage/plugin-auth-node';
+import { createProxyAuthenticator } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
 import { OAuth2ProxyResult } from './types';
 
@@ -46,7 +43,7 @@ export const oauth2ProxyAuthenticator = createProxyAuthenticator({
   async authenticate({ req }) {
     try {
       const authHeader = req.header(OAUTH2_PROXY_JWT_HEADER);
-      const jwt = getBearerTokenFromAuthorizationHeader(authHeader);
+      const jwt = authHeader?.match(/^Bearer[ ]+(\S+)$/i)?.[1];
       const decodedJWT = jwt && decodeJwt(jwt);
 
       const result = {

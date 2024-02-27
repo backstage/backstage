@@ -18,6 +18,7 @@ import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { Entity, Validators } from '@backstage/catalog-model';
 import {
   CatalogProcessor,
+  CatalogProcessorParser,
   EntitiesSearchFilter,
   EntityProvider,
   PlaceholderResolver,
@@ -55,6 +56,12 @@ export interface CatalogModelExtensionPoint {
    * @param validators - The (subset of) validators to set
    */
   setFieldValidators(validators: Partial<Validators>): void;
+
+  /**
+   * Sets the entity data parser which is used to read raw data from locations
+   * @param parser - Parser which will used to extract entities from raw data
+   */
+  setEntityDataParser(parser: CatalogProcessorParser): void;
 }
 
 /**

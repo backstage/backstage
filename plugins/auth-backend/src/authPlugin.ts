@@ -75,6 +75,10 @@ export const authPlugin = createBackendPlugin({
           providerFactories: Object.fromEntries(providers),
           disableDefaultProviderFactories: true,
         });
+        httpRouter.addAuthPolicy({
+          path: '/',
+          allow: 'unauthenticated',
+        });
         httpRouter.use(router);
       },
     });

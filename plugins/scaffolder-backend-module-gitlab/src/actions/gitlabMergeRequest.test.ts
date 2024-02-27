@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createRootLogger, getRootLogger } from '@backstage/backend-common';
+import { createRootLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { Writable } from 'stream';
 import { createPublishGitlabMergeRequestAction } from './gitlabMergeRequest';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 // Make sure root logger is initialized ahead of FS mock
 createRootLogger();
@@ -78,6 +78,8 @@ describe('createGitLabMergeRequest', () => {
   const workspacePath = mockDir.resolve('workspace');
 
   beforeEach(() => {
+    jest.clearAllMocks();
+
     mockDir.clear();
 
     const config = new ConfigReader({
@@ -116,14 +118,7 @@ describe('createGitLabMergeRequest', () => {
           irrelevant: { 'bar.txt': 'Nothing to see here' },
         },
       });
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.Projects.show).not.toHaveBeenCalled();
@@ -158,14 +153,7 @@ describe('createGitLabMergeRequest', () => {
           irrelevant: { 'bar.txt': 'Nothing to see here' },
         },
       });
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.Projects.show).toHaveBeenCalledWith('owner/repo');
@@ -203,14 +191,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
@@ -238,14 +219,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
@@ -279,14 +253,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
@@ -319,14 +286,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
@@ -359,14 +319,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
@@ -398,14 +351,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.MergeRequests.create).toHaveBeenCalledWith(
@@ -433,14 +379,7 @@ describe('createGitLabMergeRequest', () => {
           irrelevant: { 'bar.txt': 'Nothing to see here' },
         },
       });
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
@@ -482,14 +421,7 @@ describe('createGitLabMergeRequest', () => {
           irrelevant: { 'bar.txt': 'Nothing to see here' },
         },
       });
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
@@ -526,14 +458,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
@@ -568,14 +493,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
@@ -610,14 +528,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
       await instance.handler(ctx);
 
       expect(mockGitlabClient.Commits.create).toHaveBeenCalledWith(
@@ -655,14 +566,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
 
       await instance.handler(ctx);
 
@@ -700,14 +604,7 @@ describe('createGitLabMergeRequest', () => {
         },
       });
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
 
       await instance.handler(ctx);
 
@@ -737,14 +634,7 @@ describe('createGitLabMergeRequest', () => {
         commitAction: 'create',
       };
 
-      const ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      const ctx = createMockActionContext({ input, workspacePath });
 
       await expect(instance.handler(ctx)).rejects.toThrow(
         'Relative path is not allowed to refer to a directory outside its parent',

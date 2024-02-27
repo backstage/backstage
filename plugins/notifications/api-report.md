@@ -12,16 +12,16 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
-import { NotificationType } from '@backstage/plugin-notifications-common';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public (undocumented)
 export type GetNotificationsOptions = {
-  type?: NotificationType;
   offset?: number;
   limit?: number;
   search?: string;
+  read?: boolean;
+  createdAfter?: Date;
 };
 
 // @public (undocumented)
@@ -78,16 +78,24 @@ export const NotificationsSidebarItem: (props?: {
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const NotificationsTable: (props: {
-  onUpdate: () => void;
-  type: NotificationType;
+export const NotificationsTable: ({
+  isLoading,
+  notifications,
+  onUpdate,
+  setContainsText,
+}: NotificationsTableProps) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type NotificationsTableProps = {
+  isLoading?: boolean;
   notifications?: Notification_2[];
-}) => React_2.JSX.Element;
+  onUpdate: () => void;
+  setContainsText: (search: string) => void;
+};
 
 // @public (undocumented)
 export type UpdateNotificationsOptions = {
   ids: string[];
-  done?: boolean;
   read?: boolean;
   saved?: boolean;
 };

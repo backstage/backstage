@@ -62,7 +62,6 @@ describe.each(databases.eachSupportedId())(
     const insertNotification = async (
       notification: Partial<Notification> & {
         id: string;
-        done?: Date;
         saved?: Date;
         read?: Date;
       },
@@ -78,7 +77,6 @@ describe.each(databases.eachSupportedId())(
             title: notification.payload?.title,
             severity: notification.payload?.severity,
             scope: notification.payload?.scope,
-            done: notification.done,
             saved: notification.saved,
             read: notification.read,
           })
@@ -104,44 +102,68 @@ describe.each(databases.eachSupportedId())(
 
         const notifications = await storage.getNotifications({ user });
         expect(notifications.length).toBe(2);
+        expect(notifications.find(el => el.id === id1)).toBeTruthy();
+        expect(notifications.find(el => el.id === id2)).toBeTruthy();
       });
 
-      it('should return undone notifications for user', async () => {
+      it('should return read notifications for user', async () => {
         const id1 = uuid();
         const id2 = uuid();
-        await insertNotification({
-          id: id1,
-          ...testNotification,
-          done: new Date(),
-        });
+        const id3 = uuid();
+        await insertNotification({ id: id1, ...testNotification });
         await insertNotification({ id: id2, ...testNotification });
+        await insertNotification({ id: id3, ...testNotification });
         await insertNotification({ id: uuid(), ...otherUserNotification });
+
+        await storage.markRead({ ids: [id1, id3], user });
 
         const notifications = await storage.getNotifications({
           user,
-          type: 'undone',
+          read: true,
+        });
+        expect(notifications.length).toBe(2);
+        expect(notifications.find(el => el.id === id1)).toBeTruthy();
+        expect(notifications.find(el => el.id === id3)).toBeTruthy();
+      });
+
+      it('should return unread notifications for user', async () => {
+        const id1 = uuid();
+        const id2 = uuid();
+        const id3 = uuid();
+        await insertNotification({ id: id1, ...testNotification });
+        await insertNotification({ id: id2, ...testNotification });
+        await insertNotification({ id: id3, ...testNotification });
+        await insertNotification({ id: uuid(), ...otherUserNotification });
+
+        await storage.markRead({ ids: [id1, id3], user });
+
+        const notifications = await storage.getNotifications({
+          user,
+          read: false,
         });
         expect(notifications.length).toBe(1);
         expect(notifications.at(0)?.id).toEqual(id2);
       });
 
-      it('should return done notifications for user', async () => {
+      it('should return both read and unread notifications for user', async () => {
         const id1 = uuid();
         const id2 = uuid();
-        await insertNotification({
-          id: id1,
-          ...testNotification,
-          done: new Date(),
-        });
+        const id3 = uuid();
+        await insertNotification({ id: id1, ...testNotification });
         await insertNotification({ id: id2, ...testNotification });
+        await insertNotification({ id: id3, ...testNotification });
         await insertNotification({ id: uuid(), ...otherUserNotification });
+
+        await storage.markRead({ ids: [id1, id3], user });
 
         const notifications = await storage.getNotifications({
           user,
-          type: 'done',
+          read: undefined,
         });
-        expect(notifications.length).toBe(1);
-        expect(notifications.at(0)?.id).toEqual(id1);
+        expect(notifications.length).toBe(3);
+        expect(notifications.find(el => el.id === id1)).toBeTruthy();
+        expect(notifications.find(el => el.id === id2)).toBeTruthy();
+        expect(notifications.find(el => el.id === id3)).toBeTruthy();
       });
 
       it('should allow searching for notifications', async () => {
@@ -165,6 +187,33 @@ describe.each(databases.eachSupportedId())(
         });
         expect(notifications.length).toBe(1);
         expect(notifications.at(0)?.id).toEqual(id1);
+      });
+
+      it('should filter notifications based on created date', async () => {
+        const id1 = uuid();
+        const id2 = uuid();
+        await insertNotification({
+          id: id1,
+          ...testNotification,
+          created: new Date(Date.now() - 1 * 60 * 60 * 1000 /* an hour ago */),
+        });
+        await insertNotification({
+          id: id2,
+          ...testNotification,
+          payload: {
+            severity: 'normal',
+            title: 'Please find me',
+          },
+          created: new Date() /* now */,
+        });
+        await insertNotification({ id: uuid(), ...otherUserNotification });
+
+        const notifications = await storage.getNotifications({
+          user,
+          createdAfter: new Date(Date.now() - 5 * 60 * 1000 /* 5mins */),
+        });
+        expect(notifications.length).toBe(1);
+        expect(notifications.at(0)?.id).toEqual(id2);
       });
     });
 
@@ -218,7 +267,6 @@ describe.each(databases.eachSupportedId())(
           ...testNotification,
           id: id1,
           read: new Date(),
-          done: new Date(),
           payload: {
             title: 'Notification',
             link: '/scaffolder/task/1234',
@@ -242,7 +290,6 @@ describe.each(databases.eachSupportedId())(
         expect(existing).not.toBeNull();
         expect(existing?.id).toEqual(id1);
         expect(existing?.payload.title).toEqual('New notification');
-        expect(existing?.done).toBeNull();
         expect(existing?.read).toBeNull();
       });
     });
@@ -283,32 +330,6 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
-    describe('markDone', () => {
-      it('should mark notification done', async () => {
-        const id1 = uuid();
-        await insertNotification({ id: id1, ...testNotification });
-
-        await storage.markDone({ ids: [id1], user });
-        const notification = await storage.getNotification({ id: id1 });
-        expect(notification?.done).not.toBeNull();
-      });
-    });
-
-    describe('markUndone', () => {
-      it('should mark notification undone', async () => {
-        const id1 = uuid();
-        await insertNotification({
-          id: id1,
-          ...testNotification,
-          done: new Date(),
-        });
-
-        await storage.markUndone({ ids: [id1], user });
-        const notification = await storage.getNotification({ id: id1 });
-        expect(notification?.done).toBeNull();
-      });
-    });
-
     describe('markSaved', () => {
       it('should mark notification saved', async () => {
         const id1 = uuid();
@@ -332,6 +353,27 @@ describe.each(databases.eachSupportedId())(
         await storage.markUnsaved({ ids: [id1], user });
         const notification = await storage.getNotification({ id: id1 });
         expect(notification?.saved).toBeNull();
+      });
+    });
+
+    describe('saveNotification', () => {
+      it('should store a notification', async () => {
+        const id1 = uuid();
+        await storage.saveNotification({
+          id: id1,
+          user,
+          created: new Date(),
+          origin: 'my-origin',
+          payload: {
+            title: 'My title One',
+            description: 'a description of the notification',
+            link: 'http://foo.bar',
+            severity: 'normal',
+            topic: 'my-topic',
+          },
+        });
+        const notification = await storage.getNotification({ id: id1 });
+        expect(notification?.payload?.title).toBe('My title One');
       });
     });
   },

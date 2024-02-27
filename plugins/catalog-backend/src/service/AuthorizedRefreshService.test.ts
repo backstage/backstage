@@ -18,6 +18,7 @@ import { NotAllowedError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { AuthorizedRefreshService } from './AuthorizedRefreshService';
+import { mockCredentials } from '@backstage/backend-test-utils';
 
 describe('AuthorizedRefreshService', () => {
   const refreshService = {
@@ -46,7 +47,7 @@ describe('AuthorizedRefreshService', () => {
     await expect(() =>
       authorizedService.refresh({
         entityRef: 'some entity ref',
-        authorizationToken: 'some auth token',
+        credentials: mockCredentials.none(),
       }),
     ).rejects.toThrow(NotAllowedError);
   });
@@ -64,7 +65,7 @@ describe('AuthorizedRefreshService', () => {
 
     const options = {
       entityRef: 'some entity ref',
-      authorizationToken: 'some auth token',
+      credentials: mockCredentials.none(),
     };
     await authorizedService.refresh(options);
 

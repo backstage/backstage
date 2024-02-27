@@ -1,5 +1,32 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.6.0-next.0
+
+### Minor Changes
+
+- 9fdb86a: Ability to fetch the README file from a different Azure DevOps path.
+
+  Defaults to the current, Azure DevOps default behaviour (`README.md` in the root of the git repo); to use a different path, add the annotation `dev.azure.com/readme-path`
+
+  Example:
+
+  ```yaml
+  dev.azure.com/readme-path: /my-path/README.md
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-azure-devops-common@0.4.0-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+
 ## 0.5.2
 
 ### Patch Changes

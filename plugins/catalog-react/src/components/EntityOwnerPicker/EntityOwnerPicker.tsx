@@ -48,6 +48,8 @@ export type CatalogReactEntityOwnerPickerClassKey = 'input';
 
 const useStyles = makeStyles(
   {
+    root: {},
+    label: {},
     input: {},
     fullWidth: { width: '100%' },
     boxLabel: {
@@ -174,8 +176,8 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   }
 
   return (
-    <Box pb={1} pt={1}>
-      <Typography variant="button" component="label">
+    <Box className={classes.root} pb={1} pt={1}>
+      <Typography className={classes.label} variant="button" component="label">
         Owner
         <Autocomplete
           multiple

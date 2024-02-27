@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
 import { createGitlabGroupEnsureExistsAction } from './createGitlabGroupEnsureExistsAction';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 
@@ -35,13 +34,7 @@ jest.mock('@gitbeaker/node', () => ({
 }));
 
 describe('gitlab:group:ensureExists', () => {
-  const mockContext = {
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
 
   afterEach(() => {
     jest.resetAllMocks();
