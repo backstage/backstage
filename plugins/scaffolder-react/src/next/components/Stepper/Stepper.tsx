@@ -154,6 +154,9 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleCreate = useCallback(() => {
     props.onCreate(formState);
+    const name =
+      typeof formState.name === 'string' ? formState.name : undefined;
+    analytics.captureEvent('create', name ?? props.templateName ?? 'unknown');
     analytics.captureEvent('click', `[${props.templateRef}]: ${createLabel}`);
   }, [props, formState, analytics, createLabel]);
 
@@ -179,6 +182,7 @@ export const Stepper = (stepperProps: StepperProps) => {
       setErrors(undefined);
       setActiveStep(prevActiveStep => {
         const stepNum = prevActiveStep + 1;
+        analytics.captureEvent('click', `Next Step (${stepNum})`);
         analytics.captureEvent(
           'click',
           `[${props.templateRef}]: Next Step (${stepNum})`,
