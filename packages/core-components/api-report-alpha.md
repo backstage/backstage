@@ -23,7 +23,7 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'signIn.guestProvider.title': 'Guest';
     readonly 'signIn.guestProvider.enter': 'Enter';
     readonly 'signIn.guestProvider.subtitle': 'Enter as a Guest User.\n You will not have a verified identity, meaning some features might be unavailable.';
-    readonly shipToContent: 'Skip to content';
+    readonly skipToContent: 'Skip to content';
     readonly 'copyTextButton.tooltipText': 'Text copied to clipboard';
     readonly 'simpleStepper.finish': 'Finish';
     readonly 'simpleStepper.reset': 'Reset';

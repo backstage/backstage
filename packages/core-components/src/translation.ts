@@ -39,7 +39,7 @@ export const coreComponentsTranslationRef = createTranslationRef({
         enter: 'Enter',
       },
     },
-    shipToContent: 'Skip to content',
+    skipToContent: 'Skip to content',
     copyTextButton: {
       tooltipText: 'Text copied to clipboard',
     },

@@ -263,7 +263,7 @@ function A11ySkipSidebar() {
       variant="contained"
       className={classnames(classes.visuallyHidden)}
     >
-      {t('shipToContent')}
+      {t('skipToContent')}
     </Button>
   );
 }
