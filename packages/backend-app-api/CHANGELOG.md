@@ -1,5 +1,31 @@
 # @backstage/backend-app-api
 
+## 0.6.0-next.0
+
+### Minor Changes
+
+- 4a3d434: **BREAKING**: For users that have migrated to the new backend system, incoming requests will now be rejected if they are not properly authenticated (e.g. with a Backstage bearer token or a backend token). Please see the [Auth Service Migration tutorial](https://backstage.io/docs/tutorials/auth-service-migration) for more information on how to circumvent this behavior in the short term and how to properly leverage it in the longer term.
+
+  Added service factories for the new [`auth`](https://backstage.io/docs/backend-system/core-services/auth/), [`httpAuth`](https://backstage.io/docs/backend-system/core-services/http-auth), and [`userInfo`](https://backstage.io/docs/backend-system/core-services/user-info) services that were created as part of [BEP-0003](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution).
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+- 0502d82: Updated the `permissionsServiceFactory` to forward the `AuthService` to the implementation.
+- 9802004: Made the `DefaultUserInfoService` claims check stricter
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/plugin-permission-node@0.7.24-next.0
+  - @backstage/cli-node@0.2.4-next.0
+  - @backstage/config-loader@1.6.3-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+
 ## 0.5.11
 
 ### Patch Changes

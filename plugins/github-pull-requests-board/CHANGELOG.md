@@ -1,5 +1,18 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.25-next.0
+
+### Patch Changes
+
+- 3c2d7c0: The `CardHeader` component in the `github-pull-requests-board` plugin will show the status for the PR
+- 402d991: Align `p-limit` dependency version to v3
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/integration@1.9.1-next.0
+
 ## 0.1.24
 
 ### Patch Changes

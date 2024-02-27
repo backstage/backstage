@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.8.1-next.0
+
+### Patch Changes
+
+- 930b5c1: Added 'root' and 'label' class key to TemplateCategoryPicker
+- 6d649d2: Updated dependency `flatted` to `3.3.1`.
+- 0cecb09: Updated dependency `@rjsf/utils` to `5.17.1`.
+  Updated dependency `@rjsf/core` to `5.17.1`.
+  Updated dependency `@rjsf/material-ui` to `5.17.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.17.1`.
+- Updated dependencies
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-scaffolder-common@1.5.1-next.0
+
 ## 1.8.0
 
 ### Minor Changes

@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-backend-module-rails
 
+## 0.4.30-next.0
+
+### Patch Changes
+
+- f44589d: Introduced `createMockActionContext` to unify the way of creating scaffolder mock context.
+
+  It will help to maintain tests in a long run during structural changes of action context.
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-scaffolder-node@0.3.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/types@1.1.1
+
 ## 0.4.27
 
 ### Patch Changes

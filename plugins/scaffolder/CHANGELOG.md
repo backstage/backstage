@@ -1,5 +1,30 @@
 # @backstage/plugin-scaffolder
 
+## 1.18.1-next.0
+
+### Patch Changes
+
+- 0cecb09: Updated dependency `@rjsf/utils` to `5.17.1`.
+  Updated dependency `@rjsf/core` to `5.17.1`.
+  Updated dependency `@rjsf/material-ui` to `5.17.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.17.1`.
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/integration-react@1.1.25-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/plugin-scaffolder-react@1.8.1-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+  - @backstage/core-compat-api@0.2.1-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+  - @backstage/plugin-permission-react@0.4.21-next.0
+  - @backstage/plugin-scaffolder-common@1.5.1-next.0
+
 ## 1.18.0
 
 ### Minor Changes
