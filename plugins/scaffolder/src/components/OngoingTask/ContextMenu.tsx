@@ -72,7 +72,10 @@ export const ContextMenu = (props: ContextMenuProps) => {
 
   const [{ status: cancelStatus }, { execute: cancel }] = useAsync(async () => {
     if (taskId) {
-      analytics.captureEvent('click', `[${templateRef}]: Task canceled`);
+      analytics.captureEvent(
+        'click',
+        `[${templateRef}]: Task has been canceled`,
+      );
       await scaffolderApi.cancelTask(taskId);
     }
   });
