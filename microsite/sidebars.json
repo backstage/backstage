@@ -116,6 +116,7 @@
           "features/software-templates/input-examples",
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
+          "features/software-templates/writing-tests-for-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
           "features/software-templates/authorizing-parameters-steps-and-actions",

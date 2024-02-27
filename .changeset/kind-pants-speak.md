@@ -12,9 +12,10 @@
 '@backstage/plugin-scaffolder-backend-module-azure': patch
 '@backstage/plugin-scaffolder-backend-module-gitea': patch
 '@backstage/plugin-scaffolder-backend-module-rails': patch
-'@backstage/plugin-scaffolder-node-test-utils': patch
+'@backstage/plugin-scaffolder-node-test-utils': minor
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-Introduced createMockActionContext to unify the way of creating scaffolder mock context.
+Introduced `createMockActionContext` to unify the way of creating scaffolder mock context.
+
 It will help to maintain tests in a long run during structural changes of action context.
