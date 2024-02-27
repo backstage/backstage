@@ -72,7 +72,6 @@
     "@backstage/plugin-search-backend-module-pg": "workspace:^",
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
-    "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-signals-node": "workspace:^",
     "@backstage/plugin-tech-insights-backend": "workspace:^",
