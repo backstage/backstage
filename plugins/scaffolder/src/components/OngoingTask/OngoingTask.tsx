@@ -102,6 +102,15 @@ export const OngoingTask = (props: {
     return 0;
   }, [steps]);
 
+  const template = taskStream.task?.spec.templateInfo?.entity!;
+  const templateName = template.metadata.name;
+
+  const templateRef = stringifyEntityRef({
+    kind: 'Template',
+    namespace: template.metadata.namespace,
+    name: templateName,
+  });
+
   const startOver = useCallback(() => {
     const { namespace, name } =
       taskStream.task?.spec.templateInfo?.entity?.metadata ?? {};
@@ -112,7 +121,10 @@ export const OngoingTask = (props: {
       return;
     }
 
-    analytics.captureEvent('click', `[${name}]: Task has been started over`);
+    analytics.captureEvent(
+      'click',
+      `[${templateRef}]: Task has been started over`,
+    );
 
     navigate({
       pathname: templateRouteRef({
@@ -126,17 +138,9 @@ export const OngoingTask = (props: {
     navigate,
     taskStream.task?.spec.parameters,
     taskStream.task?.spec.templateInfo?.entity?.metadata,
+    templateRef,
     templateRouteRef,
   ]);
-
-  const template = taskStream.task?.spec.templateInfo?.entity!;
-  const templateName = template.metadata.name;
-
-  const templateRef = stringifyEntityRef({
-    kind: 'Template',
-    namespace: template.metadata.namespace,
-    name: templateName,
-  });
 
   const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
     async () => {
