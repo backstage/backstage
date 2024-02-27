@@ -53,14 +53,14 @@ export const techdocsPlugin = createBackendPlugin({
       },
     });
 
-    let customTechdosGenerator: TechdocsGenerator | undefined;
+    let customTechdocsGenerator: TechdocsGenerator | undefined;
     env.registerExtensionPoint(techdocsGeneratorExtensionPoint, {
       setTechdocsGenerator(generator: TechdocsGenerator) {
-        if (customTechdosGenerator) {
+        if (customTechdocsGenerator) {
           throw new Error('TechdocsGenerator may only be set once');
         }
 
-        customTechdosGenerator = generator;
+        customTechdocsGenerator = generator;
       },
     });
 
@@ -89,7 +89,7 @@ export const techdocsPlugin = createBackendPlugin({
         const generators = await Generators.fromConfig(config, {
           logger: winstonLogger,
           containerRunner,
-          customGenerator: customTechdosGenerator,
+          customGenerator: customTechdocsGenerator,
         });
 
         // Publisher is used for
