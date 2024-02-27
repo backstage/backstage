@@ -28,6 +28,7 @@ export default async function createPlugin(
     config: env.config,
     catalogApi,
     permissions: env.permissions,
+    discovery: env.discovery,
   }).build();
   return router;
 }
