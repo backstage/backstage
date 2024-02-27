@@ -109,13 +109,10 @@ export type CatalogReactEntityLifecyclePickerClassKey = 'input';
 export type CatalogReactEntityNamespacePickerClassKey = 'input';
 
 // @public (undocumented)
-export type CatalogReactEntityOwnerPickerClassKey = 'input' | 'root' | 'label';
+export type CatalogReactEntityOwnerPickerClassKey = 'input';
 
 // @public (undocumented)
-export type CatalogReactEntityProcessingStatusPickerClassKey =
-  | 'input'
-  | 'root'
-  | 'label';
+export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 
 // @public (undocumented)
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
