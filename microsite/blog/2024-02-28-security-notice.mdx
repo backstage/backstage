@@ -14,7 +14,7 @@ Please update your Backstage instance.
 Last week we were notified by [Roadie](https://roadie.io/) of a potential security vulnerability in the scaffolder that they had discovered during a third-party security audit. 
 Roadie are running their scaffolder tasks in an isolated, ephemeral container to mitigate these kinds of issues, but as good citizens of the Backstage community, they alerted the Backstage maintainer team to make sure a fix was applied to the upstream project. 
 Upon further investigation, it turned out that this was a more widespread issue with the `resolveSafeChildPath` utility from the `@backstage/backend-common` package, which is used to prevent path traversal exploits. 
-This issue has now been fixed, and also backported to cover releases almost a year ago.
+This issue has now been fixed, and also backported to cover releases up to almost a year old.
 
 Please make sure that you have updated your Backstage instance to the latest v.1.23.2, or that you are using `@backstage/backend-common` `v0.21.1`, `v0.19.10`, or `v0.20.2`. 
 If you are building backend plugins for Backstage and do any local file operations, make sure you use the `resolveSafeChildPath` utility, as this check is quite tricky to implement correctly 😊
