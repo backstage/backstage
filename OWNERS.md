@@ -118,6 +118,16 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 | Philipp Hugenroth    | Spotify      | [tudi2d](https://github.com/tudi2d)         | `tudi2d`     |
 | Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
 
+### Notifications
+
+Team: @backstage/notifications-maintainers
+
+Scope: The Notifications and Signals plugins and libraries
+
+| Name        | Organization | GitHub                                      | Discord   |
+| ----------- | ------------ | ------------------------------------------- | --------- |
+| Marek Libra | RedHat       | [mareklibra](https://github.com/mareklibra) | `marekli` |
+
 ### OpenAPI Tooling
 
 Team: @backstage/openapi-tooling-maintainers
