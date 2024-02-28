@@ -61,7 +61,7 @@ import {
 import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/MarkdownEmitter';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { paths as cliPaths } from '../../lib/paths';
-import minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import { getPackageExportNames } from '../../lib/entryPoints';
 import { createBinRunner } from '../util';
 

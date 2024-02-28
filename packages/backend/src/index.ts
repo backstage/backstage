@@ -70,6 +70,7 @@ import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import { DefaultEventBroker } from '@backstage/plugin-events-backend';
+import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { metrics } from '@opentelemetry/api';
@@ -99,7 +100,11 @@ function makeCreateEnv(config: Config) {
     discovery,
   });
 
-  const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
+  const eventsService = DefaultEventsService.create({ logger: root });
+  const eventBroker = new DefaultEventBroker(
+    root.child({ type: 'plugin' }),
+    eventsService,
+  );
   const signalService = DefaultSignalService.create({
     eventBroker,
   });
@@ -119,6 +124,7 @@ function makeCreateEnv(config: Config) {
       config,
       reader,
       eventBroker,
+      events: eventsService,
       discovery,
       tokenManager,
       permissions,

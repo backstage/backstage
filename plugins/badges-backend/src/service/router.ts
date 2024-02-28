@@ -17,6 +17,7 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import {
+  createLegacyAuthAdapters,
   DatabaseManager,
   errorHandler,
   PluginEndpointDiscovery,
@@ -30,9 +31,9 @@ import { BadgeContext, BadgeFactories } from '../types';
 import { isNil } from 'lodash';
 import { Logger } from 'winston';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { BadgesStore, DatabaseBadgesStore } from '../database/badgesStore';
 import { createDefaultBadgeFactories } from '../badges';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface RouterOptions {
@@ -42,6 +43,8 @@ export interface RouterOptions {
   config: Config;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
   logger: Logger;
   identity: IdentityApi;
   badgeStore?: BadgesStore;
@@ -60,28 +63,31 @@ export async function createRouter(
     );
   const router = Router();
 
-  const { config, logger, tokenManager, discovery } = options;
+  const { config, logger, discovery } = options;
   const baseUrl = await discovery.getExternalBaseUrl('badges');
+
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   if (config.getOptionalBoolean('app.badges.obfuscate')) {
     return obfuscatedRoute(
       router,
       catalog,
       badgeBuilder,
-      tokenManager,
       logger,
       options,
       config,
       baseUrl,
+      auth,
+      httpAuth,
     );
   }
   return nonObfuscatedRoute(
     router,
     catalog,
     badgeBuilder,
-    tokenManager,
     config,
     baseUrl,
+    auth,
   );
 }
 
@@ -89,18 +95,19 @@ async function obfuscatedRoute(
   router: express.Router,
   catalog: CatalogApi,
   badgeBuilder: BadgeBuilder,
-  tokenManager: TokenManager,
   logger: Logger,
   options: RouterOptions,
   config: Config,
   baseUrl: string,
+  auth: AuthService,
+  httpAuth: HttpAuthService,
 ) {
   logger.info('Badges obfuscation is enabled');
 
   const store = options.badgeStore
     ? options.badgeStore
     : await DatabaseBadgesStore.create({
-        database: await DatabaseManager.fromConfig(config).forPlugin('badges'),
+        database: DatabaseManager.fromConfig(config).forPlugin('badges'),
       });
 
   router.get('/entity/:entityUuid/badge-specs', async (req, res) => {
@@ -117,16 +124,15 @@ async function obfuscatedRoute(
     const name = badgeInfos.name;
     const namespace = badgeInfos.namespace;
     const kind = badgeInfos.kind;
-    const token = await tokenManager.getToken();
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
 
-    // Query the catalog with the name, namespace, kind to get the entity informations
+    // Query the catalog with the name, namespace, kind to get the entity information
     const entity = await catalog.getEntityByRef(
-      {
-        namespace,
-        kind,
-        name,
-      },
-      token,
+      { namespace, kind, name },
+      { token },
     );
 
     if (isNil(entity)) {
@@ -168,14 +174,15 @@ async function obfuscatedRoute(
     const name = badgeInfo.name;
     const namespace = badgeInfo.namespace;
     const kind = badgeInfo.kind;
-    const token = await tokenManager.getToken();
+
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
+
     const entity = await catalog.getEntityByRef(
-      {
-        namespace,
-        kind,
-        name,
-      },
-      token,
+      { namespace, kind, name },
+      { token },
     );
     if (isNil(entity)) {
       throw new NotFoundError(
@@ -217,20 +224,17 @@ async function obfuscatedRoute(
   router.get(
     '/entity/:namespace/:kind/:name/obfuscated',
     async function authenticate(req, _res, next) {
-      const token = getBearerTokenFromAuthorizationHeader(
-        req.headers.authorization,
-      );
-
       const { kind, namespace, name } = req.params;
+
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: await httpAuth.credentials(req),
+        targetPluginId: 'catalog',
+      });
 
       // check that the user has the correct permissions
       // to view the catalog entity by forwarding the token
       const entity = await catalog.getEntityByRef(
-        {
-          kind,
-          namespace,
-          name,
-        },
+        { kind, namespace, name },
         { token },
       );
 
@@ -266,16 +270,20 @@ async function nonObfuscatedRoute(
   router: express.Router,
   catalog: CatalogApi,
   badgeBuilder: BadgeBuilder,
-  tokenManager: TokenManager,
   config: Config,
   baseUrl: string,
+  auth: AuthService,
 ) {
   router.get('/entity/:namespace/:kind/:name/badge-specs', async (req, res) => {
-    const token = await tokenManager.getToken();
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
+
     const { namespace, kind, name } = req.params;
     const entity = await catalog.getEntityByRef(
       { namespace, kind, name },
-      token,
+      { token },
     );
     if (!entity) {
       throw new NotFoundError(
@@ -306,11 +314,16 @@ async function nonObfuscatedRoute(
     '/entity/:namespace/:kind/:name/badge/:badgeId',
     async (req, res) => {
       const { namespace, kind, name, badgeId } = req.params;
-      const token = await tokenManager.getToken();
+      const { token } = await auth.getPluginRequestToken({
+        onBehalfOf: await auth.getOwnServiceCredentials(),
+        targetPluginId: 'catalog',
+      });
+
       const entity = await catalog.getEntityByRef(
         { namespace, kind, name },
-        token,
+        { token },
       );
+
       if (!entity) {
         throw new NotFoundError(
           `No ${kind} entity in ${namespace} named "${name}"`,

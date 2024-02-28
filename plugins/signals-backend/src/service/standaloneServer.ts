@@ -28,6 +28,11 @@ import {
   EventParams,
   EventSubscriber,
 } from '@backstage/plugin-events-node';
+import {
+  BackstageCredentials,
+  BackstageUserInfo,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
@@ -64,11 +69,21 @@ export async function startStandaloneServer(
     eventBroker,
   });
 
+  const userInfo: UserInfoService = {
+    async getUserInfo(_: BackstageCredentials): Promise<BackstageUserInfo> {
+      return {
+        userEntityRef: 'user:default/guest',
+        ownershipEntityRefs: ['user:default/guest'],
+      };
+    },
+  };
+
   const router = await createRouter({
     logger,
     identity,
     eventBroker,
     discovery,
+    userInfo,
   });
 
   let service = createServiceBuilder(module)

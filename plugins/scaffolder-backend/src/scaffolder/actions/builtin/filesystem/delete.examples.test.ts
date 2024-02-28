@@ -15,8 +15,7 @@
  */
 
 import { createFilesystemDeleteAction } from './delete';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { resolve as resolvePath } from 'path';
 import fs from 'fs-extra';
 import yaml from 'yaml';
@@ -31,16 +30,12 @@ describe('fs:delete examples', () => {
 
   const files: string[] = yaml.parse(examples[0].example).steps[0].input.files;
 
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       files: files,
     },
     workspacePath,
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     jest.restoreAllMocks();

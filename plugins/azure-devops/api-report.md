@@ -12,8 +12,8 @@ import { BuildRunOptions } from '@backstage/plugin-azure-devops-common';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { GitTag } from '@backstage/plugin-azure-devops-common';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
@@ -121,10 +121,7 @@ export const azureDevOpsApiRef: ApiRef<AzureDevOpsApi>;
 
 // @public (undocumented)
 export class AzureDevOpsClient implements AzureDevOpsApi {
-  constructor(options: {
-    discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
-  });
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi });
   // (undocumented)
   getAllTeams(): Promise<Team[]>;
   // (undocumented)

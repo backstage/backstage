@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TokenManager } from '@backstage/backend-common';
+
 import { NotificationService } from './NotificationService';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
 
 /** @public */
 export type NotificationServiceOptions = {
+  auth: AuthService;
   discovery: DiscoveryService;
-  tokenManager: TokenManager;
   pluginId: string;
 };
 
@@ -44,22 +44,27 @@ export type NotificationSendOptions = {
 export class DefaultNotificationService implements NotificationService {
   private constructor(
     private readonly discovery: DiscoveryService,
-    private readonly tokenManager: TokenManager,
+    private readonly auth: AuthService,
     private readonly pluginId: string,
   ) {}
 
-  static create({
-    tokenManager,
-    discovery,
-    pluginId,
-  }: NotificationServiceOptions): DefaultNotificationService {
-    return new DefaultNotificationService(discovery, tokenManager, pluginId);
+  static create(
+    options: NotificationServiceOptions,
+  ): DefaultNotificationService {
+    return new DefaultNotificationService(
+      options.discovery,
+      options.auth,
+      options.pluginId,
+    );
   }
 
   async send(notification: NotificationSendOptions): Promise<void> {
     try {
       const baseUrl = await this.discovery.getBaseUrl('notifications');
-      const { token } = await this.tokenManager.getToken();
+      const { token } = await this.auth.getPluginRequestToken({
+        onBehalfOf: await this.auth.getOwnServiceCredentials(),
+        targetPluginId: 'notifications',
+      });
       const response = await fetch(`${baseUrl}/`, {
         method: 'POST',
         body: JSON.stringify({

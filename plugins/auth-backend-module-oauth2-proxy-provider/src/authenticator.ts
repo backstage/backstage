@@ -15,10 +15,7 @@
  */
 
 import { AuthenticationError } from '@backstage/errors';
-import {
-  createProxyAuthenticator,
-  getBearerTokenFromAuthorizationHeader,
-} from '@backstage/plugin-auth-node';
+import { createProxyAuthenticator } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
 import { OAuth2ProxyResult } from './types';
 
@@ -31,10 +28,7 @@ import { OAuth2ProxyResult } from './types';
 export const OAUTH2_PROXY_JWT_HEADER = 'X-OAUTH2-PROXY-ID-TOKEN';
 
 /** @public */
-export const oauth2ProxyAuthenticator = createProxyAuthenticator<
-  unknown,
-  OAuth2ProxyResult
->({
+export const oauth2ProxyAuthenticator = createProxyAuthenticator({
   defaultProfileTransform: async (result: OAuth2ProxyResult) => {
     return {
       profile: {
@@ -49,7 +43,7 @@ export const oauth2ProxyAuthenticator = createProxyAuthenticator<
   async authenticate({ req }) {
     try {
       const authHeader = req.header(OAUTH2_PROXY_JWT_HEADER);
-      const jwt = getBearerTokenFromAuthorizationHeader(authHeader);
+      const jwt = authHeader?.match(/^Bearer[ ]+(\S+)$/i)?.[1];
       const decodedJWT = jwt && decodeJwt(jwt);
 
       const result = {
@@ -63,7 +57,13 @@ export const oauth2ProxyAuthenticator = createProxyAuthenticator<
           return req.get(name);
         },
       };
-      return { result };
+
+      return {
+        result,
+        providerInfo: {
+          accessToken: result.accessToken,
+        },
+      };
     } catch (e) {
       throw new AuthenticationError('Authentication failed', e);
     }

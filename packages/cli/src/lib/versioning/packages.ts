@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import { getPackages } from '@manypkg/get-packages';
 import { NotFoundError } from '../errors';
 import { detectYarnVersion } from '../yarn';

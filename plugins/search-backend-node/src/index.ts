@@ -33,6 +33,9 @@ export type {
   IndexBuilderOptions,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
+  SearchEngine,
+  QueryRequestOptions,
+  QueryTranslator,
 } from './types';
 export * from './errors';
 export * from './indexing';

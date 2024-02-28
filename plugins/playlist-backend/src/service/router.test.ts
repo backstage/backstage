@@ -20,13 +20,13 @@ import {
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { permissions } from '@backstage/plugin-playlist-common';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 const sampleEntities = [
   {
@@ -58,10 +58,6 @@ jest.mock('@backstage/catalog-client', () => ({
   CatalogClient: jest
     .fn()
     .mockImplementation(() => ({ getEntities: mockGetEntties })),
-}));
-
-jest.mock('@backstage/plugin-auth-node', () => ({
-  getBearerTokenFromAuthorizationHeader: () => 'token',
 }));
 
 const mockConditionFilter = { key: 'test', values: ['test-val'] };
@@ -128,17 +124,6 @@ describe('createRouter', () => {
     authorizeConditional: mockedAuthorizeConditional,
   };
 
-  const mockUser = {
-    type: 'user',
-    ownershipEntityRefs: ['user:default/me', 'group:default/owner'],
-    userEntityRef: 'user:default/me',
-  };
-  const mockIdentityClient = {
-    getIdentity: jest
-      .fn()
-      .mockImplementation(async () => ({ identity: mockUser })),
-  } as unknown as IdentityApi;
-
   const discovery: jest.Mocked<PluginEndpointDiscovery> = {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
@@ -148,9 +133,11 @@ describe('createRouter', () => {
     const router = await createRouter({
       database: createDatabase(),
       discovery,
-      identity: mockIdentityClient,
+      identity: mockServices.identity(),
       logger: getVoidLogger(),
       permissions: mockPermissionEvaluator,
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
     });
 
     app = express().use(router);
@@ -173,7 +160,7 @@ describe('createRouter', () => {
 
       expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
         [{ permission: permissions.playlistListRead }],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.listPlaylists).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
@@ -182,7 +169,7 @@ describe('createRouter', () => {
     it('should get playlists correctly', async () => {
       let response = await request(app).get('/').send();
       expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(
-        mockUser,
+        mockCredentials.user().principal,
         undefined,
       );
       expect(response.status).toEqual(200);
@@ -193,7 +180,7 @@ describe('createRouter', () => {
       ]);
       response = await request(app).get('/').send();
       expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(
-        mockUser,
+        mockCredentials.user().principal,
         mockConditionFilter,
       );
       expect(response.status).toEqual(200);
@@ -205,7 +192,7 @@ describe('createRouter', () => {
         .get('/?filter=mock=test&filter=foo=bar')
         .send();
       expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(
-        mockUser,
+        mockCredentials.user().principal,
         mockRequestFilter,
       );
       expect(response.status).toEqual(200);
@@ -217,9 +204,12 @@ describe('createRouter', () => {
       response = await request(app)
         .get('/?filter=mock=test&filter=foo=bar')
         .send();
-      expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(mockUser, {
-        allOf: [mockRequestFilter, mockConditionFilter],
-      });
+      expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(
+        mockCredentials.user().principal,
+        {
+          allOf: [mockRequestFilter, mockConditionFilter],
+        },
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([mockPlaylist]);
     });
@@ -228,10 +218,10 @@ describe('createRouter', () => {
       let response = await request(app).get('/?editable=true').send();
       expect(mockedAuthorizeConditional).toHaveBeenCalledWith(
         [{ permission: permissions.playlistListUpdate }],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(
-        mockUser,
+        mockCredentials.user().principal,
         undefined,
       );
       expect(response.status).toEqual(200);
@@ -241,7 +231,7 @@ describe('createRouter', () => {
         .get('/?editable=true&filter=mock=test&filter=foo=bar')
         .send();
       expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(
-        mockUser,
+        mockCredentials.user().principal,
         mockRequestFilter,
       );
       expect(response.status).toEqual(200);
@@ -251,9 +241,10 @@ describe('createRouter', () => {
         { result: AuthorizeResult.CONDITIONAL },
       ]);
       response = await request(app).get('/?editable=true').send();
-      expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(mockUser, {
-        allOf: [mockConditionFilter, mockConditionFilter],
-      });
+      expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(
+        mockCredentials.user().principal,
+        { allOf: [mockConditionFilter, mockConditionFilter] },
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([mockPlaylist]);
 
@@ -263,12 +254,15 @@ describe('createRouter', () => {
       response = await request(app)
         .get('/?editable=true&filter=mock=test&filter=foo=bar')
         .send();
-      expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(mockUser, {
-        allOf: [
-          { allOf: [mockRequestFilter, mockConditionFilter] },
-          mockConditionFilter,
-        ],
-      });
+      expect(mockDbHandler.listPlaylists).toHaveBeenLastCalledWith(
+        mockCredentials.user().principal,
+        {
+          allOf: [
+            { allOf: [mockRequestFilter, mockConditionFilter] },
+            mockConditionFilter,
+          ],
+        },
+      );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual([mockPlaylist]);
     });
@@ -285,7 +279,7 @@ describe('createRouter', () => {
 
       expect(mockedAuthorize).toHaveBeenCalledWith(
         [{ permission: permissions.playlistListCreate }],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.createPlaylist).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
@@ -313,7 +307,7 @@ describe('createRouter', () => {
             resourceRef: 'playlist-id',
           },
         ],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.getPlaylist).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
@@ -323,7 +317,7 @@ describe('createRouter', () => {
       const response = await request(app).get('/playlist-id').send();
       expect(mockDbHandler.getPlaylist).toHaveBeenCalledWith(
         'playlist-id',
-        mockUser,
+        mockCredentials.user().principal,
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(mockPlaylist);
@@ -346,7 +340,7 @@ describe('createRouter', () => {
             resourceRef: 'playlist-id',
           },
         ],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.updatePlaylist).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
@@ -375,7 +369,7 @@ describe('createRouter', () => {
             resourceRef: 'playlist-id',
           },
         ],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.deletePlaylist).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
@@ -404,7 +398,7 @@ describe('createRouter', () => {
             resourceRef: 'playlist-id',
           },
         ],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.addPlaylistEntities).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
@@ -436,7 +430,7 @@ describe('createRouter', () => {
             resourceRef: 'playlist-id',
           },
         ],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.getPlaylistEntities).not.toHaveBeenCalled();
       expect(mockGetEntties).not.toHaveBeenCalled();
@@ -463,7 +457,12 @@ describe('createRouter', () => {
             },
           ],
         },
-        { token: 'token' },
+        {
+          token: mockCredentials.service.token({
+            onBehalfOf: mockCredentials.user(),
+            targetPluginId: 'catalog',
+          }),
+        },
       );
       expect(response.status).toEqual(200);
       expect(response.body).toEqual(sampleEntities);
@@ -486,7 +485,7 @@ describe('createRouter', () => {
             resourceRef: 'playlist-id',
           },
         ],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.removePlaylistEntities).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
@@ -518,7 +517,7 @@ describe('createRouter', () => {
             resourceRef: 'playlist-id',
           },
         ],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.followPlaylist).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
@@ -528,7 +527,7 @@ describe('createRouter', () => {
       const response = await request(app).post('/playlist-id/followers').send();
       expect(mockDbHandler.followPlaylist).toHaveBeenCalledWith(
         'playlist-id',
-        mockUser,
+        mockCredentials.user().principal,
       );
       expect(response.status).toEqual(200);
     });
@@ -550,7 +549,7 @@ describe('createRouter', () => {
             resourceRef: 'playlist-id',
           },
         ],
-        { token: 'token' },
+        { credentials: mockCredentials.user() },
       );
       expect(mockDbHandler.unfollowPlaylist).not.toHaveBeenCalled();
       expect(response.status).toEqual(403);
@@ -562,7 +561,7 @@ describe('createRouter', () => {
         .send();
       expect(mockDbHandler.unfollowPlaylist).toHaveBeenCalledWith(
         'playlist-id',
-        mockUser,
+        mockCredentials.user().principal,
       );
       expect(response.status).toEqual(200);
     });

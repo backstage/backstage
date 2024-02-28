@@ -178,17 +178,23 @@ export const kubernetesPlugin = createBackendPlugin({
         http: coreServices.httpRouter,
         logger: coreServices.logger,
         config: coreServices.rootConfig,
+        discovery: coreServices.discovery,
         catalogApi: catalogServiceRef,
         tokenManager: coreServices.tokenManager,
         permissions: coreServices.permissions,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
       async init({
         http,
         logger,
         config,
+        discovery,
         catalogApi,
         tokenManager,
         permissions,
+        auth,
+        httpAuth,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         // TODO: expose all of the customization & extension points of the builder here
@@ -198,6 +204,9 @@ export const kubernetesPlugin = createBackendPlugin({
           catalogApi,
           tokenManager,
           permissions,
+          discovery,
+          auth,
+          httpAuth,
         })
           .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
           .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())

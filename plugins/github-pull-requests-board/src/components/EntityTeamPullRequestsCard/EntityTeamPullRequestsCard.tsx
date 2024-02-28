@@ -114,6 +114,7 @@ const EntityTeamPullRequestsCard = (props: EntityTeamPullRequestsCardProps) => {
                     repository,
                     isDraft,
                     labels,
+                    commits,
                   },
                   index,
                 ) =>
@@ -137,6 +138,7 @@ const EntityTeamPullRequestsCard = (props: EntityTeamPullRequestsCardProps) => {
                       repositoryIsArchived={repository.isArchived}
                       isDraft={isDraft}
                       labels={labels.nodes}
+                      status={commits.nodes}
                     />
                   ),
               )}

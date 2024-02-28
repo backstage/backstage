@@ -1,5 +1,17 @@
 # @backstage/plugin-home-react
 
+## 0.1.9-next.0
+
+### Patch Changes
+
+- 0cecb09: Updated dependency `@rjsf/utils` to `5.17.1`.
+  Updated dependency `@rjsf/core` to `5.17.1`.
+  Updated dependency `@rjsf/material-ui` to `5.17.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.17.1`.
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+
 ## 0.1.8
 
 ### Patch Changes

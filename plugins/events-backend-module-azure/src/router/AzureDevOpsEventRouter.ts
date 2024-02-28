@@ -16,6 +16,7 @@
 
 import {
   EventParams,
+  EventsService,
   SubTopicEventRouter,
 } from '@backstage/plugin-events-node';
 
@@ -27,8 +28,15 @@ import {
  * @public
  */
 export class AzureDevOpsEventRouter extends SubTopicEventRouter {
-  constructor() {
-    super('azureDevOps');
+  constructor(options: { events: EventsService }) {
+    super({
+      events: options.events,
+      topic: 'azureDevOps',
+    });
+  }
+
+  protected getSubscriberId(): string {
+    return 'AzureDevOpsEventRouter';
   }
 
   protected determineSubTopic(params: EventParams): string | undefined {

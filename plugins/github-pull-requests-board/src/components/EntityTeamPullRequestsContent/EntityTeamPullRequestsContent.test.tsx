@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { EntityTeamPullRequestsContent } from '../EntityTeamPullRequestsContent';
-import { PullRequestsColumn } from '../../utils/types';
+import { PullRequestsColumn, Status } from '../../utils/types';
 import { render } from '@testing-library/react';
 import { fireEvent } from '@testing-library/react';
 
@@ -33,13 +33,21 @@ jest.mock('../../hooks/useUserRepositoriesAndTeam', () => {
 });
 
 jest.mock('../../hooks/usePullRequestsByTeam', () => {
-  const buildPullRequest = (
-    prTitle: string,
-    authorLogin: string,
-    repoName: string,
-    isDraft: boolean,
-    isArchived: boolean,
-  ) => {
+  const buildPullRequest = ({
+    prTitle,
+    authorLogin,
+    repoName,
+    isDraft,
+    isArchived,
+    status,
+  }: {
+    prTitle: string;
+    authorLogin: string;
+    repoName: string;
+    isDraft: boolean;
+    isArchived: boolean;
+    status: Status;
+  }) => {
     return {
       id: 'id',
       title: prTitle,
@@ -62,6 +70,9 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
       labels: {
         nodes: [],
       },
+      commits: {
+        nodes: status,
+      },
       isDraft: isDraft,
       author: {
         login: authorLogin,
@@ -77,62 +88,118 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
     {
       title: 'column',
       content: [
-        buildPullRequest(
-          'non-team-non-draft-non-archive',
-          'non-team-member',
-          'team-repo',
-          false,
-          false,
-        ),
-        buildPullRequest(
-          'non-team-non-draft-is-archive',
-          'non-team-member',
-          'team-repo',
-          false,
-          true,
-        ),
-        buildPullRequest(
-          'non-team-is-draft-non-archive',
-          'non-team-member',
-          'team-repo',
-          true,
-          false,
-        ),
-        buildPullRequest(
-          'non-team-is-draft-is-archive',
-          'non-team-member',
-          'team-repo',
-          true,
-          true,
-        ),
-        buildPullRequest(
-          'is-team-non-draft-non-archive',
-          'team-member',
-          'non-team-repo',
-          false,
-          false,
-        ),
-        buildPullRequest(
-          'is-team-non-draft-is-archive',
-          'team-member',
-          'non-team-repo',
-          false,
-          true,
-        ),
-        buildPullRequest(
-          'is-team-is-draft-non-archive',
-          'team-member',
-          'non-team-repo',
-          true,
-          false,
-        ),
-        buildPullRequest(
-          'is-team-is-draft-is-archive',
-          'team-member',
-          'non-team-repo',
-          true,
-          true,
-        ),
+        buildPullRequest({
+          prTitle: 'non-team-non-draft-non-archive',
+          authorLogin: 'non-team-member',
+          repoName: 'team-repo',
+          isDraft: false,
+          isArchived: false,
+          status: {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
+        }),
+        buildPullRequest({
+          prTitle: 'non-team-non-draft-is-archive',
+          authorLogin: 'non-team-member',
+          repoName: 'team-repo',
+          isDraft: false,
+          isArchived: true,
+          status: {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
+        }),
+        buildPullRequest({
+          prTitle: 'non-team-is-draft-non-archive',
+          authorLogin: 'non-team-member',
+          repoName: 'team-repo',
+          isDraft: true,
+          isArchived: false,
+          status: {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
+        }),
+        buildPullRequest({
+          prTitle: 'non-team-is-draft-is-archive',
+          authorLogin: 'non-team-member',
+          repoName: 'team-repo',
+          isDraft: true,
+          isArchived: true,
+          status: {
+            commit: {
+              statusCheckRollup: {
+                state: 'SUCCESS',
+              },
+            },
+          },
+        }),
+        buildPullRequest({
+          prTitle: 'is-team-non-draft-non-archive',
+          authorLogin: 'team-member',
+          repoName: 'non-team-repo',
+          isDraft: false,
+          isArchived: false,
+          status: {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
+        }),
+        buildPullRequest({
+          prTitle: 'is-team-non-draft-is-archive',
+          authorLogin: 'team-member',
+          repoName: 'non-team-repo',
+          isDraft: false,
+          isArchived: true,
+          status: {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
+        }),
+        buildPullRequest({
+          prTitle: 'is-team-is-draft-non-archive',
+          authorLogin: 'team-member',
+          repoName: 'non-team-repo',
+          isDraft: true,
+          isArchived: false,
+          status: {
+            commit: {
+              statusCheckRollup: {
+                state: 'FAILURE',
+              },
+            },
+          },
+        }),
+        buildPullRequest({
+          prTitle: 'is-team-is-draft-is-archive',
+          authorLogin: 'team-member',
+          repoName: 'non-team-repo',
+          isDraft: true,
+          isArchived: true,
+          status: {
+            commit: {
+              statusCheckRollup: {
+                state: 'SUCCESS',
+              },
+            },
+          },
+        }),
       ],
     },
   ];
@@ -152,7 +219,7 @@ describe('EntityTeamPullRequestsContent', () => {
   describe('non-team PRs', () => {
     describe('non-draft PRs', () => {
       it('should show non-team PRs for un-archived repos when archived option is not checked', async () => {
-        const { getByText, getAllByText, queryAllByTitle } = await render(
+        const { getByText, getAllByText, queryAllByTitle } = render(
           <EntityTeamPullRequestsContent />,
         );
         expect(getByText('non-team-non-draft-non-archive')).toBeInTheDocument();
@@ -162,8 +229,9 @@ describe('EntityTeamPullRequestsContent', () => {
       });
 
       it('should show non-team PRs for archived repos when archived option is checked', async () => {
-        const { getByText, getAllByText, getByTitle, queryAllByTitle } =
-          await render(<EntityTeamPullRequestsContent />);
+        const { getByText, getAllByText, getByTitle, queryAllByTitle } = render(
+          <EntityTeamPullRequestsContent />,
+        );
         const archiveToggle = getByTitle('Show archived repos');
         fireEvent.click(archiveToggle);
         expect(getByText('non-team-non-draft-is-archive')).toBeInTheDocument();
@@ -175,8 +243,9 @@ describe('EntityTeamPullRequestsContent', () => {
 
     describe('draft PRs', () => {
       it('should show draft non-team PRs for un-archived repos when archived option is not checked', async () => {
-        const { getByText, getAllByText, getByTitle, queryAllByTitle } =
-          await render(<EntityTeamPullRequestsContent />);
+        const { getByText, getAllByText, getByTitle, queryAllByTitle } = render(
+          <EntityTeamPullRequestsContent />,
+        );
         const draftToggle = getByTitle('Show draft PRs');
         fireEvent.click(draftToggle);
         expect(getByText('non-team-is-draft-non-archive')).toBeInTheDocument();
@@ -186,8 +255,9 @@ describe('EntityTeamPullRequestsContent', () => {
       });
 
       it('should show draft non-team PRs for archived repos when archived option is checked', async () => {
-        const { getByText, getAllByText, getByTitle, queryAllByTitle } =
-          await render(<EntityTeamPullRequestsContent />);
+        const { getByText, getAllByText, getByTitle, queryAllByTitle } = render(
+          <EntityTeamPullRequestsContent />,
+        );
         const draftToggle = getByTitle('Show draft PRs');
         fireEvent.click(draftToggle);
         const archiveToggle = getByTitle('Show archived repos');
@@ -203,8 +273,9 @@ describe('EntityTeamPullRequestsContent', () => {
   describe('team PRs', () => {
     describe('non-draft PRs', () => {
       it('should show team PRs for un-archived repos when archived option is not checked', async () => {
-        const { getByText, getAllByText, getByTitle, queryAllByTitle } =
-          await render(<EntityTeamPullRequestsContent />);
+        const { getByText, getAllByText, getByTitle, queryAllByTitle } = render(
+          <EntityTeamPullRequestsContent />,
+        );
         const teamToggle = getByTitle('Show PRs from your team');
         fireEvent.click(teamToggle);
         expect(getByText('is-team-non-draft-non-archive')).toBeInTheDocument();
@@ -214,8 +285,9 @@ describe('EntityTeamPullRequestsContent', () => {
       });
 
       it('should show team PRs for archived repos when archived option is checked', async () => {
-        const { getByText, getAllByText, getByTitle, queryAllByTitle } =
-          await render(<EntityTeamPullRequestsContent />);
+        const { getByText, getAllByText, getByTitle, queryAllByTitle } = render(
+          <EntityTeamPullRequestsContent />,
+        );
         const teamToggle = getByTitle('Show PRs from your team');
         fireEvent.click(teamToggle);
         const archiveToggle = getByTitle('Show archived repos');
@@ -229,8 +301,9 @@ describe('EntityTeamPullRequestsContent', () => {
 
     describe('draft PRs', () => {
       it('should show draft team PRs for un-archived repos when archived option is not checked', async () => {
-        const { getByText, getAllByText, getByTitle, queryAllByTitle } =
-          await render(<EntityTeamPullRequestsContent />);
+        const { getByText, getAllByText, getByTitle, queryAllByTitle } = render(
+          <EntityTeamPullRequestsContent />,
+        );
         const teamToggle = getByTitle('Show PRs from your team');
         fireEvent.click(teamToggle);
         const draftToggle = getByTitle('Show draft PRs');
@@ -242,8 +315,9 @@ describe('EntityTeamPullRequestsContent', () => {
       });
 
       it('should show draft team PRs for archived repos when archived option is checked', async () => {
-        const { getByText, getAllByText, getByTitle, queryAllByTitle } =
-          await render(<EntityTeamPullRequestsContent />);
+        const { getByText, getAllByText, getByTitle, queryAllByTitle } = render(
+          <EntityTeamPullRequestsContent />,
+        );
         const teamToggle = getByTitle('Show PRs from your team');
         fireEvent.click(teamToggle);
         const draftToggle = getByTitle('Show draft PRs');

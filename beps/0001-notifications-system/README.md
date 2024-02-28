@@ -96,7 +96,6 @@ The notification backend stores notification using the [database service](https:
 
 - ID
 - Read date
-- Done date
 - Saved status
 - Creation date
 - Updated date (optional, for scoped notifications)
@@ -104,7 +103,8 @@ The notification backend stores notification using the [database service](https:
   - Title
   - Description (optional)
   - Origin
-  - Link
+  - Link (optional)
+  - Additional links (optional)
   - Recipients
   - Severity (optional, default normal)
   - Topic (optional)
@@ -112,6 +112,10 @@ The notification backend stores notification using the [database service](https:
   - Icon (optional)
 
 The recipients is **not** a list of users, but rather a filter that describes who should receive the notification. It must be possible to evaluate this filter in a database query, so that we can efficiently fetch all notifications for a given user. The same filter will also be used by the signal backend to determine which users should receive a signal.
+
+The read date is a timestamp of marking the notifications as read by the user. If missing, the notification is still unread.
+
+The saved status is a timestamp indicating when/if the user marked the notification for better visibility in the future (to "pin" the message). Can be undefined.
 
 The title is mandatory human-readable text shortly describing the notifications.
 
@@ -142,6 +146,8 @@ The link is a relative or absolute URL. As an example, it can be used:
 - by an external system to provide more details related to the notification
 - by an external system to request an action within an asynchronous task
 - by a BE plugin to provide link to other part of the Backstage UI (i.e. to the Catalog)
+
+The additional links are an array of title-URL pairs. They can represent immediate actions on the notification (i.e. yes-no) or lead the user to additional details.
 
 The `notification-backend` does not provide any new permissions, since creating notifications can only be done by other backend plugins, while reading notifications can only be done by the authenticated user. It is possible that we want to add a permissions for reading notifications, in particular for admin and impersonation use cases, but that is not part of this proposal or the initial implementation.
 
@@ -228,7 +234,7 @@ interface NotificationService {
 
 Each notification is always routed to individual users unless it's a broadcast. The `notification-backend` will figure out which users will receive a notification based on the `recipients` parameter, resolving it to the concrete list of users at the time of sending the notification.
 
-Each notification contains a `title` and a `link` for user to see further information. The `created`, `id`, `read` and `saved` properties are handled by the backend based and cannot be changed during the notification creation.
+Each notification contains a human readable `title`, `origin` and optionally `link` for additional details. The `created`, `id`, `read` and `saved` properties are handled by the backend based and cannot be passed during the notification creation.
 
 Calling `sendNotification` should never throw an error so that it doesn't block the current processing. Notifications should be considered as second-level citizens that are not critical if not delivered.
 
@@ -273,37 +279,31 @@ Example signal payload for a new notification:
 
 Notification frontend shows users their own notifications in its own page and the number of unread notifications in the main menu item.
 
-By default, notifications that are `undone` will be shown in the notifications view. The notification `read` status is indicated by the UI.
+Notifications are set to `read` when the `Mark as read` action is triggered by the user (bulk or single).
 
-Notifications are set to `read` when the notification link is opened or the notification is set as `done` by the user.
+Notifications can be saved for better visibility in the future.
 
-Notifications can be set to `done` by the user, and they are filtered out of the main view.
+Notifications can be filtered by `read`, `saved`, `content` (text search in title or description), `created` (since multiple predefined options) and `severity`.
 
-Notifications can be saved for later use by the user.
-
-Notifications can be filtered by their `read`, `done` and `saved` statuses.
-
-Notifications are displayed in pages.
-
-User can search for notifications based on their title and description.
+Notifications are displayed in pages. To do so, the backend needs to implement filtering and sorting.
 
 The following frontend API is added as part of this proposal.
 
 #### `NotificationsApi`
 
 ```ts
-export type NotificationType = 'undone' | 'done' | 'saved';
+export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
 export type GetNotificationsOptions = {
-  type?: NotificationType;
   offset?: number;
   limit?: number;
   search?: string;
+  createdSince?: Date;
+  severity?: NotificationSeverity;
 };
 
 export type NotificationUpdateOptions = {
   ids: string[];
-  done?: boolean;
   read?: boolean;
   saved?: boolean;
 };
@@ -358,7 +358,7 @@ interface SignalApi {
 
 - Replace absent signal service with long polling. This requires changes to the `signals` plugin as well.
 - Render dynamic values with various different React elements such as the `EntityRefLink` for entity references (for example `{{ user:default/john.doe }}`) in the notification payload
-- Handle `link` values that use route references. For example instead hard-coding link to `/catalog/default/component/artist-web` it should be possible to use `catalogPlugin.catalogEntity` route reference as a link of the notification. This should also allow using parameters to be passed to the route reference
+- Handle `link` values that use route references. For example instead hard-coding link to `/catalog/default/component/artist-web` it should be possible to use `catalogPlugin.catalogEntity` route reference as a link of the notification. This should also allow using parameters to be passed to the route reference. Links to external systems are still supported.
 - Add support for `analyticsApi` to notification actions like marking notifications done, saved or opening links in the notifications
 - Add support for user settings to control how notifications are shown to the user and which notifications user wants to receive. This should also include support for different `NotificationProcessor`s that can send notification to external systems
 - Add a sound to be played when notification is received

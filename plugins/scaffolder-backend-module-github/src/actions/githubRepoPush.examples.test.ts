@@ -29,14 +29,13 @@ import {
   TemplateAction,
   initRepoAndPush,
 } from '@backstage/plugin-scaffolder-node';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { PassThrough } from 'stream';
 import { createGithubRepoPushAction } from './githubRepoPush';
 import { examples } from './githubRepoPush.examples';
 import yaml from 'yaml';
@@ -102,13 +101,7 @@ describe('github:repo:push examples', () => {
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;
 
-  const mockContext = {
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
 
   beforeEach(() => {
     jest.resetAllMocks();

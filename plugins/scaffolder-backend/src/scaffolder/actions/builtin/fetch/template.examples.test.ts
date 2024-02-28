@@ -16,13 +16,9 @@
 
 import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
-import {
-  getVoidLogger,
-  resolvePackagePath,
-  UrlReader,
-} from '@backstage/backend-common';
+import { resolvePackagePath, UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { PassThrough } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createFetchTemplateAction } from './template';
 import {
   ActionContext,
@@ -61,23 +57,15 @@ describe('fetch:template examples', () => {
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
 
-  const logger = getVoidLogger();
-
-  const mockContext = (input: any) => ({
-    templateInfo: {
-      baseUrl: 'base-url',
-      entityRef: 'template:default/test-template',
-    },
-    input: input,
-    output: jest.fn(),
-    logStream: new PassThrough(),
-    logger,
-    workspacePath,
-
-    async createTemporaryDirectory() {
-      return fs.mkdtemp(mockDir.resolve('tmp-'));
-    },
-  });
+  const mockContext = (input: any) =>
+    createMockActionContext({
+      templateInfo: {
+        baseUrl: 'base-url',
+        entityRef: 'template:default/test-template',
+      },
+      input,
+      workspacePath,
+    });
 
   beforeEach(() => {
     mockDir.clear();

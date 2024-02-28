@@ -1,5 +1,15 @@
 # @backstage/integration-react
 
+## 1.1.25-next.0
+
+### Patch Changes
+
+- b38dc55: Updated `microsoftAuthApi` scopes for Azure DevOps to be fully qualified.
+- Updated dependencies
+  - @backstage/config@1.1.2-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/integration@1.9.1-next.0
+
 ## 1.1.24
 
 ### Patch Changes

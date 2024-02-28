@@ -10,10 +10,10 @@
  * between the frontend and backend plugin packages.
  */
 export type CommonType = {
-  field: string
-}
+  field: string;
+};
 
 /**
  * Or you might declare some common constants.
  */
-export const COMMON_CONSTANT = 1
+export const COMMON_CONSTANT = 1;

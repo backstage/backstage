@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   coreServices,
   createBackendModule,
@@ -44,22 +45,15 @@ export const catalogModuleInternalOpenApiSpec = createBackendModule({
         discovery: coreServices.discovery,
         scheduler: coreServices.scheduler,
         logger: coreServices.logger,
-        tokenManager: coreServices.tokenManager,
+        auth: coreServices.auth,
       },
-      async init({
-        catalog,
-        config,
-        discovery,
-        scheduler,
-        logger,
-        tokenManager,
-      }) {
+      async init({ catalog, config, discovery, scheduler, logger, auth }) {
         catalog.addEntityProvider(
           InternalOpenApiDocumentationProvider.fromConfig(config, {
             discovery,
             schedule: scheduler,
             logger,
-            tokenManager,
+            auth,
           }),
         );
       },

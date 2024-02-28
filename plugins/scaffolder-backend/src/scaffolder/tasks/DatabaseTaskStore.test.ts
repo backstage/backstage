@@ -188,4 +188,37 @@ describe('DatabaseTaskStore', () => {
       await store.shutdownTask({ taskId });
     }).rejects.toThrow(ConflictError);
   });
+
+  it('should store checkpoints and retrieve task state', async () => {
+    const { store } = await createStore();
+    const { taskId } = await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.saveTaskState({
+      taskId,
+      state: {
+        checkpoints: {
+          'repo.create': {
+            status: 'success',
+            value: { repoUrl: 'https://github.com/backstage/backstage.git' },
+          },
+        },
+      },
+    });
+
+    const state = await store.getTaskState({ taskId });
+
+    expect(state).toStrictEqual({
+      state: {
+        checkpoints: {
+          'repo.create': {
+            status: 'success',
+            value: { repoUrl: 'https://github.com/backstage/backstage.git' },
+          },
+        },
+      },
+    });
+  });
 });

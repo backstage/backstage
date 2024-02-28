@@ -28,10 +28,11 @@ export default async function createPlugin(
   builder.addProcessor(new ScaffolderEntitiesProcessor());
 
   const demoProvider = new DemoEventBasedEntityProvider({
+    events: env.events,
     logger: env.logger,
     topics: ['example'],
-    eventBroker: env.eventBroker,
   });
+  await demoProvider.subscribe();
   builder.addEntityProvider(demoProvider);
 
   const { processingEngine, router } = await builder.build();

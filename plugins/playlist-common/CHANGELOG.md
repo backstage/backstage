@@ -1,5 +1,12 @@
 # @backstage/plugin-playlist-common
 
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.13-next.0
+
 ## 0.1.14
 
 ### Patch Changes

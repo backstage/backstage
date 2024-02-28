@@ -93,7 +93,11 @@ export type CatalogReactComponentsNameToClassKey = {
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
   CatalogReactEntityProcessingStatusPicker: CatalogReactEntityProcessingStatusPickerClassKey;
+  CatalogReactEntityAutocompletePickerClassKey: CatalogReactEntityAutocompletePickerClassKey;
 };
+
+// @public (undocumented)
+export type CatalogReactEntityAutocompletePickerClassKey = 'root' | 'label';
 
 // @public
 export type CatalogReactEntityDisplayNameClassKey = 'root' | 'icon';
