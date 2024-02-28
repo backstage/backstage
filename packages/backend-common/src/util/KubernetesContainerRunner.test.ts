@@ -195,13 +195,15 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
       api = kubeConfig.makeApiClient(CoreV1Api);
       authApi = kubeConfig.makeApiClient(RbacAuthorizationV1Api);
       await api.createNamespace({
-        metadata: {
-          name: 'test',
+        body: {
+          metadata: {
+            name: 'test',
+          },
         },
       });
     });
     afterAll(async () => {
-      await api.deleteNamespace('test');
+      await api.deleteNamespace({ name: 'test' });
     });
 
     it('should fail when watch fails', async () => {
@@ -233,47 +235,60 @@ async function givenAServiceAccountThatCannotWatchPods(
   kubeConfig: KubeConfig,
 ) {
   await Promise.all([
-    api.createNamespacedServiceAccount('test', {
-      metadata: {
-        name: 'test',
-      },
-    }),
-    authApi.createNamespacedRole('test', {
-      metadata: {
-        name: 'test',
-      },
-      rules: [
-        {
-          apiGroups: ['batch'],
-          verbs: ['create'],
-          resources: ['jobs'],
-        },
-      ],
-    }),
-    authApi.createNamespacedRoleBinding('test', {
-      metadata: {
-        name: 'test',
-      },
-      subjects: [
-        {
-          kind: 'ServiceAccount',
+    api.createNamespacedServiceAccount({
+      namespace: 'test',
+      body: {
+        metadata: {
           name: 'test',
         },
-      ],
-      roleRef: {
-        apiGroup: 'rbac.authorization.k8s.io',
-        kind: 'Role',
-        name: 'test',
+      },
+    }),
+    authApi.createNamespacedRole({
+      namespace: 'test',
+      body: {
+        metadata: {
+          name: 'test',
+        },
+        rules: [
+          {
+            apiGroups: ['batch'],
+            verbs: ['create'],
+            resources: ['jobs'],
+          },
+        ],
+      },
+    }),
+    authApi.createNamespacedRoleBinding({
+      namespace: 'test',
+      body: {
+        metadata: {
+          name: 'test',
+        },
+        subjects: [
+          {
+            kind: 'ServiceAccount',
+            name: 'test',
+          },
+        ],
+        roleRef: {
+          apiGroup: 'rbac.authorization.k8s.io',
+          kind: 'Role',
+          name: 'test',
+        },
       },
     }),
   ]);
   const token = (
-    await api.createNamespacedServiceAccountToken('test', 'test', {
-      spec: {
-        audiences: [],
+    await api.createNamespacedServiceAccountToken({
+      name: 'test',
+      namespace: 'test',
+      body: {
+        spec: {
+          audiences: [],
+        },
       },
     })
-  ).body.status?.token;
+  ).status?.token;
   const testConfig = new KubeConfig();
   testConfig.loadFromDefault();
   testConfig.addUser({

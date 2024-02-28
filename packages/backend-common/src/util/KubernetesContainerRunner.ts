@@ -22,7 +22,6 @@ import {
   V1Job,
   V1EnvVar,
   Log,
-  HttpError,
   V1Status,
   V1VolumeMount,
   V1PodTemplateSpec,
@@ -30,6 +29,18 @@ import {
   Watch,
 } from '@kubernetes/client-node';
 import { v4 as uuid } from 'uuid';
+import * as http from 'http';
+
+export class HttpError extends Error {
+  constructor(
+    public response: http.IncomingMessage,
+    public body: any,
+    public statusCode?: number,
+  ) {
+    super('HTTP request failed');
+    this.name = 'HttpError';
+  }
+}
 
 /**
  * An existing Kubernetes volume that will be used as base for mounts.
@@ -323,7 +334,10 @@ export class KubernetesContainerRunner implements ContainerRunner {
 
   private async createJob(jobSpec: V1Job): Promise<any> {
     return this.batchV1Api
-      .createNamespacedJob(this.namespace, jobSpec)
+      .createNamespacedJob({
+        namespace: this.namespace,
+        body: jobSpec,
+      })
       .catch(err => {
         throw handleKubernetesError(
           'Kubernetes Job creation failed with the following error message:',
