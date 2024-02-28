@@ -13,14 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventBroker } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
 
 /**
  * @public
  */
 export type SignalServiceOptions = {
-  eventBroker?: EventBroker;
+  events: EventsService;
 };
 
 /** @public */

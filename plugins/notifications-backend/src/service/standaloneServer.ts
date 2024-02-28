@@ -33,9 +33,9 @@ import {
 } from '@backstage/catalog-client';
 import { DefaultSignalService } from '@backstage/plugin-signals-node';
 import {
-  EventBroker,
   EventParams,
-  EventSubscriber,
+  EventsService,
+  EventsServiceSubscribeOptions,
 } from '@backstage/plugin-events-node';
 
 export interface ServerOptions {
@@ -96,19 +96,17 @@ export async function startStandaloneServer(
     },
   };
 
-  const mockSubscribers: EventSubscriber[] = [];
-  const eventBroker: EventBroker = {
+  const mockSubscribers: EventsServiceSubscribeOptions[] = [];
+  const events: EventsService = {
     async publish(params: EventParams): Promise<void> {
       mockSubscribers.forEach(sub => sub.onEvent(params));
     },
-    subscribe(...subscribers: EventSubscriber[]) {
-      subscribers.flat().forEach(subscriber => {
-        mockSubscribers.push(subscriber);
-      });
+    async subscribe(subscription: EventsServiceSubscribeOptions) {
+      mockSubscribers.push(subscription);
     },
   };
 
-  const signalService = DefaultSignalService.create({ eventBroker });
+  const signalService = DefaultSignalService.create({ events });
 
   const router = await createRouter({
     logger,

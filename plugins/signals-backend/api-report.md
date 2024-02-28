@@ -5,7 +5,7 @@
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { EventBroker } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -22,7 +22,7 @@ export interface RouterOptions {
   // (undocumented)
   discovery: PluginEndpointDiscovery;
   // (undocumented)
-  eventBroker?: EventBroker;
+  events: EventsService;
   // (undocumented)
   identity: IdentityApi;
   // (undocumented)

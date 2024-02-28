@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { WebSocket } from 'ws';
-import { EventSubscriber } from '@backstage/plugin-events-node';
+import { EventsServiceSubscribeOptions } from '@backstage/plugin-events-node';
 import { SignalManager } from './SignalManager';
 import { getVoidLogger } from '@backstage/backend-common';
 
@@ -56,15 +56,15 @@ class MockWebSocket {
 describe('SignalManager', () => {
   let onEvent: Function;
 
-  const mockEventBroker = {
+  const mockEvents = {
     publish: async () => {},
-    subscribe: (subscriber: EventSubscriber) => {
+    subscribe: async (subscriber: EventsServiceSubscribeOptions) => {
       onEvent = subscriber.onEvent;
     },
   };
 
   const manager = SignalManager.create({
-    eventBroker: mockEventBroker,
+    events: mockEvents,
     logger: getVoidLogger(),
   });
 

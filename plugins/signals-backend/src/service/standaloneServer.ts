@@ -24,9 +24,9 @@ import { createRouter } from './router';
 import { DefaultSignalService } from '@backstage/plugin-signals-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import {
-  EventBroker,
   EventParams,
-  EventSubscriber,
+  EventsService,
+  EventsServiceSubscribeOptions,
 } from '@backstage/plugin-events-node';
 import {
   BackstageCredentials,
@@ -53,20 +53,18 @@ export async function startStandaloneServer(
     issuer: await discovery.getExternalBaseUrl('auth'),
   });
 
-  const mockSubscribers: EventSubscriber[] = [];
-  const eventBroker: EventBroker = {
+  const mockSubscribers: EventsServiceSubscribeOptions[] = [];
+  const events: EventsService = {
     async publish(params: EventParams): Promise<void> {
       mockSubscribers.forEach(sub => sub.onEvent(params));
     },
-    subscribe(...subscribers: EventSubscriber[]) {
-      subscribers.flat().forEach(subscriber => {
-        mockSubscribers.push(subscriber);
-      });
+    async subscribe(subscription: EventsServiceSubscribeOptions) {
+      mockSubscribers.push(subscription);
     },
   };
 
   const signals = DefaultSignalService.create({
-    eventBroker,
+    events,
   });
 
   const userInfo: UserInfoService = {
@@ -81,7 +79,7 @@ export async function startStandaloneServer(
   const router = await createRouter({
     logger,
     identity,
-    eventBroker,
+    events,
     discovery,
     userInfo,
   });
