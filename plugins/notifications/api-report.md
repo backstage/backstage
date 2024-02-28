@@ -14,6 +14,7 @@ import { Notification as Notification_2 } from '@backstage/plugin-notifications-
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { TableProps } from '@backstage/core-components';
 
 // @public (undocumented)
 export type GetNotificationsOptions = {
@@ -25,13 +26,19 @@ export type GetNotificationsOptions = {
 };
 
 // @public (undocumented)
+export type GetNotificationsResponse = {
+  notifications: Notification_2[];
+  totalCount: number;
+};
+
+// @public (undocumented)
 export interface NotificationsApi {
   // (undocumented)
   getNotification(id: string): Promise<Notification_2>;
   // (undocumented)
   getNotifications(
     options?: GetNotificationsOptions,
-  ): Promise<Notification_2[]>;
+  ): Promise<GetNotificationsResponse>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
@@ -51,7 +58,7 @@ export class NotificationsClient implements NotificationsApi {
   // (undocumented)
   getNotifications(
     options?: GetNotificationsOptions,
-  ): Promise<Notification_2[]>;
+  ): Promise<GetNotificationsResponse>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
@@ -83,14 +90,23 @@ export const NotificationsTable: ({
   notifications,
   onUpdate,
   setContainsText,
+  onPageChange,
+  onRowsPerPageChange,
+  page,
+  pageSize,
+  totalCount,
 }: NotificationsTableProps) => React_2.JSX.Element;
 
 // @public (undocumented)
-export type NotificationsTableProps = {
+export type NotificationsTableProps = Pick<
+  TableProps,
+  'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
+> & {
   isLoading?: boolean;
   notifications?: Notification_2[];
   onUpdate: () => void;
   setContainsText: (search: string) => void;
+  pageSize: number;
 };
 
 // @public (undocumented)

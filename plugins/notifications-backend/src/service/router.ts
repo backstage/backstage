@@ -212,8 +212,10 @@ export async function createRouter(
       opts.createdAfter = new Date(sinceEpoch);
     }
 
-    const notifications = await store.getNotifications(opts);
-    const totalCount = await store.getNotificationsCount(opts);
+    const [notifications, totalCount] = await Promise.all([
+      store.getNotifications(opts),
+      store.getNotificationsCount(opts),
+    ]);
     res.send({
       totalCount,
       notifications,

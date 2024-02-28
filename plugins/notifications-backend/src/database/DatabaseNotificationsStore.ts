@@ -171,8 +171,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     countOptions.sort = null;
     const notificationQuery = this.getNotificationsBaseQuery(countOptions);
     const response = await notificationQuery.count('* as CNT');
-    const totalCount = Number.parseInt(response[0].CNT.toString(), 10);
-    return totalCount;
+    return Number(response[0].CNT);
   }
 
   async saveNotification(notification: Notification) {

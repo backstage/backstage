@@ -228,7 +228,7 @@ describe.each(databases.eachSupportedId())(
         await insertNotification({
           id: id1,
           ...testNotification,
-          created: new Date(Date.now() - 1 * 60 * 60 * 1000 /* an hour ago */),
+          created: new Date(now - 1 * 60 * 60 * 1000 /* an hour ago */),
         });
         await insertNotification({
           id: id2,
@@ -270,7 +270,7 @@ describe.each(databases.eachSupportedId())(
 
         const notifications = await storage.getNotifications({
           user,
-          createdAfter: new Date(Date.now() - 5 * 60 * 1000 /* 5mins */),
+          createdAfter: new Date(now - 5 * 60 * 1000 /* 5 mins */),
         });
         expect(notifications.length).toBe(6);
         expect(notifications.at(0)?.id).toEqual(id7);
