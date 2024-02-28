@@ -82,6 +82,11 @@ const Community = () => {
       logo: 'img/partner-logo-roadie.png',
     },
     {
+      name: 'solo.io',
+      url: 'https://solo.io/',
+      logo: 'img/partner-logo-solo.png',
+    },
+    {
       name: 'ThoughtWorks',
       url: 'https://www.thoughtworks.com',
       logo: 'img/partner-logo-thoughtworks.png',
