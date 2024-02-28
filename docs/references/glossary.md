@@ -27,7 +27,7 @@ A type of [OAuth flow](#oauth) used by confidential and public clients to get an
 
 ## Backstage
 
-1. A platform for creating and deploying [developer portals](#developer-portal), originally created at Spotify. Backstage is an incubation-stage open source project of the [Cloud Native Computing Foundation](#cloud-native-computing-foundation).
+1. A open source framework for creating and deploying [developer portals](#developer-portal), originally created at Spotify. Backstage is an incubation-stage open source project of the [Cloud Native Computing Foundation](#cloud-native-computing-foundation).
 
 2. [The Backstage Framework](#backstage-framework).
 
@@ -105,7 +105,7 @@ An executable or package file with all of the necessary information required to 
 
 ## Developer Portal
 
-A centralized system comprising a user interface and database used to facilitate and document all the software projects within an organization. Backstage is both a developer portal and (by virtue of being based on plugins) a platform for creating developer portals.
+A centralized system comprising a user interface and database used to facilitate and document all the software projects within an organization. Backstage is both a developer portal and (by virtue of being based on plugins) a framework for creating developer portals.
 
 ## Document (search plugin)
 
