@@ -249,7 +249,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return (
       authProvider === 'serviceAccount' &&
       !clusterDetails.authMetadata.serviceAccountToken &&
-      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH)
+      fs.pathExistsSync('/var/run/secrets/kubernetes.io/serviceaccount/ca.crt')
     );
   }
 
