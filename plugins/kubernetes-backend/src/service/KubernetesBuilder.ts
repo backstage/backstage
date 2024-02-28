@@ -64,7 +64,10 @@ import {
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesProxy } from './KubernetesProxy';
-import { createLegacyAuthAdapters, TokenManager } from '@backstage/backend-common';
+import {
+  createLegacyAuthAdapters,
+  TokenManager,
+} from '@backstage/backend-common';
 import {
   AuthService,
   DiscoveryService,
