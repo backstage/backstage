@@ -33,15 +33,19 @@ export const signalsPlugin = createBackendPlugin({
         logger: coreServices.logger,
         identity: coreServices.identity,
         discovery: coreServices.discovery,
+        userInfo: coreServices.userInfo,
+        auth: coreServices.auth,
         // TODO: EventBroker. It is optional for now but it's actually required so waiting for the new backend system
         //       for the events-backend for this to work.
       },
-      async init({ httpRouter, logger, identity, discovery }) {
+      async init({ httpRouter, logger, identity, discovery, userInfo, auth }) {
         httpRouter.use(
           await createRouter({
             logger,
             identity,
             discovery,
+            userInfo,
+            auth,
           }),
         );
       },

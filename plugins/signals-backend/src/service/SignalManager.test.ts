@@ -126,25 +126,15 @@ describe('SignalManager', () => {
     // Connection with identity and subscription
     const ws2 = new MockWebSocket();
     manager.addConnection(ws2 as unknown as WebSocket, {
-      identity: {
-        type: 'user',
-        ownershipEntityRefs: ['user:default/john.doe'],
-        userEntityRef: 'user:default/john.doe',
-      },
-      expiresInSeconds: 3600,
-      token: '1234',
+      ownershipEntityRefs: ['user:default/john.doe'],
+      userEntityRef: 'user:default/john.doe',
     });
 
     // Connection without subscription
     const ws3 = new MockWebSocket();
     manager.addConnection(ws3 as unknown as WebSocket, {
-      identity: {
-        type: 'user',
-        ownershipEntityRefs: ['user:default/john.doe'],
-        userEntityRef: 'user:default/john.doe',
-      },
-      expiresInSeconds: 3600,
-      token: '1234',
+      ownershipEntityRefs: ['user:default/john.doe'],
+      userEntityRef: 'user:default/john.doe',
     });
 
     ws1.trigger(
