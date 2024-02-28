@@ -74,7 +74,7 @@ Remember that package extensions that are not auto-discovered must be manually a
 
 ### Configure extensions individually
 
-It is possible to enable, disable and configure extensions individually in the `app-config.yaml` config file. To get familiar with what is available for app extensions personalization, go to the [built-in extensions](./02-built-in-extensions.md) documentation. For plugin customizations, we recommend that you read the instructions in each plugin's README file.
+It is possible to enable, disable and configure extensions individually in the `app-config.yaml` config file. To get familiar with what is available for app extensions personalization, go to the [built-in extensions](./03-built-in-extensions.md) documentation. For plugin customizations, we recommend that you read the instructions in each plugin's README file.
 
 ### Customize or override built-in extensions
 
@@ -139,7 +139,7 @@ const app = createApp({
     // Calls an async utility method that fetches the config object from the server
     const config = await getConfigFromServer();
     // Feel free to manipulate the config object before returning it
-    // A common example is conditionally modify the config based on the running enviroment
+    // A common example is conditionally modify the config based on the running environment
     return { config };
   },
 });
