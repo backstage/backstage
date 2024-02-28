@@ -23,6 +23,7 @@ import request from 'supertest';
 import { createRouter } from './router';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 
 const eventBrokerMock: jest.Mocked<EventBroker> = {
   subscribe: jest.fn(),
@@ -38,6 +39,10 @@ const discovery: jest.Mocked<PluginEndpointDiscovery> = {
   getExternalBaseUrl: jest.fn(),
 };
 
+const userInfo: jest.Mocked<UserInfoService> = {
+  getUserInfo: jest.fn(),
+};
+
 describe('createRouter', () => {
   let app: express.Express;
 
@@ -47,6 +52,7 @@ describe('createRouter', () => {
       identity: identityApiMock,
       eventBroker: eventBrokerMock,
       discovery,
+      userInfo,
     });
     app = express().use(router);
   });

@@ -18,8 +18,10 @@ import { SignalPayload } from '@backstage/plugin-signals-node';
 import { RawData, WebSocket } from 'ws';
 import { v4 as uuid } from 'uuid';
 import { JsonObject } from '@backstage/types';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  BackstageUserInfo,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * @internal
@@ -64,14 +66,14 @@ export class SignalManager {
     });
   }
 
-  addConnection(ws: WebSocket, identity?: BackstageIdentityResponse) {
+  addConnection(ws: WebSocket, identity?: BackstageUserInfo) {
     const id = uuid();
 
     const conn = {
       id,
-      user: identity?.identity.userEntityRef ?? 'user:default/guest',
+      user: identity?.userEntityRef ?? 'user:default/guest',
       ws,
-      ownershipEntityRefs: identity?.identity.ownershipEntityRefs ?? [
+      ownershipEntityRefs: identity?.ownershipEntityRefs ?? [
         'user:default/guest',
       ],
       subscriptions: new Set<string>(),
@@ -80,7 +82,7 @@ export class SignalManager {
     this.connections.set(id, conn);
 
     ws.on('error', (err: Error) => {
-      this.logger.info(
+      this.logger.error(
         `Error occurred with connection ${id}: ${err}, closing connection`,
       );
       ws.close();
