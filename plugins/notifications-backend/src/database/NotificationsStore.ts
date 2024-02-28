@@ -27,7 +27,7 @@ export type NotificationGetOptions = {
   offset?: number;
   limit?: number;
   search?: string;
-  sort?: 'created' | 'read' | 'updated' | null;
+  sort?: 'created' | 'topic' | 'origin' | null;
   sortOrder?: 'asc' | 'desc';
   read?: boolean;
   saved?: boolean;

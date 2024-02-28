@@ -23,6 +23,8 @@ export type GetNotificationsOptions = {
   search?: string;
   read?: boolean;
   createdAfter?: Date;
+  sort?: 'created' | 'topic' | 'origin';
+  sortOrder?: 'asc' | 'desc';
 };
 
 // @public (undocumented)

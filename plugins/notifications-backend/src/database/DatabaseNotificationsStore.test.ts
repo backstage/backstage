@@ -81,6 +81,7 @@ describe.each(databases.eachSupportedId())(
             user: notification.user,
             origin: notification.origin,
             created: notification.created,
+            topic: notification.payload?.topic,
             link: notification.payload?.link,
             title: notification.payload?.title,
             severity: notification.payload?.severity,
@@ -287,6 +288,109 @@ describe.each(databases.eachSupportedId())(
         expect(allUserNotificationsPageTwo.at(0)?.id).toEqual(id5);
         expect(allUserNotificationsPageTwo.at(1)?.id).toEqual(id4);
         expect(allUserNotificationsPageTwo.at(2)?.id).toEqual(id3);
+      });
+
+      it('should sort result', async () => {
+        const now = Date.now();
+        const timeDelay = 5 * 1000; /* 5 secs */
+
+        await insertNotification({
+          id: id1,
+          user,
+          origin: 'Y',
+          payload: {
+            title: 'Notification 1',
+            link: '/catalog',
+            severity: 'normal',
+            topic: 'AAA',
+          },
+          created: new Date(now - 10 * timeDelay),
+        });
+        await insertNotification({
+          id: id2,
+          user,
+          origin: 'Z',
+          payload: {
+            title: 'Notification 2',
+            link: '/catalog',
+            severity: 'normal',
+            topic: 'CCC',
+          },
+          created: new Date(now),
+        });
+        await insertNotification({
+          id: id3,
+          user,
+          origin: 'X',
+          payload: {
+            title: 'Notification 3',
+            link: '/catalog',
+            severity: 'normal',
+            topic: 'BBB',
+          },
+          created: new Date(now - 5 * timeDelay),
+        });
+
+        const notificationsCreatedAsc = await storage.getNotifications({
+          user,
+          sort: 'created',
+          sortOrder: 'asc',
+        });
+        expect(notificationsCreatedAsc.length).toBe(3);
+        expect(notificationsCreatedAsc.at(0)?.id).toEqual(id1);
+        expect(notificationsCreatedAsc.at(1)?.id).toEqual(id3);
+        expect(notificationsCreatedAsc.at(2)?.id).toEqual(id2);
+
+        const notificationsCreatedDesc = await storage.getNotifications({
+          user,
+          sort: 'created',
+          sortOrder: 'desc',
+        });
+        expect(notificationsCreatedDesc.length).toBe(3);
+        expect(notificationsCreatedDesc.at(0)?.id).toEqual(id2);
+        expect(notificationsCreatedDesc.at(1)?.id).toEqual(id3);
+        expect(notificationsCreatedDesc.at(2)?.id).toEqual(id1);
+
+        const notificationsTopicAsc = await storage.getNotifications({
+          user,
+          sort: 'topic',
+          sortOrder: 'asc',
+        });
+        expect(notificationsTopicAsc.length).toBe(3);
+        expect(notificationsTopicAsc.at(0)?.id).toEqual(id1);
+        expect(notificationsTopicAsc.at(1)?.id).toEqual(id3);
+        expect(notificationsTopicAsc.at(2)?.id).toEqual(id2);
+
+        const notificationsTopicDesc = await storage.getNotifications({
+          user,
+          sort: 'topic',
+          sortOrder: 'desc',
+        });
+        expect(notificationsTopicDesc.length).toBe(3);
+        expect(notificationsTopicDesc.at(0)?.id).toEqual(id2);
+        expect(notificationsTopicDesc.at(1)?.id).toEqual(id3);
+        expect(notificationsTopicDesc.at(2)?.id).toEqual(id1);
+
+        const notificationsOrigin = await storage.getNotifications({
+          user,
+          sort: 'origin',
+          sortOrder: 'asc',
+          limit: 2,
+          offset: 0,
+        });
+        expect(notificationsOrigin.length).toBe(2);
+        expect(notificationsOrigin.at(0)?.id).toEqual(id3);
+        expect(notificationsOrigin.at(1)?.id).toEqual(id1);
+
+        const notificationsOriginNext = await storage.getNotifications({
+          user,
+          sort: 'origin',
+          sortOrder: 'asc',
+          limit: 2,
+          offset: 2,
+        });
+        expect(notificationsOriginNext.length).toBe(1);
+        expect(notificationsOriginNext.at(0)?.id).toEqual(id2);
       });
     });
 
