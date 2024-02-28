@@ -34,9 +34,9 @@ import { escapeRegExp } from '../lib/escapeRegExp';
  */
 export interface WinstonLoggerOptions {
   meta?: JsonObject;
-  level: string;
-  format: Format;
-  transports: Transport[];
+  level?: string;
+  format?: Format;
+  transports?: Transport[];
 }
 
 /**
@@ -53,12 +53,20 @@ export class WinstonLogger implements RootLoggerService {
    */
   static create(options: WinstonLoggerOptions): WinstonLogger {
     const redacter = WinstonLogger.redacter();
+    const defaultFormatter =
+      process.env.NODE_ENV === 'production'
+        ? format.json()
+        : WinstonLogger.colorFormat();
 
     let logger = createLogger({
-      level: options.level,
-      format: format.combine(redacter.format, options.format),
+      level: process.env.LOG_LEVEL ?? options.level ?? 'info',
+      format: format.combine(
+        redacter.format,
+        options.format ?? defaultFormatter,
+      ),
       transports: options.transports ?? new transports.Console(),
     });
+
     if (options.meta) {
       logger = logger.child(options.meta);
     }
