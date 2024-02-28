@@ -117,7 +117,7 @@ You can then also add any additional extensions that you may need to create as p
 
 [Utility API](../utility-apis/01-index.md) factories are now installed as extensions instead. Pass the existing factory to `createApiExtension` and install it in the app. For more information, see the section on [configuring Utility APIs](../utility-apis/04-configuring.md).
 
-For example, the following API configuration:
+For example, the following apis configuration:
 
 ```ts
 const app = createApp({
@@ -151,15 +151,75 @@ Icons are currently installed through the usual options to `createApp`, but will
 
 Plugins are now passed through the `features` options instead.
 
+For example, the following plugins configuration:
+
+```tsx
+import { homePlugin } from '@backstage/plugin-home';
+
+createApp({
+  // ...
+  plugins: [homePlugin],
+  // ...
+});
+```
+
+Can be converted to the following features configuration:
+
+```tsx
+// plugins are now default exported via alpha subpath
+import homePlugin from '@backstage/plugin-home/alpha';
+
+createApp({
+  // ...
+  features: [homePlugin],
+  // ...
+});
+```
+
+Plugins don't even have to be imported manually after installing their package if [features discovery](../architecture/02-app.md#feature-discovery) is enabled.
+
+```yaml title="in app-config.yaml"
+app:
+  # Enabling plugin and override features discovery
+  experimental: 'all'
+```
+
 ### `featureFlags`
 
 Declaring features flags in the app is no longer supported, move these declarations to the appropriate plugins instead.
+
+For example, the following app feature flags configuration:
+
+```tsx
+createApp({
+  // ...
+  featureFlags: [
+    {
+      pluginId: '',
+      name: 'tech-radar',
+      description: 'Enables the tech radar plugin',
+    },
+  ],
+  // ...
+});
+```
+
+Can be converted to the following plugin configuration:
+
+```tsx
+createPlugin({
+  id: 'tech-radar',
+  // ...
+  featureFlags: [{ name: 'tech-radar' }],
+  // ...
+});
+```
 
 ### `components`
 
 Many app components are now installed as extensions instead using `createComponentExtension`. See the section on [configuring app components](./01-index.md#configure-your-app) for more information.
 
-The `Router` component is now a built-in extension that you can override using `createRouterExtension`.
+The `Router` component is now a built-in extension that you can [override](../architecture/05-extension-overrides.md) using `createRouterExtension`.
 
 The Sign-in page is now installed as an extension using the `createSignInPageExtension` instead.
 
@@ -277,6 +337,35 @@ const app = createApp({
 
 Translations are now installed as extensions, using `createTranslationExtension`.
 
+For example, the following translations configuration:
+
+```tsx
+import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
+createApp({
+  // ...
+  __experimentalTranslations: {
+    resources: [
+      createTranslationMessages({
+        ref: catalogTranslationRef,
+        catalog_page_create_button_title: 'Create Software',
+      }),
+    ],
+  },
+  // ...
+});
+```
+
+Can be converted to the following extension:
+
+```tsx
+createTranslationExtension({
+  resource: createTranslationMessages({
+    ref: catalogTranslationRef,
+    catalog_page_create_button_title: 'Create Software',
+  }),
+});
+```
+
 ## Gradual Migration
 
 After updating all `createApp` options as well as using `convertLegacyApp` to use your existing app structure, you should be able to start up the app and see that it still works. If that is not the case, make sure you read any error messages that you may see in the app as they can provide hints on what you need to fix. If you are still stuck, you can check if anyone else ran into the same issue in our [GitHub issues](https://github.com/backstage/backstage/issues), or ask for help in our [community Discord](https://discord.gg/backstage-687207715902193673).
@@ -368,7 +457,7 @@ The entity pages are typically defined in `packages/app/src/components/catalog` 
 
 New apps feature a built-in sidebar extension (`app/nav`) that will render all nav item extensions provided by plugins. This is a placeholder implementation and not intended as a long-term solution. In the future we will aim to provide a more flexible sidebar extension that allows for more customization out of the box.
 
-Because the built-in sidebar is quite limited you may want to override the sidebar with your own custom implementation. To do so, use `createExtension` directly and refer to the [original sidebar implementation](https://github.com/backstage/backstage/blob/master/packages/frontend-app-api/src/extensions/AppNav.tsx). The following is an example of how to take your existing sidebar from the `Root` component that you typically find in `packages/app/src/components/Root.tsx`, and use it in an extension override:
+Because the built-in sidebar is quite limited you may want to override the sidebar with your own custom implementation. To do so, use `createExtension` directly and refer to the [original sidebar implementation](https://github.com/backstage/backstage/blob/master/packages/frontend-app-api/src/extensions/AppNav.tsx). The following is an example of how to take your existing sidebar from the `Root` component that you typically find in `packages/app/src/components/Root.tsx`, and use it in an [extension override](../architecture/05-extension-overrides.md):
 
 ```tsx
 const nav = createExtension({
@@ -435,3 +524,24 @@ export default app.createRoot(
 ```
 
 Any app root wrapper needs to be migrated to be an extension, using `createAppRootWrapperExtension`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
+
+Here is an example converting the `CustomAppBarrier` into extension:
+
+```tsx
+createApp({
+  // ...
+  features: [
+    createExtensionOverrides({
+      extensions: [
+        createAppRootWrapperExtension({
+          name: 'CustomAppBarrier',
+          // Whenever your component uses legacy core packages, wrap it with "compatWrapper"
+          // e.g. props => compatWrapper(<CustomAppBarrier {...props} />)
+          Component: CustomAppBarrier,
+        }),
+      ],
+    }),
+  ],
+  // ...
+});
+```
