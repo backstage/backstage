@@ -22,7 +22,6 @@ import {
   V1Job,
   V1EnvVar,
   Log,
-  V1Status,
   V1VolumeMount,
   V1PodTemplateSpec,
   V1Pod,
@@ -384,9 +383,16 @@ export class KubernetesContainerRunner implements ContainerRunner {
   }
 }
 
-function handleKubernetesError(message: string, err: Error): Error {
-  if (err instanceof HttpError) {
-    return new Error(`${message} ${(err.body as V1Status).message}`);
+function handleKubernetesError(message: string, err: any): Error {
+  if (err && typeof err.body === 'string') {
+    try {
+      const parsedBody = JSON.parse(err.body);
+      if (parsedBody && parsedBody.message) {
+        return new Error(`${message} ${parsedBody.message}`);
+      }
+    } catch (e) {
+      return new Error(`${message} Error parsing response body - ${e.message}`);
+    }
   }
-  return new Error(`${message} ${err}`);
+  return new Error(`${message} Error: ${err.message || 'Unknown error'}`);
 }
