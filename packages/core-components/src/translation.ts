@@ -80,9 +80,6 @@ export const coreComponentsTranslationRef = createTranslationRef({
       login: 'Log in',
       rejectAll: 'Reject All',
     },
-    link: {
-      openNewWindow: 'Opens in a new window',
-    },
     supportButton: {
       title: 'Support',
       close: 'Close',
