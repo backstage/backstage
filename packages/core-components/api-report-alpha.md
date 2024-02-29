@@ -9,7 +9,6 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 export const coreComponentsTranslationRef: TranslationRef<
   'core-components',
   {
-    readonly 'link.openNewWindow': 'Opens in a new window';
     readonly 'table.filter.title': 'Filters';
     readonly 'table.filter.clearAll': 'Clear all';
     readonly 'signIn.title': 'Sign In';
