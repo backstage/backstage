@@ -131,7 +131,7 @@ export type SidebarSubmenuItemProps = {
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
-  initialShowDropDown?: boolean;
+  initialShowDropdown?: boolean;
 };
 
 /**
@@ -151,7 +151,7 @@ export const SidebarSubmenuItem = (props: SidebarSubmenuItemProps) => {
   let isActive = isLocationMatch(currentLocation, toLocation, exact);
 
   const [showDropDown, setShowDropDown] = useState(
-    props.initialShowDropDown ?? false,
+    props.initialShowDropdown ?? false,
   );
   const handleClickDropdown = () => {
     setShowDropDown(!showDropDown);
