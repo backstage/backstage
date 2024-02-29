@@ -66,4 +66,28 @@ describe('GetVaultConfig', () => {
       secretEngine: 'test',
     });
   });
+
+  it('loads kubernetes token config', () => {
+    const config = new ConfigReader({
+      vault: {
+        baseUrl: 'http://www.example.com',
+        token: {
+          type: 'kubernetes',
+          role: 'test',
+        },
+      },
+    });
+
+    const vaultConfig = getVaultConfig(config);
+    expect(vaultConfig).toStrictEqual({
+      baseUrl: 'http://www.example.com',
+      publicUrl: undefined,
+      token: {
+        type: 'kubernetes',
+        role: 'test',
+      },
+      kvVersion: 2,
+      secretEngine: 'secrets',
+    });
+  });
 });

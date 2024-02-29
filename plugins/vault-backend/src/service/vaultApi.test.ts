@@ -17,11 +17,16 @@
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { VaultSecret, VaultClient, VaultSecretList } from './vaultApi';
+import {
+  VaultApi,
+  VaultSecret,
+  VaultClient,
+  VaultSecretList,
+} from './vaultApi';
 import { ConfigReader } from '@backstage/config';
 
 describe('VaultApi', () => {
-  let api: VaultClient;
+  let api: VaultApi;
 
   const server = setupServer();
   setupRequestMockHandlers(server);
@@ -110,7 +115,7 @@ describe('VaultApi', () => {
   });
 
   it('should return success token renew', async () => {
-    expect(await api.renewToken()).toBe(undefined);
+    expect(await api.renewToken?.()).toBe(undefined);
   });
 
   it('should render frontend url', () => {
