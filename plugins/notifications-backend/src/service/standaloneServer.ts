@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  createLegacyAuthAdapters,
   createServiceBuilder,
   HostDiscovery,
   loadBackendConfig,
@@ -37,6 +38,11 @@ import {
   EventsService,
   EventsServiceSubscribeOptions,
 } from '@backstage/plugin-events-node';
+import {
+  AuthService,
+  HttpAuthService,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
@@ -107,15 +113,25 @@ export async function startStandaloneServer(
   };
 
   const signalService = DefaultSignalService.create({ events });
+  // TODO: Move to use services instead this hack
+  const { auth, httpAuth, userInfo } = createLegacyAuthAdapters<
+    any,
+    { auth: AuthService; httpAuth: HttpAuthService; userInfo: UserInfoService }
+  >({
+    identity: identityMock,
+    tokenManager,
+    discovery,
+  });
 
   const router = await createRouter({
     logger,
-    identity: identityMock,
     database: dbMock,
     catalog: catalogApi,
     discovery,
-    tokenManager,
     signalService,
+    auth,
+    httpAuth,
+    userInfo,
   });
 
   let service = createServiceBuilder(module)

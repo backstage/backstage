@@ -24,7 +24,7 @@ export type NotificationPayload = {
   link?: string;
   // TODO: Add support for additional links
   // additionalLinks?: string[];
-  severity: NotificationSeverity;
+  severity?: NotificationSeverity;
   topic?: string;
   scope?: string;
   icon?: string;

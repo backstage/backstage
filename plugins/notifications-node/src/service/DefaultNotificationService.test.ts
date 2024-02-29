@@ -42,7 +42,6 @@ describe('DefaultNotificationService', () => {
     service = DefaultNotificationService.create({
       auth,
       discovery,
-      pluginId: 'test',
     });
   });
 
@@ -58,7 +57,7 @@ describe('DefaultNotificationService', () => {
           `${await discovery.getBaseUrl('notifications')}/`,
           async (req, res, ctx) => {
             const json = await req.json();
-            expect(json).toEqual({ ...body, origin: 'plugin-test' });
+            expect(json).toEqual(body);
             expect(req.headers.get('Authorization')).toBe(
               mockCredentials.service.header({
                 onBehalfOf: await auth.getOwnServiceCredentials(),
@@ -83,7 +82,7 @@ describe('DefaultNotificationService', () => {
           `${await discovery.getBaseUrl('notifications')}/`,
           async (req, res, ctx) => {
             const json = await req.json();
-            expect(json).toEqual({ ...body, origin: 'plugin-test' });
+            expect(json).toEqual(body);
             expect(req.headers.get('Authorization')).toBe(
               mockCredentials.service.header({
                 onBehalfOf: await auth.getOwnServiceCredentials(),

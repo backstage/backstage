@@ -22,7 +22,6 @@ import { NotificationPayload } from '@backstage/plugin-notifications-common';
 export type NotificationServiceOptions = {
   auth: AuthService;
   discovery: DiscoveryService;
-  pluginId: string;
 };
 
 /** @public */
@@ -45,17 +44,12 @@ export class DefaultNotificationService implements NotificationService {
   private constructor(
     private readonly discovery: DiscoveryService,
     private readonly auth: AuthService,
-    private readonly pluginId: string,
   ) {}
 
   static create(
     options: NotificationServiceOptions,
   ): DefaultNotificationService {
-    return new DefaultNotificationService(
-      options.discovery,
-      options.auth,
-      options.pluginId,
-    );
+    return new DefaultNotificationService(options.discovery, options.auth);
   }
 
   async send(notification: NotificationSendOptions): Promise<void> {
@@ -65,13 +59,10 @@ export class DefaultNotificationService implements NotificationService {
         onBehalfOf: await this.auth.getOwnServiceCredentials(),
         targetPluginId: 'notifications',
       });
+
       const response = await fetch(`${baseUrl}/`, {
         method: 'POST',
-        body: JSON.stringify({
-          ...notification,
-          // TODO: Should retrieve this in the backend from service auth instead
-          origin: `plugin-${this.pluginId}`,
-        }),
+        body: JSON.stringify(notification),
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',

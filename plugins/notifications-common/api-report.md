@@ -27,7 +27,7 @@ export type NotificationPayload = {
   title: string;
   description?: string;
   link?: string;
-  severity: NotificationSeverity;
+  severity?: NotificationSeverity;
   topic?: string;
   scope?: string;
   icon?: string;
