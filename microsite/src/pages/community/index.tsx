@@ -88,7 +88,7 @@ const Community = () => {
     },
     {
       name: 'VMWare',
-      url: 'https://tanzu.vmware.com/',
+      url: 'https://tanzu.vmware.com/developer-portal',
       logo: 'img/partner-logo-tanzubybroadcom.png',
     },
   ];
