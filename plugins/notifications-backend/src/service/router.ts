@@ -13,15 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createLegacyAuthAdapters,
-  errorHandler,
-  PluginDatabaseManager,
-  TokenManager,
-} from '@backstage/backend-common';
+import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   DatabaseNotificationsStore,
   NotificationGetOptions,
@@ -36,12 +30,13 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { NotificationProcessor } from '@backstage/plugin-notifications-node';
-import { AuthenticationError, InputError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import {
   AuthService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
+  UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
 import {
@@ -53,15 +48,14 @@ import {
 /** @internal */
 export interface RouterOptions {
   logger: LoggerService;
-  identity: IdentityApi;
   database: PluginDatabaseManager;
-  tokenManager: TokenManager;
   discovery: DiscoveryService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
   signalService?: SignalService;
   catalog?: CatalogApi;
   processors?: NotificationProcessor[];
-  auth?: AuthService;
-  httpAuth?: HttpAuthService;
 }
 
 /** @internal */
@@ -71,7 +65,9 @@ export async function createRouter(
   const {
     logger,
     database,
-    identity,
+    auth,
+    httpAuth,
+    userInfo,
     discovery,
     catalog,
     processors,
@@ -82,14 +78,10 @@ export async function createRouter(
     catalog ?? new CatalogClient({ discoveryApi: discovery });
   const store = await DatabaseNotificationsStore.create({ database });
 
-  const { auth, httpAuth } = createLegacyAuthAdapters(options);
-
   const getUser = async (req: Request<unknown>) => {
-    const user = await identity.getIdentity({ request: req });
-    if (!user) {
-      throw new AuthenticationError();
-    }
-    return user.identity.userEntityRef;
+    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
+    const info = await userInfo.getUserInfo(credentials);
+    return info.userEntityRef;
   };
 
   const getUsersForEntityRef = async (
@@ -277,18 +269,16 @@ export async function createRouter(
   });
 
   // Add new notification
-  // Allowed only for service-to-service authentication, uses `getUsersForEntityRef` to retrieve recipients for
-  // specific entity reference
   router.post('/', async (req, res) => {
-    const { recipients, origin, payload } = req.body;
+    const { recipients, payload } = req.body;
     const notifications = [];
     let users = [];
 
-    await httpAuth.credentials(req, { allow: ['service'] });
+    const credentials = await httpAuth.credentials(req, { allow: ['service'] });
 
-    const { title, link, scope } = payload;
+    const { title, scope } = payload;
 
-    if (!recipients || !title || !origin || !link) {
+    if (!recipients || !title) {
       logger.error(`Invalid notification request received`);
       throw new InputError();
     }
@@ -305,6 +295,7 @@ export async function createRouter(
       throw new InputError();
     }
 
+    const origin = credentials.principal.subject;
     const baseNotification: Omit<Notification, 'id' | 'user'> = {
       payload: {
         ...payload,
