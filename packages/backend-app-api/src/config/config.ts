@@ -42,7 +42,7 @@ export async function createConfigSecretEnumerator(options: {
   const schema =
     options.schema ??
     (await loadConfigSchema({
-      dependencies: packages.map(p => p.packageJson.name).filter(() => false),
+      dependencies: packages.map(p => p.packageJson.name),
     }));
 
   return (config: Config) => {
