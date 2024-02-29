@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventBroker, EventParams } from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { SignalPayload } from '@backstage/plugin-signals-node';
 import { RawData, WebSocket } from 'ws';
 import { v4 as uuid } from 'uuid';
@@ -38,8 +38,7 @@ export type SignalConnection = {
  * @internal
  */
 export type SignalManagerOptions = {
-  // TODO: Remove optional when events-backend can offer this service
-  eventBroker?: EventBroker;
+  events: EventsService;
   logger: LoggerService;
 };
 
@@ -49,7 +48,7 @@ export class SignalManager {
     string,
     SignalConnection
   >();
-  private eventBroker?: EventBroker;
+  private events: EventsService;
   private logger: LoggerService;
 
   static create(options: SignalManagerOptions) {
@@ -57,12 +56,13 @@ export class SignalManager {
   }
 
   private constructor(options: SignalManagerOptions) {
-    ({ eventBroker: this.eventBroker, logger: this.logger } = options);
+    ({ events: this.events, logger: this.logger } = options);
 
-    this.eventBroker?.subscribe({
-      supportsEventTopics: () => ['signals'],
-      onEvent: (params: EventParams<SignalPayload>) =>
-        this.onEventBrokerEvent(params),
+    this.events.subscribe({
+      id: 'signals',
+      topics: ['signals'],
+      onEvent: (params: EventParams) =>
+        this.onEventBrokerEvent(params.eventPayload as SignalPayload),
     });
   }
 
@@ -126,10 +126,7 @@ export class SignalManager {
     }
   }
 
-  private async onEventBrokerEvent(
-    params: EventParams<SignalPayload>,
-  ): Promise<void> {
-    const { eventPayload } = params;
+  private async onEventBrokerEvent(eventPayload: SignalPayload): Promise<void> {
     if (!eventPayload.channel || !eventPayload.message) {
       return;
     }

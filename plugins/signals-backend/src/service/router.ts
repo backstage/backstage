@@ -30,14 +30,14 @@ import * as https from 'https';
 import http, { IncomingMessage } from 'http';
 import { SignalManager } from './SignalManager';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { EventBroker } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { WebSocket, WebSocketServer } from 'ws';
 import { Duplex } from 'stream';
 
 /** @public */
 export interface RouterOptions {
   logger: LoggerService;
-  eventBroker?: EventBroker;
+  events: EventsService;
   identity: IdentityApi;
   discovery: PluginEndpointDiscovery;
   auth?: AuthService;

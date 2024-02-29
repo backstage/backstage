@@ -21,11 +21,11 @@ import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-import { EventBroker } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
-const eventBrokerMock: jest.Mocked<EventBroker> = {
+const eventsServiceMock: jest.Mocked<EventsService> = {
   subscribe: jest.fn(),
   publish: jest.fn(),
 };
@@ -50,7 +50,7 @@ describe('createRouter', () => {
     const router = await createRouter({
       logger: getVoidLogger(),
       identity: identityApiMock,
-      eventBroker: eventBrokerMock,
+      events: eventsServiceMock,
       discovery,
       userInfo,
     });
