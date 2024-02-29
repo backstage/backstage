@@ -33,6 +33,7 @@ export interface VaultApi {
       secretEngine?: string;
     },
   ): Promise<VaultSecret[]>;
+  loadToken(): Promise<void>;
   renewToken?(): Promise<void>;
 }
 
@@ -42,6 +43,8 @@ export class VaultBuilder {
   build(): VaultBuilderReturn;
   static createBuilder(env: VaultEnvironment): VaultBuilder;
   enableTokenRenew(schedule?: TaskRunner): Promise<this>;
+  // (undocumented)
+  loadToken(): Promise<void>;
   setVaultClient(vaultApi: VaultApi): this;
 }
 
@@ -62,6 +65,8 @@ export class VaultClient implements VaultApi {
       secretEngine?: string;
     },
   ): Promise<VaultSecret[]>;
+  // (undocumented)
+  loadToken(): Promise<void>;
   // (undocumented)
   renewToken(): Promise<void>;
 }

@@ -31,6 +31,12 @@ export type VaultSecret = {
  */
 export interface VaultApi {
   /**
+   * Makes sure the token is loaded into the VaultClient. If the login is done via Kubernetes it
+   * needs to make a request first.
+   */
+  loadToken(): Promise<void>;
+
+  /**
    * Returns the URL to access the Vault UI with the defined config.
    */
   getFrontendSecretsUrl(): string;

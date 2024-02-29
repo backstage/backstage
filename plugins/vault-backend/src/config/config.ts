@@ -17,6 +17,31 @@
 import { Config } from '@backstage/config';
 
 /**
+ * The Kubernetes auth method parameters needed for the vault-backend plugin
+ * to login.
+ *
+ * @public
+ */
+export interface VaultKubernetesAuthConfig {
+  type: 'kubernetes';
+  /**
+   * The role used to login to Vault.
+   */
+  role: string;
+
+  /**
+   * The authPath used to login to Vault. If not set, it defaults to 'kubernetes'.
+   */
+  authPath?: string;
+
+  /**
+   * The path where the service account token is. If not set,
+   * it defaults to '/var/run/secrets/kubernetes.io/serviceaccount/token'.
+   */
+  serviceAccountTokenPath?: string;
+}
+
+/**
  * The configuration needed for the vault-backend plugin
  *
  * @public
@@ -33,9 +58,10 @@ export interface VaultConfig {
   publicUrl?: string;
 
   /**
-   * The token used by Backstage to access Vault.
+   * The credentials used to login to Vault. They can be a raw token
+   * or the Kubernetes
    */
-  token: string;
+  token: string | VaultKubernetesAuthConfig;
 
   /**
    * The secret engine name where in vault. Defaults to `secrets`.
@@ -59,7 +85,7 @@ export function getVaultConfig(config: Config): VaultConfig {
   return {
     baseUrl: config.getString('vault.baseUrl'),
     publicUrl: config.getOptionalString('vault.publicUrl'),
-    token: config.getString('vault.token'),
+    token: config.get<string | VaultKubernetesAuthConfig>('vault.token'),
     kvVersion: config.getOptionalNumber('vault.kvVersion') ?? 2,
     secretEngine: config.getOptionalString('vault.secretEngine') ?? 'secrets',
   };

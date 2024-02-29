@@ -67,6 +67,7 @@ export const vaultPlugin = createBackendPlugin({
         }
 
         const { router } = builder.build();
+        await builder.loadToken();
         httpRouter.use(router);
       },
     });

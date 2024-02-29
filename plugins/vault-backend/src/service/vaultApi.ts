@@ -18,7 +18,12 @@ import { Config } from '@backstage/config';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import fetch from 'node-fetch';
 import plimit from 'p-limit';
-import { getVaultConfig, VaultConfig } from '../config';
+import {
+  getVaultConfig,
+  VaultConfig,
+  VaultKubernetesAuthConfig,
+} from '../config';
+import { readFile } from 'fs/promises';
 
 /**
  * Object received as a response from the Vault API when fetching secrets
@@ -58,6 +63,12 @@ type RenewTokenResponse = {
  */
 export interface VaultApi {
   /**
+   * Makes sure the token is loaded into the VaultClient. If the login is done via Kubernetes it
+   * needs to make a request first.
+   */
+  loadToken(): Promise<void>;
+
+  /**
    * Returns the URL to access the Vault UI with the defined config.
    */
   getFrontendSecretsUrl(): string;
@@ -88,9 +99,55 @@ export interface VaultApi {
 export class VaultClient implements VaultApi {
   private vaultConfig: VaultConfig;
   private readonly limit = plimit(5);
+  private token: string = '';
 
   constructor(options: { config: Config }) {
     this.vaultConfig = getVaultConfig(options.config);
+    if (typeof this.vaultConfig.token === 'string') {
+      this.token = this.vaultConfig.token;
+    }
+  }
+
+  async loadToken() {
+    if (typeof this.vaultConfig.token === 'string') {
+      this.token = this.vaultConfig.token;
+    } else {
+      this.token = await this.kubernetesLogin(
+        this.vaultConfig.baseUrl,
+        this.vaultConfig.token,
+      );
+    }
+  }
+
+  private async kubernetesLogin(
+    baseUrl: string,
+    kubernetesCfg: VaultKubernetesAuthConfig,
+  ): Promise<string> {
+    const jwt = await readFile(
+      kubernetesCfg.serviceAccountTokenPath ||
+        '/var/run/secrets/kubernetes.io/serviceaccount/token',
+      'utf-8',
+    );
+
+    const resp = await fetch(
+      `${baseUrl}/v1/auth/${kubernetesCfg.authPath || 'kubernetes'}/login`,
+      {
+        method: 'POST',
+        body: JSON.stringify({
+          role: kubernetesCfg.role,
+          jwt: jwt,
+        }),
+      },
+    );
+
+    if (!resp.ok) {
+      throw Error(
+        `Error while login to vault. ${resp.status}: ${resp.statusText}`,
+      );
+    }
+
+    const result: { auth: { client_token: string } } = await resp.json();
+    return result.auth.client_token;
   }
 
   private async callApi<T>(
@@ -105,7 +162,7 @@ export class VaultClient implements VaultApi {
         method,
         headers: {
           Accept: 'application/json',
-          'X-Vault-Token': this.vaultConfig.token,
+          'X-Vault-Token': this.token,
         },
       },
     );
@@ -180,6 +237,6 @@ export class VaultClient implements VaultApi {
       'POST',
     );
 
-    this.vaultConfig.token = result.auth.client_token;
+    this.token = result.auth.client_token;
   }
 }

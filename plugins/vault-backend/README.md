@@ -83,6 +83,55 @@ To get started, first you need a running instance of Vault. You can follow [this
      }
    ```
 
+## Login via Kubernetes Auth Method
+
+Alternatively, it's also possible to make Backstage use the [Kubernetes auth method](https://developer.hashicorp.com/vault/docs/auth/kubernetes) to login into Vault. For that, the configuration should look like this:
+
+```yaml
+vault:
+  baseUrl: http://your-internal-vault-url.svc
+  publicUrl: https://your-vault-url.example.com
+  token:
+    type: kubernetes
+    role: <KUBERNETES_ROLE>
+    authPath: <KUBERNETES_AUTH_PATH> # Optional. It defaults to 'kubernetes', but you could set a different authPath if needed
+    serviceAccountTokenPath: <PATH_TO_JWT> # Optional. It defaults to '/var/run/secrets/kubernetes.io/serviceaccount/token'. Where the JWT token is located
+  secretEngine: 'customSecretEngine' # Optional. By default it uses 'secrets'. Can be overwritten by the annotation of the entity
+  kvVersion: <kv-version> # Optional. The K/V version that your instance is using. The available options are '1' or '2'
+  schedule: # Optional. If the token renewal is enabled this schedule will be used instead of the hourly one
+    frequency: { hours: 1 }
+    timeout: { hours: 1 }
+```
+
+If using in the old backend system, you will need to make sure the token is properly
+loaded. To achieve that, the API export a method that has to be called on demand to
+fetch this token using the Kubernetes authentication. Add the following to your `createPlugin` method:
+
+```typescript
+import { VaultBuilder } from '@backstage/plugin-vault-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = VaultBuilder.createBuilder({
+    logger: env.logger,
+    config: env.config,
+    scheduler: env.scheduler,
+  });
+
+  const { router } = builder.build();
+
+  // NOTE that `loadToken` has to be called once the builder has been built
+  await builder.loadToken();
+
+  return router;
+}
+```
+
+In the new backend system, this is done automatically.
+
 ## New Backend System
 
 The Vault backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
@@ -179,5 +228,6 @@ If the `taskRunner` is not set when calling the `enableTokenRenew`, the plugin w
 - Open a link to view the secret
 - Open a link to edit the secret
 - Renew the token automatically with a defined periodicity
+- Login to Vault with [Kubernetes auth method](https://developer.hashicorp.com/vault/docs/auth/kubernetes)
 
 The secrets cannot be edited/viewed from within Backstage to make it more secure. Backstage will only have permissions to LIST data from Vault or to renew its own token if that is needed. And the user who wants to edit/view a certain secret needs the correct permissions to do so.

@@ -106,6 +106,11 @@ export class VaultBuilder {
     return this;
   }
 
+  public async loadToken() {
+    this.env.logger.info('Loading Vault token');
+    await this.vaultApi?.loadToken();
+  }
+
   /**
    * Enables the token renewal for Vault. The schedule if configured in the app-config.yaml file.
    * If not set, the renewal is executed hourly

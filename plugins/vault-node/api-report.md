@@ -14,6 +14,7 @@ export interface VaultApi {
       secretEngine?: string;
     },
   ): Promise<VaultSecret[]>;
+  loadToken(): Promise<void>;
   renewToken?(): Promise<void>;
 }
 
