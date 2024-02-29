@@ -83,7 +83,7 @@ const Community = () => {
     },
     {
       name: 'ThoughtWorks',
-      url: 'https://www.thoughtworks.com',
+      url: 'https://www.thoughtworks.com/about-us/partnerships/technology/backstage-by-spotify',
       logo: 'img/partner-logo-thoughtworks.png',
     },
     {
