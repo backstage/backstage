@@ -16,7 +16,6 @@
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { DatabaseNotificationsStore } from './DatabaseNotificationsStore';
 import { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
 import { Notification } from '@backstage/plugin-notifications-common';
 
 jest.setTimeout(60_000);
@@ -53,6 +52,15 @@ const otherUserNotification: Partial<Notification> = {
   ...testNotification,
   user: 'user:default/jane.doe',
 };
+
+const id1 = '01e0871e-e60a-4f68-8110-5ae3513f992e';
+const id2 = '02e0871e-e60a-4f68-8110-5ae3513f992e';
+const id3 = '03e0871e-e60a-4f68-8110-5ae3513f992e';
+const id4 = '04e0871e-e60a-4f68-8110-5ae3513f992e';
+const id5 = '05e0871e-e60a-4f68-8110-5ae3513f992e';
+const id6 = '06e0871e-e60a-4f68-8110-5ae3513f992e';
+const id7 = '07e0871e-e60a-4f68-8110-5ae3513f992e';
+const id8 = '08e0871e-e60a-4f68-8110-5ae3513f992e';
 
 describe.each(databases.eachSupportedId())(
   'DatabaseNotificationsStore (%s)',
@@ -94,11 +102,9 @@ describe.each(databases.eachSupportedId())(
 
     describe('getNotifications', () => {
       it('should return all notifications for user', async () => {
-        const id1 = uuid();
-        const id2 = uuid();
         await insertNotification({ id: id1, ...testNotification });
         await insertNotification({ id: id2, ...testNotification });
-        await insertNotification({ id: uuid(), ...otherUserNotification });
+        await insertNotification({ id: id3, ...otherUserNotification });
 
         const notifications = await storage.getNotifications({ user });
         expect(notifications.length).toBe(2);
@@ -107,13 +113,10 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should return read notifications for user', async () => {
-        const id1 = uuid();
-        const id2 = uuid();
-        const id3 = uuid();
         await insertNotification({ id: id1, ...testNotification });
         await insertNotification({ id: id2, ...testNotification });
         await insertNotification({ id: id3, ...testNotification });
-        await insertNotification({ id: uuid(), ...otherUserNotification });
+        await insertNotification({ id: id4, ...otherUserNotification });
 
         await storage.markRead({ ids: [id1, id3], user });
 
@@ -127,13 +130,10 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should return unread notifications for user', async () => {
-        const id1 = uuid();
-        const id2 = uuid();
-        const id3 = uuid();
         await insertNotification({ id: id1, ...testNotification });
         await insertNotification({ id: id2, ...testNotification });
         await insertNotification({ id: id3, ...testNotification });
-        await insertNotification({ id: uuid(), ...otherUserNotification });
+        await insertNotification({ id: id4, ...otherUserNotification });
 
         await storage.markRead({ ids: [id1, id3], user });
 
@@ -146,13 +146,10 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should return both read and unread notifications for user', async () => {
-        const id1 = uuid();
-        const id2 = uuid();
-        const id3 = uuid();
         await insertNotification({ id: id1, ...testNotification });
         await insertNotification({ id: id2, ...testNotification });
         await insertNotification({ id: id3, ...testNotification });
-        await insertNotification({ id: uuid(), ...otherUserNotification });
+        await insertNotification({ id: id4, ...otherUserNotification });
 
         await storage.markRead({ ids: [id1, id3], user });
 
@@ -167,8 +164,6 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should allow searching for notifications', async () => {
-        const id1 = uuid();
-        const id2 = uuid();
         await insertNotification({
           id: id1,
           ...testNotification,
@@ -179,7 +174,7 @@ describe.each(databases.eachSupportedId())(
           },
         });
         await insertNotification({ id: id2, ...testNotification });
-        await insertNotification({ id: uuid(), ...otherUserNotification });
+        await insertNotification({ id: id3, ...otherUserNotification });
 
         const notifications = await storage.getNotifications({
           user,
@@ -190,8 +185,6 @@ describe.each(databases.eachSupportedId())(
       });
 
       it('should filter notifications based on created date', async () => {
-        const id1 = uuid();
-        const id2 = uuid();
         await insertNotification({
           id: id1,
           ...testNotification,
@@ -206,7 +199,7 @@ describe.each(databases.eachSupportedId())(
           },
           created: new Date() /* now */,
         });
-        await insertNotification({ id: uuid(), ...otherUserNotification });
+        await insertNotification({ id: id3, ...otherUserNotification });
 
         const notifications = await storage.getNotifications({
           user,
@@ -215,19 +208,97 @@ describe.each(databases.eachSupportedId())(
         expect(notifications.length).toBe(1);
         expect(notifications.at(0)?.id).toEqual(id2);
       });
+
+      it('should apply pagination', async () => {
+        const now = Date.now();
+        const timeDelay = 5 * 1000; /* 5 secs */
+
+        await insertNotification({
+          id: id1,
+          ...testNotification,
+          created: new Date(now - 1 * 60 * 60 * 1000 /* an hour ago */),
+        });
+        await insertNotification({
+          id: id2,
+          ...testNotification,
+          created: new Date(now),
+        });
+        await insertNotification({
+          id: id3,
+          ...testNotification,
+          created: new Date(now - 5 * timeDelay),
+        });
+        await insertNotification({
+          id: id4,
+          ...testNotification,
+          created: new Date(now - 4 * timeDelay),
+        });
+        await insertNotification({
+          id: id5,
+          ...testNotification,
+          created: new Date(now - 3 * timeDelay),
+        });
+        await insertNotification({
+          id: id6,
+          ...testNotification,
+          created: new Date(now - 2 * timeDelay),
+        });
+        await insertNotification({
+          id: id7,
+          ...testNotification,
+          created: new Date(now - 1 * timeDelay),
+        });
+
+        await insertNotification({ id: id8, ...otherUserNotification });
+
+        const allUserNotifications = await storage.getNotifications({
+          user,
+        });
+        expect(allUserNotifications.length).toBe(7);
+
+        const notifications = await storage.getNotifications({
+          user,
+          createdAfter: new Date(now - 5 * 60 * 1000 /* 5 mins */),
+          // so far no pagination
+        });
+        expect(notifications.length).toBe(6);
+        expect(notifications.at(0)?.id).toEqual(id2);
+        expect(notifications.at(1)?.id).toEqual(id7);
+        expect(notifications.at(2)?.id).toEqual(id6);
+        expect(notifications.at(3)?.id).toEqual(id5);
+        expect(notifications.at(4)?.id).toEqual(id4);
+
+        const allUserNotificationsPageOne = await storage.getNotifications({
+          user,
+          limit: 3,
+          offset: 0,
+        });
+        expect(allUserNotificationsPageOne.length).toBe(3);
+        expect(allUserNotificationsPageOne.at(0)?.id).toEqual(id2);
+        expect(allUserNotificationsPageOne.at(1)?.id).toEqual(id7);
+        expect(allUserNotificationsPageOne.at(2)?.id).toEqual(id6);
+
+        const allUserNotificationsPageTwo = await storage.getNotifications({
+          user,
+          limit: 3,
+          offset: 3,
+        });
+        expect(allUserNotificationsPageTwo.length).toBe(3);
+        expect(allUserNotificationsPageTwo.at(0)?.id).toEqual(id5);
+        expect(allUserNotificationsPageTwo.at(1)?.id).toEqual(id4);
+        expect(allUserNotificationsPageTwo.at(2)?.id).toEqual(id3);
+      });
     });
 
     describe('getStatus', () => {
       it('should return status for user', async () => {
-        const id1 = uuid();
-        const id2 = uuid();
         await insertNotification({
           id: id1,
           ...testNotification,
           read: new Date(),
         });
         await insertNotification({ id: id2, ...testNotification });
-        await insertNotification({ id: uuid(), ...otherUserNotification });
+        await insertNotification({ id: id3, ...otherUserNotification });
 
         const status = await storage.getStatus({ user });
         expect(status.read).toEqual(1);
@@ -237,7 +308,6 @@ describe.each(databases.eachSupportedId())(
 
     describe('getExistingScopeNotification', () => {
       it('should return existing scope notification', async () => {
-        const id1 = uuid();
         const notification: any = {
           ...testNotification,
           id: id1,
@@ -262,7 +332,6 @@ describe.each(databases.eachSupportedId())(
 
     describe('restoreExistingNotification', () => {
       it('should return restore existing scope notification', async () => {
-        const id1 = uuid();
         const notification: any = {
           ...testNotification,
           id: id1,
@@ -296,7 +365,6 @@ describe.each(databases.eachSupportedId())(
 
     describe('getNotification', () => {
       it('should return notification by id', async () => {
-        const id1 = uuid();
         await insertNotification({ id: id1, ...testNotification });
 
         const notification = await storage.getNotification({ id: id1 });
@@ -306,7 +374,6 @@ describe.each(databases.eachSupportedId())(
 
     describe('markRead', () => {
       it('should mark notification read', async () => {
-        const id1 = uuid();
         await insertNotification({ id: id1, ...testNotification });
 
         await storage.markRead({ ids: [id1], user });
@@ -317,7 +384,6 @@ describe.each(databases.eachSupportedId())(
 
     describe('markUnread', () => {
       it('should mark notification unread', async () => {
-        const id1 = uuid();
         await insertNotification({
           id: id1,
           ...testNotification,
@@ -332,7 +398,6 @@ describe.each(databases.eachSupportedId())(
 
     describe('markSaved', () => {
       it('should mark notification saved', async () => {
-        const id1 = uuid();
         await insertNotification({ id: id1, ...testNotification });
 
         await storage.markSaved({ ids: [id1], user });
@@ -343,7 +408,6 @@ describe.each(databases.eachSupportedId())(
 
     describe('markUnsaved', () => {
       it('should mark notification not saved', async () => {
-        const id1 = uuid();
         await insertNotification({
           id: id1,
           ...testNotification,
@@ -358,7 +422,6 @@ describe.each(databases.eachSupportedId())(
 
     describe('saveNotification', () => {
       it('should store a notification', async () => {
-        const id1 = uuid();
         await storage.saveNotification({
           id: id1,
           user,

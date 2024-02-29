@@ -197,15 +197,21 @@ export async function createRouter(
       // or keep undefined
     }
     if (req.query.created_after) {
-      const sinceEpoch = Date.parse(req.query.created_after.toString());
+      const sinceEpoch = Date.parse(String(req.query.created_after));
       if (isNaN(sinceEpoch)) {
         throw new InputError('Unexpected date format');
       }
       opts.createdAfter = new Date(sinceEpoch);
     }
 
-    const notifications = await store.getNotifications(opts);
-    res.send(notifications);
+    const [notifications, totalCount] = await Promise.all([
+      store.getNotifications(opts),
+      store.getNotificationsCount(opts),
+    ]);
+    res.send({
+      totalCount,
+      notifications,
+    });
   });
 
   router.get('/:id', async (req, res) => {

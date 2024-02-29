@@ -99,7 +99,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   ) => {
     const { user } = options;
     const isSQLite = this.db.client.config.client.includes('sqlite3');
-    // const isPsql = this.db.client.config.client.includes('pg');
 
     const query = this.db('notification').where('user', user);
 
@@ -163,6 +162,16 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const notificationQuery = this.getNotificationsBaseQuery(options);
     const notifications = await notificationQuery.select();
     return this.mapToNotifications(notifications);
+  }
+
+  async getNotificationsCount(options: NotificationGetOptions) {
+    const countOptions: NotificationGetOptions = { ...options };
+    countOptions.limit = undefined;
+    countOptions.offset = undefined;
+    countOptions.sort = null;
+    const notificationQuery = this.getNotificationsBaseQuery(countOptions);
+    const response = await notificationQuery.count('* as CNT');
+    return Number(response[0].CNT);
   }
 
   async saveNotification(notification: Notification) {

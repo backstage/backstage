@@ -15,25 +15,34 @@
  */
 import React, { useMemo } from 'react';
 import throttle from 'lodash/throttle';
+// @ts-ignore
+import RelativeTime from 'react-relative-time';
 import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
 import { Notification } from '@backstage/plugin-notifications-common';
+
 import { notificationsApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import MarkAsUnreadIcon from '@material-ui/icons/Markunread';
 import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
-
-// @ts-ignore
-import RelativeTime from 'react-relative-time';
-import { Link, Table, TableColumn } from '@backstage/core-components';
+import {
+  Link,
+  Table,
+  TableProps,
+  TableColumn,
+} from '@backstage/core-components';
 
 const ThrottleDelayMs = 1000;
 
 /** @public */
-export type NotificationsTableProps = {
+export type NotificationsTableProps = Pick<
+  TableProps,
+  'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
+> & {
   isLoading?: boolean;
   notifications?: Notification[];
   onUpdate: () => void;
   setContainsText: (search: string) => void;
+  pageSize: number;
 };
 
 /** @public */
@@ -42,6 +51,11 @@ export const NotificationsTable = ({
   notifications = [],
   onUpdate,
   setContainsText,
+  onPageChange,
+  onRowsPerPageChange,
+  page,
+  pageSize,
+  totalCount,
 }: NotificationsTableProps) => {
   const notificationsApi = useApi(notificationsApiRef);
 
@@ -156,16 +170,15 @@ export const NotificationsTable = ({
       isLoading={isLoading}
       options={{
         search: true,
-        // TODO: add pagination
-        // paging: true,
-        // pageSize,
+        paging: true,
+        pageSize,
         header: false,
         sorting: false,
       }}
-      // onPageChange={setPageNumber}
-      // onRowsPerPageChange={setPageSize}
-      // page={offset}
-      // totalCount={value?.totalCount}
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
+      page={page}
+      totalCount={totalCount}
       onSearchChange={throttledContainsTextHandler}
       data={notifications}
       columns={compactColumns}
