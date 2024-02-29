@@ -73,7 +73,7 @@ const Community = () => {
     },
     {
       name: 'RedHat',
-      url: 'https://www.redhat.com/',
+      url: 'https://developers.redhat.com/rhdh',
       logo: 'img/partner-logo-redhat.png',
     },
     {
