@@ -117,4 +117,68 @@ describe('TemplateWizardPage', () => {
       context: { entityRef: 'template:default/test' },
     });
   });
+  describe('scaffolder page context menu', () => {
+    it('should render if editUrl is set to url', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [
+          {
+            title: 'Step 1',
+            schema: {
+              properties: {
+                name: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        ],
+        title: 'React JSON Schema Form Test',
+        editUrl: 'http://example.com/load-testing',
+      });
+      const { queryByTestId } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />,
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+      expect(queryByTestId('menu-button')).toBeInTheDocument();
+    });
+    it('should not render if editUrl is undefined', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        steps: [
+          {
+            title: 'Step 1',
+            schema: {
+              properties: {
+                name: {
+                  type: 'string',
+                },
+              },
+            },
+          },
+        ],
+        title: 'React JSON Schema Form Test',
+        editUrl: undefined,
+      });
+      const { queryByTestId } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />,
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+      expect(queryByTestId('menu-button')).not.toBeInTheDocument();
+    });
+  });
 });

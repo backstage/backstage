@@ -30,6 +30,7 @@ import {
   FieldExtensionOptions,
   ReviewStepProps,
 } from '@backstage/plugin-scaffolder-react';
+import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
 import { Workflow } from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
 import { Header, Page } from '@backstage/core-components';
@@ -73,6 +74,22 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     name: templateName,
   });
 
+  const [editUrl, setEditURL] = React.useState('');
+  scaffolderApi.getTemplateParameterSchema(templateRef).then(data => {
+    if (data.editUrl !== undefined) setEditURL(data.editUrl);
+  });
+  const scaffolderPageContextMenuProps = {
+    onEditorClicked:
+      editUrl !== ''
+        ? () => {
+            window.location.href = editUrl;
+          }
+        : undefined,
+    onActionsClicked: undefined,
+    onTasksClicked: undefined,
+    onCreateClicked: undefined,
+  };
+
   const onCreate = async (values: Record<string, JsonValue>) => {
     const { taskId } = await scaffolderApi.scaffold({
       templateRef,
@@ -93,7 +110,9 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
           {...props.headerOptions}
-        />
+        >
+          <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
+        </Header>
         <Workflow
           namespace={namespace}
           templateName={templateName}

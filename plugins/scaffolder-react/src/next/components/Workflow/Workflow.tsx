@@ -20,7 +20,6 @@ import {
   InfoCard,
   MarkdownContent,
   Progress,
-  Link,
 } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core';
@@ -30,8 +29,6 @@ import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
 import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
-import IconButton from '@material-ui/core/IconButton';
-import EditIcon from '@material-ui/icons/Edit';
 
 const useStyles = makeStyles({
   markdown: {
@@ -96,23 +93,13 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   if (error) {
     return props.onError(error);
   }
+
   return (
     <Content>
       {loading && <Progress />}
       {sortedManifest && (
         <InfoCard
           title={title ?? sortedManifest.title}
-          action={
-            <IconButton
-              component={Link}
-              aria-label="Edit"
-              title="Edit Template"
-              to={sortedManifest.editUrl ?? '#'}
-              disabled={!sortedManifest.editUrl}
-            >
-              <EditIcon />
-            </IconButton>
-          }
           subheader={
             <MarkdownContent
               className={styles.markdown}
