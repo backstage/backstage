@@ -33,7 +33,7 @@ If you do want to keep the default auth policy in effect, there is little action
 With the default auth policy in effect you will now need to ensure that the requests to your backend are authenticated, also during local development. If you already have a setup where you use an auth provider for local development, you can keep using that. But, if you rely on the `'guest'` access for local development we recommend that you install the new guest provider module in your auth backend:
 
 ```sh
-yarn install @backstage/plugin-auth-backend-module-guest-provider
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-guest-provider
 ```
 
 Add it to your backend:
