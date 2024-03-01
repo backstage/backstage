@@ -34,7 +34,6 @@
     "@backstage/config": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-devtools-common": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",

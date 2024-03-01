@@ -36,7 +36,6 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
-    "@backstage/plugin-auth-node": "workspace:^",
     "@types/express": "^4.17.6",
     "body-parser": "^1.20.0",
     "body-parser-xml": "^2.0.5",

@@ -1,16 +1,8 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused devDependencies (1)
 
-| Name                                | Location     | Severity |
-| :---------------------------------- | :----------- | :------- |
-| @backstage/plugin-scaffolder-common | package.json | error    |
-| winston                             | package.json | error    |
-
-## Unused devDependencies (2)
-
-| Name                      | Location     | Severity |
-| :------------------------ | :----------- | :------- |
-| @testing-library/jest-dom | package.json | error    |
-| @types/react              | package.json | error    |
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| @types/react | package.json | error    |
 

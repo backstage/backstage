@@ -1,12 +1,11 @@
 # Knip report
 
-## Unused dependencies (3)
+## Unused dependencies (2)
 
-| Name                        | Location     | Severity |
-| :-------------------------- | :----------- | :------- |
-| @backstage/plugin-auth-node | package.json | error    |
-| @backstage/repo-tools       | package.json | error    |
-| node-fetch                  | package.json | error    |
+| Name                  | Location     | Severity |
+| :-------------------- | :----------- | :------- |
+| @backstage/repo-tools | package.json | error    |
+| node-fetch            | package.json | error    |
 
 ## Unused devDependencies (1)
 
