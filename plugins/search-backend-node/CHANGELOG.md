@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend-node
 
+## 1.2.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3
+  - @backstage/backend-tasks@0.5.18
+  - @backstage/backend-plugin-api@0.6.13
+
 ## 1.2.16
 
 ### Patch Changes

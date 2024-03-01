@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.21.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3
+  - @backstage/backend-tasks@0.5.18
+  - @backstage/plugin-auth-node@0.4.8
+  - @backstage/plugin-permission-node@0.7.24
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.5
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.3
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.5
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.3
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.3
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.2.16
+  - @backstage/plugin-scaffolder-node@0.3.3
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.10
+  - @backstage/plugin-catalog-node@1.7.3
+  - @backstage/backend-plugin-api@0.6.13
+
 ## 1.21.2
 
 ### Patch Changes

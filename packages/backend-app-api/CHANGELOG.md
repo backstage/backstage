@@ -1,5 +1,19 @@
 # @backstage/backend-app-api
 
+## 0.5.14
+
+### Patch Changes
+
+- ac1310f: Fixed an issue where configuration schema for the purpose of redacting secrets from logs was not being read correctly.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3
+  - @backstage/backend-tasks@0.5.18
+  - @backstage/plugin-auth-node@0.4.8
+  - @backstage/plugin-permission-node@0.7.24
+  - @backstage/cli-node@0.2.3
+  - @backstage/config-loader@1.6.2
+  - @backstage/backend-plugin-api@0.6.13
+
 ## 0.5.13
 
 ### Patch Changes
