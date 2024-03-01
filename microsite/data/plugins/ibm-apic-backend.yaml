@@ -1,0 +1,16 @@
+---
+title: IBM APIC Backend
+author: croz.net
+authorUrl: https://croz.net/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=backstage-ibm-apic-backend
+category: API Management
+description: Bring IBM APIC to Backstage.
+documentation: https://croz.net/news/backstage-plugin-ibm-apic?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=backstage-ibm-apic-backend
+iconUrl: https://croz.net/wp-content/uploads/2024/02/croz_large-o.png
+npmPackageName: '@croz/plugin-ibm-apic-backend'
+tags:
+  - idp
+  - developer
+  - portal
+  - internal
+  - openapic
+addedDate: '2024-03-01'
