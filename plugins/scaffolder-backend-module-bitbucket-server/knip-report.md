@@ -1,8 +1,9 @@
 # Knip report
 
-## Unused dependencies (1)
+## Unused dependencies (2)
 
-| Name | Location     | Severity |
-| :--- | :----------- | :------- |
-| yaml | package.json | error    |
+| Name                      | Location     | Severity |
+| :------------------------ | :----------- | :------- |
+| @backstage/backend-common | package.json | error    |
+| yaml                      | package.json | error    |
 

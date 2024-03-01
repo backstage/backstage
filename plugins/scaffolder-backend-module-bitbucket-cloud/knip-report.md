@@ -1,8 +1,9 @@
 # Knip report
 
-## Unused dependencies (1)
+## Unused dependencies (2)
 
-| Name     | Location     | Severity |
-| :------- | :----------- | :------- |
-| fs-extra | package.json | error    |
+| Name                      | Location     | Severity |
+| :------------------------ | :----------- | :------- |
+| @backstage/backend-common | package.json | error    |
+| fs-extra                  | package.json | error    |
 

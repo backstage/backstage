@@ -1,11 +1,12 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (3)
 
-| Name   | Location     | Severity |
-| :----- | :----------- | :------- |
-| lodash | package.json | error    |
-| yn     | package.json | error    |
+| Name                      | Location     | Severity |
+| :------------------------ | :----------- | :------- |
+| @backstage/backend-common | package.json | error    |
+| lodash                    | package.json | error    |
+| yn                        | package.json | error    |
 
 ## Unused devDependencies (2)
 
