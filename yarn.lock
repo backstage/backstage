@@ -3803,7 +3803,6 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
-    lodash: ^4.17.21
   languageName: unknown
   linkType: soft
 
