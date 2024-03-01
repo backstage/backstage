@@ -58,9 +58,5 @@ Similar to the other authentication providers, you have to enable the provider i
 ```diff
 auth:
     providers:
-+       guest:
-+           userEntityRef: user:default/guest
-+           development: {}
++       guest: {}
 ```
-
-We need to specify that the provider is enabled for the given environment, and as there are no config values for this provider yet, you can just specify an empty object.
