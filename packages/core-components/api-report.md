@@ -137,6 +137,9 @@ export function Breadcrumbs(props: Props_18): React_2.JSX.Element;
 export type BreadcrumbsClickableTextClassKey = 'root';
 
 // @public (undocumented)
+export type BreadcrumbsCurrentPageClassKey = 'root';
+
+// @public (undocumented)
 export type BreadcrumbsStyledBoxClassKey = 'root';
 
 // @public
