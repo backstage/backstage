@@ -37,13 +37,11 @@ export const adrDecoratorFactories = Object.freeze({
   /**
    * Rewrites relative Markdown embeds using absolute URLs.
    */
-  createRewriteRelativeEmbedsDecorator(
-    backendUrl: string,
-  ): AdrContentDecorator {
+  createRewriteRelativeEmbedsDecorator(): AdrContentDecorator {
     return ({ baseUrl, content }) => ({
       content: content.replace(
         /!\[([^\[\]]*)\]\((?!https?:\/\/)(.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/gim,
-        `![$1](${backendUrl}/image?url=${baseUrl}/$2$3$4)`,
+        `![$1](${baseUrl}/$2$3$4)`,
       ),
     });
   },

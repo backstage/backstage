@@ -63,9 +63,7 @@ export const AdrReader = (props: {
     }
     const adrDecorators = decorators ?? [
       adrDecoratorFactories.createRewriteRelativeLinksDecorator(),
-      adrDecoratorFactories.createRewriteRelativeEmbedsDecorator(
-        backendUrl ?? '',
-      ),
+      adrDecoratorFactories.createRewriteRelativeEmbedsDecorator(),
       adrDecoratorFactories.createFrontMatterFormatterDecorator(),
     ];
 
@@ -74,7 +72,7 @@ export const AdrReader = (props: {
         decorator({ baseUrl: adrLocationUrl, content }).content,
       value.data,
     );
-  }, [adrLocationUrl, backendUrl, decorators, value]);
+  }, [adrLocationUrl, decorators, value]);
 
   return (
     <InfoCard>
@@ -85,7 +83,16 @@ export const AdrReader = (props: {
       )}
 
       {!loading && !error && value?.data && (
-        <MarkdownContent content={adrContent} linkTarget="_blank" />
+        <MarkdownContent
+          content={adrContent}
+          linkTarget="_blank"
+          transformImageUri={imageUrl => {
+            return imageUrl.replace(
+              /!\[([^\[\]]*)\]\((.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/gim,
+              `![$1](${backendUrl}/image?url=$2$3$4)`,
+            );
+          }}
+        />
       )}
     </InfoCard>
   );
