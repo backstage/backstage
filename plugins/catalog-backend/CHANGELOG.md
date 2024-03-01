@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend
 
+## 1.17.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3
+  - @backstage/backend-tasks@0.5.18
+  - @backstage/repo-tools@0.6.3
+  - @backstage/plugin-auth-node@0.4.8
+  - @backstage/plugin-permission-node@0.7.24
+  - @backstage/plugin-search-backend-module-catalog@0.1.17
+  - @backstage/plugin-catalog-node@1.7.3
+  - @backstage/backend-plugin-api@0.6.13
+  - @backstage/backend-openapi-utils@0.1.6
+  - @backstage/plugin-events-node@0.2.22
+
 ## 1.17.2
 
 ### Patch Changes
