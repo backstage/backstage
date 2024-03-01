@@ -28,7 +28,7 @@ In short, this will allow requests through to plugins in your backend, even if t
 
 ### Migrating the backend
 
-If you do want to keep the default auth policy in effect, there is little action needed to migrate the backend itself. Be sure to upgrade all plugins to their latest versions to pick up any updates that may be needed for the new auth services. If you have any internal plugins or modules, refer to the plugin migration section below.
+If you do want to keep the default auth policy in effect, there is some minor action needed to migrate the backend itself. Be sure to upgrade all plugins to their latest versions to pick up any updates that may be needed for the new auth services. If you have any internal plugins or modules, refer to the plugin migration section below.
 
 With the default auth policy in effect you will now need to ensure that the requests to your backend are authenticated, also during local development. If you already have a setup where you use an auth provider for local development, you can keep using that. But, if you rely on the `'guest'` access for local development we recommend that you install the new guest provider module in your auth backend:
 
@@ -51,7 +51,7 @@ auth:
     guest: {}
 ```
 
-Make sure that you only enable the guest provider for local development, and not in production. It will refuse to be enabled in production by default, but you it still best to avoid it entirely. If you do not have a separate development configuration, add the following to your production configuration:
+Make sure that you only enable the guest provider for local development, and not in production. It will refuse to be enabled in production by default, but it is still best to avoid it entirely. If you do not have a separate development configuration, add the following to your production configuration:
 
 ```yaml
 auth:
