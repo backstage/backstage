@@ -86,11 +86,8 @@ export const AdrReader = (props: {
         <MarkdownContent
           content={adrContent}
           linkTarget="_blank"
-          transformImageUri={imageUrl => {
-            return imageUrl.replace(
-              /!\[([^\[\]]*)\]\((.*?)(\.png|\.jpg|\.jpeg|\.gif|\.webp)(.*)\)/gim,
-              `![$1](${backendUrl}/image?url=$2$3$4)`,
-            );
+          transformImageUri={href => {
+            return `${backendUrl}/image?url=${href}`;
           }}
         />
       )}
