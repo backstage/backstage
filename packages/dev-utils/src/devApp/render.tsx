@@ -44,7 +44,7 @@ import {
 } from '@backstage/integration-react';
 import Box from '@material-ui/core/Box';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import React, { ComponentType, ReactNode, PropsWithChildren } from 'react';
+import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 import 'react-dom';
@@ -80,6 +80,9 @@ export type DevAppPageOptions = {
   children?: JSX.Element;
   title?: string;
   icon?: IconComponent;
+  sideBarItem?: JSX.Element;
+
+  routeRef?: RouteRef;
 };
 
 /**
@@ -141,7 +144,9 @@ export class DevAppBuilder {
       this.defaultPage = path;
     }
 
-    if (opts.title) {
+    if (opts.sideBarItem) {
+      this.sidebarItems.push(opts.sideBarItem);
+    } else if (opts.title) {
       this.sidebarItems.push(
         <SidebarItem
           key={path}
@@ -151,14 +156,29 @@ export class DevAppBuilder {
         />,
       );
     }
-    this.routes.push(
-      <MaybeGatheringRoute
-        key={path}
-        path={path}
-        element={opts.element}
-        children={opts.children}
-      />,
-    );
+
+    if (opts.routeRef) {
+      const Elem = () => <>{opts.element}</>;
+      attachComponentData(Elem, 'core.mountPoint', opts.routeRef);
+
+      this.routes.push(
+        <MaybeGatheringRoute
+          key={path}
+          path={path}
+          element={<Elem />}
+          children={opts.children}
+        />,
+      );
+    } else {
+      this.routes.push(
+        <MaybeGatheringRoute
+          key={path}
+          path={path}
+          element={opts.element}
+          children={opts.children}
+        />,
+      );
+    }
     return this;
   }
 

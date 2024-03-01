@@ -45,7 +45,9 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/cli": "workspace:^",
+    "@backstage/plugin-events-backend": "workspace:^",
     "@types/supertest": "^2.0.8",
     "msw": "^1.0.0",
     "supertest": "^6.2.4"
