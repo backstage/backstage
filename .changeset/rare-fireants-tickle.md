@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Added expanded property to allow optionally have sub menu items automatically expand their contents on the sidebar
+Added optional `initialShowDropDown` prop to `SidebarSubmenuItem` to internally manage the initial display state of the dropdown items.
