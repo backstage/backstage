@@ -1,5 +1,19 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/plugin-azure-sites-common@0.1.3-next.0
+  - @backstage/plugin-permission-react@0.4.21-next.0
+
 ## 0.1.19
 
 ### Patch Changes

@@ -16,14 +16,13 @@
 
 import yaml from 'yaml';
 
-import os from 'os';
 import { resolve as resolvePath } from 'path';
-import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createFetchPlainAction } from './plain';
-import { PassThrough } from 'stream';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { examples } from './plain.examples';
 
 jest.mock('@backstage/plugin-scaffolder-node', () => ({
@@ -50,19 +49,15 @@ describe('fetch:plain examples', () => {
   });
 
   const action = createFetchPlainAction({ integrations, reader });
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
 
   it('should fetch plain', async () => {
-    await action.handler({
-      ...mockContext,
-      input: yaml.parse(examples[0].example).steps[0].input,
-    });
+    await action.handler(
+      createMockActionContext({
+        ...mockContext,
+        input: yaml.parse(examples[0].example).steps[0].input,
+      }),
+    );
     expect(fetchContents).toHaveBeenCalledWith(
       expect.objectContaining({
         outputPath: resolvePath(mockContext.workspacePath),

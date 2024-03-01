@@ -22,8 +22,11 @@ import { AuthenticationError } from '@backstage/errors';
 describe('MockHttpAuthService', () => {
   const httpAuth = new MockHttpAuthService('test', mockCredentials.none());
 
-  function makeAuthReq(header?: string) {
-    return { headers: { authorization: header } } as Request;
+  function makeAuthReq(authorization?: string) {
+    return { headers: { authorization } } as Request;
+  }
+  function makeCookieAuthReq(cookie?: string) {
+    return { headers: { cookie } } as Request;
   }
 
   it('should authenticate unauthenticated requests', async () => {
@@ -66,6 +69,59 @@ describe('MockHttpAuthService', () => {
         makeAuthReq(mockCredentials.user.header('user:default/other')),
       ),
     ).resolves.toEqual(mockCredentials.user('user:default/other'));
+  });
+
+  it('should authenticate limited user requests', async () => {
+    await expect(
+      httpAuth.credentials(
+        makeCookieAuthReq(mockCredentials.limitedUser.cookie()),
+      ),
+    ).resolves.toEqual(mockCredentials.none());
+
+    await expect(
+      httpAuth.credentials(
+        makeCookieAuthReq(mockCredentials.limitedUser.cookie()),
+        { allowLimitedAccess: true },
+      ),
+    ).resolves.toEqual(mockCredentials.user());
+
+    await expect(
+      httpAuth.credentials(makeAuthReq(mockCredentials.user.header()), {
+        allowLimitedAccess: true,
+      }),
+    ).resolves.toEqual(mockCredentials.user());
+
+    await expect(
+      httpAuth.credentials(
+        makeCookieAuthReq(mockCredentials.limitedUser.cookie()),
+        {
+          allow: ['user'],
+        },
+      ),
+    ).rejects.toThrow('Missing credentials');
+
+    await expect(
+      httpAuth.credentials(
+        makeCookieAuthReq(mockCredentials.limitedUser.cookie()),
+        {
+          allow: ['none', 'service'],
+          allowLimitedAccess: true,
+        },
+      ),
+    ).rejects.toThrow("This endpoint does not allow 'user' credentials");
+
+    await expect(
+      httpAuth.credentials(
+        makeAuthReq(`Bearer ${mockCredentials.limitedUser.token()}`),
+        { allowLimitedAccess: true },
+      ),
+    ).resolves.toEqual(mockCredentials.user());
+
+    await expect(
+      httpAuth.credentials(
+        makeAuthReq(`Bearer ${mockCredentials.limitedUser.token()}`),
+      ),
+    ).rejects.toThrow('Limited user token is not allowed');
   });
 
   it('should authenticate service requests', async () => {
@@ -161,9 +217,42 @@ describe('MockHttpAuthService', () => {
     ).rejects.toThrow('Service token is invalid');
   });
 
-  it('does not implement .issueUserCookie', async () => {
-    await expect(httpAuth.issueUserCookie({} as any)).rejects.toThrow(
-      'Not implemented',
+  it('should issue user cookie from request credentials', async () => {
+    const setHeader = jest.fn();
+
+    await expect(
+      httpAuth.issueUserCookie({
+        req: makeAuthReq(mockCredentials.user.header()),
+        setHeader,
+      } as any),
+    ).resolves.toEqual({
+      expiresAt: expect.any(Date),
+    });
+
+    expect(setHeader).toHaveBeenCalledWith(
+      'Set-Cookie',
+      mockCredentials.limitedUser.cookie(),
+    );
+  });
+
+  it('should issue user cookie from explicit credentials', async () => {
+    const setHeader = jest.fn();
+
+    await expect(
+      httpAuth.issueUserCookie(
+        {
+          req: makeAuthReq(mockCredentials.user.header()),
+          setHeader,
+        } as any,
+        { credentials: mockCredentials.user('user:default/other') },
+      ),
+    ).resolves.toEqual({
+      expiresAt: expect.any(Date),
+    });
+
+    expect(setHeader).toHaveBeenCalledWith(
+      'Set-Cookie',
+      mockCredentials.limitedUser.cookie('user:default/other'),
     );
   });
 });

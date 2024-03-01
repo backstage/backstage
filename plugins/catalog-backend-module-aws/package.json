@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-aws",
-  "version": "0.3.4",
+  "version": "0.3.7-next.0",
   "description": "A Backstage catalog backend module that helps integrate towards AWS",
   "backstage": {
     "role": "backend-plugin-module"
@@ -67,7 +67,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "p-limit": "^3.0.2",
-    "uuid": "^8.0.0",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {

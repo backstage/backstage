@@ -22,7 +22,7 @@ import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult } from '../useImportState';
 import { Link } from '@backstage/core-components';
 import partition from 'lodash/partition';
-import { CompoundEntityRef } from '@backstage/catalog-model';
+import { CompoundEntityRef, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
@@ -46,7 +46,12 @@ const filterComponentEntity = (
           entity.kind.toLocaleLowerCase('en-US'),
         )
       ) {
-        return entity;
+        return {
+          kind: entity.kind.toLocaleLowerCase('en-US'),
+          namespace:
+            entity.namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE,
+          name: entity.name,
+        };
       }
     }
   }

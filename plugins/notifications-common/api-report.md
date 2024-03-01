@@ -16,7 +16,6 @@ type Notification_2 = {
   created: Date;
   saved?: Date;
   read?: Date;
-  done?: Date;
   updated?: Date;
   origin: string;
   payload: NotificationPayload;
@@ -27,8 +26,8 @@ export { Notification_2 as Notification };
 export type NotificationPayload = {
   title: string;
   description?: string;
-  link: string;
-  severity: NotificationSeverity;
+  link?: string;
+  severity?: NotificationSeverity;
   topic?: string;
   scope?: string;
   icon?: string;
@@ -51,7 +50,4 @@ export type NotificationStatus = {
   unread: number;
   read: number;
 };
-
-// @public (undocumented)
-export type NotificationType = 'undone' | 'done' | 'saved';
 ```

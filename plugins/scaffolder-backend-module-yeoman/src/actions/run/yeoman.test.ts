@@ -18,9 +18,8 @@ import { yeomanRun } from './yeomanRun';
 
 jest.mock('./yeomanRun');
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import os from 'os';
-import { PassThrough } from 'stream';
 import { createRunYeomanAction } from './yeoman';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
@@ -46,18 +45,14 @@ describe('run:yeoman', () => {
     const options = {
       code: 'owner',
     };
-    mockContext = {
+    mockContext = createMockActionContext({
       input: {
         namespace,
         args,
         options,
       },
       workspacePath: mockTmpDir,
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn().mockResolvedValue(mockTmpDir),
-    };
+    });
 
     await action.handler(mockContext);
     expect(yeomanRun).toHaveBeenCalledWith(

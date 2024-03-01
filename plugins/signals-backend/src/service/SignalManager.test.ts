@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { WebSocket } from 'ws';
-import { EventSubscriber } from '@backstage/plugin-events-node';
+import { EventsServiceSubscribeOptions } from '@backstage/plugin-events-node';
 import { SignalManager } from './SignalManager';
 import { getVoidLogger } from '@backstage/backend-common';
 
@@ -56,15 +56,15 @@ class MockWebSocket {
 describe('SignalManager', () => {
   let onEvent: Function;
 
-  const mockEventBroker = {
+  const mockEvents = {
     publish: async () => {},
-    subscribe: (subscriber: EventSubscriber) => {
+    subscribe: async (subscriber: EventsServiceSubscribeOptions) => {
       onEvent = subscriber.onEvent;
     },
   };
 
   const manager = SignalManager.create({
-    eventBroker: mockEventBroker,
+    events: mockEvents,
     logger: getVoidLogger(),
   });
 
@@ -126,25 +126,15 @@ describe('SignalManager', () => {
     // Connection with identity and subscription
     const ws2 = new MockWebSocket();
     manager.addConnection(ws2 as unknown as WebSocket, {
-      identity: {
-        type: 'user',
-        ownershipEntityRefs: ['user:default/john.doe'],
-        userEntityRef: 'user:default/john.doe',
-      },
-      expiresInSeconds: 3600,
-      token: '1234',
+      ownershipEntityRefs: ['user:default/john.doe'],
+      userEntityRef: 'user:default/john.doe',
     });
 
     // Connection without subscription
     const ws3 = new MockWebSocket();
     manager.addConnection(ws3 as unknown as WebSocket, {
-      identity: {
-        type: 'user',
-        ownershipEntityRefs: ['user:default/john.doe'],
-        userEntityRef: 'user:default/john.doe',
-      },
-      expiresInSeconds: 3600,
-      token: '1234',
+      ownershipEntityRefs: ['user:default/john.doe'],
+      userEntityRef: 'user:default/john.doe',
     });
 
     ws1.trigger(

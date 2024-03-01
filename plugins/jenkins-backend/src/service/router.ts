@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { errorHandler } from '@backstage/backend-common';
+import {
+  createLegacyAuthAdapters,
+  errorHandler,
+} from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Logger } from 'winston';
@@ -25,17 +28,24 @@ import {
   PermissionEvaluator,
   toPermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { stringifyError } from '@backstage/errors';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { jenkinsPermissions } from '@backstage/plugin-jenkins-common';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface RouterOptions {
   logger: Logger;
   jenkinsInfoProvider: JenkinsInfoProvider;
   permissions?: PermissionEvaluator | PermissionAuthorizer;
+  discovery: DiscoveryService;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 }
 
 /** @public */
@@ -56,6 +66,8 @@ export async function createRouter(
       : undefined;
   }
 
+  const { httpAuth } = createLegacyAuthAdapters(options);
+
   const jenkinsApi = new JenkinsApiImpl(permissionEvaluator);
 
   const router = Router();
@@ -70,9 +82,6 @@ export async function createRouter(
     '/v1/entity/:namespace/:kind/:name/projects',
     async (request, response) => {
       const { namespace, kind, name } = request.params;
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
       const branch = request.query.branch;
       let branches: string[] | undefined;
 
@@ -96,7 +105,7 @@ export async function createRouter(
           namespace,
           name,
         },
-        backstageToken: token,
+        credentials: await httpAuth.credentials(request),
       });
 
       try {
@@ -123,9 +132,6 @@ export async function createRouter(
   router.get(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName/:buildNumber',
     async (request, response) => {
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
       const { namespace, kind, name, jobFullName, buildNumber } =
         request.params;
 
@@ -136,7 +142,7 @@ export async function createRouter(
           name,
         },
         jobFullName,
-        backstageToken: token,
+        credentials: await httpAuth.credentials(request),
       });
 
       const build = await jenkinsApi.getBuild(
@@ -154,9 +160,6 @@ export async function createRouter(
   router.get(
     '/v1/entity/:namespace/:kind/:name/job/:jobFullName',
     async (request, response) => {
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
       const { namespace, kind, name, jobFullName } = request.params;
 
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
@@ -166,7 +169,7 @@ export async function createRouter(
           name,
         },
         jobFullName,
-        backstageToken: token,
+        credentials: await httpAuth.credentials(request),
       });
 
       const build = await jenkinsApi.getJobBuilds(jenkinsInfo, jobFullName);
@@ -182,9 +185,6 @@ export async function createRouter(
     async (request, response) => {
       const { namespace, kind, name, jobFullName, buildNumber } =
         request.params;
-      const token = getBearerTokenFromAuthorizationHeader(
-        request.header('authorization'),
-      );
       const jenkinsInfo = await jenkinsInfoProvider.getInstance({
         entityRef: {
           kind,
@@ -192,7 +192,7 @@ export async function createRouter(
           name,
         },
         jobFullName,
-        backstageToken: token,
+        credentials: await httpAuth.credentials(request),
       });
 
       const resourceRef = stringifyEntityRef({ kind, namespace, name });
@@ -202,7 +202,7 @@ export async function createRouter(
         parseInt(buildNumber, 10),
         resourceRef,
         {
-          token,
+          credentials: await httpAuth.credentials(request),
         },
       );
       response.json({}).status(status);

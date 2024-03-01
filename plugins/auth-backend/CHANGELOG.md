@@ -1,5 +1,42 @@
 # @backstage/plugin-auth-backend
 
+## 0.22.0-next.0
+
+### Minor Changes
+
+- 293c835: Add support for Service Tokens to Cloudflare Access auth provider
+- 492fe83: **BREAKING**: The `CatalogIdentityClient` constructor now also requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support the new auth services, which has also been done for the `createRouter` function.
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+- 2af5354: Bump dependency `jose` to v5
+- 38af71a: Updated dependency `google-auth-library` to `^9.0.0`.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- fa7ea3f: Internal refactor to break out how the router is constructed
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.8-next.0
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.4-next.0
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.3-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.8-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.5-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.6-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/types@1.1.1
+
 ## 0.21.0
 
 ### Minor Changes

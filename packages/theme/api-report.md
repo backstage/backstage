@@ -206,6 +206,9 @@ export const darkTheme: Theme_3;
 export const defaultComponentThemes: ThemeOptions['components'];
 
 // @public
+export const defaultTypography: BackstageTypography;
+
+// @public
 export function genPageTheme(props: {
   colors: string[];
   shape: string;

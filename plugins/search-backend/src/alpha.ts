@@ -22,6 +22,7 @@ import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
+  SearchEngine,
   LunrSearchEngine,
 } from '@backstage/plugin-search-backend-node';
 import {
@@ -33,7 +34,6 @@ import {
 } from '@backstage/plugin-search-backend-node/alpha';
 
 import { createRouter } from './service/router';
-import { SearchEngine } from '@backstage/plugin-search-common';
 
 class SearchIndexRegistry implements SearchIndexRegistryExtensionPoint {
   private collators: RegisterCollatorParameters[] = [];
@@ -94,11 +94,23 @@ export default createBackendPlugin({
       deps: {
         logger: coreServices.logger,
         config: coreServices.rootConfig,
+        discovery: coreServices.discovery,
         permissions: coreServices.permissions,
+        auth: coreServices.auth,
         http: coreServices.httpRouter,
+        httpAuth: coreServices.httpAuth,
         searchIndexService: searchIndexServiceRef,
       },
-      async init({ config, logger, permissions, http, searchIndexService }) {
+      async init({
+        config,
+        logger,
+        discovery,
+        permissions,
+        auth,
+        http,
+        httpAuth,
+        searchIndexService,
+      }) {
         let searchEngine = searchEngineRegistry.getSearchEngine();
         if (!searchEngine) {
           searchEngine = new LunrSearchEngine({
@@ -117,7 +129,10 @@ export default createBackendPlugin({
 
         const router = await createRouter({
           config,
+          discovery,
           permissions,
+          auth,
+          httpAuth,
           logger: loggerToWinstonLogger(logger),
           engine: searchEngine,
           types: searchIndexService.getDocumentTypes(),

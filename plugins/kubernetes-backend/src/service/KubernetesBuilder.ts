@@ -64,6 +64,12 @@ import {
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesProxy } from './KubernetesProxy';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
 
 /**
  *
@@ -73,7 +79,10 @@ export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
   catalogApi: CatalogApi;
+  discovery: DiscoveryService;
   permissions: PermissionEvaluator;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 }
 
 /**
@@ -131,6 +140,13 @@ export class KubernetesBuilder {
         router: Router(),
       } as unknown as KubernetesBuilderReturn;
     }
+
+    const { auth, httpAuth } = createLegacyAuthAdapters({
+      auth: this.env.auth,
+      httpAuth: this.env.httpAuth,
+      discovery: this.env.discovery,
+    });
+
     const customResources = this.buildCustomResources();
 
     const fetcher = this.getFetcher();
@@ -158,6 +174,8 @@ export class KubernetesBuilder {
       this.env.catalogApi,
       proxy,
       permissions,
+      auth,
+      httpAuth,
     );
 
     return {
@@ -337,6 +355,8 @@ export class KubernetesBuilder {
     catalogApi: CatalogApi,
     proxy: KubernetesProxy,
     permissionApi: PermissionEvaluator,
+    authService: AuthService,
+    httpAuth: HttpAuthService,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
@@ -391,7 +411,13 @@ export class KubernetesBuilder {
       });
     });
 
-    addResourceRoutesToRouter(router, catalogApi, objectsProvider);
+    addResourceRoutesToRouter(
+      router,
+      catalogApi,
+      objectsProvider,
+      authService,
+      httpAuth,
+    );
 
     return router;
   }

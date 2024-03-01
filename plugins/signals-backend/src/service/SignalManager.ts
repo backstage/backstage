@@ -13,13 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventBroker, EventParams } from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { SignalPayload } from '@backstage/plugin-signals-node';
 import { RawData, WebSocket } from 'ws';
 import { v4 as uuid } from 'uuid';
 import { JsonObject } from '@backstage/types';
-import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  BackstageUserInfo,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * @internal
@@ -36,8 +38,7 @@ export type SignalConnection = {
  * @internal
  */
 export type SignalManagerOptions = {
-  // TODO: Remove optional when events-backend can offer this service
-  eventBroker?: EventBroker;
+  events: EventsService;
   logger: LoggerService;
 };
 
@@ -47,7 +48,7 @@ export class SignalManager {
     string,
     SignalConnection
   >();
-  private eventBroker?: EventBroker;
+  private events: EventsService;
   private logger: LoggerService;
 
   static create(options: SignalManagerOptions) {
@@ -55,23 +56,24 @@ export class SignalManager {
   }
 
   private constructor(options: SignalManagerOptions) {
-    ({ eventBroker: this.eventBroker, logger: this.logger } = options);
+    ({ events: this.events, logger: this.logger } = options);
 
-    this.eventBroker?.subscribe({
-      supportsEventTopics: () => ['signals'],
-      onEvent: (params: EventParams<SignalPayload>) =>
-        this.onEventBrokerEvent(params),
+    this.events.subscribe({
+      id: 'signals',
+      topics: ['signals'],
+      onEvent: (params: EventParams) =>
+        this.onEventBrokerEvent(params.eventPayload as SignalPayload),
     });
   }
 
-  addConnection(ws: WebSocket, identity?: BackstageIdentityResponse) {
+  addConnection(ws: WebSocket, identity?: BackstageUserInfo) {
     const id = uuid();
 
     const conn = {
       id,
-      user: identity?.identity.userEntityRef ?? 'user:default/guest',
+      user: identity?.userEntityRef ?? 'user:default/guest',
       ws,
-      ownershipEntityRefs: identity?.identity.ownershipEntityRefs ?? [
+      ownershipEntityRefs: identity?.ownershipEntityRefs ?? [
         'user:default/guest',
       ],
       subscriptions: new Set<string>(),
@@ -80,7 +82,7 @@ export class SignalManager {
     this.connections.set(id, conn);
 
     ws.on('error', (err: Error) => {
-      this.logger.info(
+      this.logger.error(
         `Error occurred with connection ${id}: ${err}, closing connection`,
       );
       ws.close();
@@ -124,10 +126,7 @@ export class SignalManager {
     }
   }
 
-  private async onEventBrokerEvent(
-    params: EventParams<SignalPayload>,
-  ): Promise<void> {
-    const { eventPayload } = params;
+  private async onEventBrokerEvent(eventPayload: SignalPayload): Promise<void> {
     if (!eventPayload.channel || !eventPayload.message) {
       return;
     }

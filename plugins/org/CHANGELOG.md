@@ -1,5 +1,19 @@
 # @backstage/plugin-org
 
+## 0.6.21-next.0
+
+### Patch Changes
+
+- 526f00a: Document the new frontend system extensions for the org plugin.
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+  - @backstage/core-compat-api@0.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+
 ## 0.6.20
 
 ### Patch Changes

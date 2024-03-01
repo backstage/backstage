@@ -5,12 +5,15 @@
 ```ts
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
 import { AuthMetadata as AuthMetadata_2 } from '@backstage/plugin-kubernetes-node';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ClusterDetails as ClusterDetails_2 } from '@backstage/plugin-kubernetes-node';
 import { Config } from '@backstage/config';
 import { CustomResource as CustomResource_2 } from '@backstage/plugin-kubernetes-node';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
 import express from 'express';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import * as k8sAuthTypes from '@backstage/plugin-kubernetes-node';
 import { KubernetesClustersSupplier as KubernetesClustersSupplier_2 } from '@backstage/plugin-kubernetes-node';
 import { KubernetesCredential as KubernetesCredential_2 } from '@backstage/plugin-kubernetes-node';
@@ -190,6 +193,8 @@ export class KubernetesBuilder {
     catalogApi: CatalogApi,
     proxy: KubernetesProxy,
     permissionApi: PermissionEvaluator,
+    authService: AuthService,
+    httpAuth: HttpAuthService,
   ): express.Router;
   // (undocumented)
   protected buildServiceLocator(
@@ -273,9 +278,15 @@ export type KubernetesCredential = k8sAuthTypes.KubernetesCredential;
 // @public (undocumented)
 export interface KubernetesEnvironment {
   // (undocumented)
+  auth?: AuthService;
+  // (undocumented)
   catalogApi: CatalogApi;
   // (undocumented)
   config: Config;
+  // (undocumented)
+  discovery: DiscoveryService;
+  // (undocumented)
+  httpAuth?: HttpAuthService;
   // (undocumented)
   logger: Logger;
   // (undocumented)

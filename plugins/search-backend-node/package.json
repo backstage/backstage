@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-node",
-  "version": "1.2.14",
+  "version": "1.2.17-next.0",
   "description": "A library for Backstage backend plugins that want to interact with the search backend plugin",
   "backstage": {
     "role": "node-library"
@@ -56,7 +56,7 @@
     "lodash": "^4.17.21",
     "lunr": "^2.3.9",
     "ndjson": "^2.0.0",
-    "uuid": "^8.3.2",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {

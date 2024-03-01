@@ -16,12 +16,12 @@
 import { DefaultSignalService } from './DefaultSignalService';
 
 describe('DefaultSignalService', () => {
-  const mockEventBroker = {
+  const mockEvents = {
     publish: jest.fn(),
     subscribe: jest.fn(),
   };
 
-  const service = DefaultSignalService.create({ eventBroker: mockEventBroker });
+  const service = DefaultSignalService.create({ events: mockEvents });
 
   it('should publish signal', () => {
     const signal = {
@@ -30,7 +30,7 @@ describe('DefaultSignalService', () => {
       message: { msg: 'hello world' },
     };
     service.publish(signal);
-    expect(mockEventBroker.publish).toHaveBeenCalledWith({
+    expect(mockEvents.publish).toHaveBeenCalledWith({
       topic: 'signals',
       eventPayload: signal,
     });

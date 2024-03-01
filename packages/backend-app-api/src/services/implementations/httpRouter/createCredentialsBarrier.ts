@@ -76,7 +76,7 @@ export function createCredentialsBarrier(options: {
     httpAuth
       .credentials(req, {
         allow: ['user', 'service'],
-        allowedAuthMethods: allowsCookie ? ['token', 'cookie'] : ['token'],
+        allowLimitedAccess: allowsCookie,
       })
       .then(
         () => next(),

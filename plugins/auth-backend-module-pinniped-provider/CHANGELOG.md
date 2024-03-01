@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-pinniped-provider
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 2af5354: Bump dependency `jose` to v5
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/config@1.1.2-next.0
+
 ## 0.1.4
 
 ### Patch Changes

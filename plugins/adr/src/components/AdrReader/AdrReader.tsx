@@ -45,12 +45,12 @@ export const AdrReader = (props: {
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const adrApi = useApi(adrApiRef);
   const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations);
+  const adrFileLocationUrl = getAdrLocationUrl(entity, scmIntegrations, adr);
   const discoveryApi = useApi(discoveryApiRef);
 
-  const url = `${adrLocationUrl.replace(/\/$/, '')}/${adr}`;
   const { value, loading, error } = useAsync(
-    async () => adrApi.readAdr(url),
-    [url],
+    async () => adrApi.readAdr(adrFileLocationUrl),
+    [adrFileLocationUrl],
   );
 
   const { value: backendUrl } = useAsync(
