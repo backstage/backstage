@@ -51,6 +51,18 @@ const StyledBox = withStyles(
   { name: 'BackstageBreadcrumbsStyledBox' },
 )(Box);
 
+/** @public */
+export type BreadcrumbsCurrentPageClassKey = 'root';
+
+const BreadcrumbsCurrentPage = withStyles(
+  {
+    root: {
+      fontStyle: 'italic',
+    },
+  },
+  { name: 'BreadcrumbsCurrentPage' },
+)(Box);
+
 /**
  * Breadcrumbs component to show navigation hierarchical structure
  *
@@ -88,7 +100,7 @@ export function Breadcrumbs(props: Props) {
         {hasHiddenBreadcrumbs && (
           <ClickableText onClick={handleClick}>...</ClickableText>
         )}
-        <Box style={{ fontStyle: 'italic' }}>{currentPage}</Box>
+        <BreadcrumbsCurrentPage>{currentPage}</BreadcrumbsCurrentPage>
       </MaterialBreadcrumbs>
       <Popover
         open={open}
