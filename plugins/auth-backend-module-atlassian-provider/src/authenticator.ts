@@ -29,8 +29,7 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
-    const baseUrl =
-      config.getOptionalString('audience') || 'https://api.atlassian.com';
+    const baseUrl = 'https://auth.atlassian.com';
 
     return PassportOAuthAuthenticatorHelper.from(
       new AtlassianStrategy(
