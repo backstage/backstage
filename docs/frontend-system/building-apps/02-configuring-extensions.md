@@ -49,49 +49,7 @@ app:
 You can enable/disable individual extension by ID, in this case the value is a boolean:
 
 ```yaml
-extensions:
-  - <id>: <true/false>
-```
-
-You can override the implementation of an extension by ID, in this case the value is a string:
-
-```yaml
-extensions:
-  - <id>: ‘<implementation-reference>’
-```
-
-You can **create a new extension instance with a generated ID** by including an input name in the key:
-
-```yaml
-extensions:
-  - <parent-id>/<parent-input>:
-      extension: <implementation-reference>
-      config: <configuration-object>
-```
-
-This syntax is only for use in the app configuration itself, every extension provided by default from a plugin must have an explicit ID. For example, the following two configurations are equivalent, except that the former does not have an explicit instance ID:
-
-```yaml
-extensions:
-  # Generated ID
-  - core.router/routes:
-      extension: '@backstage/plugin-tech-radar#TechRadarPage'
-  # Explicit ID
-  - tech-radar.page:
-      at: core.router/routes
-      extension: '@backstage/plugin-tech-radar#TechRadarPage'
-```
-
-Lastly, if you do not need to provide additional configuration, you can combine the key input format with the implementation value format as a shorthand for creating a new extension instance with a generated ID and no configuration:
-
-```yaml
-extensions:
-  - <parent-id>/<parent-input>: ‘<implementation-reference>’
-```
-
-For example:
-
-```yaml
-extensions:
-  - core.router/routes: '@backstage/plugin-tech-radar#TechRadarPage'
+app:
+  extensions:
+    - <id>: <true/false>
 ```
