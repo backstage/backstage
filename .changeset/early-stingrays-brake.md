@@ -3,4 +3,4 @@
 '@backstage/plugin-devtools': patch
 ---
 
-Update devtools info in real time using signals
+Resource utilization (CPU and RAM) on the Info tab is now updated in real time using signals
