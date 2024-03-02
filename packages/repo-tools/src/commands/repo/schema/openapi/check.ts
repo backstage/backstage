@@ -23,6 +23,12 @@ import {
 import { paths as cliPaths } from '../../../../lib/paths';
 import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';
 
+function cleanUpApiName(e: { apiName: string }) {
+  e.apiName = e.apiName
+    .replace(cliPaths.targetDir, '')
+    .replace(YAML_SCHEMA_PATH, '');
+}
+
 export async function command(opts: OptionValues) {
   let packages = await PackageGraph.listTargetPackages();
 
@@ -84,30 +90,10 @@ export async function command(opts: OptionValues) {
       });
     }
 
-    outputs.completed.forEach(
-      e =>
-        (e.apiName = e.apiName
-          .replace(cliPaths.targetDir, '')
-          .replace(YAML_SCHEMA_PATH, '')),
-    );
-    outputs.failed.forEach(
-      e =>
-        (e.apiName = e.apiName
-          .replace(cliPaths.targetDir, '')
-          .replace(YAML_SCHEMA_PATH, '')),
-    );
-    outputs.noop.forEach(
-      e =>
-        (e.apiName = e.apiName
-          .replace(cliPaths.targetDir, '')
-          .replace(YAML_SCHEMA_PATH, '')),
-    );
-    outputs.warning?.forEach(
-      e =>
-        (e.apiName = e.apiName
-          .replace(cliPaths.targetDir, '')
-          .replace(YAML_SCHEMA_PATH, '')),
-    );
+    outputs.completed.forEach(cleanUpApiName);
+    outputs.failed.forEach(cleanUpApiName);
+    outputs.noop.forEach(cleanUpApiName);
+    outputs.warning?.forEach(cleanUpApiName);
 
     const { stdout: currentSha } = await exec('git', ['rev-parse', 'HEAD']);
     console.log(
