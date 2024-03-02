@@ -132,6 +132,14 @@ const getBreakagesRow = (breakage: CiRunDetails['completed'][number]) => {
   )}`;
 };
 
+const addSummaryLine = (items: any[] | number | undefined, label: string) => {
+  const length = Array.isArray(items) ? items.length : items;
+  if (!length) return '';
+  let text = length === 1 ? `1 API` : `${length} APIs`;
+  text += ` had ${label}`;
+  return text;
+};
+
 export const generateCompareSummaryMarkdown = (
   commit: { sha: string },
   results: CiRunDetails,
@@ -161,38 +169,14 @@ export const generateCompareSummaryMarkdown = (
     results.completed.length - breakages.length;
   return `### Summary for commit (${commit.sha})
 
-${
-  results.noop.length > 0
-    ? `${
-        results.noop.length === 1 ? '1 API' : `${results.noop.length} APIs`
-      } had no changes.`
-    : ''
-}
-${
-  breakages.length > 0
-    ? `${
-        breakages.length === 1 ? '1 API' : `${breakages.length} APIs`
-      } had breaking changes.`
-    : ''
-}
-${
-  successfullyCompletedCount > 0
-    ? `${
-        successfullyCompletedCount === 1
-          ? '1 API'
-          : `${successfullyCompletedCount} APIs`
-      } had non-breaking changes.`
-    : ''
-}
-${
-  results.warning && results.warning.length > 0
-    ? `${
-        results.warning.length === 1
-          ? '1 API'
-          : `${results.warning.length} APIs`
-      } had warnings.`
-    : ''
-}
+${addSummaryLine(results.noop, 'no changes')}
+
+${addSummaryLine(breakages.length, 'breaking changes')}
+
+${addSummaryLine(successfullyCompletedCount, 'non-breaking changes')}
+
+${addSummaryLine(results.warning, 'warnings')}
+
 ${
   results.completed.length > 0
     ? `### APIs with Changes
