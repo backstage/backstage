@@ -1,5 +1,19 @@
 # @backstage/plugin-devtools
 
+## 0.1.10-next.0
+
+### Patch Changes
+
+- a0e3393: Updated to use `fetchApi` as per [ADR013](https://backstage.io/docs/architecture-decisions/adrs-adr013)
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+  - @backstage/core-compat-api@0.2.1-next.0
+  - @backstage/plugin-devtools-common@0.1.9-next.0
+  - @backstage/plugin-permission-react@0.4.21-next.0
+
 ## 0.1.9
 
 ### Patch Changes

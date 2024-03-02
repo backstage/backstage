@@ -16,6 +16,7 @@
 
 import {
   EventParams,
+  EventsService,
   SubTopicEventRouter,
 } from '@backstage/plugin-events-node';
 
@@ -27,8 +28,15 @@ import {
  * @public
  */
 export class GithubEventRouter extends SubTopicEventRouter {
-  constructor() {
-    super('github');
+  constructor(options: { events: EventsService }) {
+    super({
+      events: options.events,
+      topic: 'github',
+    });
+  }
+
+  protected getSubscriberId(): string {
+    return 'GithubEventRouter';
   }
 
   protected determineSubTopic(params: EventParams): string | undefined {

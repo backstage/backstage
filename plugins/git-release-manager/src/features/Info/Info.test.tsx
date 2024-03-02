@@ -15,14 +15,13 @@
  */
 
 import React from 'react';
-import { render } from '@testing-library/react';
-
 import {
   mockCalverProject,
   mockReleaseBranch,
   mockReleaseCandidateCalver,
 } from '../../test-helpers/test-helpers';
 import { Info } from './Info';
+import { renderInTestApp } from '@backstage/test-utils';
 
 jest.mock('../../contexts/ProjectContext', () => ({
   useProjectContext: () => ({
@@ -32,7 +31,7 @@ jest.mock('../../contexts/ProjectContext', () => ({
 
 describe('Info', () => {
   it('should return early if no latestRelease exists', async () => {
-    const { findByText } = render(
+    const { findByText } = await renderInTestApp(
       <Info
         latestRelease={mockReleaseCandidateCalver}
         releaseBranch={mockReleaseBranch}

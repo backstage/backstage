@@ -27,9 +27,11 @@ import {
   mockCredentials,
   MOCK_USER_TOKEN,
   MOCK_USER_TOKEN_PREFIX,
+  MOCK_INVALID_USER_TOKEN,
+  MOCK_USER_LIMITED_TOKEN_PREFIX,
+  MOCK_INVALID_USER_LIMITED_TOKEN,
   MOCK_SERVICE_TOKEN,
   MOCK_SERVICE_TOKEN_PREFIX,
-  MOCK_INVALID_USER_TOKEN,
   MOCK_INVALID_SERVICE_TOKEN,
   UserTokenPayload,
   ServiceTokenPayload,
@@ -48,7 +50,10 @@ export class MockAuthService implements AuthService {
     this.disableDefaultAuthPolicy = options.disableDefaultAuthPolicy;
   }
 
-  async authenticate(token: string): Promise<BackstageCredentials> {
+  async authenticate(
+    token: string,
+    options?: { allowLimitedAccess?: boolean },
+  ): Promise<BackstageCredentials> {
     switch (token) {
       case MOCK_USER_TOKEN:
         return mockCredentials.user();
@@ -56,6 +61,8 @@ export class MockAuthService implements AuthService {
         return mockCredentials.service();
       case MOCK_INVALID_USER_TOKEN:
         throw new AuthenticationError('User token is invalid');
+      case MOCK_INVALID_USER_LIMITED_TOKEN:
+        throw new AuthenticationError('Limited user token is invalid');
       case MOCK_INVALID_SERVICE_TOKEN:
         throw new AuthenticationError('Service token is invalid');
       case '':
@@ -67,6 +74,18 @@ export class MockAuthService implements AuthService {
     if (token.startsWith(MOCK_USER_TOKEN_PREFIX)) {
       const { sub: userEntityRef }: UserTokenPayload = JSON.parse(
         token.slice(MOCK_USER_TOKEN_PREFIX.length),
+      );
+
+      return mockCredentials.user(userEntityRef);
+    }
+
+    if (token.startsWith(MOCK_USER_LIMITED_TOKEN_PREFIX)) {
+      if (!options?.allowLimitedAccess) {
+        throw new AuthenticationError('Limited user token is not allowed');
+      }
+
+      const { sub: userEntityRef }: UserTokenPayload = JSON.parse(
+        token.slice(MOCK_USER_LIMITED_TOKEN_PREFIX.length),
       );
 
       return mockCredentials.user(userEntityRef);
@@ -90,6 +109,10 @@ export class MockAuthService implements AuthService {
     }
 
     throw new AuthenticationError(`Unknown mock token '${token}'`);
+  }
+
+  async getNoneCredentials() {
+    return mockCredentials.none();
   }
 
   async getOwnServiceCredentials(): Promise<
@@ -142,6 +165,23 @@ export class MockAuthService implements AuthService {
         onBehalfOf: options.onBehalfOf,
         targetPluginId: options.targetPluginId,
       }),
+    };
+  }
+
+  async getLimitedUserToken(
+    credentials: BackstageCredentials<BackstageUserPrincipal>,
+  ): Promise<{ token: string; expiresAt: Date }> {
+    if (credentials.principal.type !== 'user') {
+      throw new AuthenticationError(
+        `Refused to issue limited user token for credential type '${credentials.principal.type}'`,
+      );
+    }
+
+    return {
+      token: mockCredentials.limitedUser.token(
+        credentials.principal.userEntityRef,
+      ),
+      expiresAt: new Date(Date.now() + 3600_000),
     };
   }
 }

@@ -54,7 +54,7 @@ export async function startPostgresContainer(image: string) {
 
   const container = await new GenericContainer(image)
     .withExposedPorts(5432)
-    .withEnv('POSTGRES_PASSWORD', password)
+    .withEnvironment({ POSTGRES_PASSWORD: password })
     .withTmpFs({ '/var/lib/postgresql/data': 'rw' })
     .start();
 

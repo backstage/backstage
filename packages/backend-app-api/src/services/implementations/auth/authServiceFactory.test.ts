@@ -28,10 +28,12 @@ import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
+import { tokenManagerServiceFactory } from '../tokenManager';
 
 // TODO: Ship discovery mock service in the service factory tester
 const mockDeps = [
   discoveryServiceFactory(),
+  tokenManagerServiceFactory,
   mockServices.rootConfig.factory({
     data: {
       backend: {

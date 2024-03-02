@@ -16,6 +16,7 @@
 
 import {
   EventParams,
+  EventsService,
   SubTopicEventRouter,
 } from '@backstage/plugin-events-node';
 
@@ -27,8 +28,15 @@ import {
  * @public
  */
 export class BitbucketCloudEventRouter extends SubTopicEventRouter {
-  constructor() {
-    super('bitbucketCloud');
+  constructor(options: { events: EventsService }) {
+    super({
+      events: options.events,
+      topic: 'bitbucketCloud',
+    });
+  }
+
+  protected getSubscriberId(): string {
+    return 'BitbucketCloudEventRouter';
   }
 
   protected determineSubTopic(params: EventParams): string | undefined {

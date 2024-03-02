@@ -23,21 +23,23 @@ import {
   EvaluatePermissionRequest,
   EvaluatePermissionResponse,
   isResourcePermission,
-  PermissionEvaluator,
   QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
   IndexableResult,
   IndexableResultSet,
+  SearchQuery,
+} from '@backstage/plugin-search-common';
+import {
   QueryRequestOptions,
   QueryTranslator,
   SearchEngine,
-  SearchQuery,
-} from '@backstage/plugin-search-common';
+} from '@backstage/plugin-search-backend-node';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { Writable } from 'stream';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {
   if (!pageCursor) {
@@ -68,7 +70,7 @@ export class AuthorizedSearchEngine implements SearchEngine {
   constructor(
     private readonly searchEngine: SearchEngine,
     private readonly types: Record<string, DocumentTypeInfo>,
-    private readonly permissions: PermissionEvaluator,
+    private readonly permissions: PermissionsService,
     config: Config,
   ) {
     this.queryLatencyBudgetMs =

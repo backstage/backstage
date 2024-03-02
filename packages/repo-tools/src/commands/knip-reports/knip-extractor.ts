@@ -178,5 +178,7 @@ export async function runKnipReports({
       const fullDir = cliPaths.resolveTargetRoot(packageDir);
       cleanKnipConfig({ packageDir: fullDir });
     });
+
+    throw e;
   }
 }

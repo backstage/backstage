@@ -16,6 +16,7 @@
 
 import {
   EventParams,
+  EventsService,
   SubTopicEventRouter,
 } from '@backstage/plugin-events-node';
 
@@ -27,8 +28,15 @@ import {
  * @public
  */
 export class GitlabEventRouter extends SubTopicEventRouter {
-  constructor() {
-    super('gitlab');
+  constructor(options: { events: EventsService }) {
+    super({
+      events: options.events,
+      topic: 'gitlab',
+    });
+  }
+
+  protected getSubscriberId(): string {
+    return 'GitlabEventRouter';
   }
 
   protected determineSubTopic(params: EventParams): string | undefined {

@@ -1,5 +1,21 @@
 # @backstage/plugin-api-docs
 
+## 0.11.1-next.0
+
+### Patch Changes
+
+- 7854120: Use the `AppIcon` component in the navigation item extension.
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/plugin-catalog@1.17.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+  - @backstage/core-compat-api@0.2.1-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+  - @backstage/plugin-permission-react@0.4.21-next.0
+
 ## 0.11.0
 
 ### Minor Changes

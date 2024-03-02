@@ -26,6 +26,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { createRouter } from './router';
 import { CatalogRequestOptions } from '@backstage/catalog-client';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('./CodeCoverageDatabase');
 
@@ -96,6 +97,8 @@ describe('createRouter', () => {
       discovery: testDiscovery,
       urlReader: mockUrlReader,
       logger: getVoidLogger(),
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
     });
     app = express().use(router);
   });
@@ -118,21 +121,21 @@ describe('createRouter', () => {
     '/history?entity=component:default/mycomponent',
   ].forEach(uri => {
     describe(`GET ${uri}`, () => {
-      it('does not send token when calling catalog api and request is unauthenticated', async () => {
-        const response = await request(app).get(uri);
-
-        expect(response.status).toEqual(200);
-        expect(catalogRequestOptions.token).toBeUndefined();
-      });
-
-      it('includes auth token when calling catalog api', async () => {
-        const token = 'my-auth-token';
+      it('forwards request credentials to the catalog api call', async () => {
         const response = await request(app)
           .get(uri)
-          .set('Authorization', `Bearer ${token}`);
+          .set(
+            'Authorization',
+            mockCredentials.user.header('user:default/other'),
+          );
 
         expect(response.status).toEqual(200);
-        expect(catalogRequestOptions.token).toEqual(token);
+        expect(catalogRequestOptions.token).toEqual(
+          mockCredentials.service.token({
+            onBehalfOf: mockCredentials.user('user:default/other'),
+            targetPluginId: 'catalog',
+          }),
+        );
       });
     });
   });

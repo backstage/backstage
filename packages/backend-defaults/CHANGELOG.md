@@ -1,5 +1,14 @@
 # @backstage/backend-defaults
 
+## 0.2.13-next.0
+
+### Patch Changes
+
+- 7cbb760: Added support for the new auth services, which are now installed by default. See the [migration guide](https://backstage.io/docs/tutorials/auth-service-migration) for details.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-app-api@0.6.0-next.0
+
 ## 0.2.10
 
 ### Patch Changes

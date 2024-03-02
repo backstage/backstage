@@ -10,7 +10,7 @@ import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
-import { SearchEngine } from '@backstage/plugin-search-common';
+import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { SearchQuery } from '@backstage/plugin-search-common';
 
 // @public

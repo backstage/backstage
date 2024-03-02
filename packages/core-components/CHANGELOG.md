@@ -1,5 +1,21 @@
 # @backstage/core-components
 
+## 0.14.1-next.0
+
+### Patch Changes
+
+- ff33ee2: Removed hardcoded font-family on select input
+- ff7e126: Support i18n for core components
+- 7854120: Create a component abstraction to consume system icons.
+- ce73c3b: Removed the inline color from select icon to allow it to be colored via a theme
+- a8f7904: `SignInPage`'s `'guest'` provider now supports the `@backstage/plugin-auth-backend-module-guest-provider` package to generate tokens. It will continue to use the old frontend-only auth as a fallback.
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/version-bridge@1.0.7
+
 ## 0.14.0
 
 ### Minor Changes

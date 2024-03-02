@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.23.0",
+  "version": "1.24.0-next.0",
   "private": true,
   "repository": {
     "type": "git",
@@ -75,7 +75,7 @@
     "package.json": [
       "yarn backstage-repo-tools generate-catalog-info",
       "git add */catalog-info.yaml",
-      "yarn sort-package-json"
+      "node ./scripts/sort-package-json.mjs"
     ],
     "yarn.lock": [
       "node ./scripts/verify-lockfile-duplicates --fix"

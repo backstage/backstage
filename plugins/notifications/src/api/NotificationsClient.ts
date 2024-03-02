@@ -15,6 +15,7 @@
  */
 import {
   GetNotificationsOptions,
+  GetNotificationsResponse,
   NotificationsApi,
   UpdateNotificationsOptions,
 } from './NotificationsApi';
@@ -40,11 +41,8 @@ export class NotificationsClient implements NotificationsApi {
 
   async getNotifications(
     options?: GetNotificationsOptions,
-  ): Promise<Notification[]> {
+  ): Promise<GetNotificationsResponse> {
     const queryString = new URLSearchParams();
-    if (options?.type) {
-      queryString.append('type', options.type);
-    }
     if (options?.limit !== undefined) {
       queryString.append('limit', options.limit.toString(10));
     }
@@ -54,10 +52,15 @@ export class NotificationsClient implements NotificationsApi {
     if (options?.search) {
       queryString.append('search', options.search);
     }
-
+    if (options?.read !== undefined) {
+      queryString.append('read', options.read ? 'true' : 'false');
+    }
+    if (options?.createdAfter !== undefined) {
+      queryString.append('created_after', options.createdAfter.toISOString());
+    }
     const urlSegment = `?${queryString}`;
 
-    return await this.request<Notification[]>(urlSegment);
+    return await this.request<GetNotificationsResponse>(urlSegment);
   }
 
   async getNotification(id: string): Promise<Notification> {

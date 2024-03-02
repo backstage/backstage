@@ -44,7 +44,10 @@ export type {
   LifecycleServiceShutdownOptions,
 } from './LifecycleService';
 export type { LoggerService } from './LoggerService';
-export type { PermissionsService } from './PermissionsService';
+export type {
+  PermissionsService,
+  PermissionsServiceRequestOptions,
+} from './PermissionsService';
 export type { PluginMetadataService } from './PluginMetadataService';
 export type { RootHttpRouterService } from './RootHttpRouterService';
 export type { RootLifecycleService } from './RootLifecycleService';

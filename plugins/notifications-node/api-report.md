@@ -51,7 +51,6 @@ export const notificationService: ServiceRef<NotificationService, 'plugin'>;
 export type NotificationServiceOptions = {
   auth: AuthService;
   discovery: DiscoveryService;
-  pluginId: string;
 };
 
 // @public (undocumented)
