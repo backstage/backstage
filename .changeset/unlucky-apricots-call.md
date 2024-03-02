@@ -2,4 +2,4 @@
 '@backstage/plugin-org': patch
 ---
 
-fix: `OwnershipCard` could be unscrollable when using together with `react-grid-layout`
+Fixed an issue where the `OwnershipCard` component failed to scroll properly when used alongside `react-grid-layout`.
