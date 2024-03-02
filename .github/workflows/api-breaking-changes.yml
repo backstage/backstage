@@ -41,7 +41,7 @@ jobs:
 
       - name: breaking changes check
         run: |
-          yarn backstage-repo-tools repo schema openapi check --since ${{ github.base_ref }} > comment.md
+          yarn backstage-repo-tools repo schema openapi check --since origin/${{ github.base_ref }} > comment.md
 
       - name: Upload Rendered Comment as Artifact
         uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
