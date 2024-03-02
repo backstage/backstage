@@ -131,119 +131,108 @@ export const generateCompareSummaryMarkdown = (
   );
   const anyCompletedHasCapture = results.completed.some(s => s.capture);
   return `
-    ${
-      results.completed.length > 0
-        ? `### APIs Changed
-    
-    <table>
-    <thead>
-    <tr>
-    <th>API</th>
-    <th>Changes</th>
-    <th>Rules</th>
-    ${anyCompletedHasWarning ? '<th>Warnings</th>' : ''}
-    ${anyCompletedHasCapture ? '<th>Tests</th>' : ''}
-    <th></th>
-    </tr>
-    </thead>
-    <tbody>
-    ${results.completed
-      .map(
-        s =>
-          `<tr>
-    <td>
-    
-    ${relative(cliPaths.targetDir, s.apiName)}
-    
-    </td>
-    <td>
-    
-    ${getOperationsText(s.comparison.groupedDiffs, {
-      webUrl: s.opticWebUrl,
-      verbose: options.verbose,
-      labelJoiner: ',\n',
-    })}
-    
-    </td>
-    <td>
-    
-    ${getChecksLabel(s.comparison.results, results.severity)}
-    
-    </td>
-    
-    ${anyCompletedHasWarning ? `<td>${s.warnings.join('\n')}</td>` : ''}
-    
-    ${
-      anyCompletedHasCapture
-        ? `
-    
-    <td>
-    
-    ${
-      s.capture
-        ? s.capture.success
-          ? s.capture.mismatchedEndpoints || s.capture.unmatchedInteractions
-            ? getCaptureIssuesLabel({
-                unmatchedInteractions: s.capture.unmatchedInteractions,
-                mismatchedEndpoints: s.capture.mismatchedEndpoints,
-              })
-            : `✅ ${s.capture.percentCovered}% coverage`
-          : '❌ Failed to run'
-        : ''
-    }
-    
-    </td>
-    
-    `
-        : ''
-    }
-    </tr>`,
-      )
-      .join('\n')}
-    </tbody>
-    </table>
-    `
-        : ''
-    }
-    ${
-      results.failed.length > 0
-        ? `### Errors running optic
-    
-    <table>
-    <thead>
-    <tr>
-    <th>API</th>
-    <th>Error</th>
-    </tr>
-    </thead>
-    <tbody>
-    ${results.failed
-      .map(
-        s => `<tr>
-    <td>${s.apiName}</td>
-    <td>
-    
-    ${'```'}
-    ${s.error}
-    ${'```'}
-    
-    </td>
-    </tr>`,
-      )
-      .join('\n')}
-    </tbody>
-    </table>
-    `
-        : ''
-    }
-    
-    Summary of API changes for commit (${commit.sha})
-    
-    ${
-      results.noop.length > 0
-        ? `${
-            results.noop.length === 1 ? '1 API' : `${results.noop.length} APIs`
-          } had no changes.`
-        : ''
-    }`;
+${
+  results.completed.length > 0
+    ? `### APIs Changed
+
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Changes</th>
+<th>Rules</th>
+${anyCompletedHasWarning ? '<th>Warnings</th>' : ''}
+${anyCompletedHasCapture ? '<th>Tests</th>' : ''}
+</tr>
+</thead>
+<tbody>
+${results.completed
+  .map(
+    s =>
+      `<tr>
+<td>
+${relative(cliPaths.targetDir, s.apiName)}
+</td>
+<td>
+${getOperationsText(s.comparison.groupedDiffs, {
+  webUrl: s.opticWebUrl,
+  verbose: options.verbose,
+  labelJoiner: ',\n',
+})}
+</td>
+<td>
+${getChecksLabel(s.comparison.results, results.severity)}
+</td>
+
+${anyCompletedHasWarning ? `<td>${s.warnings.join('\n')}</td>` : ''}
+
+${
+  anyCompletedHasCapture
+    ? `
+<td>
+${
+  s.capture
+    ? s.capture.success
+      ? s.capture.mismatchedEndpoints || s.capture.unmatchedInteractions
+        ? getCaptureIssuesLabel({
+            unmatchedInteractions: s.capture.unmatchedInteractions,
+            mismatchedEndpoints: s.capture.mismatchedEndpoints,
+          })
+        : `✅ ${s.capture.percentCovered}% coverage`
+      : '❌ Failed to run'
+    : ''
+}
+</td>
+`
+    : ''
+}
+</tr>`,
+  )
+  .join('\n')}
+</tbody>
+</table>
+`
+    : ''
+}
+${
+  results.failed.length > 0
+    ? `### Errors running optic
+
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Error</th>
+</tr>
+</thead>
+<tbody>
+${results.failed
+  .map(
+    s => `<tr>
+<td>${s.apiName}</td>
+<td>
+
+${'```'}
+${s.error}
+${'```'}
+
+</td>
+</tr>`,
+  )
+  .join('\n')}
+</tbody>
+</table>
+`
+    : ''
+}
+
+Summary of API changes for commit (${commit.sha})
+
+${
+  results.noop.length > 0
+    ? `${
+        results.noop.length === 1 ? '1 API' : `${results.noop.length} APIs`
+      } had no changes.`
+    : ''
+}`;
 };
