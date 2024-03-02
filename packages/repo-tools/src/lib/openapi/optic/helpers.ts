@@ -26,6 +26,11 @@ import { GroupedDiffs } from '@useoptic/openapi-utilities/build/openapi3/group-d
 import { relative } from 'path';
 import { paths as cliPaths } from '../../paths';
 
+/**
+ * The below code is copied from https://github.com/opticdev/optic/blob/main/projects/optic/src/commands/ci/comment/common.ts#L82 for use
+ *  with a security flow for forked repositories.
+ */
+
 type Comparison = {
   groupedDiffs: ReturnType<typeof groupDiffsByEndpoint>;
   results: Awaited<ReturnType<typeof compareSpecs>>['results'];
