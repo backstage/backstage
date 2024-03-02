@@ -1072,7 +1072,7 @@ export const spec = {
             'application/json': {
               schema: {
                 type: 'object',
-                required: ['entityRefs'],
+                required: ['entityRefs', 'fields'],
                 properties: {
                   entityRefs: {
                     type: 'array',

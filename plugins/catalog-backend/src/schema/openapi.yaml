@@ -841,6 +841,7 @@ paths:
               type: object
               required:
                 - entityRefs
+                - fields
               properties:
                 entityRefs:
                   type: array
