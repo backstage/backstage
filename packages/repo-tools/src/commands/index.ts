@@ -78,6 +78,14 @@ function registerPackageCommand(program: Command) {
     .action(
       lazy(() => import('./package/schema/openapi/fuzz').then(m => m.command)),
     );
+
+  openApiCommand
+    .command('check')
+    .option('--ignore', 'Ignore linting failures and only log the results.')
+    .option('--json', 'Output the results as JSON')
+    .action(
+      lazy(() => import('./package/schema/openapi/check').then(m => m.command)),
+    );
 }
 
 function registerRepoCommand(program: Command) {
@@ -96,11 +104,7 @@ function registerRepoCommand(program: Command) {
   openApiCommand
     .command('verify [paths...]')
     .description(
-      'Verify that all OpenAPI schemas are valid and set up correctly. This also verifies that your API has not changed in a breaking way.',
-    )
-    .option(
-      '--from <ref>',
-      'The base ref to compare against. Defaults to the fork point of the current branch.',
+      'Verify that all OpenAPI schemas are valid and set up correctly.',
     )
     .action(
       lazy(() =>
@@ -136,6 +140,20 @@ function registerRepoCommand(program: Command) {
     )
     .action(
       lazy(() => import('./repo/schema/openapi/fuzz').then(m => m.command)),
+    );
+
+  openApiCommand
+    .command('check')
+    .description(
+      'Check the repository against a specific ref, will run all package `check:api` scripts.',
+    )
+    .option(
+      '--since <ref>',
+      'Check the API against a specific ref',
+      'origin/master',
+    )
+    .action(
+      lazy(() => import('./repo/schema/openapi/check').then(m => m.command)),
     );
 }
 
