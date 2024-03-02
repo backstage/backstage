@@ -2,17 +2,8 @@ name: API Breaking Changes (Trigger)
 on:
   pull_request:
     types: [opened, synchronize, reopened, closed]
-    paths-ignore:
-      - '.changeset/**'
-      - 'contrib/**'
-      - 'docs/**'
-      - 'microsite/**'
-      - 'beps/**'
-      - 'scripts/**'
-      - 'storybook/**'
-      - '**/*.test.*'
-      - '**/package.json'
-      - '*.md'
+    paths:
+      - '**/openapi.yaml'
 
 jobs:
   get-backstage-changes:
