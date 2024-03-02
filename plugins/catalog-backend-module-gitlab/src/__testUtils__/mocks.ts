@@ -26,9 +26,10 @@ export const apiBaseUrl: string = 'https://example.com/api/v4';
 export const apiBaseUrlSaas: string = 'https://gitlab.com/api/v4';
 export const graphQlBaseUrl = 'https://example.com/api/graphql';
 export const saasGraphQlBaseUrl = 'https://gitlab.com/api/graphql';
-export const groupName: string = 'test-group';
+export const groupName: string = 'group1';
 export const groupID: number = 1;
 export const userID: number = 1;
+export const projectID: number = 1;
 
 /**
  * Endpoints
@@ -56,7 +57,7 @@ export const config_saas: MockObject = {
   baseUrl: 'https://gitlab.com',
 };
 
-export const config_single_integration: MockObject = {
+export const config_no_org_integration: MockObject = {
   integrations: {
     gitlab: [
       {
@@ -71,12 +72,90 @@ export const config_single_integration: MockObject = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          group: 'test-group',
+          group: 'group1',
           skipForkedRepos: false,
           schedule: {
             frequency: 'PT30M',
             timeout: 'PT3M',
           },
+        },
+      },
+    },
+  },
+};
+
+export const config_disabled_org_integration: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          skipForkedRepos: false,
+          orgEnabled: false,
+          schedule: {
+            frequency: 'PT30M',
+            timeout: 'PT3M',
+          },
+        },
+      },
+    },
+  },
+};
+
+export const config_saas_no_group: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'gitlab.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'gitlab.com',
+          skipForkedRepos: false,
+          orgEnabled: true,
+          schedule: {
+            frequency: 'PT30M',
+            timeout: 'PT3M',
+          },
+        },
+      },
+    },
+  },
+};
+
+export const config_non_gitlab_host: MockObject = {
+  integrations: {
+    github: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          groupPattern: '^group.*',
+          orgEnabled: true,
         },
       },
     },
@@ -98,8 +177,64 @@ export const config_single_integration_branch: MockObject = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          group: 'test-group',
+          group: 'group1',
           branch: 'main',
+          skipForkedRepos: false,
+          schedule: {
+            frequency: 'PT30M',
+            timeout: 'PT3M',
+          },
+        },
+      },
+    },
+  },
+};
+
+export const config_single_integration_group: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'nonMatchingGroup',
+          branch: 'main',
+          skipForkedRepos: false,
+          schedule: {
+            frequency: 'PT30M',
+            timeout: 'PT3M',
+          },
+        },
+      },
+    },
+  },
+};
+
+export const config_fallbackBranch_branch: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          fallbackBranch: 'staging',
           skipForkedRepos: false,
           schedule: {
             frequency: 'PT30M',
@@ -126,12 +261,36 @@ export const config_single_integration_skip_forks: MockObject = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          group: 'test-group',
+          group: 'group1',
           skipForkedRepos: true,
           schedule: {
             frequency: 'PT30M',
             timeout: 'PT3M',
           },
+        },
+      },
+    },
+  },
+};
+
+export const config_no_schedule: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          orgEnabled: true,
+          skipForkedRepos: true,
         },
       },
     },
@@ -153,7 +312,7 @@ export const config_single_integration_project_pattern: MockObject = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          group: 'test-group',
+          group: 'group1',
           projectPattern: 'test-repo',
           skipForkedRepos: false,
           schedule: {
@@ -181,7 +340,7 @@ export const config_no_schedule_integration: MockObject = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          group: 'test-group',
+          group: 'group1',
           projectPattern: 'test-repo',
           skipForkedRepos: true,
         },
@@ -229,7 +388,7 @@ export const config_double_integration: MockObject = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          group: 'test-group',
+          group: 'group1',
         },
         'second-test': {
           host: 'example.com',
@@ -255,7 +414,32 @@ export const config_org_integration: MockObject = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          groupPattern: 'group',
+          groupPattern: '^group.*',
+          orgEnabled: true,
+        },
+      },
+    },
+  },
+};
+
+export const config_userPattern_integration: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          // group: 'group1',
+          // groupPattern: 'group',
+          userPattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$',
           orgEnabled: true,
         },
       },
@@ -279,7 +463,29 @@ export const config_org_integration_saas: MockObject = {
         'test-id': {
           host: 'gitlab.com',
           group: 'group1',
-          groupPattern: 'group',
+          groupPattern: '^group.*',
+          orgEnabled: true,
+        },
+      },
+    },
+  },
+};
+
+export const config_org_integration_no_group: MockObject = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
           orgEnabled: true,
         },
       },
@@ -302,7 +508,7 @@ export const config_org_integration_saas_no_group: MockObject = {
       gitlab: {
         'test-id': {
           host: 'gitlab.com',
-          groupPattern: 'group',
+          groupPattern: '^group.*',
           orgEnabled: true,
         },
       },
@@ -326,7 +532,7 @@ export const config_org_integration_saas_sched: MockObject = {
         'test-id': {
           host: 'gitlab.com',
           group: 'group1',
-          groupPattern: 'group',
+          groupPattern: '^group.*',
           orgEnabled: true,
           schedule: {
             frequency: 'PT30M',
@@ -353,7 +559,7 @@ export const config_org_double_integration: MockObject = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          group: 'test-group',
+          group: 'group1',
           orgEnabled: true,
         },
         'second-test': {
@@ -379,8 +585,8 @@ export const all_projects_response: GitLabProject[] = [
     path: 'test-repo1',
     archived: false,
     last_activity_at: new Date().toString(),
-    web_url: 'https://example.com/test-group/test-repo1',
-    path_with_namespace: 'test-group/test-repo1',
+    web_url: 'https://example.com/group1/test-repo1',
+    path_with_namespace: 'group1/test-repo1',
   },
   {
     id: 2,
@@ -390,8 +596,8 @@ export const all_projects_response: GitLabProject[] = [
     path: 'test-repo2',
     archived: false,
     last_activity_at: new Date().toString(),
-    web_url: 'https://example.com/test-group/test-repo2',
-    path_with_namespace: 'test-group/test-repo2',
+    web_url: 'https://example.com/group1/test-repo2',
+    path_with_namespace: 'group1/test-repo2',
   },
   // unmatched project
   {
@@ -402,8 +608,8 @@ export const all_projects_response: GitLabProject[] = [
     path: 'repo3',
     archived: false,
     last_activity_at: new Date().toString(),
-    web_url: 'https://example.com/test-group/repo3',
-    path_with_namespace: 'test-group/repo3',
+    web_url: 'https://example.com/group1/repo3',
+    path_with_namespace: 'group1/repo3',
   },
   // forked project
   {
@@ -414,9 +620,33 @@ export const all_projects_response: GitLabProject[] = [
     path: 'test-repo4-forked',
     archived: false,
     last_activity_at: new Date().toString(),
-    web_url: 'https://example.com/test-group/test-repo4-forked',
-    path_with_namespace: 'test-group/test-repo4-forked',
+    web_url: 'https://example.com/group1/test-repo4-forked',
+    path_with_namespace: 'group1/test-repo4-forked',
     forked_from_project: { id: 13083 },
+  },
+  // fallBack branch
+  {
+    id: 5,
+    description: 'Project Five Description',
+    name: 'test-repo5-staging',
+    default_branch: 'staging',
+    path: 'test-repo5-staging',
+    archived: false,
+    last_activity_at: new Date().toString(),
+    web_url: 'https://example.com/group1/test-repo5-staging',
+    path_with_namespace: 'group1/test-repo5-staging',
+  },
+  // diffrent group
+  {
+    id: 6,
+    description: 'Project Six Description',
+    name: 'test-repo6',
+    default_branch: 'main',
+    path: 'test-repo6',
+    archived: false,
+    last_activity_at: new Date().toString(),
+    web_url: 'https://example.com/group1/test-repo6',
+    path_with_namespace: 'awesome-group/test-repo6',
   },
 ];
 
@@ -448,14 +678,25 @@ export const all_users_response: GitLabUser[] = [
     avatar_url: 'https://secure.gravatar.com/',
     web_url: 'https://gitlab.example/mary_smith',
   },
+  // inactive user
   {
     id: 4,
     username: 'LuigiMario',
     name: 'Luigi Mario',
-    state: 'active',
+    state: 'inactive',
     email: 'luigi.mario@company.com',
     avatar_url: 'https://secure.gravatar.com/',
     web_url: 'https://gitlab.example/luigi_mario',
+  },
+  // malfomed email address
+  {
+    id: 5,
+    username: 'MarioMario',
+    name: 'Mario Mario',
+    state: 'active',
+    email: 'mario.mario-company.com',
+    avatar_url: 'https://secure.gravatar.com/',
+    web_url: 'https://gitlab.example/mario_mario',
   },
 ];
 
@@ -538,7 +779,13 @@ export const all_groups_response: GitLabGroup[] = [
     id: 4,
     name: 'group1',
     description: '',
-    full_path: 'new-parent-path/group1',
+    full_path: 'group-new/group1',
+  },
+  {
+    id: 5,
+    name: 'nonMatchingGroup',
+    description: '',
+    full_path: 'parent1/nonMatchingGroup',
   },
 ];
 
@@ -600,7 +847,7 @@ const added_commits: MockObject[] = [
     message: 'test',
     title: 'test',
     timestamp: '2024-01-24T14:16:55+00:00',
-    url: 'https://example.com/test-group/test-repo1/-/commit/ce53673ebe13a961a6b937411019e7c1db79741f',
+    url: 'https://example.com/group1/test-repo1/-/commit/ce53673ebe13a961a6b937411019e7c1db79741f',
     author: {
       name: 'Tom Sawyer',
       email: 'tom.sawyer@email.com',
@@ -614,7 +861,7 @@ const added_commits: MockObject[] = [
     message: 'test',
     title: 'test',
     timestamp: '2024-01-24T14:16:55+00:00',
-    url: 'https://example.com/test-group/test-repo1/-/commit/ce53673ebe13a961a6b937411019e7c1db79741f',
+    url: 'https://example.com/group1/test-repo1/-/commit/ce53673ebe13a961a6b937411019e7c1db79741f',
     author: {
       name: 'Tom Sawyer',
       email: 'tom.sawyer@email.com',
@@ -631,7 +878,7 @@ const removed_commits: MockObject[] = [
     message: 'test',
     title: 'test',
     timestamp: '2024-01-24T14:16:55+00:00',
-    url: 'https://example.com/test-group/test-repo1/-/commit/ce53673ebe13a961a6b937411019e7c1db79741f',
+    url: 'https://example.com/group1/test-repo1/-/commit/ce53673ebe13a961a6b937411019e7c1db79741f',
     author: {
       name: 'Tom Sawyer',
       email: 'tom.sawyer@email.com',
@@ -648,7 +895,7 @@ const modified_commits: MockObject[] = [
     message: 'test',
     title: 'test',
     timestamp: '2024-01-24T14:16:55+00:00',
-    url: 'https://example.com/test-group/test-repo1/-/commit/ce53673ebe13a961a6b937411019e7c1db79741f',
+    url: 'https://example.com/group1/test-repo1/-/commit/ce53673ebe13a961a6b937411019e7c1db79741f',
     author: {
       name: 'Tom Sawyer',
       email: 'tom.sawyer@email.com',
@@ -672,6 +919,19 @@ export const group_destroy_event: EventParams = {
   },
 };
 
+export const group_destroy_event_unmatched: EventParams = {
+  topic: 'gitlab.group_destroy',
+  eventPayload: {
+    event_name: 'group_destroy',
+    created_at: '2024-02-02T10:53:09Z',
+    updated_at: '2024-02-02T10:53:09Z',
+    name: 'my-awesome-group',
+    path: 'my-awesome-group',
+    full_path: 'parent/my-awesome-group',
+    group_id: 123,
+  },
+};
+
 export const group_rename_event: EventParams = {
   topic: 'gitlab.group_rename',
   eventPayload: {
@@ -679,10 +939,10 @@ export const group_rename_event: EventParams = {
     created_at: '2024-02-02T10:53:09Z',
     updated_at: '2024-02-02T10:53:09Z',
     name: 'group1', // this is the displayname
-    path: 'new-parent-group',
-    full_path: 'new-parent-group/group1',
-    old_path: 'old-parent-group',
-    old_full_path: 'old-parent-path/group1',
+    path: 'group-new',
+    full_path: 'group-new/group1',
+    old_path: 'group-old',
+    old_full_path: 'group-old/group1',
     group_id: 4,
   },
 };
@@ -695,8 +955,20 @@ export const group_create_event: EventParams = {
     updated_at: '2024-02-02T10:53:09Z',
     name: 'group1',
     path: 'group1',
-    full_path: 'my-groups/group1',
+    full_path: 'group1',
     group_id: 1,
+  },
+};
+export const group_create_event_unmatched: EventParams = {
+  topic: 'gitlab.group_create',
+  eventPayload: {
+    event_name: 'group_create',
+    created_at: '2024-02-02T10:53:09Z',
+    updated_at: '2024-02-02T10:53:09Z',
+    name: 'nonMatchingGroup',
+    path: 'nonMatchingGroup',
+    full_path: 'parent1/nonMatchingGroup',
+    group_id: 5,
   },
 };
 
@@ -733,6 +1005,25 @@ export const user_add_to_group_event: EventParams = {
     group_name: 'group1',
     group_path: 'my-groups/group1',
     group_id: 1,
+    user_username: 'JohnDoe',
+    user_name: 'John Doe',
+    user_email: 'john.doe@company.com',
+    user_id: 1,
+    group_access: 'Owner',
+    expires_at: null,
+    group_plan: null,
+    event_name: 'user_add_to_group',
+  },
+};
+
+export const user_add_to_group_event_mismatched: EventParams = {
+  topic: 'gitlab.user_add_to_group',
+  eventPayload: {
+    created_at: '2024-02-02T10:53:09Z',
+    updated_at: '2024-02-02T10:53:09Z',
+    group_name: 'nonMatchingGroup',
+    group_path: 'parent1/nonMatchingGroup',
+    group_id: 5,
     user_username: 'JohnDoe',
     user_name: 'John Doe',
     user_email: 'john.doe@company.com',
@@ -781,17 +1072,17 @@ export const push_add_event: EventParams = {
     user_username: 'tom.sawyer',
     user_email: 'tom.sawyer@email.com',
     user_avatar: 'https://secure.gravatar.com/avatar/testtest=42&d=identicon',
-    project_id: 123456789,
+    project_id: 1,
     project: {
       name: 'test-repo',
-      path_with_namespace: 'test-group/test-repo1',
+      path_with_namespace: 'group1/test-repo1',
       description: 'My Cool Project',
-      web_url: 'https://example.com/test-group/test-repo1',
+      web_url: 'https://example.com/group1/test-repo1',
       avatar_url: null,
-      namespace: 'test-group',
+      namespace: 'group1',
       visibility_level: 20,
       default_branch: 'main',
-      url: 'https://example.com/test-group/test-repo1',
+      url: 'https://example.com/group1/test-repo1',
       git_ssh_url: '',
       git_http_url: '',
       homepage: '',
@@ -800,14 +1091,110 @@ export const push_add_event: EventParams = {
     },
     commits: added_commits,
     total_commits_count: 2,
-    // push_options: {},
     repository: {
-      name: 'test-repo',
-      url: 'https://gitlab.com/test-group/test-repo1',
+      name: 'test-repo1',
+      url: 'https://gitlab.com/group1/test-repo1',
       description: 'My Cool Project',
-      homepage: 'https://gitlab.com/test-group/test-repo1',
-      git_http_url: 'https://gitlab.com/test-group/test-repo1.git',
-      git_ssh_url: 'git@gitlab.com:btest-group/test-repo1.git',
+      homepage: 'https://gitlab.com/group1/test-repo1',
+      git_http_url: 'https://gitlab.com/group1/test-repo1.git',
+      git_ssh_url: 'git@gitlab.com:group1/test-repo1.git',
+      visibility_level: 20,
+    },
+  },
+};
+
+export const push_add_event_unmatched_group: EventParams = {
+  topic: 'gitlab.push',
+  metadata: {
+    'x-gitlab-event': 'Push Hook',
+  },
+  eventPayload: {
+    object_kind: 'push',
+    event_name: 'push',
+    before: 'a1a1472b4a1b51d521d75a95cethisisatest00',
+    after: '616thisisatestc424d5031540dee772a845bcf9',
+    ref: 'refs/heads/main',
+    ref_protected: true,
+    checkout_sha: '616c427c283fb1b834d5thisiatest72a845bcf9',
+    user_id: 11013327,
+    user_name: 'Tom Sawyer',
+    user_username: 'tom.sawyer',
+    user_email: 'tom.sawyer@email.com',
+    user_avatar: 'https://secure.gravatar.com/avatar/testtest=42&d=identicon',
+    project_id: 6,
+    project: {
+      name: 'test-repo6',
+      path_with_namespace: 'awesome-group/test-repo6',
+      description: 'My Cool Project',
+      web_url: 'https://example.com/awesome-group/test-repo6',
+      avatar_url: null,
+      namespace: 'group1',
+      visibility_level: 20,
+      default_branch: 'main',
+      url: 'https://example.com/awesome-group/test-repo6',
+      git_ssh_url: '',
+      git_http_url: '',
+      homepage: '',
+      ssh_url: '',
+      http_url: '',
+    },
+    commits: added_commits,
+    total_commits_count: 2,
+    repository: {
+      name: 'test-repo6',
+      url: 'https://gitlab.com/awesome-group/test-repo6',
+      description: 'My Cool Project',
+      homepage: 'https://gitlab.com/awesome-group/test-repo6',
+      git_http_url: 'https://gitlab.com/awesome-group/test-repo6.git',
+      git_ssh_url: 'git@gitlab.com:awesome-group/test-repo6.git',
+      visibility_level: 20,
+    },
+  },
+};
+export const push_add_event_forked: EventParams = {
+  topic: 'gitlab.push',
+  metadata: {
+    'x-gitlab-event': 'Push Hook',
+  },
+  eventPayload: {
+    object_kind: 'push',
+    event_name: 'push',
+    before: 'a1a1472b4a1b51d521d75a95cethisisatest00',
+    after: '616thisisatestc424d5031540dee772a845bcf9',
+    ref: 'refs/heads/main',
+    ref_protected: true,
+    checkout_sha: '616c427c283fb1b834d5thisiatest72a845bcf9',
+    user_id: 11013327,
+    user_name: 'Tom Sawyer',
+    user_username: 'tom.sawyer',
+    user_email: 'tom.sawyer@email.com',
+    user_avatar: 'https://secure.gravatar.com/avatar/testtest=42&d=identicon',
+    project_id: 4,
+    project: {
+      name: 'test-repo4-forked',
+      path_with_namespace: 'group1/test-repo4-forked',
+      description: 'My Cool Project',
+      web_url: 'https://example.com/group1/test-repo4-forked',
+      avatar_url: null,
+      namespace: 'group1',
+      visibility_level: 20,
+      default_branch: 'main',
+      url: 'https://example.com/group1/test-repo4-forked',
+      git_ssh_url: '',
+      git_http_url: '',
+      homepage: '',
+      ssh_url: '',
+      http_url: '',
+    },
+    commits: added_commits,
+    total_commits_count: 2,
+    repository: {
+      name: 'test-repo4-forked',
+      url: 'https://gitlab.com/group1/test-repo4-forked',
+      description: 'My Cool Project',
+      homepage: 'https://gitlab.com/group1/test-repo4-forked',
+      git_http_url: 'https://gitlab.com/group1/test-repo4-forked.git',
+      git_ssh_url: 'git@gitlab.com:group1/test-repo4-forked.git',
       visibility_level: 20,
     },
   },
@@ -831,17 +1218,17 @@ export const push_remove_event: EventParams = {
     user_username: 'tom.sawyer',
     user_email: 'tom.sawyer@email.com',
     user_avatar: 'https://secure.gravatar.com/avatar/testtest=42&d=identicon',
-    project_id: 123456789,
+    project_id: 1,
     project: {
       name: 'test-repo',
-      path_with_namespace: 'test-group/test-repo1',
+      path_with_namespace: 'group1/test-repo1',
       description: 'My Cool Project',
-      web_url: 'https://example.com/test-group/test-repo1',
+      web_url: 'https://example.com/group1/test-repo1',
       avatar_url: null,
-      namespace: 'test-group',
+      namespace: 'group1',
       visibility_level: 20,
       default_branch: 'main',
-      url: 'https://example.com/test-group/test-repo1',
+      url: 'https://example.com/group1/test-repo1',
       git_ssh_url: '',
       git_http_url: '',
       homepage: '',
@@ -852,11 +1239,11 @@ export const push_remove_event: EventParams = {
     total_commits_count: 2,
     repository: {
       name: 'test-repo',
-      url: 'https://gitlab.com/test-group/test-repo1',
+      url: 'https://gitlab.com/group1/test-repo1',
       description: 'My Cool Project',
-      homepage: 'https://gitlab.com/test-group/test-repo1',
-      git_http_url: 'https://gitlab.com/test-group/test-repo1.git',
-      git_ssh_url: 'git@gitlab.com:btest-group/test-repo1.git',
+      homepage: 'https://gitlab.com/group1/test-repo1',
+      git_http_url: 'https://gitlab.com/group1/test-repo1.git',
+      git_ssh_url: 'git@gitlab.com:bgroup1/test-repo1.git',
       visibility_level: 20,
     },
   },
@@ -880,17 +1267,17 @@ export const push_modif_event: EventParams = {
     user_username: 'tom.sawyer',
     user_email: 'tom.sawyer@email.com',
     user_avatar: 'https://secure.gravatar.com/avatar/testtest=42&d=identicon',
-    project_id: 123456789,
+    project_id: 1,
     project: {
       name: 'test-repo',
-      path_with_namespace: 'test-group/test-repo1',
+      path_with_namespace: 'group1/test-repo1',
       description: 'My Cool Project',
-      web_url: 'https://example.com/test-group/test-repo1',
+      web_url: 'https://example.com/group1/test-repo1',
       avatar_url: null,
-      namespace: 'test-group',
+      namespace: 'group1',
       visibility_level: 20,
       default_branch: 'main',
-      url: 'https://example.com/test-group/test-repo1',
+      url: 'https://example.com/group1/test-repo1',
       git_ssh_url: '',
       git_http_url: '',
       homepage: '',
@@ -901,11 +1288,11 @@ export const push_modif_event: EventParams = {
     total_commits_count: 2,
     repository: {
       name: 'test-repo',
-      url: 'https://gitlab.com/test-group/test-repo1',
+      url: 'https://gitlab.com/group1/test-repo1',
       description: 'My Cool Project',
-      homepage: 'https://gitlab.com/test-group/test-repo1',
-      git_http_url: 'https://gitlab.com/test-group/test-repo1.git',
-      git_ssh_url: 'git@gitlab.com:btest-group/test-repo1.git',
+      homepage: 'https://gitlab.com/group1/test-repo1',
+      git_http_url: 'https://gitlab.com/group1/test-repo1.git',
+      git_ssh_url: 'git@gitlab.com:bgroup1/test-repo1.git',
       visibility_level: 20,
     },
   },
@@ -916,7 +1303,7 @@ export const push_modif_event: EventParams = {
  */
 export const expected_location_entities: MockObject[] =
   all_projects_response.map(project => {
-    const targetUrl = `https://example.com/${groupName}/${project.name}/-/blob/${project.default_branch}/catalog-info.yaml`;
+    const targetUrl = `https://example.com/${project.path_with_namespace}/-/blob/${project.default_branch}/catalog-info.yaml`;
 
     return {
       entity: {
@@ -941,7 +1328,7 @@ export const expected_location_entities: MockObject[] =
 
 export const expected_added_location_entities: MockObject[] = added_commits.map(
   commit => {
-    const targetUrl = `https://example.com/test-group/test-repo1/-/blob/main/${commit.added}`;
+    const targetUrl = `https://example.com/group1/test-repo1/-/blob/main/${commit.added}`;
 
     return {
       entity: {
@@ -967,7 +1354,7 @@ export const expected_added_location_entities: MockObject[] = added_commits.map(
 
 export const expected_removed_location_entities: MockObject[] =
   removed_commits.map(commit => {
-    const targetUrl = `https://example.com/test-group/test-repo1/-/blob/main/${commit.removed}`;
+    const targetUrl = `https://example.com/group1/test-repo1/-/blob/main/${commit.removed}`;
 
     return {
       entity: {
@@ -1051,12 +1438,12 @@ export const expected_added_group_entity: MockObject[] = [
       metadata: {
         annotations: {
           'backstage.io/managed-by-location':
-            'url:https://example.com/new-parent-path/group1',
+            'url:https://example.com/group-new/group1',
           'backstage.io/managed-by-origin-location':
-            'url:https://example.com/new-parent-path/group1',
-          'example.com/team-path': 'new-parent-path/group1',
+            'url:https://example.com/group-new/group1',
+          'example.com/team-path': 'group-new/group1',
         },
-        name: 'new-parent-path-group1',
+        name: 'group-new-group1',
       },
       spec: {
         children: [],
@@ -1078,12 +1465,12 @@ export const expected_removed_group_entity: MockObject[] = [
       metadata: {
         annotations: {
           'backstage.io/managed-by-location':
-            'url:https://example.com/old-parent-path/group1',
+            'url:https://example.com/group-old/group1',
           'backstage.io/managed-by-origin-location':
-            'url:https://example.com/old-parent-path/group1',
-          'example.com/team-path': 'old-parent-path/group1',
+            'url:https://example.com/group-old/group1',
+          'example.com/team-path': 'group-old/group1',
         },
-        name: 'old-parent-path-group1',
+        name: 'group-old-group1',
       },
       spec: {
         children: [],
@@ -1123,7 +1510,7 @@ export const expected_transformed_group_entity: MockObject[] = [
   },
 ];
 
-export const expected_user1_entity: MockObject[] = [
+export const expected_single_user_entity: MockObject[] = [
   {
     entity: {
       apiVersion: 'backstage.io/v1alpha1',
@@ -1150,7 +1537,7 @@ export const expected_user1_entity: MockObject[] = [
   },
 ];
 
-export const expected_user1_removed_entity: MockObject[] = [
+export const expected_single_user_removed_entity: MockObject[] = [
   {
     entity: {
       apiVersion: 'backstage.io/v1alpha1',
@@ -1179,14 +1566,28 @@ export const expected_user1_removed_entity: MockObject[] = [
 
 export const expected_full_org_scan_entities: MockObject[] = [
   {
-    ...expected_user1_entity[0],
     entity: {
-      ...expected_user1_entity[0].entity,
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/JohnDoe',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/JohnDoe',
+          'example.com/user-login': 'https://gitlab.example/john_doe',
+        },
+        name: 'JohnDoe',
+      },
       spec: {
-        ...expected_user1_entity[0].entity.spec,
-        memberOf: ['group1'], // Add 'group1' to the memberOf property
+        memberOf: ['group1'],
+        profile: {
+          displayName: 'John Doe',
+          email: 'john.doe@company.com',
+          picture: 'https://secure.gravatar.com/',
+        },
       },
     },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
   },
   {
     entity: {
@@ -1244,24 +1645,25 @@ export const expected_full_org_scan_entities: MockObject[] = [
       metadata: {
         annotations: {
           'backstage.io/managed-by-location':
-            'url:https://example.com/LuigiMario',
+            'url:https://example.com/MarioMario',
           'backstage.io/managed-by-origin-location':
-            'url:https://example.com/LuigiMario',
-          'example.com/user-login': 'https://gitlab.example/luigi_mario',
+            'url:https://example.com/MarioMario',
+          'example.com/user-login': 'https://gitlab.example/mario_mario',
         },
-        name: 'LuigiMario',
+        name: 'MarioMario',
       },
       spec: {
         memberOf: [],
         profile: {
-          displayName: 'Luigi Mario',
-          email: 'luigi.mario@company.com',
+          displayName: 'Mario Mario',
+          email: 'mario.mario-company.com',
           picture: 'https://secure.gravatar.com/',
         },
       },
     },
     locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
   },
+
   expected_group_entity[0],
 ];
 

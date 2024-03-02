@@ -23,11 +23,16 @@ import {
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { setupServer } from 'msw/node';
 import { handlers } from '../__testUtils__/handlers';
 import * as mock from '../__testUtils__/mocks';
 import { GroupNameTransformerOptions } from '../lib/types';
 import { GitlabOrgDiscoveryEntityProvider } from './GitlabOrgDiscoveryEntityProvider';
+
+const server = setupServer(...handlers);
+setupRequestMockHandlers(server);
+afterEach(() => jest.resetAllMocks());
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -44,12 +49,8 @@ class PersistingTaskRunner implements TaskRunner {
 
 const logger = getVoidLogger();
 
-describe('GitlabOrgDiscoveryEntityProvider', () => {
-  const server = setupServer(...handlers);
-  setupRequestMockHandlers(server);
-  afterEach(() => jest.resetAllMocks());
-
-  it('no provider config', () => {
+describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
+  it('should not instantiate providers when no config found', () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader({});
     const providers = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
@@ -60,18 +61,87 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
     expect(providers).toHaveLength(0);
   });
 
-  it('single simple discovery config with org disabled', () => {
+  it('should throw error when no matching GitLab integration config found', () => {
     const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader(mock.config_single_integration);
-    const providers = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    });
+    const config = new ConfigReader(mock.config_non_gitlab_host);
 
-    expect(providers).toHaveLength(0);
+    expect(() => {
+      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+      });
+    }).toThrow('No gitlab integration found that matches host example.com');
   });
 
-  it('single simple discovery config with org enabled', () => {
+  it('should throw error when org configuration not found', () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader(mock.config_no_org_integration);
+
+    expect(() => {
+      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+      });
+    }).toThrow('Org not enabled for test-id');
+  });
+
+  it('should throw error when saas without group configuration', () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader(mock.config_saas_no_group);
+
+    expect(() => {
+      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+      });
+    }).toThrow(
+      `Missing 'group' value for GitlabOrgDiscoveryEntityProvider:test-id`,
+    );
+  });
+  it('should fail without schedule and scheduler', () => {
+    const config = new ConfigReader(mock.config_org_integration_saas);
+
+    expect(() =>
+      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+      }),
+    ).toThrow('Either schedule or scheduler must be provided');
+  });
+
+  it('should fail with scheduler but no schedule config', () => {
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => jest.fn(),
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader(mock.config_org_integration_saas);
+
+    expect(() =>
+      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        scheduler,
+      }),
+    ).toThrow(
+      'No schedule provided neither via code nor config for GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+  });
+
+  it('should instantiate provider with single simple saas config', async () => {
+    const schedule = new PersistingTaskRunner();
+    const scheduler = {
+      createScheduledTaskRunner: (_: any) => schedule,
+    } as unknown as PluginTaskScheduler;
+    const config = new ConfigReader(mock.config_org_integration_saas_sched);
+    const providers = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      scheduler,
+    });
+
+    expect(providers).toHaveLength(1);
+    expect(providers[0].getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+  });
+
+  it('should instantiate provider when org enabled', () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader(mock.config_org_integration);
     const providers = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
@@ -85,7 +155,7 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
     );
   });
 
-  it('multiple discovery configs', () => {
+  it('should instantiate providers when multiple valid provider configs', () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader(mock.config_org_double_integration);
     const providers = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
@@ -101,8 +171,10 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
       'GitlabOrgDiscoveryEntityProvider:second-test',
     );
   });
+});
 
-  it('apply full update on scheduled execution', async () => {
+describe('GitlabOrgDiscoveryEntityProvider - refresh', () => {
+  it('should apply full update on scheduled execution', async () => {
     const config = new ConfigReader(mock.config_org_integration);
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
@@ -132,7 +204,73 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
     });
   });
 
-  it('apply full update on scheduled execution for gitlab.com', async () => {
+  it('should exclude inactive user', async () => {
+    const config = new ConfigReader(mock.config_org_integration);
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
+    );
+    await (taskDef.fn as () => Promise<void>)();
+    const userEntities = mock.expected_full_org_scan_entities.filter(
+      entity => entity.entity.kind === 'User',
+    );
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(userEntities).not.toHaveLength(mock.all_users_response.length);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_full_org_scan_entities,
+    });
+  });
+
+  it('should exclude user when email or username does not match userPattern', async () => {
+    const config = new ConfigReader(mock.config_userPattern_integration);
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+
+    await (taskDef.fn as () => Promise<void>)();
+    const userEntities = mock.expected_full_org_scan_entities.filter(
+      element => element.entity.metadata.name !== 'MarioMario',
+    ); // filter out user with non matched e-mail
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(userEntities).not.toHaveLength(mock.all_users_response.length);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: userEntities,
+    });
+  });
+
+  it('should apply full update on scheduled execution for gitlab.com', async () => {
     const config = new ConfigReader(mock.config_org_integration_saas);
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
@@ -161,76 +299,13 @@ describe('GitlabOrgDiscoveryEntityProvider', () => {
       entities: mock.expected_full_org_scan_entities_saas,
     });
   });
-
-  it('fail without schedule and scheduler', () => {
-    const config = new ConfigReader(mock.config_org_integration_saas);
-
-    expect(() =>
-      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-        logger,
-      }),
-    ).toThrow('Either schedule or scheduler must be provided');
-  });
-
-  it('fail with scheduler but no schedule config', () => {
-    const scheduler = {
-      createScheduledTaskRunner: (_: any) => jest.fn(),
-    } as unknown as PluginTaskScheduler;
-    const config = new ConfigReader(mock.config_org_integration_saas);
-
-    expect(() =>
-      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-        logger,
-        scheduler,
-      }),
-    ).toThrow(
-      'No schedule provided neither via code nor config for GitlabOrgDiscoveryEntityProvider:test-id',
-    );
-  });
-
-  it('fail with scheduler but no group config when host is gitlab.com', () => {
-    const scheduler = {
-      createScheduledTaskRunner: (_: any) => jest.fn(),
-    } as unknown as PluginTaskScheduler;
-    const config = new ConfigReader(mock.config_org_integration_saas_no_group);
-
-    expect(() =>
-      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-        logger,
-        scheduler,
-      }),
-    ).toThrow(
-      `Missing 'group' value for GitlabOrgDiscoveryEntityProvider:test-id`,
-    );
-  });
-
-  it('single simple provider config with schedule in config', async () => {
-    const schedule = new PersistingTaskRunner();
-    const scheduler = {
-      createScheduledTaskRunner: (_: any) => schedule,
-    } as unknown as PluginTaskScheduler;
-    const config = new ConfigReader(mock.config_org_integration_saas_sched);
-    const providers = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-      logger,
-      scheduler,
-    });
-
-    expect(providers).toHaveLength(1);
-    expect(providers[0].getProviderName()).toEqual(
-      'GitlabOrgDiscoveryEntityProvider:test-id',
-    );
-  });
 });
 
-// <<< EventSupportChange: start add tests
 describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
-  const server = setupServer(...handlers);
-  setupRequestMockHandlers(server);
-  afterEach(() => jest.resetAllMocks());
-
-  it('should apply a delta mutation if gitlab.group_destroy event received and defaultGroupTransformation in place', async () => {
+  it('should ignore gitlab.group_destroy event when group pattern does not match', async () => {
     const config = new ConfigReader(mock.config_org_integration);
     const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
       refresh: jest.fn(),
@@ -238,6 +313,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
       logger,
       schedule,
+      events,
     })[0];
 
     expect(provider.getProviderName()).toEqual(
@@ -246,7 +322,32 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
 
     await provider.connect(entityProviderConnection);
 
-    await provider.onEvent(mock.group_destroy_event);
+    await events.publish(mock.group_destroy_event_unmatched);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+  });
+
+  it('should apply a delta mutation if gitlab.group_destroy event received and defaultGroupTransformation in place', async () => {
+    const config = new ConfigReader(mock.config_org_integration);
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    await events.publish(mock.group_destroy_event);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -256,9 +357,10 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     });
   });
 
-  it('should apply a delta mutation if gitlab.group_create event received and defaultGroupTransformation in place', async () => {
+  it('should ignore gitlab.group_create event when group pattern does not match', async () => {
     const config = new ConfigReader(mock.config_org_integration);
     const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
       refresh: jest.fn(),
@@ -266,6 +368,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
       logger,
       schedule,
+      events,
     })[0];
 
     expect(provider.getProviderName()).toEqual(
@@ -273,7 +376,30 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     );
 
     await provider.connect(entityProviderConnection);
-    await provider.onEvent(mock.group_create_event);
+    await events.publish(mock.group_create_event_unmatched);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+  });
+  it('should apply a delta mutation if gitlab.group_create event received and defaultGroupTransformation in place', async () => {
+    const config = new ConfigReader(mock.config_org_integration);
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+    await events.publish(mock.group_create_event);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -286,6 +412,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
   it('should apply a delta mutation if gitlab.group_create event received and user/group transformations in place', async () => {
     const config = new ConfigReader(mock.config_org_integration);
     const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
 
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
@@ -301,6 +428,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
       logger,
       schedule,
+      events,
       groupNameTransformer: customGroupNameTransformer,
     })[0];
 
@@ -310,7 +438,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
 
     await provider.connect(entityProviderConnection);
 
-    await provider.onEvent(mock.group_create_event);
+    await events.publish(mock.group_create_event);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -323,6 +451,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
   it('should apply a delta mutation if gitlab.group_rename event received and defaultGroupTransformation in place', async () => {
     const config = new ConfigReader(mock.config_org_integration);
     const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
       refresh: jest.fn(),
@@ -330,6 +459,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
       logger,
       schedule,
+      events,
     })[0];
 
     expect(provider.getProviderName()).toEqual(
@@ -338,7 +468,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
 
     await provider.connect(entityProviderConnection);
 
-    await provider.onEvent(mock.group_rename_event);
+    await events.publish(mock.group_rename_event);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -351,6 +481,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
   it('should apply a delta mutation if gitlab.user_create event received', async () => {
     const config = new ConfigReader(mock.config_org_integration);
     const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
       refresh: jest.fn(),
@@ -358,6 +489,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
       logger,
       schedule,
+      events,
     })[0];
 
     expect(provider.getProviderName()).toEqual(
@@ -366,12 +498,12 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
 
     await provider.connect(entityProviderConnection);
 
-    await provider.onEvent(mock.user_create_event);
+    await events.publish(mock.user_create_event);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'delta',
-      added: mock.expected_user1_entity,
+      added: mock.expected_single_user_entity,
       removed: [],
     });
   });
@@ -379,6 +511,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
   it('should apply a delta mutation if gitlab.user_destroy event received', async () => {
     const config = new ConfigReader(mock.config_org_integration);
     const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
       refresh: jest.fn(),
@@ -386,6 +519,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
       logger,
       schedule,
+      events,
     })[0];
 
     expect(provider.getProviderName()).toEqual(
@@ -394,19 +528,20 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
 
     await provider.connect(entityProviderConnection);
 
-    await provider.onEvent(mock.user_destroy_event);
+    await events.publish(mock.user_destroy_event);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'delta',
       added: [],
-      removed: mock.expected_user1_removed_entity,
+      removed: mock.expected_single_user_removed_entity,
     });
   });
 
   it('should apply a delta mutation if gitlab.user_add_to_group event received and defaultGroupTransformer', async () => {
     const config = new ConfigReader(mock.config_org_integration);
     const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
       refresh: jest.fn(),
@@ -414,6 +549,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
       logger,
       schedule,
+      events,
     })[0];
 
     expect(provider.getProviderName()).toEqual(
@@ -422,7 +558,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
 
     await provider.connect(entityProviderConnection);
 
-    await provider.onEvent(mock.user_add_to_group_event);
+    await events.publish(mock.user_add_to_group_event);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -432,9 +568,35 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     });
   });
 
+  it('should ignore a delta mutation if gitlab.user_add_to_group event received and group outside scope', async () => {
+    const config = new ConfigReader(mock.config_org_integration);
+    const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+      events,
+    })[0];
+
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    await events.publish(mock.user_add_to_group_event_mismatched);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+  });
+
   it('should apply a delta mutation if gitlab.user_remove_from_group event received and customGroupTransformer', async () => {
     const config = new ConfigReader(mock.config_org_integration);
     const schedule = new PersistingTaskRunner();
+    const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
       refresh: jest.fn(),
@@ -449,6 +611,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
       groupNameTransformer: customGroupNameTransformer,
       logger,
       schedule,
+      events,
     })[0];
 
     expect(provider.getProviderName()).toEqual(
@@ -457,7 +620,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
 
     await provider.connect(entityProviderConnection);
 
-    await provider.onEvent(mock.user_remove_from_group_event);
+    await events.publish(mock.user_remove_from_group_event);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -467,5 +630,3 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     });
   });
 });
-
-// EventSupportChange: end add tests >>>

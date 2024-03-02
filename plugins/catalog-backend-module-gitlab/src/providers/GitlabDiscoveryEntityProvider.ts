@@ -24,7 +24,7 @@ import {
   EntityProviderConnection,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { WebhookProjectSchema, WebhookPushEventSchema } from '@gitbeaker/rest';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
@@ -53,20 +53,20 @@ type Result = {
  *
  * @public
  */
-
-export class GitlabDiscoveryEntityProvider
-  implements EntityProvider, EventSubscriber
-{
+// <<< EventSupportChange: implemented EventSubscriber interface
+export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private readonly config: GitlabProviderConfig;
   private readonly integration: GitLabIntegration;
   private readonly logger: Logger;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
+  private readonly events?: EventsService;
 
   static fromConfig(
     config: Config,
     options: {
       logger: Logger;
+      events?: EventsService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -119,6 +119,7 @@ export class GitlabDiscoveryEntityProvider
     config: GitlabProviderConfig;
     integration: GitLabIntegration;
     logger: Logger;
+    events?: EventsService;
     taskRunner: TaskRunner;
   }) {
     this.config = options.config;
@@ -127,6 +128,7 @@ export class GitlabDiscoveryEntityProvider
       target: this.getProviderName(),
     });
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
+    this.events = options.events;
   }
 
   getProviderName(): string {
@@ -136,6 +138,20 @@ export class GitlabDiscoveryEntityProvider
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
     await this.scheduleFn();
+
+    if (this.events) {
+      await this.events.subscribe({
+        id: this.getProviderName(),
+        topics: [TOPIC_REPO_PUSH],
+        onEvent: async params => {
+          if (params.topic !== TOPIC_REPO_PUSH) {
+            return;
+          }
+
+          await this.onRepoPush(params.eventPayload as WebhookPushEventSchema);
+        },
+      });
+    }
   }
 
   /**
@@ -201,38 +217,8 @@ export class GitlabDiscoveryEntityProvider
     };
 
     for await (const project of projects) {
-      if (!this.config.projectPattern.test(project.path_with_namespace ?? '')) {
-        continue;
-      }
-      res.scanned++;
-
-      if (
-        this.config.skipForkedRepos &&
-        project.hasOwnProperty('forked_from_project')
-      ) {
-        continue;
-      }
-
-      if (
-        !this.config.branch &&
-        this.config.fallbackBranch === '*' &&
-        project.default_branch === undefined
-      ) {
-        continue;
-      }
-
-      const project_branch =
-        this.config.branch ??
-        project.default_branch ??
-        this.config.fallbackBranch;
-
-      const projectHasFile: boolean = await client.hasFile(
-        project.path_with_namespace ?? '',
-        project_branch,
-        this.config.catalogFile,
-      );
-
-      if (projectHasFile) {
+      if (await this.shouldProcessProject(project, client)) {
+        res.scanned++;
         res.matches.push(project);
       }
     }
@@ -260,29 +246,6 @@ export class GitlabDiscoveryEntityProvider
     };
   }
 
-  // Specifies which topics will be listened to.
-  // The topics from the original GitLab events contain only the string 'gitlab'. These are caught by the GitlabEventRouter Module, who republishes them with a more specific topic 'gitlab.<event_name>'
-  supportsEventTopics(): string[] {
-    return [TOPIC_REPO_PUSH];
-  }
-
-  /**
-   * Catch events and redirects the "gitlab.push" event to be correctly handled.
-   *
-   * @param event - The GitLab event.
-   */
-  async onEvent(event: EventParams): Promise<void> {
-    this.logger.debug(`Received event from topic ${event.topic}`);
-
-    if (event.topic !== TOPIC_REPO_PUSH) {
-      return;
-    }
-
-    const payload: WebhookPushEventSchema =
-      event.eventPayload as WebhookPushEventSchema;
-    await this.onRepoPush(payload);
-  }
-
   /**
    * Handles the "gitlab.push" event.
    *
@@ -296,25 +259,27 @@ export class GitlabDiscoveryEntityProvider
         `Gitlab discovery connection not initialized for ${this.getProviderName()}`,
       );
     }
-    if (
-      !this.config.projectPattern.test(event.project.path_with_namespace ?? '')
-    ) {
-      this.logger.debug(
+    this.logger.debug(
+      `Received push event for ${event.project.path_with_namespace}`,
+    );
+
+    const client = new GitLabClient({
+      config: this.integration.config,
+      logger: this.logger,
+    });
+
+    const project = await client.getProjectById(event.project_id);
+
+    if (!project) {
+      this.logger.info(
         `Ignoring push event for ${event.project.path_with_namespace}`,
       );
+
       return;
     }
 
-    const repoName = event.project.name;
-    const repoUrl = event.project.web_url;
-    this.logger.debug(`Received push event for ${repoName} - ${repoUrl}`);
-
-    const branch = this.config.branch || event.project.default_branch;
-
-    if (!(event.ref as string).includes(branch)) {
-      this.logger.debug(
-        `Ignoring push event for ${repoName} - ${repoUrl} and branch ${branch}`,
-      );
+    if (!(await this.shouldProcessProject(project, client))) {
+      this.logger.info(`Skipping event ${event.project.path_with_namespace}`);
       return;
     }
 
@@ -424,12 +389,12 @@ export class GitlabDiscoveryEntityProvider
       project.default_branch ??
       this.config.fallbackBranch;
 
-    // Filters added files that match the catalog file pattern
+    // Filter added files that match the catalog file pattern
     const matchingFiles = addedFiles.filter(
       file => path.basename(file) === this.config.catalogFile,
     );
 
-    // Creates a location spec for each matching file
+    // Create a location spec for each matching file
     const locationSpecs: LocationSpec[] = matchingFiles.map(file => ({
       type: 'url',
       target: `${project.web_url}/-/blob/${projectBranch}/${file}`,
@@ -466,5 +431,56 @@ export class GitlabDiscoveryEntityProvider
           entity: entity,
         };
       });
+  }
+
+  private async shouldProcessProject(
+    project: GitLabProject,
+    client: GitLabClient,
+  ): Promise<boolean> {
+    if (!this.config.projectPattern.test(project.path_with_namespace ?? '')) {
+      this.logger.info(
+        `Skipping project ${project.path_with_namespace} as it does not match the project pattern ${this.config.projectPattern}.`,
+      );
+      return false;
+    }
+
+    if (
+      this.config.group &&
+      !project.path_with_namespace!.startsWith(`${this.config.group}/`)
+    ) {
+      this.logger.info(
+        `Skipping project ${project.path_with_namespace} as it does not match the group pattern ${this.config.group}.`,
+      );
+      return false;
+    }
+
+    if (
+      this.config.skipForkedRepos &&
+      project.hasOwnProperty('forked_from_project')
+    ) {
+      this.logger.info(
+        `Skipping project ${project.path_with_namespace} as it is a forked project.`,
+      );
+      return false;
+    }
+
+    const customFallbackBranch =
+      this.config.fallbackBranch !== 'master'
+        ? this.config.fallbackBranch
+        : undefined;
+
+    const project_branch =
+      this.config.branch ??
+      customFallbackBranch ??
+      project.default_branch ??
+      this.config.fallbackBranch;
+
+    const hasFile = await client.hasFile(
+      project.path_with_namespace ?? '',
+      project_branch,
+      this.config.catalogFile,
+    );
+
+    return hasFile;
   }
 }

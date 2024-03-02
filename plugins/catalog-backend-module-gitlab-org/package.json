@@ -1,26 +1,29 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-gitlab-org",
-  "description": "The gitlab-org backend module for the catalog plugin.",
   "version": "0.0.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "description": "The gitlab-org backend module for the catalog plugin.",
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "backend-plugin-module"
-  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -30,10 +33,10 @@
     "@backstage/plugin-events-node": "workspace:^"
   },
   "devDependencies": {
+    "@backstage/backend-tasks": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^"
-  },
-  "files": [
-    "dist"
-  ]
+    "@backstage/cli": "workspace:^",
+    "@backstage/plugin-events-backend-test-utils": "workspace:^",
+    "luxon": "^3.0.0"
+  }
 }

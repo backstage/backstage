@@ -26,7 +26,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 import { Logger } from 'winston';
@@ -98,12 +98,11 @@ const TOPIC_USER_REMOVE_GROUP = 'gitlab.user_remove_from_group';
  * Discovers users and groups from a Gitlab instance.
  * @public
  */
-export class GitlabOrgDiscoveryEntityProvider
-  implements EntityProvider, EventSubscriber
-{
+export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private readonly config: GitlabProviderConfig;
   private readonly integration: GitLabIntegration;
   private readonly logger: Logger;
+  private readonly events?: EventsService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private userTransformer: UserTransformer;
@@ -114,6 +113,7 @@ export class GitlabOrgDiscoveryEntityProvider
     config: Config,
     options: {
       logger: Logger;
+      events?: EventsService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
       userTransformer?: UserTransformer;
@@ -133,7 +133,7 @@ export class GitlabOrgDiscoveryEntityProvider
       const integration = integrations.byHost(providerConfig.host);
 
       if (!providerConfig.orgEnabled) {
-        return;
+        throw new Error(`Org not enabled for ${providerConfig.id}.`);
       }
 
       if (!integration) {
@@ -174,6 +174,7 @@ export class GitlabOrgDiscoveryEntityProvider
     config: GitlabProviderConfig;
     integration: GitLabIntegration;
     logger: Logger;
+    events?: EventsService;
     taskRunner: TaskRunner;
     userTransformer?: UserTransformer;
     groupEntitiesTransformer?: GroupEntitiesTransformer;
@@ -185,6 +186,7 @@ export class GitlabOrgDiscoveryEntityProvider
       target: this.getProviderName(),
     });
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
+    this.events = options.events;
 
     this.userTransformer = options.userTransformer ?? defaultUserTransformer;
     this.groupEntitiesTransformer =
@@ -200,6 +202,117 @@ export class GitlabOrgDiscoveryEntityProvider
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
     await this.scheduleFn();
+
+    // Specifies which topics will be listened to.
+    // The topics from the original GitLab events contain only the string 'gitlab'. These are caught by the GitlabEventRouter Module, who republishes them with a more specific topic 'gitlab.<event_name>'
+    if (this.events) {
+      await this.events.subscribe({
+        id: this.getProviderName(),
+        topics: [
+          TOPIC_GROUP_CREATE,
+          TOPIC_GROUP_DESTROY,
+          TOPIC_GROUP_RENAME,
+          TOPIC_USER_CREATE,
+          TOPIC_USER_DESTROY,
+          TOPIC_USER_ADD_GROUP,
+          TOPIC_USER_REMOVE_GROUP,
+        ],
+        onEvent: async params => {
+          this.logger.debug(`Received event from topic ${params.topic}`);
+
+          const addEntitiesOperation = (entities: Entity[]) => ({
+            removed: [],
+            added: entities.map(entity => ({
+              locationKey: this.getProviderName(),
+              entity: this.withLocations(
+                this.integration.config.host,
+                this.integration.config.baseUrl,
+                entity,
+              ),
+            })),
+          });
+
+          const removeEntitiesOperation = (entities: Entity[]) => ({
+            added: [],
+            removed: entities.map(entity => ({
+              locationKey: this.getProviderName(),
+              entity: this.withLocations(
+                this.integration.config.host,
+                this.integration.config.baseUrl,
+                entity,
+              ),
+            })),
+          });
+
+          const replaceEntitiesOperation = (entities: Entity[]) => {
+            const entitiesToReplace = entities.map(entity => ({
+              locationKey: this.getProviderName(),
+              entity: this.withLocations(
+                this.integration.config.host,
+                this.integration.config.baseUrl,
+                entity,
+              ),
+            }));
+
+            return {
+              removed: entitiesToReplace,
+              added: entitiesToReplace,
+            };
+          };
+
+          // handle group change events
+          if (
+            params.topic === TOPIC_GROUP_CREATE ||
+            params.topic === TOPIC_GROUP_DESTROY
+          ) {
+            const payload: SystemHookGroupCreateOrDestroyEventSchema =
+              params.eventPayload as SystemHookGroupCreateOrDestroyEventSchema;
+
+            const createDeltaOperation =
+              params.topic === TOPIC_GROUP_CREATE
+                ? addEntitiesOperation
+                : removeEntitiesOperation;
+
+            await this.onGroupChange(payload, createDeltaOperation);
+          }
+          if (params.topic === TOPIC_GROUP_RENAME) {
+            const payload: SystemHookGroupRenameEventSchema =
+              params.eventPayload as SystemHookGroupRenameEventSchema;
+
+            await this.onGroupEdit(payload, replaceEntitiesOperation);
+          }
+
+          // handle user change events
+          if (
+            params.topic === TOPIC_USER_CREATE ||
+            params.topic === TOPIC_USER_DESTROY
+          ) {
+            const payload: SystemHookUserCreateOrDestroyEventSchema =
+              params.eventPayload as SystemHookUserCreateOrDestroyEventSchema;
+
+            const createDeltaOperation =
+              params.topic === TOPIC_USER_CREATE
+                ? addEntitiesOperation
+                : removeEntitiesOperation;
+
+            await this.onUserChange(payload, createDeltaOperation);
+          }
+
+          // handle user membership changes
+          if (
+            params.topic === TOPIC_USER_ADD_GROUP ||
+            params.topic === TOPIC_USER_REMOVE_GROUP
+          ) {
+            const payload: SystemHookCreateOrDestroyMembershipEventsSchema =
+              params.eventPayload as SystemHookCreateOrDestroyMembershipEventsSchema;
+
+            const createDeltaOperation = addEntitiesOperation;
+
+            await this.onMembershipChange(payload, createDeltaOperation);
+          }
+        },
+      });
+    }
   }
 
   private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
@@ -246,6 +359,7 @@ export class GitlabOrgDiscoveryEntityProvider
       groups = paginated<GitLabGroup>(options => client.listGroups(options), {
         page: 1,
         per_page: 100,
+        all_available: true,
       });
 
       users = paginated<GitLabUser>(options => client.listUsers(options), {
@@ -278,27 +392,38 @@ export class GitlabOrgDiscoveryEntityProvider
     };
 
     for await (const user of users) {
-      if (!this.shouldProcessUser(user)) {
-        return;
-      }
-
       userRes.scanned++;
+
+      // <<< EventSupportChange: start small refactor
+      if (!this.shouldProcessUser(user)) {
+        logger.info(`Skipped user: ${user.username}`);
+        continue;
+      }
+      // EventSupportChange: end small refactor >>>
 
       idMappedUser[user.id] = user;
       userRes.matches.push(user);
     }
 
     for await (const group of groups) {
-      if (!this.shouldProcessGroup(group)) {
-        return;
-      }
-
       groupRes.scanned++;
+
+      // <<< EventSupportChange: start small refactor
+      if (!this.shouldProcessGroup(group)) {
+        logger.info(`Skipped group: ${group.full_path}`);
+        continue;
+      }
+      logger.info(`Processed group: ${group.full_path}`);
+      // EventSupportChange: end small refactor >>>
+
       groupRes.matches.push(group);
 
       let groupUsers: PagedResponse<GitLabUser> = { items: [] };
       try {
-        groupUsers = await client.getGroupMembers(group.full_path, ['DIRECT']);
+        groupUsers = await client.getGroupMembers(group.full_path, [
+          'DIRECT',
+          'INHERITED',
+        ]);
       } catch (e) {
         logger.error(
           `Failed fetching users for group '${group.full_path}': ${e}`,
@@ -336,6 +461,13 @@ export class GitlabOrgDiscoveryEntityProvider
       groupNameTransformer: this.groupNameTransformer,
     });
 
+    logger.info(
+      `Scanned ${userRes.scanned} users and processed ${userRes.matches.length} users`,
+    );
+    logger.info(
+      `Scanned ${groupRes.scanned} groups and processed ${groupEntities.length} groups`,
+    );
+
     await this.connection.applyMutation({
       type: 'full',
       entities: [...userEntities, ...groupEntities].map(entity => ({
@@ -348,116 +480,6 @@ export class GitlabOrgDiscoveryEntityProvider
       })),
     });
   }
-
-  // Specifies which topics will be listened to.
-  // The topics from the original GitLab events contain only the string 'gitlab'. These are caught by the GitlabEventRouter Module, who republishes them with a more specific topic 'gitlab.<event_name>'
-  supportsEventTopics(): string[] {
-    return [
-      TOPIC_GROUP_CREATE,
-      TOPIC_GROUP_DESTROY,
-      TOPIC_GROUP_RENAME,
-      TOPIC_USER_CREATE,
-      TOPIC_USER_DESTROY,
-      TOPIC_USER_ADD_GROUP,
-      TOPIC_USER_REMOVE_GROUP,
-    ];
-  }
-  // We have decided to use GitLab as the source of truth and not the Catalog because we cannot infer how the Entities in a given installation will look like (user might implement a custom transformer). See discussion here: https://github.com/backstage/backstage/pull/14870#discussion_r1039573375
-  async onEvent(event: EventParams): Promise<void> {
-    this.logger.debug(`Received event from topic ${event.topic}`);
-
-    const addEntitiesOperation = (entities: Entity[]) => ({
-      removed: [],
-      added: entities.map(entity => ({
-        locationKey: this.getProviderName(),
-        entity: this.withLocations(
-          this.integration.config.host,
-          this.integration.config.baseUrl,
-          entity,
-        ),
-      })),
-    });
-
-    const removeEntitiesOperation = (entities: Entity[]) => ({
-      added: [],
-      removed: entities.map(entity => ({
-        locationKey: this.getProviderName(),
-        entity: this.withLocations(
-          this.integration.config.host,
-          this.integration.config.baseUrl,
-          entity,
-        ),
-      })),
-    });
-
-    const replaceEntitiesOperation = (entities: Entity[]) => {
-      const entitiesToReplace = entities.map(entity => ({
-        locationKey: this.getProviderName(),
-        entity: this.withLocations(
-          this.integration.config.host,
-          this.integration.config.baseUrl,
-          entity,
-        ),
-      }));
-
-      return {
-        removed: entitiesToReplace,
-        added: entitiesToReplace,
-      };
-    };
-
-    // handle group change events
-    if (
-      event.topic === TOPIC_GROUP_CREATE ||
-      event.topic === TOPIC_GROUP_DESTROY
-    ) {
-      const payload: SystemHookGroupCreateOrDestroyEventSchema =
-        event.eventPayload as SystemHookGroupCreateOrDestroyEventSchema;
-
-      const createDeltaOperation =
-        event.topic === TOPIC_GROUP_CREATE
-          ? addEntitiesOperation
-          : removeEntitiesOperation;
-
-      await this.onGroupChange(payload, createDeltaOperation);
-    }
-    if (event.topic === TOPIC_GROUP_RENAME) {
-      const payload: SystemHookGroupRenameEventSchema =
-        event.eventPayload as SystemHookGroupRenameEventSchema;
-
-      await this.onGroupEdit(payload, replaceEntitiesOperation);
-    }
-
-    // handle user change events
-    if (
-      event.topic === TOPIC_USER_CREATE ||
-      event.topic === TOPIC_USER_DESTROY
-    ) {
-      const payload: SystemHookUserCreateOrDestroyEventSchema =
-        event.eventPayload as SystemHookUserCreateOrDestroyEventSchema;
-
-      const createDeltaOperation =
-        event.topic === TOPIC_USER_CREATE
-          ? addEntitiesOperation
-          : removeEntitiesOperation;
-
-      await this.onUserChange(payload, createDeltaOperation);
-    }
-
-    // handle user membership changes
-    if (
-      event.topic === TOPIC_USER_ADD_GROUP ||
-      event.topic === TOPIC_USER_REMOVE_GROUP
-    ) {
-      const payload: SystemHookCreateOrDestroyMembershipEventsSchema =
-        event.eventPayload as SystemHookCreateOrDestroyMembershipEventsSchema;
-
-      const createDeltaOperation = addEntitiesOperation;
-
-      await this.onMembershipChange(payload, createDeltaOperation);
-    }
-  }
-
   private async onGroupChange(
     event: SystemHookGroupCreateOrDestroyEventSchema,
     createDeltaOperation: (entities: Entity[]) => {
@@ -491,34 +513,38 @@ export class GitlabOrgDiscoveryEntityProvider
       group = await client.getGroupById(event.group_id);
     }
 
-    if (group && this.shouldProcessGroup(group)) {
-      // create the group entity
-      const groupEntity = await this.groupEntitiesTransformer({
-        groups: [group],
-        providerConfig: this.config,
-        groupNameTransformer: this.groupNameTransformer,
+    if (!this.shouldProcessGroup(group)) {
+      this.logger.info(`Skipped group ${group.full_path}.`);
+      return;
+    }
+
+    // create the group entity
+    const groupEntity = this.groupEntitiesTransformer({
+      groups: [group],
+      providerConfig: this.config,
+      groupNameTransformer: this.groupNameTransformer,
+    });
+
+    // we need to fetch the parent group's object because its representation might be changed by the groupTransformer
+    if (group.parent_id) {
+      const client = new GitLabClient({
+        config: this.integration.config,
+        logger: this.logger,
       });
 
-      // we need to fetch the parent group's object because its representation might be changed by the groupTransformer
-      if (group.parent_id) {
-        const client = new GitLabClient({
-          config: this.integration.config,
-          logger: this.logger,
-        });
+      const parentGroup = await client.getGroupById(group.parent_id);
 
-        const parentGroup = await client.getGroupById(group.parent_id);
-
-        groupEntity[0].spec.parent = this.groupNameTransformer({
-          group: parentGroup,
-          providerConfig: this.config,
-        });
-      }
-
-      await this.connection.applyMutation({
-        type: 'delta',
-        ...createDeltaOperation(groupEntity),
+      groupEntity[0].spec.parent = this.groupNameTransformer({
+        group: parentGroup,
+        providerConfig: this.config,
       });
     }
+
+    this.logger.info(`Applying mutation for group ${group.full_path}.`);
+    await this.connection.applyMutation({
+      type: 'delta',
+      ...createDeltaOperation(groupEntity),
+    });
   }
 
   // the goal here is to trigger a mutation to remove the old entity and add the new one.
@@ -544,6 +570,7 @@ export class GitlabOrgDiscoveryEntityProvider
     };
 
     if (!this.shouldProcessGroup(groupToRemove)) {
+      this.logger.info(`Skipped group ${groupToRemove.full_path}.`);
       return;
     }
 
@@ -561,6 +588,7 @@ export class GitlabOrgDiscoveryEntityProvider
     const groupToAdd = await client.getGroupById(event.group_id);
 
     if (!this.shouldProcessGroup(groupToAdd)) {
+      this.logger.info(`Skipped group ${groupToAdd.full_path}.`);
       return;
     }
 
@@ -582,6 +610,7 @@ export class GitlabOrgDiscoveryEntityProvider
     const { added } = createDeltaOperation([...groupEntityToAdd]);
     const { removed } = createDeltaOperation([...groupEntityToRemove]);
 
+    this.logger.info(`Applying mutation for group ${groupToAdd.full_path}.`);
     await this.connection.applyMutation({
       type: 'delta',
       removed,
@@ -622,25 +651,29 @@ export class GitlabOrgDiscoveryEntityProvider
       user = await client.getUserById(event.user_id);
     }
 
-    if (user && this.shouldProcessUser(user)) {
-      const userEntities: UserEntityV1alpha1[] = [];
-      userEntities.push(
-        await this.userTransformer({
-          user: user,
-          integrationConfig: this.integration.config,
-          providerConfig: this.config,
-          groupNameTransformer: this.groupNameTransformer,
-        }),
-      );
-
-      const { added, removed } = createDeltaOperation([...userEntities]);
-
-      await this.connection.applyMutation({
-        type: 'delta',
-        removed,
-        added,
-      });
+    if (!this.shouldProcessUser(user)) {
+      this.logger.info(`Skipped user ${user.username}.`);
+      return;
     }
+
+    const userEntities: UserEntityV1alpha1[] = [];
+    userEntities.push(
+      await this.userTransformer({
+        user: user,
+        integrationConfig: this.integration.config,
+        providerConfig: this.config,
+        groupNameTransformer: this.groupNameTransformer,
+      }),
+    );
+
+    const { added, removed } = createDeltaOperation([...userEntities]);
+
+    this.logger.info(`Applying mutation for user ${user.username}.`);
+    await this.connection.applyMutation({
+      type: 'delta',
+      removed,
+      added,
+    });
   }
 
   // the goal here is to reconstruct the group either from which the user was removed or to which the user was added. Specifically, we add/remove the new user to/from the spec.member property array of the group entity. The Processor should take care of updating the relations
@@ -666,15 +699,18 @@ export class GitlabOrgDiscoveryEntityProvider
       event.group_id,
     );
 
-    if (!groupToRebuild) {
+    // If the group is outside the scope there is no point creating anything related to it.
+    if (!this.shouldProcessGroup(groupToRebuild)) {
+      this.logger.info(`Skipped group ${groupToRebuild.full_path}.`);
       return;
     }
 
-    // get direct members of the group
+    // get direct and indirect members of the group
     const usersToBeAdded: string[] = [];
     let groupMembers: PagedResponse<GitLabUser> = { items: [] };
     groupMembers = await client.getGroupMembers(groupToRebuild.full_path, [
       'DIRECT',
+      'INHERITED',
     ]);
 
     if (groupMembers.items.length !== 0) {
@@ -696,12 +732,25 @@ export class GitlabOrgDiscoveryEntityProvider
       groupNameTransformer: this.groupNameTransformer,
     });
 
+    // we need to fetch the parent group's object because its representation might be changed by the groupTransformer
+    if (groupToRebuild.parent_id) {
+      const parentGroup = await client.getGroupById(groupToRebuild.parent_id);
+
+      groupEntityToModify[0].spec.parent = this.groupNameTransformer({
+        group: parentGroup,
+        providerConfig: this.config,
+      });
+    }
+
     if (usersToBeAdded.length !== 0) {
       groupEntityToModify[0].spec.members = [...usersToBeAdded];
     }
 
     const { added, removed } = createDeltaOperation([...groupEntityToModify]);
 
+    this.logger.info(
+      `Applying mutation for group ${groupToRebuild.full_path}.`,
+    );
     await this.connection.applyMutation({
       type: 'delta',
       removed,
@@ -709,18 +758,16 @@ export class GitlabOrgDiscoveryEntityProvider
     });
   }
 
-  private shouldProcessGroup(group: GitLabGroup | undefined): boolean {
+  private shouldProcessGroup(group: GitLabGroup): boolean {
     return (
-      !!group &&
-      this.config.groupPattern.test(group.full_path ?? '') &&
+      this.config.groupPattern.test(group.full_path) &&
       (!this.config.group ||
         group.full_path.startsWith(`${this.config.group}/`))
     );
   }
 
-  private shouldProcessUser(user: GitLabUser | undefined): boolean {
+  private shouldProcessUser(user: GitLabUser): boolean {
     return (
-      !!user &&
       this.config.userPattern.test(user.email ?? user.username ?? '') &&
       user.state === 'active'
     );

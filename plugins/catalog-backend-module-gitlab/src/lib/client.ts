@@ -24,6 +24,7 @@ import {
   GitLabDescendantGroupsResponse,
   GitLabGroup,
   GitLabGroupMembersResponse,
+  GitLabProject,
   GitLabUser,
   PagedResponse,
 } from './types';
@@ -77,14 +78,25 @@ export class GitLabClient {
     return this.pagedRequest(`/projects`, options);
   }
 
+  async getProjectById(
+    projectId: number,
+    options?: CommonListOptions,
+  ): Promise<GitLabProject> {
+    // Make the request to the GitLab API
+    const response = await this.nonPagedRequest(
+      `/projects/${projectId}`,
+      options,
+    );
+
+    return response;
+  }
+
   async getGroupById(
     groupId: number,
     options?: CommonListOptions,
   ): Promise<GitLabGroup> {
     // Make the request to the GitLab API
-    const response = await this.nonPagedRequest(`/groups/${groupId}`, {
-      ...options,
-    });
+    const response = await this.nonPagedRequest(`/groups/${groupId}`, options);
 
     return response;
   }
@@ -94,9 +106,7 @@ export class GitLabClient {
     options?: CommonListOptions,
   ): Promise<GitLabUser> {
     // Make the request to the GitLab API
-    const response = await this.nonPagedRequest(`/users/${userId}`, {
-      ...options,
-    });
+    const response = await this.nonPagedRequest(`/users/${userId}`, options);
 
     return response;
   }

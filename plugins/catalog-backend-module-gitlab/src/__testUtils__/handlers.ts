@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-// Copyright 2024 DB Systel GmbH
-// Licensed under the DBISL, see the accompanying file LICENSE.
 import { graphql, rest } from 'msw';
 import {
   all_groups_response,
@@ -25,8 +23,6 @@ import {
   apiBaseUrl,
   apiBaseUrlSaas,
   graphQlBaseUrl,
-  groupID,
-  groupName,
   paged_endpoint,
   saasGraphQlBaseUrl,
   some_endpoint,
@@ -44,27 +40,17 @@ const httpHandlers = [
     return res(ctx.set('x-next-page', ''), ctx.json(all_projects_response));
   }),
 
+  // testing non existing file
+  rest.get(
+    `${apiBaseUrl}/projects/test-group%2Ftest-repo1/repository/files/catalog-info.yaml`,
+    (_, res, ctx) => {
+      return res(ctx.status(400), ctx.json({ error: 'Not found' }));
+    },
+  ),
+
   /**
    * Group REST endpoint mocks
    */
-
-  rest.get(`${apiBaseUrl}/groups/${groupID}/projects`, (_, res, ctx) => {
-    return res(ctx.set('x-next-page', ''), ctx.json(all_projects_response));
-  }),
-
-  rest.get(`${apiBaseUrl}/groups/${groupName}/projects`, (_, res, ctx) => {
-    return res(ctx.set('x-next-page', ''), ctx.json(all_projects_response));
-  }),
-
-  rest.get(`${apiBaseUrl}/groups/${groupID}`, (_, res, ctx) => {
-    return res(
-      ctx.json(all_groups_response.find(group => group.id === groupID)),
-    );
-  }),
-
-  rest.get(`${apiBaseUrl}/groups/4`, (_, res, ctx) => {
-    return res(ctx.json(all_groups_response.find(group => group.id === 4)));
-  }),
 
   rest.get(`${apiBaseUrl}/groups`, (_req, res, ctx) => {
     return res(ctx.set('x-next-page', ''), ctx.json(all_groups_response));
@@ -123,9 +109,56 @@ const httpHandlers = [
   }),
 ];
 
-const httpDynamicHandlers = all_projects_response.map(project =>
-  rest.head(
-    `${apiBaseUrl}/projects/${groupName}%2F${project.name}/repository/files/catalog-info.yaml`,
+// dynamic handlers
+
+const httpGroupFindByIdDynamic = all_groups_response.map(group => {
+  return rest.get(`${apiBaseUrl}/groups/${group.id}`, (_, res, ctx) => {
+    return res(ctx.json(all_groups_response.find(g => g.id === group.id)));
+  });
+});
+
+const httpGroupListDescendantProjectsById = all_groups_response.map(group => {
+  return rest.get(
+    `${apiBaseUrl}/groups/${group.id}/projects`,
+    (_, res, ctx) => {
+      const projectsInGroup = all_projects_response.filter(p =>
+        p.path_with_namespace?.includes(group.name),
+      );
+
+      return res(ctx.json(projectsInGroup));
+    },
+  );
+});
+
+const httpGroupListDescendantProjectsByName = all_groups_response.map(group => {
+  return rest.get(
+    `${apiBaseUrl}/groups/${group.name}/projects`,
+    (_, res, ctx) => {
+      const projectsInGroup = all_projects_response.filter(p =>
+        p.path_with_namespace?.includes(group.name),
+      );
+
+      return res(ctx.json(projectsInGroup));
+    },
+  );
+});
+const httpGroupFindByNameDynamic = all_groups_response.map(group => {
+  return rest.get(`${apiBaseUrl}/groups/${group.name}`, (_, res, ctx) => {
+    return res(ctx.json(all_groups_response.find(g => g.name === group.name)));
+  });
+});
+const httpProjectFindByIdDynamic = all_projects_response.map(project => {
+  return rest.get(`${apiBaseUrl}/projects/${project.id}`, (_, res, ctx) => {
+    return res(ctx.json(all_projects_response.find(p => p.id === project.id)));
+  });
+});
+const httpProjectCatalogDynamic = all_projects_response.map(project => {
+  const path: string = project.path_with_namespace
+    ? project.path_with_namespace!.replace(/\//g, '%2F')
+    : `${project.path_with_namespace}%2F${project.name}`;
+
+  return rest.head(
+    `${apiBaseUrl}/projects/${path}/repository/files/catalog-info.yaml`,
     (req, res, ctx) => {
       const branch = req.url.searchParams.get('ref');
       if (branch === project.default_branch) {
@@ -133,8 +166,8 @@ const httpDynamicHandlers = all_projects_response.map(project =>
       }
       return res(ctx.status(404, 'Not Found'));
     },
-  ),
-);
+  );
+});
 
 /**
  * GraphQL endpoint mocks
@@ -474,6 +507,11 @@ const graphqlHandlers = [
 
 export const handlers = [
   ...httpHandlers,
-  ...httpDynamicHandlers,
+  ...httpProjectFindByIdDynamic,
+  ...httpProjectCatalogDynamic,
+  ...httpGroupFindByIdDynamic,
+  ...httpGroupFindByNameDynamic,
+  ...httpGroupListDescendantProjectsById,
+  ...httpGroupListDescendantProjectsByName,
   ...graphqlHandlers,
 ];

@@ -129,11 +129,16 @@ describe('GitLabClient', () => {
         options => client.listProjects(options),
         { group: 1 },
       );
+
+      const expectedProjects = mock.all_projects_response.filter(project =>
+        project.path_with_namespace!.includes('group1/'),
+      );
+
       const allItems = [];
       for await (const item of groupProjectsGen) {
         allItems.push(item);
       }
-      expect(allItems).toHaveLength(mock.all_projects_response.length);
+      expect(allItems).toHaveLength(expectedProjects.length);
     });
 
     it('should get all projects for an instance', async () => {
@@ -436,7 +441,6 @@ describe('GitLabClient', () => {
     });
   });
 });
-// });
 
 describe('paginated', () => {
   it('should iterate through the pages until exhausted', async () => {
@@ -474,7 +478,7 @@ describe('hasFile', () => {
 
   it('should find catalog file', async () => {
     const hasFile = await client.hasFile(
-      'test-group/test-repo1',
+      'group1/test-repo1',
       'main',
       'catalog-info.yaml',
     );
@@ -483,7 +487,7 @@ describe('hasFile', () => {
 
   it('should not find catalog file', async () => {
     const hasFile = await client.hasFile(
-      'test-group/test-repo1',
+      'group1/test-repo1',
       'unknown',
       'catalog-info.yaml',
     );
