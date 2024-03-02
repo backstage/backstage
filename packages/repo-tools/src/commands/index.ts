@@ -96,7 +96,11 @@ function registerRepoCommand(program: Command) {
   openApiCommand
     .command('verify [paths...]')
     .description(
-      'Verify that all OpenAPI schemas are valid and have a matching `schemas/openapi.generated.ts` file.',
+      'Verify that all OpenAPI schemas are valid and set up correctly. This also verifies that your API has not changed in a breaking way.',
+    )
+    .option(
+      '--from <ref>',
+      'The base ref to compare against. Defaults to the fork point of the current branch.',
     )
     .action(
       lazy(() =>

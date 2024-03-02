@@ -29,8 +29,10 @@ import {
   YAML_SCHEMA_PATH,
 } from '../../../../lib/openapi/constants';
 import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
+import { exec } from '../../../../lib/exec';
+import { OptionValues } from 'commander';
 
-async function verify(directoryPath: string) {
+async function verify(directoryPath: string, options: OptionValues) {
   let openapiPath = '';
   try {
     openapiPath = await getPathToOpenApiSpec(directoryPath);
@@ -58,10 +60,39 @@ async function verify(directoryPath: string) {
       `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools package schema openapi generate\` from '${path}' to regenerate \`${TS_SCHEMA_PATH}\`.`,
     );
   }
+
+  let baseRef = options.from ?? process.env.GITHUB_BASE_REF;
+  if (!baseRef) {
+    const { stdout: branch } = await exec('git merge-base --fork-point HEAD');
+    baseRef = branch.toString().trim();
+  }
+
+  try {
+    const { stdout } = await exec('optic diff', [
+      openapiPath,
+      '--check',
+      '--base',
+      baseRef,
+    ]);
+    // Log out the results as this still shows API changes that aren't breakages.
+    console.log(
+      stdout
+        .toString()
+        .split('\n')
+        .filter(e => !e.startsWith('Rerun') && e.trim())
+        .join('\n'),
+    );
+  } catch (err) {
+    err.message = err.stdout;
+    throw err;
+  }
 }
 
-export async function bulkCommand(paths: string[] = []): Promise<void> {
-  const resultsList = await runner(paths, dir => verify(dir));
+export async function bulkCommand(
+  paths: string[] = [],
+  options: OptionValues,
+): Promise<void> {
+  const resultsList = await runner(paths, dir => verify(dir, options));
 
   let failed = false;
   for (const { relativeDir, resultText } of resultsList) {

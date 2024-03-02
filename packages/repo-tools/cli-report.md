@@ -168,7 +168,7 @@ Options:
   -h, --help
 
 Commands:
-  verify [paths...]
+  verify [options] [paths...]
   lint [options] [paths...]
   test [options] [paths...]
   fuzz [options]
@@ -211,6 +211,7 @@ Options:
 Usage: backstage-repo-tools repo schema openapi verify [options] [paths...]
 
 Options:
+  --from <ref>
   -h, --help
 ```
 
