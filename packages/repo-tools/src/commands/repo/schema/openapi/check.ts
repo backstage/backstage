@@ -23,7 +23,11 @@ import {
 
 export async function command(opts: OptionValues) {
   let packages = await PackageGraph.listTargetPackages();
+
+  let since = '';
   if (opts.since) {
+    const { stdout: sinceRaw } = await exec('git', ['rev-parse', opts.since]);
+    since = sinceRaw.toString().trim();
     const graph = PackageGraph.fromPackages(packages);
     const changedPackages = await graph.listChangedPackages({
       ref: opts.since,
@@ -47,10 +51,10 @@ export async function command(opts: OptionValues) {
       severity: 0,
     } as CiRunDetails;
     for (const pkg of checkablePackages) {
-      const baseRef = opts.since;
+      const sinceCommands = since ? ['--since', since] : [];
       const { stdout } = await exec(
         'yarn',
-        ['check:api', '--ignore', '--json', '--since', baseRef],
+        ['check:api', '--ignore', '--json', ...sinceCommands],
         {
           cwd: pkg.dir,
         },
