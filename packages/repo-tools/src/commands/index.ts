@@ -83,6 +83,7 @@ function registerPackageCommand(program: Command) {
     .command('check')
     .option('--ignore', 'Ignore linting failures and only log the results.')
     .option('--json', 'Output the results as JSON')
+    .option('--since <ref>', 'Check the API against a specific ref')
     .action(
       lazy(() => import('./package/schema/openapi/check').then(m => m.command)),
     );

@@ -32,7 +32,7 @@ const reduceOpticOutput = (output: string) => {
 async function check(opts: OptionValues) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
 
-  let baseRef = opts.since ?? process.env.GITHUB_BASE_REF;
+  let baseRef = opts.since;
   if (!baseRef) {
     const { stdout: branch } = await exec(
       'git merge-base --fork-point origin/master',
