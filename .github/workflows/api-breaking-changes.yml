@@ -12,8 +12,6 @@ jobs:
     name: Build PR image
     runs-on: ubuntu-latest
     if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
-    outputs:
-      tags: ${{ steps.meta.outputs.tags }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0

@@ -77,7 +77,7 @@ jobs:
         run: |
           unzip preview-spec.zip comment.md
           ls
-          echo "MANIFESTS_FILE_HASH=$(md5sum manifests.rendered.yml | awk '{ print $1 }')" >> $GITHUB_OUTPUT
+          grep
 
   add-comment:
     name: Write comment about issues
@@ -93,19 +93,19 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
 
       # Identify comment to be updated
-      - name: Find comment for Ephemeral Environment
+      - name: Find comment for API Changes
         uses: peter-evans/find-comment@d5fe37641ad8451bdd80312415672ba26c86575e # v3
         id: find-comment
         with:
-          issue-number: ${{ needs.cache-manifests-file.outputs.pr-number }}
+          issue-number: ${{ needs.setup.outputs.pr-number }}
           comment-author: 'github-actions[bot]'
-          body-includes: pr-changes-${{ needs.cache-manifests-file.outputs.pr-number }}
+          body-includes: API changes
           direction: last
 
-      - name: Create or Update Comment with Deployment URL
+      - name: Create or Update Comment with API Changes
         uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
         with:
-          comment-id: ${{ steps.notification.outputs.comment-id }}
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
           issue-number: ${{ github.event.pull_request.number }}
           body-path: comment.md
           edit-mode: replace

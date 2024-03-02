@@ -23,8 +23,6 @@ import {
   getOperationsChanged,
 } from '@useoptic/openapi-utilities';
 import { GroupedDiffs } from '@useoptic/openapi-utilities/build/openapi3/group-diff';
-import { relative } from 'path';
-import { paths as cliPaths } from '../../paths';
 
 /**
  * The below code is copied from https://github.com/opticdev/optic/blob/main/projects/optic/src/commands/ci/comment/common.ts#L82 for use
@@ -45,6 +43,7 @@ export type CiRunDetails = {
     specUrl?: string | null;
     capture?: any;
   }[];
+  warning?: { apiName: string; warning: string }[];
   failed: { apiName: string; error: string }[];
   noop: { apiName: string }[];
   severity: Severity;
@@ -121,6 +120,18 @@ const getCaptureIssuesLabel = ({
   ].join('\n');
 };
 
+const getBreakagesRow = (breakage: CiRunDetails['completed'][number]) => {
+  return `
+  - ${breakage.apiName}
+  ${breakage.comparison.results.map(
+    s => `
+    - ${s.where}
+      ${'```'}
+      ${s.error}
+      ${'```'}`,
+  )}`;
+};
+
 export const generateCompareSummaryMarkdown = (
   commit: { sha: string },
   results: CiRunDetails,
@@ -130,10 +141,61 @@ export const generateCompareSummaryMarkdown = (
     s => s.warnings.length > 0,
   );
   const anyCompletedHasCapture = results.completed.some(s => s.capture);
-  return `
+  if (
+    results.completed.length === 0 &&
+    results.failed.length === 0 &&
+    results.failed.length === 0
+  ) {
+    return `No API changes detected for commit (${commit.sha})`;
+  }
+  const breakages = results.completed
+    .filter(s => s.comparison.results.some(e => !e.passed))
+    .map(e => ({
+      ...e,
+      comparison: {
+        ...e.comparison,
+        results: e.comparison.results.filter(f => !f.passed),
+      },
+    }));
+  const successfullyCompletedCount =
+    results.completed.length - breakages.length;
+  return `### Summary for commit (${commit.sha})
+
+${
+  results.noop.length > 0
+    ? `${
+        results.noop.length === 1 ? '1 API' : `${results.noop.length} APIs`
+      } had no changes.`
+    : ''
+}
+${
+  breakages.length > 0
+    ? `${
+        breakages.length === 1 ? '1 API' : `${breakages.length} APIs`
+      } had breaking changes.`
+    : ''
+}
+${
+  successfullyCompletedCount > 0
+    ? `${
+        successfullyCompletedCount === 1
+          ? '1 API'
+          : `${successfullyCompletedCount} APIs`
+      } had non-breaking changes.`
+    : ''
+}
+${
+  results.warning && results.warning.length > 0
+    ? `${
+        results.warning.length === 1
+          ? '1 API'
+          : `${results.warning.length} APIs`
+      } had warnings.`
+    : ''
+}
 ${
   results.completed.length > 0
-    ? `### APIs Changed
+    ? `### APIs with Changes
 
 <table>
 <thead>
@@ -151,7 +213,7 @@ ${results.completed
     s =>
       `<tr>
 <td>
-${relative(cliPaths.targetDir, s.apiName)}
+${s.apiName}
 </td>
 <td>
 ${getOperationsText(s.comparison.groupedDiffs, {
@@ -190,13 +252,13 @@ ${
   )
   .join('\n')}
 </tbody>
-</table>
-`
+</table>`
     : ''
 }
+
 ${
   results.failed.length > 0
-    ? `### Errors running optic
+    ? `### APIs with Errors
 
 <table>
 <thead>
@@ -226,13 +288,33 @@ ${'```'}
     : ''
 }
 
-Summary of API changes for commit (${commit.sha})
-
 ${
-  results.noop.length > 0
-    ? `${
-        results.noop.length === 1 ? '1 API' : `${results.noop.length} APIs`
-      } had no changes.`
+  results.warning && results.warning.length
+    ? `
+### APIs with Warnings
+<table>
+<thead>
+<tr>
+<th>API</th>
+<th>Warning</th>
+</tr>
+</thead>
+<tbody>
+      ${results.warning
+        .map(e => `<tr><td>${e.apiName}</td><td>${e.warning}</td></tr>`)
+        .join('\n')}
+</tbody>
+</table>`
     : ''
-}`;
+}
+${
+  breakages.length > 0
+    ? `
+### Routes with Breakages
+
+${breakages.map(getBreakagesRow).join('\n')}
+`
+    : ''
+}
+`;
 };

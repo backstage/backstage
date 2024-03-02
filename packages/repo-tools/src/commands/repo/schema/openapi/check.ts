@@ -20,6 +20,8 @@ import {
   CiRunDetails,
   generateCompareSummaryMarkdown,
 } from '../../../../lib/openapi/optic/helpers';
+import { paths as cliPaths } from '../../../../lib/paths';
+import { YAML_SCHEMA_PATH } from '../../../../lib/openapi/constants';
 
 export async function command(opts: OptionValues) {
   let packages = await PackageGraph.listTargetPackages();
@@ -28,26 +30,34 @@ export async function command(opts: OptionValues) {
   if (opts.since) {
     const { stdout: sinceRaw } = await exec('git', ['rev-parse', opts.since]);
     since = sinceRaw.toString().trim();
-    const graph = PackageGraph.fromPackages(packages);
-    const changedPackages = await graph.listChangedPackages({
-      ref: opts.since,
-      analyzeLockfile: true,
-    });
-    const withDevDependents = graph.collectPackageNames(
-      changedPackages.map(pkg => pkg.name),
-      pkg => pkg.localDevDependents.keys(),
+    const { stdout: changedFilesRaw } = await exec('git', [
+      'diff',
+      '--name-only',
+      since,
+    ]);
+    const changedFiles = changedFilesRaw.toString().trim();
+
+    const changedOpenApiSpecs = changedFiles
+      .split('\n')
+      .filter(e => e.endsWith(YAML_SCHEMA_PATH))
+      .map(e => cliPaths.resolveTarget(e));
+
+    // filter packages by changedFiles
+    packages = packages.filter(pkg =>
+      changedOpenApiSpecs.some(e => e.startsWith(`${pkg.dir}/`)),
     );
-    packages = Array.from(withDevDependents).map(name => graph.get(name)!);
   }
 
   const checkablePackages = packages.filter(
     e => e.packageJson.scripts?.['check:api'],
   );
+
   try {
     const outputs = {
       completed: [],
       failed: [],
       noop: [],
+      warning: [],
       severity: 0,
     } as CiRunDetails;
     for (const pkg of checkablePackages) {
@@ -64,6 +74,40 @@ export async function command(opts: OptionValues) {
       outputs.failed.push(...(result.failed ?? []));
       outputs.noop.push(...(result.noop ?? []));
     }
+
+    for (const pkg of packages.filter(
+      e => !e.packageJson.scripts?.['check:api'],
+    )) {
+      outputs.warning?.push({
+        apiName: `${pkg.dir}/`,
+        warning: 'No check:api script found in package.json',
+      });
+    }
+
+    outputs.completed.forEach(
+      e =>
+        (e.apiName = e.apiName
+          .replace(cliPaths.targetDir, '')
+          .replace(YAML_SCHEMA_PATH, '')),
+    );
+    outputs.failed.forEach(
+      e =>
+        (e.apiName = e.apiName
+          .replace(cliPaths.targetDir, '')
+          .replace(YAML_SCHEMA_PATH, '')),
+    );
+    outputs.noop.forEach(
+      e =>
+        (e.apiName = e.apiName
+          .replace(cliPaths.targetDir, '')
+          .replace(YAML_SCHEMA_PATH, '')),
+    );
+    outputs.warning?.forEach(
+      e =>
+        (e.apiName = e.apiName
+          .replace(cliPaths.targetDir, '')
+          .replace(YAML_SCHEMA_PATH, '')),
+    );
 
     const { stdout: currentSha } = await exec('git', ['rev-parse', 'HEAD']);
     console.log(
