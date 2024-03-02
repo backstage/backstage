@@ -47,7 +47,7 @@ export async function command(opts: OptionValues) {
       severity: 0,
     } as CiRunDetails;
     for (const pkg of checkablePackages) {
-      const baseRef = opts.since ?? process.env.GITHUB_BASE_REF;
+      const baseRef = opts.since;
       const { stdout } = await exec(
         'yarn',
         ['check:api', '--ignore', '--json', '--since', baseRef],
