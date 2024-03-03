@@ -337,3 +337,85 @@ const routes = (
 ```
 
 The same method can be used to customize the _default_ filters with a different interface - for such usage, the generic argument isn't needed since the filter shape remains the same as the default.
+
+## Advanced Customization
+
+For those where none of the above fits their needs you can take the option of creating a fully custom `CatalogIndexPage`.
+
+```tsx title="packages/app/src/components/catalog/CustomCatalogIndex.tsx"
+import {
+  PageWithHeader,
+  Content,
+  ContentHeader,
+  SupportButton,
+} from '@backstage/core-components';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { CatalogTable } from '@backstage/plugin-catalog';
+import {
+  EntityListProvider,
+  CatalogFilterLayout,
+  EntityKindPicker,
+  EntityLifecyclePicker,
+  EntityNamespacePicker,
+  EntityOwnerPicker,
+  EntityProcessingStatusPicker,
+  EntityTagPicker,
+  EntityTypePicker,
+  UserListPicker,
+} from '@backstage/plugin-catalog-react';
+import React from 'react';
+
+export const CustomCatalogPage = () => {
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
+
+  return (
+    <PageWithHeader title={orgName} themeId="home">
+      <Content>
+        <ContentHeader title="">
+          <SupportButton>All your software catalog entities</SupportButton>
+        </ContentHeader>
+        <EntityListProvider pagination>
+          <CatalogFilterLayout>
+            <CatalogFilterLayout.Filters>
+              <EntityKindPicker />
+              <EntityTypePicker />
+              <UserListPicker />
+              <EntityOwnerPicker />
+              <EntityLifecyclePicker />
+              <EntityTagPicker />
+              <EntityProcessingStatusPicker />
+              <EntityNamespacePicker />
+            </CatalogFilterLayout.Filters>
+            <CatalogFilterLayout.Content>
+              <CatalogTable />
+            </CatalogFilterLayout.Content>
+          </CatalogFilterLayout>
+        </EntityListProvider>
+      </Content>
+    </PageWithHeader>
+  );
+};
+```
+
+The above is a very basic version of a fully custom `CatalogIndexPage`, you'll want to explore the various props to see what you can all do with them. This was built off the building blocks seen in the [`DefaultCatalogPage`](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/DefaultCatalogPage.tsx)
+
+> Note: The catalog index page is designed to have a minimal code footprint to support easy customization, but creating a replica does introduce a possibility of drifting out of date over time. Be sure to check the catalog [CHANGELOG](https://github.com/backstage/backstage/blob/master/plugins/catalog/CHANGELOG.md) periodically.
+
+To use this custom `CatalogIndexPage` which we called `CustomCatalogPage`, you'll need to make the following change:
+
+```tsx title="packages/app/src/App.tsx"
+const routes = (
+  <FlatRoutes>
+    <Navigate key="/" to="catalog" />
+    {/* highlight-remove-next-line */}
+    <Route path="/catalog" element={<CatalogIndexPage />} />
+    {/* highlight-add-start */}
+    <Route path="/catalog" element={<CatalogIndexPage />}>
+      <CustomCatalogPage />
+    </Route>
+    {/* highlight-add-end */}
+    {/* ... */}
+  </FlatRoutes>
+);
+```
