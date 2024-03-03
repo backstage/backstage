@@ -414,6 +414,33 @@ describe('GitLabClient', () => {
     });
   });
 
+  describe('getProjectById', () => {
+    it('should return project details by ID', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: getVoidLogger(),
+      });
+
+      const project = await client.getProjectById(1);
+      expect(project).toMatchObject(mock.all_projects_response[0]);
+    });
+
+    it('should handle errors when fetching project details by ID', async () => {
+      const client = new GitLabClient({
+        config: readGitLabIntegrationConfig(
+          new ConfigReader(mock.config_self_managed),
+        ),
+        logger: getVoidLogger(),
+      });
+
+      await expect(() => client.getProjectById(42)).rejects.toThrow(
+        'Internal Server Error',
+      );
+    });
+  });
+
   describe('getUserById', () => {
     it('should return user details by ID', async () => {
       const client = new GitLabClient({

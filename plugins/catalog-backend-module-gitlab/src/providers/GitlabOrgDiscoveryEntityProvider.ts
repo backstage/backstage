@@ -218,7 +218,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
           TOPIC_USER_REMOVE_GROUP,
         ],
         onEvent: async params => {
-          this.logger.debug(`Received event from topic ${params.topic}`);
+          this.logger.info(`Received event from topic ${params.topic}`);
 
           const addEntitiesOperation = (entities: Entity[]) => ({
             removed: [],
@@ -394,12 +394,10 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     for await (const user of users) {
       userRes.scanned++;
 
-      // <<< EventSupportChange: start small refactor
       if (!this.shouldProcessUser(user)) {
-        logger.info(`Skipped user: ${user.username}`);
+        logger.debug(`Skipped user: ${user.username}`);
         continue;
       }
-      // EventSupportChange: end small refactor >>>
 
       idMappedUser[user.id] = user;
       userRes.matches.push(user);
@@ -408,13 +406,11 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     for await (const group of groups) {
       groupRes.scanned++;
 
-      // <<< EventSupportChange: start small refactor
       if (!this.shouldProcessGroup(group)) {
-        logger.info(`Skipped group: ${group.full_path}`);
+        logger.debug(`Skipped group: ${group.full_path}`);
         continue;
       }
-      logger.info(`Processed group: ${group.full_path}`);
-      // EventSupportChange: end small refactor >>>
+      logger.debug(`Processed group: ${group.full_path}`);
 
       groupRes.matches.push(group);
 
@@ -462,7 +458,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     });
 
     logger.info(
-      `Scanned ${userRes.scanned} users and processed ${userRes.matches.length} users`,
+      `Scanned ${userRes.scanned} users and processed ${userEntities.length} users`,
     );
     logger.info(
       `Scanned ${groupRes.scanned} groups and processed ${groupEntities.length} groups`,
@@ -514,7 +510,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     }
 
     if (!this.shouldProcessGroup(group)) {
-      this.logger.info(`Skipped group ${group.full_path}.`);
+      this.logger.debug(`Skipped group ${group.full_path}.`);
       return;
     }
 
@@ -540,7 +536,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       });
     }
 
-    this.logger.info(`Applying mutation for group ${group.full_path}.`);
+    this.logger.debug(`Applying mutation for group ${group.full_path}.`);
     await this.connection.applyMutation({
       type: 'delta',
       ...createDeltaOperation(groupEntity),
@@ -570,7 +566,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     };
 
     if (!this.shouldProcessGroup(groupToRemove)) {
-      this.logger.info(`Skipped group ${groupToRemove.full_path}.`);
+      this.logger.debug(`Skipped group ${groupToRemove.full_path}.`);
       return;
     }
 
@@ -588,7 +584,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     const groupToAdd = await client.getGroupById(event.group_id);
 
     if (!this.shouldProcessGroup(groupToAdd)) {
-      this.logger.info(`Skipped group ${groupToAdd.full_path}.`);
+      this.logger.debug(`Skipped group ${groupToAdd.full_path}.`);
       return;
     }
 
@@ -610,7 +606,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     const { added } = createDeltaOperation([...groupEntityToAdd]);
     const { removed } = createDeltaOperation([...groupEntityToRemove]);
 
-    this.logger.info(`Applying mutation for group ${groupToAdd.full_path}.`);
+    this.logger.debug(`Applying mutation for group ${groupToAdd.full_path}.`);
     await this.connection.applyMutation({
       type: 'delta',
       removed,
@@ -652,7 +648,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     }
 
     if (!this.shouldProcessUser(user)) {
-      this.logger.info(`Skipped user ${user.username}.`);
+      this.logger.debug(`Skipped user ${user.username}.`);
       return;
     }
 
@@ -668,7 +664,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
     const { added, removed } = createDeltaOperation([...userEntities]);
 
-    this.logger.info(`Applying mutation for user ${user.username}.`);
+    this.logger.debug(`Applying mutation for user ${user.username}.`);
     await this.connection.applyMutation({
       type: 'delta',
       removed,
@@ -701,7 +697,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
     // If the group is outside the scope there is no point creating anything related to it.
     if (!this.shouldProcessGroup(groupToRebuild)) {
-      this.logger.info(`Skipped group ${groupToRebuild.full_path}.`);
+      this.logger.debug(`Skipped group ${groupToRebuild.full_path}.`);
       return;
     }
 
@@ -748,7 +744,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
     const { added, removed } = createDeltaOperation([...groupEntityToModify]);
 
-    this.logger.info(
+    this.logger.debug(
       `Applying mutation for group ${groupToRebuild.full_path}.`,
     );
     await this.connection.applyMutation({

@@ -252,14 +252,12 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
    * @param event - The push event payload.
    */
   private async onRepoPush(event: WebhookPushEventSchema): Promise<void> {
-    this.logger.debug({ event });
-
     if (!this.connection) {
       throw new Error(
         `Gitlab discovery connection not initialized for ${this.getProviderName()}`,
       );
     }
-    this.logger.debug(
+    this.logger.info(
       `Received push event for ${event.project.path_with_namespace}`,
     );
 
@@ -271,7 +269,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     const project = await client.getProjectById(event.project_id);
 
     if (!project) {
-      this.logger.info(
+      this.logger.debug(
         `Ignoring push event for ${event.project.path_with_namespace}`,
       );
 
@@ -279,7 +277,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     }
 
     if (!(await this.shouldProcessProject(project, client))) {
-      this.logger.info(`Skipping event ${event.project.path_with_namespace}`);
+      this.logger.debug(`Skipping event ${event.project.path_with_namespace}`);
       return;
     }
 
@@ -365,11 +363,20 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     if (!event.commits) {
       return [];
     }
-    return event.commits.flatMap((element: any) =>
+
+    const matchingFiles = event.commits.flatMap((element: any) =>
       element[action].filter(
         (file: string) => path.basename(file) === catalogFile,
       ),
     );
+
+    if (matchingFiles.length === 0) {
+      this.logger.debug(
+        `No files matching '${catalogFile}' found in the commits.`,
+      );
+    }
+
+    return matchingFiles;
   }
 
   /**
@@ -383,7 +390,6 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     project: WebhookProjectSchema,
     addedFiles: string[],
   ): LocationSpec[] {
-    this.logger.debug(project);
     const projectBranch =
       this.config.branch ??
       project.default_branch ??
@@ -438,7 +444,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     client: GitLabClient,
   ): Promise<boolean> {
     if (!this.config.projectPattern.test(project.path_with_namespace ?? '')) {
-      this.logger.info(
+      this.logger.debug(
         `Skipping project ${project.path_with_namespace} as it does not match the project pattern ${this.config.projectPattern}.`,
       );
       return false;
@@ -448,7 +454,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       this.config.group &&
       !project.path_with_namespace!.startsWith(`${this.config.group}/`)
     ) {
-      this.logger.info(
+      this.logger.debug(
         `Skipping project ${project.path_with_namespace} as it does not match the group pattern ${this.config.group}.`,
       );
       return false;
@@ -458,7 +464,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       this.config.skipForkedRepos &&
       project.hasOwnProperty('forked_from_project')
     ) {
-      this.logger.info(
+      this.logger.debug(
         `Skipping project ${project.path_with_namespace} as it is a forked project.`,
       );
       return false;

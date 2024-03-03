@@ -437,8 +437,6 @@ export const config_userPattern_integration: MockObject = {
       gitlab: {
         'test-id': {
           host: 'example.com',
-          // group: 'group1',
-          // groupPattern: 'group',
           userPattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+.[a-zA-Z]{2,}$',
           orgEnabled: true,
         },

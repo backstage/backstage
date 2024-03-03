@@ -40,6 +40,10 @@ const httpHandlers = [
     return res(ctx.set('x-next-page', ''), ctx.json(all_projects_response));
   }),
 
+  rest.get(`${apiBaseUrl}/projects/42`, (_, res, ctx) => {
+    return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
+  }),
+
   // testing non existing file
   rest.get(
     `${apiBaseUrl}/projects/test-group%2Ftest-repo1/repository/files/catalog-info.yaml`,
