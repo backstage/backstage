@@ -293,10 +293,7 @@ export interface DocRequestMatcher<
   T,
   Method extends HttpMethods,
 > {
-  <
-    TPath extends MethodAwareDocPath<Doc, DocPath<Doc>, Method>,
-    TMethod extends DocPathMethod<Doc, TPath>,
-  >(
+  <TPath extends MethodAwareDocPath<Doc, DocPath<Doc>, Method>>(
     path: PathTemplate<TPath>,
     ...handlers: Array<DocRequestHandler<Doc, TPath, Method>>
   ): T;
@@ -338,6 +335,6 @@ type why = DocPathMethod<
 type test5 = MethodAwareDocPath<InputOutput, '/entities', 'GET'>;
 
 const router: TypedRouter = Router() as TypedRouter;
-router.post('/entities/by-refs', (req, res) => {
+router.post('/entities', (req, res) => {
   res.json([{}]);
 });
