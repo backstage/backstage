@@ -5,6 +5,9 @@ files:
     templateType: API
     # For some reason, they check for destinationFilename differences. We have to change the ending to override the file.
     destinationFilename: .server.ts
-  client/apis/index.mustache:
+  server/apis/index.mustache:
     templateType: SupportingFiles
     destinationFilename: apis/index.ts
+  server/index.mustache:
+    templateType: SupportingFiles
+    destinationFilename: index.ts

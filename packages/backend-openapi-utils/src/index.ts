@@ -36,5 +36,9 @@ export type {
   RequestMatcherByModelAndPathParams,
 } from './types/express';
 export type { PathTemplate } from './types/common';
-export { createValidatedOpenApiRouter, getOpenApiSpecRoute } from './stub';
+export {
+  createValidatedOpenApiRouter,
+  getOpenApiSpecRoute,
+  createValidatedOpenApiRouterFromGeneratedEndpointMap,
+} from './stub';
 export { wrapInOpenApiTestServer } from './testUtils';
