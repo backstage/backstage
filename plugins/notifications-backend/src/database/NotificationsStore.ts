@@ -32,6 +32,7 @@ export type NotificationGetOptions = {
   read?: boolean;
   saved?: boolean;
   createdAfter?: Date;
+  minimalSeverity?: Number;
 };
 
 /** @internal */

@@ -22,13 +22,27 @@ import {
   NotificationModifyOptions,
   NotificationsStore,
 } from './NotificationsStore';
-import { Notification } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  NotificationSeverity,
+} from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-notifications-backend',
   'migrations',
 );
+
+const severities: NotificationSeverity[] = [
+  'critical',
+  'high',
+  'normal',
+  'low',
+];
+export const getNumericSeverity = (severity: string): Number => {
+  const idx = severities.indexOf(severity as NotificationSeverity);
+  return idx >= 0 ? idx : 2 /* normal */;
+};
 
 /** @internal */
 export class DatabaseNotificationsStore implements NotificationsStore {
@@ -70,7 +84,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         description: row.description,
         link: row.link,
         topic: row.topic,
-        severity: row.severity,
+        severity: severities[row.severity],
         scope: row.scope,
         icon: row.icon,
       },
@@ -87,7 +101,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload?.link,
       title: notification.payload?.title,
       description: notification.payload?.description,
-      severity: notification.payload?.severity,
+      severity: getNumericSeverity(notification.payload?.severity ?? 'normal'),
       scope: notification.payload?.scope,
       saved: notification.saved,
       read: notification.read,
@@ -154,6 +168,10 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     } else if (options.saved === false) {
       query.whereNull('notification.saved');
     } // or match both if undefined
+
+    if (options.minimalSeverity !== undefined) {
+      query.where('notification.severity', '<=', options.minimalSeverity);
+    }
 
     return query;
   };
@@ -225,25 +243,28 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return rows[0] as Notification;
   }
 
-  async restoreExistingNotification(options: {
+  async restoreExistingNotification({
+    id,
+    notification,
+  }: {
     id: string;
     notification: Notification;
   }) {
     const query = this.db('notification')
-      .where('id', options.id)
-      .where('user', options.notification.user);
+      .where('id', id)
+      .where('user', notification.user);
 
     await query.update({
-      title: options.notification.payload.title,
-      description: options.notification.payload.description,
-      link: options.notification.payload.link,
-      topic: options.notification.payload.topic,
+      title: notification.payload.title,
+      description: notification.payload.description,
+      link: notification.payload.link,
+      topic: notification.payload.topic,
       updated: new Date(),
-      severity: options.notification.payload.severity,
+      severity: getNumericSeverity(notification.payload?.severity ?? 'normal'),
       read: null,
     });
 
-    return await this.getNotification(options);
+    return await this.getNotification({ id });
   }
 
   async getNotification(options: { id: string }): Promise<Notification | null> {

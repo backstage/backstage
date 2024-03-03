@@ -33,6 +33,7 @@ import MarkAsUnreadIcon from '@material-ui/icons/Markunread' /* TODO: use Drafts
 import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
 import MarkAsUnsavedIcon from '@material-ui/icons/LabelOff' /* TODO: use BookmarkRemove and BookmarkAdd once we have mui 5 icons */;
 import MarkAsSavedIcon from '@material-ui/icons/Label';
+import { SeverityIcon } from './SeverityIcon';
 
 const ThrottleDelayMs = 1000;
 
@@ -93,6 +94,12 @@ export const NotificationsTable = ({
 
   const compactColumns = React.useMemo(
     (): TableColumn<Notification>[] => [
+      {
+        width: '1rem',
+        render: (notification: Notification) => (
+          <SeverityIcon severity={notification.payload?.severity} />
+        ),
+      },
       {
         customFilterAndSearch: () =>
           true /* Keep it on backend due to pagination. If recent flickering is an issue, implement search here as well. */,

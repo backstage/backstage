@@ -32,6 +32,7 @@ import {
   SortByOptions,
 } from '../NotificationsFilters';
 import { GetNotificationsOptions } from '../../api';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 
 export const NotificationsPage = () => {
   const [refresh, setRefresh] = React.useState(false);
@@ -45,6 +46,8 @@ export const NotificationsPage = () => {
   const [sorting, setSorting] = React.useState<SortBy>(
     SortByOptions.newest.sortBy,
   );
+  const [severity, setSeverity] =
+    React.useState<NotificationSeverity>('normal');
 
   const { error, value, retry, loading } = useNotificationsApi(
     api => {
@@ -52,6 +55,7 @@ export const NotificationsPage = () => {
         search: containsText,
         limit: pageSize,
         offset: pageNumber * pageSize,
+        minimalSeverity: severity,
         ...(sorting || {}),
       };
       if (unreadOnly !== undefined) {
@@ -76,6 +80,7 @@ export const NotificationsPage = () => {
       pageSize,
       sorting,
       saved,
+      severity,
     ],
   );
 
@@ -114,6 +119,8 @@ export const NotificationsPage = () => {
               sorting={sorting}
               saved={saved}
               onSavedChanged={setSaved}
+              severity={severity}
+              onSeverityChanged={setSeverity}
             />
           </Grid>
           <Grid item xs={10}>
