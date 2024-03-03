@@ -45,6 +45,7 @@ export const OPENAPI_IGNORE_FILES = [
   // Override the created version.
   'apis/*.ts',
   '!apis/*.client.ts',
+  '!apis/*.server.ts',
   'models/*.ts',
   '!models/*.model.ts',
 

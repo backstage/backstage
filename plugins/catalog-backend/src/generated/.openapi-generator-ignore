@@ -1,4 +1,5 @@
 *.md
+*.mustache
 apis/baseapi.ts
 apis/exception.ts
 auth/*
@@ -11,6 +12,7 @@ rxjsStub.ts
 .gitignore
 apis/*.ts
 !apis/*.client.ts
+!apis/*.server.ts
 models/*.ts
 !models/*.model.ts
 !index.ts

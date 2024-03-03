@@ -8,25 +8,27 @@ files:
   client/model.mustache:
     templateType: Model
     destinationFilename: .model.ts
-  client/models/modelGeneric.mustache:
+  modelGeneric.mustache:
     templateType: SupportingFiles
-  client/models/modelOneOf.mustache:
+  modelOneOf.mustache:
     templateType: SupportingFiles
-  client/models/modelGenericAdditionalProperties.mustache:
+  modelGenericAdditionalProperties.mustache:
     templateType: SupportingFiles
-  client/models/ modelGenericEnums.mustache:
+  modelGenericEnums.mustache:
     templateType: SupportingFiles
-  client/models/modelAlias.mustache:
+  modelAlias.mustache:
     templateType: SupportingFiles
-  client/models/modelEnum.mustache:
+  modelEnum.mustache:
     templateType: SupportingFiles
-  client/models/modelTaggedUnion.mustache:
+  modelTaggedUnion.mustache:
     templateType: SupportingFiles
   client/models/models_all.mustache:
     templateType: SupportingFiles
     destinationFilename: models/index.ts
-  client/types/fetch.ts: {}
-  client/types/discovery.ts: {}
+  client/types/fetch.ts:
+    destinationFilename: types/fetch.ts
+  client/types/discovery.ts:
+    destinationFilename: types/discovery.ts
   client/apis/index.mustache:
     templateType: SupportingFiles
     destinationFilename: apis/index.ts

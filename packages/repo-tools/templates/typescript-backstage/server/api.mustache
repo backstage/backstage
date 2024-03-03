@@ -22,7 +22,8 @@ type ExtendsString<Path extends string> = Path;
     type InputOutput = {
         {{#operation}}
         
-        '#{{httpMethod}}|{{path}}': {
+        '{{path}}': {
+            '{{httpMethod}}': {
             path: {
                 {{#pathParams}}
                     {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
@@ -37,6 +38,7 @@ type ExtendsString<Path extends string> = Path;
                 body: {{{dataType}}},
             {{/bodyParam}}
             response: {{{returnType}}}{{^returnType}}void{{/returnType}},
+            }
         },
         
         {{/operation}}
