@@ -16,7 +16,6 @@
 
 import type core from 'express-serve-static-core';
 
-
 import type {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
@@ -35,191 +34,212 @@ import type {
 } from '@backstage/catalog-client';
 import { Router } from 'express';
 
-
 /**
  * no description
  */
 
-    type InputOutput = {
-        
-        '#POST|/analyze-location': {
-            path: {
-            },
-            query: {
-            },
-                body: AnalyzeLocationRequest,
-            response: AnalyzeLocationResponse,
-        },
-        
-        
-        '#POST|/locations': {
-            path: {
-            },
-            query: {
-                    dryRun?: string,
-            },
-                body: CreateLocationRequest,
-            response: CreateLocation201Response,
-        },
-        
-        
-        '#DELETE|/entities/by-uid/{uid}': {
-            path: {
-                    uid: string,
-            },
-            query: {
-            },
-            response: void,
-        },
-        
-        
-        '#DELETE|/locations/{id}': {
-            path: {
-                    id: string,
-            },
-            query: {
-            },
-            response: void,
-        },
-        
-        
-        '#GET|/entities': {
-            path: {
-            },
-            query: {
-                    fields?: Array<string>,
-                    limit?: number,
-                    filter?: Array<string>,
-                    offset?: number,
-                    after?: string,
-                    order?: Array<string>,
-            },
-            response: Array<Entity>,
-        },
-        
-        
-        '#GET|/entities/by-query': {
-            path: {
-            },
-            query: {
-                    fields?: Array<string>,
-                    limit?: number,
-                    orderField?: Array<string>,
-                    cursor?: string,
-                    filter?: Array<string>,
-                    fullTextFilterTerm?: string,
-                    fullTextFilterFields?: Array<string>,
-            },
-            response: EntitiesQueryResponse,
-        },
-        
-        
-        '#POST|/entities/by-refs': {
-            path: {
-            },
-            query: {
-            },
-                body: GetEntitiesByRefsRequest,
-            response: EntitiesBatchResponse,
-        },
-        
-        
-        '#GET|/entities/by-name/{kind}/{namespace}/{name}/ancestry': {
-            path: {
-                    kind: string,
-                    namespace: string,
-                    name: string,
-            },
-            query: {
-            },
-            response: EntityAncestryResponse,
-        },
-        
-        
-        '#GET|/entities/by-name/{kind}/{namespace}/{name}': {
-            path: {
-                    kind: string,
-                    namespace: string,
-                    name: string,
-            },
-            query: {
-            },
-            response: Entity,
-        },
-        
-        
-        '#GET|/entities/by-uid/{uid}': {
-            path: {
-                    uid: string,
-            },
-            query: {
-            },
-            response: Entity,
-        },
-        
-        
-        '#GET|/entity-facets': {
-            path: {
-            },
-            query: {
-                    facet: Array<string>,
-                    filter?: Array<string>,
-            },
-            response: EntityFacetsResponse,
-        },
-        
-        
-        '#GET|/locations/{id}': {
-            path: {
-                    id: string,
-            },
-            query: {
-            },
-            response: Location,
-        },
-        
-        
-        '#GET|/locations': {
-            path: {
-            },
-            query: {
-            },
-            response: Array<GetLocations200ResponseInner>,
-        },
-        
-        
-        '#POST|/refresh': {
-            path: {
-            },
-            query: {
-            },
-                body: RefreshEntityRequest,
-            response: void,
-        },
-        
-        
-        '#POST|/validate-entity': {
-            path: {
-            },
-            query: {
-            },
-                body: ValidateEntityRequest,
-            response: void,
-        },
-        
+type InputOutput = {
+  '#POST|/analyze-location': {
+    path: {};
+    query: {};
+    body: AnalyzeLocationRequest;
+    response: AnalyzeLocationResponse;
+  };
+
+  '#POST|/locations': {
+    path: {};
+    query: {
+      dryRun?: string;
     };
+    body: CreateLocationRequest;
+    response: CreateLocation201Response;
+  };
 
-type ValueOf<T> = T[keyof T]; 
+  '#DELETE|/entities/by-uid/{uid}': {
+    path: {
+      uid: string;
+    };
+    query: {};
+    response: void;
+  };
 
-type Filter<T, K> = T extends K ? K : never;
+  '#DELETE|/locations/{id}': {
+    path: {
+      id: string;
+    };
+    query: {};
+    response: void;
+  };
 
-type ExtractDocPath<Path extends string> = Path extends `#${string}|${infer OpenApiPath}` ? OpenApiPath : never;
+  '#GET|/entities': {
+    path: {};
+    query: {
+      fields?: Array<string>;
+      limit?: number;
+      filter?: Array<string>;
+      offset?: number;
+      after?: string;
+      order?: Array<string>;
+    };
+    response: Array<Entity>;
+  };
 
-type ExtractDocMethod<Path extends string> = Path extends `#${infer Method}|${string}` ? Method : never
+  '#GET|/entities/by-query': {
+    path: {};
+    query: {
+      fields?: Array<string>;
+      limit?: number;
+      orderField?: Array<string>;
+      cursor?: string;
+      filter?: Array<string>;
+      fullTextFilterTerm?: string;
+      fullTextFilterFields?: Array<string>;
+    };
+    response: EntitiesQueryResponse;
+  };
 
-type DocPath<Doc extends InputOutput> = ExtractDocPath<Filter<keyof Doc, string>>;
+  '#POST|/entities/by-refs': {
+    path: {};
+    query: {};
+    body: GetEntitiesByRefsRequest;
+    response: EntitiesBatchResponse;
+  };
 
-type DocPathMethod<Doc extends InputOutput, Path extends string> = ExtractDocMethod<Path>;
+  '#GET|/entities/by-name/{kind}/{namespace}/{name}/ancestry': {
+    path: {
+      kind: string;
+      namespace: string;
+      name: string;
+    };
+    query: {};
+    response: EntityAncestryResponse;
+  };
+
+  '#GET|/entities/by-name/{kind}/{namespace}/{name}': {
+    path: {
+      kind: string;
+      namespace: string;
+      name: string;
+    };
+    query: {};
+    response: Entity;
+  };
+
+  '#GET|/entities/by-uid/{uid}': {
+    path: {
+      uid: string;
+    };
+    query: {};
+    response: Entity;
+  };
+
+  '#GET|/entity-facets': {
+    path: {};
+    query: {
+      facet: Array<string>;
+      filter?: Array<string>;
+    };
+    response: EntityFacetsResponse;
+  };
+
+  '#GET|/locations/{id}': {
+    path: {
+      id: string;
+    };
+    query: {};
+    response: Location;
+  };
+
+  '/locations': {
+    get: {
+      path: {};
+      query: {};
+      response: Array<GetLocations200ResponseInner>;
+    };
+  };
+
+  '#POST|/refresh': {
+    path: {};
+    query: {};
+    body: RefreshEntityRequest;
+    response: void;
+  };
+
+  '#POST|/validate-entity': {
+    path: {};
+    query: {};
+    body: ValidateEntityRequest;
+    response: void;
+  };
+};
+
+type PathTemplate<Path extends string> =
+  Path extends `${infer Prefix}{${infer PathName}}${infer Suffix}`
+    ? `${Prefix}:${PathName}${PathTemplate<Suffix>}`
+    : Path;
+
+type HttpMethods = Uppercase<'all' | 'put' | 'get' | 'post' | 'delete'>;
+
+type ValueOf<T> = T[keyof T];
+
+/**
+ * @public
+ */
+export type Filter<T, U> = T extends U ? T : never;
+
+type DocPath<Doc extends InputOutput> = ValueOf<{
+  [Template in keyof Doc]: Template extends `#${string}|${infer Path}`
+    ? Path
+    : never;
+}>;
+
+type DocPathMethod<
+  Doc extends InputOutput,
+  Path extends DocPath<Doc>,
+> = ValueOf<{
+  [Template in keyof Doc]: Template extends `#${infer Method}|${Path}`
+    ? Method extends string
+      ? Method
+      : never
+    : never;
+}>;
+
+type PathSchema<
+  Doc extends InputOutput,
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
+> = `#${Method}|${Path}` extends keyof Doc
+  ? 'path' extends keyof Doc[`#${Method}|${Path}`]
+    ? Doc[`#${Method}|${Path}`]['path']
+    : never
+  : never;
+type RequestBody<
+  Doc extends InputOutput,
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
+> = `#${Method}|${Path}` extends keyof Doc
+  ? 'body' extends keyof Doc[`#${Method}|${Path}`]
+    ? Doc[`#${Method}|${Path}`]['body']
+    : any
+  : any;
+type ResponseBody<
+  Doc extends InputOutput,
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
+> = `#${Method}|${Path}` extends keyof Doc
+  ? 'response' extends keyof Doc[`#${Method}|${Path}`]
+    ? Doc[`#${Method}|${Path}`]['response']
+    : any
+  : any;
+type QuerySchema<
+  Doc extends InputOutput,
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
+> = `#${Method}|${Path}` extends keyof Doc
+  ? 'query' extends keyof Doc[`#${Method}|${Path}`]
+    ? Doc[`#${Method}|${Path}`]['query']
+    : never
+  : never;
 
 /**
  * Typed express request handler.
@@ -231,8 +251,8 @@ export type DocRequestHandler<
   Method extends DocPathMethod<Doc, Path>,
 > = core.RequestHandler<
   PathSchema<Doc, Path, Method>,
-  ResponseBodyToJsonSchema<Doc, Path, Method>,
-  RequestBodyToJsonSchema<Doc, Path, Method>,
+  ResponseBody<Doc, Path, Method>,
+  RequestBody<Doc, Path, Method>,
   QuerySchema<Doc, Path, Method>,
   Record<string, string>
 >;
@@ -242,60 +262,85 @@ export type DocRequestHandler<
  * @public
  */
 export type DocRequestHandlerParams<
-  Doc extends RequiredDoc,
+  Doc extends InputOutput,
   Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
 > = core.RequestHandlerParams<
   PathSchema<Doc, Path, Method>,
-  ResponseBodyToJsonSchema<Doc, Path, Method>,
-  RequestBodyToJsonSchema<Doc, Path, Method>,
+  ResponseBody<Doc, Path, Method>,
+  RequestBody<Doc, Path, Method>,
   QuerySchema<Doc, Path, Method>,
   Record<string, string>
 >;
+
+/**
+ * @public
+ */
+export type MethodAwareDocPath<
+  Doc extends InputOutput,
+  Path extends DocPath<Doc>,
+  Method extends DocPathMethod<Doc, Path>,
+> = ValueOf<{
+  [Template in keyof Doc]: Template extends `#${Method}|${Path}` ? Path : never;
+}>;
 
 /**
  * Superset of the express router path matcher that enforces typed request and response bodies.
  * @public
  */
 export interface DocRequestMatcher<
-  Doc extends RequiredDoc,
+  Doc extends InputOutput,
   T,
-  Method extends
-    | 'all'
-    | 'get'
-    | 'post'
-    | 'put'
-    | 'delete'
-    | 'patch'
-    | 'options'
-    | 'head',
+  Method extends HttpMethods,
 > {
   <
-    Path extends MethodAwareDocPath<
-      Doc,
-      PathTemplate<Extract<keyof Doc['paths'], string>>,
-      Method
-    >,
+    TPath extends DocPath<Doc>,
+    TMethod extends Filter<DocPathMethod<Doc, TPath>, Method>,
   >(
-    path: Path,
-    ...handlers: Array<
-      DocRequestHandler<Doc, TemplateToDocPath<Doc, Path>, Method>
-    >
+    path: PathTemplate<MethodAwareDocPath<Doc, TPath, TMethod>>,
+    ...handlers: Array<DocRequestHandler<Doc, TPath, TMethod>>
   ): T;
   <
-    Path extends MethodAwareDocPath<
-      Doc,
-      PathTemplate<Extract<keyof Doc['paths'], string>>,
-      Method
-    >,
+    TPath extends DocPath<Doc>,
+    TMethod extends Filter<DocPathMethod<Doc, TPath>, Method>,
   >(
-    path: Path,
-    ...handlers: Array<
-      DocRequestHandlerParams<Doc, TemplateToDocPath<Doc, Path>, Method>
-    >
+    path: PathTemplate<MethodAwareDocPath<Doc, TPath, TMethod>>,
+    ...handlers: Array<DocRequestHandlerParams<Doc, TPath, TMethod>>
   ): T;
 }
 
 export interface TypedRouter extends Router {
-    get: 
+  get: DocRequestMatcher<InputOutput, this, 'GET'>;
+  post: DocRequestMatcher<InputOutput, this, 'POST'>;
+  put: DocRequestMatcher<InputOutput, this, 'PUT'>;
+  delete: DocRequestMatcher<InputOutput, this, 'DELETE'>;
 }
+
+type method = DocRequestMatcher<InputOutput, Router, 'POST'>;
+
+type test2 = keyof method;
+
+type paths = PathTemplate<DocPath<InputOutput>>;
+type test3 = PathSchema<
+  InputOutput,
+  '/entities/by-name/{kind}/{namespace}/{name}',
+  'GET'
+>;
+
+type test4 = ResponseBody<
+  InputOutput,
+  '/entities/by-name/{kind}/{namespace}/{name}',
+  'GET'
+>;
+type Method = DocPath<InputOutput>;
+type why = DocPathMethod<
+  InputOutput,
+  '/entities/by-name/{kind}/{namespace}/{name}'
+>;
+
+type test5 = MethodAwareDocPath<InputOutput, '/entities', 'GET'>;
+
+const router: TypedRouter = Router() as TypedRouter;
+router.post('/entities', (req, res) => {
+  res.json([{}]);
+});
