@@ -1,15 +1,9 @@
 {{>licenseInfo}}
 import type {
-  PathTemplate,RequestMatcherByModelAndPath,RequestMatcherByModelAndPathParams
-} from '@backstage/backend-openapi-utils';
-import type {
 {{#imports}}
   {{classname}},
 {{/imports}}
 } from '{{clientPackageName}}';
-import {Router} from 'express';
-
-type ExtendsString<Path extends string> = Path;
 
 
 {{#operations}}
@@ -17,31 +11,29 @@ type ExtendsString<Path extends string> = Path;
 /**
  * {{{description}}}{{^description}}no description{{/description}}
  */
-{{! export interface TypedRouter extends Router { }}
 
-    type InputOutput = {
-        {{#operation}}
-        
-        '{{path}}': {
-            '{{httpMethod}}': {
-            path: {
-                {{#pathParams}}
-                    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-                {{/pathParams}}
-            },
-            query: {
-                {{#queryParams}}
-                    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-                {{/queryParams}}
-            },
-            {{#bodyParam}}
-                body: {{{dataType}}},
-            {{/bodyParam}}
-            response: {{{returnType}}}{{^returnType}}void{{/returnType}},
-            }
+export type EndpointMap = {
+    {{#operation}}
+    
+    '#{{#lambda.lowercase}}{{httpMethod}}{{/lambda.lowercase}}|{{path}}': {
+        path: {
+            {{#pathParams}}
+                {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+            {{/pathParams}}
         },
-        
-        {{/operation}}
-    }
-{{! } }}
+        query: {
+            {{#queryParams}}
+                {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+            {{/queryParams}}
+        },
+        {{#bodyParam}}
+            body: {{{dataType}}},
+        {{/bodyParam}}
+        {{#returnType}}
+            response: {{{returnType}}},
+        {{/returnType}}
+    },
+    
+    {{/operation}}
+}
 {{/operations}}

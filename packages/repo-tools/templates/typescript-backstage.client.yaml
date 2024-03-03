@@ -35,3 +35,6 @@ files:
   client/pluginId.mustache:
     templateType: SupportingFiles
     destinationFilename: pluginId.ts
+  client/index.mustache:
+    templateType: SupportingFiles
+    destinationFilename: index.ts

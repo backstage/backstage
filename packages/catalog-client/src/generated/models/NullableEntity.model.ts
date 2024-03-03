@@ -23,7 +23,7 @@ import { EntityRelation } from '../models/EntityRelation.model';
 /**
  * The parts of the format that's common to all versions/kinds of entity.
  */
-export interface NullableEntity {
+export type NullableEntity = {
   /**
    * The relations that this entity has with other entities.
    */
@@ -41,4 +41,4 @@ export interface NullableEntity {
    * The version of specification format for this particular entity that this is written against.
    */
   apiVersion: string;
-}
+} | null;
