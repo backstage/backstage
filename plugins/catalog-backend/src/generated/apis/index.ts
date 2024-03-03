@@ -14,5 +14,4 @@
  * limitations under the License.
  */
 
-
-export * from './DefaultApi.client';
+export * from './DefaultApi.server';

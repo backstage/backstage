@@ -49,13 +49,8 @@ import {
 import { createOpenApiRouter } from '../schema/openapi.generated';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
-import {
-  AuthService,
-  HttpAuthService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
-import { TypedRouter } from '../generated/apis';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 
 /**
  * Options used by {@link createRouter}.
@@ -84,13 +79,13 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = (await createOpenApiRouter({
+  const router = await createOpenApiRouter({
     validatorOptions: {
       // We want the spec to be up to date with the expected value, but the return type needs
       //  to be controlled by the router implementation not the request validator.
       ignorePaths: /^\/validate-entity\/?$/,
     },
-  })) as TypedRouter;
+  });
   const {
     entitiesCatalog,
     locationAnalyzer,
