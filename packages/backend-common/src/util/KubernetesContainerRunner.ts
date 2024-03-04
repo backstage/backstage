@@ -391,7 +391,6 @@ function handleKubernetesError(message: string, err: any): Error {
         return new Error(`${message} ${parsedBody.message}`);
       }
     } catch (e) {
-      return new Error(`${message} Error parsing response body - ${e.message}`);
     }
   }
   return new Error(`${message} Error: ${err.message || 'Unknown error'}`);
