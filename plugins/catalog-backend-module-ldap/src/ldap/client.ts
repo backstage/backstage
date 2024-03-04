@@ -15,7 +15,7 @@
  */
 
 import { ForwardedError, stringifyError } from '@backstage/errors';
-import * as fs from 'fs';
+import { readFileSync } from 'fs';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { cloneDeep } from 'lodash';
 import tlsLib from 'tls';
@@ -47,27 +47,26 @@ export class LdapClient {
     tls?: TLSConfig,
   ): Promise<LdapClient> {
     const readTLSOptionFile = (file?: string) =>
-      file !== undefined ? fs.readFileSync(file).toString() : undefined;
+      file !== undefined ? readFileSync(file).toString() : undefined;
 
-    const getTlsOptions = () => {
-      const certs = readTLSOptionFile(tls?.certs);
-      const keys = readTLSOptionFile(tls?.keys);
-
-      if (certs !== undefined || keys !== undefined) {
-        return {
-          secureContext: tlsLib.createSecureContext({
+    const certs = readTLSOptionFile(tls?.certs);
+    const keys = readTLSOptionFile(tls?.keys);
+    const secureContext =
+      certs !== undefined || keys !== undefined
+        ? tlsLib.createSecureContext({
             cert: certs,
             key: keys,
-          }),
-          rejectUnauthorized: tls?.rejectUnauthorized,
-        };
-      }
-      return tls;
+          })
+        : undefined;
+
+    const tlsOptions = {
+      secureContext,
+      rejectUnauthorized: tls?.rejectUnauthorized,
     };
 
     const client = ldap.createClient({
       url: target,
-      tlsOptions: getTlsOptions(),
+      tlsOptions: tlsOptions,
     });
 
     // We want to have a catch-all error handler at the top, since the default
