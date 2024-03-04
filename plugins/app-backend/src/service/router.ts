@@ -38,6 +38,8 @@ import {
   CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
 import { ConfigSchema } from '@backstage/config-loader';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import { AuthenticationError } from '@backstage/errors';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -46,6 +48,8 @@ type Mime = { lookup(arg0: string): string };
 export interface RouterOptions {
   config: Config;
   logger: Logger;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 
   /**
    * If a database is provided it will be used to cache previously deployed static assets.
@@ -99,7 +103,14 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { config, logger, appPackageName, staticFallbackHandler } = options;
+  const {
+    config,
+    logger,
+    appPackageName,
+    staticFallbackHandler,
+    auth,
+    httpAuth,
+  } = options;
 
   const disableConfigInjection =
     options.disableConfigInjection ??
@@ -154,9 +165,80 @@ export async function createRouter(
 
   router.use(helmet.frameguard({ action: 'deny' }));
 
+  const publicDistDir = resolvePath(appDistDir, 'public');
+
+  const enablePublicEntryPoint = await fs.pathExists(publicDistDir);
+
+  /*
+  TODO:
+        - Cookie refresh
+          - Backend endpoint, /.backstage/v1-cookie
+          - Frontend provider
+        - Remove issueUserCookie from HttpAuthService and move to auth-node
+        - Move RedirectToRoot to auth-react
+        - Document index-public-experimental & how to use
+        - Logout? How do we clear the cookie?
+
+  */
+
+  if (enablePublicEntryPoint && auth && httpAuth) {
+    const publicRouter = Router();
+
+    // TODO
+    // publicRouter.use(createCookieAuthRouter({ httpAuth }))
+
+    publicRouter.use(async (req, _res, next) => {
+      const credentials = await httpAuth.credentials(req, {
+        allow: ['user', 'service', 'none'],
+        allowLimitedAccess: true,
+      });
+
+      if (credentials.principal.type === 'none') {
+        next();
+      } else {
+        next('router');
+      }
+    });
+
+    publicRouter.post(
+      '*',
+      express.urlencoded({ extended: true }),
+      async (req, res, next) => {
+        if (req.body.type === 'sign-in') {
+          const credentials = await auth.authenticate(req.body.token);
+
+          if (!auth.isPrincipal(credentials, 'user')) {
+            throw new AuthenticationError('Invalid token, not a user');
+          }
+
+          await httpAuth.issueUserCookie(res, {
+            credentials,
+          });
+
+          // Resume as if it was a GET request towards the outer protected router, serving index.html
+          req.method = 'GET';
+          next('router');
+        } else {
+          throw new Error('Invalid POST request to /');
+        }
+      },
+    );
+
+    publicRouter.use(
+      await createEntryPointRouter({
+        logger: logger.child({ entry: 'public' }),
+        rootDir: publicDistDir,
+        assetStore: assetStore?.withNamespace('public'),
+        appConfigs, // TODO(Rugvip): We should not be including the full config here
+      }),
+    );
+
+    router.use(publicRouter);
+  }
+
   router.use(
     await createEntryPointRouter({
-      logger,
+      logger: logger.child({ entry: 'main' }),
       rootDir: appDistDir,
       assetStore,
       staticFallbackHandler,

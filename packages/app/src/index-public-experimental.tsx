@@ -22,25 +22,17 @@ import {
   SignInPage,
 } from '@backstage/core-components';
 import React from 'react';
+import useAsync from 'react-use/lib/useAsync';
 import ReactDOM from 'react-dom/client';
 import { providers } from '../src/identityProviders';
 import {
   configApiRef,
   createApiFactory,
   discoveryApiRef,
+  identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
-
-// TODO(Rugvip): make this available via some util, or maybe Utility API?
-function readBasePath(configApi: typeof configApiRef.T) {
-  let { pathname } = new URL(
-    configApi.getOptionalString('app.baseUrl') ?? '/',
-    'http://sample.dev', // baseUrl can be specified as just a path
-  );
-  pathname = pathname.replace(/\/*$/, '');
-  return pathname;
-}
 
 const app = createApp({
   apis: [
@@ -65,8 +57,33 @@ const app = createApp({
 });
 
 function RedirectToRoot() {
-  window.location.pathname = readBasePath(useApi(configApiRef));
-  return <div />;
+  const identityApi = useApi(identityApiRef);
+
+  const { value, loading, error } = useAsync(async () => {
+    const { token } = await identityApi.getCredentials();
+    if (!token) {
+      throw new Error('Expected Backstage token in sign-in response');
+    }
+    return token;
+  }, [identityApi]);
+
+  if (loading) {
+    return null;
+  } else if (error) {
+    return <>An error occurred: {error}</>;
+  }
+
+  return (
+    <form
+      ref={form => form?.submit()}
+      action={window.location.href}
+      method="POST"
+    >
+      <input type="hidden" name="type" value="sign-in" />
+      <input type="hidden" name="token" value={value} />
+      <input type="submit" value="Continue" />
+    </form>
+  );
 }
 
 const App = app.createRoot(
