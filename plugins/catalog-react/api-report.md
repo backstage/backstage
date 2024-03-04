@@ -182,6 +182,7 @@ export type DefaultFiltersProps = {
   initialKind?: string;
   initiallySelectedFilter?: UserListFilterKind;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  initiallySelectedNamespaces?: string[];
 };
 
 // @public (undocumented)
