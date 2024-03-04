@@ -122,6 +122,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
             initialKind={initialKind}
             initiallySelectedFilter={initiallySelectedFilter}
             ownerPickerMode={ownerPickerMode}
+            initiallySelectedNamespaces={initiallySelectedNamespaces}
           />
         )
       }
