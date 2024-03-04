@@ -53,10 +53,11 @@ export const AdrReader = (props: {
     [adrFileLocationUrl],
   );
 
-  const { value: backendUrl } = useAsync(
-    async () => discoveryApi.getBaseUrl('adr'),
-    [],
-  );
+  const {
+    value: backendUrl,
+    loading: backendUrlLoading,
+    error: backendUrlError,
+  } = useAsync(async () => discoveryApi.getBaseUrl('adr'), []);
   const adrContent = useMemo(() => {
     if (!value?.data) {
       return '';
@@ -82,15 +83,26 @@ export const AdrReader = (props: {
         <WarningPanel title="Failed to fetch ADR" message={error?.message} />
       )}
 
-      {!loading && !error && value?.data && (
-        <MarkdownContent
-          content={adrContent}
-          linkTarget="_blank"
-          transformImageUri={href => {
-            return `${backendUrl}/image?url=${href}`;
-          }}
+      {!backendUrlLoading && backendUrlError && (
+        <WarningPanel
+          title="Failed to fetch ADR Image"
+          message={backendUrlError?.message}
         />
       )}
+
+      {!loading &&
+        !backendUrlLoading &&
+        !error &&
+        !backendUrlError &&
+        value?.data && (
+          <MarkdownContent
+            content={adrContent}
+            linkTarget="_blank"
+            transformImageUri={href => {
+              return `${backendUrl}/image?url=${href}`;
+            }}
+          />
+        )}
     </InfoCard>
   );
 };
