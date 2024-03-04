@@ -22,6 +22,8 @@ export const AZURE_DEVOPS_HOST_ORG_ANNOTATION = 'dev.azure.com/host-org';
 /** @public */
 export const AZURE_DEVOPS_PROJECT_ANNOTATION = 'dev.azure.com/project';
 /** @public */
+export const AZURE_DEVOPS_README_ANNOTATION = 'dev.azure.com/readme-path';
+/** @public */
 export const AZURE_DEVOPS_REPO_ANNOTATION = 'dev.azure.com/project-repo';
 /** @public */
 export const AZURE_DEVOPS_DEFAULT_TOP: number = 10;

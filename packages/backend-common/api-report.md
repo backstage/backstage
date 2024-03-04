@@ -8,6 +8,7 @@
 
 import { AppConfig } from '@backstage/config';
 import { AuthCallback } from 'isomorphic-git';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
@@ -30,6 +31,7 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
 import { Knex } from 'knex';
@@ -65,6 +67,7 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
@@ -231,6 +234,39 @@ export function createDatabaseClient(
     pluginMetadata: PluginMetadataService;
   },
 ): knexFactory.Knex<any, any[]>;
+
+// @public
+export function createLegacyAuthAdapters<
+  TOptions extends {
+    auth?: AuthService;
+    httpAuth?: HttpAuthService;
+    userInfo?: UserInfoService;
+    identity?: IdentityService;
+    tokenManager?: TokenManager;
+    discovery: PluginEndpointDiscovery;
+  },
+  TAdapters = (TOptions extends {
+    auth?: AuthService;
+  }
+    ? {
+        auth: AuthService;
+      }
+    : {}) &
+    (TOptions extends {
+      httpAuth?: HttpAuthService;
+    }
+      ? {
+          httpAuth: HttpAuthService;
+        }
+      : {}) &
+    (TOptions extends {
+      userInfo?: UserInfoService;
+    }
+      ? {
+          userInfo: UserInfoService;
+        }
+      : {}),
+>(options: TOptions): TAdapters;
 
 // @public
 export function createRootLogger(

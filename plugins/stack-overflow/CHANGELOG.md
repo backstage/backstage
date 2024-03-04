@@ -1,5 +1,34 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.26-next.0
+
+### Patch Changes
+
+- c6779ac: fix: fix decode issues in title and author fields in `StackOverflowSearchResultListItem`
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-search-common@1.2.11-next.0
+  - @backstage/plugin-home-react@0.1.9-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/plugin-search-react@1.7.7-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+
+## 0.1.25
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- c1bc331: Fixes a bug that made the API return questions not related to the tags provided
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/plugin-search-react@1.7.6
+  - @backstage/plugin-home-react@0.1.8
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.1.25-next.3
 
 ### Patch Changes

@@ -1,5 +1,39 @@
 # @backstage/plugin-adr-backend
 
+## 0.4.10-next.0
+
+### Patch Changes
+
+- 334c5fe: Updated dependency `marked` to `^12.0.0`.
+- c8fdd83: Migrated `DefaultAdrCollatorFactory` to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-adr-common@0.2.21-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-search-common@1.2.11-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+
+## 0.4.7
+
+### Patch Changes
+
+- b64ce5a: Updated New Backend System instructions to use default import
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration@1.9.0
+  - @backstage/catalog-client@1.6.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-adr-common@0.2.20
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.4.7-next.3
 
 ### Patch Changes

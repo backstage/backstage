@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import {
   AZURE_DEVOPS_PROJECT_ANNOTATION,
   AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION,
+  AZURE_DEVOPS_README_ANNOTATION,
   AZURE_DEVOPS_REPO_ANNOTATION,
   AZURE_DEVOPS_HOST_ORG_ANNOTATION,
 } from '@backstage/plugin-azure-devops-common';
@@ -28,6 +29,7 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
   definition?: string;
   host?: string;
   org?: string;
+  readmePath?: string;
 } {
   const hostOrg = getHostOrg(entity.metadata.annotations);
   const projectRepo = getProjectRepo(entity.metadata.annotations);
@@ -35,12 +37,15 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
     entity.metadata.annotations?.[AZURE_DEVOPS_PROJECT_ANNOTATION];
   const definition =
     entity.metadata.annotations?.[AZURE_DEVOPS_BUILD_DEFINITION_ANNOTATION];
+  const readmePath =
+    entity.metadata.annotations?.[AZURE_DEVOPS_README_ANNOTATION];
 
   if (definition) {
     if (project) {
       return {
         project,
         definition,
+        readmePath: readmePath,
         ...hostOrg,
       };
     }
@@ -49,6 +54,7 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
         project: projectRepo.project,
         repo: projectRepo.repo,
         definition,
+        readmePath: readmePath,
         ...hostOrg,
       };
     }
@@ -60,6 +66,7 @@ export function getAnnotationValuesFromEntity(entity: Entity): {
       return {
         project: projectRepo.project,
         repo: projectRepo.repo,
+        readmePath: readmePath,
         ...hostOrg,
       };
     }

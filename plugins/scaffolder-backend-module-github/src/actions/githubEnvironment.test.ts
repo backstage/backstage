@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
 import { createGithubEnvironmentAction } from './githubEnvironment';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -58,17 +57,12 @@ describe('github:environment:create', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   let action: TemplateAction<any>;
 
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'github.com?repo=repository&owner=owner',
       name: 'envname',
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     mockOctokit.rest.actions.getEnvironmentPublicKey.mockResolvedValue({

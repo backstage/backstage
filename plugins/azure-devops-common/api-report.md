@@ -17,6 +17,9 @@ export const AZURE_DEVOPS_HOST_ORG_ANNOTATION = 'dev.azure.com/host-org';
 export const AZURE_DEVOPS_PROJECT_ANNOTATION = 'dev.azure.com/project';
 
 // @public (undocumented)
+export const AZURE_DEVOPS_README_ANNOTATION = 'dev.azure.com/readme-path';
+
+// @public (undocumented)
 export const AZURE_DEVOPS_REPO_ANNOTATION = 'dev.azure.com/project-repo';
 
 // @public (undocumented)
@@ -227,6 +230,8 @@ export interface ReadmeConfig {
   host?: string;
   // (undocumented)
   org?: string;
+  // (undocumented)
+  path?: string;
   // (undocumented)
   project: string;
   // (undocumented)

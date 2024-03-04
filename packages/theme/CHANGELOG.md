@@ -1,5 +1,18 @@
 # @backstage/theme
 
+## 0.5.2-next.0
+
+### Patch Changes
+
+- 6f4d2a0: Exported `defaultTypography` to make adjusting these values in a custom theme easier
+
+## 0.5.1
+
+### Patch Changes
+
+- dd5d7cc: Fixed missing extra variables like `applyDarkStyles` in Mui V5 theme after calling `createUnifiedThemeFromV4` function
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+
 ## 0.5.1-next.1
 
 ### Patch Changes

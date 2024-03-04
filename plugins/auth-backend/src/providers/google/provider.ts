@@ -19,6 +19,7 @@ import {
   googleSignInResolvers,
 } from '@backstage/plugin-auth-backend-module-google-provider';
 import {
+  SignInResolver,
   commonSignInResolvers,
   createOAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
@@ -29,7 +30,7 @@ import {
 } from '../../lib/legacy';
 import { OAuthResult } from '../../lib/oauth';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { AuthHandler, SignInResolver } from '../types';
+import { AuthHandler } from '../types';
 
 /**
  * Auth provider integration for Google auth

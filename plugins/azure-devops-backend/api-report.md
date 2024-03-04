@@ -124,6 +124,7 @@ export class AzureDevOpsApi {
     org: string,
     project: string,
     repo: string,
+    path: string,
   ): Promise<{
     url: string;
     content: string;

@@ -21,7 +21,11 @@ export const awsAlbAuthenticator: ProxyAuthenticator<
     issuer: string;
     getKey: (header: JWTHeaderParameters) => Promise<KeyObject>;
   },
-  AwsAlbResult
+  AwsAlbResult,
+  {
+    accessToken: string;
+    expiresInSeconds: number;
+  }
 >;
 
 // @public

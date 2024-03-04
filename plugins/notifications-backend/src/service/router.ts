@@ -13,17 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  errorHandler,
-  PluginDatabaseManager,
-  TokenManager,
-} from '@backstage/backend-common';
+import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
-import {
-  getBearerTokenFromAuthorizationHeader,
-  IdentityApi,
-} from '@backstage/plugin-auth-node';
 import {
   DatabaseNotificationsStore,
   NotificationGetOptions,
@@ -38,23 +30,29 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { NotificationProcessor } from '@backstage/plugin-notifications-node';
-import { AuthenticationError, InputError } from '@backstage/errors';
-import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
+import { InputError } from '@backstage/errors';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 import { SignalService } from '@backstage/plugin-signals-node';
 import {
   NewNotificationSignal,
   Notification,
   NotificationReadSignal,
-  NotificationType,
 } from '@backstage/plugin-notifications-common';
 
 /** @internal */
 export interface RouterOptions {
   logger: LoggerService;
-  identity: IdentityApi;
   database: PluginDatabaseManager;
-  tokenManager: TokenManager;
   discovery: DiscoveryService;
+  auth: AuthService;
+  httpAuth: HttpAuthService;
+  userInfo: UserInfoService;
   signalService?: SignalService;
   catalog?: CatalogApi;
   processors?: NotificationProcessor[];
@@ -67,10 +65,11 @@ export async function createRouter(
   const {
     logger,
     database,
-    identity,
+    auth,
+    httpAuth,
+    userInfo,
     discovery,
     catalog,
-    tokenManager,
     processors,
     signalService,
   } = options;
@@ -80,27 +79,18 @@ export async function createRouter(
   const store = await DatabaseNotificationsStore.create({ database });
 
   const getUser = async (req: Request<unknown>) => {
-    const user = await identity.getIdentity({ request: req });
-    if (!user) {
-      throw new AuthenticationError();
-    }
-    return user.identity.userEntityRef;
-  };
-
-  const authenticateService = async (req: Request<unknown>) => {
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.header('authorization'),
-    );
-    if (!token) {
-      throw new AuthenticationError();
-    }
-    await tokenManager.authenticate(token);
+    const credentials = await httpAuth.credentials(req, { allow: ['user'] });
+    const info = await userInfo.getUserInfo(credentials);
+    return info.userEntityRef;
   };
 
   const getUsersForEntityRef = async (
     entityRef: string | string[] | null,
   ): Promise<string[]> => {
-    const { token } = await tokenManager.getToken();
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
 
     // TODO: Support for broadcast
     if (entityRef === null) {
@@ -191,9 +181,6 @@ export async function createRouter(
     const opts: NotificationGetOptions = {
       user: user,
     };
-    if (req.query.type) {
-      opts.type = req.query.type.toString() as NotificationType;
-    }
     if (req.query.offset) {
       opts.offset = Number.parseInt(req.query.offset.toString(), 10);
     }
@@ -203,9 +190,28 @@ export async function createRouter(
     if (req.query.search) {
       opts.search = req.query.search.toString();
     }
+    if (req.query.read === 'true') {
+      opts.read = true;
+    } else if (req.query.read === 'false') {
+      opts.read = false;
+      // or keep undefined
+    }
+    if (req.query.created_after) {
+      const sinceEpoch = Date.parse(String(req.query.created_after));
+      if (isNaN(sinceEpoch)) {
+        throw new InputError('Unexpected date format');
+      }
+      opts.createdAfter = new Date(sinceEpoch);
+    }
 
-    const notifications = await store.getNotifications(opts);
-    res.send(notifications);
+    const [notifications, totalCount] = await Promise.all([
+      store.getNotifications(opts),
+      store.getNotificationsCount(opts),
+    ]);
+    res.send({
+      totalCount,
+      notifications,
+    });
   });
 
   router.get('/:id', async (req, res) => {
@@ -225,7 +231,7 @@ export async function createRouter(
 
   router.get('/status', async (req, res) => {
     const user = await getUser(req);
-    const status = await store.getStatus({ user, type: 'undone' });
+    const status = await store.getStatus({ user });
     res.send(status);
   });
 
@@ -269,22 +275,16 @@ export async function createRouter(
   });
 
   // Add new notification
-  // Allowed only for service-to-service authentication, uses `getUsersForEntityRef` to retrieve recipients for
-  // specific entity reference
   router.post('/', async (req, res) => {
-    const { recipients, origin, payload } = req.body;
+    const { recipients, payload } = req.body;
     const notifications = [];
     let users = [];
 
-    try {
-      await authenticateService(req);
-    } catch (e) {
-      throw new AuthenticationError();
-    }
+    const credentials = await httpAuth.credentials(req, { allow: ['service'] });
 
-    const { title, link, scope } = payload;
+    const { title, scope } = payload;
 
-    if (!recipients || !title || !origin || !link) {
+    if (!recipients || !title) {
       logger.error(`Invalid notification request received`);
       throw new InputError();
     }
@@ -301,6 +301,7 @@ export async function createRouter(
       throw new InputError();
     }
 
+    const origin = credentials.principal.subject;
     const baseNotification: Omit<Notification, 'id' | 'user'> = {
       payload: {
         ...payload,

@@ -35,6 +35,8 @@ describe('ResponseError', () => {
     const e = await ResponseError.fromResponse(response as Response);
     expect(e.name).toEqual('ResponseError');
     expect(e.message).toEqual('Request failed with 444 Fours');
+    expect(e.statusCode).toEqual(444);
+    expect(e.statusText).toEqual('Fours');
     expect(e.cause.name).toEqual('Fours');
     expect(e.cause.message).toEqual('Expected fives');
     expect(e.cause.stack).toEqual('lines');

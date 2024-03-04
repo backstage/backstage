@@ -17,12 +17,12 @@
 import {
   DocumentDecoratorFactory,
   DocumentTypeInfo,
-  SearchEngine,
 } from '@backstage/plugin-search-common';
 import { Transform, pipeline } from 'stream';
 import { Logger } from 'winston';
 import { Scheduler } from './Scheduler';
 import {
+  SearchEngine,
   IndexBuilderOptions,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,

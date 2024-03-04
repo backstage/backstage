@@ -1,5 +1,24 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.8-next.0
+
+### Patch Changes
+
+- 2af5354: Bump dependency `jose` to v5
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+
+## 0.1.5
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 1ff2684: Added the possibility to use custom scopes for performing login with Microsoft EntraID.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/backend-plugin-api@0.6.10
+
 ## 0.1.5-next.3
 
 ### Patch Changes

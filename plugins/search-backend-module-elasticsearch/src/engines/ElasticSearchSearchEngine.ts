@@ -18,9 +18,9 @@ import {
   IndexableDocument,
   IndexableResult,
   IndexableResultSet,
-  SearchEngine,
   SearchQuery,
 } from '@backstage/plugin-search-common';
+import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { isEmpty, isNumber, isNaN as nan } from 'lodash';
 
 import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';

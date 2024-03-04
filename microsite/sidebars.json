@@ -1,6 +1,7 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.23.0",
       "releases/v1.22.0",
       "releases/v1.21.0",
       "releases/v1.20.0",
@@ -115,6 +116,7 @@
           "features/software-templates/input-examples",
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
+          "features/software-templates/writing-tests-for-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
           "features/software-templates/authorizing-parameters-steps-and-actions",
@@ -306,6 +308,7 @@
           "auth/gitlab/provider",
           "auth/google/provider",
           "auth/google/gcp-iap-auth",
+          "auth/guest/provider",
           "auth/okta/provider",
           "auth/oauth2-proxy/provider",
           "auth/onelogin/provider",
@@ -387,7 +390,28 @@
       {
         "type": "category",
         "label": "Core Services",
-        "items": ["backend-system/core-services/index"]
+        "items": [
+          "backend-system/core-services/index",
+          "backend-system/core-services/auth",
+          "backend-system/core-services/cache",
+          "backend-system/core-services/database",
+          "backend-system/core-services/discovery",
+          "backend-system/core-services/http-auth",
+          "backend-system/core-services/http-router",
+          "backend-system/core-services/identity",
+          "backend-system/core-services/lifecycle",
+          "backend-system/core-services/logger",
+          "backend-system/core-services/permissions",
+          "backend-system/core-services/plugin-metadata",
+          "backend-system/core-services/root-config",
+          "backend-system/core-services/root-http-router",
+          "backend-system/core-services/root-lifecycle",
+          "backend-system/core-services/root-logger",
+          "backend-system/core-services/scheduler",
+          "backend-system/core-services/token-manager",
+          "backend-system/core-services/url-reader",
+          "backend-system/core-services/user-info"
+        ]
       }
     ],
     "New Frontend System": [
@@ -423,7 +447,9 @@
         "label": "Building Apps",
         "items": [
           "frontend-system/building-apps/index",
-          "frontend-system/building-apps/built-in-extensions"
+          "frontend-system/building-apps/configuring-extensions",
+          "frontend-system/building-apps/built-in-extensions",
+          "frontend-system/building-apps/migrating"
         ]
       },
       {
@@ -468,6 +494,7 @@
       "tutorials/using-backstage-proxy-within-plugin",
       "tutorials/yarn-migration",
       "tutorials/migrate-to-mui5",
+      "tutorials/auth-service-migration",
       "tutorials/setup-opentelemetry"
     ],
     "Architecture Decision Records (ADRs)": [

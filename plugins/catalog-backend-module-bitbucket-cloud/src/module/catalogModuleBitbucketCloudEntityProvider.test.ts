@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
+import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { startTestBackend, mockServices } from '@backstage/backend-test-utils';
+import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
+import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Duration } from 'luxon';
 import { catalogModuleBitbucketCloudEntityProvider } from './catalogModuleBitbucketCloudEntityProvider';
 import { BitbucketCloudEntityProvider } from '../providers/BitbucketCloudEntityProvider';
 
 describe('catalogModuleBitbucketCloudEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
+    const events = new TestEventsService();
+    const eventsServiceFactory = createServiceFactory({
+      service: eventsServiceRef,
+      deps: {},
+      async factory({}) {
+        return events;
+      },
+    });
     let addedProviders: Array<BitbucketCloudEntityProvider> | undefined;
-    let addedSubscribers: Array<BitbucketCloudEntityProvider> | undefined;
     let usedSchedule: TaskScheduleDefinition | undefined;
 
     const catalogExtensionPointImpl = {
@@ -33,11 +43,7 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
         addedProviders = providers;
       },
     };
-    const eventsExtensionPointImpl = {
-      addSubscribers: (subscribers: any) => {
-        addedSubscribers = subscribers;
-      },
-    };
+    const connection = jest.fn() as unknown as EntityProviderConnection;
     const runner = jest.fn();
     const scheduler = mockServices.scheduler.mock({
       createScheduledTaskRunner(schedule) {
@@ -49,9 +55,9 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
     await startTestBackend({
       extensionPoints: [
         [catalogProcessingExtensionPoint, catalogExtensionPointImpl],
-        [eventsExtensionPoint, eventsExtensionPointImpl],
       ],
       features: [
+        eventsServiceFactory(),
         catalogModuleBitbucketCloudEntityProvider(),
         mockServices.rootConfig.factory({
           data: {
@@ -75,10 +81,14 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
     expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));
     expect(usedSchedule?.timeout).toEqual(Duration.fromISO('PT3M'));
     expect(addedProviders?.length).toEqual(1);
-    expect(addedProviders?.pop()?.getProviderName()).toEqual(
+    expect(runner).not.toHaveBeenCalled();
+    const provider = addedProviders!.pop()!;
+    expect(provider.getProviderName()).toEqual(
       'bitbucketCloud-provider:default',
     );
-    expect(addedSubscribers).toEqual(addedProviders);
-    expect(runner).not.toHaveBeenCalled();
+    await provider.connect(connection);
+    expect(events.subscribed).toHaveLength(1);
+    expect(events.subscribed[0].id).toEqual('bitbucketCloud-provider:default');
+    expect(runner).toHaveBeenCalledTimes(1);
   });
 });

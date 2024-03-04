@@ -21,13 +21,8 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 
 import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
-import {
-  getVoidLogger,
-  resolvePackagePath,
-  UrlReader,
-} from '@backstage/backend-common';
+import { resolvePackagePath, UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { PassThrough } from 'stream';
 import { createFetchTemplateAction } from './template';
 import {
   fetchContents,
@@ -35,6 +30,7 @@ import {
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 type FetchTemplateInput = ReturnType<
   typeof createFetchTemplateAction
@@ -59,29 +55,22 @@ describe('fetch:template', () => {
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
 
-  const logger = getVoidLogger();
-
-  const mockContext = (inputPatch: Partial<FetchTemplateInput> = {}) => ({
-    templateInfo: {
-      baseUrl: 'base-url',
-      entityRef: 'template:default/test-template',
-    },
-    input: {
-      url: './skeleton',
-      targetPath: './target',
-      values: {
-        test: 'value',
+  const mockContext = (inputPatch: Partial<FetchTemplateInput> = {}) =>
+    createMockActionContext({
+      templateInfo: {
+        baseUrl: 'base-url',
+        entityRef: 'template:default/test-template',
       },
-      ...inputPatch,
-    },
-    output: jest.fn(),
-    logStream: new PassThrough(),
-    logger,
-    workspacePath,
-    async createTemporaryDirectory() {
-      return fs.mkdtemp(mockDir.resolve('tmp-'));
-    },
-  });
+      input: {
+        url: './skeleton',
+        targetPath: './target',
+        values: {
+          test: 'value',
+        },
+        ...inputPatch,
+      },
+      workspacePath,
+    });
 
   beforeEach(() => {
     mockDir.setContent({

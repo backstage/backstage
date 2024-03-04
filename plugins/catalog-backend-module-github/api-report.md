@@ -4,6 +4,7 @@
 
 ```ts
 import { AnalyzeOptions } from '@backstage/plugin-catalog-node';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
@@ -124,7 +125,8 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
 export type GithubLocationAnalyzerOptions = {
   config: Config;
   discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
+  tokenManager?: TokenManager;
+  auth?: AuthService;
   githubCredentialsProvider?: GithubCredentialsProvider;
 };
 

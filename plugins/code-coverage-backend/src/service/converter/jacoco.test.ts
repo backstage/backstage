@@ -54,4 +54,10 @@ describe('convert jacoco', () => {
 
     expect(files.sort()).toEqual(expected.sort());
   });
+
+  it('works when not providing files (as per not setting annotation to scm-only)', () => {
+    const files = converter.convert(fixture, []);
+
+    expect(files).toHaveLength(4);
+  });
 });

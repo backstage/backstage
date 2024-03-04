@@ -1,5 +1,40 @@
 # @backstage/plugin-playlist
 
+## 0.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/plugin-search-react@1.7.7-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+  - @backstage/plugin-permission-react@0.4.21-next.0
+  - @backstage/plugin-playlist-common@0.1.15-next.0
+
+## 0.2.4
+
+### Patch Changes
+
+- 5a03537: Conditionally render playlist description only when it's non-empty
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 7f11009: Added stack trace display to `ErrorPage` and updated existing refs
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/plugin-permission-react@0.4.20
+  - @backstage/plugin-search-react@1.7.6
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.21
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-playlist-common@0.1.14
+
 ## 0.2.4-next.3
 
 ### Patch Changes

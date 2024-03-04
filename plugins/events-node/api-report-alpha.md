@@ -13,15 +13,15 @@ import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 export interface EventsExtensionPoint {
   // (undocumented)
   addHttpPostIngress(options: HttpPostIngressOptions): void;
-  // (undocumented)
+  // @deprecated (undocumented)
   addPublishers(
     ...publishers: Array<EventPublisher | Array<EventPublisher>>
   ): void;
-  // (undocumented)
+  // @deprecated (undocumented)
   addSubscribers(
     ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
   ): void;
-  // (undocumented)
+  // @deprecated (undocumented)
   setEventBroker(eventBroker: EventBroker): void;
 }
 

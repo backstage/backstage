@@ -21,7 +21,7 @@
  */
 
 export { authPlugin as default } from './authPlugin';
-export * from './service/router';
+export * from './service';
 export type { TokenParams } from './identity';
 export * from './providers';
 

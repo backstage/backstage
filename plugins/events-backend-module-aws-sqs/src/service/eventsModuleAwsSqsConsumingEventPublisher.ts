@@ -18,8 +18,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { AwsSqsConsumingEventPublisher } from '../publisher/AwsSqsConsumingEventPublisher';
 
 /**
@@ -34,19 +33,19 @@ export const eventsModuleAwsSqsConsumingEventPublisher = createBackendModule({
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
-        events: eventsExtensionPoint,
+        events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },
       async init({ config, events, logger, scheduler }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         const sqs = AwsSqsConsumingEventPublisher.fromConfig({
-          config: config,
-          logger: winstonLogger,
-          scheduler: scheduler,
+          config,
+          events,
+          logger,
+          scheduler,
         });
 
-        events.addPublishers(sqs);
+        await Promise.all(sqs.map(publisher => publisher.start()));
       },
     });
   },

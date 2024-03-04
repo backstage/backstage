@@ -19,18 +19,22 @@ import { Request } from 'express';
 import { ProfileTransform } from '../types';
 
 /** @public */
-export interface ProxyAuthenticator<TContext, TResult> {
+export interface ProxyAuthenticator<
+  TContext,
+  TResult,
+  TProviderInfo = undefined,
+> {
   defaultProfileTransform: ProfileTransform<TResult>;
   initialize(ctx: { config: Config }): TContext;
   authenticate(
     options: { req: Request },
     ctx: TContext,
-  ): Promise<{ result: TResult }>;
+  ): Promise<{ result: TResult; providerInfo?: TProviderInfo }>;
 }
 
 /** @public */
-export function createProxyAuthenticator<TContext, TResult>(
-  authenticator: ProxyAuthenticator<TContext, TResult>,
-): ProxyAuthenticator<TContext, TResult> {
+export function createProxyAuthenticator<TContext, TResult, TProviderInfo>(
+  authenticator: ProxyAuthenticator<TContext, TResult, TProviderInfo>,
+): ProxyAuthenticator<TContext, TResult, TProviderInfo> {
   return authenticator;
 }

@@ -16,8 +16,7 @@
 
 import React from 'react';
 import { VisitList } from './VisitList';
-import { render } from '@testing-library/react';
-import { BrowserRouter } from 'react-router-dom';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<VisitList/>', () => {
   it('renders skeleton when loading is true', async () => {
@@ -29,7 +28,7 @@ describe('<VisitList/>', () => {
   });
 
   it('renders specified amount of items', async () => {
-    const { container } = await render(
+    const { container } = await renderInTestApp(
       <VisitList
         detailType="time-ago"
         loading
@@ -41,7 +40,7 @@ describe('<VisitList/>', () => {
   });
 
   it('renders some items hidden', async () => {
-    const { container } = await render(
+    const { container } = await renderInTestApp(
       <VisitList
         detailType="time-ago"
         loading
@@ -54,7 +53,7 @@ describe('<VisitList/>', () => {
   });
 
   it('renders all items when not collapsed', async () => {
-    const { container } = await render(
+    const { container } = await renderInTestApp(
       <VisitList
         detailType="time-ago"
         loading

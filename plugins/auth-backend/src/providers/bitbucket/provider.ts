@@ -37,12 +37,11 @@ import {
   PassportDoneCallback,
 } from '../../lib/passport';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { AuthHandler, OAuthStartResponse } from '../types';
 import {
-  AuthHandler,
-  OAuthStartResponse,
-  SignInResolver,
   AuthResolverContext,
-} from '../types';
+  SignInResolver,
+} from '@backstage/plugin-auth-node';
 
 type PrivateInfo = {
   refreshToken: string;

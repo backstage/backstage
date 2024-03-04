@@ -52,6 +52,7 @@ export type RawDbTaskRow = {
   id: string;
   spec: string;
   status: TaskStatus;
+  state?: string;
   last_heartbeat_at?: string;
   created_at: string;
   created_by: string | null;
@@ -392,6 +393,32 @@ export class DatabaseTaskStore implements TaskStore {
       event_type: 'log',
       body: serializedBody,
     });
+  }
+
+  async getTaskState({ taskId }: { taskId: string }): Promise<
+    | {
+        state: JsonObject;
+      }
+    | undefined
+  > {
+    const [result] = await this.db<RawDbTaskRow>('tasks')
+      .where({ id: taskId })
+      .select('state');
+    return result.state ? JSON.parse(result.state) : undefined;
+  }
+
+  async saveTaskState(options: {
+    taskId: string;
+    state?: JsonObject;
+  }): Promise<void> {
+    if (options.state) {
+      const serializedState = JSON.stringify({ state: options.state });
+      await this.db<RawDbTaskRow>('tasks')
+        .where({ id: options.taskId })
+        .update({
+          state: serializedState,
+        });
+    }
   }
 
   async listEvents(

@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import ora from 'ora';
 import semver from 'semver';
-import minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import { OptionValues } from 'commander';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';

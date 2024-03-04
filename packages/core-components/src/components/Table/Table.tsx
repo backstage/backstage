@@ -115,6 +115,7 @@ const StyledMTableHeader = withStyles(
       fontWeight: theme.typography.fontWeightBold,
       position: 'static',
       wordBreak: 'normal',
+      textTransform: 'uppercase',
     },
   }),
   { name: 'BackstageTableHeader' },
@@ -436,7 +437,7 @@ export function Table<T extends object = {}>(props: TableProps<T>) {
           Toolbar,
           ...components,
         }}
-        options={{ headerStyle: { textTransform: 'uppercase' }, ...options }}
+        options={options}
         columns={convertColumns(columns, theme)}
         icons={tableIcons}
         title={

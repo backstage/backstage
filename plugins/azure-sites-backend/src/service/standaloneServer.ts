@@ -53,6 +53,7 @@ export async function startStandaloneServer(
     permissions,
     azureSitesApi: AzureSitesApi.fromConfig(config),
     catalogApi,
+    discovery,
   });
 
   let service = createServiceBuilder(module)

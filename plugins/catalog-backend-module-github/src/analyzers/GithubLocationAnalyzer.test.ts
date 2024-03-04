@@ -32,12 +32,12 @@ jest.mock('@octokit/rest', () => {
   return { Octokit };
 });
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { GithubLocationAnalyzer } from './GithubLocationAnalyzer';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  setupRequestMockHandlers,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
@@ -49,10 +49,9 @@ describe('GithubLocationAnalyzer', () => {
     getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
     getExternalBaseUrl: jest.fn(),
   };
-  const mockTokenManager: jest.Mocked<TokenManager> = {
-    authenticate: jest.fn(),
-    getToken: jest.fn().mockResolvedValue('abc123'),
-  };
+  const mockAuthService = mockServices.auth.mock({
+    getPluginRequestToken: async () => ({ token: 'abc123' }),
+  });
   const config = new ConfigReader({
     integrations: {
       github: [
@@ -123,8 +122,8 @@ describe('GithubLocationAnalyzer', () => {
 
     const analyzer = new GithubLocationAnalyzer({
       discovery: mockDiscoveryApi,
+      auth: mockAuthService,
       config,
-      tokenManager: mockTokenManager,
     });
     const result = await analyzer.analyze({
       url: 'https://github.com/foo/bar',
@@ -137,6 +136,7 @@ describe('GithubLocationAnalyzer', () => {
         'https://github.com/foo/bar/blob/my_default_branch/catalog-info.yaml',
     });
   });
+
   it('should use the provided entity filename for search', async () => {
     octokit.search.code.mockImplementation((opts: { q: string }) => {
       if (opts.q === 'filename:anvil.yaml repo:foo/bar') {
@@ -149,8 +149,8 @@ describe('GithubLocationAnalyzer', () => {
 
     const analyzer = new GithubLocationAnalyzer({
       discovery: mockDiscoveryApi,
+      auth: mockAuthService,
       config,
-      tokenManager: mockTokenManager,
     });
     const result = await analyzer.analyze({
       url: 'https://github.com/foo/bar',

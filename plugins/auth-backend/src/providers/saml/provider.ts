@@ -25,17 +25,17 @@ import {
   executeFrameHandlerStrategy,
   executeRedirectStrategy,
 } from '../../lib/passport';
-import {
-  AuthProviderRouteHandlers,
-  AuthHandler,
-  SignInResolver,
-  AuthResponse,
-  AuthResolverContext,
-} from '../types';
+import { AuthHandler } from '../types';
 import { postMessageResponse } from '../../lib/flow';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { AuthenticationError, isError } from '@backstage/errors';
 import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
+import {
+  AuthProviderRouteHandlers,
+  AuthResolverContext,
+  ClientAuthResponse,
+  SignInResolver,
+} from '@backstage/plugin-auth-node';
 
 /** @public */
 export type SamlAuthResult = {
@@ -93,7 +93,7 @@ export class SamlAuthProvider implements AuthProviderRouteHandlers {
 
       const { profile } = await this.authHandler(result, this.resolverContext);
 
-      const response: AuthResponse<{}> = {
+      const response: ClientAuthResponse<{}> = {
         profile,
         providerInfo: {},
       };

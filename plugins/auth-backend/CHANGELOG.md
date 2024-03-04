@@ -1,5 +1,90 @@
 # @backstage/plugin-auth-backend
 
+## 0.22.0-next.0
+
+### Minor Changes
+
+- 293c835: Add support for Service Tokens to Cloudflare Access auth provider
+- 492fe83: **BREAKING**: The `CatalogIdentityClient` constructor now also requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support the new auth services, which has also been done for the `createRouter` function.
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+- 2af5354: Bump dependency `jose` to v5
+- 38af71a: Updated dependency `google-auth-library` to `^9.0.0`.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- fa7ea3f: Internal refactor to break out how the router is constructed
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.6-next.0
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.8-next.0
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.4-next.0
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.3-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.8-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.5-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.6-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/types@1.1.1
+
+## 0.21.0
+
+### Minor Changes
+
+- 7dd8463: **BREAKING**: The `saml` provider has been migrated from `passport-saml` to `@node-saml/passport-saml`.
+
+  This comes with breaking changes to config options:
+
+  - `audience` is now mandatory
+  - `wantAuthnResponseSigned` is now exposed and defaults to `true`
+  - `wantAssertionsSigned` is now exposed and defaults to `true`
+
+### Patch Changes
+
+- 97f8724: Support additional algorithms in the `/.well-known/openid-configuration` endpoint.
+- a3f1fa3: Use the externalized `auth-backend-module-microsoft-provider` again.
+- a9e0107: The auth backend will now refuse to issue user tokens are excessively large.
+- 5d2fcba: Migrated oidc auth provider to new `@backstage/plugin-auth-backend-module-oidc-provider` module package.
+- d4cc552: The helper function `makeProfileInfo` and `PassportHelpers.transformProfile`
+  were refactored to use the `jose` library.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- 23a98f8: Migrated the AWS ALB auth provider to new `@backstage/plugin-auth-backend-module-aws-alb-provider` module package.
+- f5e04e3: Internal refactor to no longer use deprecated types
+- 8321c97: Added `experimentalExtraAllowedOrigins` to config
+- 8e8a25d: Ability for user to configure backstage token expiration
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.3
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.0
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.2
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.2
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.5
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.7
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.7
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.7
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.7
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.4
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.21.0-next.3
 
 ### Patch Changes

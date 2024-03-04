@@ -52,6 +52,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: 'repoName',
         definition: undefined,
+        readmePath: undefined,
         host: undefined,
         org: undefined,
       });
@@ -149,6 +150,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: undefined,
         definition: 'buildDefinitionName',
+        readmePath: undefined,
         host: undefined,
         org: undefined,
       });
@@ -220,6 +222,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: 'repoName',
         definition: undefined,
+        readmePath: undefined,
         host: 'hostName',
         org: 'organizationName',
       });
@@ -246,6 +249,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: undefined,
         definition: 'buildDefinitionName',
+        readmePath: undefined,
         host: 'hostName',
         org: 'organizationName',
       });
@@ -344,6 +348,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: 'repoName',
         definition: undefined,
+        readmePath: undefined,
         host: 'company.com/tfs',
         org: 'organizationName',
       });
@@ -417,6 +422,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: 'repoName',
         definition: 'buildDefinitionName',
+        readmePath: undefined,
         host: undefined,
         org: undefined,
       });
@@ -443,6 +449,87 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: undefined,
         definition: 'buildDefinitionName',
+        readmePath: undefined,
+        host: undefined,
+        org: undefined,
+      });
+    });
+  });
+
+  describe('definition, project and readme', () => {
+    it('returns with the readme path', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'project-repo',
+          annotations: {
+            'dev.azure.com/project': 'projectName',
+            'dev.azure.com/build-definition': 'buildDefinitionName',
+            'dev.azure.com/readme-path': 'readme/path.md',
+          },
+        },
+      };
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: undefined,
+        definition: 'buildDefinitionName',
+        readmePath: 'readme/path.md',
+        host: undefined,
+        org: undefined,
+      });
+    });
+  });
+
+  describe('definition, projectRepo and readme', () => {
+    it('returns with the readme path', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'project-repo',
+          annotations: {
+            'dev.azure.com/project-repo': 'projectName/repoName',
+            'dev.azure.com/build-definition': 'buildDefinitionName',
+            'dev.azure.com/readme-path': 'readme/path.md',
+          },
+        },
+      };
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: 'repoName',
+        definition: 'buildDefinitionName',
+        readmePath: 'readme/path.md',
+        host: undefined,
+        org: undefined,
+      });
+    });
+  });
+
+  describe('projectRepo and readme', () => {
+    it('returns with the readme path', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'project-repo',
+          annotations: {
+            'dev.azure.com/project-repo': 'projectName/repoName',
+            'dev.azure.com/readme-path': 'readme/path.md',
+          },
+        },
+      };
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: 'repoName',
+        definition: undefined,
+        readmePath: 'readme/path.md',
         host: undefined,
         org: undefined,
       });
