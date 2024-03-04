@@ -85,7 +85,7 @@ export const AdrReader = (props: {
 
       {!backendUrlLoading && backendUrlError && (
         <WarningPanel
-          title="Failed to fetch ADR Image"
+          title="Failed to fetch ADR images"
           message={backendUrlError?.message}
         />
       )}
