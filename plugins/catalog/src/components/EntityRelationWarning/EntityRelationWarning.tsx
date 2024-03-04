@@ -26,6 +26,8 @@ import useAsync from 'react-use/esm/useAsync';
 import Box from '@material-ui/core/Box';
 import { ResponseErrorPanel } from '@backstage/core-components';
 import { useApi, ApiHolder } from '@backstage/core-plugin-api';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 async function getRelationWarnings(entity: Entity, catalogApi: CatalogApi) {
   const entityRefRelations = entity.relations?.map(
@@ -80,6 +82,7 @@ export function EntityRelationWarning() {
   const { loading, error, value } = useAsync(async () => {
     return getRelationWarnings(entity, catalogApi);
   }, [entity, catalogApi]);
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   if (error) {
     return (
@@ -95,10 +98,8 @@ export function EntityRelationWarning() {
 
   return (
     <>
-      <Alert severity="warning">
-        This entity has relations to other entities, which can't be found in the
-        catalog. <br />
-        Entities not found are: {value.join(', ')}
+      <Alert severity="warning" style={{ whiteSpace: 'pre-line' }}>
+        {t('entityRelationWarningDescription')} {value.join(', ')}
       </Alert>
     </>
   );
