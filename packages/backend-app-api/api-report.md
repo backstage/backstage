@@ -273,6 +273,8 @@ export function readHttpServerOptions(config?: Config): HttpServerOptions;
 export interface RootConfigFactoryOptions {
   argv?: string[];
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
+  // (undocumented)
+  watch?: boolean;
 }
 
 // @public (undocumented)
