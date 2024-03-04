@@ -2,4 +2,4 @@
 '@backstage/plugin-gocd': patch
 ---
 
-Update README
+Updated README
