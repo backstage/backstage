@@ -46,9 +46,14 @@ export const buildKnipReports = async (paths: string[] = [], opts: Options) => {
 
   if (selectedPackageDirs.length > 0) {
     console.log('# Generating package knip reports');
-    await runKnipReports({
-      packageDirs: selectedPackageDirs,
-      isLocalBuild: !isCiBuild,
-    });
+
+    try {
+      await runKnipReports({
+        packageDirs: selectedPackageDirs,
+        isLocalBuild: !isCiBuild,
+      });
+    } catch (e) {
+      process.exit(1);
+    }
   }
 };

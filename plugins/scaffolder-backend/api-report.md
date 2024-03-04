@@ -21,6 +21,7 @@ import * as gitlab from '@backstage/plugin-scaffolder-backend-module-gitlab';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
@@ -359,6 +360,7 @@ export interface CurrentClaimedTask {
   createdBy?: string;
   secrets?: TaskSecrets_2;
   spec: TaskSpec;
+  state?: JsonObject;
   taskId: string;
 }
 
@@ -397,6 +399,13 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask_2>;
   // (undocumented)
+  getTaskState({ taskId }: { taskId: string }): Promise<
+    | {
+        state: JsonObject;
+      }
+    | undefined
+  >;
+  // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
   list(options: { createdBy?: string }): Promise<{
@@ -417,6 +426,8 @@ export class DatabaseTaskStore implements TaskStore {
   recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<{
     ids: string[];
   }>;
+  // (undocumented)
+  saveTaskState(options: { taskId: string; state?: JsonObject }): Promise<void>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -519,11 +530,32 @@ export class TaskManager implements TaskContext_2 {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
+  getTaskState?(): Promise<
+    | {
+        state?: JsonObject;
+      }
+    | undefined
+  >;
+  // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
   get secrets(): TaskSecrets_2 | undefined;
   // (undocumented)
   get spec(): TaskSpecV1beta3;
+  // (undocumented)
+  updateCheckpoint?(
+    options:
+      | {
+          key: string;
+          status: 'success';
+          value: JsonValue;
+        }
+      | {
+          key: string;
+          status: 'failed';
+          reason: string;
+        },
+  ): Promise<void>;
 }
 
 // @public @deprecated (undocumented)
@@ -553,6 +585,13 @@ export interface TaskStore {
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
+  getTaskState?({ taskId }: { taskId: string }): Promise<
+    | {
+        state: JsonObject;
+      }
+    | undefined
+  >;
+  // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
   list?(options: { createdBy?: string }): Promise<{
@@ -572,6 +611,11 @@ export interface TaskStore {
   recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<{
     ids: string[];
   }>;
+  // (undocumented)
+  saveTaskState?(options: {
+    taskId: string;
+    state?: JsonObject;
+  }): Promise<void>;
   // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }

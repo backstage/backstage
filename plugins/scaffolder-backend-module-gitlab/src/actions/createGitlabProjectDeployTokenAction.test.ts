@@ -15,10 +15,9 @@
  */
 
 import { createGitlabProjectDeployTokenAction } from './createGitlabProjectDeployTokenAction';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
 
 const mockGitlabClient = {
   ProjectDeployTokens: {
@@ -52,7 +51,7 @@ describe('gitlab:create-deploy-token', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createGitlabProjectDeployTokenAction({ integrations });
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
       projectId: '123',
@@ -60,12 +59,7 @@ describe('gitlab:create-deploy-token', () => {
       username: 'tokenuser',
       scopes: ['read_repository'],
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();

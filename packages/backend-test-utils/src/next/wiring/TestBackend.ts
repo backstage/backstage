@@ -80,6 +80,7 @@ export const defaultServiceFactories = [
   mockServices.rootLogger.factory(),
   mockServices.scheduler.factory(),
   mockServices.tokenManager.factory(),
+  mockServices.userInfo.factory(),
   mockServices.urlReader.factory(),
 ];
 

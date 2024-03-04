@@ -25,17 +25,19 @@ This will only work with the new backend system. There is no support for this in
 
 Add the `@backstage/plugin-auth-backend-module-guest-provider` to your backend installation.
 
-```
+```sh
+# From your Backstage root directory
 yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-guest-provider
 ```
 
-Then, add it to your backend's `index.ts` file,
+Then, add it to your backend's source,
 
-```diff
+```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 
-backend.add('@backstage/plugin-auth-backend');
-+backend.add('@backstage/plugin-auth-backend-module-guest-provider');
+backend.add(import('@backstage/plugin-auth-backend'));
+// highlight-add-next-line
+backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 
 await backend.start();
 ```
@@ -44,10 +46,11 @@ await backend.start();
 
 Add the following to your `SignInPage` providers,
 
-```diff
+```ts
 const providers = [
-+  'guest',
-   ...
+  // highlight-add-next-line
+  'guest',
+  ...
 ]
 ```
 
@@ -55,12 +58,9 @@ const providers = [
 
 Similar to the other authentication providers, you have to enable the provider in config. Add the following to your `app-config.local.yaml`,
 
-```diff
+```yaml title="app-config.local.yaml"
 auth:
-    providers:
-+       guest:
-+           userEntityRef: user:default/guest
-+           development: {}
+  providers:
+    # highlight-add-next-line
+    guest: {}
 ```
-
-We need to specify that the provider is enabled for the given environment, and as there are no config values for this provider yet, you can just specify an empty object.

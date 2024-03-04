@@ -15,7 +15,11 @@
  */
 
 import { Request, Response } from 'express';
-import { BackstageCredentials, BackstagePrincipalTypes } from './AuthService';
+import {
+  BackstageCredentials,
+  BackstagePrincipalTypes,
+  BackstageUserPrincipal,
+} from './AuthService';
 
 /** @public */
 export interface HttpAuthService {
@@ -23,9 +27,14 @@ export interface HttpAuthService {
     req: Request<any, any, any, any, any>,
     options?: {
       allow?: Array<TAllowed>;
-      allowedAuthMethods?: Array<'token' | 'cookie'>;
+      allowLimitedAccess?: boolean;
     },
   ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>>;
 
-  issueUserCookie(res: Response): Promise<void>;
+  issueUserCookie(
+    res: Response,
+    options?: {
+      credentials?: BackstageCredentials<BackstageUserPrincipal>;
+    },
+  ): Promise<{ expiresAt: Date }>;
 }

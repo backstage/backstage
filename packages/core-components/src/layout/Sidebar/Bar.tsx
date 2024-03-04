@@ -34,6 +34,8 @@ import { MobileSidebar } from './MobileSidebar';
 import { useContent } from './Page';
 import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { useSidebarPinState } from './SidebarPinStateContext';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { coreComponentsTranslationRef } from '../../translation';
 
 /** @public */
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
@@ -250,6 +252,7 @@ function A11ySkipSidebar() {
   const { sidebarConfig } = useContext(SidebarConfigContext);
   const { focusContent, contentRef } = useContent();
   const classes = useStyles({ sidebarConfig });
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   if (!contentRef?.current) {
     return null;
@@ -260,7 +263,7 @@ function A11ySkipSidebar() {
       variant="contained"
       className={classnames(classes.visuallyHidden)}
     >
-      Skip to content
+      {t('skipToContent')}
     </Button>
   );
 }

@@ -397,10 +397,8 @@ auth:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
         scopes: ${AUTH_ATLASSIAN_SCOPES}
-    myproxy:
-      development: {}
-    guest:
-      development: {}
+    myproxy: {}
+    guest: {}
 
 costInsights:
   engineerCost: 200000

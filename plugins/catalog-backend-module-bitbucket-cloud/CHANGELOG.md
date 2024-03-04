@@ -1,5 +1,63 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 9e527c9: BREAKING CHANGE: Migrates the `BitbucketCloudEntityProvider` to use the `EventsService`; fix new backend system support.
+
+  `BitbucketCloudEntityProvider.fromConfig` accepts `events: EventsService` as optional argument to its `options`.
+  With provided `events`, the event-based updates/refresh will be available.
+  However, the `EventSubscriber` interface was removed including its `supportsEventTopics()` and `onEvent(params)`.
+
+  The event subscription happens on `connect(connection)` if the `events` is available.
+
+  **Migration:**
+
+  ```diff
+    const bitbucketCloudProvider = BitbucketCloudEntityProvider.fromConfig(
+      env.config,
+      {
+        catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
+  +     events: env.events,
+        logger: env.logger,
+        scheduler: env.scheduler,
+        tokenManager: env.tokenManager,
+      },
+    );
+  - env.eventBroker.subscribe(bitbucketCloudProvider);
+  ```
+
+  **New Backend System:**
+
+  Before this change, using this module with the new backend system was broken.
+  Now, you can add the catalog module for Bitbucket Cloud incl. event support backend.
+  Event support will always be enabled.
+  However, no updates/refresh will happen without receiving events.
+
+  ```ts
+  backend.add(
+    import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
+  );
+  ```
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0-next.0
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.17-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+
 ## 0.1.25
 
 ### Patch Changes

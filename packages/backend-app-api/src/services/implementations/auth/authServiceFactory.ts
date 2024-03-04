@@ -35,37 +35,37 @@ export type InternalBackstageCredentials<TPrincipal = unknown> =
   BackstageCredentials<TPrincipal> & {
     version: string;
     token?: string;
-    authMethod: 'token' | 'cookie' | 'none';
   };
 
 export function createCredentialsWithServicePrincipal(
   sub: string,
+  token?: string,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
   return {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
+    token,
     principal: {
       type: 'service',
       subject: sub,
     },
-    authMethod: 'token',
   };
 }
 
 export function createCredentialsWithUserPrincipal(
   sub: string,
   token: string,
-  authMethod: 'token' | 'cookie' = 'token',
+  expiresAt?: Date,
 ): InternalBackstageCredentials<BackstageUserPrincipal> {
   return {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
     token,
+    expiresAt,
     principal: {
       type: 'user',
       userEntityRef: sub,
     },
-    authMethod,
   };
 }
 
@@ -76,7 +76,6 @@ export function createCredentialsWithNonePrincipal(): InternalBackstageCredentia
     principal: {
       type: 'none',
     },
-    authMethod: 'none',
   };
 }
 
@@ -111,6 +110,7 @@ class DefaultAuthService implements AuthService {
     private readonly disableDefaultAuthPolicy: boolean,
   ) {}
 
+  // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {
     const { sub, aud } = decodeJwt(token);
 
@@ -134,6 +134,7 @@ class DefaultAuthService implements AuthService {
     return createCredentialsWithUserPrincipal(
       identity.identity.userEntityRef,
       token,
+      this.#getJwtExpiration(token),
     );
   }
 
@@ -154,6 +155,12 @@ class DefaultAuthService implements AuthService {
     }
 
     return true;
+  }
+
+  async getNoneCredentials(): Promise<
+    BackstageCredentials<BackstageNonePrincipal>
+  > {
+    return createCredentialsWithNonePrincipal();
   }
 
   async getOwnServiceCredentials(): Promise<
@@ -192,6 +199,30 @@ class DefaultAuthService implements AuthService {
           `Refused to issue service token for credential type '${type}'`,
         );
     }
+  }
+
+  async getLimitedUserToken(
+    credentials: BackstageCredentials<BackstageUserPrincipal>,
+  ): Promise<{ token: string; expiresAt: Date }> {
+    const internalCredentials = toInternalBackstageCredentials(credentials);
+
+    const { token } = internalCredentials;
+
+    if (!token) {
+      throw new AuthenticationError(
+        'User credentials is unexpectedly missing token',
+      );
+    }
+
+    return { token, expiresAt: this.#getJwtExpiration(token) };
+  }
+
+  #getJwtExpiration(token: string) {
+    const { exp } = decodeJwt(token);
+    if (!exp) {
+      throw new AuthenticationError('User token is missing expiration');
+    }
+    return new Date(exp * 1000);
   }
 }
 

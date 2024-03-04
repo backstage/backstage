@@ -8,6 +8,7 @@
 yarn.lock                                         @backstage/maintainers @backstage-service
 */yarn.lock                                       @backstage/maintainers @backstage-service
 /.changeset/*.md
+/beps/0001-notifications-system                   @backstage/maintainers @backstage/notifications-maintainers
 /docs/assets/search                               @backstage/discoverability-maintainers
 /docs/features/search                             @backstage/discoverability-maintainers
 /docs/features/techdocs                           @backstage/techdocs-maintainers
@@ -66,6 +67,8 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/linguist                                 @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/linguist-backend                         @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/linguist-common                          @backstage/maintainers @backstage/reviewers @awanlin
+/plugins/notifications                            @backstage/maintainers @backstage/notifications-maintainers
+/plugins/notifications-*                          @backstage/maintainers @backstage/notifications-maintainers
 /plugins/octopus-deploy                           @backstage/maintainers @backstage/reviewers @jmezach
 /plugins/permission-*                             @backstage/permission-maintainers
 /plugins/playlist                                 @backstage/maintainers @backstage/reviewers @kuangp
@@ -76,6 +79,8 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/scaffolder-*                             @backstage/maintainers @backstage/reviewers @backstage/scaffolder-maintainers
 /plugins/search                                   @backstage/discoverability-maintainers
 /plugins/search-*                                 @backstage/discoverability-maintainers
+/plugins/signals                                  @backstage/maintainers @backstage/notifications-maintainers
+/plugins/signals-*                                @backstage/maintainers @backstage/notifications-maintainers
 /plugins/sonarqube                                @backstage/maintainers @backstage/reviewers @backstage/sda-se-reviewers
 /plugins/stack-overflow                           @backstage/discoverability-maintainers
 /plugins/stack-overflow-backend                   @backstage/discoverability-maintainers

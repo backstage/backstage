@@ -12,6 +12,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { BackstageNonePrincipal } from '@backstage/backend-plugin-api';
 import { BackstageServicePrincipal } from '@backstage/backend-plugin-api';
+import { BackstageUserInfo } from '@backstage/backend-plugin-api';
 import { BackstageUserPrincipal } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
@@ -37,6 +38,7 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public
 export function createMockDirectory(
@@ -48,6 +50,17 @@ export function isDockerDisabledForTests(): boolean;
 
 // @public (undocumented)
 export namespace mockCredentials {
+  export function limitedUser(
+    userEntityRef?: string,
+  ): BackstageCredentials<BackstageUserPrincipal>;
+  export namespace limitedUser {
+    export function cookie(userEntityRef?: string): string;
+    // (undocumented)
+    export function invalidCookie(): string;
+    // (undocumented)
+    export function invalidToken(): string;
+    export function token(userEntityRef?: string): string;
+  }
   export function none(): BackstageCredentials<BackstageNonePrincipal>;
   export namespace none {
     export function header(): string;
@@ -315,6 +328,17 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<UrlReaderService> | undefined,
       ) => ServiceMock<UrlReaderService>;
+  }
+  export function userInfo(
+    customInfo?: Partial<BackstageUserInfo>,
+  ): UserInfoService;
+  // (undocumented)
+  export namespace userInfo {
+    const factory: () => ServiceFactory<UserInfoService, 'plugin'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<UserInfoService> | undefined,
+      ) => ServiceMock<UserInfoService>;
   }
 }
 

@@ -68,7 +68,9 @@ The following versioning policy applies to the main-line releases only.
   done when necessary and with the goal of having minimal impact. When possible,
   there will always be a deprecation path for a breaking change.
 - Security fixes **may** be backported to older releases based on the simplicity
-  of the upgrade path, and the severity of the vulnerability.
+  of the upgrade path, and the severity of the vulnerability. Vulnerabilities
+  with a severity of `high` or `critical` will always be backported to releases
+  for the last 6 months if feasible.
 - Bug reports are valid only if reproducible in the most recent release, and bug
   fixes are only applied to the next release.
 - We will do our best to adhere to this policy.

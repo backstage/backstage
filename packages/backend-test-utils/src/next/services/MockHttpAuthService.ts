@@ -18,16 +18,18 @@ import {
   AuthService,
   BackstageCredentials,
   BackstagePrincipalTypes,
+  BackstageUserPrincipal,
   HttpAuthService,
 } from '@backstage/backend-plugin-api';
 import { Request, Response } from 'express';
+import { parse as parseCookie } from 'cookie';
 import { MockAuthService } from './MockAuthService';
+import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import {
-  AuthenticationError,
-  NotAllowedError,
-  NotImplementedError,
-} from '@backstage/errors';
-import { mockCredentials } from './mockCredentials';
+  MOCK_NONE_TOKEN,
+  MOCK_AUTH_COOKIE,
+  mockCredentials,
+} from './mockCredentials';
 
 // TODO: support mock cookie auth?
 export class MockHttpAuthService implements HttpAuthService {
@@ -42,33 +44,52 @@ export class MockHttpAuthService implements HttpAuthService {
     this.#defaultCredentials = defaultCredentials;
   }
 
-  async #getCredentials(req: Request) {
+  async #getCredentials(req: Request, allowLimitedAccess: boolean) {
     const header = req.headers.authorization;
-
-    if (header === mockCredentials.none.header()) {
-      return mockCredentials.none();
-    }
-
     const token =
       typeof header === 'string'
         ? header.match(/^Bearer[ ]+(\S+)$/i)?.[1]
         : undefined;
 
-    if (!token) {
-      return this.#defaultCredentials;
+    if (token) {
+      if (token === MOCK_NONE_TOKEN) {
+        return this.#auth.getNoneCredentials();
+      }
+
+      return await this.#auth.authenticate(token, {
+        allowLimitedAccess,
+      });
     }
 
-    return await this.#auth.authenticate(token);
+    if (allowLimitedAccess) {
+      const cookieHeader = req.headers.cookie;
+
+      if (cookieHeader) {
+        const cookies = parseCookie(cookieHeader);
+        const cookie = cookies[MOCK_AUTH_COOKIE];
+
+        if (cookie) {
+          return await this.#auth.authenticate(cookie, {
+            allowLimitedAccess: true,
+          });
+        }
+      }
+    }
+
+    return this.#defaultCredentials;
   }
 
   async credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
     req: Request,
     options?: {
       allow?: Array<TAllowed>;
-      allowedAuthMethods?: Array<'token' | 'cookie'>;
+      allowLimitedAccess?: boolean;
     },
   ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>> {
-    const credentials = await this.#getCredentials(req);
+    const credentials = await this.#getCredentials(
+      req,
+      options?.allowLimitedAccess ?? false,
+    );
 
     const allowedPrincipalTypes = options?.allow;
     if (!allowedPrincipalTypes) {
@@ -80,7 +101,7 @@ export class MockHttpAuthService implements HttpAuthService {
         return credentials as any;
       }
 
-      throw new AuthenticationError();
+      throw new AuthenticationError('Missing credentials');
     } else if (this.#auth.isPrincipal(credentials, 'user')) {
       if (allowedPrincipalTypes.includes('user' as TAllowed)) {
         return credentials as any;
@@ -104,7 +125,19 @@ export class MockHttpAuthService implements HttpAuthService {
     );
   }
 
-  async issueUserCookie(_res: Response): Promise<void> {
-    throw new NotImplementedError('Not implemented');
+  async issueUserCookie(
+    res: Response,
+    options?: { credentials?: BackstageCredentials<BackstageUserPrincipal> },
+  ): Promise<{ expiresAt: Date }> {
+    const credentials =
+      options?.credentials ??
+      (await this.credentials(res.req, { allow: ['user'] }));
+
+    res.setHeader(
+      'Set-Cookie',
+      mockCredentials.limitedUser.cookie(credentials.principal.userEntityRef),
+    );
+
+    return { expiresAt: new Date(Date.now() + 3600_000) };
   }
 }

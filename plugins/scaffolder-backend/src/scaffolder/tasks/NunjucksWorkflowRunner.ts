@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import nunjucks from 'nunjucks';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
-import { InputError, NotAllowedError } from '@backstage/errors';
+import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
@@ -78,6 +78,16 @@ type TemplateContext = {
   };
   each?: JsonValue;
 };
+
+type CheckpointState =
+  | {
+      status: 'failed';
+      reason: string;
+    }
+  | {
+      status: 'success';
+      value: JsonValue;
+    };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
   return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
@@ -330,6 +340,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
+      const prevTaskState = await task.getTaskState?.();
 
       for (const iteration of iterations) {
         if (iteration.each) {
@@ -347,6 +358,43 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           logger: taskLogger,
           logStream: streamLogger,
           workspacePath,
+          async checkpoint<U extends JsonValue>(
+            keySuffix: string,
+            fn: () => Promise<U>,
+          ) {
+            const key = `v1.task.checkpoint.${keySuffix}`;
+            try {
+              let prevValue: U | undefined;
+              if (prevTaskState) {
+                const prevState = (
+                  prevTaskState.state?.checkpoints as {
+                    [key: string]: CheckpointState;
+                  }
+                )?.[key];
+                if (prevState && prevState.status === 'success') {
+                  prevValue = prevState.value as U;
+                }
+              }
+
+              const value = prevValue ? prevValue : await fn();
+
+              if (!prevValue) {
+                task.updateCheckpoint?.({
+                  key,
+                  status: 'success',
+                  value,
+                });
+              }
+              return value;
+            } catch (err) {
+              task.updateCheckpoint?.({
+                key,
+                status: 'failed',
+                reason: stringifyError(err),
+              });
+              throw err;
+            }
+          },
           createTemporaryDirectory: async () => {
             const tmpDir = await fs.mkdtemp(
               `${workspacePath}_step-${step.id}-`,

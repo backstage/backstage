@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-stack-overflow-backend",
-  "version": "0.2.14",
+  "version": "0.2.17-next.0",
   "description": "Deprecated, consider using @backstage/plugin-search-backend-module-stack-overflow-collator instead",
   "backstage": {
     "role": "backend-plugin"
