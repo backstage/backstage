@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog': patch
 ---
 
-Added support for providing an `initiallySelectedNamspaces` which accepts an array of Namespaces to have selected by default
+Added support for providing an `initiallySelectedNamespaces` which accepts an array of Namespaces to have selected by default
