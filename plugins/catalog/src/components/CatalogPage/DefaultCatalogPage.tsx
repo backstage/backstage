@@ -69,7 +69,7 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
               to={createComponentLink && createComponentLink()}
             />
           )}
-          <SupportButton>All your software catalog entities</SupportButton>
+          <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
         </ContentHeader>
         <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>

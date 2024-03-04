@@ -20,6 +20,8 @@ import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Illo } from './Illo';
+import { catalogTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -45,24 +47,24 @@ const useStyles = makeStyles(theme => ({
 
 export function EntityNotFound() {
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
     <Grid container spacing={0} className={classes.container}>
       <Illo />
       <Grid item xs={12} sm={6}>
         <Typography variant="h2" className={classes.title}>
-          Entity was not found
+          {t('entityNotFound.title')}
         </Typography>
         <Typography variant="body1" className={classes.body}>
-          Want to help us build this? Check out our Getting Started
-          documentation.
+          {t('entityNotFound.description')}
         </Typography>
         <Button
           variant="contained"
           color="primary"
           href="https://backstage.io/docs"
         >
-          DOCS
+          {t('entityNotFound.docButtonTitle')}
         </Button>
       </Grid>
     </Grid>
