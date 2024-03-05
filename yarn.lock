@@ -19804,12 +19804,11 @@ __metadata:
   linkType: hard
 
 "@types/rollup-plugin-peer-deps-external@npm:^2.2.0":
-  version: 2.2.4
-  resolution: "@types/rollup-plugin-peer-deps-external@npm:2.2.4"
+  version: 2.2.5
+  resolution: "@types/rollup-plugin-peer-deps-external@npm:2.2.5"
   dependencies:
-    "@types/node": "*"
     rollup: ^0.63.4
-  checksum: 215849a0ae0f5bd4aec0ae2c1f05defaca1a88013b1c89ebfd207a4732799b970b0aaf7d3fe1797548f08c972e1bd028352d3193d00cb570d58cd86fd4da9447
+  checksum: 3f0d130fc15c80eac737391e180e77597da1200ff1f6d28a44f785a0de7f29144df805ab5b020ba38b243af6959e9da0757efa4141c4e737cd04eebe50f59c07
   languageName: node
   linkType: hard
 
