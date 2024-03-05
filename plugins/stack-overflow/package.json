@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-stack-overflow",
-  "version": "0.1.26-next.0",
+  "version": "0.1.26-next.1",
   "backstage": {
     "role": "frontend-plugin"
   },

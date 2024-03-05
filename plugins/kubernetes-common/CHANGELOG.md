@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.7.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/types@1.1.1
+
 ## 0.7.5-next.0
 
 ### Patch Changes

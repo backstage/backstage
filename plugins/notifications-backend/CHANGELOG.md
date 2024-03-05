@@ -1,5 +1,28 @@
 # @backstage/plugin-notifications-backend
 
+## 0.1.0-next.1
+
+### Minor Changes
+
+- 07abfe1: The NotificationsPage newly uses pagination implemented on the backend layer to avoid large dataset transfers
+- daf85dc: BREAKING CHANGE: Migrates signals to use the `EventsService` and makes it mandatory
+
+### Patch Changes
+
+- a790a3d: Move notification origin resolving to backend with new auth
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/plugin-notifications-common@0.0.2-next.1
+  - @backstage/plugin-notifications-node@0.1.0-next.1
+  - @backstage/plugin-signals-node@0.1.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-events-node@0.3.0-next.1
+
 ## 0.1.0-next.0
 
 ### Minor Changes
