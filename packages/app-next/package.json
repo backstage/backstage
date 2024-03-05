@@ -85,7 +85,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "@octokit/rest": "^19.0.3",
+    "@octokit/rest": "^20.0.0",
     "@oriflame/backstage-plugin-score-card": "^0.8.0",
     "@roadiehq/backstage-plugin-buildkite": "^2.0.8",
     "@roadiehq/backstage-plugin-github-insights": "^2.0.5",
