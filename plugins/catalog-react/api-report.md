@@ -204,6 +204,7 @@ export type EntityAutocompletePickerProps<
   };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
+  filtersForAvailableValues?: Array<keyof T>;
 };
 
 // @public

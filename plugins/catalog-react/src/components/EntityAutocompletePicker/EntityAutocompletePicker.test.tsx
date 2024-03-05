@@ -24,6 +24,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { DefaultEntityFilters } from '../../hooks';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter } from '../../types';
+import { EntityKindFilter, EntityTypeFilter } from '../../filters';
 
 interface EntityFilters extends DefaultEntityFilters {
   options?: EntityOptionFilter;
@@ -46,13 +47,17 @@ class EntityOptionFilter implements EntityFilter {
 }
 
 describe('<EntityAutocompletePicker/>', () => {
-  const mockCatalogApi = {
-    getEntityFacets: async () => ({
+  const mockCatalogApi: Partial<jest.Mocked<CatalogApi>> = {
+    getEntityFacets: jest.fn().mockResolvedValue({
       facets: {
         'spec.options': options.map((value, idx) => ({ value, count: idx })),
       },
     }),
-  } as unknown as CatalogApi;
+  };
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('renders all options', async () => {
     render(
@@ -70,6 +75,12 @@ describe('<EntityAutocompletePicker/>', () => {
     await waitFor(() =>
       expect(screen.getByText('Options')).toBeInTheDocument(),
     );
+
+    // should have called catalog backend without any filters applied
+    expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
+      facets: ['spec.options'],
+      filter: {},
+    });
 
     fireEvent.click(screen.getByTestId('options-picker-expand'));
     options.forEach(option => {
@@ -266,5 +277,69 @@ describe('<EntityAutocompletePicker/>', () => {
     expect(updateFilters).toHaveBeenLastCalledWith({
       options: new EntityOptionFilter(['option2']),
     });
+  });
+
+  it('filters available values by kind as default', async () => {
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+        <MockEntityListContextProvider
+          value={{
+            filters: {
+              kind: new EntityKindFilter('Component'),
+              type: new EntityTypeFilter(['service']),
+            },
+          }}
+        >
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
+        facets: ['spec.options'],
+        filter: {
+          kind: 'Component',
+        },
+      }),
+    );
+  });
+
+  it('can be supplied with filters for available values', async () => {
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
+        <MockEntityListContextProvider
+          value={{
+            filters: {
+              kind: new EntityKindFilter('Component'),
+              type: new EntityTypeFilter(['service']),
+            },
+          }}
+        >
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+            filtersForAvailableValues={['kind', 'type']}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+
+    await waitFor(() =>
+      expect(mockCatalogApi.getEntityFacets).toHaveBeenCalledWith({
+        facets: ['spec.options'],
+        filter: {
+          kind: 'Component',
+          'spec.type': ['service'],
+        },
+      }),
+    );
   });
 });
