@@ -30,6 +30,8 @@ import {
   Generators,
   Publisher,
   techdocsBuildsExtensionPoint,
+  techdocsGeneratorExtensionPoint,
+  TechdocsGenerator,
 } from '@backstage/plugin-techdocs-node';
 import Docker from 'dockerode';
 import { createRouter } from '@backstage/plugin-techdocs-backend';
@@ -48,6 +50,17 @@ export const techdocsPlugin = createBackendPlugin({
           throw new Error('DocsBuildStrategy may only be set once');
         }
         docsBuildStrategy = buildStrategy;
+      },
+    });
+
+    let customTechdocsGenerator: TechdocsGenerator | undefined;
+    env.registerExtensionPoint(techdocsGeneratorExtensionPoint, {
+      setTechdocsGenerator(generator: TechdocsGenerator) {
+        if (customTechdocsGenerator) {
+          throw new Error('TechdocsGenerator may only be set once');
+        }
+
+        customTechdocsGenerator = generator;
       },
     });
 
@@ -76,6 +89,7 @@ export const techdocsPlugin = createBackendPlugin({
         const generators = await Generators.fromConfig(config, {
           logger: winstonLogger,
           containerRunner,
+          customGenerator: customTechdocsGenerator,
         });
 
         // Publisher is used for
