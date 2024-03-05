@@ -16,6 +16,7 @@
 import {
   PluginEndpointDiscovery,
   PluginCacheManager,
+  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -37,6 +38,7 @@ import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -56,6 +58,7 @@ export type OutOfTheBoxDeploymentOptions = {
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
+  httpAuth?: HttpAuthService;
 };
 
 /**
@@ -73,6 +76,7 @@ export type RecommendedDeploymentOptions = {
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
+  httpAuth?: HttpAuthService;
 };
 
 /**
@@ -106,6 +110,9 @@ export async function createRouter(
 ): Promise<express.Router> {
   const router = Router();
   const { publisher, config, logger, discovery } = options;
+
+  const { httpAuth } = createLegacyAuthAdapters(options);
+
   const catalogClient =
     options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
   const docsBuildStrategy =
@@ -286,6 +293,12 @@ export async function createRouter(
 
   // Route middleware which serves files from the storage set in the publisher.
   router.use('/static/docs', publisher.docsRouter());
+
+  // Endpoint that sets the cookie for the user
+  router.get('/cookie', async (req, res) => {
+    const { expiresAt } = await httpAuth.issueUserCookie(req);
+    res.json({ expiresAt: expiresAt.toISOString() });
+  });
 
   return router;
 }
