@@ -28,6 +28,7 @@ import {
   useEntityList,
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
+import { reduceBackendCatalogFilters } from '../../utils';
 
 /** @public */
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
@@ -50,6 +51,7 @@ export type EntityAutocompletePickerProps<
   Filter: { new (values: string[]): NonNullable<T[Name]> };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
+  filtersForAvailableValues?: Array<keyof T>;
 };
 
 /** @public */
@@ -76,6 +78,7 @@ export function EntityAutocompletePicker<
     Filter,
     InputProps,
     initialSelectedOptions = [],
+    filtersForAvailableValues = ['kind'],
   } = props;
 
   const classes = useStyles();
@@ -87,17 +90,22 @@ export function EntityAutocompletePicker<
   } = useEntityList<T>();
 
   const catalogApi = useApi(catalogApiRef);
+  const availableValuesFilters = filtersForAvailableValues.map(
+    f => filters[f] as EntityFilter | undefined,
+  );
   const { value: availableValues } = useAsync(async () => {
     const facet = path;
     const { facets } = await catalogApi.getEntityFacets({
       facets: [facet],
-      filter: filters.kind?.getCatalogFilters(),
+      filter: reduceBackendCatalogFilters(
+        availableValuesFilters.filter(Boolean) as EntityFilter[],
+      ),
     });
 
     return Object.fromEntries(
       facets[facet].map(({ value, count }) => [value, count]),
     );
-  }, [filters.kind]);
+  }, [...availableValuesFilters]);
 
   const queryParameters = useMemo(
     () => [queryParameter].flat().filter(Boolean) as string[],

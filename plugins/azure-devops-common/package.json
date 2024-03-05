@@ -36,5 +36,9 @@
   },
   "files": [
     "dist"
-  ]
+  ],
+  "dependencies": {
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^"
+  }
 }

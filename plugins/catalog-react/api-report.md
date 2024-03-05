@@ -173,6 +173,18 @@ export function defaultEntityPresentation(
 ): EntityRefPresentationSnapshot;
 
 // @public (undocumented)
+export const DefaultFilters: (
+  props: DefaultFiltersProps,
+) => React_2.JSX.Element;
+
+// @public
+export type DefaultFiltersProps = {
+  initialKind?: string;
+  initiallySelectedFilter?: UserListFilterKind;
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
+};
+
+// @public (undocumented)
 export function EntityAutocompletePicker<
   T extends DefaultEntityFilters = DefaultEntityFilters,
   Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
@@ -192,6 +204,7 @@ export type EntityAutocompletePickerProps<
   };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
+  filtersForAvailableValues?: Array<keyof T>;
 };
 
 // @public

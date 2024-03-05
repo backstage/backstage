@@ -20,6 +20,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { stringifyEntityRef, Entity } from '@backstage/catalog-model';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { examples } from './register.examples';
+import { AuthService } from '@backstage/backend-plugin-api';
 
 const id = 'catalog:register';
 
@@ -30,8 +31,9 @@ const id = 'catalog:register';
 export function createCatalogRegisterAction(options: {
   catalogClient: CatalogApi;
   integrations: ScmIntegrations;
+  auth?: AuthService;
 }) {
-  const { catalogClient, integrations } = options;
+  const { catalogClient, integrations, auth } = options;
 
   return createTemplateAction<
     | { catalogInfoUrl: string; optional?: boolean }
@@ -125,6 +127,11 @@ export function createCatalogRegisterAction(options: {
 
       ctx.logger.info(`Registering ${catalogInfoUrl} in the catalog`);
 
+      const { token } = (await auth?.getPluginRequestToken({
+        onBehalfOf: await ctx.getInitiatorCredentials(),
+        targetPluginId: 'catalog',
+      })) ?? { token: ctx.secrets?.backstageToken };
+
       try {
         // 1st try to register the location, this will throw an error if the location already exists (see catch)
         await catalogClient.addLocation(
@@ -132,9 +139,7 @@ export function createCatalogRegisterAction(options: {
             type: 'url',
             target: catalogInfoUrl,
           },
-          ctx.secrets?.backstageToken
-            ? { token: ctx.secrets.backstageToken }
-            : {},
+          token ? { token } : {},
         );
       } catch (e) {
         if (!input.optional) {
@@ -151,9 +156,7 @@ export function createCatalogRegisterAction(options: {
             type: 'url',
             target: catalogInfoUrl,
           },
-          ctx.secrets?.backstageToken
-            ? { token: ctx.secrets.backstageToken }
-            : {},
+          token ? { token } : {},
         );
 
         if (result.entities.length) {

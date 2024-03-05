@@ -48,12 +48,12 @@ import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { createDefaultFilters } from '../../lib/templating/filters';
 import {
   AuthorizeResult,
-  PermissionEvaluator,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -62,7 +62,7 @@ type NunjucksWorkflowRunnerOptions = {
   logger: winston.Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-  permissions?: PermissionEvaluator;
+  permissions?: PermissionsService;
 };
 
 type TemplateContext = {
@@ -414,6 +414,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           user: task.spec.user,
           isDryRun: task.isDryRun,
           signal: task.cancelSignal,
+          getInitiatorCredentials: task.getInitiatorCredentials,
         });
       }
 
@@ -472,7 +473,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         this.options.permissions && task.spec.steps.length
           ? await this.options.permissions.authorizeConditional(
               [{ permission: actionExecutePermission }],
-              { token: task.secrets?.backstageToken },
+              { credentials: await task.getInitiatorCredentials() },
             )
           : [{ result: AuthorizeResult.ALLOW }];
 

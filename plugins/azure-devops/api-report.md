@@ -69,6 +69,7 @@ export interface AzureDevOpsApi {
   // (undocumented)
   getBuildRuns(
     projectName: string,
+    entityRef: string,
     repoName?: string,
     definitionName?: string,
     host?: string,
@@ -85,6 +86,7 @@ export interface AzureDevOpsApi {
   getGitTags(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
   ): Promise<{
@@ -94,6 +96,7 @@ export interface AzureDevOpsApi {
   getPullRequests(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
     options?: PullRequestOptions,
@@ -127,6 +130,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   // (undocumented)
   getBuildRuns(
     projectName: string,
+    entityRef: string,
     repoName?: string,
     definitionName?: string,
     host?: string,
@@ -143,6 +147,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   getGitTags(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
   ): Promise<{
@@ -152,6 +157,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   getPullRequests(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
     options?: PullRequestOptions,

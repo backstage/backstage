@@ -6,6 +6,7 @@
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
 import { AuthMetadata as AuthMetadata_2 } from '@backstage/plugin-kubernetes-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ClusterDetails as ClusterDetails_2 } from '@backstage/plugin-kubernetes-node';
 import { Config } from '@backstage/config';
@@ -212,6 +213,9 @@ export class KubernetesBuilder {
   // (undocumented)
   protected fetchClusterDetails(
     clusterSupplier: KubernetesClustersSupplier_2,
+    options: {
+      credentials: BackstageCredentials;
+    },
   ): Promise<ClusterDetails_2[]>;
   // (undocumented)
   protected getAuthStrategyMap(): {

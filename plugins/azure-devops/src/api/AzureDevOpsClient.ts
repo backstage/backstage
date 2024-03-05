@@ -72,6 +72,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   public async getGitTags(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
   ): Promise<{ items: GitTag[] }> {
@@ -82,6 +83,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (org) {
       queryString.append('org', org);
     }
+    queryString.append('entityRef', entityRef);
     const urlSegment = `git-tags/${encodeURIComponent(
       projectName,
     )}/${encodeURIComponent(repoName)}?${queryString}`;
@@ -93,6 +95,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   public async getPullRequests(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
     options?: PullRequestOptions,
@@ -110,6 +113,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (org) {
       queryString.append('org', org);
     }
+    queryString.append('entityRef', entityRef);
     const urlSegment = `pull-requests/${encodeURIComponent(
       projectName,
     )}/${encodeURIComponent(repoName)}?${queryString}`;
@@ -136,6 +140,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 
   public async getBuildRuns(
     projectName: string,
+    entityRef: string,
     repoName?: string,
     definitionName?: string,
     host?: string,
@@ -174,6 +179,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (options?.top) {
       queryString.append('top', options.top.toString());
     }
+    queryString.append('entityRef', entityRef);
     const urlSegment = `builds/${encodeURIComponent(
       projectName,
     )}?${queryString}`;
@@ -192,6 +198,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (opts.path) {
       queryString.append('path', opts.path);
     }
+    queryString.append('entityRef', opts.entityRef);
     return await this.get(
       `readme/${encodeURIComponent(opts.project)}/${encodeURIComponent(
         opts.repo,
