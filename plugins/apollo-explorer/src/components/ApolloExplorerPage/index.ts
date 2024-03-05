@@ -14,3 +14,4 @@
  * limitations under the License.
  */
 export { ApolloExplorerPage } from './ApolloExplorerPage';
+export type { EndpointProps } from './components/ApolloExplorerPage';
