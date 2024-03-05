@@ -16,7 +16,7 @@
 
 import { Readme } from '@backstage/plugin-azure-devops-common';
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
@@ -32,9 +32,11 @@ export function useReadme(entity: Entity): {
   const { value, loading, error } = useAsync(() => {
     const { project, repo, host, org, readmePath } =
       getAnnotationValuesFromEntity(entity);
+    const entityRef = stringifyEntityRef(entity);
     return api.getReadme({
       project,
       repo: repo as string,
+      entityRef,
       host,
       org,
       path: readmePath,

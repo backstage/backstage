@@ -24,7 +24,7 @@ import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/lib/useAsync';
 import { getAnnotationValuesFromEntity } from '../utils';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
 export function useBuildRuns(
   entity: Entity,
@@ -44,7 +44,15 @@ export function useBuildRuns(
   const { value, loading, error } = useAsync(() => {
     const { project, repo, definition, host, org } =
       getAnnotationValuesFromEntity(entity);
-    return api.getBuildRuns(project, repo, definition, host, org, options);
+    return api.getBuildRuns(
+      project,
+      stringifyEntityRef(entity),
+      repo,
+      definition,
+      host,
+      org,
+      options,
+    );
   }, [api]);
 
   return {

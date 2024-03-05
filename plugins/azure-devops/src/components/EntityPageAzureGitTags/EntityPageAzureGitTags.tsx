@@ -14,7 +14,22 @@
  * limitations under the License.
  */
 
+import { azureDevOpsGitTagReadPermission } from '@backstage/plugin-azure-devops-common';
 import { GitTagTable } from '../GitTagTable/GitTagTable';
 import React from 'react';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { RequirePermission } from '@backstage/plugin-permission-react';
 
-export const EntityPageAzureGitTags = () => <GitTagTable />;
+export const EntityPageAzureGitTags = () => {
+  const { entity } = useEntity();
+  return (
+    <RequirePermission
+      permission={azureDevOpsGitTagReadPermission}
+      resourceRef={stringifyEntityRef(entity)}
+      errorPage={null}
+    >
+      <GitTagTable />
+    </RequirePermission>
+  );
+};
