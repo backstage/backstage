@@ -28,9 +28,7 @@ export const apolloExplorerPlugin: BackstagePlugin<
   {}
 >;
 
-// Warning: (ae-missing-release-tag) "EndpointProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
+// @public
 export type EndpointProps = {
   title: string;
   graphRef: string;

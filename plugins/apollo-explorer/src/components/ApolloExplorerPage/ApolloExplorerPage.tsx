@@ -23,6 +23,11 @@ import useAsync from 'react-use/lib/useAsync';
 import { CircularProgress } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
+/**
+ * Exports types to be used with {@link @backstage/apollo-explorer#ApolloExplorerPage}.
+ *
+ * @public
+ */
 export type EndpointProps = {
   title: string;
   graphRef: string;
