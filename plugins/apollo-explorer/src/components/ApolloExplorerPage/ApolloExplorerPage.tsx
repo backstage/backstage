@@ -19,7 +19,7 @@ import { Content, Header, Page } from '@backstage/core-components';
 import { ApolloExplorerBrowser } from '../ApolloExplorerBrowser';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
 import { ApiHolder, useApiHolder } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import useAsync from 'react-use/lib/useAsync';
 import { CircularProgress } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
