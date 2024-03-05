@@ -107,11 +107,13 @@ const EntityCountTile = ({
 };
 
 export const ComponentsGrid = ({
+  className,
   entity,
   relationsType,
   entityFilterKind,
   entityLimit = 6,
 }: {
+  className?: string;
   entity: Entity;
   relationsType: EntityRelationAggregation;
   entityFilterKind?: string[];
@@ -132,7 +134,7 @@ export const ComponentsGrid = ({
   }
 
   return (
-    <Grid container>
+    <Grid container className={className}>
       {componentsWithCounters?.map(c => (
         <Grid item xs={6} md={6} lg={4} key={c.type ?? c.kind}>
           <EntityCountTile
