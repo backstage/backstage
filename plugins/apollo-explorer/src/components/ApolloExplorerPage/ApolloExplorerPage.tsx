@@ -18,6 +18,10 @@ import React from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 import { ApolloExplorerBrowser } from '../ApolloExplorerBrowser';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
+import { ApiHolder, useApiHolder } from '@backstage/core-plugin-api';
+import { useAsync } from 'react-use';
+import { CircularProgress } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 
 type EndpointProps = {
   title: string;
@@ -35,19 +39,34 @@ type EndpointProps = {
   };
 };
 
+type EndpointPropsCallback = (options: {
+  apiHolder: ApiHolder;
+}) => Promise<EndpointProps[]>;
+
 type Props = {
   title?: string | undefined;
   subtitle?: string | undefined;
-  endpoints: EndpointProps[];
+  endpoints: EndpointProps[] | EndpointPropsCallback;
 };
 
 export const ApolloExplorerPage = (props: Props) => {
   const { title, subtitle, endpoints } = props;
+  const apiHolder = useApiHolder();
+
+  const { value, loading, error } = useAsync(async () => {
+    if (typeof endpoints === 'function') {
+      return await endpoints({ apiHolder });
+    }
+    return endpoints;
+  }, []);
+
   return (
     <Page themeId="tool">
       <Header title={title ?? 'Apollo Explorer 👩‍🚀'} subtitle={subtitle ?? ''} />
       <Content noPadding>
-        <ApolloExplorerBrowser endpoints={endpoints} />
+        {loading && <CircularProgress style={{ padding: 5 }} />}
+        {error && <Alert severity="error">{error?.message}</Alert>}
+        {value && <ApolloExplorerBrowser endpoints={value} />}
       </Content>
     </Page>
   );
