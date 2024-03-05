@@ -18,6 +18,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { EntityTagFilter } from '../../filters';
 import { EntityAutocompletePicker } from '../EntityAutocompletePicker/EntityAutocompletePicker';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type CatalogReactEntityTagPickerClassKey = 'input';
@@ -35,10 +37,11 @@ const useStyles = makeStyles(
 /** @public */
 export const EntityTagPicker = (props: EntityTagPickerProps) => {
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   return (
     <EntityAutocompletePicker
-      label="Tags"
+      label={t('entityTagPickerTitle')}
       name="tags"
       path="metadata.tags"
       Filter={EntityTagFilter}
