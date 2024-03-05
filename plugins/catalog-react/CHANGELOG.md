@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-react
 
+## 1.10.1-next.1
+
+### Patch Changes
+
+- b2a9926: Adds an argument for which filters should be applied when fetching/counting available values
+- a6e237f: Added `DefaultFilters` component
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/integration-react@1.1.25-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+
 ## 1.10.1-next.0
 
 ### Patch Changes

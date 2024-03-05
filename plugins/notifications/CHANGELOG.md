@@ -1,5 +1,22 @@
 # @backstage/plugin-notifications
 
+## 0.1.0-next.1
+
+### Minor Changes
+
+- 07abfe1: The NotificationsPage newly uses pagination implemented on the backend layer to avoid large dataset transfers
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-notifications-common@0.0.2-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-signals-react@0.0.2-next.1
+
 ## 0.1.0-next.0
 
 ### Minor Changes

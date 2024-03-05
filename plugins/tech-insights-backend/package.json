@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-tech-insights-backend",
-  "version": "0.5.27-next.0",
+  "version": "0.5.28-next.1",
   "backstage": {
     "role": "backend-plugin"
   },

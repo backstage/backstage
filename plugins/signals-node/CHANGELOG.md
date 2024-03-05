@@ -1,5 +1,21 @@
 # @backstage/plugin-signals-node
 
+## 0.1.0-next.1
+
+### Minor Changes
+
+- daf85dc: BREAKING CHANGE: Migrates signals to use the `EventsService` and makes it mandatory
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.0-next.1
+
 ## 0.0.4-next.0
 
 ### Patch Changes

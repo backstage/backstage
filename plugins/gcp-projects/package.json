@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-gcp-projects",
-  "version": "0.3.47-next.0",
+  "version": "0.3.47-next.1",
   "description": "A Backstage plugin that helps you manage projects in GCP",
   "backstage": {
     "role": "frontend-plugin"

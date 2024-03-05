@@ -1,5 +1,19 @@
 # @backstage/config-loader
 
+## 1.7.0-next.1
+
+### Minor Changes
+
+- db8358d: Forward `null` values read from configuration files in configuration data, rather than treating them as an absence of config.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+
 ## 1.6.3-next.0
 
 ### Patch Changes

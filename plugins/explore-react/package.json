@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-explore-react",
-  "version": "0.0.37-next.0",
+  "version": "0.0.37-next.1",
   "description": "A frontend library for Backstage plugins that want to interact with the explore plugin",
   "backstage": {
     "role": "web-library"

@@ -1,5 +1,22 @@
 # @backstage/plugin-search-backend
 
+## 1.5.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.1
+  - @backstage/plugin-search-backend-node@1.2.18-next.1
+  - @backstage/backend-openapi-utils@0.1.7-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-search-common@1.2.11-next.1
+
 ## 1.5.3-next.0
 
 ### Patch Changes

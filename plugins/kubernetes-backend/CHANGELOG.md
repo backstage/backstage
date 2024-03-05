@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.16.0-next.1
+
+### Patch Changes
+
+- 69d0217: Pass user credentials when calling catalog get entities api.
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/plugin-kubernetes-node@0.1.8-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/integration-aws-node@0.1.10-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+  - @backstage/plugin-kubernetes-common@0.7.5-next.1
+
 ## 0.16.0-next.0
 
 ### Minor Changes

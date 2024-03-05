@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-gitops-profiles",
-  "version": "0.3.46-next.0",
+  "version": "0.3.46-next.1",
   "description": "A Backstage plugin that helps you manage GitOps profiles",
   "backstage": {
     "role": "frontend-plugin"
