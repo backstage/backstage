@@ -183,7 +183,9 @@ export class TaskManager implements TaskContext {
       return JSON.parse(this.task.secrets.__initiatorCredentials);
     }
     if (!this.auth) {
-      throw new Error('Unable to access credentials in ....');
+      throw new Error(
+        'Failed to create none credentials in scaffolder task. The TaskManager has not been initialized with an auth service implementation',
+      );
     }
     return this.auth.getNoneCredentials();
   }

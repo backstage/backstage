@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-node': patch
+'@backstage/plugin-scaffolder-node': minor
 ---
 
-Update the task context type to contain the new auth initiator credentials.
+Update task context type to contain the new auth initiator credentials.
