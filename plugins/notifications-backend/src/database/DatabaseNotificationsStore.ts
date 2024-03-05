@@ -60,7 +60,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return rows.map(row => ({
       id: row.id,
       user: row.user,
-      created: row.created,
+      created: new Date(row.created),
       saved: row.saved,
       read: row.read,
       updated: row.updated,
