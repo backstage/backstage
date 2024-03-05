@@ -6306,6 +6306,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-codescene@workspace:plugins/codescene"
   dependencies:
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
@@ -6313,13 +6314,16 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
+    "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
+    "@backstage/theme": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/lab": 4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    luxon: ^3.4.4
     msw: ^1.0.0
     rc-progress: 3.5.1
     react-use: ^17.2.4
@@ -34316,7 +34320,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.0.0, luxon@npm:^3.3.0, luxon@npm:^3.4.3, luxon@npm:~3.4.0":
+"luxon@npm:^3.0.0, luxon@npm:^3.3.0, luxon@npm:^3.4.3, luxon@npm:^3.4.4, luxon@npm:~3.4.0":
   version: 3.4.4
   resolution: "luxon@npm:3.4.4"
   checksum: 36c1f99c4796ee4bfddf7dc94fa87815add43ebc44c8934c924946260a58512f0fd2743a629302885df7f35ccbd2d13f178c15df046d0e3b6eb71db178f1c60c

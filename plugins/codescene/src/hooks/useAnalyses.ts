@@ -13,15 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  codescenePlugin,
-  CodeScenePage,
-  CodeSceneProjectDetailsPage,
-  CodeSceneEntityFileSummary,
-  CodeSceneEntityKPICard,
-} from './plugin';
-export { CodeSceneIcon } from './CodeSceneIcon';
-export {
-  isCodeSceneAvailable,
-  CODESCENE_PROJECT_ANNOTATION,
-} from './utils/commonUtil';
+
+import { Analysis } from '../api/types';
+import { codesceneApiRef } from '../api/api';
+import { useApi } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/lib/useAsync';
+
+export const useAnalyses = (projectId: number) => {
+  const codesceneApi = useApi(codesceneApiRef);
+
+  const {
+    value: analysis,
+    loading,
+    error,
+  } = useAsync(async (): Promise<Analysis> => {
+    return await codesceneApi.fetchLatestAnalysis(projectId);
+  }, []);
+
+  return { analysis, loading, error };
+};
