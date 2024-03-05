@@ -23,10 +23,10 @@ import { Logger } from 'winston';
 import { BindConfig, TLSConfig } from './config';
 import { createOptions, errorString } from './util';
 import {
+  AEDirVendor,
   ActiveDirectoryVendor,
   DefaultLdapVendor,
   FreeIpaVendor,
-  AEDirVendor,
   LdapVendor,
 } from './vendors';
 
@@ -46,27 +46,20 @@ export class LdapClient {
     bind?: BindConfig,
     tls?: TLSConfig,
   ): Promise<LdapClient> {
-    const readTLSOptionFile = (file?: string) =>
-      file !== undefined ? readFileSync(file).toString() : undefined;
-
-    const certs = readTLSOptionFile(tls?.certs);
-    const keys = readTLSOptionFile(tls?.keys);
     const secureContext =
-      certs !== undefined || keys !== undefined
+      tls && tls.certs && tls.keys
         ? tlsLib.createSecureContext({
-            cert: certs,
-            key: keys,
+            cert: readFileSync(tls.certs).toString(),
+            key: readFileSync(tls.keys).toString(),
           })
         : undefined;
 
-    const tlsOptions = {
-      secureContext,
-      rejectUnauthorized: tls?.rejectUnauthorized,
-    };
-
     const client = ldap.createClient({
       url: target,
-      tlsOptions: tlsOptions,
+      tlsOptions: {
+        secureContext,
+        rejectUnauthorized: tls?.rejectUnauthorized,
+      },
     });
 
     // We want to have a catch-all error handler at the top, since the default
