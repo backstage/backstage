@@ -145,10 +145,7 @@ export const OngoingTask = (props: {
   const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
     async () => {
       if (taskId) {
-        analytics.captureEvent(
-          'click',
-          `[${templateRef}]: Task has been canceled`,
-        );
+        analytics.captureEvent('cancelled', templateRef);
         await scaffolderApi.cancelTask(taskId);
       }
     },
