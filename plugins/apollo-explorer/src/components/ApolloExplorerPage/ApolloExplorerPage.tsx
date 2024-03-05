@@ -23,7 +23,7 @@ import { useAsync } from 'react-use';
 import { CircularProgress } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
-type EndpointProps = {
+export type EndpointProps = {
   title: string;
   graphRef: string;
   persistExplorerState?: boolean;
