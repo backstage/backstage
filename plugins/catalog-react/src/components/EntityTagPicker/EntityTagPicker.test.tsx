@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  fireEvent,
-  render,
-  waitFor,
-  screen,
-  act,
-} from '@testing-library/react';
+import { fireEvent, waitFor, screen, act } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityTagFilter } from '../../filters';
 import { EntityTagPicker } from './EntityTagPicker';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
 import { CatalogApi } from '@backstage/catalog-client';
 
@@ -41,7 +35,7 @@ describe('<EntityTagPicker/>', () => {
   } as unknown as CatalogApi;
 
   it('renders all tags', async () => {
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityTagPicker />
@@ -57,7 +51,7 @@ describe('<EntityTagPicker/>', () => {
   });
 
   it('renders unique tags in alphabetical order', async () => {
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityTagPicker />
@@ -77,7 +71,7 @@ describe('<EntityTagPicker/>', () => {
   });
 
   it('renders tags with counts', async () => {
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityTagPicker showCounts />
@@ -99,7 +93,7 @@ describe('<EntityTagPicker/>', () => {
   it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { tags: ['tag3'] };
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider
           value={{
@@ -121,7 +115,7 @@ describe('<EntityTagPicker/>', () => {
 
   it('adds tags to filters', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider
           value={{
@@ -145,7 +139,7 @@ describe('<EntityTagPicker/>', () => {
 
   it('removes tags from filters', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider
           value={{
@@ -173,7 +167,7 @@ describe('<EntityTagPicker/>', () => {
 
   it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    const rendered = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider
           value={{
@@ -209,7 +203,7 @@ describe('<EntityTagPicker/>', () => {
 
   it('verify that user can select tags after query string has been set', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider
           value={{
@@ -247,7 +241,7 @@ describe('<EntityTagPicker/>', () => {
       }),
     } as unknown as CatalogApi;
 
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRefNoTags]]}>
         <MockEntityListContextProvider
           value={{

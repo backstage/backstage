@@ -21,6 +21,8 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { EntityKindFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
 import { filterKinds, useAllKinds } from './kindFilterUtils';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 function useEntityKindFilter(opts: { initialFilter: string }): {
   loading: boolean;
@@ -95,6 +97,7 @@ export interface EntityKindPickerProps {
 /** @public */
 export const EntityKindPicker = (props: EntityKindPickerProps) => {
   const { allowedKinds, hidden, initialFilter = 'component' } = props;
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const alertApi = useApi(alertApiRef);
 
@@ -106,11 +109,11 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
   useEffect(() => {
     if (error) {
       alertApi.post({
-        message: `Failed to load entity kinds`,
+        message: t('entityKindPicker.errorMessage'),
         severity: 'error',
       });
     }
-  }, [error, alertApi]);
+  }, [error, alertApi, t]);
 
   if (error) return null;
 
@@ -124,7 +127,7 @@ export const EntityKindPicker = (props: EntityKindPickerProps) => {
   return hidden ? null : (
     <Box pb={1} pt={1}>
       <Select
-        label="Kind"
+        label={t('entityKindPicker.title')}
         items={items}
         selected={selectedKind.toLocaleLowerCase('en-US')}
         onChange={value => setSelectedKind(String(value))}

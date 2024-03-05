@@ -20,13 +20,18 @@ import DialogContentText from '@material-ui/core/DialogContentText';
 import React from 'react';
 import YAML from 'yaml';
 import { sortKeys } from './util';
+import { catalogReactTranslationRef } from '../../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export function YamlPage(props: { entity: Entity }) {
+  const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <>
-      <DialogContentText variant="h2">Entity as YAML</DialogContentText>
+      <DialogContentText variant="h2">
+        {t('inspectEntityDialog.yamlPage.title')}
+      </DialogContentText>
       <DialogContentText>
-        This is the raw entity data as received from the catalog, on YAML form.
+        {t('inspectEntityDialog.yamlPage.description')}
       </DialogContentText>
       <DialogContentText>
         <div style={{ fontSize: '75%' }} data-testid="code-snippet">
