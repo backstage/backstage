@@ -239,6 +239,8 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   initiallySelectedFilter?: UserListFilterKind;
   // (undocumented)
+  initiallySelectedNamespaces?: string[];
+  // (undocumented)
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   // (undocumented)
   pagination?:

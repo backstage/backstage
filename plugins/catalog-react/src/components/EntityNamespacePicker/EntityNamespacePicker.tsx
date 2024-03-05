@@ -32,8 +32,18 @@ const useStyles = makeStyles(
   },
 );
 
+/**
+ * Props for {@link EntityNamespacePicker}.
+ *
+ * @public
+ */
+export interface EntityNamespacePickerProps {
+  initiallySelectedNamespaces?: string[];
+}
+
 /** @public */
-export const EntityNamespacePicker = () => {
+export const EntityNamespacePicker = (props: EntityNamespacePickerProps) => {
+  const { initiallySelectedNamespaces } = props;
   const classes = useStyles();
   return (
     <EntityAutocompletePicker
@@ -42,6 +52,7 @@ export const EntityNamespacePicker = () => {
       path="metadata.namespace"
       Filter={EntityNamespaceFilter}
       InputProps={{ className: classes.input }}
+      initialSelectedOptions={initiallySelectedNamespaces}
     />
   );
 };
