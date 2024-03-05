@@ -659,6 +659,8 @@ metadata:
   name: v1beta2-demo
   title: Test Action template
   description: scaffolder v1beta2 template demo
+  annotations:
+    backstage.io/hours-saved: '4'
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -735,6 +737,15 @@ A list of strings that can be associated with the template, e.g.
 
 This list will also be used in the frontend to display to the user so you can
 potentially search and group templates by these tags.
+
+### `metadata.annotations.[backstage.io/hours-saved]` [optional]
+
+The approximate number of hours (as a YAML string) representing the amount of
+time saved when someone uses this template.
+
+Can be used in combination with the `backstage.io/source-template` annotation,
+or analytics data, to calculate how much time has been saved through the use
+of the Scaffolder plugin.
 
 ### `spec.type` [required]
 
