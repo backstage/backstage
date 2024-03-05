@@ -51,6 +51,7 @@ import {
   ApiResolver,
   AppThemeSelector,
 } from '@backstage/core-app-api';
+import { Progress } from '@backstage/core-components';
 
 // TODO: Get rid of all of these
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -214,7 +215,7 @@ export function createApp(options?: {
     createRoot() {
       const LazyApp = React.lazy(appLoader);
       return (
-        <React.Suspense fallback="Loading...">
+        <React.Suspense fallback={<Progress />}>
           <LazyApp />
         </React.Suspense>
       );
