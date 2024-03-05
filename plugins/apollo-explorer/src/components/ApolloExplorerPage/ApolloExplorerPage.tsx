@@ -24,7 +24,7 @@ import { CircularProgress } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 
 /**
- * Exports types to be used with {@link @backstage/apollo-explorer#ApolloExplorerPage}.
+ * Export types to be used with {@link @backstage/apollo-explorer#ApolloExplorerPage}.
  *
  * @public
  */
