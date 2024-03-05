@@ -30,6 +30,7 @@ export const VisitList = ({
   numVisitsTotal = 8,
   collapsed = true,
   loading = false,
+  title = '',
 }: {
   detailType: ItemDetailType;
   visits?: Visit[];
@@ -37,6 +38,7 @@ export const VisitList = ({
   numVisitsTotal?: number;
   collapsed?: boolean;
   loading?: boolean;
+  title?: string;
 }) => {
   let listBody: React.ReactElement = <></>;
   if (loading) {
@@ -81,6 +83,7 @@ export const VisitList = ({
 
   return (
     <>
+      {title && <h5>{title}</h5>}
       <List dense disablePadding>
         {listBody}
       </List>

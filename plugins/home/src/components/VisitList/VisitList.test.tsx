@@ -19,9 +19,16 @@ import { VisitList } from './VisitList';
 import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<VisitList/>', () => {
+  it('renders with mandatory parameters', async () => {
+    const { getByText } = await renderInTestApp(
+      <VisitList title="My title" detailType="time-ago" />,
+    );
+    expect(getByText('My title')).toBeInTheDocument();
+  });
+
   it('renders skeleton when loading is true', async () => {
-    const { container } = await render(
-      <VisitList detailType="time-ago" loading />,
+    const { container } = await renderInTestApp(
+      <VisitList title="My title" detailType="time-ago" loading />,
     );
     expect(container.querySelectorAll('li')).toHaveLength(8);
     expect(container.querySelectorAll('.MuiSkeleton-root')).toHaveLength(16);
@@ -30,6 +37,7 @@ describe('<VisitList/>', () => {
   it('renders specified amount of items', async () => {
     const { container } = await renderInTestApp(
       <VisitList
+        title="My title"
         detailType="time-ago"
         loading
         numVisitsOpen={1}
@@ -42,6 +50,7 @@ describe('<VisitList/>', () => {
   it('renders some items hidden', async () => {
     const { container } = await renderInTestApp(
       <VisitList
+        title="My title"
         detailType="time-ago"
         loading
         numVisitsOpen={1}
@@ -55,6 +64,7 @@ describe('<VisitList/>', () => {
   it('renders all items when not collapsed', async () => {
     const { container } = await renderInTestApp(
       <VisitList
+        title="My title"
         detailType="time-ago"
         loading
         collapsed={false}
@@ -67,22 +77,20 @@ describe('<VisitList/>', () => {
   });
 
   it('renders visit with time-ago', async () => {
-    const { container, getByText } = await render(
-      <BrowserRouter>
-        <VisitList
-          detailType="time-ago"
-          visits={[
-            {
-              id: 'explore',
-              name: 'Explore Backstage',
-              pathname: '/explore',
-              hits: 35,
-              timestamp: Date.now() - 86400_000,
-            },
-          ]}
-        />
-        ,
-      </BrowserRouter>,
+    const { container, getByText } = await renderInTestApp(
+      <VisitList
+        title="My title"
+        detailType="time-ago"
+        visits={[
+          {
+            id: 'explore',
+            name: 'Explore Backstage',
+            pathname: '/explore',
+            hits: 35,
+            timestamp: Date.now() - 86400_000,
+          },
+        ]}
+      />,
     );
     expect(container.querySelectorAll('li')).toHaveLength(1);
     expect(getByText('Explore Backstage')).toBeInTheDocument();
@@ -90,22 +98,20 @@ describe('<VisitList/>', () => {
   });
 
   it('renders visit with hits', async () => {
-    const { container, getByText } = await render(
-      <BrowserRouter>
-        <VisitList
-          detailType="hits"
-          visits={[
-            {
-              id: 'explore',
-              name: 'Explore Backstage',
-              pathname: '/explore',
-              hits: 35,
-              timestamp: Date.now() - 86400_000,
-            },
-          ]}
-        />
-        ,
-      </BrowserRouter>,
+    const { container, getByText } = await renderInTestApp(
+      <VisitList
+        title="My title"
+        detailType="hits"
+        visits={[
+          {
+            id: 'explore',
+            name: 'Explore Backstage',
+            pathname: '/explore',
+            hits: 35,
+            timestamp: Date.now() - 86400_000,
+          },
+        ]}
+      />,
     );
     expect(container.querySelectorAll('li')).toHaveLength(1);
     expect(getByText('Explore Backstage')).toBeInTheDocument();
@@ -113,22 +119,20 @@ describe('<VisitList/>', () => {
   });
 
   it('renders text warning about few items', async () => {
-    const { getByText } = await render(
-      <BrowserRouter>
-        <VisitList
-          detailType="hits"
-          visits={[
-            {
-              id: 'explore',
-              name: 'Explore Backstage',
-              pathname: '/explore',
-              hits: 35,
-              timestamp: Date.now() - 86400_000,
-            },
-          ]}
-        />
-        ,
-      </BrowserRouter>,
+    const { getByText } = await renderInTestApp(
+      <VisitList
+        title="My title"
+        detailType="hits"
+        visits={[
+          {
+            id: 'explore',
+            name: 'Explore Backstage',
+            pathname: '/explore',
+            hits: 35,
+            timestamp: Date.now() - 86400_000,
+          },
+        ]}
+      />,
     );
     expect(
       getByText('The more pages you visit, the more pages will appear here.'),
@@ -136,10 +140,8 @@ describe('<VisitList/>', () => {
   });
 
   it('renders text warning about no items', async () => {
-    const { getByText } = await render(
-      <BrowserRouter>
-        <VisitList detailType="hits" visits={[]} />,
-      </BrowserRouter>,
+    const { getByText } = await renderInTestApp(
+      <VisitList title="My title" detailType="hits" visits={[]} />,
     );
     expect(getByText('There are no visits to show yet.')).toBeInTheDocument();
   });
