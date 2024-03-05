@@ -30,6 +30,10 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { TaskStore } from './types';
 import { readDuration } from './helper';
+import {
+  AuthService,
+  BackstageCredentials,
+} from '@backstage/backend-plugin-api';
 
 type TaskState = {
   checkpoints: {
@@ -59,8 +63,9 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
+    auth?: AuthService,
   ) {
-    const agent = new TaskManager(task, storage, abortSignal, logger);
+    const agent = new TaskManager(task, storage, abortSignal, logger, auth);
     agent.startTimeout();
     return agent;
   }
@@ -71,6 +76,7 @@ export class TaskManager implements TaskContext {
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
+    private readonly auth?: AuthService,
   ) {}
 
   get spec() {
@@ -171,6 +177,18 @@ export class TaskManager implements TaskContext {
       }
     }, 1000);
   }
+
+  async getInitiatorCredentials(): Promise<BackstageCredentials> {
+    if (this.task.secrets && '__initiatorCredentials' in this.task.secrets) {
+      return JSON.parse(this.task.secrets.__initiatorCredentials);
+    }
+    if (!this.auth) {
+      throw new Error(
+        'Failed to create none credentials in scaffolder task. The TaskManager has not been initialized with an auth service implementation',
+      );
+    }
+    return this.auth.getNoneCredentials();
+  }
 }
 
 /**
@@ -214,6 +232,7 @@ export class StorageTaskBroker implements TaskBroker {
     private readonly storage: TaskStore,
     private readonly logger: Logger,
     private readonly config?: Config,
+    private readonly auth?: AuthService,
   ) {}
 
   async list(options?: {
@@ -299,6 +318,7 @@ export class StorageTaskBroker implements TaskBroker {
           this.storage,
           abortController.signal,
           this.logger,
+          this.auth,
         );
       }
 

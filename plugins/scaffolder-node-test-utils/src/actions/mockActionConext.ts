@@ -16,7 +16,10 @@
 
 import { PassThrough } from 'stream';
 import { getVoidLogger } from '@backstage/backend-common';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockCredentials,
+} from '@backstage/backend-test-utils';
 import { JsonObject } from '@backstage/types';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 
@@ -32,6 +35,7 @@ export const createMockActionContext = <
 >(
   options?: Partial<ActionContext<TActionInput, TActionOutput>>,
 ): ActionContext<TActionInput, TActionOutput> => {
+  const credentials = mockCredentials.user();
   const defaultContext = {
     logger: getVoidLogger(),
     logStream: new PassThrough(),
@@ -39,6 +43,7 @@ export const createMockActionContext = <
     createTemporaryDirectory: jest.fn(),
     input: {} as TActionInput,
     checkpoint: jest.fn(),
+    getInitiatorCredentials: () => Promise.resolve(credentials),
   };
 
   const createDefaultWorkspace = () => ({
