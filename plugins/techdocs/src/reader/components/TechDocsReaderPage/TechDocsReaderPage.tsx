@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, Children, ReactElement } from 'react';
+import React, { ReactNode, Children, ReactElement, useState } from 'react';
 import { useOutlet } from 'react-router-dom';
 
-import { Page } from '@backstage/core-components';
+import { ErrorPanel, Page } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   TECHDOCS_ADDONS_WRAPPER_KEY,
   TECHDOCS_ADDONS_KEY,
   TechDocsReaderPageProvider,
+  techdocsApiRef,
 } from '@backstage/plugin-techdocs-react';
 
 import { TechDocsReaderPageRenderFunction } from '../../../types';
@@ -33,8 +34,11 @@ import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
 import { rootDocsRouteRef } from '../../../routes';
 import {
   getComponentData,
+  useApi,
+  useApp,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
+import { useAsync } from 'react-use';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -143,6 +147,27 @@ export const TechDocsReaderLayout = (props: TechDocsReaderLayoutProps) => {
   );
 };
 
+function TechDocsAuthProvider({ children }: { children: ReactNode }) {
+  const app = useApp();
+  const { Progress } = app.getComponents();
+
+  const techdocsApi = useApi(techdocsApiRef);
+
+  const { loading, error } = useAsync(async () => {
+    return await techdocsApi.issueUserCookie();
+  }, [techdocsApi]);
+
+  if (error) {
+    return <ErrorPanel error={error} />;
+  }
+
+  if (loading) {
+    return <Progress />;
+  }
+
+  return children;
+}
+
 /**
  * @public
  */
@@ -177,29 +202,33 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
     // As explained above, "page" is configuration 4 and <TechDocsReaderLayout> is 1
     return (
-      <TechDocsReaderPageProvider entityRef={entityRef}>
-        {(page as JSX.Element) || <TechDocsReaderLayout />}
-      </TechDocsReaderPageProvider>
+      <TechDocsAuthProvider>
+        <TechDocsReaderPageProvider entityRef={entityRef}>
+          {(page as JSX.Element) || <TechDocsReaderLayout />}
+        </TechDocsReaderPageProvider>
+      </TechDocsAuthProvider>
     );
   }
 
   // As explained above, a render function is configuration 3 and React element is 2
   return (
-    <TechDocsReaderPageProvider entityRef={entityRef}>
-      {({ metadata, entityMetadata, onReady }) => (
-        <div className="techdocs-reader-page">
-          <Page themeId="documentation">
-            {children instanceof Function
-              ? children({
-                  entityRef,
-                  techdocsMetadataValue: metadata.value,
-                  entityMetadataValue: entityMetadata.value,
-                  onReady,
-                })
-              : children}
-          </Page>
-        </div>
-      )}
-    </TechDocsReaderPageProvider>
+    <TechDocsAuthProvider>
+      <TechDocsReaderPageProvider entityRef={entityRef}>
+        {({ metadata, entityMetadata, onReady }) => (
+          <div className="techdocs-reader-page">
+            <Page themeId="documentation">
+              {children instanceof Function
+                ? children({
+                    entityRef,
+                    techdocsMetadataValue: metadata.value,
+                    entityMetadataValue: entityMetadata.value,
+                    onReady,
+                  })
+                : children}
+            </Page>
+          </div>
+        )}
+      </TechDocsReaderPageProvider>
+    </TechDocsAuthProvider>
   );
 };

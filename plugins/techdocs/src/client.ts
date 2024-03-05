@@ -51,6 +51,70 @@ export class TechDocsClient implements TechDocsApi {
     this.fetchApi = options.fetchApi;
   }
 
+  private async getCookie(): Promise<{ expiresAt: string }> {
+    const apiOrigin = await this.getApiOrigin();
+    const requestUrl = `${apiOrigin}/cookie`;
+    const response = await this.fetchApi.fetch(`${requestUrl}`, {
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+    return await response.json();
+  }
+
+  private async refreshCookie(options: {
+    expiresAt?: Date | null;
+    timeoutId: number | null;
+  }): Promise<{ expiresAt: string }> {
+    // Always clear the previous timeout
+    if (options.timeoutId) clearTimeout(options.timeoutId);
+
+    // Only issue a new cookie when we don't have an expiry date or it's in the past
+    if (!options.expiresAt || options.expiresAt.getTime() < Date.now()) {
+      return this.getCookie().then(response => {
+        const expiresAt = new Date(response.expiresAt);
+        expiresAt.setMinutes(expiresAt.getMinutes() - 5);
+        localStorage.setItem(
+          'backstage-auth-cookie-last-refresh-expiration-date',
+          expiresAt.toISOString(),
+        );
+        const timeoutId = setTimeout(this.refreshCookie, expiresAt.getTime());
+        localStorage.setItem(
+          'backstage-auth-cookie-last-refresh-timeout-id',
+          timeoutId.toString(),
+        );
+        return { expiresAt: expiresAt.toISOString() };
+      });
+    }
+
+    // Otherwise, set a new timeout to refresh the cookie with the current expiration date
+    const timeoutId = setTimeout(
+      this.refreshCookie,
+      options.expiresAt.getTime(),
+    );
+    localStorage.setItem(
+      'backstage-auth-cookie-last-refresh-timeout-id',
+      timeoutId.toString(),
+    );
+
+    return { expiresAt: options.expiresAt.toISOString() };
+  }
+
+  async issueUserCookie() {
+    const expiresAt = localStorage.getItem(
+      'backstage-auth-cookie-last-refresh-expiration-date',
+    );
+    const timeoutId = localStorage.getItem(
+      'backstage-auth-cookie-last-refresh-timeout-id',
+    );
+
+    return this.refreshCookie({
+      expiresAt: expiresAt ? new Date(expiresAt) : null,
+      timeoutId: timeoutId ? Number(timeoutId) : null,
+    });
+  }
+
   async getApiOrigin(): Promise<string> {
     return await this.discoveryApi.getBaseUrl('techdocs');
   }
