@@ -24,6 +24,10 @@ import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { LocalKubectlProxyClusterLocator } from './LocalKubectlProxyLocator';
+import {
+  AuthService,
+  BackstageCredentials,
+} from '@backstage/backend-plugin-api';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   constructor(
@@ -31,9 +35,11 @@ class CombinedClustersSupplier implements KubernetesClustersSupplier {
     readonly logger: Logger,
   ) {}
 
-  async getClusters(): Promise<ClusterDetails[]> {
+  async getClusters(options: {
+    credentials: BackstageCredentials;
+  }): Promise<ClusterDetails[]> {
     const clusters = await Promise.all(
-      this.clusterSuppliers.map(supplier => supplier.getClusters()),
+      this.clusterSuppliers.map(supplier => supplier.getClusters(options)),
     )
       .then(res => {
         return res.flat();
@@ -67,6 +73,7 @@ export const getCombinedClusterSupplier = (
   authStrategy: AuthenticationStrategy,
   logger: Logger,
   refreshInterval: Duration | undefined = undefined,
+  auth: AuthService,
 ): KubernetesClustersSupplier => {
   const clusterSuppliers = rootConfig
     .getConfigArray('kubernetes.clusterLocatorMethods')
@@ -74,7 +81,7 @@ export const getCombinedClusterSupplier = (
       const type = clusterLocatorMethod.getString('type');
       switch (type) {
         case 'catalog':
-          return CatalogClusterLocator.fromConfig(catalogClient);
+          return CatalogClusterLocator.fromConfig(catalogClient, auth);
         case 'localKubectlProxy':
           return new LocalKubectlProxyClusterLocator();
         case 'config':

@@ -67,6 +67,7 @@ import { KubernetesProxy } from './KubernetesProxy';
 import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   AuthService,
+  BackstageCredentials,
   DiscoveryService,
   HttpAuthService,
 } from '@backstage/backend-plugin-api';
@@ -257,12 +258,14 @@ export class KubernetesBuilder {
     refreshInterval: Duration,
   ): KubernetesClustersSupplier {
     const config = this.env.config;
+    const { auth } = createLegacyAuthAdapters(this.env);
     this.clusterSupplier = getCombinedClusterSupplier(
       config,
       this.env.catalogApi,
       new DispatchStrategy({ authStrategyMap: this.getAuthStrategyMap() }),
       this.env.logger,
       refreshInterval,
+      auth,
     );
 
     return this.clusterSupplier;
@@ -385,8 +388,11 @@ export class KubernetesBuilder {
       }
     });
 
-    router.get('/clusters', async (_, res) => {
-      const clusterDetails = await this.fetchClusterDetails(clusterSupplier);
+    router.get('/clusters', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+      const clusterDetails = await this.fetchClusterDetails(clusterSupplier, {
+        credentials,
+      });
       res.json({
         items: clusterDetails.map(cd => {
           const oidcTokenProvider =
@@ -438,8 +444,9 @@ export class KubernetesBuilder {
 
   protected async fetchClusterDetails(
     clusterSupplier: KubernetesClustersSupplier,
+    options: { credentials: BackstageCredentials },
   ) {
-    const clusterDetails = await clusterSupplier.getClusters();
+    const clusterDetails = await clusterSupplier.getClusters(options);
 
     this.env.logger.info(
       `action=loadClusterDetails numOfClustersLoaded=${clusterDetails.length}`,
