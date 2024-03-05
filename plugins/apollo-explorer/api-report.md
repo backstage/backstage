@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="react" />
 
+import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
 import { JSX as JSX_2 } from 'react';
@@ -14,23 +15,9 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const ApolloExplorerPage: (props: {
   title?: string | undefined;
   subtitle?: string | undefined;
-  endpoints: {
-    title: string;
-    graphRef: string;
-    persistExplorerState?: boolean | undefined;
-    initialState?:
-      | {
-          document?: string | undefined;
-          variables?: JSONObject | undefined;
-          headers?: Record<string, string> | undefined;
-          displayOptions: {
-            docsPanelState?: 'closed' | 'open' | undefined;
-            showHeadersAndEnvVars?: boolean | undefined;
-            theme?: 'dark' | 'light' | undefined;
-          };
-        }
-      | undefined;
-  }[];
+  endpoints:
+    | EndpointProps[]
+    | ((options: { apiHolder: ApiHolder }) => Promise<EndpointProps[]>);
 }) => JSX_2.Element;
 
 // @public
@@ -40,4 +27,23 @@ export const apolloExplorerPlugin: BackstagePlugin<
   },
   {}
 >;
+
+// Warning: (ae-missing-release-tag) "EndpointProps" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export type EndpointProps = {
+  title: string;
+  graphRef: string;
+  persistExplorerState?: boolean;
+  initialState?: {
+    document?: string;
+    variables?: JSONObject;
+    headers?: Record<string, string>;
+    displayOptions: {
+      docsPanelState?: 'open' | 'closed';
+      showHeadersAndEnvVars?: boolean;
+      theme?: 'dark' | 'light';
+    };
+  };
+};
 ```
