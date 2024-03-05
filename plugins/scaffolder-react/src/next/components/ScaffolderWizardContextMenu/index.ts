@@ -13,17 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './Stepper';
-export * from './TemplateCard';
-export * from './ReviewState';
-export * from './TemplateGroup';
-export * from './TemplateGroups';
-export * from './Workflow';
-export * from './TemplateOutputs';
-export * from './Form';
-export * from './TaskSteps';
-export * from './TaskLogStream';
-export * from './TemplateCategoryPicker';
-export * from './ScaffolderPageContextMenu';
-export * from './ScaffolderWizardContextMenu';
-export * from './ScaffolderField';
+export {
+  ScaffolderWizardContextMenu,
+  type ScaffolderWizardContextMenuProps,
+} from './ScaffolderWizardContextMenu';

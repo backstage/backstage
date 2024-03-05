@@ -484,7 +484,6 @@ export type TemplateGroupFilter = {
 export type TemplateParameterSchema = {
   title: string;
   description?: string;
-  editUrl?: string;
   presentation?: TemplatePresentationV1beta3;
   steps: Array<{
     title: string;

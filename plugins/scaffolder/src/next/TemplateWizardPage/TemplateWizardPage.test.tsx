@@ -29,6 +29,7 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateWizardPage } from './TemplateWizardPage';
 import { rootRouteRef } from '../../routes';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -50,12 +51,32 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   listTasks: jest.fn(),
 };
 
+const catalogApiMock: jest.Mocked<CatalogApi> = {
+  getEntityByRef: jest.fn(),
+} as any;
+
 const analyticsMock = new MockAnalyticsApi();
 const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
   [analyticsApiRef, analyticsMock],
+  [catalogApiRef, catalogApiMock],
 );
 
+const entityRefResponse = {
+  apiVersion: 'v1',
+  kind: 'service',
+  metadata: {
+    name: 'test',
+    annotations: {
+      'backstage.io/edit-url': 'http://localhost:3000',
+    },
+  },
+  spec: {
+    profile: {
+      displayName: 'BackUser',
+    },
+  },
+};
 describe('TemplateWizardPage', () => {
   it('captures expected analytics events', async () => {
     scaffolderApiMock.scaffold.mockResolvedValue({ taskId: 'xyz' });
@@ -74,6 +95,7 @@ describe('TemplateWizardPage', () => {
       ],
       title: 'React JSON Schema Form Test',
     });
+    catalogApiMock.getEntityByRef.mockResolvedValue(entityRefResponse);
 
     const { findByRole, getByRole } = await renderInTestApp(
       <ApiProvider apis={apis}>
@@ -119,21 +141,20 @@ describe('TemplateWizardPage', () => {
   });
   describe('scaffolder page context menu', () => {
     it('should render if editUrl is set to url', async () => {
-      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
-        steps: [
-          {
-            title: 'Step 1',
-            schema: {
-              properties: {
-                name: {
-                  type: 'string',
-                },
-              },
-            },
+      catalogApiMock.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'service',
+        metadata: {
+          name: 'test',
+          annotations: {
+            'backstage.io/edit-url': 'http://localhost:3000',
           },
-        ],
-        title: 'React JSON Schema Form Test',
-        editUrl: 'http://example.com/load-testing',
+        },
+        spec: {
+          profile: {
+            displayName: 'BackUser',
+          },
+        },
       });
       const { queryByTestId } = await renderInTestApp(
         <ApiProvider apis={apis}>
@@ -150,21 +171,18 @@ describe('TemplateWizardPage', () => {
       expect(queryByTestId('menu-button')).toBeInTheDocument();
     });
     it('should not render if editUrl is undefined', async () => {
-      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
-        steps: [
-          {
-            title: 'Step 1',
-            schema: {
-              properties: {
-                name: {
-                  type: 'string',
-                },
-              },
-            },
+      catalogApiMock.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'service',
+        metadata: {
+          name: 'test',
+          // annotations are not set
+        },
+        spec: {
+          profile: {
+            displayName: 'BackUser',
           },
-        ],
-        title: 'React JSON Schema Form Test',
-        editUrl: undefined,
+        },
       });
       const { queryByTestId } = await renderInTestApp(
         <ApiProvider apis={apis}>

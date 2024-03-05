@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-react': minor
 ---
 
-Added an editUrl parameter to TemplateParameterSchema
+Added a header menu for ScaffolderWizard
