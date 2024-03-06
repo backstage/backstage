@@ -38,9 +38,18 @@ export default async function createPlugin(
     discoveryApi: env.discovery,
   });
 
-  const githubEventRouter = new GithubEventRouter();
-  const azureDevOpsEventRouter = new AzureDevOpsEventRouter();
-  const bitbucketCloudEventRouter = new BitbucketCloudEventRouter();
+  const githubEventRouter = new GithubEventRouter({ events: env.events });
+  githubEventRouter.subscribe();
+
+  const azureDevOpsEventRouter = new AzureDevOpsEventRouter({
+    events: env.events,
+  });
+  azureDevOpsEventRouter.subscribe();
+
+  const bitbucketCloudEventRouter = new BitbucketCloudEventRouter({
+    events: env.events,
+  });
+  bitbucketCloudEventRouter.subscribe();
 
   const azureDevOpsTechDocsEventSubscriber =
     AzureDevOpsTechDocsEventSubscriber.fromConfig(env.config, {
@@ -74,12 +83,6 @@ export default async function createPlugin(
 
   await new EventsBackend(env.logger)
     .setEventBroker(env.eventBroker)
-    .addPublishers(
-      http,
-      githubEventRouter,
-      azureDevOpsEventRouter,
-      bitbucketCloudEventRouter,
-    )
     .addSubscribers(
       azureDevOpsTechDocsEventSubscriber,
       bitbucketServerTechDocsEventSubscriber,
