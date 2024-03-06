@@ -106,6 +106,7 @@ export async function makeRollupConfigs(
         format: 'module',
         sourcemap: true,
         preserveModules: true,
+        preserveModulesRoot: `${targetDir}/src`,
       });
       // Assume we're building for the browser if ESM output is included
       mainFields.unshift('browser');
