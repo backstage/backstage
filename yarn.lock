@@ -4300,7 +4300,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@npm:^1.1.21, @backstage/integration-react@npm:^1.1.24":
+"@backstage/integration-react@npm:^1.1.24":
   version: 1.1.24
   resolution: "@backstage/integration-react@npm:1.1.24"
   dependencies:
@@ -15884,17 +15884,17 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-github-insights@npm:^2.0.5":
-  version: 2.3.23
-  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.3.23"
+  version: 2.3.27
+  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.3.27"
   dependencies:
-    "@backstage/catalog-model": ^1.4.3
-    "@backstage/core-components": ^0.13.8
-    "@backstage/core-plugin-api": ^1.8.0
-    "@backstage/integration-react": ^1.1.21
-    "@backstage/plugin-catalog-react": ^1.9.1
-    "@backstage/theme": ^0.4.4
+    "@backstage/catalog-model": ^1.4.4
+    "@backstage/core-components": ^0.14.0
+    "@backstage/core-plugin-api": ^1.9.0
+    "@backstage/integration-react": ^1.1.24
+    "@backstage/plugin-catalog-react": ^1.10.0
+    "@backstage/theme": ^0.5.1
     "@date-io/core": 2.10.7
-    "@material-ui/core": ^4.11.0
+    "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.45
     "@octokit/rest": ^19.0.3
@@ -15904,10 +15904,10 @@ __metadata:
     react-use: ^17.2.4
     zustand: 3.6.9
   peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
-  checksum: 07dd3df1d8f99ea6f2910d343c361bd27b249fbd1e982fc42630ddc8e530901ef42e9a3cf5a944c80abd0c5be25cca716c12a838057ec1e83ad538a9462033e4
+  checksum: d92f8a8f0ca66ff81722f319d55d2532436aa99cc5053a1f57bd4b82c297ab05869fce88615663fb4faf490deba1ea6b2f6ff6ddcf4412296a3c4416bb6d327e
   languageName: node
   linkType: hard
 
