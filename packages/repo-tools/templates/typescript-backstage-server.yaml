@@ -1,13 +1,13 @@
-templateDir: templates/typescript-backstage
+templateDir: templates/typescript-backstage-server
 
 files:
-  server/api.mustache:
+  api.mustache:
     templateType: API
     # For some reason, they check for destinationFilename differences. We have to change the ending to override the file.
     destinationFilename: .server.ts
-  server/apis/index.mustache:
+  apis/index.mustache:
     templateType: SupportingFiles
     destinationFilename: apis/index.ts
-  server/index.mustache:
+  index.mustache:
     templateType: SupportingFiles
     destinationFilename: index.ts
