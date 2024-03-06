@@ -46,6 +46,7 @@
     "build:assets": "node scripts/build-nunjucks.js"
   },
   "dependencies": {
+    "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
