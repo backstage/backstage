@@ -66,7 +66,7 @@ export const createOpenApiRouter = async (
   }
 }
 
-async function generate() {
+async function generate(clientPackage: string | undefined) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
   const resolvedOutputDirectory = await getRelativePathToFile(OUTPUT_PATH);
   mkdirpSync(resolvedOutputDirectory);
@@ -77,6 +77,11 @@ async function generate() {
     resolve(resolvedOutputDirectory, '.openapi-generator-ignore'),
     OPENAPI_IGNORE_FILES.join('\n'),
   );
+
+  const additionalProperties = [];
+  if (clientPackage) {
+    additionalProperties.push(`clientPackageName=${clientPackage}`);
+  }
 
   await exec(
     'node',
@@ -92,9 +97,9 @@ async function generate() {
       '-c',
       resolvePackagePath(
         '@backstage/repo-tools',
-        'templates/typescript-backstage.server.yaml',
+        'templates/typescript-backstage-server.yaml',
       ),
-      `--additional-properties=clientPackageName=@backstage/catalog-client`,
+      `--additional-properties=${additionalProperties.join(',')}`,
       '--generator-key',
       'v3.0',
     ],
@@ -126,9 +131,14 @@ async function generate() {
   await generateSpecFile();
 }
 
-export async function command(): Promise<void> {
+export async function command(
+  clientPackage: string | undefined,
+): Promise<void> {
   try {
-    await generate();
+    const { name } = clientPackage
+      ? require(cliPaths.resolveTargetRoot(clientPackage, 'package.json'))
+      : { name: undefined };
+    await generate(name);
     console.log(chalk.green(`Generated all files`));
   } catch (err) {
     console.log();
