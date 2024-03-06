@@ -149,6 +149,16 @@ export type ScaffolderReactComponentsNameToClassKey = {
 // @alpha (undocumented)
 export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
 
+// @alpha (undocumented)
+export function ScaffolderWizardContextMenu(
+  props: ScaffolderWizardContextMenuProps,
+): React_2.JSX.Element | null;
+
+// @alpha (undocumented)
+export type ScaffolderWizardContextMenuProps = {
+  onEditorClicked?: () => void;
+};
+
 // @alpha
 export const Stepper: (stepperProps: StepperProps) => React_2.JSX.Element;
 
