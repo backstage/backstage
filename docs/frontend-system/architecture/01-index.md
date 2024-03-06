@@ -28,15 +28,15 @@ This is the app instance itself that you create and use as the root of your Back
 
 ### Extensions
 
-Extensions are the building blocks that build out both the visual and non-visual structure of the application. There are both built-in extensions provided by the app itself, as well as extensions provided by plugins. Each extension is attached to a parent with which it shares data, and can have any number of children of its own. It is up to the app to wire together all extensions into a single tree known as the app extension tree. It is from this structure that the entire app can then be instantiated and rendered.
+Extensions are the building blocks that build out both the visual and non-visual structure of the application. There are both built-in extensions provided by the app itself, as well as extensions provided by plugins. Each extension is attached to a parent with whom it shares data, and can have any number of children of its own. It is up to the app to wire together all extensions into a single tree known as the app extension tree. It is from this structure that the entire app can then be instantiated and rendered.
 
 ### Plugins
 
-Plugins provide the actual features inside an app. The size of a plugin can range from a tiny component to an entire new system in which other plugins can be composed and integrated. Plugins can be completely standalone, or build on top of each other to extend existing plugins and augment their features. Plugins can communicate with each other by composing their extensions, or by sharing Utility APIs and routes.
+Plugins provide the actual features inside an app. The size of a plugin can range from a tiny component to an entire new system in which other plugins can be composed and integrated. Plugins can be completely standalone, or built on top of each other to extend existing plugins and augment their features. Plugins can communicate with each other by composing their extensions or by sharing Utility APIs and routes.
 
 ### Extension Overrides
 
-In addition to the built-in extensions and extensions provided by plugins, it is also possible to install extension overrides. This is a collection of extensions with high priority that can replace existing extensions. They can for example be used to override an individual extension provided by a plugin, or install a completely new extension, such as a new app theme.
+In addition to the built-in extensions and extensions provided by plugins, it is also possible to install extension overrides. This is a collection of extensions with high priority that can replace existing extensions. They can, for example, be used to override an individual extension provided by a plugin or install a completely new extension, such as a new app theme.
 
 ### Utility APIs
 
@@ -44,7 +44,7 @@ Utility APIs provide functionality that makes it easier to build plugins, make i
 
 ### Routes
 
-The Backstage routing system adds a layer of indirection that makes it possible for plugins to route to each other's extensions without explicit knowledge of what URL paths the extension are rendered at or if they even exist at all. It makes it possible for plugins to share routes with each other and dynamically generate concrete links at runtime. It is the responsibility of the app to resolve these links to actual URLs, but it is also possible for integrators to define their own route bindings that decide how the links should be resolved. The routing system also lets plugins define internal routes, aiding in the linking to different content in the same plugin.
+The Backstage routing system adds a layer of indirection that makes it possible for plugins to route to each other's extensions without explicit knowledge of what URL paths the extensions are rendered at or if they even exist at all. It makes it possible for plugins to share routes with each other and dynamically generate concrete links at runtime. It is the responsibility of the app to resolve these links to actual URLs, but it is also possible for integrators to define their own route bindings that decide how the links should be resolved. The routing system also lets plugins define internal routes, aiding in linking to different content in the same plugin.
 
 ## Package structure
 
