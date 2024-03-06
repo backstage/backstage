@@ -7200,7 +7200,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-home-react@npm:^0.1.5":
+"@backstage/plugin-home-react@npm:^0.1.8":
   version: 0.1.8
   resolution: "@backstage/plugin-home-react@npm:0.1.8"
   dependencies:
@@ -12959,7 +12959,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@material-ui/core@npm:^4.11.0, @material-ui/core@npm:^4.11.3, @material-ui/core@npm:^4.12.2, @material-ui/core@npm:^4.12.4, @material-ui/core@npm:^4.9.13":
+"@material-ui/core@npm:^4.11.3, @material-ui/core@npm:^4.12.2, @material-ui/core@npm:^4.12.4, @material-ui/core@npm:^4.9.13":
   version: 4.12.4
   resolution: "@material-ui/core@npm:4.12.4"
   dependencies:
@@ -15912,15 +15912,15 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-github-pull-requests@npm:^2.2.7":
-  version: 2.5.20
-  resolution: "@roadiehq/backstage-plugin-github-pull-requests@npm:2.5.20"
+  version: 2.5.24
+  resolution: "@roadiehq/backstage-plugin-github-pull-requests@npm:2.5.24"
   dependencies:
-    "@backstage/catalog-model": ^1.4.3
-    "@backstage/core-components": ^0.13.8
-    "@backstage/core-plugin-api": ^1.8.0
-    "@backstage/plugin-catalog-react": ^1.9.1
-    "@backstage/plugin-home-react": ^0.1.5
-    "@material-ui/core": ^4.11.0
+    "@backstage/catalog-model": ^1.4.4
+    "@backstage/core-components": ^0.14.0
+    "@backstage/core-plugin-api": ^1.9.0
+    "@backstage/plugin-catalog-react": ^1.10.0
+    "@backstage/plugin-home-react": ^0.1.8
+    "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.60
     "@octokit/rest": ^19.0.3
@@ -15928,15 +15928,15 @@ __metadata:
     "@types/node-fetch": ^2.5.7
     history: ^5.0.0
     lodash: ^4.17.21
-    luxon: ^3.3.0
+    luxon: ^3.0.0
     msw: ^1.0.1
     node-fetch: ^2.6.1
     react-use: ^17.2.4
   peerDependencies:
-    react: ^16.13.1 || ^17.0.0
-    react-dom: ^16.13.1 || ^17.0.0
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
-  checksum: f9ac5bbff5173eff98002f3f8bd7b7fe349723039481651b1e81b7aa5bbaaa799f4cd51d5425a5d74cebf3d0f5bb7340a0c4091b858addc45791881c3802f7a7
+  checksum: 87ce408e6a1756925b3e2ab2fe1f0f839be2976157f05575435f1a075079b4634a59ddcde23a15f910d6dcaba6d6d093742264cc97cc47a490689ab64cef094c
   languageName: node
   linkType: hard
 
