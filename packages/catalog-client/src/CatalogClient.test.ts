@@ -73,6 +73,10 @@ describe('CatalogClient', () => {
         rest.get(`${mockBaseUrl}/entities`, (_, res, ctx) => {
           return res(ctx.json(defaultServiceResponse));
         }),
+        // disable the by-query feature detection
+        rest.get(`${mockBaseUrl}/entities/by-query`, (_, res, ctx) => {
+          return res(ctx.status(404));
+        }),
       );
     });
 
@@ -260,6 +264,111 @@ describe('CatalogClient', () => {
       );
 
       expect(response.items).toEqual([]);
+    });
+  });
+
+  describe('emulateGetEntitiesWithQueryEntities', () => {
+    it('paginates through a full collection', async () => {
+      const entities: Entity[] = [
+        {
+          apiVersion: 'v',
+          kind: 'k',
+          metadata: { name: 'n0', namespace: 'ns' },
+        },
+        {
+          apiVersion: 'v',
+          kind: 'k',
+          metadata: { name: 'n1', namespace: 'ns' },
+        },
+      ];
+
+      const responses: QueryEntitiesResponse[] = [
+        {
+          items: [entities[0]],
+          pageInfo: { nextCursor: 'next' },
+          totalItems: 2,
+        },
+        {
+          items: [entities[1]],
+          pageInfo: {},
+          totalItems: 2,
+        },
+      ];
+
+      const expectedLimits = [
+        '1', // the feature detection probe
+        '1000', // first page
+        '1000', // second page
+      ];
+      let callNr = 0;
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities/by-query`, (req, res, ctx) => {
+          const firstPage = req.url.searchParams.get('cursor') !== 'next';
+          expect(req.url.searchParams.get('limit')).toEqual(
+            expectedLimits[callNr++],
+          );
+          return res(ctx.json(firstPage ? responses[0] : responses[1]));
+        }),
+      );
+
+      const response = await client.getEntities();
+
+      expect(response).toEqual({ items: entities });
+    });
+
+    it('obeys limits', async () => {
+      const entities: Entity[] = [
+        {
+          apiVersion: 'v',
+          kind: 'k',
+          metadata: { name: 'n0', namespace: 'ns' },
+        },
+        {
+          apiVersion: 'v',
+          kind: 'k',
+          metadata: { name: 'n1', namespace: 'ns' },
+        },
+        {
+          apiVersion: 'v',
+          kind: 'k',
+          metadata: { name: 'n2', namespace: 'ns' },
+        },
+      ];
+
+      const responses: QueryEntitiesResponse[] = [
+        {
+          items: [entities[0], entities[1]],
+          pageInfo: { nextCursor: 'next' },
+          totalItems: 2,
+        },
+        {
+          items: [entities[2]],
+          pageInfo: {},
+          totalItems: 2,
+        },
+      ];
+
+      const expectedLimits = [
+        '1', // the feature detection probe
+        '3', // first page
+        '1', // second page
+      ];
+      let callNr = 0;
+
+      server.use(
+        rest.get(`${mockBaseUrl}/entities/by-query`, (req, res, ctx) => {
+          const firstPage = req.url.searchParams.get('cursor') !== 'next';
+          expect(req.url.searchParams.get('limit')).toEqual(
+            expectedLimits[callNr++],
+          );
+          return res(ctx.json(firstPage ? responses[0] : responses[1]));
+        }),
+      );
+
+      const response = await client.getEntities({ limit: 3 });
+
+      expect(response).toEqual({ items: entities });
     });
   });
 

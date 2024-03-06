@@ -40,10 +40,13 @@ import {
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  QueryEntitiesInitialRequest,
+  QueryEntitiesCursorRequest,
   ValidateEntityResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest } from './utils';
 import { DefaultApiClient, TypedResponse } from './generated';
+import { featureDetector, hasQueryEntities } from './helpers';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -53,12 +56,16 @@ import { DefaultApiClient, TypedResponse } from './generated';
  */
 export class CatalogClient implements CatalogApi {
   private readonly apiClient: DefaultApiClient;
+  private readonly hasQueryEntities: (
+    options?: CatalogRequestOptions,
+  ) => Promise<boolean | undefined>;
 
   constructor(options: {
     discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
     fetchApi?: { fetch: typeof fetch };
   }) {
     this.apiClient = new DefaultApiClient(options);
+    this.hasQueryEntities = featureDetector(hasQueryEntities(this.apiClient));
   }
 
   /**
@@ -110,14 +117,15 @@ export class CatalogClient implements CatalogApi {
     request?: GetEntitiesRequest,
     options?: CatalogRequestOptions,
   ): Promise<GetEntitiesResponse> {
-    const {
-      filter = [],
-      fields = [],
-      order,
-      offset,
-      limit,
-      after,
-    } = request ?? {};
+    const { filter, fields, order, offset, limit, after } = request ?? {};
+
+    if (!offset && !after && (await this.hasQueryEntities(options))) {
+      return await this.emulateGetEntitiesWithQueryEntities(
+        { filter, fields, orderFields: order, limit },
+        options,
+      );
+    }
+
     const encodedOrder = [];
     if (order) {
       for (const directive of [order].flat()) {
@@ -131,9 +139,9 @@ export class CatalogClient implements CatalogApi {
       await this.apiClient.getEntities(
         {
           query: {
-            fields,
+            fields: fields ?? [],
             limit,
-            filter: this.getFilterValue(filter),
+            filter: this.getFilterValue(filter ?? []),
             offset,
             after,
             order: order ? encodedOrder : undefined,
@@ -166,6 +174,51 @@ export class CatalogClient implements CatalogApi {
     };
 
     return { items: entities.sort(refCompare) };
+  }
+
+  /**
+   * Implements getEntities in terms of smaller queryEntities calls, to avoid
+   * overloading the server with massive queries.
+   */
+  private async emulateGetEntitiesWithQueryEntities(
+    initialRequest: QueryEntitiesInitialRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<GetEntitiesResponse> {
+    const items: Entity[] = [];
+    const maxItemsPerRequest = 1000; // TODO(freben): Make this not hardcoded?
+
+    let request: QueryEntitiesRequest = {
+      ...initialRequest,
+      limit:
+        initialRequest.limit !== undefined
+          ? Math.min(initialRequest.limit, maxItemsPerRequest)
+          : maxItemsPerRequest,
+    };
+
+    for (;;) {
+      const response = await this.queryEntities(request, options);
+      Array.prototype.push.apply(items, response.items);
+
+      if (
+        response.items.length === 0 ||
+        !response.pageInfo.nextCursor ||
+        (initialRequest.limit !== undefined &&
+          items.length >= initialRequest.limit)
+      ) {
+        break;
+      }
+
+      request = {
+        cursor: response.pageInfo.nextCursor,
+        fields: initialRequest.fields,
+        limit:
+          initialRequest.limit !== undefined
+            ? Math.min(initialRequest.limit - items.length, maxItemsPerRequest)
+            : maxItemsPerRequest,
+      } as QueryEntitiesCursorRequest;
+    }
+
+    return { items };
   }
 
   /**
