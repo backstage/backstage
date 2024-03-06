@@ -224,6 +224,12 @@ export async function createRouter(
       opts.read = false;
       // or keep undefined
     }
+    if (req.query.saved === 'true') {
+      opts.saved = true;
+    } else if (req.query.saved === 'false') {
+      opts.saved = false;
+      // or keep undefined
+    }
     if (req.query.created_after) {
       const sinceEpoch = Date.parse(String(req.query.created_after));
       if (isNaN(sinceEpoch)) {

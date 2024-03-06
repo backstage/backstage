@@ -17,19 +17,22 @@ import React, { useMemo } from 'react';
 import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
+import { Box, Grid, IconButton, Tooltip, Typography } from '@material-ui/core';
 import { Notification } from '@backstage/plugin-notifications-common';
 
 import { notificationsApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
-import MarkAsUnreadIcon from '@material-ui/icons/Markunread';
-import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
 import {
   Link,
   Table,
   TableProps,
   TableColumn,
 } from '@backstage/core-components';
+
+import MarkAsUnreadIcon from '@material-ui/icons/Markunread' /* TODO: use Drafts and MarkAsUnread once we have mui 5 icons */;
+import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
+import MarkAsUnsavedIcon from '@material-ui/icons/LabelOff' /* TODO: use BookmarkRemove and BookmarkAdd once we have mui 5 icons */;
+import MarkAsSavedIcon from '@material-ui/icons/Label';
 
 const ThrottleDelayMs = 1000;
 
@@ -65,6 +68,18 @@ export const NotificationsTable = ({
         .updateNotifications({
           ids: [notification.id],
           read: !notification.read,
+        })
+        .then(() => onUpdate());
+    },
+    [notificationsApi, onUpdate],
+  );
+
+  const onSwitchSavedStatus = React.useCallback(
+    (notification: Notification) => {
+      notificationsApi
+        .updateNotifications({
+          ids: [notification.id],
+          saved: !notification.saved,
         })
         .then(() => onUpdate());
     },
@@ -136,7 +151,6 @@ export const NotificationsTable = ({
       //   },
       // },
       {
-        // TODO: action for saving notifications
         // actions
         width: '1rem',
         render: (notification: Notification) => {
@@ -147,24 +161,47 @@ export const NotificationsTable = ({
             ? MarkAsUnreadIcon
             : MarkAsReadIcon;
 
+          const markAsSavedText = !!notification.saved
+            ? 'Undo save'
+            : 'Save for later';
+
+          const SavedIconComponent = !!notification.saved
+            ? MarkAsUnsavedIcon
+            : MarkAsSavedIcon;
+
           return (
-            <Tooltip title={markAsReadText}>
-              <IconButton
-                onClick={() => {
-                  onSwitchReadStatus(notification);
-                }}
-              >
-                <IconComponent aria-label={markAsReadText} />
-              </IconButton>
-            </Tooltip>
+            <Grid container wrap="nowrap">
+              <Grid item>
+                <Tooltip title={markAsSavedText}>
+                  <IconButton
+                    onClick={() => {
+                      onSwitchSavedStatus(notification);
+                    }}
+                  >
+                    <SavedIconComponent aria-label={markAsSavedText} />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+
+              <Grid item>
+                <Tooltip title={markAsReadText}>
+                  <IconButton
+                    onClick={() => {
+                      onSwitchReadStatus(notification);
+                    }}
+                  >
+                    <IconComponent aria-label={markAsReadText} />
+                  </IconButton>
+                </Tooltip>
+              </Grid>
+            </Grid>
           );
         },
       },
     ],
-    [onSwitchReadStatus],
+    [onSwitchReadStatus, onSwitchSavedStatus],
   );
 
-  // TODO: render "Saved notifications" as "Pinned"
   return (
     <Table<Notification>
       isLoading={isLoading}
