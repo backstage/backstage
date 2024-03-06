@@ -34,7 +34,7 @@
   "dependencies": {
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@material-ui/core": "^4.12.4"
+    "@mui/material": "^5.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

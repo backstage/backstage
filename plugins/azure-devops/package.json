@@ -51,7 +51,7 @@
     "@backstage/plugin-azure-devops-common": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
-    "@material-ui/core": "^4.12.2",
+    "@mui/material": "^5.0.0",
     "@material-ui/icons": "^4.9.1",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "humanize-duration": "^3.27.0",
