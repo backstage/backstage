@@ -13,13 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
+import { errorHandler } from '@backstage/backend-common';
+import {
+  LoggerService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
+import { NotificationService } from '@backstage/plugin-notifications-node';
 
 export interface RouterOptions {
-  logger: Logger;
+  config: RootConfigService;
+  logger: LoggerService;
+  notificationService: NotificationService;
 }
 
 export async function createRouter(
@@ -31,7 +37,7 @@ export async function createRouter(
   router.use(express.json());
 
   router.get('/health', (_, response) => {
-    logger.info('PONG!');
+    logger.info('Notifications-external-backend is running.');
     response.json({ status: 'ok' });
   });
   router.use(errorHandler());

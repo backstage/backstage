@@ -1,28 +1,31 @@
 {
   "name": "example-backend-next",
   "version": "0.0.21-next.1",
-  "main": "dist/index.cjs.js",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
-  "private": true,
   "backstage": {
     "role": "backend"
   },
+  "private": true,
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/backend-next"
   },
-  "keywords": [
-    "backstage"
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
   ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
@@ -50,6 +53,7 @@
     "@backstage/plugin-linguist-backend": "workspace:^",
     "@backstage/plugin-nomad-backend": "workspace:^",
     "@backstage/plugin-notifications-backend": "workspace:^",
+    "@backstage/plugin-notifications-external-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
@@ -70,8 +74,5 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }
