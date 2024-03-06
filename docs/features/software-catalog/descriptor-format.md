@@ -660,7 +660,7 @@ metadata:
   title: Test Action template
   description: scaffolder v1beta2 template demo
   annotations:
-    backstage.io/hours-saved: '4'
+    backstage.io/time-saved: PT4H
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -738,10 +738,10 @@ A list of strings that can be associated with the template, e.g.
 This list will also be used in the frontend to display to the user so you can
 potentially search and group templates by these tags.
 
-### `metadata.annotations.[backstage.io/hours-saved]` [optional]
+### `metadata.annotations.[backstage.io/time-saved]` [optional]
 
-The approximate number of hours (as a YAML string) representing the amount of
-time saved when someone uses this template.
+An ISO 8601 duration representing the approximate amount of time saved when
+someone uses this template.
 
 Can be used in combination with the `backstage.io/source-template` annotation,
 or analytics data, to calculate how much time has been saved through the use
