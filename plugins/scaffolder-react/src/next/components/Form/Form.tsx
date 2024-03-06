@@ -22,6 +22,7 @@ import { DescriptionFieldTemplate } from './DescriptionFieldTemplate';
 import { FieldProps } from '@rjsf/utils';
 import { ScaffolderRJSFFormProps } from '@backstage/plugin-scaffolder-react';
 import { Theme as MuiTheme } from '@rjsf/material-ui';
+import transformErrors from './transformErrors';
 
 const WrappedForm = withTheme(MuiTheme);
 
@@ -62,6 +63,13 @@ export const Form = (props: PropsWithChildren<ScaffolderRJSFFormProps>) => {
   );
 
   return (
-    <WrappedForm {...props} templates={templates} fields={wrappedFields} />
+    <WrappedForm
+      {...{
+        ...props,
+        ...(props.transformErrors ? {} : { transformErrors }),
+      }}
+      templates={templates}
+      fields={wrappedFields}
+    />
   );
 };
