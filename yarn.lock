@@ -7918,6 +7918,25 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-notifications-external-backend@workspace:^, @backstage/plugin-notifications-external-backend@workspace:plugins/notifications-external-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-notifications-external-backend@workspace:plugins/notifications-external-backend"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    supertest: ^6.2.4
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-notifications-node@workspace:^, @backstage/plugin-notifications-node@workspace:plugins/notifications-node":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-notifications-node@workspace:plugins/notifications-node"
@@ -27850,6 +27869,7 @@ __metadata:
     "@backstage/plugin-lighthouse-backend": "workspace:^"
     "@backstage/plugin-linguist-backend": "workspace:^"
     "@backstage/plugin-nomad-backend": "workspace:^"
+    "@backstage/plugin-notifications-external-backend": "workspace:^"
     "@backstage/plugin-permission-backend": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
