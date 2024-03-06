@@ -63,7 +63,7 @@ async function generate(
       '-c',
       resolvePackagePath(
         '@backstage/repo-tools',
-        'templates/typescript-backstage.client.yaml',
+        'templates/typescript-backstage-client.yaml',
       ),
       '--generator-key',
       'v3.0',

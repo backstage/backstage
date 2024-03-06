@@ -78,6 +78,11 @@ async function generate(abortSignal?: AbortController) {
     OPENAPI_IGNORE_FILES.join('\n'),
   );
 
+  const additionalProperties = [];
+  if (clientPackage) {
+    additionalProperties.push(`clientPackageName=${clientPackage}`);
+  }
+
   await exec(
     'node',
     [
@@ -92,9 +97,9 @@ async function generate(abortSignal?: AbortController) {
       '-c',
       resolvePackagePath(
         '@backstage/repo-tools',
-        'templates/typescript-backstage.server.yaml',
+        'templates/typescript-backstage-server.yaml',
       ),
-      `--additional-properties=clientPackageName=@backstage/catalog-client`,
+      `--additional-properties=${additionalProperties.join(',')}`,
       '--generator-key',
       'v3.0',
     ],
