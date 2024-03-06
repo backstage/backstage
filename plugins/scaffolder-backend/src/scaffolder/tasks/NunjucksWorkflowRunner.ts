@@ -54,6 +54,8 @@ import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { WinstonLogger } from '@backstage/backend-app-api';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -101,16 +103,8 @@ const createStepLogger = ({
   step: TaskStep;
 }) => {
   const metadata = { stepId: step.id };
-  const taskLogger = winston.createLogger({
-    level: process.env.LOG_LEVEL || 'info',
-    format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple(),
-    ),
-    defaultMeta: {},
-  });
-
   const streamLogger = new PassThrough();
+
   streamLogger.on('data', async data => {
     const message = data.toString().trim();
     if (message?.length > 1) {
@@ -118,7 +112,19 @@ const createStepLogger = ({
     }
   });
 
-  taskLogger.add(new winston.transports.Stream({ stream: streamLogger }));
+  const taskLogger = WinstonLogger.create({
+    level: process.env.LOG_LEVEL || 'info',
+    format: winston.format.combine(
+      winston.format.colorize(),
+      winston.format.simple(),
+    ),
+    transports: [
+      new winston.transports.Console(),
+      new winston.transports.Stream({ stream: streamLogger }),
+    ],
+  });
+
+  taskLogger.addRedactions(Object.values(task.secrets ?? {}));
 
   return { taskLogger, streamLogger };
 };
@@ -355,7 +361,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         await action.handler({
           input: iteration.input,
           secrets: task.secrets ?? {},
-          logger: taskLogger,
+          logger: loggerToWinstonLogger(taskLogger),
           logStream: streamLogger,
           workspacePath,
           async checkpoint<U extends JsonValue>(
