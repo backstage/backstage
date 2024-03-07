@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
 import {
   Box,
   LinearProgress,
@@ -30,11 +29,9 @@ import {
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import qs from 'qs';
 import React from 'react';
-import { useProjectName } from '../useProjectName';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { Breadcrumbs, Link, WarningPanel } from '@backstage/core-components';
-import { getLocation } from '../useLocation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -61,21 +58,17 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export const WorkflowRunDetails = (props: { entity: Entity }) => {
-  const { value: projectName, loading, error } = useProjectName(props.entity);
-  const [projectId] = (projectName ?? '/').split('/');
-  const location = getLocation(props.entity);
-
-  const details = useWorkflowRunsDetails(projectId, location);
+export const WorkflowRunDetails = () => {
+  const details = useWorkflowRunsDetails();
 
   const classes = useStyles();
-  if (error) {
+  if (details.error) {
     return (
       <WarningPanel title="Error:">
-        Failed to load build, {error.message}.
+        Failed to load build, {details.error.message}.
       </WarningPanel>
     );
-  } else if (loading) {
+  } else if (details.loading) {
     return <LinearProgress />;
   } else if (details.value?.logUrl === undefined) {
     return <LinearProgress />;

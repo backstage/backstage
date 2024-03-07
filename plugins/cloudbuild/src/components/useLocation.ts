@@ -20,9 +20,11 @@ const CLOUDBUILD_LOCATION_ANNOTATION = 'google.com/cloudbuild-location';
 
 /** @public */
 
-export const getLocation = (entity: Entity) => {
+export const getLocation = (entity: Entity, project: number = 0) => {
   const locationAnnotation =
-    entity?.metadata.annotations?.[CLOUDBUILD_LOCATION_ANNOTATION] ?? '';
+    entity?.metadata.annotations?.[CLOUDBUILD_LOCATION_ANNOTATION]?.split(
+      ';',
+    )?.[project]?.trim() ?? '';
   if (locationAnnotation) {
     return locationAnnotation;
   }

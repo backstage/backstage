@@ -41,6 +41,12 @@ export type ActionsGetWorkflowResponseData = {
 export interface ActionsListWorkflowRunsForRepoResponseData {
   // (undocumented)
   builds: ActionsGetWorkflowResponseData[];
+  // (undocumented)
+  error?: {
+    message: string;
+    code: number;
+    status: string;
+  };
 }
 
 // @public (undocumented)

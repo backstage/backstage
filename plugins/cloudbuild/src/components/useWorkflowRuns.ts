@@ -24,6 +24,8 @@ import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 
 export type WorkflowRun = {
   id: string;
+  projectId: string;
+  location: string;
   message: string;
   url?: string;
   googleUrl?: string;
@@ -34,9 +36,9 @@ export type WorkflowRun = {
 };
 
 export function useWorkflowRuns(options: {
-  projectId: string;
-  location: string;
-  cloudBuildFilter: string;
+  projectId?: string;
+  location?: string;
+  cloudBuildFilter?: string;
 }) {
   const { projectId, location, cloudBuildFilter } = options;
   const api = useApi(cloudbuildApiRef);
@@ -52,6 +54,10 @@ export function useWorkflowRuns(options: {
     retry,
     error,
   } = useAsyncRetry<WorkflowRun[]>(async () => {
+    if (!projectId || !location || !cloudBuildFilter) {
+      return [];
+    }
+
     return api
       .listWorkflowRuns({
         projectId,
@@ -62,11 +68,19 @@ export function useWorkflowRuns(options: {
         (
           workflowRunsData: ActionsListWorkflowRunsForRepoResponseData,
         ): WorkflowRun[] => {
+          if (workflowRunsData?.error) {
+            const apiError = Error(workflowRunsData.error.message);
+            errorApi.post(apiError);
+            throw apiError;
+          }
+
           setTotal(workflowRunsData.builds.length);
           // Transformation here
           return workflowRunsData.builds.map(run => ({
             message: run.substitutions.REPO_NAME,
             id: run.id,
+            projectId,
+            location,
             rerun: async () => {
               try {
                 await api.reRunWorkflow({

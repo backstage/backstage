@@ -16,6 +16,11 @@
 
 /** @public */
 export interface ActionsListWorkflowRunsForRepoResponseData {
+  error?: {
+    message: string;
+    code: number;
+    status: string;
+  };
   builds: ActionsGetWorkflowResponseData[];
 }
 

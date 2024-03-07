@@ -18,9 +18,9 @@ import { cloudbuildApiRef } from '../../api';
 import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
 import { buildRouteRef } from '../../routes';
 
-export const useWorkflowRunsDetails = (projectId: string, location: string) => {
+export const useWorkflowRunsDetails = () => {
   const api = useApi(cloudbuildApiRef);
-  const { id } = useRouteRefParams(buildRouteRef);
+  const { id, projectId, location } = useRouteRefParams(buildRouteRef);
   const details = useAsync(async () => {
     return projectId
       ? api.getWorkflowRun({

@@ -4,6 +4,7 @@
 
 This plugin allows you to include Google Cloud Build history in your backstage CI/CD page.
 
+<img src="../../docs/assets/plugins/cloudbuild/CloudBuildProjects.png">
 <img src="../../docs/assets/plugins/cloudbuild/CloudBuildPlugin.png">
 
 ## Installation Steps
@@ -80,6 +81,24 @@ spec:
   lifecycle: development
 ```
 
+The former config will link the component to a single GCP cloudbuild project.
+
+If fetching builds from multiple GCP projects define all the project slugs separated by a semicolon:
+
+```diff
+// component-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  description: Backstage application.
++  annotations:
++    google.com/cloudbuild-project-slug: your-project-name; your-project-name-2; your-project-name-3
+spec:
+  type: website
+  lifecycle: development
+```
+
 By default, the cloud build results list is filtered by repository name equal to the name you have set in your component-info.yaml file. This is `metadata.name`. So if your metadata.name is `backstage` then it will only show builds matching the backstage repo name.
 
 Additionally, build results are pulled from the `global` region by default.
@@ -138,3 +157,39 @@ spec:
   type: website
   lifecycle: development
 ```
+
+Semicolon separated config values are all supported for `google.com/cloudbuild-repo-name`, `google.com/cloudbuild-trigger-name` and `google.com/cloudbuild-location` annotations.
+
+```diff
+// component-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  description: Backstage application.
++  annotations:
++    google.com/cloudbuild-project-slug: project-name; project-name-2; project-name-3
++    google.com/cloudbuild-repo-name: my-backstage
+spec:
+  type: website
+  lifecycle: development
+```
+
+The former config will use `my-backstage` repository for `project-name` and will use the `metadata.name` value for `project-name-2` and `project-name-3`
+
+```diff
+// component-info.yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  description: Backstage application.
++  annotations:
++    google.com/cloudbuild-project-slug: project-name; project-name-2; project-name-3
++    google.com/cloudbuild-repo-name: my-backstage; my-backstage
+spec:
+  type: website
+  lifecycle: development
+```
+
+The former config will use `my-backstage` repository for `project-name` and also for `project-name-2` but will use the default `metadata.name` for `project-name-3`.
