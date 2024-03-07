@@ -8,9 +8,5 @@ documentation: https://croz.net/news/backstage-plugin-ibm-apic?utm_source=backst
 iconUrl: https://croz.net/wp-content/uploads/2024/02/croz_large-o.png
 npmPackageName: '@croz/plugin-ibm-apic-backend'
 tags:
-  - idp
-  - developer
-  - portal
-  - internal
   - openapic
 addedDate: '2024-03-01'
