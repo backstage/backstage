@@ -205,12 +205,10 @@ export const WorkflowRunsTable = ({ entity }: WorkflowRunsTableProps) => {
 
   useEffect(() => {
     const _projects =
-      projectAnnotationValue
-        ?.split(';')
-        ?.map(projectName => ({
-          label: projectName.trim(),
-          value: projectName.trim(),
-        })) || [];
+      projectAnnotationValue?.split(';')?.map(projectName => ({
+        label: projectName.trim(),
+        value: projectName.trim(),
+      })) || [];
     setProjects(_projects);
     if (_projects.length > 0) {
       setProject(_projects[0].value);
