@@ -48,6 +48,7 @@ import {
   removeDuplicateEntitiesFrom,
 } from '../../../../helpers/helpers';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { EntityRelationAggregation } from '../../types';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -138,11 +139,13 @@ export const MembersListCard = (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
   showAggregateMembersToggle?: boolean;
+  relationsType?: EntityRelationAggregation;
 }) => {
   const {
     memberDisplayTitle = 'Members',
     pageSize = 50,
     showAggregateMembersToggle,
+    relationsType = 'direct',
   } = props;
   const classes = useListStyles();
 
@@ -162,11 +165,13 @@ export const MembersListCard = (props: {
     setPage(pageIndex);
   };
 
-  const [showAggregateMembers, setShowAggregateMembers] = useState(false);
+  const [showAggregateMembers, setShowAggregateMembers] = useState(
+    relationsType === 'aggregated',
+  );
 
   const { loading: loadingDescendantMembers, value: descendantMembers } =
     useAsync(async () => {
-      if (!showAggregateMembersToggle) {
+      if (!showAggregateMembers) {
         return [] as UserEntity[];
       }
 
@@ -174,7 +179,7 @@ export const MembersListCard = (props: {
         groupEntity,
         catalogApi,
       );
-    }, [catalogApi, groupEntity, showAggregateMembersToggle]);
+    }, [catalogApi, groupEntity, showAggregateMembers]);
   const {
     loading,
     error,
@@ -229,7 +234,7 @@ export const MembersListCard = (props: {
     memberList = (
       <Box className={classes.memberList}>
         {members.slice(pageSize * (page - 1), pageSize * page).map(member => (
-          <MemberComponent member={member} key={member.metadata.uid} />
+          <MemberComponent member={member} key={stringifyEntityRef(member)} />
         ))}
       </Box>
     );
