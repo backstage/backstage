@@ -133,7 +133,7 @@ export function mapToRows(input: Kv[], entityId: string): DbSearchRow[] {
 
   for (const { key: rawKey, value: rawValue } of input) {
     const key = rawKey.toLocaleLowerCase('en-US');
-    if (MAX_KEY_LENGTH < key.length) {
+    if (key.length > MAX_KEY_LENGTH) {
       continue;
     }
     if (rawValue === undefined || rawValue === null) {
