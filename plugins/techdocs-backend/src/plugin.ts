@@ -73,6 +73,7 @@ export const techdocsPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         cache: coreServices.cache,
         httpAuth: coreServices.httpAuth,
+        auth: coreServices.auth,
       },
       async init({
         config,
@@ -82,6 +83,7 @@ export const techdocsPlugin = createBackendPlugin({
         discovery,
         cache,
         httpAuth,
+        auth,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         // Preparers are responsible for fetching source files for documentation.
@@ -124,6 +126,7 @@ export const techdocsPlugin = createBackendPlugin({
             config,
             discovery,
             httpAuth,
+            auth,
           }),
         );
 

@@ -38,7 +38,7 @@ import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -59,6 +59,7 @@ export type OutOfTheBoxDeploymentOptions = {
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
   httpAuth?: HttpAuthService;
+  auth?: AuthService;
 };
 
 /**
@@ -77,6 +78,7 @@ export type RecommendedDeploymentOptions = {
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
   httpAuth?: HttpAuthService;
+  auth?: AuthService;
 };
 
 /**
@@ -111,7 +113,7 @@ export async function createRouter(
   const router = Router();
   const { publisher, config, logger, discovery } = options;
 
-  const { httpAuth } = createLegacyAuthAdapters(options);
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
 
   const catalogClient =
     options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
@@ -147,7 +149,13 @@ export async function createRouter(
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
-    const token = getBearerToken(req.headers.authorization);
+
+    const credentials = await httpAuth.credentials(req);
+
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog',
+    });
 
     // Verify that the related entity exists and the current user has permission to view it.
     const entity = await entityLoader.load(entityName, token);
@@ -180,7 +188,13 @@ export async function createRouter(
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
-    const token = getBearerToken(req.headers.authorization);
+
+    const credentials = await httpAuth.credentials(req);
+
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog',
+    });
 
     const entity = await entityLoader.load(entityName, token);
 
@@ -212,7 +226,13 @@ export async function createRouter(
   // If a build is required, responds with a success when finished
   router.get('/sync/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
-    const token = getBearerToken(req.headers.authorization);
+
+    const credentials = await httpAuth.credentials(req);
+
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog',
+    });
 
     const entity = await entityLoader.load({ kind, namespace, name }, token);
 
@@ -271,7 +291,13 @@ export async function createRouter(
       async (req, _res, next) => {
         const { kind, namespace, name } = req.params;
         const entityName = { kind, namespace, name };
-        const token = getBearerToken(req.headers.authorization);
+
+        const credentials = await httpAuth.credentials(req);
+
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: credentials,
+          targetPluginId: 'catalog',
+        });
 
         const entity = await entityLoader.load(entityName, token);
 
@@ -301,10 +327,6 @@ export async function createRouter(
   });
 
   return router;
-}
-
-function getBearerToken(header?: string): string | undefined {
-  return header?.match(/(?:Bearer)\s+(\S+)/i)?.[1];
 }
 
 /**
