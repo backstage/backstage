@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, Children, ReactElement, useState } from 'react';
+import React, { ReactNode, Children, ReactElement } from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import { ErrorPanel, Page } from '@backstage/core-components';

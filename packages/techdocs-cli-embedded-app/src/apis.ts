@@ -127,6 +127,10 @@ class TechDocsDevApi implements TechDocsApi {
     this.identityApi = identityApi;
   }
 
+  async issueUserCookie(): Promise<{ expiresAt: string }> {
+    return { expiresAt: new Date().toISOString() };
+  }
+
   async getApiOrigin() {
     return await this.discoveryApi.getBaseUrl('techdocs');
   }
