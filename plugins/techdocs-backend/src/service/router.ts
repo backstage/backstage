@@ -292,7 +292,9 @@ export async function createRouter(
         const { kind, namespace, name } = req.params;
         const entityName = { kind, namespace, name };
 
-        const credentials = await httpAuth.credentials(req);
+        const credentials = await httpAuth.credentials(req, {
+          allowLimitedAccess: true,
+        });
 
         const { token } = await auth.getPluginRequestToken({
           onBehalfOf: credentials,
@@ -321,8 +323,12 @@ export async function createRouter(
   router.use('/static/docs', publisher.docsRouter());
 
   // Endpoint that sets the cookie for the user
-  router.get('/cookie', async (_, res) => {
-    const { expiresAt } = await httpAuth.issueUserCookie(res);
+  router.get('/cookie', async (req, res) => {
+    const credentials = await httpAuth.credentials(req, {
+      allow: ['user'],
+      allowLimitedAccess: true,
+    });
+    const { expiresAt } = await httpAuth.issueUserCookie(res, { credentials });
     res.json({ expiresAt: expiresAt.toISOString() });
   });
 
