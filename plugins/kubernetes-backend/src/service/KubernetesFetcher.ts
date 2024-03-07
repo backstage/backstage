@@ -156,8 +156,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       if (podMetrics.ok && podList.ok) {
         return topPods(
           {
-            listPodForAllNamespaces: () =>
-              podList.json().then(b => ({ body: b })),
+            listPodForAllNamespaces: () => podList.json(),
           } as unknown as CoreV1Api,
           {
             getPodMetrics: () => podMetrics.json(),
@@ -194,7 +193,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     };
   }
 
-  private fetchResource(
+  private async fetchResource(
     clusterDetails: ClusterDetails,
     credential: KubernetesCredential,
     group: string,
@@ -217,7 +216,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     const authProvider =
       clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
 
-    if (this.isServiceAccountAuthentication(authProvider, clusterDetails)) {
+    if (
+      await this.isServiceAccountAuthentication(authProvider, clusterDetails)
+    ) {
       [url, requestInit] = this.fetchArgsInCluster(credential);
     } else if (!this.isCredentialMissing(authProvider, credential)) {
       [url, requestInit] = this.fetchArgs(clusterDetails, credential);
@@ -242,14 +243,16 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return fetch(url, requestInit);
   }
 
-  private isServiceAccountAuthentication(
+  private async isServiceAccountAuthentication(
     authProvider: string,
     clusterDetails: ClusterDetails,
   ) {
     return (
       authProvider === 'serviceAccount' &&
       !clusterDetails.authMetadata.serviceAccountToken &&
-      fs.pathExistsSync('/var/run/secrets/kubernetes.io/serviceaccount/ca.crt')
+      (await fs.pathExistsSync(
+        '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt',
+      ))
     );
   }
 

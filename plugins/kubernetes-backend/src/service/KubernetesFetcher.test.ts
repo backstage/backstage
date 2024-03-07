@@ -1054,7 +1054,7 @@ describe('KubernetesFetcher', () => {
           serviceId: 'some-service',
           clusterDetails: {
             name: 'overridden-to-in-cluster',
-            url: 'http://ignored',
+            url: 'https://10.10.10.10/',
             authMetadata: {
               [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
             },
