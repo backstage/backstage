@@ -178,6 +178,25 @@ Let's walk through the process of sending of a notification to a user:
 
    7b. Rather than rendering the notification directly, the notifications frontend plugin leaves that to an extension installed by the frontend part of the backend plugin that sent the notification. This allows for a more customized notification experience which can also contain custom actions and data display. This step is not in scope for this proposal.
 
+### Integration with external systems
+
+The `notifications-backend` is not meant to expose the API outside of the Backstage, only other Backstage backend services are expected to connect through the NotificationsService.
+
+To allow external system to send messages to either individual users or broadcast, a plugin `notifications-external-backend` will be created.
+
+The purpose of the plugin is to expose new REST API for creating messages, so far no reading functionality is expected. Internally, the new API will perform:
+
+- external service authentication (aligned with capabilities of the Auth service, so far just shared-secret)
+- validation of the request (to filter-out potentially dangerous or obviously malformed requests)
+- pass the request to the NotificationsService
+
+The new API mimics the `notifications-backend` API for the POST request.
+
+This plugin is optional for the Notifications in general, meant to be deployed only if such integration is needed.
+
+Motivation for this feature are external services performing asynchronous processing of tasks.
+Such systems need to inform the users about progress.
+
 ## Design Details
 
 ### Backend Services
