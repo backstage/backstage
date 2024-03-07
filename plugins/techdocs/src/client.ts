@@ -40,6 +40,7 @@ export class TechDocsClient implements TechDocsApi {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
   private fetchApi: FetchApi;
+  private cookieRefreshTimeoutId: NodeJS.Timeout | undefined;
 
   constructor(options: {
     configApi: Config;
@@ -63,56 +64,42 @@ export class TechDocsClient implements TechDocsApi {
     return await response.json();
   }
 
-  private async refreshCookie(options: {
-    expiresAt?: Date | null;
-    timeoutId: number | null;
-  }): Promise<{ expiresAt: string }> {
-    // Always clear the previous timeout
-    if (options.timeoutId) clearTimeout(options.timeoutId);
+  public async issueUserCookie(): Promise<{ expiresAt: string }> {
+    const expiresAtStorageKey = 'backstage-auth-cookie-last-refresh-expires-at';
+    const formatedExpiresAt = localStorage.getItem(expiresAtStorageKey);
+    const expiresAt = formatedExpiresAt ? new Date(formatedExpiresAt) : null;
 
-    // Only issue a new cookie when we don't have an expiry date or it's in the past
-    if (!options.expiresAt || options.expiresAt.getTime() < Date.now()) {
+    // get a new cookie if it doesn't exist or has expired
+    if (
+      // first time issuing a cookie or user deleted the stored expiration date
+      !expiresAt ||
+      // the application was reloaded and the cookie was not refreshed
+      expiresAt.getTime() < Date.now()
+    ) {
       return this.getCookie().then(response => {
-        const expiresAt = new Date(response.expiresAt);
-        expiresAt.setMinutes(expiresAt.getMinutes() - 5);
-        localStorage.setItem(
-          'backstage-auth-cookie-last-refresh-expiration-date',
-          expiresAt.toISOString(),
+        const newExpiresAt = new Date(response.expiresAt);
+        // refresh the cookie 5 minutes before it expires
+        newExpiresAt.setMinutes(newExpiresAt.getMinutes() - 5);
+        // store the expiration date to keep it even if the application is reloaded
+        localStorage.setItem(expiresAtStorageKey, newExpiresAt.toISOString());
+        // maintain the timeout id per tab instance so we know that there is a timeout running
+        this.cookieRefreshTimeoutId = setTimeout(
+          this.issueUserCookie,
+          newExpiresAt.getTime(),
         );
-        const timeoutId = setTimeout(this.refreshCookie, expiresAt.getTime());
-        localStorage.setItem(
-          'backstage-auth-cookie-last-refresh-timeout-id',
-          timeoutId.toString(),
-        );
-        return { expiresAt: expiresAt.toISOString() };
+        return { expiresAt: newExpiresAt.toISOString() };
       });
     }
 
-    // Otherwise, set a new timeout to refresh the cookie with the current expiration date
-    const timeoutId = setTimeout(
-      this.refreshCookie,
-      options.expiresAt.getTime(),
-    );
-    localStorage.setItem(
-      'backstage-auth-cookie-last-refresh-timeout-id',
-      timeoutId.toString(),
-    );
+    // restart timeout when the cookie is still valid but the application was reloaded
+    if (!this.cookieRefreshTimeoutId) {
+      this.cookieRefreshTimeoutId = setTimeout(
+        this.issueUserCookie,
+        expiresAt.getTime(),
+      );
+    }
 
-    return { expiresAt: options.expiresAt.toISOString() };
-  }
-
-  async issueUserCookie() {
-    const expiresAt = localStorage.getItem(
-      'backstage-auth-cookie-last-refresh-expiration-date',
-    );
-    const timeoutId = localStorage.getItem(
-      'backstage-auth-cookie-last-refresh-timeout-id',
-    );
-
-    return this.refreshCookie({
-      expiresAt: expiresAt ? new Date(expiresAt) : null,
-      timeoutId: timeoutId ? Number(timeoutId) : null,
-    });
+    return { expiresAt: expiresAt.toISOString() };
   }
 
   async getApiOrigin(): Promise<string> {
