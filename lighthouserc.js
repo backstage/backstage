@@ -16,7 +16,6 @@
 module.exports = {
   ci: {
     collect: {
-      // headful: true,
       url: [
         /** Software Catalog */
         'http://localhost:3000/catalog',
