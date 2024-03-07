@@ -70,6 +70,10 @@ export interface TechDocsApi {
   ): Promise<TechDocsEntityMetadata>;
   // (undocumented)
   getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata>;
+  // (undocumented)
+  issueUserCookie(): Promise<{
+    expiresAt: string;
+  }>;
 }
 
 // @public
