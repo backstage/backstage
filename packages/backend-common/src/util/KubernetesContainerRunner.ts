@@ -387,6 +387,11 @@ export class KubernetesContainerRunner implements ContainerRunner {
 function handleKubernetesError(message: string, err: any): Error {
   if (err instanceof HttpError) {
     return new Error(`${message} ${(err.body as V1Status).message}`);
+  } else if (err && typeof err.body === 'string') {
+    const parsedBody = JSON.parse(err.body);
+    if (parsedBody && parsedBody.message) {
+      return new Error(`${message} ${parsedBody.message}`);
+    }
   }
   return new Error(`${message} ${err}`);
 }
