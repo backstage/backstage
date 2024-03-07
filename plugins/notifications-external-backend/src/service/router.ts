@@ -21,6 +21,7 @@ import {
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { NotificationService } from '@backstage/plugin-notifications-node';
+import { validatePayload, validateRecipients } from './validation';
 
 export interface RouterOptions {
   config: RootConfigService;
@@ -31,7 +32,7 @@ export interface RouterOptions {
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
+  const { logger, notificationService } = options;
 
   const router = Router();
   router.use(express.json());
@@ -40,6 +41,37 @@ export async function createRouter(
     logger.info('Notifications-external-backend is running.');
     response.json({ status: 'ok' });
   });
+
+  // TODO:
+  // curl -X POST http://localhost:7007/api/notifications-external -H "Content-Type: application/json" -H "notifications-secret: mysecret" -d '{"recipients":{"type":"entity", "entityRef": "user:development/guest"}, "payload":{"title": "External notification - 01"}}'
+
+  // Send notification
+  router.post('/', async (req, response) => {
+    // TODO: do shared-secret auth
+
+    // validate input before passing it to the service
+    const recipients = validateRecipients(req.body.recipients);
+    if (!recipients) {
+      response.status(422).send('Incorrect format of recipients.');
+      return;
+    }
+
+    const payload = validatePayload(req.body.payload);
+    if (!payload) {
+      response.status(422).send('Incorrect format of payload.');
+      return;
+    }
+
+    logger.debug('Forwarding external request to send notification');
+    // The "origin" will be uniformly set to this service
+    await notificationService.send({
+      recipients,
+      payload,
+    });
+
+    response.json({ status: 'done' });
+  });
+
   router.use(errorHandler());
   return router;
 }

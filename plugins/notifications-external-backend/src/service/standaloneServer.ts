@@ -13,10 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+
+import { DefaultNotificationService } from '@backstage/plugin-notifications-node';
+import {
+  HostDiscovery,
+  createLegacyAuthAdapters,
+  createServiceBuilder,
+  loadBackendConfig,
+} from '@backstage/backend-common';
+import { AuthService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
@@ -31,8 +39,23 @@ export async function startStandaloneServer(
     service: 'notifications-external-backend',
   });
   logger.debug('Starting application server...');
+  const config = await loadBackendConfig({ logger, argv: process.argv });
+  const discovery = HostDiscovery.fromConfig(config);
+
+  // TODO: fix to new API
+  const { auth } = createLegacyAuthAdapters<any, { auth: AuthService }>({
+    discovery,
+  });
+
+  const notificationService = DefaultNotificationService.create({
+    auth,
+    discovery,
+  });
+
   const router = await createRouter({
     logger,
+    config,
+    notificationService,
   });
 
   let service = createServiceBuilder(module)
