@@ -59,10 +59,12 @@ const mockTechDocsMetadata = {
 
 const getEntityMetadata = jest.fn();
 const getTechDocsMetadata = jest.fn();
+const issueUserCookie = jest.fn();
 
 const techdocsApiMock = {
   getEntityMetadata,
   getTechDocsMetadata,
+  issueUserCookie,
 };
 
 const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
@@ -115,6 +117,9 @@ describe('<TechDocsReaderPage />', () => {
   beforeEach(() => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    getTechDocsMetadata.mockResolvedValue({
+      expiresAt: new Date().toISOString(),
+    });
   });
 
   afterEach(() => {

@@ -48,6 +48,9 @@ const { renderToStaticMarkup } =
 const techdocsApi = {
   getTechDocsMetadata: jest.fn(),
   getEntityMetadata: jest.fn(),
+  issueUserCookie: jest
+    .fn()
+    .mockReturnValue({ expiresAt: new Date().toISOString() }),
 };
 
 const techdocsStorageApi = {
