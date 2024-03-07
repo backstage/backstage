@@ -50,6 +50,15 @@ function registerPackageCommand(program: Command) {
       '--client-package [package]',
       'Top-level path to where the client should be generated, ie packages/catalog-client.',
     )
+    .option(
+      '--enable-react-query',
+      'Enable React Query in the generated client.',
+    )
+    .option(
+      '--react-query-output-package [package]',
+      'Package to where the React Query output should be generated.',
+    )
+    .option('--react-query-client-import [import]', 'Import for the client.')
     .option('--server')
     .description(
       'Command to generate a client and/or a server stub from an OpenAPI spec.',

@@ -1,0 +1,48 @@
+import type {
+    {{#operations}}
+    {{#operation}}
+    {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+    {{/operation}}
+    {{/operations}}
+} from '{{clientImport}}'
+import { {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client } from '{{clientImport}}'
+import {useQuery} from '@tanstack/react-query'
+import {createApiFactory, createApiRef, discoveryApiRef, fetchApiRef, useApi} from '@backstage/core-plugin-api'
+
+export const {{appName}}ApiRef = createApiRef<{{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client>({
+  id: '{{apiRefNamespace}}.{{appName}}',
+});
+
+export const default{{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Api = createApiFactory({
+    api: {{appName}}ApiRef,
+    deps: {
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+    },
+    factory: ({ discoveryApi, fetchApi }) =>
+        new {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client({ discoveryApi, fetchApi }),
+});
+
+{{#operations}}
+export const queryKeys = {
+    all: [{scope:'{{appName}}'}] as const,
+    {{#operation}}
+    {{nickname}}: (request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}) =>
+    [{ ...queryKeys.all[0], request, reqName: '{{nickname}}' }] as const,
+    {{/operation}}
+}
+{{/operations}}
+
+{{#operations}}
+    {{#operation}}
+    {{#isRestfulIndex}}{{httpMethod}}{{/isRestfulIndex}} {{#isRestfulShow}}{{httpMethod}}{{/isRestfulShow}}
+
+export function use{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}(request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}){
+    const {{appName}}Api = useApi({{appName}}ApiRef);
+    return useQuery(queryKeys.{{nickname}}(request), () => {
+        return {{appName}}Api.{{nickname}}(request)
+    })
+}
+
+    {{/operation}}
+{{/operations}}

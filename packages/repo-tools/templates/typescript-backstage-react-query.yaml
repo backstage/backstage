@@ -1,0 +1,7 @@
+templateDir: templates/typescript-backstage-react-query
+
+files:
+  api.mustache:
+    templateType: API
+    # For some reason, they check for destinationFilename differences. We have to change the ending to override the file.
+    destinationFilename: .query.ts
