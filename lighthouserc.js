@@ -16,6 +16,7 @@
 module.exports = {
   ci: {
     collect: {
+      // headful: true,
       url: [
         /** Software Catalog */
         'http://localhost:3000/catalog',
@@ -52,7 +53,7 @@ module.exports = {
         outputPath: './.lighthouseci/reports',
         preset: 'desktop',
       },
-      startServerCommand: 'yarn dev',
+      startServerCommand: 'yarn start:lighthouse',
       startServerReadyPattern: 'webpack compiled successfully',
       startServerReadyTimeout: 600000,
       numberOfRuns: 1,
@@ -64,7 +65,7 @@ module.exports = {
         'categories:pwa': 'off',
         'categories:best-practices': 'off',
         'categories:seo': 'off',
-        'categories:accessibility': ['error', { minScore: 0.89 }],
+        'categories:accessibility': ['error', { minScore: 0.95 }],
       },
     },
   },
