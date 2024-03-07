@@ -16,7 +16,10 @@
 import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/lib/useAsync';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  stringifyEntityRef,
+  ANNOTATION_EDIT_URL,
+} from '@backstage/catalog-model';
 import {
   AnalyticsContext,
   useApi,
@@ -33,7 +36,6 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
-import { ScaffolderWizardContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
 import { Workflow } from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
 import { Header, Page } from '@backstage/core-components';
@@ -43,6 +45,11 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
+
+import {
+  TemplateWizardPageContextMenu,
+  TemplateWizardPageContextMenuProps,
+} from './TemplateWizardPageContextMenu';
 
 /**
  * @alpha
@@ -80,17 +87,18 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
 
   const { value: editUrl } = useAsync(async () => {
     const data = await catalogApi.getEntityByRef(templateRef);
-    return data?.metadata.annotations?.['backstage.io/edit-url'] || '';
+    return data?.metadata.annotations?.[ANNOTATION_EDIT_URL] || '';
   }, [templateRef, catalogApi]);
 
-  const scaffolderWizardContextMenuProps = {
-    onEditorClicked:
-      editUrl !== ''
-        ? () => {
-            window.open(editUrl, '_blank');
-          }
-        : undefined,
-  };
+  const templateWizardPageContextMenuProps: TemplateWizardPageContextMenuProps =
+    {
+      onEditorClicked:
+        editUrl !== ''
+          ? () => {
+              window.open(editUrl, '_blank');
+            }
+          : undefined,
+    };
 
   const onCreate = async (values: Record<string, JsonValue>) => {
     const { taskId } = await scaffolderApi.scaffold({
@@ -113,7 +121,9 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           subtitle="Create new software components using standard templates in your organization"
           {...props.headerOptions}
         >
-          <ScaffolderWizardContextMenu {...scaffolderWizardContextMenuProps} />
+          <TemplateWizardPageContextMenu
+            {...templateWizardPageContextMenuProps}
+          />
         </Header>
         <Workflow
           namespace={namespace}

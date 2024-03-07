@@ -31,18 +31,12 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-/**
- * @alpha
- */
-export type ScaffolderWizardContextMenuProps = {
+export type TemplateWizardPageContextMenuProps = {
   onEditorClicked?: () => void;
 };
 
-/**
- * @alpha
- */
-export function ScaffolderWizardContextMenu(
-  props: ScaffolderWizardContextMenuProps,
+export function TemplateWizardPageContextMenu(
+  props: TemplateWizardPageContextMenuProps,
 ) {
   const { onEditorClicked } = props;
   const classes = useStyles();
