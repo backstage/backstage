@@ -2,13 +2,38 @@
 
 Welcome to the notifications-external backend plugin!
 
-_This plugin was created through the Backstage CLI_
+This plugin exposes REST API used by external services to create notifications in the Backstage.
+
+The API internally calls the NotificationsService (by the `@backstage/plugin-notifications-backend`).
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn
-start` in the root directory, and then navigating to [/notifications-external](http://localhost:3000/notifications-external).
+As a minimum, have the `@backstage/plugin-notifications-backend` plugin installed and configured.
 
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+Then, add this plugin to your backend:
+
+```ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-notifications-external-backend'));
+```
+
+## Usage
+
+Once the plugin is running and the backend NotificationsService properly configured, a new message can be created by a simple POST request to the exposed API:
+
+```sh
+  curl -X POST http://localhost:7007/api/notifications-external \
+    -H "Content-Type: application/json" \
+    -H "notifications-secret: mysecret" \
+    -d '{"recipients":{"type":"entity", "entityRef": "user:development/guest"}, "payload":{"title": "External user notification"}}'
+```
+
+Or a broadcasted message:
+
+```sh
+  curl -X POST http://localhost:7007/api/notifications-external \
+    -H "Content-Type: application/json" \
+    -H "notifications-secret: mysecret" \
+    -d '{"recipients":{"type":"broadcast"}, "payload":{"title": "External broadcasted notification"}}'
+```

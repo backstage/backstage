@@ -42,9 +42,6 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  // TODO:
-  // curl -X POST http://localhost:7007/api/notifications-external -H "Content-Type: application/json" -H "notifications-secret: mysecret" -d '{"recipients":{"type":"entity", "entityRef": "user:development/guest"}, "payload":{"title": "External notification - 01"}}'
-
   // Send notification
   router.post('/', async (req, response) => {
     // TODO: do shared-secret auth
