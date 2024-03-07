@@ -26,6 +26,7 @@ import {
   V1PodTemplateSpec,
   V1Pod,
   Watch,
+  V1Status,
 } from '@kubernetes/client-node';
 import { v4 as uuid } from 'uuid';
 import * as http from 'http';
@@ -384,11 +385,8 @@ export class KubernetesContainerRunner implements ContainerRunner {
 }
 
 function handleKubernetesError(message: string, err: any): Error {
-  if (err && typeof err.body === 'string') {
-    const parsedBody = JSON.parse(err.body);
-    if (parsedBody && parsedBody.message) {
-      return new Error(`${message} ${parsedBody.message}`);
-    }
+  if (err instanceof HttpError) {
+    return new Error(`${message} ${(err.body as V1Status).message}`);
   }
-  return new Error(`${message} Error: ${err.message || 'Unknown error'}`);
+  return new Error(`${message} ${err}`);
 }
