@@ -15,6 +15,7 @@
  */
 import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
+import useAsync from 'react-use/lib/useAsync';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   AnalyticsContext,
@@ -77,12 +78,10 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     name: templateName,
   });
 
-  const [editUrl, setEditURL] = React.useState('');
-  catalogApi.getEntityByRef(templateRef).then(data => {
-    const templateEditUrl =
-      data?.metadata.annotations?.['backstage.io/edit-url'];
-    if (templateEditUrl !== undefined) setEditURL(templateEditUrl);
-  });
+  const { value: editUrl } = useAsync(async () => {
+    const data = await catalogApi.getEntityByRef(templateRef);
+    return data?.metadata.annotations?.['backstage.io/edit-url'] || '';
+  }, [templateRef, catalogApi]);
 
   const scaffolderWizardContextMenuProps = {
     onEditorClicked:
