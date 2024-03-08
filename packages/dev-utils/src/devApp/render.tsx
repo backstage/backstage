@@ -80,9 +80,7 @@ export type DevAppPageOptions = {
   children?: JSX.Element;
   title?: string;
   icon?: IconComponent;
-  sideBarItem?: JSX.Element;
-
-  routeRef?: RouteRef;
+  sidebarItem?: JSX.Element;
 };
 
 /**
@@ -144,8 +142,8 @@ export class DevAppBuilder {
       this.defaultPage = path;
     }
 
-    if (opts.sideBarItem) {
-      this.sidebarItems.push(opts.sideBarItem);
+    if (opts.sidebarItem) {
+      this.sidebarItems.push(opts.sidebarItem);
     } else if (opts.title) {
       this.sidebarItems.push(
         <SidebarItem
@@ -157,28 +155,14 @@ export class DevAppBuilder {
       );
     }
 
-    if (opts.routeRef) {
-      const Elem = () => <>{opts.element}</>;
-      attachComponentData(Elem, 'core.mountPoint', opts.routeRef);
-
-      this.routes.push(
-        <MaybeGatheringRoute
-          key={path}
-          path={path}
-          element={<Elem />}
-          children={opts.children}
-        />,
-      );
-    } else {
-      this.routes.push(
-        <MaybeGatheringRoute
-          key={path}
-          path={path}
-          element={opts.element}
-          children={opts.children}
-        />,
-      );
-    }
+    this.routes.push(
+      <MaybeGatheringRoute
+        key={path}
+        path={path}
+        element={opts.element}
+        children={opts.children}
+      />,
+    );
     return this;
   }
 

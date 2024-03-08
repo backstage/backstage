@@ -35,8 +35,7 @@ const notificationsDebug = createBackendPlugin({
           interval = setInterval(async () => {
             await notifications.send({
               recipients: {
-                type: 'entity',
-                entityRef: 'user:development/guest',
+                type: 'broadcast',
               },
               payload: { title: 'Test notification' },
             });

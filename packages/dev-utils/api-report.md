@@ -14,7 +14,6 @@ import { GridProps } from '@material-ui/core/Grid';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
-import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
 export function createDevApp(): DevAppBuilder;
@@ -43,8 +42,7 @@ export type DevAppPageOptions = {
   children?: JSX.Element;
   title?: string;
   icon?: IconComponent;
-  sideBarItem?: JSX.Element;
-  routeRef?: RouteRef;
+  sidebarItem?: JSX.Element;
 };
 
 // @public (undocumented)
