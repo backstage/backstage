@@ -28,6 +28,8 @@ import { useNotificationsApi } from '../../hooks';
 import {
   CreatedAfterOptions,
   NotificationsFilters,
+  SortBy,
+  SortByOptions,
 } from '../NotificationsFilters';
 import { GetNotificationsOptions } from '../../api';
 
@@ -39,6 +41,9 @@ export const NotificationsPage = () => {
   const [pageSize, setPageSize] = React.useState(5);
   const [containsText, setContainsText] = React.useState<string>();
   const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
+  const [sorting, setSorting] = React.useState<SortBy>(
+    SortByOptions.newest.sortBy,
+  );
 
   const { error, value, retry, loading } = useNotificationsApi(
     api => {
@@ -46,6 +51,7 @@ export const NotificationsPage = () => {
         search: containsText,
         limit: pageSize,
         offset: pageNumber * pageSize,
+        ...(sorting || {}),
       };
       if (unreadOnly !== undefined) {
         options.read = !unreadOnly;
@@ -58,7 +64,7 @@ export const NotificationsPage = () => {
 
       return api.getNotifications(options);
     },
-    [containsText, unreadOnly, createdAfter, pageNumber, pageSize],
+    [containsText, unreadOnly, createdAfter, pageNumber, pageSize, sorting],
   );
 
   useEffect(() => {
@@ -92,8 +98,8 @@ export const NotificationsPage = () => {
               onUnreadOnlyChanged={setUnreadOnly}
               createdAfter={createdAfter}
               onCreatedAfterChanged={setCreatedAfter}
-              // setSorting={setSorting}
-              // sorting={sorting}
+              onSortingChanged={setSorting}
+              sorting={sorting}
             />
           </Grid>
           <Grid item xs={10}>
