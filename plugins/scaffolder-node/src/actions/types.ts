@@ -32,7 +32,7 @@ export type ActionContext<
   TActionOutput extends JsonObject = JsonObject,
 > = {
   logger: Logger;
-  /** @deprecated - use the logger instead */
+  /** @deprecated - use `ctx.logger` instead */
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
