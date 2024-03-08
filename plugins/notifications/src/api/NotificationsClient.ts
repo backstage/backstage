@@ -50,10 +50,10 @@ export class NotificationsClient implements NotificationsApi {
       queryString.append('offset', options.offset.toString(10));
     }
     if (options?.sort !== undefined) {
-      queryString.append('sort', options.sort);
-    }
-    if (options?.sortOrder !== undefined) {
-      queryString.append('sort_order', options.sortOrder);
+      queryString.append(
+        'orderField',
+        `${options.sort},${options?.sortOrder ?? 'desc'}`,
+      );
     }
     if (options?.search) {
       queryString.append('search', options.search);
