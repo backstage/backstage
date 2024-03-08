@@ -30,6 +30,7 @@ import {
 import { TemplateWizardPage } from './TemplateWizardPage';
 import { rootRouteRef } from '../../routes';
 import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import { ANNOTATION_EDIT_URL } from '@backstage/catalog-model';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -68,7 +69,7 @@ const entityRefResponse = {
   metadata: {
     name: 'test',
     annotations: {
-      'backstage.io/edit-url': 'http://localhost:3000',
+      [ANNOTATION_EDIT_URL]: 'http://localhost:3000',
     },
   },
   spec: {
@@ -147,7 +148,7 @@ describe('TemplateWizardPage', () => {
         metadata: {
           name: 'test',
           annotations: {
-            'backstage.io/edit-url': 'http://localhost:3000',
+            [ANNOTATION_EDIT_URL]: 'http://localhost:3000',
           },
         },
         spec: {
