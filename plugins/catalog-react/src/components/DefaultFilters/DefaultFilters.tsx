@@ -37,11 +37,17 @@ export type DefaultFiltersProps = {
   initialKind?: string;
   initiallySelectedFilter?: UserListFilterKind;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  initiallySelectedNamespaces?: string[];
 };
 
 /** @public */
 export const DefaultFilters = (props: DefaultFiltersProps) => {
-  const { initialKind, initiallySelectedFilter, ownerPickerMode } = props;
+  const {
+    initialKind,
+    initiallySelectedFilter,
+    ownerPickerMode,
+    initiallySelectedNamespaces,
+  } = props;
   return (
     <>
       <EntityKindPicker initialFilter={initialKind} />
@@ -51,7 +57,9 @@ export const DefaultFilters = (props: DefaultFiltersProps) => {
       <EntityLifecyclePicker />
       <EntityTagPicker />
       <EntityProcessingStatusPicker />
-      <EntityNamespacePicker />
+      <EntityNamespacePicker
+        initiallySelectedNamespaces={initiallySelectedNamespaces}
+      />
     </>
   );
 };

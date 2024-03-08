@@ -1,5 +1,11 @@
 # @backstage/plugin-notifications-common
 
+## 0.0.2-next.1
+
+### Patch Changes
+
+- a790a3d: Move notification origin resolving to backend with new auth
+
 ## 0.0.2-next.0
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-notifications-node
 
+## 0.1.0-next.1
+
+### Patch Changes
+
+- a790a3d: Move notification origin resolving to backend with new auth
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.0.2-next.1
+  - @backstage/plugin-signals-node@0.1.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+
 ## 0.1.0-next.0
 
 ### Minor Changes

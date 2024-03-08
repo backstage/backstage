@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.4.0-next.1
+
+### Minor Changes
+
+- aa543c9: Update task context type to contain the new auth initiator credentials.
+
+### Patch Changes
+
+- bbd1fe1: Made "checkpoint" on scaffolder action context non-optional
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.1-next.1
+
 ## 0.3.3-next.0
 
 ### Patch Changes

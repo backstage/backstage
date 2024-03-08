@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend-module-guest-provider
 
+## 0.1.0-next.1
+
+### Patch Changes
+
+- 72dd380: Ensure that the config schema is present
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+
 ## 0.1.0-next.0
 
 ### Minor Changes

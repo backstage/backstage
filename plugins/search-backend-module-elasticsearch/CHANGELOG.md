@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.3.17-next.1
+
+### Patch Changes
+
+- e1f73d0: Added config.d.ts entry with secrets for the shared auth block
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/integration-aws-node@0.1.10-next.1
+  - @backstage/plugin-search-backend-node@1.2.18-next.1
+  - @backstage/plugin-search-common@1.2.11-next.1
+
 ## 1.3.16-next.0
 
 ### Patch Changes

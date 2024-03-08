@@ -107,6 +107,7 @@
           "features/kubernetes/installation",
           "features/kubernetes/configuration",
           "features/kubernetes/authentication",
+          "features/kubernetes/authentication-strategies",
           "features/kubernetes/troubleshooting",
           "features/kubernetes/proxy"
         ]

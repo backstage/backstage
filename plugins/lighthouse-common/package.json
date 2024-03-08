@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-lighthouse-common",
-  "version": "0.1.5-next.0",
+  "version": "0.1.5-next.1",
   "description": "Common functionalities for lighthouse, to be shared between lighthouse and lighthouse-backend plugin",
   "backstage": {
     "role": "common-library"

@@ -1,5 +1,19 @@
 # @backstage/plugin-org
 
+## 0.6.21-next.1
+
+### Patch Changes
+
+- a767aaa: Fixed an issue where the `OwnershipCard` component failed to scroll properly when used alongside `react-grid-layout`.
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-compat-api@0.2.1-next.1
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+
 ## 0.6.21-next.0
 
 ### Patch Changes

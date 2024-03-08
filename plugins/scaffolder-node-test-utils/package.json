@@ -1,12 +1,12 @@
 {
   "name": "@backstage/plugin-scaffolder-node-test-utils",
-  "version": "0.1.0-next.0",
+  "version": "0.1.0-next.1",
   "backstage": {
     "role": "node-library"
   },
   "publishConfig": {
     "access": "public",
-    "main": "dist/index.esm.js",
+    "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
   "repository": {

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-shortcuts",
-  "version": "0.3.20-next.0",
+  "version": "0.3.20-next.1",
   "description": "A Backstage plugin that provides a shortcuts feature to the sidebar",
   "backstage": {
     "role": "frontend-plugin"

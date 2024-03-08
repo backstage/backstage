@@ -1,7 +1,7 @@
 {
   "name": "@backstage/cli",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.25.3-next.0",
+  "version": "0.25.3-next.1",
   "publishConfig": {
     "access": "public"
   },

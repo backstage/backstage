@@ -1,5 +1,15 @@
 # @backstage/plugin-tech-radar
 
+## 0.6.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/core-compat-api@0.2.1-next.1
+
 ## 0.6.14-next.0
 
 ### Patch Changes

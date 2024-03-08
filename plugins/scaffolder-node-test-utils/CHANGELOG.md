@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.1.0-next.1
+
+### Patch Changes
+
+- aa543c9: Add an initiator credentials getter to the default mock context.
+- bbd1fe1: Made "checkpoint" on scaffolder action context non-optional
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-test-utils@0.3.4-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.1-next.1
+
 ## 0.1.0-next.0
 
 ### Minor Changes

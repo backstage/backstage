@@ -1,5 +1,27 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.6.0-next.1
+
+### Minor Changes
+
+- 3270b1b: Azure DevOps plugin is now integrated with permission framework for its core features, see the https://github.com/backstage/backstage/blob/master/plugins/azure-devops/README.md#permission-framework for more details.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/plugin-azure-devops-common@0.4.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+
 ## 0.6.0-next.0
 
 ### Minor Changes

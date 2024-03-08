@@ -1,5 +1,18 @@
 # @backstage/plugin-entity-validation
 
+## 0.1.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+
 ## 0.1.16-next.0
 
 ### Patch Changes
