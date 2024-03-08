@@ -102,13 +102,11 @@ const createStepLogger = ({
   task: TaskContext;
   step: TaskStep;
 }) => {
-  const metadata = { stepId: step.id };
-  const streamLogger = new PassThrough();
-
-  streamLogger.on('data', async data => {
+  const stepLogStream = new PassThrough();
+  stepLogStream.on('data', async data => {
     const message = data.toString().trim();
     if (message?.length > 1) {
-      await task.emitLog(message, metadata);
+      await task.emitLog(message, { stepId: step.id });
     }
   });
 
@@ -120,11 +118,26 @@ const createStepLogger = ({
     ),
     transports: [
       new winston.transports.Console(),
-      new winston.transports.Stream({ stream: streamLogger }),
+      new winston.transports.Stream({ stream: stepLogStream }),
     ],
   });
 
   taskLogger.addRedactions(Object.values(task.secrets ?? {}));
+
+  // This stream logger should be deprecated. We're going to replace it with
+  // just using the logger directly, as all those logs get written to step logs
+  // using the stepLogStream above.
+  // Initially this stream used to be the only way to write to the client logs, but that
+  // has changed over time, there's not really a need for this anymore.
+  // You can just create a simple wrapper like the below in your action to write to the main logger.
+  // This way we also get recactions for free.
+  const streamLogger = new PassThrough();
+  streamLogger.on('data', async data => {
+    const message = data.toString().trim();
+    if (message?.length > 1) {
+      taskLogger.info(message);
+    }
+  });
 
   return { taskLogger, streamLogger };
 };
