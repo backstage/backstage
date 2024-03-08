@@ -21,9 +21,8 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   BackstageCredentials,
   BackstageUserPrincipal,
-  PermissionsService,
-  PermissionsServiceRequestOptions,
 } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 
 class MockWebSocket {
   closed: boolean = false;
@@ -63,16 +62,7 @@ class MockWebSocket {
 describe('SignalManager', () => {
   let onEvent: Function;
 
-  const mockedAuthorize: jest.MockedFunction<PermissionsService['authorize']> =
-    jest.fn();
-  const mockedPermissionQuery: jest.MockedFunction<
-    PermissionsService['authorizeConditional']
-  > = jest.fn();
-
-  const permissionsMock: PermissionsService = {
-    authorize: mockedAuthorize,
-    authorizeConditional: mockedPermissionQuery,
-  };
+  const permissionsMock = mockServices.permissions.mock();
 
   const mockEvents = {
     publish: async () => {},
@@ -224,8 +214,8 @@ describe('SignalManager', () => {
       false,
     );
 
-    mockedAuthorize.mockImplementation(
-      async (_permissions, options?: PermissionsServiceRequestOptions) => {
+    permissionsMock.authorize.mockImplementation(
+      async (_permissions, options?) => {
         if (options && 'credentials' in options) {
           if (
             (options.credentials.principal as unknown as BackstageUserPrincipal)
