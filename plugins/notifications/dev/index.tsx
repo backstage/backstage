@@ -15,10 +15,8 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { notificationsPlugin } from '../src/plugin';
-import { NotificationsPage } from '../src/components/NotificationsPage';
+import { NotificationsPage, notificationsPlugin } from '../src/plugin';
 import { NotificationsSidebarItem } from '../src';
-import { rootRouteRef } from '../src/routes';
 
 // TODO: How to sign in here as guest user?
 createDevApp()
@@ -26,7 +24,6 @@ createDevApp()
   .addPage({
     element: <NotificationsPage />,
     path: '/notifications',
-    sideBarItem: <NotificationsSidebarItem />,
-    routeRef: rootRouteRef,
+    sidebarItem: <NotificationsSidebarItem />,
   })
   .render();

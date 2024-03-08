@@ -400,7 +400,7 @@ export async function createRouter(
 
     if (!recipients || !title) {
       logger.error(`Invalid notification request received`);
-      throw new InputError();
+      throw new InputError('Invalid notification request');
     }
 
     const origin = credentials.principal.subject;
@@ -425,7 +425,7 @@ export async function createRouter(
       try {
         users = await getUsersForEntityRef(entityRef);
       } catch (e) {
-        throw new InputError();
+        throw new InputError('Failed to resolve notification receivers', e);
       }
       const userNotifications = await sendUserNotifications(
         baseNotification,
