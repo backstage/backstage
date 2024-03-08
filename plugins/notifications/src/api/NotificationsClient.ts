@@ -65,7 +65,7 @@ export class NotificationsClient implements NotificationsApi {
       queryString.append('saved', options.saved ? 'true' : 'false');
     }
     if (options?.createdAfter !== undefined) {
-      queryString.append('created_after', options.createdAfter.toISOString());
+      queryString.append('createdAfter', options.createdAfter.toISOString());
     }
     if (options?.minimumSeverity !== undefined) {
       queryString.append('minimal_severity', options.minimumSeverity);
