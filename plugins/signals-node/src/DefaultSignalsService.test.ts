@@ -33,7 +33,16 @@ describe('DefaultSignalsService', () => {
     service.publish(signal);
     expect(mockEvents.publish).toHaveBeenCalledWith({
       topic: 'signals',
-      eventPayload: signal,
+      eventPayload: { type: 'signal', ...signal },
+    });
+  });
+
+  it('should register channel', () => {
+    const registration = { channel: 'test-channel' };
+    service.registerChannel(registration);
+    expect(mockEvents.publish).toHaveBeenCalledWith({
+      topic: 'signals',
+      eventPayload: { type: 'registration', ...registration },
     });
   });
 });

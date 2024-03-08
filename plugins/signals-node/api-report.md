@@ -18,7 +18,15 @@ export class DefaultSignalsService implements SignalsService {
   publish<TMessage extends JsonObject = JsonObject>(
     signal: SignalPayload<TMessage>,
   ): Promise<void>;
+  // (undocumented)
+  registerChannel(registration: SignalChannelRegistration): Promise<void>;
 }
+
+// @public (undocumented)
+export type SignalChannelRegistration = {
+  channel: string;
+  permissions?: AuthorizePermissionRequest[];
+};
 
 // @public (undocumented)
 export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
@@ -32,7 +40,6 @@ export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
       };
   channel: string;
   message: TMessage;
-  permissions?: AuthorizePermissionRequest[];
 };
 
 // @public @deprecated (undocumented)
@@ -46,6 +53,7 @@ export interface SignalsService {
   publish<TMessage extends JsonObject = JsonObject>(
     signal: SignalPayload<TMessage>,
   ): Promise<void>;
+  registerChannel(registration: SignalChannelRegistration): Promise<void>;
 }
 
 // @public (undocumented)

@@ -44,6 +44,7 @@ describe('createRouter', () => {
 
   const signalService: jest.Mocked<SignalsService> = {
     publish: jest.fn(),
+    registerChannel: jest.fn(),
   };
 
   const discovery = mockServices.discovery();

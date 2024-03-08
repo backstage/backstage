@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import { EventParams, EventsService } from '@backstage/plugin-events-node';
-import { SignalPayload } from '@backstage/plugin-signals-node';
+import {
+  SignalChannelRegistration,
+  SignalPayload,
+} from '@backstage/plugin-signals-node';
 import { RawData, WebSocket } from 'ws';
 import { v4 as uuid } from 'uuid';
 import { JsonObject } from '@backstage/types';
@@ -47,11 +50,20 @@ export type SignalManagerOptions = {
   permissions?: PermissionsService;
 };
 
+type EventBrokerEvent = {
+  type: 'signal' | 'registration';
+} & SignalPayload &
+  SignalChannelRegistration;
+
 /** @internal */
 export class SignalManager {
   private connections: Map<string, SignalConnection> = new Map<
     string,
     SignalConnection
+  >();
+  private registeredChannels: Map<string, SignalChannelRegistration> = new Map<
+    string,
+    SignalChannelRegistration
   >();
   private events: EventsService;
   private logger: LoggerService;
@@ -72,7 +84,7 @@ export class SignalManager {
       id: 'signals',
       topics: ['signals'],
       onEvent: (params: EventParams) =>
-        this.onEventBrokerEvent(params.eventPayload as SignalPayload),
+        this.onEventBrokerEvent(params.eventPayload as EventBrokerEvent),
     });
   }
 
@@ -115,23 +127,58 @@ export class SignalManager {
       if (isBinary) {
         return;
       }
-      try {
-        const json = JSON.parse(data.toString()) as JsonObject;
-        this.handleMessage(conn, json);
-      } catch (err: any) {
+
+      const json = JSON.parse(data.toString()) as JsonObject;
+      this.handleMessage(conn, json).catch(err => {
         this.logger.error(
           `Invalid message received from connection ${id}: ${err}`,
         );
-      }
+      });
     });
   }
 
-  private handleMessage(connection: SignalConnection, message: JsonObject) {
+  private async authorizeSubscribe(
+    connection: SignalConnection,
+    channel: string,
+  ) {
+    if (!this.registeredChannels.has(channel)) {
+      return true;
+    }
+
+    const registration = this.registeredChannels.get(channel);
+
+    if (!registration?.permissions) {
+      return true;
+    }
+
+    if (!connection.credentials || !this.permissions) {
+      return false;
+    }
+
+    const decisions = await this.permissions.authorize(
+      registration.permissions,
+      {
+        credentials: connection.credentials,
+      },
+    );
+    const denied = decisions.some(
+      decision => decision.result === AuthorizeResult.DENY,
+    );
+    return !denied;
+  }
+
+  private async handleMessage(
+    connection: SignalConnection,
+    message: JsonObject,
+  ) {
     if (message.action === 'subscribe' && message.channel) {
-      this.logger.info(
-        `Connection ${connection.id} subscribed to ${message.channel}`,
-      );
-      connection.subscriptions.add(message.channel as string);
+      const channel = message.channel as string;
+      if (!(await this.authorizeSubscribe(connection, channel))) {
+        return;
+      }
+
+      this.logger.info(`Connection ${connection.id} subscribed to ${channel}`);
+      connection.subscriptions.add(channel);
     } else if (message.action === 'unsubscribe' && message.channel) {
       this.logger.info(
         `Connection ${connection.id} unsubscribed from ${message.channel}`,
@@ -140,12 +187,21 @@ export class SignalManager {
     }
   }
 
-  private async onEventBrokerEvent(eventPayload: SignalPayload): Promise<void> {
+  private async onEventBrokerEvent(
+    eventPayload: EventBrokerEvent,
+  ): Promise<void> {
+    // Handle signal channel registration
+    if (eventPayload.type === 'registration') {
+      this.registeredChannels.set(eventPayload.channel, eventPayload);
+      return;
+    }
+
+    // Handle signal publish
     if (!eventPayload.channel || !eventPayload.message) {
       return;
     }
 
-    const { channel, recipients, message, permissions } = eventPayload;
+    const { channel, recipients, message } = eventPayload;
     const jsonMessage = JSON.stringify({ channel, message });
     let users: string[] = [];
     if (recipients.type === 'user') {
@@ -169,24 +225,6 @@ export class SignalManager {
         !conn.ownershipEntityRefs.some((ref: string) => users.includes(ref))
       ) {
         continue;
-      }
-
-      if (permissions) {
-        // In case the message requires permissions but we can't authorize, skip sending
-        if (!this.permissions || !conn.credentials) {
-          continue;
-        }
-
-        // TODO: Check for credentials expiresAt and request new token from the client
-        const decisions = await this.permissions.authorize(permissions, {
-          credentials: conn.credentials,
-        });
-        const denied = decisions.some(
-          decision => decision.result === AuthorizeResult.DENY,
-        );
-        if (denied) {
-          continue;
-        }
       }
 
       conn.ws.send(jsonMessage, err => {

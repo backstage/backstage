@@ -21,15 +21,16 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   BackstageCredentials,
   BackstageUserPrincipal,
-  PermissionsService,
-  PermissionsServiceRequestOptions,
 } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 
 class MockWebSocket {
   closed: boolean = false;
   readyState: number = WebSocket.OPEN;
-  callbacks: Map<string | symbol, (this: WebSocket, ...args: any[]) => void> =
-    new Map();
+  callbacks: Map<
+    string | symbol,
+    (this: WebSocket, ...args: any[]) => Promise<void> | void
+  > = new Map();
   data: any[] = [];
 
   close(_: number, __: string | Buffer): void {
@@ -39,7 +40,7 @@ class MockWebSocket {
 
   on(
     event: string | symbol,
-    listener: (this: WebSocket, ...args: any[]) => void,
+    listener: (this: WebSocket, ...args: any[]) => Promise<void> | void,
   ) {
     this.callbacks.set(event, listener);
     return this;
@@ -50,29 +51,20 @@ class MockWebSocket {
     this.data.push(data);
   }
 
-  trigger(event: string | symbol, ...args: any[]): void {
+  async trigger(event: string | symbol, ...args: any[]): Promise<void> {
     const cb = this.callbacks.get(event);
     if (!cb) {
       throw new Error(`No callback for ${event.toString()}`);
     }
     // @ts-ignore
-    cb(...args);
+    await cb(...args);
   }
 }
 
 describe('SignalManager', () => {
   let onEvent: Function;
 
-  const mockedAuthorize: jest.MockedFunction<PermissionsService['authorize']> =
-    jest.fn();
-  const mockedPermissionQuery: jest.MockedFunction<
-    PermissionsService['authorizeConditional']
-  > = jest.fn();
-
-  const permissionsMock: PermissionsService = {
-    authorize: mockedAuthorize,
-    authorizeConditional: mockedPermissionQuery,
-  };
+  const permissionsMock = mockServices.permissions.mock();
 
   const mockEvents = {
     publish: async () => {},
@@ -99,7 +91,7 @@ describe('SignalManager', () => {
     const ws = new MockWebSocket();
     manager.addConnection(ws as unknown as WebSocket);
 
-    ws.trigger(
+    await ws.trigger(
       'message',
       JSON.stringify({ action: 'subscribe', channel: 'test' }),
       false,
@@ -119,7 +111,7 @@ describe('SignalManager', () => {
       JSON.stringify({ channel: 'test', message: { msg: 'test' } }),
     );
 
-    ws.trigger(
+    await ws.trigger(
       'message',
       JSON.stringify({ action: 'unsubscribe', channel: 'test' }),
       false,
@@ -156,13 +148,13 @@ describe('SignalManager', () => {
       userEntityRef: 'user:default/john.doe',
     });
 
-    ws1.trigger(
+    await ws1.trigger(
       'message',
       JSON.stringify({ action: 'subscribe', channel: 'test' }),
       false,
     );
 
-    ws2.trigger(
+    await ws2.trigger(
       'message',
       JSON.stringify({ action: 'subscribe', channel: 'test' }),
       false,
@@ -212,20 +204,8 @@ describe('SignalManager', () => {
       } as BackstageCredentials,
     );
 
-    ws1.trigger(
-      'message',
-      JSON.stringify({ action: 'subscribe', channel: 'test' }),
-      false,
-    );
-
-    ws2.trigger(
-      'message',
-      JSON.stringify({ action: 'subscribe', channel: 'test' }),
-      false,
-    );
-
-    mockedAuthorize.mockImplementation(
-      async (_permissions, options?: PermissionsServiceRequestOptions) => {
+    permissionsMock.authorize.mockImplementation(
+      async (_permissions, options?) => {
         if (options && 'credentials' in options) {
           if (
             (options.credentials.principal as unknown as BackstageUserPrincipal)
@@ -238,13 +218,34 @@ describe('SignalManager', () => {
       },
     );
 
+    // Register channel test to require permissions
+    await onEvent({
+      topic: 'signals',
+      eventPayload: {
+        type: 'registration',
+        channel: 'test',
+        permissions: [{ permission: 'testPermission' }],
+      },
+    });
+
+    await ws1.trigger(
+      'message',
+      JSON.stringify({ action: 'subscribe', channel: 'test' }),
+      false,
+    );
+
+    await ws2.trigger(
+      'message',
+      JSON.stringify({ action: 'subscribe', channel: 'test' }),
+      false,
+    );
+
     await onEvent({
       topic: 'signals',
       eventPayload: {
         recipients: { type: 'broadcast' },
         channel: 'test',
         message: { msg: 'test' },
-        permissions: [{ permission: 'testPermission' }],
       },
     });
 

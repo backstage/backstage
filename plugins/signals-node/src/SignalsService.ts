@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SignalPayload } from './types';
+import { SignalChannelRegistration, SignalPayload } from './types';
 import { JsonObject } from '@backstage/types';
 
 /** @public */
@@ -25,6 +25,11 @@ export interface SignalsService {
   publish<TMessage extends JsonObject = JsonObject>(
     signal: SignalPayload<TMessage>,
   ): Promise<void>;
+
+  /**
+   * Register a channel with optional permissions to be checked on subscription time
+   */
+  registerChannel(registration: SignalChannelRegistration): Promise<void>;
 }
 
 /**

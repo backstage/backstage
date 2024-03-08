@@ -8,7 +8,21 @@ Signals plugin allows backend plugins to publish messages to frontend plugins.
 
 First install the `@backstage/plugin-signals-node` plugin to get the `SignalsService` set up.
 
-Next, add Signals router to your backend in `packages/backend/src/plugins/signals.ts`:
+### New backend
+
+Install `@backstage/plugin-signals-backend`. Then add the import to your `packages/backend/src/index.ts`:
+
+```ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-signals-backend'));
+// ...
+backend.start();
+```
+
+### Old backend
+
+Add Signals router to your backend in `packages/backend/src/plugins/signals.ts`:
 
 ```ts
 import { Router } from 'express';

@@ -16,7 +16,6 @@
 import {
   createLegacyAuthAdapters,
   errorHandler,
-  PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
@@ -24,27 +23,28 @@ import {
   AuthService,
   BackstageCredentials,
   BackstageUserInfo,
+  DiscoveryService,
+  IdentityService,
   LoggerService,
+  PermissionsService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 import * as https from 'https';
 import http, { IncomingMessage } from 'http';
 import { SignalManager } from './SignalManager';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { WebSocket, WebSocketServer } from 'ws';
 import { Duplex } from 'stream';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 /** @public */
 export interface RouterOptions {
   logger: LoggerService;
   events: EventsService;
-  identity: IdentityApi;
-  discovery: PluginEndpointDiscovery;
+  identity: IdentityService;
+  discovery: DiscoveryService;
   auth?: AuthService;
   userInfo?: UserInfoService;
-  permissions?: PermissionEvaluator;
+  permissions?: PermissionsService;
 }
 
 /** @public */

@@ -22,10 +22,8 @@ import request from 'supertest';
 import { createRouter } from './router';
 import { EventsService } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import {
-  PermissionsService,
-  UserInfoService,
-} from '@backstage/backend-plugin-api';
+import { UserInfoService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const eventsServiceMock: jest.Mocked<EventsService> = {
   subscribe: jest.fn(),
@@ -45,16 +43,7 @@ const userInfo: jest.Mocked<UserInfoService> = {
   getUserInfo: jest.fn(),
 };
 
-const mockedAuthorize: jest.MockedFunction<PermissionsService['authorize']> =
-  jest.fn();
-const mockedPermissionQuery: jest.MockedFunction<
-  PermissionsService['authorizeConditional']
-> = jest.fn();
-
-const permissionsMock: PermissionsService = {
-  authorize: mockedAuthorize,
-  authorizeConditional: mockedPermissionQuery,
-};
+const permissionsMock = mockServices.permissions.mock();
 
 describe('createRouter', () => {
   let app: express.Express;

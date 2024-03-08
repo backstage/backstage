@@ -31,5 +31,10 @@ export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
     | { type: 'broadcast' };
   channel: string;
   message: TMessage;
+};
+
+/** @public */
+export type SignalChannelRegistration = {
+  channel: string;
   permissions?: AuthorizePermissionRequest[];
 };

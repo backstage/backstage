@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 import { EventsService } from '@backstage/plugin-events-node';
-import { SignalPayload, SignalsServiceOptions } from './types';
+import {
+  SignalChannelRegistration,
+  SignalPayload,
+  SignalsServiceOptions,
+} from './types';
 import { SignalsService } from './SignalsService';
 import { JsonObject } from '@backstage/types';
 
@@ -39,7 +43,22 @@ export class DefaultSignalsService implements SignalsService {
   ) {
     await this.events.publish({
       topic: 'signals',
-      eventPayload: signal,
+      eventPayload: {
+        type: 'signal',
+        ...signal,
+      },
+    });
+  }
+
+  async registerChannel(
+    registration: SignalChannelRegistration,
+  ): Promise<void> {
+    await this.events.publish({
+      topic: 'signals',
+      eventPayload: {
+        type: 'registration',
+        ...registration,
+      },
     });
   }
 }
