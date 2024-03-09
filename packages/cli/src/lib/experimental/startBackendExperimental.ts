@@ -93,6 +93,10 @@ export async function startBackendExperimental(options: BackendServeOptions) {
       optionArgs.push(inspect);
     }
 
+    if (process.env.ENABLE_NODE_WATCH && envEnv.NODE_ENV === 'development') {
+      optionArgs.push('--watch');
+    }
+
     const userArgs = process.argv
       .slice(['node', 'backstage-cli', 'package', 'start'].length)
       .filter(arg => !optionArgs.includes(arg));
