@@ -33,14 +33,11 @@
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@backstage/types": "workspace:^",
-    "winston": "^3.2.1"
+    "@backstage/types": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@testing-library/jest-dom": "^6.0.0",
     "@types/react": "*"
   }
 }

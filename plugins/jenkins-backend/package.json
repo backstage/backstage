@@ -36,7 +36,6 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-jenkins-common": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
