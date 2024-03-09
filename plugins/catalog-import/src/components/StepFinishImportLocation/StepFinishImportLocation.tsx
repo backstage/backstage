@@ -81,7 +81,6 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
         <Grid container spacing={0}>
           <BackButton onClick={onReset}>Register another</BackButton>
         </Grid>
-        ;
       </>
     );
   }
