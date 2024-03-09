@@ -32,17 +32,17 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export type TemplateWizardPageContextMenuProps = {
-  onEditorClicked?: () => void;
+  editUrl?: string;
 };
 
 export function TemplateWizardPageContextMenu(
   props: TemplateWizardPageContextMenuProps,
 ) {
-  const { onEditorClicked } = props;
+  const { editUrl } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
-  if (!onEditorClicked) {
+  if (!editUrl) {
     return null;
   }
 
@@ -79,14 +79,12 @@ export function TemplateWizardPageContextMenu(
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
-          {onEditorClicked && (
-            <MenuItem onClick={onEditorClicked}>
-              <ListItemIcon>
-                <Edit fontSize="small" />
-              </ListItemIcon>
-              <ListItemText primary="Edit Configuration" />
-            </MenuItem>
-          )}
+          <MenuItem onClick={() => window.open(editUrl, '_blank')}>
+            <ListItemIcon>
+              <Edit fontSize="small" />
+            </ListItemIcon>
+            <ListItemText primary="Edit Configuration" />
+          </MenuItem>
         </MenuList>
       </Popover>
     </>

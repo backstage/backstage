@@ -46,10 +46,7 @@ import {
   selectedTemplateRouteRef,
 } from '../../routes';
 
-import {
-  TemplateWizardPageContextMenu,
-  TemplateWizardPageContextMenuProps,
-} from './TemplateWizardPageContextMenu';
+import { TemplateWizardPageContextMenu } from './TemplateWizardPageContextMenu';
 
 /**
  * @alpha
@@ -90,16 +87,6 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     return data?.metadata.annotations?.[ANNOTATION_EDIT_URL] || '';
   }, [templateRef, catalogApi]);
 
-  const templateWizardPageContextMenuProps: TemplateWizardPageContextMenuProps =
-    {
-      onEditorClicked:
-        editUrl !== ''
-          ? () => {
-              window.open(editUrl, '_blank');
-            }
-          : undefined,
-    };
-
   const onCreate = async (values: Record<string, JsonValue>) => {
     const { taskId } = await scaffolderApi.scaffold({
       templateRef,
@@ -121,9 +108,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           subtitle="Create new software components using standard templates in your organization"
           {...props.headerOptions}
         >
-          <TemplateWizardPageContextMenu
-            {...templateWizardPageContextMenuProps}
-          />
+          <TemplateWizardPageContextMenu editUrl={editUrl} />
         </Header>
         <Workflow
           namespace={namespace}
