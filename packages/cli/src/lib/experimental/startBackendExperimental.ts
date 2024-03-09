@@ -93,17 +93,24 @@ export async function startBackendExperimental(options: BackendServeOptions) {
       optionArgs.push(inspect);
     }
 
-    if (process.env.ENABLE_NODE_WATCH && envEnv.NODE_ENV === 'development') {
-      optionArgs.push('--watch');
-    }
-
     const userArgs = process.argv
       .slice(['node', 'backstage-cli', 'package', 'start'].length)
       .filter(arg => !optionArgs.includes(arg));
 
+    const additionalArgs = new Array<string>();
+    if (process.env.ENABLE_NODE_WATCH && envEnv.NODE_ENV === 'development') {
+      additionalArgs.push('--watch');
+    }
+
     child = spawn(
       process.execPath,
-      [...loaderArgs, ...optionArgs, options.entry, ...userArgs],
+      [
+        ...loaderArgs,
+        ...optionArgs,
+        ...additionalArgs,
+        options.entry,
+        ...userArgs,
+      ],
       {
         stdio: ['ignore', 'inherit', 'inherit', 'ipc'],
         env: {
