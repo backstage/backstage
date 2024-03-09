@@ -83,7 +83,8 @@ export function getStatusDescription({
       return 'In progress';
     case 'completed':
       switch (conclusion?.toLocaleLowerCase('en-US')) {
-        case 'skipped' || 'canceled':
+        case 'skipped':
+        case 'cancelled':
           return 'Aborted';
         case 'timed_out':
           return 'Timed out';
