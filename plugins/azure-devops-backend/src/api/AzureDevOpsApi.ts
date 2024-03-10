@@ -121,6 +121,11 @@ export class AzureDevOpsApi {
       // No credentials found for the provided host and org in the `integrations.azure` config section
       // use the fall back personal access token from `azureDevOps.token`
       const token = this.config.getString('azureDevOps.token');
+      if (token) {
+        this.logger.warn(
+          "Using the token from 'azureDevOps.token' has been deprecated, use 'integrations.azure' instead, for more details see: https://backstage.io/docs/integrations/azure/locations",
+        );
+      }
       authHandler = getPersonalAccessTokenHandler(token);
     } else {
       authHandler = getHandlerFromToken(credentials.token);
