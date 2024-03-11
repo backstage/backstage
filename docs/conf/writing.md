@@ -199,6 +199,18 @@ configuration value will evaluate to `undefined`.
 The substitution syntax can be escaped using `$${...}`, which will be resolved
 as `${...}`.
 
+Parameter substitution syntax (e.g. `${MY_VAR:-default-value}`) is also
+supported to provide a default or fallback value for a given environment
+variable if it is unset, or is declared but has no value. For example:
+
+```yaml
+app:
+  baseUrl: https://${HOST:-http://localhost:3000}
+```
+
+In the above example, when `HOST` is unset or has no value, it will be
+substituted with `http://localhost:3000`.
+
 ## Combining Includes and Environment Variable Substitution
 
 The Includes and Environment Variable Substitutions can be combined to do
