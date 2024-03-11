@@ -8723,7 +8723,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend@workspace:plugins/scaffolder-backend"
   dependencies:
-    "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
@@ -8767,6 +8766,7 @@ __metadata:
     jsonschema: ^1.2.6
     knex: ^3.0.0
     lodash: ^4.17.21
+    logform: ^2.3.2
     luxon: ^3.0.0
     nunjucks: ^3.2.3
     p-limit: ^3.1.0
