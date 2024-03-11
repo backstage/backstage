@@ -1,9 +1,9 @@
 ---
 title: Library Check
-author: anakrz
+author: anakzr
 authorUrl: https://github.com/anakzr
 category: Services
-description: Check the status of project package or library based on main registries.
+description: Check the status of project package or library based on main registries
 documentation: https://github.com/anakzr/backstage-plugin-library-check
 iconUrl: /img/library-check-logo.png
 npmPackageName: '@anakz/backstage-plugin-library-check'
