@@ -382,7 +382,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '--release <version|next|main>',
-      'Bump to a specific Backstage release line or version',
+      'Bump to a specific Backstage release line or version, or to a specific npm dist-tag',
       'main',
     )
     .option('--skip-install', 'Skips yarn install step')

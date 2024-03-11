@@ -70,14 +70,15 @@ export default async (opts: OptionValues) => {
   }
 
   let findTargetVersion: (name: string) => Promise<string>;
-  let releaseManifest: ReleaseManifest;
+  let releaseManifest: ReleaseManifest | undefined;
+
   // Specific release specified. Be strict when resolving versions
   if (semver.valid(opts.release)) {
     releaseManifest = await getManifestByVersion({ version: opts.release });
     findTargetVersion = createStrictVersionFinder({
       releaseManifest,
     });
-  } else {
+  } else if (['main', 'next'].includes(opts.release)) {
     // Release line specified. Be lenient when resolving versions.
     if (opts.release === 'next') {
       const next = await getManifestByReleaseLine({
@@ -99,6 +100,9 @@ export default async (opts: OptionValues) => {
       releaseLine: opts.releaseLine,
       releaseManifest,
     });
+  } else {
+    // Unknown release line - try to use it as a dist-tag.
+    findTargetVersion = createVersionFinder({ releaseLine: opts.release });
   }
 
   // First we discover all Backstage dependencies within our own repo
@@ -246,7 +250,7 @@ export default async (opts: OptionValues) => {
     console.log();
 
     // Do not update backstage.json when upgrade patterns are used.
-    if (pattern === DEFAULT_PATTERN_GLOB) {
+    if (releaseManifest && pattern === DEFAULT_PATTERN_GLOB) {
       await bumpBackstageJsonVersion(releaseManifest.releaseVersion);
     } else {
       console.log(

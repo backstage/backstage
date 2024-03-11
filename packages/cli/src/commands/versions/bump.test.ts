@@ -147,6 +147,13 @@ describe('bump', () => {
       name: name,
       'dist-tags': {
         latest: REGISTRY_VERSIONS[name],
+        canary: `${REGISTRY_VERSIONS[name]}-canary.1`,
+      },
+      time: {
+        [REGISTRY_VERSIONS[name]]: new Date('2024-01-01T00:00:00Z'),
+        [`${REGISTRY_VERSIONS[name]}-canary.1`]: new Date(
+          '2024-01-02T00:00:00Z',
+        ),
       },
     }));
   });
@@ -790,6 +797,119 @@ describe('bump', () => {
         '@backstage-extra/custom-two': '^2.0.0',
         '@backstage/core': '^1.0.6',
         '@backstage/theme': '^2.0.0',
+      },
+    });
+  });
+
+  it('should bump to custom dist-tags', async () => {
+    const customLockfileMock = `${HEADER}
+"@backstage-extra/custom@^1.0.1":
+  version "1.0.1"
+
+"@backstage-extra/custom@^1.1.0-canary.0":
+  version "1.1.0-canary.0"
+
+"@backstage-extra/custom-two@^1.0.0":
+  version "1.0.0"
+`;
+    const customLockfileMockResult = `${HEADER}
+"@backstage-extra/custom-two@^1.0.0":
+  version "1.0.0"
+
+"@backstage-extra/custom@^1.0.1":
+  version "1.0.1"
+`;
+
+    mockDir.setContent({
+      'yarn.lock': customLockfileMock,
+      'package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      packages: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage-extra/custom': '^1.1.0-canary.0',
+            },
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            dependencies: {
+              '@backstage-extra/custom': '^1.0.1',
+              '@backstage-extra/custom-two': '^1.0.0',
+            },
+          }),
+        },
+      },
+    });
+
+    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    const { log: logs } = await withLogCollector(['log'], async () => {
+      await bump({
+        pattern: '@backstage-extra/*',
+        release: 'canary',
+      } as unknown as Command);
+    });
+    expectLogsToMatch(logs, [
+      'Using custom pattern glob @backstage-extra/*',
+      'Checking for updates of @backstage-extra/custom',
+      'Checking for updates of @backstage-extra/custom-two',
+      'Some packages are outdated, updating',
+      'bumping @backstage-extra/custom in a to ^1.1.0-canary.1',
+      'bumping @backstage-extra/custom in b to ^1.1.0-canary.1',
+      'bumping @backstage-extra/custom-two in b to ^2.0.0-canary.1',
+      'unlocking @backstage-extra/custom@^1.1.0-canary.0 ~> 1.1.0-canary.1',
+      'Running yarn install to install new versions',
+      'Skipping backstage.json update as custom pattern is used',
+      '⚠️  The following packages may have breaking changes:',
+      '  @backstage-extra/custom : 1.0.1 ~> 1.1.0-canary.1',
+      '  @backstage-extra/custom-two : 1.0.0 ~> 2.0.0-canary.1',
+      'Version bump complete!',
+    ]);
+
+    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(2);
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith(
+      '@backstage-extra/custom',
+    );
+    expect(mockFetchPackageInfo).toHaveBeenCalledWith(
+      '@backstage-extra/custom-two',
+    );
+
+    expect(runObj.run).toHaveBeenCalledTimes(1);
+    expect(runObj.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
+
+    const lockfileContents = await fs.readFile(
+      mockDir.resolve('yarn.lock'),
+      'utf8',
+    );
+    expect(lockfileContents).toBe(customLockfileMockResult);
+
+    const packageA = await fs.readJson(
+      mockDir.resolve('packages/a/package.json'),
+    );
+    expect(packageA).toEqual({
+      name: 'a',
+      dependencies: {
+        '@backstage-extra/custom': '^1.1.0-canary.1',
+      },
+    });
+    const packageB = await fs.readJson(
+      mockDir.resolve('packages/b/package.json'),
+    );
+    expect(packageB).toEqual({
+      name: 'b',
+      dependencies: {
+        '@backstage-extra/custom': '^1.1.0-canary.1',
+        '@backstage-extra/custom-two': '^2.0.0-canary.1',
       },
     });
   });
