@@ -6427,7 +6427,6 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@manypkg/get-packages": ^1.1.3
     "@types/express": "*"
-    "@types/minimist": ^1.2.0
     "@types/ping": ^0.4.1
     "@types/supertest": ^2.0.8
     "@types/yarnpkg__lockfile": ^1.1.4
@@ -6473,7 +6472,6 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": ^4.0.0-alpha.57
     "@testing-library/jest-dom": ^6.0.0
-    "@testing-library/react": ^14.0.0
     react-json-view: ^1.21.3
     react-use: ^17.2.4
   peerDependencies:
