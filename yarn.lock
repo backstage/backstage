@@ -7681,7 +7681,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-linguist-common": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -7726,9 +7725,7 @@ __metadata:
     "@backstage/plugin-linguist-common": "workspace:^"
     "@material-ui/core": ^4.9.13
     "@material-ui/lab": 4.0.0-alpha.61
-    "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
-    "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     luxon: ^3.0.0
     react-use: ^17.2.4
