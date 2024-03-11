@@ -461,10 +461,7 @@ export async function createRouter(
         defaultKind: 'template',
       });
 
-      // TODO(blam): This should be forced user auth eventually, but let's keep it as is for now,
-      // with the ability to do unauthenticated task creation.
       const credentials = await httpAuth.credentials(req);
-
       const { token } = await auth.getPluginRequestToken({
         onBehalfOf: credentials,
         targetPluginId: 'catalog',
