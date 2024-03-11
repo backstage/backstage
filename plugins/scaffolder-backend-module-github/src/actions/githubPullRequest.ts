@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-import path from 'path';
+import { CustomErrorBase, InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import {
+  SerializedFile,
   createTemplateAction,
   parseRepoUrl,
-  SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
+
+import { Logger } from 'winston';
 import { Octokit } from 'octokit';
-import { CustomErrorBase, InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-common';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { getOctokitOptions } from './helpers';
 import { examples } from './githubPullRequest.examples';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { getOctokitOptions } from './helpers';
+import path from 'path';
+import { resolveSafeChildPath } from '@backstage/backend-common';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -139,6 +140,7 @@ export const createPublishGithubPullRequestAction = (
   }>({
     id: 'publish:github:pull-request',
     examples,
+    supportsDryRun: true,
     schema: {
       input: {
         required: ['repoUrl', 'title', 'description', 'branchName'],
