@@ -32,11 +32,12 @@ type PaginatedCatalogTableProps = {
  * @internal
  */
 export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
-  const { columns, data, next, prev } = props;
+  const { columns, data, next, prev, title, isLoading } = props;
   const { updateFilters } = useEntityList();
 
   return (
     <Table
+      title={isLoading ? '' : title}
       columns={columns}
       data={data}
       options={{
