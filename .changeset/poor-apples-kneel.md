@@ -3,4 +3,4 @@
 '@backstage/plugin-devtools': patch
 ---
 
-Removed unused `dependencies` and `devDependencies` identified in Knip Report
+Removed unused `devDependencies` identified in Knip Report
