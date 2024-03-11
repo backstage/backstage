@@ -323,12 +323,8 @@ export async function createRouter(
   router.use('/static/docs', publisher.docsRouter());
 
   // Endpoint that sets the cookie for the user
-  router.get('/cookie', async (req, res) => {
-    const credentials = await httpAuth.credentials(req, {
-      allow: ['user'],
-      allowLimitedAccess: true,
-    });
-    const { expiresAt } = await httpAuth.issueUserCookie(res, { credentials });
+  router.get('/cookie', async (_, res) => {
+    const { expiresAt } = await httpAuth.issueUserCookie(res);
     res.json({ expiresAt: expiresAt.toISOString() });
   });
 
