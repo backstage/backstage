@@ -55,7 +55,7 @@ import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alp
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { WinstonLogger } from '@backstage/backend-app-api';
+import { WinstonLogger } from './logger';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -374,6 +374,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         await action.handler({
           input: iteration.input,
           secrets: task.secrets ?? {},
+          // TODO(blam): move to LoggerService and away from Winston
           logger: loggerToWinstonLogger(taskLogger),
           logStream: streamLogger,
           workspacePath,
