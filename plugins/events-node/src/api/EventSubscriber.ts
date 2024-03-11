@@ -22,10 +22,13 @@ import { EventParams } from './EventParams';
  * or other actions to react on events.
  *
  * @public
+ * @deprecated use the `EventsService` via the constructor, setter, or other means instead
  */
 export interface EventSubscriber {
   /**
    * Supported event topics like "github", "bitbucketCloud", etc.
+   *
+   * @deprecated use the `EventsService` via the constructor, setter, or other means instead
    */
   supportsEventTopics(): string[];
 
@@ -33,6 +36,7 @@ export interface EventSubscriber {
    * React on a received event.
    *
    * @param params - parameters for the to be received event.
+   * @deprecated you are not required to expose this anymore when using `EventsService`
    */
   onEvent(params: EventParams): Promise<void>;
 }

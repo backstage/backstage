@@ -40,11 +40,16 @@ export class Generators implements GeneratorBuilder {
    */
   static async fromConfig(
     config: Config,
-    options: { logger: Logger; containerRunner: ContainerRunner },
+    options: {
+      logger: Logger;
+      containerRunner: ContainerRunner;
+      customGenerator?: TechdocsGenerator;
+    },
   ): Promise<GeneratorBuilder> {
     const generators = new Generators();
 
-    const techdocsGenerator = TechdocsGenerator.fromConfig(config, options);
+    const techdocsGenerator =
+      options.customGenerator ?? TechdocsGenerator.fromConfig(config, options);
     generators.register('techdocs', techdocsGenerator);
 
     return generators;

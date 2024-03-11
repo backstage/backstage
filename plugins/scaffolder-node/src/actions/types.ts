@@ -16,11 +16,12 @@
 
 import { Logger } from 'winston';
 import { Writable } from 'stream';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Schema } from 'jsonschema';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**
  * ActionContext is passed into scaffolder actions.
@@ -35,6 +36,10 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
+  checkpoint<U extends JsonValue>(
+    key: string,
+    fn: () => Promise<U>,
+  ): Promise<U>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
@@ -44,6 +49,11 @@ export type ActionContext<
    * Creates a temporary directory for use by the action, which is then cleaned up automatically.
    */
   createTemporaryDirectory(): Promise<string>;
+
+  /**
+   * Get the credentials for the current request
+   */
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
 
   templateInfo?: TemplateInfo;
 

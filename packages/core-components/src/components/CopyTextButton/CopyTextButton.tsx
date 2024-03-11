@@ -20,6 +20,8 @@ import Tooltip from '@material-ui/core/Tooltip';
 import CopyIcon from '@material-ui/icons/FileCopy';
 import React, { MouseEventHandler, useEffect, useState } from 'react';
 import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * Properties for {@link CopyTextButton}
@@ -78,10 +80,11 @@ export interface CopyTextButtonProps {
  * ```
  */
 export function CopyTextButton(props: CopyTextButtonProps) {
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
   const {
     text,
     tooltipDelay = 1000,
-    tooltipText = 'Text copied to clipboard',
+    tooltipText = t('copyTextButton.tooltipText'),
     'aria-label': ariaLabel = 'Copy text',
   } = props;
   const errorApi = useApi(errorApiRef);

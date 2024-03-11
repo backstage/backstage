@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, Observable } from '@backstage/types';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
 
 /**
  * TaskSecrets
@@ -118,7 +119,30 @@ export interface TaskContext {
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
+  getTaskState?(): Promise<
+    | {
+        state?: JsonObject;
+      }
+    | undefined
+  >;
+
+  updateCheckpoint?(
+    options:
+      | {
+          key: string;
+          status: 'success';
+          value: JsonValue;
+        }
+      | {
+          key: string;
+          status: 'failed';
+          reason: string;
+        },
+  ): Promise<void>;
+
   getWorkspaceName(): Promise<string>;
+
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
 }
 
 /**

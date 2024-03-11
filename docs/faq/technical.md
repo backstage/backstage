@@ -47,7 +47,7 @@ gets a consistent UX, no matter what tool or service is being accessed on the
 other side.
 
 Each plugin is treated as a self-contained web app and can include almost any
-type of content. Plugins all use a common set of platform APIs and reusable UI
+type of content. Plugins all use a common set of framework APIs and reusable UI
 components. Plugins can fetch data either from the backend or an API exposed
 through the proxy.
 
@@ -179,7 +179,7 @@ No. Backstage does not collect any telemetry from any third party using the
 platform. Spotify, and the open source community, do have access to
 [GitHub Insights](https://github.com/features/insights), which contains
 information such as contributors, commits, traffic, and dependencies. Backstage
-is an open platform, but you are in control of your own data. You control who
+is an open source framework, but you are in control of your own data. You control who
 has access to any data you provide to your version of Backstage and who that
 data is shared with.
 

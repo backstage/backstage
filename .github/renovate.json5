@@ -54,5 +54,17 @@
       matchPackageNames: ['inquirer', '@types/inquirer'],
       allowedVersions: '<9.0.0',
     },
+    {
+      matchPackageNames: ['ora'],
+      allowedVersions: '<5.0.0',
+    },
+    {
+      matchPackageNames: ['p-limit'],
+      allowedVersions: '<4.0.0',
+    },
+    {
+      matchPackageNames: ['p-queue'],
+      allowedVersions: '<7.0.0',
+    },
   ],
 }

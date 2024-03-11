@@ -102,6 +102,7 @@ export const techInsightsPlugin = createBackendPlugin({
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         tokenManager: coreServices.tokenManager,
+        auth: coreServices.auth,
       },
       async init({
         config,
@@ -111,6 +112,7 @@ export const techInsightsPlugin = createBackendPlugin({
         logger,
         scheduler,
         tokenManager,
+        auth,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const factRetrievers: FactRetrieverRegistration[] = Object.entries(
@@ -136,6 +138,7 @@ export const techInsightsPlugin = createBackendPlugin({
           persistenceContext,
           scheduler,
           tokenManager,
+          auth,
         });
 
         httpRouter.use(

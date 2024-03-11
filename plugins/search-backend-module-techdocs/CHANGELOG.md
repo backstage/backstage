@@ -1,5 +1,42 @@
 # @backstage/plugin-search-backend-module-techdocs
 
+## 0.1.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/backend-tasks@0.5.19-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-search-backend-node@1.2.18-next.1
+  - @backstage/plugin-techdocs-node@1.11.6-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 0.1.17-next.0
+
+### Patch Changes
+
+- bb368a5: Migrated to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-techdocs-node@1.11.5-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/plugin-search-common@1.2.11-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/plugin-search-backend-node@1.2.17-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+
 ## 0.1.14
 
 ### Patch Changes

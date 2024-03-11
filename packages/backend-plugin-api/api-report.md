@@ -5,6 +5,8 @@
 ```ts
 /// <reference types="node" />
 
+import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
+import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -13,6 +15,8 @@ import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
+import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
@@ -20,7 +24,21 @@ import { Response as Response_2 } from 'express';
 // @public (undocumented)
 export interface AuthService {
   // (undocumented)
-  authenticate(token: string): Promise<BackstageCredentials>;
+  authenticate(
+    token: string,
+    options?: {
+      allowLimitedAccess?: boolean;
+    },
+  ): Promise<BackstageCredentials>;
+  // (undocumented)
+  getLimitedUserToken(
+    credentials: BackstageCredentials<BackstageUserPrincipal>,
+  ): Promise<{
+    token: string;
+    expiresAt: Date;
+  }>;
+  // (undocumented)
+  getNoneCredentials(): Promise<BackstageCredentials<BackstageNonePrincipal>>;
   // (undocumented)
   getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
@@ -103,6 +121,7 @@ export interface BackendPluginRegistrationPoints {
 // @public (undocumented)
 export type BackstageCredentials<TPrincipal = unknown> = {
   $$type: '@backstage/BackstageCredentials';
+  expiresAt?: Date;
   principal: TPrincipal;
 };
 
@@ -295,11 +314,18 @@ export interface HttpAuthService {
     req: Request_2<any, any, any, any, any>,
     options?: {
       allow?: Array<TAllowed>;
-      allowedAuthMethods?: Array<'token' | 'cookie'>;
+      allowLimitedAccess?: boolean;
     },
   ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>>;
   // (undocumented)
-  issueUserCookie(res: Response_2): Promise<void>;
+  issueUserCookie(
+    res: Response_2,
+    options?: {
+      credentials?: BackstageCredentials<BackstageUserPrincipal>;
+    },
+  ): Promise<{
+    expiresAt: Date;
+  }>;
 }
 
 // @public (undocumented)
@@ -364,7 +390,27 @@ export interface LoggerService {
 }
 
 // @public (undocumented)
-export interface PermissionsService extends PermissionEvaluator {}
+export interface PermissionsService extends PermissionEvaluator {
+  // (undocumented)
+  authorize(
+    requests: AuthorizePermissionRequest[],
+    options?: PermissionsServiceRequestOptions,
+  ): Promise<AuthorizePermissionResponse[]>;
+  // (undocumented)
+  authorizeConditional(
+    requests: QueryPermissionRequest[],
+    options?: PermissionsServiceRequestOptions,
+  ): Promise<QueryPermissionResponse[]>;
+}
+
+// @public
+export type PermissionsServiceRequestOptions =
+  | {
+      token?: string;
+    }
+  | {
+      credentials: BackstageCredentials;
+    };
 
 // @public (undocumented)
 export interface PluginMetadataService {

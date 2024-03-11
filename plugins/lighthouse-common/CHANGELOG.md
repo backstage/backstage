@@ -1,5 +1,19 @@
 # @backstage/plugin-lighthouse-common
 
+## 0.1.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.1.2-next.0
+
 ## 0.1.4
 
 ### Patch Changes

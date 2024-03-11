@@ -1,5 +1,34 @@
 # @backstage/plugin-techdocs-node
 
+## 1.11.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/integration-aws-node@0.1.10-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 1.11.5-next.0
+
+### Patch Changes
+
+- 5b4f565: Fix handling of default plugins that have configuration
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-search-common@1.2.11-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/integration-aws-node@0.1.10-next.0
+
 ## 1.11.2
 
 ### Patch Changes

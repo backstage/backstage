@@ -39,6 +39,11 @@ import {
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
+/**
+ * Helper for generating octokit configuration options for given repoUrl.
+ * If no token is provided, it will attempt to get a token from the credentials provider.
+ * @public
+ */
 export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;

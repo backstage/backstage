@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (28)
+## Unused dependencies (27)
 
 | Name                             | Location     | Severity |
 | :------------------------------- | :----------- | :------- |

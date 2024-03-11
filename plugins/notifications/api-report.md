@@ -12,16 +12,25 @@ import { FetchApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
-import { NotificationType } from '@backstage/plugin-notifications-common';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { TableProps } from '@backstage/core-components';
 
 // @public (undocumented)
 export type GetNotificationsOptions = {
-  type?: NotificationType;
   offset?: number;
   limit?: number;
   search?: string;
+  read?: boolean;
+  createdAfter?: Date;
+  sort?: 'created' | 'topic' | 'origin';
+  sortOrder?: 'asc' | 'desc';
+};
+
+// @public (undocumented)
+export type GetNotificationsResponse = {
+  notifications: Notification_2[];
+  totalCount: number;
 };
 
 // @public (undocumented)
@@ -31,7 +40,7 @@ export interface NotificationsApi {
   // (undocumented)
   getNotifications(
     options?: GetNotificationsOptions,
-  ): Promise<Notification_2[]>;
+  ): Promise<GetNotificationsResponse>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
@@ -51,7 +60,7 @@ export class NotificationsClient implements NotificationsApi {
   // (undocumented)
   getNotifications(
     options?: GetNotificationsOptions,
-  ): Promise<Notification_2[]>;
+  ): Promise<GetNotificationsResponse>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
@@ -78,16 +87,33 @@ export const NotificationsSidebarItem: (props?: {
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const NotificationsTable: (props: {
-  onUpdate: () => void;
-  type: NotificationType;
+export const NotificationsTable: ({
+  isLoading,
+  notifications,
+  onUpdate,
+  setContainsText,
+  onPageChange,
+  onRowsPerPageChange,
+  page,
+  pageSize,
+  totalCount,
+}: NotificationsTableProps) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type NotificationsTableProps = Pick<
+  TableProps,
+  'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
+> & {
+  isLoading?: boolean;
   notifications?: Notification_2[];
-}) => React_2.JSX.Element;
+  onUpdate: () => void;
+  setContainsText: (search: string) => void;
+  pageSize: number;
+};
 
 // @public (undocumented)
 export type UpdateNotificationsOptions = {
   ids: string[];
-  done?: boolean;
   read?: boolean;
   saved?: boolean;
 };

@@ -36,6 +36,18 @@ describe('mockCredentials', () => {
     });
   });
 
+  it('creates a mocked credentials object for a limited user principal', () => {
+    expect(mockCredentials.limitedUser()).toEqual({
+      $$type: '@backstage/BackstageCredentials',
+      principal: { type: 'user', userEntityRef: 'user:default/mock' },
+    });
+
+    expect(mockCredentials.limitedUser('user:default/other')).toEqual({
+      $$type: '@backstage/BackstageCredentials',
+      principal: { type: 'user', userEntityRef: 'user:default/other' },
+    });
+  });
+
   it('creates a mocked credentials object for a service principal', () => {
     expect(mockCredentials.service()).toEqual({
       $$type: '@backstage/BackstageCredentials',
@@ -65,6 +77,22 @@ describe('mockCredentials', () => {
     );
     expect(mockCredentials.user.invalidHeader()).toBe(
       'Bearer mock-invalid-user-token',
+    );
+  });
+
+  it('creates limited user tokens and headers', () => {
+    expect(mockCredentials.limitedUser.token('user:default/other')).toBe(
+      'mock-limited-user-token:{"sub":"user:default/other"}',
+    );
+    expect(mockCredentials.limitedUser.invalidToken()).toBe(
+      'mock-invalid-limited-user-token',
+    );
+
+    expect(mockCredentials.limitedUser.cookie('user:default/other')).toBe(
+      'backstage-auth=mock-limited-user-token:{"sub":"user:default/other"}',
+    );
+    expect(mockCredentials.limitedUser.invalidCookie()).toBe(
+      'backstage-auth=mock-invalid-limited-user-token',
     );
   });
 

@@ -95,7 +95,7 @@ export async function fetchFile(options: {
     const res = await reader.readUrl(readUrl, { token });
     await fs.ensureDir(path.dirname(outputPath));
     const buffer = await res.buffer();
-    await fs.outputFile(outputPath, buffer.toString());
+    await fs.outputFile(outputPath, buffer);
   }
 }
 

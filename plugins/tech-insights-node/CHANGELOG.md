@@ -1,5 +1,31 @@
 # @backstage/plugin-tech-insights-node
 
+## 0.5.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.5.0-next.0
+
+### Minor Changes
+
+- d621468: **BREAKING**: The `FactRetrieverContext` type now contains an additional `auth` field.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.4.16
 
 ### Patch Changes

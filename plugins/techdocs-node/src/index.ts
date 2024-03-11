@@ -25,5 +25,7 @@ export * from './helpers';
 export * from './techdocsTypes';
 export {
   techdocsBuildsExtensionPoint,
+  techdocsGeneratorExtensionPoint,
   type TechdocsBuildsExtensionPoint,
+  type TechdocsGeneratorExtensionPoint,
 } from './extensions';

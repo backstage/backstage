@@ -5,6 +5,10 @@ on:
   repository_dispatch:
     types: [release-published]
 
+env:
+  RELEASE_VERSION: v${{ github.event.client_payload.version }}
+  TAG_VERSION: ghcr.io/${{ github.repository_owner }}/backstage:${{ github.event.client_payload.version }}
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -24,7 +28,7 @@ jobs:
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           path: backstage
-          ref: v${{ github.event.client_payload.version }}
+          ref: ${{ github.event.client_payload.version && env.RELEASE_VERSION || github.ref }}
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
@@ -61,10 +65,10 @@ jobs:
         with:
           context: './example-app'
           file: ./example-app/packages/backend/Dockerfile
-          push: ${{ (github.event_name == "repository_dispatch") && (github.event.action == "release-published") }}
+          push: ${{ (github.event_name == 'repository_dispatch') && (github.event.action == 'release-published') }}
           platforms: linux/amd64,linux/arm64
           tags: |
             ghcr.io/${{ github.repository_owner }}/backstage:latest
-            ghcr.io/${{ github.repository_owner }}/backstage:${{ github.event.client_payload.version }}
+            ${{ github.event.client_payload.version && env.TAG_VERSION || '' }}
           labels: |
             org.opencontainers.image.description=Docker image generated from the latest Backstage release; this contains what you would get out of the box by running npx @backstage/create-app and building a Docker image from the generated source. This is meant to ease the process of evaluating Backstage for the first time, but also has the severe limitation that there is no way to install additional plugins relevant to your infrastructure.

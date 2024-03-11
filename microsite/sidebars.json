@@ -42,22 +42,28 @@
     ],
     "Getting Started": [
       "getting-started/index",
-      "getting-started/configuration",
-      "getting-started/create-an-app",
       {
         "type": "category",
-        "label": "App configuration",
+        "label": "Configuring Backstage",
         "items": [
+          "getting-started/config/database",
+          "getting-started/config/authentication",
           "getting-started/configure-app-with-plugins",
           "getting-started/app-custom-theme",
           "getting-started/homepage"
         ]
       },
+      {
+        "type": "category",
+        "label": "Using Backstage",
+        "items": [
+          "getting-started/logging-in",
+          "getting-started/register-a-component",
+          "getting-started/create-a-component"
+        ]
+      },
       "getting-started/keeping-backstage-updated",
-      "getting-started/concepts",
-      "getting-started/contributors",
-      "getting-started/getting-involved",
-      "getting-started/project-structure"
+      "getting-started/concepts"
     ],
     "Local Development": [
       {
@@ -101,6 +107,7 @@
           "features/kubernetes/installation",
           "features/kubernetes/configuration",
           "features/kubernetes/authentication",
+          "features/kubernetes/authentication-strategies",
           "features/kubernetes/troubleshooting",
           "features/kubernetes/proxy"
         ]
@@ -116,6 +123,7 @@
           "features/software-templates/input-examples",
           "features/software-templates/builtin-actions",
           "features/software-templates/writing-custom-actions",
+          "features/software-templates/writing-tests-for-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
           "features/software-templates/authorizing-parameters-steps-and-actions",
@@ -307,6 +315,7 @@
           "auth/gitlab/provider",
           "auth/google/provider",
           "auth/google/gcp-iap-auth",
+          "auth/guest/provider",
           "auth/okta/provider",
           "auth/oauth2-proxy/provider",
           "auth/onelogin/provider",
@@ -445,7 +454,9 @@
         "label": "Building Apps",
         "items": [
           "frontend-system/building-apps/index",
-          "frontend-system/building-apps/built-in-extensions"
+          "frontend-system/building-apps/configuring-extensions",
+          "frontend-system/building-apps/built-in-extensions",
+          "frontend-system/building-apps/migrating"
         ]
       },
       {
@@ -511,6 +522,11 @@
     ],
     "FAQ": ["faq/index", "faq/product", "faq/technical"],
     "Accessibility": ["accessibility/index"],
+    "Contribute": [
+      "contribute/index",
+      "contribute/getting-involved",
+      "contribute/project-structure"
+    ],
     "References": ["references/glossary"]
   }
 }

@@ -73,7 +73,7 @@ const Community = () => {
     },
     {
       name: 'RedHat',
-      url: 'https://www.redhat.com/',
+      url: 'https://developers.redhat.com/rhdh',
       logo: 'img/partner-logo-redhat.png',
     },
     {
@@ -83,12 +83,12 @@ const Community = () => {
     },
     {
       name: 'ThoughtWorks',
-      url: 'https://www.thoughtworks.com',
+      url: 'https://www.thoughtworks.com/about-us/partnerships/technology/backstage-by-spotify',
       logo: 'img/partner-logo-thoughtworks.png',
     },
     {
       name: 'VMWare',
-      url: 'https://tanzu.vmware.com/',
+      url: 'https://tanzu.vmware.com/developer-portal',
       logo: 'img/partner-logo-tanzubybroadcom.png',
     },
   ];

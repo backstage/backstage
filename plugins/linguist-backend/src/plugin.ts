@@ -32,6 +32,8 @@ export const linguistPlugin = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         reader: coreServices.urlReader,
@@ -42,6 +44,8 @@ export const linguistPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
       },
       async init({
+        auth,
+        httpAuth,
         logger,
         config,
         reader,
@@ -53,6 +57,8 @@ export const linguistPlugin = createBackendPlugin({
       }) {
         httpRouter.use(
           await createRouterFromConfig({
+            auth,
+            httpAuth,
             logger: loggerToWinstonLogger(logger),
             config,
             reader,

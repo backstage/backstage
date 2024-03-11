@@ -20,48 +20,20 @@ import {
   Header,
   InfoCard,
   Page,
-  Progress,
   SupportButton,
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
+import { configApiRef, useApi, useApp } from '@backstage/core-plugin-api';
 import { Grid, Typography } from '@material-ui/core';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import useAsync from 'react-use/lib/useAsync';
-import { codesceneApiRef } from '../../api/api';
-import { Analysis } from '../../api/types';
 import { CodeHealthKpisCard } from '../CodeHealthKpisCard/CodeHealthKpisCard';
+import { useAnalyses } from '../../hooks/useAnalyses';
+import { Analysis } from '../../api/types';
 
-export const CodeSceneProjectDetailsPage = () => {
-  const params = useParams();
-  const projectId = Number(params.projectId);
-  const codesceneApi = useApi(codesceneApiRef);
-  const config = useApi(configApiRef);
-  const {
-    value: analysis,
-    loading,
-    error,
-  } = useAsync(async (): Promise<Analysis> => {
-    return await codesceneApi.fetchLatestAnalysis(projectId);
-  }, []);
-
-  if (loading) {
-    return <Progress />;
-  } else if (error) {
-    return <Alert severity="error">{error.message}</Alert>;
-  } else if (!analysis) {
-    return (
-      <EmptyState
-        missing="content"
-        title="CodeScene analysis"
-        description={`No analysis found for project with id ${params.projectId}`}
-      />
-    );
-  }
-
+export const CodeSceneFileSummary = (props: Analysis) => {
   const columns: TableColumn[] = [
     {
       title: 'Language',
@@ -85,14 +57,36 @@ export const CodeSceneProjectDetailsPage = () => {
     },
   ];
 
-  const fileSummaryTable = (
+  return (
     <Table
       options={{ paging: false, padding: 'dense' }}
-      data={analysis.file_summary.sort((a, b) => b.code - a.code)}
+      data={props.file_summary.sort((a, b) => b.code - a.code)}
       columns={columns}
       title="File Summary"
     />
   );
+};
+
+export const CodeSceneProjectDetailsPage = () => {
+  const params = useParams();
+  const projectId = Number(params.projectId);
+  const config = useApi(configApiRef);
+  const { analysis, loading, error } = useAnalyses(projectId);
+  const { Progress } = useApp().getComponents();
+
+  if (loading) {
+    return <Progress />;
+  } else if (error) {
+    return <Alert severity="error">{error.message}</Alert>;
+  } else if (!analysis) {
+    return (
+      <EmptyState
+        missing="content"
+        title="CodeScene analysis"
+        description={`No analysis found for project with id ${params.projectId}`}
+      />
+    );
+  }
 
   const codesceneHost = config.getString('codescene.baseUrl');
   const analysisPath = `${codesceneHost}/${projectId}/analyses/${analysis.id}`;
@@ -150,7 +144,9 @@ export const CodeSceneProjectDetailsPage = () => {
           </Grid>
         </Grid>
         <Grid container spacing={2} direction="column">
-          <Grid item>{fileSummaryTable}</Grid>
+          <Grid item>
+            <CodeSceneFileSummary {...analysis} />
+          </Grid>
         </Grid>
       </Content>
     </Page>

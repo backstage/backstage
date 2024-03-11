@@ -13,22 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventBroker } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { SignalPayload, SignalServiceOptions } from './types';
 import { SignalService } from './SignalService';
 import { JsonObject } from '@backstage/types';
 
 /** @public */
 export class DefaultSignalService implements SignalService {
-  // TODO: Remove this to be optional when events-backend has eventBroker as service
-  private eventBroker?: EventBroker;
+  private events: EventsService;
 
   static create(options: SignalServiceOptions) {
     return new DefaultSignalService(options);
   }
 
   private constructor(options: SignalServiceOptions) {
-    ({ eventBroker: this.eventBroker } = options);
+    ({ events: this.events } = options);
   }
 
   /**
@@ -38,7 +37,7 @@ export class DefaultSignalService implements SignalService {
   async publish<TMessage extends JsonObject = JsonObject>(
     signal: SignalPayload<TMessage>,
   ) {
-    await this.eventBroker?.publish({
+    await this.events.publish({
       topic: 'signals',
       eventPayload: signal,
     });

@@ -23,6 +23,8 @@ import React from 'react';
 import { CodeSnippet } from '../CodeSnippet';
 import { Link } from '../Link';
 import { EmptyState } from './EmptyState';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { coreComponentsTranslationRef } from '../../translation';
 
 const COMPONENT_YAML_TEMPLATE = `apiVersion: backstage.io/v1alpha1
 kind: Component
@@ -76,7 +78,7 @@ function generateComponentYaml(annotations: string[]) {
   return COMPONENT_YAML_TEMPLATE.replace(ANNOTATION_YAML, annotationYaml);
 }
 
-function generateDescription(annotations: string[]) {
+function useGenerateDescription(annotations: string[]) {
   const isSingular = annotations.length <= 1;
   return (
     <>
@@ -106,17 +108,17 @@ export function MissingAnnotationEmptyState(props: Props) {
     readMoreUrl ||
     'https://backstage.io/docs/features/software-catalog/well-known-annotations';
   const classes = useStyles();
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   return (
     <EmptyState
       missing="field"
-      title="Missing Annotation"
-      description={generateDescription(annotations)}
+      title={t('emptyState.missingAnnotation.title')}
+      description={useGenerateDescription(annotations)}
       action={
         <>
           <Typography variant="body1">
-            Add the annotation to your component YAML as shown in the
-            highlighted example below:
+            {t('emptyState.missingAnnotation.actionTitle')}
           </Typography>
           <Box className={classes.code}>
             <CodeSnippet
@@ -128,7 +130,7 @@ export function MissingAnnotationEmptyState(props: Props) {
             />
           </Box>
           <Button color="primary" component={Link} to={url}>
-            Read more
+            {t('emptyState.missingAnnotation.readMore')}
           </Button>
         </>
       }

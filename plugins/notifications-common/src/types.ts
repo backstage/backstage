@@ -15,19 +15,16 @@
  */
 
 /** @public */
-export type NotificationType = 'undone' | 'done' | 'saved';
-
-/** @public */
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
 /** @public */
 export type NotificationPayload = {
   title: string;
   description?: string;
-  link: string;
+  link?: string;
   // TODO: Add support for additional links
   // additionalLinks?: string[];
-  severity: NotificationSeverity;
+  severity?: NotificationSeverity;
   topic?: string;
   scope?: string;
   icon?: string;
@@ -40,7 +37,6 @@ export type Notification = {
   created: Date;
   saved?: Date;
   read?: Date;
-  done?: Date;
   updated?: Date;
   origin: string;
   payload: NotificationPayload;

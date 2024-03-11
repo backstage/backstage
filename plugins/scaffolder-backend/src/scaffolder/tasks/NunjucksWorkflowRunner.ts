@@ -21,7 +21,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import nunjucks from 'nunjucks';
 import { JsonArray, JsonObject, JsonValue } from '@backstage/types';
-import { InputError, NotAllowedError } from '@backstage/errors';
+import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { generateExampleOutput, isTruthy } from './helper';
 import { validate as validateJsonSchema } from 'jsonschema';
@@ -48,12 +48,12 @@ import { createCounterMetric, createHistogramMetric } from '../../util/metrics';
 import { createDefaultFilters } from '../../lib/templating/filters';
 import {
   AuthorizeResult,
-  PermissionEvaluator,
   PolicyDecision,
 } from '@backstage/plugin-permission-common';
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -62,7 +62,7 @@ type NunjucksWorkflowRunnerOptions = {
   logger: winston.Logger;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
-  permissions?: PermissionEvaluator;
+  permissions?: PermissionsService;
 };
 
 type TemplateContext = {
@@ -78,6 +78,16 @@ type TemplateContext = {
   };
   each?: JsonValue;
 };
+
+type CheckpointState =
+  | {
+      status: 'failed';
+      reason: string;
+    }
+  | {
+      status: 'success';
+      value: JsonValue;
+    };
 
 const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
   return taskSpec.apiVersion === 'scaffolder.backstage.io/v1beta3';
@@ -330,6 +340,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
+      const prevTaskState = await task.getTaskState?.();
 
       for (const iteration of iterations) {
         if (iteration.each) {
@@ -347,6 +358,43 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           logger: taskLogger,
           logStream: streamLogger,
           workspacePath,
+          async checkpoint<U extends JsonValue>(
+            keySuffix: string,
+            fn: () => Promise<U>,
+          ) {
+            const key = `v1.task.checkpoint.${keySuffix}`;
+            try {
+              let prevValue: U | undefined;
+              if (prevTaskState) {
+                const prevState = (
+                  prevTaskState.state?.checkpoints as {
+                    [key: string]: CheckpointState;
+                  }
+                )?.[key];
+                if (prevState && prevState.status === 'success') {
+                  prevValue = prevState.value as U;
+                }
+              }
+
+              const value = prevValue ? prevValue : await fn();
+
+              if (!prevValue) {
+                task.updateCheckpoint?.({
+                  key,
+                  status: 'success',
+                  value,
+                });
+              }
+              return value;
+            } catch (err) {
+              task.updateCheckpoint?.({
+                key,
+                status: 'failed',
+                reason: stringifyError(err),
+              });
+              throw err;
+            }
+          },
           createTemporaryDirectory: async () => {
             const tmpDir = await fs.mkdtemp(
               `${workspacePath}_step-${step.id}-`,
@@ -366,6 +414,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           user: task.spec.user,
           isDryRun: task.isDryRun,
           signal: task.cancelSignal,
+          getInitiatorCredentials: task.getInitiatorCredentials,
         });
       }
 
@@ -424,7 +473,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         this.options.permissions && task.spec.steps.length
           ? await this.options.permissions.authorizeConditional(
               [{ permission: actionExecutePermission }],
-              { token: task.secrets?.backstageToken },
+              { credentials: await task.getInitiatorCredentials() },
             )
           : [{ result: AuthorizeResult.ALLOW }];
 

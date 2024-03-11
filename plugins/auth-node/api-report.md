@@ -223,7 +223,7 @@ export class DefaultIdentityClient implements IdentityApi {
 // @public (undocumented)
 export function encodeOAuthState(state: OAuthState): string;
 
-// @public
+// @public @deprecated
 export function getBearerTokenFromAuthorizationHeader(
   authorizationHeader: unknown,
 ): string | undefined;

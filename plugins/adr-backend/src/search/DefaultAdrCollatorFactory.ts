@@ -22,6 +22,7 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
   UrlReader,
+  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import {
   CatalogApi,
@@ -46,6 +47,7 @@ import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 
 import { createMadrParser } from './createMadrParser';
 import { AdrParser } from './types';
+import { AuthService } from '@backstage/backend-plugin-api';
 
 /**
  * Options to configure the AdrCollatorFactory
@@ -89,6 +91,10 @@ export type AdrCollatorFactoryOptions = {
    * Token Manager
    */
   tokenManager: TokenManager;
+  /**
+   * Auth Service
+   */
+  auth?: AuthService;
 };
 
 /**
@@ -103,8 +109,8 @@ export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {
   private readonly logger: Logger;
   private readonly parser: AdrParser;
   private readonly reader: UrlReader;
+  private readonly auth: AuthService;
   private readonly scmIntegrations: ScmIntegrationRegistry;
-  private readonly tokenManager: TokenManager;
 
   private constructor(options: AdrCollatorFactoryOptions) {
     this.adrFilePathFilterFn =
@@ -117,7 +123,8 @@ export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {
     this.parser = options.parser ?? createMadrParser();
     this.reader = options.reader;
     this.scmIntegrations = ScmIntegrations.fromConfig(options.config);
-    this.tokenManager = options.tokenManager;
+
+    this.auth = createLegacyAuthAdapters(options).auth;
   }
 
   static fromConfig(options: AdrCollatorFactoryOptions) {
@@ -129,7 +136,11 @@ export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {
   }
 
   async *execute(): AsyncGenerator<AdrDocument> {
-    const { token } = await this.tokenManager.getToken();
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
+
     const entities = (
       await this.catalogClient.getEntities(
         {

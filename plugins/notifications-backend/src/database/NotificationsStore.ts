@@ -17,19 +17,21 @@
 import {
   Notification,
   NotificationStatus,
-  NotificationType,
 } from '@backstage/plugin-notifications-common';
 
+// TODO: reuse the common part of the type with front-end
 /** @internal */
 export type NotificationGetOptions = {
   user: string;
   ids?: string[];
-  type?: NotificationType;
   offset?: number;
   limit?: number;
   search?: string;
-  sort?: 'created' | 'read' | 'updated' | null;
+  sort?: 'created' | 'topic' | 'origin' | null;
   sortOrder?: 'asc' | 'desc';
+  read?: boolean;
+  saved?: boolean;
+  createdAfter?: Date;
 };
 
 /** @internal */
@@ -40,6 +42,7 @@ export type NotificationModifyOptions = {
 /** @internal */
 export interface NotificationsStore {
   getNotifications(options: NotificationGetOptions): Promise<Notification[]>;
+  getNotificationsCount(options: NotificationGetOptions): Promise<number>;
 
   saveNotification(notification: Notification): Promise<void>;
 
@@ -61,10 +64,6 @@ export interface NotificationsStore {
   markRead(options: NotificationModifyOptions): Promise<void>;
 
   markUnread(options: NotificationModifyOptions): Promise<void>;
-
-  markDone(options: NotificationModifyOptions): Promise<void>;
-
-  markUndone(options: NotificationModifyOptions): Promise<void>;
 
   markSaved(options: NotificationModifyOptions): Promise<void>;
 

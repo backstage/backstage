@@ -132,7 +132,7 @@ in the catalog.
 
 ![screenshot of tools](https://backstage.io/assets/images/tabs-abfdf72185d3ceb1d92c4237f7f78809.png)
 
-The Backstage platform can be customized by incorporating
+Your Backstage developer portal can be customized by incorporating
 [existing open source plugins](https://github.com/backstage/backstage/tree/master/plugins),
 or by [building your own](../../plugins/index.md).
 

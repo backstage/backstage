@@ -233,9 +233,13 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
+  filters?: ReactNode;
+  // (undocumented)
   initialKind?: string;
   // (undocumented)
   initiallySelectedFilter?: UserListFilterKind;
+  // (undocumented)
+  initiallySelectedNamespaces?: string[];
   // (undocumented)
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   // (undocumented)

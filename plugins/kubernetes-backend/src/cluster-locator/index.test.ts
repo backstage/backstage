@@ -21,6 +21,7 @@ import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernete
 import { getCombinedClusterSupplier } from './index';
 import { ClusterDetails } from '../types/types';
 import { AuthenticationStrategy, DispatchStrategy } from '../auth';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 describe('getCombinedClusterSupplier', () => {
   let catalogApi: CatalogApi;
@@ -57,13 +58,18 @@ describe('getCombinedClusterSupplier', () => {
       presentAuthMetadata: jest.fn(),
     };
 
+    const auth = mockServices.auth();
+    const credentials = mockCredentials.user();
+
     const clusterSupplier = getCombinedClusterSupplier(
       config,
       catalogApi,
       mockStrategy,
       getVoidLogger(),
+      undefined,
+      auth,
     );
-    const result = await clusterSupplier.getClusters();
+    const result = await clusterSupplier.getClusters({ credentials });
 
     expect(result).toStrictEqual<ClusterDetails[]>([
       {
@@ -96,12 +102,16 @@ describe('getCombinedClusterSupplier', () => {
       'ctx',
     );
 
+    const auth = mockServices.auth();
+
     expect(() =>
       getCombinedClusterSupplier(
         config,
         catalogApi,
         new DispatchStrategy({ authStrategyMap: {} }),
         getVoidLogger(),
+        undefined,
+        auth,
       ),
     ).toThrow(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
@@ -151,13 +161,19 @@ describe('getCombinedClusterSupplier', () => {
       validateEntity: jest.fn(),
     };
 
+    const auth = mockServices.auth();
+    const credentials = mockCredentials.user();
+
     const clusterSupplier = getCombinedClusterSupplier(
       config,
       catalogApi,
       mockStrategy,
       logger,
+      undefined,
+      auth,
     );
-    await clusterSupplier.getClusters();
+
+    await clusterSupplier.getClusters({ credentials });
 
     expect(warn).toHaveBeenCalledWith(`Duplicate cluster name 'cluster'`);
   });

@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.14.0",
+  "version": "0.14.1-next.1",
   "publishConfig": {
     "access": "public"
   },
@@ -22,11 +22,15 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
     "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
       "testUtils": [
         "src/testUtils.ts"
       ],

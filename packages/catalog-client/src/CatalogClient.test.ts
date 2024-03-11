@@ -761,7 +761,7 @@ describe('CatalogClient', () => {
           },
           'url:http://example.com',
         ),
-      ).rejects.toThrow(/Request failed with 500 Error/);
+      ).rejects.toThrow(/Request failed with 500 Internal Server Error/);
     });
   });
 });
