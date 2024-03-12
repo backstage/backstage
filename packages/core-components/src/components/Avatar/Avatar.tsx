@@ -29,6 +29,8 @@ const useStyles = makeStyles(
       width: '4rem',
       height: '4rem',
       color: theme.palette.common.white,
+      backgroundColor: (props: { backgroundColor?: string }) =>
+        props.backgroundColor,
     },
     avatarText: {
       fontWeight: theme.typography.fontWeightBold,
