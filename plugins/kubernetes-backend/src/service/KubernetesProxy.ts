@@ -22,6 +22,7 @@ import {
 } from '@backstage/errors';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   KubernetesRequestAuth,
   kubernetesProxyPermission,
 } from '@backstage/plugin-kubernetes-common';
@@ -29,9 +30,15 @@ import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import { bufferFromFileOrString } from '@kubernetes/client-node';
+import {
+  Cluster,
+  KubeConfig,
+  bufferFromFileOrString,
+} from '@kubernetes/client-node';
 import { createProxyMiddleware, RequestHandler } from 'http-proxy-middleware';
 import { Logger } from 'winston';
+import fs from 'fs-extra';
+import { Config } from '@kubernetes/client-node';
 
 import { AuthenticationStrategy } from '../auth';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
@@ -232,6 +239,25 @@ export class KubernetesProxy {
 
     if (!cluster) {
       throw new NotFoundError(`Cluster '${clusterName}' not found`);
+    }
+
+    const authProvider =
+      cluster.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
+
+    if (
+      authProvider === 'serviceAccount' &&
+      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH) &&
+      !cluster.authMetadata.serviceAccountToken
+    ) {
+      const kc = new KubeConfig();
+      kc.loadFromCluster();
+      const clusterFromKubeConfig = kc.getCurrentCluster() as Cluster;
+
+      const url = new URL(clusterFromKubeConfig.server);
+      cluster.url = clusterFromKubeConfig.server;
+      if (url.protocol === 'https:') {
+        cluster.caFile = clusterFromKubeConfig.caFile;
+      }
     }
 
     return cluster;
