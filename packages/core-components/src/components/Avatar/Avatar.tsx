@@ -30,7 +30,7 @@ const useStyles = ({
   styles: CSSProperties;
   fontStyles: CSSProperties;
 }) =>
-  makeStyles<Theme>(
+  makeStyles(
     (theme: Theme) => ({
       avatar: {
         width: '4rem',
