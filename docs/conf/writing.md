@@ -205,11 +205,11 @@ variable if it is unset, or is declared but has no value. For example:
 
 ```yaml
 app:
-  baseUrl: https://${HOST:-http://localhost:3000}
+  baseUrl: https://${HOST:-localhost:3000}
 ```
 
 In the above example, when `HOST` is unset or has no value, it will be
-substituted with `http://localhost:3000`.
+substituted with `localhost:3000`.
 
 ## Combining Includes and Environment Variable Substitution
 
