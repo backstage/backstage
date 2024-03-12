@@ -45,7 +45,7 @@ import {
   useApp,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { useAsyncRetry } from 'react-use';
+import useAsyncRetry from 'react-use/lib/useAsyncRetry';
 import { Button } from '@material-ui/core';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
@@ -182,7 +182,9 @@ function TechDocsAuthProvider({ children }: { children: ReactNode }) {
     if (!value) return () => {};
     channel.postMessage({ action: 'COOKIE_REFRESHED', payload: value });
     let stopCookieRefresh = startCookieRefresh(value.expiresAt);
-    const handleMessage = (event: MessageEvent<any>): void => {
+    const handleMessage = (
+      event: MessageEvent<{ action: string; payload: { expiresAt: string } }>,
+    ): void => {
       const { action, payload } = event.data;
       if (action === 'COOKIE_REFRESHED') {
         stopCookieRefresh();
