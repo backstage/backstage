@@ -89,7 +89,12 @@ export function defaultScmResolveUrl(options: {
     updated = new URL(href);
 
     const repoRootPath = trimEnd(
-      updated.pathname.substring(0, updated.pathname.length - filepath.length),
+      updated.pathname.substring(
+        0,
+        filepath.length
+          ? updated.pathname.length - filepath.length - 1
+          : updated.pathname.length,
+      ),
       '/',
     );
     updated.pathname = `${repoRootPath}${url}`;

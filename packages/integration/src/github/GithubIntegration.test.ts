@@ -67,6 +67,27 @@ describe('GithubIntegration', () => {
         base: 'https://github.com/backstage/backstage/blob/master/test/README.md',
       }),
     ).toBe('https://github.com/backstage/backstage/tree/master/test/');
+
+    expect(
+      integration.resolveUrl({
+        url: '/package.json',
+        base: 'https://github.com/backstage/backstage/tree/master/packages/cli/',
+      }),
+    ).toBe('https://github.com/backstage/backstage/tree/master/package.json');
+
+    expect(
+      integration.resolveUrl({
+        url: '/package.json',
+        base: 'https://github.com/backstage/backstage/tree/master/packages/cli',
+      }),
+    ).toBe('https://github.com/backstage/backstage/tree/master/package.json');
+
+    expect(
+      integration.resolveUrl({
+        url: '/package.json',
+        base: 'https://github.com/backstage/backstage/tree/master',
+      }),
+    ).toBe('https://github.com/backstage/backstage/tree/master/package.json');
   });
 
   it('resolve edit URL', () => {
