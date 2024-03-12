@@ -46,6 +46,7 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 import { useAsyncRetry } from 'react-use';
+import { Button } from '@material-ui/core';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -196,7 +197,13 @@ function TechDocsAuthProvider({ children }: { children: ReactNode }) {
   }, [value, channel, startCookieRefresh]);
 
   if (error) {
-    return <ErrorPanel error={error} />;
+    return (
+      <ErrorPanel error={error}>
+        <Button variant="outlined" onClick={retry}>
+          Retry
+        </Button>
+      </ErrorPanel>
+    );
   }
 
   if (loading) {
