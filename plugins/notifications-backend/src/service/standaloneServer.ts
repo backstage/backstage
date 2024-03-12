@@ -32,7 +32,7 @@ import {
   CatalogRequestOptions,
   GetEntitiesByRefsRequest,
 } from '@backstage/catalog-client';
-import { DefaultSignalService } from '@backstage/plugin-signals-node';
+import { DefaultSignalsService } from '@backstage/plugin-signals-node';
 import {
   EventParams,
   EventsService,
@@ -112,7 +112,7 @@ export async function startStandaloneServer(
     },
   };
 
-  const signalService = DefaultSignalService.create({ events });
+  const signalService = DefaultSignalsService.create({ events });
   // TODO: Move to use services instead this hack
   const { auth, httpAuth, userInfo } = createLegacyAuthAdapters<
     any,
@@ -128,7 +128,7 @@ export async function startStandaloneServer(
     database: dbMock,
     catalog: catalogApi,
     discovery,
-    signalService,
+    signals: signalService,
     auth,
     httpAuth,
     userInfo,

@@ -6,28 +6,70 @@ Signals plugin allows backend plugins to publish messages to frontend plugins.
 
 ## Getting started
 
+### New backend system
+
+In `packages/backend/index.ts`, add the signals backend:
+
+```ts
+backend.add(import('@backstage/plugin-signals-backend'));
+```
+
+To use signals in your plugin, add it as a dependency to `my-plugin/plugin.ts`:
+
+```ts
+import {
+  coreServices,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+import { signalsServiceRef } from '@backstage/plugin-signals-node';
+
+export const myPlugin = createBackendPlugin({
+  pluginId: 'my-plugin',
+  register(env) {
+    env.registerInit({
+      deps: {
+        httpRouter: coreServices.httpRouter,
+        signals: signalsServiceRef,
+      },
+      async init({ httpRouter, signals }) {
+        httpRouter.use(
+          await createRouter({
+            signals,
+          }),
+        );
+      },
+    });
+  },
+});
+```
+
+### Old backend system
+
 Add SignalService to your plugin environment in `packages/backend/src/types.ts`:
 
 ```ts
-import { SignalService } from '@backstage/plugin-signals-node';
+import { SignalsService } from '@backstage/plugin-signals-node';
 
 export type PluginEnvironment = {
   // ...
-  signalService: SignalService;
+  signals: SignalsService;
 };
 ```
 
 Add it also to your `makeCreateEnv` to allow access from the other plugins:
 
 ```ts
-import { SignalService } from '@backstage/plugin-signals-node';
+import {
+  SignalsService,
+  DefaultSignalsService,
+} from '@backstage/plugin-signals-node';
 import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 
 function makeCreateEnv(config: Config) {
   // ...
 
   const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
-  const signalService = DefaultSignalService.create({
+  const signalsService = DefaultSignalsService.create({
     eventBroker,
   });
 
@@ -36,7 +78,7 @@ function makeCreateEnv(config: Config) {
     return {
       logger,
       eventBroker,
-      signalService,
+      signals: signalsService,
       // ...
     };
   };
@@ -54,7 +96,7 @@ all subscribers, you can use `null` as `recipients` parameter.
 ```ts
 // Periodic sending example
 setInterval(async () => {
-  await signalService.publish({
+  await signals.publish({
     recipients: null,
     channel: 'my_plugin',
     message: {
