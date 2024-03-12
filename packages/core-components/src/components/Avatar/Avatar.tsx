@@ -16,7 +16,7 @@
 import MaterialAvatar from '@material-ui/core/Avatar';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React, { CSSProperties, useMemo } from 'react';
+import React, { CSSProperties } from 'react';
 
 import { extractInitials, stringToColor } from './utils';
 
@@ -30,28 +30,23 @@ const useStyles = ({
   styles: CSSProperties;
   fontStyles: CSSProperties;
 }) =>
-  useMemo(
-    () =>
-      makeStyles(
-        (theme: Theme) => ({
-          avatar: {
-            width: '4rem',
-            height: '4rem',
-            color: theme.palette.common.white,
-            ...styles,
-          },
-          avatarText: {
-            fontWeight: theme.typography.fontWeightBold,
-            letterSpacing: '1px',
-            textTransform: 'uppercase',
-            ...fontStyles,
-          },
-        }),
-        { name: 'BackstageAvatar' },
-      )(),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [JSON.stringify(styles), JSON.stringify(fontStyles)],
-  );
+  makeStyles(
+    (theme: Theme) => ({
+      avatar: {
+        width: '4rem',
+        height: '4rem',
+        color: theme.palette.common.white,
+        ...styles,
+      },
+      avatarText: {
+        fontWeight: theme.typography.fontWeightBold,
+        letterSpacing: '1px',
+        textTransform: 'uppercase',
+        ...fontStyles,
+      },
+    }),
+    { name: 'BackstageAvatar' },
+  )();
 
 /**
  * Properties for {@link Avatar}.
