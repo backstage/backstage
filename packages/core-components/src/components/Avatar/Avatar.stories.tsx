@@ -16,6 +16,15 @@
 
 import React from 'react';
 import { Avatar } from './Avatar';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles({
+  avatar: {
+    width: '24px',
+    height: '24px',
+    fontSize: '8px',
+  },
+});
 
 export default {
   title: 'Data Display/Avatar',
@@ -34,9 +43,7 @@ export const NameFallback = () => <Avatar displayName="Jenny Doe" />;
 
 export const Empty = () => <Avatar />;
 
-export const CustomStyling = () => (
-  <Avatar
-    displayName="Jenny Doe"
-    customStyles={{ width: '24px', height: '24px', fontSize: '8px' }}
-  />
-);
+export const CustomStyling = () => {
+  const classes = useStyles();
+  return <Avatar displayName="Jenny Doe" classes={classes} />;
+};

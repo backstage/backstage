@@ -21,32 +21,23 @@ import React, { CSSProperties } from 'react';
 import { extractInitials, stringToColor } from './utils';
 
 /** @public */
-export type AvatarClassKey = 'avatar';
+export type AvatarClassKey = 'avatar' | 'avatarText';
 
-const useStyles = ({
-  styles,
-  fontStyles,
-}: {
-  styles: CSSProperties;
-  fontStyles: CSSProperties;
-}) =>
-  makeStyles(
-    (theme: Theme) => ({
-      avatar: {
-        width: '4rem',
-        height: '4rem',
-        color: theme.palette.common.white,
-        ...styles,
-      },
-      avatarText: {
-        fontWeight: theme.typography.fontWeightBold,
-        letterSpacing: '1px',
-        textTransform: 'uppercase',
-        ...fontStyles,
-      },
-    }),
-    { name: 'BackstageAvatar' },
-  )();
+const useStyles = makeStyles(
+  (theme: Theme) => ({
+    avatar: {
+      width: '4rem',
+      height: '4rem',
+      color: theme.palette.common.white,
+    },
+    avatarText: {
+      fontWeight: theme.typography.fontWeightBold,
+      letterSpacing: '1px',
+      textTransform: 'uppercase',
+    },
+  }),
+  { name: 'BackstageAvatar' },
+);
 
 /**
  * Properties for {@link Avatar}.
@@ -64,8 +55,14 @@ export interface AvatarProps {
   picture?: string;
   /**
    * Custom styles applied to avatar
+   * @deprecated - use the classes property instead
    */
   customStyles?: CSSProperties;
+
+  /**
+   * Custom styles applied to avatar
+   */
+  classes?: { [key in AvatarClassKey]?: string };
 }
 
 /**
@@ -78,32 +75,36 @@ export interface AvatarProps {
  */
 export function Avatar(props: AvatarProps) {
   const { displayName, picture, customStyles } = props;
-  let styles = { ...customStyles };
-  // We only calculate the background color if there's not an avatar
-  // picture. If there is a picture, it might have a transparent
-  // background and we don't know whether the calculated background
-  // color will clash.
-  if (!picture) {
-    styles = {
-      backgroundColor: stringToColor(displayName || ''),
-      ...customStyles,
-    };
-  }
+  const styles = { ...customStyles };
+
+  // TODO: Remove this with the customStyles deprecation
   const fontStyles = {
     fontFamily: styles.fontFamily,
     fontSize: styles.fontSize,
     fontWeight: styles.fontWeight,
   };
 
-  const classes = useStyles({ styles, fontStyles });
+  // We only calculate the background color if there's not an avatar
+  // picture. If there is a picture, it might have a transparent
+  // background and we don't know whether the calculated background
+  // color will clash.
+  const classes = useStyles(
+    !picture ? { backgroundColor: stringToColor(displayName || '') } : {},
+  );
 
   return (
-    <MaterialAvatar alt={displayName} src={picture} className={classes.avatar}>
+    <MaterialAvatar
+      alt={displayName}
+      src={picture}
+      className={`${props.classes?.avatarText} ${classes.avatar}`}
+      style={styles}
+    >
       {displayName && (
         <Typography
           variant="h6"
           component="span"
-          className={classes.avatarText}
+          className={`${props.classes?.avatarText} ${classes.avatarText}`}
+          style={fontStyles}
         >
           {extractInitials(displayName)}
         </Typography>
