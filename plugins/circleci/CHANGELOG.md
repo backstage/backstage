@@ -1,5 +1,15 @@
 # @backstage/plugin-circleci
 
+## 0.3.31-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.1
+
 ## 0.3.31-next.1
 
 ### Patch Changes
