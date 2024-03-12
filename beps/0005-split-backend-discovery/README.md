@@ -95,11 +95,88 @@ If there's any ambiguity about HOW your proposal will be implemented, this is th
 
 #### Gateway Node
 
-A node that serves as the primary discovery point. A gateway node will have all of the information necessary to route traffic through your system.
+A node that serves as the primary discovery point. A gateway node will have all of the information necessary to route traffic through your system. The gateway node is _not_ an API gateway, it only has knowledge of which plugins are on which nodes, it will not automatically route traffic to the correct instance.
 
 #### Non-gateway Node
 
-A node that needs to call a Gateway node for routing.
+A node that needs to call a Gateway node for routing outside of its own plugins.
+
+### New Discovery Plugin
+
+We propose a new Discovery plugin that exposes a set of HTTP endpoints that allow dynamic registration and unregistration of plugins across multiple instances in a deployment. This will allow a single instance or type of instance ("gateway node") to have information about all installed plugins across your entire deployment, which may be multiple instances. The API would look like this,
+
+```yaml
+openapi: 3.0.3
+info:
+  title: Discovery API
+  version: v1
+paths:
+  /register:
+    post:
+      summary: Register an instance with the gateway.
+      operationId: registerInstance
+      requestBody:
+        description: Create a new pet in the store
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                instanceUrl:
+                  type: string
+                plugins:
+                  type: object
+                  # Map of pluginId to external/internal URL.
+                  additionalProperties:
+                    type: object
+                    properties:
+                      externalUrl:
+                        type: string
+                      internalUrl:
+                        type: string
+        required: true
+      responses:
+        '200':
+          description: Successful operation
+        '400':
+          description: Invalid input
+  /registrations:
+    get:
+      summary: Get all registered plugins
+      operationId: listRegistrations
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /by-plugin/{pluginId}:
+    get:
+      summary: Get registration URLs for a given pluginId.
+      operationId: getRegistrationByPlugin
+      parameters:
+        - name: pluginId
+          in: path
+          description: The plugin ID to get information for.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  internal:
+                    type: string
+                  external:
+                    type: string
+```
 
 ### Backend Requests
 
@@ -211,3 +288,9 @@ What other approaches did you consider, and why did you rule them out? These do
 not need to be as detailed as the proposal, but should include enough
 information to express the idea and why it was not acceptable.
 -->
+
+## Per-plugin registration
+
+Assuming that instances restart when plugins are added and removed -- as is currently the case -- this doesn't give much benefit. However, if plugins are able to be installed dynamically and it becomes difficult to maintain an accurate list at the instance-level, we should revisit this.
+
+## Health check-based flow
