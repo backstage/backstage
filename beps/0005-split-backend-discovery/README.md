@@ -105,16 +105,29 @@ A node that needs to call a Gateway node for routing.
 
 ![](./discovery.drawio.png)
 
-Backend `DiscoveryApi` requests will either
+Backend [`DiscoveryService`](https://github.com/backstage/backstage/blob/master/packages/backend-plugin-api/src/services/definitions/DiscoveryService.ts) requests will either
 
 1. route to their own instance and can use the existing `HostDiscovery` implementation, or
 2. need to route to a separate instance and will have to go to the gateway node for routing information.
+
+To get that extra information, the backend instances will call the gateway node's `by-plugin/{pluginId}` endpoint and route with the given response.
+
+We also propose adding a new method to this service to give a list of plugins across the deployment,
+
+```ts
+interface DiscoveryService {
+  ...
+  listPlugins: () => Promise<string[]>;
+}
+```
+
+This new method is expected to call the gateway node's `discovery://registrations` method.
 
 ### Registration Flow
 
 ![](./registrations.drawio.png)
 
-It is imperative that bad actors not be able to register into this new discovery implementation. For the initial launch, we propose using the service-to-service auth system and sharing keys between backends. This is the current recommended approach to protect this endpoint. In the future, we may revisit this.
+On startup, _instances_ will send a request to the gateway node, `discovery://register` with information about the instance and what plugins it owns. This request must be signed using service-to-service auth keys between the two instances to prevent malicious registrations. We may revisit this in the future.
 
 #### New `InstanceMetadataService`
 
@@ -132,10 +145,10 @@ interface InstanceMetadataService {
 
 ![](./frontend.drawio.png)
 
-This will leverage the existing [`DiscoveryService`](https://github.com/backstage/backstage/blob/master/packages/backend-plugin-api/src/services/definitions/DiscoveryService.ts). We propose adding a new method, `listPlugins` that will return a list of all plugins installed in your Backstage deployment.
+This will leverage the existing [`DiscoveryApi`](https://github.com/backstage/backstage/blob/master/packages/core-plugin-api/src/apis/definitions/DiscoveryApi.ts). We propose adding a new method, `listPlugins` that will return a list of all plugins installed in your Backstage deployment.
 
 ```ts
-interface DiscoveryService {
+interface DiscoveryApi {
   ...
   listPlugins: () => Promise<string[]>;
 }
