@@ -23,21 +23,23 @@ import { extractInitials, stringToColor } from './utils';
 /** @public */
 export type AvatarClassKey = 'avatar';
 
-const useStyles = makeStyles(
-  (theme: Theme) => ({
-    avatar: {
-      width: '4rem',
-      height: '4rem',
-      color: theme.palette.common.white,
-    },
-    avatarText: {
-      fontWeight: theme.typography.fontWeightBold,
-      letterSpacing: '1px',
-      textTransform: 'uppercase',
-    },
-  }),
-  { name: 'BackstageAvatar' },
-);
+const useStyles = (styles: CSSProperties) =>
+  makeStyles<Theme>(
+    (theme: Theme) => ({
+      avatar: {
+        width: '4rem',
+        height: '4rem',
+        color: theme.palette.common.white,
+        ...styles,
+      },
+      avatarText: {
+        fontWeight: theme.typography.fontWeightBold,
+        letterSpacing: '1px',
+        textTransform: 'uppercase',
+      },
+    }),
+    { name: 'BackstageAvatar' },
+  )();
 
 /**
  * Properties for {@link Avatar}.
@@ -69,13 +71,15 @@ export interface AvatarProps {
  */
 export function Avatar(props: AvatarProps) {
   const { displayName, picture, customStyles } = props;
-  const classes = useStyles();
   let styles = { ...customStyles };
   const fontStyles = {
     fontFamily: styles.fontFamily,
     fontSize: styles.fontSize,
     fontWeight: styles.fontWeight,
   };
+
+  const classes = useStyles(styles);
+
   // We only calculate the background color if there's not an avatar
   // picture. If there is a picture, it might have a transparent
   // background and we don't know whether the calculated background
