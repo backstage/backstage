@@ -59,7 +59,7 @@ export class WinstonLogger implements RootLoggerService {
         : WinstonLogger.colorFormat();
 
     let logger = createLogger({
-      level: process.env.LOG_LEVEL ?? options.level ?? 'info',
+      level: process.env.LOG_LEVEL || options.level || 'info',
       format: format.combine(
         redacter.format,
         options.format ?? defaultFormatter,
