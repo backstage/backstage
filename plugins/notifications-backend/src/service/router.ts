@@ -38,7 +38,7 @@ import {
   LoggerService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
-import { SignalService } from '@backstage/plugin-signals-node';
+import { SignalsService } from '@backstage/plugin-signals-node';
 import {
   NewNotificationSignal,
   Notification,
@@ -53,7 +53,7 @@ export interface RouterOptions {
   auth: AuthService;
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
-  signalService?: SignalService;
+  signals?: SignalsService;
   catalog?: CatalogApi;
   processors?: NotificationProcessor[];
 }
@@ -93,7 +93,7 @@ export async function createRouter(
     discovery,
     catalog,
     processors,
-    signalService,
+    signals,
   } = options;
 
   const catalogClient =
@@ -273,8 +273,8 @@ export async function createRouter(
     if (read === true) {
       await store.markRead({ user, ids });
 
-      if (signalService) {
-        await signalService.publish<NotificationReadSignal>({
+      if (signals) {
+        await signals.publish<NotificationReadSignal>({
           recipients: [user],
           message: { action: 'notification_read', notification_ids: ids },
           channel: 'notifications',
@@ -283,8 +283,8 @@ export async function createRouter(
     } else if (read === false) {
       await store.markUnread({ user: user, ids });
 
-      if (signalService) {
-        await signalService.publish<NotificationReadSignal>({
+      if (signals) {
+        await signals.publish<NotificationReadSignal>({
           recipients: [user],
           message: { action: 'notification_unread', notification_ids: ids },
           channel: 'notifications',
@@ -371,8 +371,8 @@ export async function createRouter(
       processorSendNotification(ret);
       notifications.push(ret);
 
-      if (signalService) {
-        await signalService.publish<NewNotificationSignal>({
+      if (signals) {
+        await signals.publish<NewNotificationSignal>({
           recipients: user,
           message: {
             action: 'new_notification',

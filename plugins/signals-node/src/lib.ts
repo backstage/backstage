@@ -17,12 +17,12 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { DefaultSignalService } from './DefaultSignalService';
-import { SignalService } from './SignalService';
+import { DefaultSignalsService } from './DefaultSignalsService';
+import { SignalsService } from './SignalsService';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /** @public */
-export const signalService = createServiceRef<SignalService>({
+export const signalsServiceRef = createServiceRef<SignalsService>({
   id: 'signals.service',
   scope: 'plugin',
   defaultFactory: async service =>
@@ -32,7 +32,13 @@ export const signalService = createServiceRef<SignalService>({
         events: eventsServiceRef,
       },
       factory({ events }) {
-        return DefaultSignalService.create({ events });
+        return DefaultSignalsService.create({ events });
       },
     }),
 });
+
+/**
+ * @public
+ * @deprecated Use `signalsServiceRef` instead
+ */
+export const signalService = signalsServiceRef;

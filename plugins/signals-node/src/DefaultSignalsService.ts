@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 import { EventsService } from '@backstage/plugin-events-node';
-import { SignalPayload, SignalServiceOptions } from './types';
-import { SignalService } from './SignalService';
+import { SignalPayload, SignalsServiceOptions } from './types';
+import { SignalsService } from './SignalsService';
 import { JsonObject } from '@backstage/types';
 
 /** @public */
-export class DefaultSignalService implements SignalService {
+export class DefaultSignalsService implements SignalsService {
   private events: EventsService;
 
-  static create(options: SignalServiceOptions) {
-    return new DefaultSignalService(options);
+  static create(options: SignalsServiceOptions) {
+    return new DefaultSignalsService(options);
   }
 
-  private constructor(options: SignalServiceOptions) {
+  private constructor(options: SignalsServiceOptions) {
     ({ events: this.events } = options);
   }
 
@@ -43,3 +43,9 @@ export class DefaultSignalService implements SignalService {
     });
   }
 }
+
+/**
+ * @public
+ * @deprecated Use `DefaultSignalsService` instead
+ */
+export const DefaultSignalService = DefaultSignalsService;
