@@ -5110,6 +5110,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-auth-react@workspace:^, @backstage/plugin-auth-react@workspace:plugins/auth-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-react@workspace:plugins/auth-react"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-components": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@material-ui/core": ^4.9.13
+    "@react-hookz/web": ^24.0.4
+    "@testing-library/jest-dom": ^6.0.0
+    "@testing-library/react": ^14.0.0
+  peerDependencies:
+    react: ^16.13.1 || ^17.0.0 || ^18.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-azure-devops-backend@workspace:^, @backstage/plugin-azure-devops-backend@workspace:plugins/azure-devops-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-azure-devops-backend@workspace:plugins/azure-devops-backend"
@@ -9852,6 +9869,7 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/integration-react": "workspace:^"
+    "@backstage/plugin-auth-react": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-search-react": "workspace:^"
@@ -15707,7 +15725,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-hookz/web@npm:^24.0.0":
+"@react-hookz/web@npm:^24.0.0, @react-hookz/web@npm:^24.0.4":
   version: 24.0.4
   resolution: "@react-hookz/web@npm:24.0.4"
   dependencies:
