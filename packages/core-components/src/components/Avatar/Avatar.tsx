@@ -19,6 +19,7 @@ import Typography from '@material-ui/core/Typography';
 import React, { CSSProperties } from 'react';
 
 import { extractInitials, stringToColor } from './utils';
+import classNames from 'classnames';
 
 /** @public */
 export type AvatarClassKey = 'avatar';
@@ -94,18 +95,24 @@ export function Avatar(props: AvatarProps) {
     !picture ? { backgroundColor: stringToColor(displayName || '') } : {},
   );
 
+  const avatarClassNames = classNames(props.classes?.avatar, classes.avatar);
+  const avatarTextClassNames = classNames(
+    props.classes?.avatarText,
+    classes.avatarText,
+  );
+
   return (
     <MaterialAvatar
       alt={displayName}
       src={picture}
-      className={`${props.classes?.avatarText} ${classes.avatar}`}
+      className={avatarClassNames}
       style={styles}
     >
       {displayName && (
         <Typography
           variant="h6"
           component="span"
-          className={`${props.classes?.avatarText} ${classes.avatarText}`}
+          className={avatarTextClassNames}
           style={fontStyles}
         >
           {extractInitials(displayName)}
