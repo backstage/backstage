@@ -20,7 +20,6 @@ import { paths } from './paths';
 import { Lockfile } from './versioning';
 
 /* eslint-disable @backstage/no-relative-monorepo-imports */
-
 /*
 This is a list of all packages used by the templates. If dependencies are added or removed,
 this list should be updated as well.
@@ -33,7 +32,6 @@ This does not create an actual dependency on these packages and does not bring i
 Rollup will extract the value of the version field in each package at build time without
 leaving any imports in place.
 */
-
 import { version as backendCommon } from '../../../../packages/backend-common/package.json';
 import { version as backendPluginApi } from '../../../../packages/backend-plugin-api/package.json';
 import { version as backendTestUtils } from '../../../../packages/backend-test-utils/package.json';
@@ -46,9 +44,11 @@ import { version as devUtils } from '../../../../packages/dev-utils/package.json
 import { version as testUtils } from '../../../../packages/test-utils/package.json';
 import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
 import { version as theme } from '../../../../packages/theme/package.json';
+import { version as backendDefaults } from '../../../../packages/backend-defaults/package.json';
 
 export const packageVersions: Record<string, string> = {
   '@backstage/backend-common': backendCommon,
+  '@backstage/backend-defaults': backendDefaults,
   '@backstage/backend-plugin-api': backendPluginApi,
   '@backstage/backend-test-utils': backendTestUtils,
   '@backstage/cli': cli,
