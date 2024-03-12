@@ -181,15 +181,17 @@ function TechDocsAuthProvider({ children }: { children: ReactNode }) {
     if (!value) return () => {};
     channel.postMessage({ action: 'COOKIE_REFRESHED', payload: value });
     let stopCookieRefresh = startCookieRefresh(value.expiresAt);
-    channel.onmessage = event => {
+    const handleMessage = (event: MessageEvent<any>): void => {
       const { action, payload } = event.data;
       if (action === 'COOKIE_REFRESHED') {
         stopCookieRefresh();
         stopCookieRefresh = startCookieRefresh(payload.expiresAt);
       }
     };
+    channel.addEventListener('message', handleMessage);
     return () => {
       stopCookieRefresh();
+      channel.removeEventListener('message', handleMessage);
     };
   }, [value, channel, startCookieRefresh]);
 

@@ -59,12 +59,12 @@ const mockTechDocsMetadata = {
 
 const getEntityMetadata = jest.fn();
 const getTechDocsMetadata = jest.fn();
-const issueUserCookie = jest.fn();
+const getCookie = jest.fn();
 
 const techdocsApiMock = {
   getEntityMetadata,
   getTechDocsMetadata,
-  issueUserCookie,
+  getCookie,
 };
 
 const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
