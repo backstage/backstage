@@ -53,7 +53,9 @@ export function TechDocsAuthProvider({ children }: { children: ReactNode }) {
   const app = useApp();
   const { Progress } = app.getComponents();
 
-  const [channel] = useState(new BroadcastChannel('techdocs-cookie-refresh'));
+  const [channel] = useState(
+    () => new BroadcastChannel('techdocs-cookie-refresh'),
+  );
 
   const { loading, error, value, retry, refresh } = useTechDocsCookie();
 
