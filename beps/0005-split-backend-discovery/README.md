@@ -61,7 +61,7 @@ know that this has succeeded?
 1. As an integrator, I can now get a list of currently installed plugins across my deployment.
 1. As an administrator, I can use the default discovery API across both frontend and backend for complex situations like split backends, without writing my own.
 1. As an administrator, I can add/remove plugins without having to do a full redeployment of all of my Backstage nodes.
-1. A
+1. Registrations will be authenticated and any plugins that are added to the registry will have a proof of access to write to the registry.
 
 ### Non-Goals
 
