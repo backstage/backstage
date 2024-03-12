@@ -292,5 +292,3 @@ information to express the idea and why it was not acceptable.
 ## Per-plugin registration
 
 Assuming that instances restart when plugins are added and removed -- as is currently the case -- this doesn't give much benefit. However, if plugins are able to be installed dynamically and it becomes difficult to maintain an accurate list at the instance-level, we should revisit this.
-
-## Health check-based flow
