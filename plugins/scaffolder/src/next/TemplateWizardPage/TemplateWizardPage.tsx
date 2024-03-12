@@ -84,7 +84,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
 
   const { value: editUrl } = useAsync(async () => {
     const data = await catalogApi.getEntityByRef(templateRef);
-    return data?.metadata.annotations?.[ANNOTATION_EDIT_URL] || '';
+    return data?.metadata.annotations?.[ANNOTATION_EDIT_URL];
   }, [templateRef, catalogApi]);
 
   const onCreate = async (values: Record<string, JsonValue>) => {
