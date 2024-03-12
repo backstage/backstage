@@ -117,9 +117,6 @@ describe('<TechDocsReaderPage />', () => {
   beforeEach(() => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
-    getTechDocsMetadata.mockResolvedValue({
-      expiresAt: new Date().toISOString(),
-    });
   });
 
   afterEach(() => {
