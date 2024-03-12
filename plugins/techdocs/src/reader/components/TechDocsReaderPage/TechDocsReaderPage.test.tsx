@@ -33,11 +33,12 @@ import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
 import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { FlatRoutes } from '@backstage/core-app-api';
 
-import { Page } from '@backstage/core-components';
+import { ErrorPage, Page } from '@backstage/core-components';
 import {
   configApiRef,
   discoveryApiRef,
   fetchApiRef,
+  IErrorPageProps
 } from '@backstage/core-plugin-api';
 
 const mockEntityMetadata = {
@@ -167,6 +168,11 @@ describe('<TechDocsReaderPage />', () => {
       </Wrapper>,
       {
         mountedRoutes,
+        components: {
+          NotFoundErrorPage: (props: IErrorPageProps) => (
+            <ErrorPage {...props} />
+          ),
+        },
       },
     );
 

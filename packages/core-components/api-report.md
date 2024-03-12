@@ -22,6 +22,7 @@ import { ErrorInfo } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { IErrorPageProps } from '@backstage/core-plugin-api';
 import { LinearProgressProps } from '@material-ui/core/LinearProgress';
 import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
@@ -378,8 +379,6 @@ export type ErrorBoundaryProps = React_2.PropsWithChildren<{
   onError?: (error: Error, errorInfo: string) => null;
 }>;
 
-// Warning: (ae-forgotten-export) The symbol "IErrorPageProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export function ErrorPage(props: IErrorPageProps): React_2.JSX.Element;
 

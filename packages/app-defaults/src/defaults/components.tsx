@@ -26,6 +26,7 @@ import {
   AppComponents,
   BootErrorPageProps,
   ErrorBoundaryFallbackProps,
+  IErrorPageProps,
 } from '@backstage/core-plugin-api';
 
 export function OptionallyWrapInRouter({ children }: { children: ReactNode }) {
@@ -35,8 +36,8 @@ export function OptionallyWrapInRouter({ children }: { children: ReactNode }) {
   return <MemoryRouter>{children}</MemoryRouter>;
 }
 
-const DefaultNotFoundPage = () => (
-  <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />
+const DefaultNotFoundPage = (props: IErrorPageProps) => (
+  <ErrorPage {...props} />
 );
 
 const DefaultBootErrorPage = ({ step, error }: BootErrorPageProps) => {

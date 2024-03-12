@@ -25,6 +25,7 @@ import {
   IdentityApi,
   RouteRef,
   SubRouteRef,
+  IErrorPageProps,
 } from '@backstage/core-plugin-api';
 import { AppConfig } from '@backstage/config';
 
@@ -67,7 +68,7 @@ export type ErrorBoundaryFallbackProps = PropsWithChildren<{
  * @public
  */
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
+  NotFoundErrorPage: ComponentType<PropsWithChildren<IErrorPageProps>>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<PropsWithChildren<{}>>;
   Router: ComponentType<PropsWithChildren<{ basename?: string }>>;
