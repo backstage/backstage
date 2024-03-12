@@ -127,8 +127,9 @@ class TechDocsDevApi implements TechDocsApi {
     this.identityApi = identityApi;
   }
 
-  async issueUserCookie(): Promise<{ expiresAt: string }> {
-    return { expiresAt: new Date().toISOString() };
+  async getCookie(): Promise<{ expiresAt: string }> {
+    const tenMinutesFromNow = new Date(Date.now() + 10 * 60 * 1000);
+    return { expiresAt: tenMinutesFromNow.toISOString() };
   }
 
   async getApiOrigin() {
