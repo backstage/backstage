@@ -259,6 +259,10 @@ export class TechDocsClient implements TechDocsApi_2 {
   discoveryApi: DiscoveryApi;
   // (undocumented)
   getApiOrigin(): Promise<string>;
+  // (undocumented)
+  getCookie(): Promise<{
+    expiresAt: string;
+  }>;
   getEntityMetadata(
     entityId: CompoundEntityRef,
   ): Promise<TechDocsEntityMetadata_2>;
