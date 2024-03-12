@@ -326,7 +326,7 @@ Azure DevOps plugin supports the permission framework for PRs, GitTags, Pipeline
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-azure-devops-common
+yarn --cwd packages/backend add @backstage/plugin-azure-devops-common
 ```
 
 New Backend you can skip the below and proceed with [permission configuration](#configure-permission)
