@@ -26,6 +26,7 @@ import {
 
 import { resolve as resolvePath } from 'path';
 import { RailsNewRunner } from './railsNewRunner';
+import { PassThrough } from 'stream';
 
 /**
  * Creates the `fetch:rails` Scaffolder action.
@@ -215,10 +216,15 @@ export function createFetchRailsAction(options: {
         throw new Error(`Image ${imageName} is not allowed`);
       }
 
+      const logStream = new PassThrough();
+      logStream.on('data', chunk => {
+        ctx.logger.info(chunk.toString());
+      });
+
       // Will execute the template in ./template and put the result in ./result
       await templateRunner.run({
         workspacePath: workDir,
-        logStream: ctx.logStream,
+        logStream,
         values: { ...ctx.input.values, imageName },
       });
 

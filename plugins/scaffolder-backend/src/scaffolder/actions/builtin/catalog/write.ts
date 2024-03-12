@@ -49,7 +49,7 @@ export function createCatalogWriteAction() {
     examples,
     supportsDryRun: true,
     async handler(ctx) {
-      ctx.logStream.write(`Writing catalog-info.yaml`);
+      ctx.logger.info(`Writing catalog-info.yaml`);
       const { filePath, entity } = ctx.input;
       const path = filePath ?? 'catalog-info.yaml';
 
