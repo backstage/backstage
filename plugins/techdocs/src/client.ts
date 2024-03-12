@@ -31,8 +31,6 @@ import {
 } from '@backstage/plugin-techdocs-react';
 import { EventSourcePolyfill } from 'event-source-polyfill';
 
-const EXPIRES_AT_STORAGE_KEY = 'backstage-techdocs-cookie-expires-at';
-
 /**
  * API to talk to `techdocs-backend`.
  *
@@ -42,10 +40,6 @@ export class TechDocsClient implements TechDocsApi {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
   private fetchApi: FetchApi;
-  private locked = false;
-  private readonly channel = new BroadcastChannel(
-    'backstage-techdocs-cookie-refresh',
-  );
 
   constructor(options: {
     configApi: Config;
@@ -55,23 +49,9 @@ export class TechDocsClient implements TechDocsApi {
     this.configApi = options.configApi;
     this.discoveryApi = options.discoveryApi;
     this.fetchApi = options.fetchApi;
-    this.channel.onmessage = event => {
-      const { action, payload } = event.data;
-      if (action === 'REFRESH_COOKIE') {
-        this.locked = payload.locked;
-      }
-    };
   }
 
-  set expiresAt(value: string) {
-    localStorage.setItem(EXPIRES_AT_STORAGE_KEY, value);
-  }
-
-  get expiresAt(): string | null {
-    return localStorage.getItem(EXPIRES_AT_STORAGE_KEY);
-  }
-
-  private async getCookie(): Promise<{ expiresAt: string }> {
+  public async getCookie(): Promise<{ expiresAt: string }> {
     const apiOrigin = await this.getApiOrigin();
     const requestUrl = `${apiOrigin}/cookie`;
     const response = await this.fetchApi.fetch(`${requestUrl}`, {
@@ -81,48 +61,6 @@ export class TechDocsClient implements TechDocsApi {
       throw await ResponseError.fromResponse(response);
     }
     return await response.json();
-  }
-
-  private refreshUserCookie(options: { expiresAt: string }) {
-    const { expiresAt } = options;
-    const tenMinutesInMilliseconds = 10 * 60000;
-    const intervalId = setInterval(() => {
-      if (this.locked) return;
-      if (Date.parse(expiresAt) - Date.now() - tenMinutesInMilliseconds > 0)
-        return;
-
-      this.channel.postMessage({
-        action: 'REFRESH_COOKIE',
-        payload: { locked: true },
-      });
-
-      this.issueUserCookie({ force: true })
-        .then(() => clearInterval(intervalId))
-        .finally(() => {
-          this.locked = false;
-          this.channel.postMessage({
-            action: 'REFRESH_COOKIE',
-            payload: { locked: false },
-          });
-        });
-    }, tenMinutesInMilliseconds);
-
-    return { expiresAt };
-  }
-
-  public async issueUserCookie(
-    options: {
-      force?: boolean;
-    } = {},
-  ): Promise<{ expiresAt: string }> {
-    const { force } = options;
-    if (force || !this.expiresAt || Date.parse(this.expiresAt) < Date.now()) {
-      return this.getCookie().then(({ expiresAt }) => {
-        this.expiresAt = expiresAt;
-        return this.refreshUserCookie({ expiresAt });
-      });
-    }
-    return this.refreshUserCookie({ expiresAt: this.expiresAt });
   }
 
   async getApiOrigin(): Promise<string> {

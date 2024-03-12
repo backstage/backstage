@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, Children, ReactElement } from 'react';
+import React, {
+  ReactNode,
+  Children,
+  ReactElement,
+  useEffect,
+  useState,
+  useCallback,
+} from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import { ErrorPanel, Page } from '@backstage/core-components';
@@ -38,7 +45,7 @@ import {
   useApp,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import { useAsync } from 'react-use';
+import { useAsyncRetry } from 'react-use';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -151,11 +158,40 @@ function TechDocsAuthProvider({ children }: { children: ReactNode }) {
   const app = useApp();
   const { Progress } = app.getComponents();
 
+  const [channel] = useState(new BroadcastChannel('techdocs-cookie-refresh'));
+
   const techdocsApi = useApi(techdocsApiRef);
 
-  const { loading, error } = useAsync(async () => {
-    return await techdocsApi.issueUserCookie();
+  const { loading, error, value, retry } = useAsyncRetry(async () => {
+    return await techdocsApi.getCookie();
   }, [techdocsApi]);
+
+  const startCookieRefresh = useCallback(
+    (expiresAt: string) => {
+      // Randomize the refreshing margin to avoid all tabs refreshing at the same time
+      const refreshingMargin = (1 + 3 * Math.random()) * 60_000;
+      const delay = Date.parse(expiresAt) - Date.now() - refreshingMargin;
+      const timeout = setTimeout(retry, delay);
+      return () => clearTimeout(timeout);
+    },
+    [retry],
+  );
+
+  useEffect(() => {
+    if (!value) return () => {};
+    channel.postMessage({ action: 'COOKIE_REFRESHED', payload: value });
+    let stopCookieRefresh = startCookieRefresh(value.expiresAt);
+    channel.onmessage = event => {
+      const { action, payload } = event.data;
+      if (action === 'COOKIE_REFRESHED') {
+        stopCookieRefresh();
+        stopCookieRefresh = startCookieRefresh(payload.expiresAt);
+      }
+    };
+    return () => {
+      stopCookieRefresh();
+    };
+  }, [value, channel, startCookieRefresh]);
 
   if (error) {
     return <ErrorPanel error={error} />;

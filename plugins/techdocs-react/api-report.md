@@ -65,15 +65,15 @@ export interface TechDocsApi {
   // (undocumented)
   getApiOrigin(): Promise<string>;
   // (undocumented)
+  getCookie(): Promise<{
+    expiresAt: string;
+  }>;
+  // (undocumented)
   getEntityMetadata(
     entityId: CompoundEntityRef,
   ): Promise<TechDocsEntityMetadata>;
   // (undocumented)
   getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata>;
-  // (undocumented)
-  issueUserCookie(): Promise<{
-    expiresAt: string;
-  }>;
 }
 
 // @public

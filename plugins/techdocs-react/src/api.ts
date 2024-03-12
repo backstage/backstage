@@ -24,7 +24,7 @@ import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
  * @public
  */
 export interface TechDocsApi {
-  issueUserCookie(): Promise<{ expiresAt: string }>;
+  getCookie(): Promise<{ expiresAt: string }>;
   getApiOrigin(): Promise<string>;
   getTechDocsMetadata(entityId: CompoundEntityRef): Promise<TechDocsMetadata>;
   getEntityMetadata(
