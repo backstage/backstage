@@ -14,23 +14,15 @@
  * limitations under the License.
  */
 
-import React, {
-  ReactNode,
-  Children,
-  ReactElement,
-  useEffect,
-  useState,
-  useCallback,
-} from 'react';
+import React, { ReactNode, Children, ReactElement } from 'react';
 import { useOutlet } from 'react-router-dom';
 
-import { ErrorPanel, Page } from '@backstage/core-components';
+import { Page } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   TECHDOCS_ADDONS_WRAPPER_KEY,
   TECHDOCS_ADDONS_KEY,
   TechDocsReaderPageProvider,
-  techdocsApiRef,
 } from '@backstage/plugin-techdocs-react';
 
 import { TechDocsReaderPageRenderFunction } from '../../../types';
@@ -41,12 +33,9 @@ import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
 import { rootDocsRouteRef } from '../../../routes';
 import {
   getComponentData,
-  useApi,
-  useApp,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import { Button } from '@material-ui/core';
+import { TechDocsAuthProvider } from './TechDocsAuthProvider';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -154,66 +143,6 @@ export const TechDocsReaderLayout = (props: TechDocsReaderLayoutProps) => {
     </Page>
   );
 };
-
-function TechDocsAuthProvider({ children }: { children: ReactNode }) {
-  const app = useApp();
-  const { Progress } = app.getComponents();
-
-  const [channel] = useState(new BroadcastChannel('techdocs-cookie-refresh'));
-
-  const techdocsApi = useApi(techdocsApiRef);
-
-  const { loading, error, value, retry } = useAsyncRetry(async () => {
-    return await techdocsApi.getCookie();
-  }, [techdocsApi]);
-
-  const startCookieRefresh = useCallback(
-    (expiresAt: string) => {
-      // Randomize the refreshing margin to avoid all tabs refreshing at the same time
-      const refreshingMargin = (1 + 3 * Math.random()) * 60_000;
-      const delay = Date.parse(expiresAt) - Date.now() - refreshingMargin;
-      const timeout = setTimeout(retry, delay);
-      return () => clearTimeout(timeout);
-    },
-    [retry],
-  );
-
-  useEffect(() => {
-    if (!value) return () => {};
-    channel.postMessage({ action: 'COOKIE_REFRESHED', payload: value });
-    let stopCookieRefresh = startCookieRefresh(value.expiresAt);
-    const handleMessage = (
-      event: MessageEvent<{ action: string; payload: { expiresAt: string } }>,
-    ): void => {
-      const { action, payload } = event.data;
-      if (action === 'COOKIE_REFRESHED') {
-        stopCookieRefresh();
-        stopCookieRefresh = startCookieRefresh(payload.expiresAt);
-      }
-    };
-    channel.addEventListener('message', handleMessage);
-    return () => {
-      stopCookieRefresh();
-      channel.removeEventListener('message', handleMessage);
-    };
-  }, [value, channel, startCookieRefresh]);
-
-  if (error) {
-    return (
-      <ErrorPanel error={error}>
-        <Button variant="outlined" onClick={retry}>
-          Retry
-        </Button>
-      </ErrorPanel>
-    );
-  }
-
-  if (loading) {
-    return <Progress />;
-  }
-
-  return children;
-}
 
 /**
  * @public
