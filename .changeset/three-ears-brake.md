@@ -2,4 +2,4 @@
 '@backstage/core-components': patch
 ---
 
-Move inline styles into classes for `Avatar` component
+Deprecate the `customStyles` prop for the `Avatar` component in favour of the `classes` prop.
