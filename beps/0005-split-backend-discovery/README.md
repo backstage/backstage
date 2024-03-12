@@ -4,6 +4,7 @@ status: provisional
 authors:
   - '@aramissennyeydd'
 owners:
+  - '@aramissennyeydd'
 project-areas:
   - core
 creation-date: 2024-02-16
@@ -31,23 +32,13 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 - [Dependencies](#dependencies)
 - [Alternatives](#alternatives)
 
-## Glossary
-
-### Gateway Node
-
-A node that serves as the primary discovery point. A gateway node will have all of the information necessary to route traffic through your system.
-
-### Non-gateway Node
-
-A node that needs to call a Gateway node for routing.
-
 ## Summary
 
 <!--
 The summary of the BEP is a few paragraphs long and give a high-level overview of the features to be implemented. It should be possible to read *only* the summary and understand what the BEP is proposing to accomplish and what impact it has for users.
 -->
 
-The goal of this BEP is to define the architecture that we will be using for an automatic discovery API that handles split backends. While users can use the current target-based config, it is not runtime driven and adding plugins requires a config update. This new system allows existing backends to register with gateway nodes at start time and based on reachability, can be deregistered.
+The goal of this BEP is to define the architecture that we will be using for an automatic discovery API that handles split backends. While users can use the current target-based config, it is not runtime driven and adding plugins requires a config update. This new system allows existing backends to register with gateway nodes at start time, allows them to unregister before the program exits and catches system errors by timing out plugin registrations that haven't been refreshed recently.
 
 ## Motivation
 
@@ -68,7 +59,9 @@ know that this has succeeded?
 -->
 
 1. As an integrator, I can now get a list of currently installed plugins across my deployment.
+1. As an administrator, I can use the default discovery API across both frontend and backend for complex situations like split backends, without writing my own.
 1. As an administrator, I can add/remove plugins without having to do a full redeployment of all of my Backstage nodes.
+1. A
 
 ### Non-Goals
 
@@ -98,21 +91,57 @@ change are understandable. This may include API specs or even code snippets.
 If there's any ambiguity about HOW your proposal will be implemented, this is the place to discuss them.
 -->
 
+### Glossary
+
+#### Gateway Node
+
+A node that serves as the primary discovery point. A gateway node will have all of the information necessary to route traffic through your system.
+
+#### Non-gateway Node
+
+A node that needs to call a Gateway node for routing.
+
 ### Backend Requests
 
-![](./discovery.png)
+![](./discovery.drawio.png)
+
+Backend `DiscoveryApi` requests will either
+
+1. route to their own instance and can use the existing `HostDiscovery` implementation, or
+2. need to route to a separate instance and will have to go to the gateway node for routing information.
 
 ### Registration Flow
 
-![](./registrations.png)
+![](./registrations.drawio.png)
+
+It is imperative that bad actors not be able to register into this new discovery implementation. For the initial launch, we propose using the service-to-service auth system and sharing keys between backends. This is the current recommended approach to protect this endpoint. In the future, we may revisit this.
 
 #### New `InstanceMetadataService`
 
-While we could attach the existing information to the `PluginMetadataService`, we propose a new service that handles instance-level information. The existing `PluginMetadataService` should reveal information about the plugin itself, its pluginId, dependencies or similar. The new `InstanceMetadataService` should give you information about the entire Backstage instance that you're interrogating. At launch, this should include the list of plugins installed _on your instance_ that can then be aggregated by the discovery API across the gateway nodes. One could imagine this service also having information about instance URLs, health or gateway status.
+While we could attach the existing information to the `PluginMetadataService`, we propose a new service that handles instance-level information. The existing `PluginMetadataService` should reveal information about the plugin itself, its `pluginId`, dependencies or similar. The new `InstanceMetadataService` should give you information about the entire Backstage instance that you're interrogating. At launch, this should include the list of features installed _on your instance_ that can then be aggregated by the discovery API across the gateway nodes. One could imagine this service also having information about instance URLs, health or gateway status.
+
+```ts
+interface InstanceMetadataService {
+  listFeatures: () => BackendFeature[];
+  // or
+  listFeatures: () => string[]; // list of pluginIds/moduleIds.
+}
+```
 
 ### Frontend Requests
 
-![](./frontend.png)
+![](./frontend.drawio.png)
+
+This will leverage the existing [`DiscoveryService`](https://github.com/backstage/backstage/blob/master/packages/backend-plugin-api/src/services/definitions/DiscoveryService.ts). We propose adding a new method, `listPlugins` that will return a list of all plugins installed in your Backstage deployment.
+
+```ts
+interface DiscoveryService {
+  ...
+  listPlugins: () => Promise<string[]>;
+}
+```
+
+All methods will just call the gateway node's HTTP discovery endpoint for the data, see diagram for more information.
 
 ### Gateway Scaling
 
@@ -138,11 +167,15 @@ To prevent stale data, we propose implementing "check ins". Each check in will w
 1. to verify that the gateway node is reachable by the non-gateway node.
 1. to verify that the gateway node has the most up to date data from the non-gateway node.
 
-The first is necessary to prevent a case where the non-gateway node loses network access or crashes. In this case, we will use the `last_check_in` timestamp. If an instance hasn't contacted the gateway plugin in x checkins (or seconds), we remove that instance's plugins. This will most likely be an optimistic update and will happen at read time for other operations. So the database may still have entries with expired `last_check_in` rows if the discovery API is not actively used.
+The first is necessary to prevent a case where the non-gateway node loses network access or crashes. In this case, we will use the `last_check_in` timestamp. If an instance hasn't contacted the gateway plugin in x check-ins (or seconds), we remove that instance's plugins. This will most likely be an optimistic update and will happen at read time for other operations. So the database may still have entries with expired `last_check_in` rows if the discovery API is not actively used.
 
 The second is necessary to prevent a case where an instance may restart with more/less plugins. The gateway needs a way of knowing that the instance data changed. This is why we propose a "check in" approach over just a heartbeat. The non-gateway plugin should send its list of plugins to the gateway plugin to check if anything has changed since it last checked in. This allows us to be much more specific about when the instance will re-register.
 
 In the case of horizontally scaled plugins, we should be able to keep the current check-ins, but we may revisit if the volume is too high.
+
+### Unregistering Plugins
+
+While some service discovery implementation have the ability for plugins to unregister themselves on shutdown or error, this proves difficult for horizontally scaled deployments. As such, we propose using the check ins described above to verify that a plugin is operational.
 
 ## Release Plan
 

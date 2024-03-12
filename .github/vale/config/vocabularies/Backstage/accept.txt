@@ -84,6 +84,7 @@ debuggability
 declaratively
 deduplicated
 deliverables
+denormalized
 dependabot
 deps
 destructured
