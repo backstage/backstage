@@ -23,7 +23,13 @@ import { extractInitials, stringToColor } from './utils';
 /** @public */
 export type AvatarClassKey = 'avatar';
 
-const useStyles = (styles: CSSProperties) =>
+const useStyles = ({
+  styles,
+  fontStyles,
+}: {
+  styles: CSSProperties;
+  fontStyles: CSSProperties;
+}) =>
   makeStyles<Theme>(
     (theme: Theme) => ({
       avatar: {
@@ -36,6 +42,7 @@ const useStyles = (styles: CSSProperties) =>
         fontWeight: theme.typography.fontWeightBold,
         letterSpacing: '1px',
         textTransform: 'uppercase',
+        ...fontStyles,
       },
     }),
     { name: 'BackstageAvatar' },
@@ -72,14 +79,6 @@ export interface AvatarProps {
 export function Avatar(props: AvatarProps) {
   const { displayName, picture, customStyles } = props;
   let styles = { ...customStyles };
-  const fontStyles = {
-    fontFamily: styles.fontFamily,
-    fontSize: styles.fontSize,
-    fontWeight: styles.fontWeight,
-  };
-
-  const classes = useStyles(styles);
-
   // We only calculate the background color if there's not an avatar
   // picture. If there is a picture, it might have a transparent
   // background and we don't know whether the calculated background
@@ -90,19 +89,21 @@ export function Avatar(props: AvatarProps) {
       ...customStyles,
     };
   }
+  const fontStyles = {
+    fontFamily: styles.fontFamily,
+    fontSize: styles.fontSize,
+    fontWeight: styles.fontWeight,
+  };
+
+  const classes = useStyles({ styles, fontStyles });
+
   return (
-    <MaterialAvatar
-      alt={displayName}
-      src={picture}
-      className={classes.avatar}
-      style={styles}
-    >
+    <MaterialAvatar alt={displayName} src={picture} className={classes.avatar}>
       {displayName && (
         <Typography
           variant="h6"
           component="span"
           className={classes.avatarText}
-          style={fontStyles}
         >
           {extractInitials(displayName)}
         </Typography>
