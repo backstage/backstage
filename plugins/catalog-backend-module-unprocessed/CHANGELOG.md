@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.3.11-next.2
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+
 ## 0.3.11-next.1
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.28-next.2
+
+### Patch Changes
+
+- 3f14e9f: Mock the new issue user cookie api method.
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.10.1-next.2
+  - @backstage/plugin-techdocs-react@1.2.0-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/plugin-catalog@1.18.0-next.2
+  - @backstage/integration-react@1.1.25-next.2
+  - @backstage/plugin-search-react@1.7.7-next.2
+  - @backstage/core-app-api@1.12.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/test-utils@1.5.1-next.1
+
 ## 1.0.28-next.1
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/plugin-devtools-backend
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- 8b0026d: Removed unused `devDependencies` identified in Knip Report
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-devtools-common@0.1.9-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.2
+
 ## 0.3.0-next.1
 
 ### Patch Changes
