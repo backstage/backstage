@@ -59,10 +59,12 @@ const mockTechDocsMetadata = {
 
 const getEntityMetadata = jest.fn();
 const getTechDocsMetadata = jest.fn();
+const getCookie = jest.fn();
 
 const techdocsApiMock = {
   getEntityMetadata,
   getTechDocsMetadata,
+  getCookie,
 };
 
 const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
@@ -113,8 +115,35 @@ const mountedRoutes = {
 
 describe('<TechDocsReaderPage />', () => {
   beforeEach(() => {
+    type Listener = (event: { data: any }) => void;
+
+    global.BroadcastChannel = jest
+      .fn()
+      .mockImplementation((_channelName: string) => {
+        let listeners: Listener[] = [];
+        return {
+          postMessage: jest.fn((message: any) => {
+            listeners.forEach(listener => listener({ data: message }));
+          }),
+          addEventListener: jest.fn((event: string, listener: Listener) => {
+            if (event === 'message') {
+              listeners.push(listener);
+            }
+          }),
+          removeEventListener: jest.fn((event: string, listener: Listener) => {
+            if (event === 'message') {
+              listeners = listeners.filter(l => l !== listener);
+            }
+          }),
+        };
+      });
+
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    getCookie.mockResolvedValue({
+      // Expires in 10 minutes
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    });
   });
 
   afterEach(() => {
