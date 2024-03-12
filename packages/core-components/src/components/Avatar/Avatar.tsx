@@ -21,7 +21,7 @@ import React, { CSSProperties } from 'react';
 import { extractInitials, stringToColor } from './utils';
 
 /** @public */
-export type AvatarClassKey = 'avatar' | 'avatarText';
+export type AvatarClassKey = 'avatar';
 
 const useStyles = makeStyles(
   (theme: Theme) => ({
@@ -62,7 +62,7 @@ export interface AvatarProps {
   /**
    * Custom styles applied to avatar
    */
-  classes?: { [key in AvatarClassKey]?: string };
+  classes?: { [key in 'avatar' | 'avatarText']?: string };
 }
 
 /**
