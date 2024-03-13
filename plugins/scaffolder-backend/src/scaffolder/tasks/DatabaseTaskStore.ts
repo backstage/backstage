@@ -212,7 +212,7 @@ export class DatabaseTaskStore implements TaskStore {
     try {
       const spec = JSON.parse(result.spec);
       const secrets = result.secrets ? JSON.parse(result.secrets) : undefined;
-      const state = result.state ? JSON.parse(result.state) : undefined;
+      const state = result.state ? JSON.parse(result.state).state : undefined;
       return {
         id: result.id,
         spec,
@@ -272,7 +272,7 @@ export class DatabaseTaskStore implements TaskStore {
 
       const getState = () => {
         try {
-          return task.state ? JSON.parse(task.state) : undefined;
+          return task.state ? JSON.parse(task.state).state : undefined;
         } catch (error) {
           throw new Error(
             `Failed to parse state of the task '${task.id}', ${error}`,

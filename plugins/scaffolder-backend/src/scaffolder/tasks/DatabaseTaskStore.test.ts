@@ -196,7 +196,7 @@ describe('DatabaseTaskStore', () => {
     await store.claimTask();
 
     const claimedTask = await store.getTask(taskId);
-    expect(claimedTask.state).toEqual({ state });
+    expect(claimedTask.state).toEqual({ state: state.state });
   });
 
   it('should shutdown the running task', async () => {
