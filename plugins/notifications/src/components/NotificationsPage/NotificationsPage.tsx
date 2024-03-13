@@ -37,6 +37,7 @@ export const NotificationsPage = () => {
   const [refresh, setRefresh] = React.useState(false);
   const { lastSignal } = useSignal('notifications');
   const [unreadOnly, setUnreadOnly] = React.useState<boolean | undefined>(true);
+  const [saved, setSaved] = React.useState<boolean | undefined>(undefined);
   const [pageNumber, setPageNumber] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(5);
   const [containsText, setContainsText] = React.useState<string>();
@@ -56,6 +57,9 @@ export const NotificationsPage = () => {
       if (unreadOnly !== undefined) {
         options.read = !unreadOnly;
       }
+      if (saved !== undefined) {
+        options.saved = saved;
+      }
 
       const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
       if (createdAfterDate.valueOf() > 0) {
@@ -64,7 +68,15 @@ export const NotificationsPage = () => {
 
       return api.getNotifications(options);
     },
-    [containsText, unreadOnly, createdAfter, pageNumber, pageSize, sorting],
+    [
+      containsText,
+      unreadOnly,
+      createdAfter,
+      pageNumber,
+      pageSize,
+      sorting,
+      saved,
+    ],
   );
 
   useEffect(() => {
@@ -100,6 +112,8 @@ export const NotificationsPage = () => {
               onCreatedAfterChanged={setCreatedAfter}
               onSortingChanged={setSorting}
               sorting={sorting}
+              saved={saved}
+              onSavedChanged={setSaved}
             />
           </Grid>
           <Grid item xs={10}>
