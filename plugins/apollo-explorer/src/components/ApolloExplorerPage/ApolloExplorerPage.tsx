@@ -63,7 +63,7 @@ export const ApolloExplorerPage = (props: Props) => {
       return await endpoints({ apiHolder });
     }
     return endpoints;
-  }, []);
+  }, [endpoints]);
 
   return (
     <Page themeId="tool">
