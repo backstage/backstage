@@ -83,7 +83,7 @@ const Community = () => {
     },
     {
       name: 'solo.io',
-      url: 'https://solo.io/',
+      url: 'https://www.solo.io/spotlight/',
       logo: 'img/partner-logo-solo.png',
     },
     {
