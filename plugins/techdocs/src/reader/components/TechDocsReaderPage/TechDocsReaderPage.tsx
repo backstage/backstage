@@ -23,7 +23,6 @@ import {
   TECHDOCS_ADDONS_WRAPPER_KEY,
   TECHDOCS_ADDONS_KEY,
   TechDocsReaderPageProvider,
-  techdocsApiRef,
 } from '@backstage/plugin-techdocs-react';
 
 import { TechDocsReaderPageRenderFunction } from '../../../types';
@@ -180,7 +179,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
     // As explained above, "page" is configuration 4 and <TechDocsReaderLayout> is 1
     return (
-      <CookieAuthRefreshProvider apiRef={techdocsApiRef}>
+      <CookieAuthRefreshProvider pluginId="techdocs">
         <TechDocsReaderPageProvider entityRef={entityRef}>
           {(page as JSX.Element) || <TechDocsReaderLayout />}
         </TechDocsReaderPageProvider>
@@ -190,7 +189,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
   // As explained above, a render function is configuration 3 and React element is 2
   return (
-    <CookieAuthRefreshProvider apiRef={techdocsApiRef}>
+    <CookieAuthRefreshProvider pluginId="techdocs">
       <TechDocsReaderPageProvider entityRef={entityRef}>
         {({ metadata, entityMetadata, onReady }) => (
           <div className="techdocs-reader-page">

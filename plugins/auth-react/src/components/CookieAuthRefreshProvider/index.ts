@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export { CookieAuthRefreshProvider } from './CookieAuthRefreshProvider';
+export {
+  CookieAuthRefreshProvider,
+  type CookieAuthRefreshProviderProps,
+} from './CookieAuthRefreshProvider';

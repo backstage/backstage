@@ -19,10 +19,15 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CookieAuthRefreshProvider } from './CookieAuthRefreshProvider';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
-import { createApiRef } from '@backstage/core-plugin-api';
-import { AuthApi } from '../../types';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 
 describe('CookieAuthRefreshProvider', () => {
+  const discoveryApiMock = {
+    getBaseUrl: jest
+      .fn()
+      .mockResolvedValue('http://localhost:7000/techdocs/api'),
+  };
+
   function getExpiresAtInFuture() {
     const tenMinutesInMilliseconds = 10 * 60 * 1000;
     return new Date(Date.now() + tenMinutesInMilliseconds).toISOString();
@@ -35,14 +40,18 @@ describe('CookieAuthRefreshProvider', () => {
   }));
 
   it('should render a progress bar', async () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
-    const apiMock = {
-      getCookie: jest.fn().mockReturnValue(new Promise(() => {})),
+    const fetchApiMock = {
+      fetch: jest.fn().mockReturnValue(new Promise(() => {})),
     };
 
     await renderInTestApp(
-      <TestApiProvider apis={[[apiRef, apiMock]]}>
-        <CookieAuthRefreshProvider apiRef={apiRef}>
+      <TestApiProvider
+        apis={[
+          [fetchApiRef, fetchApiMock],
+          [discoveryApiRef, discoveryApiMock],
+        ]}
+      >
+        <CookieAuthRefreshProvider pluginId="techdocs">
           <div>Test Content</div>
         </CookieAuthRefreshProvider>
       </TestApiProvider>,
@@ -51,16 +60,20 @@ describe('CookieAuthRefreshProvider', () => {
     expect(screen.getByTestId('progress')).toBeInTheDocument();
   });
 
-  it('should render a error panel', async () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
+  it('should render an error panel', async () => {
     const error = new Error('Failed to get cookie');
-    const apiMock = {
-      getCookie: jest.fn().mockRejectedValue(error),
+    const fetchApiMock = {
+      fetch: jest.fn().mockRejectedValue(error),
     };
 
     await renderInTestApp(
-      <TestApiProvider apis={[[apiRef, apiMock]]}>
-        <CookieAuthRefreshProvider apiRef={apiRef}>
+      <TestApiProvider
+        apis={[
+          [fetchApiRef, fetchApiMock],
+          [discoveryApiRef, discoveryApiMock],
+        ]}
+      >
+        <CookieAuthRefreshProvider pluginId="techdocs">
           <div>Test Content</div>
         </CookieAuthRefreshProvider>
       </TestApiProvider>,
@@ -70,29 +83,46 @@ describe('CookieAuthRefreshProvider', () => {
   });
 
   it('should call the api again when retry is clicked', async () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
     const error = new Error('Failed to get cookie');
-    const apiMock = {
-      getCookie: jest.fn().mockRejectedValueOnce(error).mockResolvedValue({
-        expiresAt: getExpiresAtInFuture(),
-      }),
+    const fetchApiMock = {
+      fetch: jest
+        .fn()
+        .mockRejectedValueOnce(error)
+        .mockResolvedValue({
+          ok: true,
+          json: jest.fn().mockResolvedValue({
+            expiresAt: getExpiresAtInFuture(),
+          }),
+        }),
     };
 
     await renderInTestApp(
-      <TestApiProvider apis={[[apiRef, apiMock]]}>
-        <CookieAuthRefreshProvider apiRef={apiRef}>
+      <TestApiProvider
+        apis={[
+          [fetchApiRef, fetchApiMock],
+          [discoveryApiRef, discoveryApiMock],
+        ]}
+      >
+        <CookieAuthRefreshProvider pluginId="techdocs">
           <div>Test Content</div>
         </CookieAuthRefreshProvider>
       </TestApiProvider>,
     );
 
-    expect(apiMock.getCookie).toHaveBeenCalledTimes(1);
+    await waitFor(() =>
+      expect(fetchApiMock.fetch).toHaveBeenCalledWith(
+        'http://localhost:7000/techdocs/api/cookie',
+        { credentials: 'include' },
+      ),
+    );
+
+    expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1);
 
     expect(screen.getByText(error.message)).toBeInTheDocument();
 
     await userEvent.click(screen.getByText('Retry'));
 
-    expect(apiMock.getCookie).toHaveBeenCalledTimes(2);
+    expect(fetchApiMock.fetch).toHaveBeenCalledTimes(2);
 
     await waitFor(() =>
       expect(screen.getByText('Test Content')).toBeInTheDocument(),
@@ -100,18 +130,23 @@ describe('CookieAuthRefreshProvider', () => {
   });
 
   it('should render the children', async () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
-    const apiMock = {
-      getCookie: jest.fn().mockResolvedValue({
-        expiresAt: {
+    const fetchApiMock = {
+      fetch: jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
           expiresAt: getExpiresAtInFuture(),
-        },
+        }),
       }),
     };
 
     await renderInTestApp(
-      <TestApiProvider apis={[[apiRef, apiMock]]}>
-        <CookieAuthRefreshProvider apiRef={apiRef}>
+      <TestApiProvider
+        apis={[
+          [fetchApiRef, fetchApiMock],
+          [discoveryApiRef, discoveryApiMock],
+        ]}
+      >
+        <CookieAuthRefreshProvider pluginId="techdocs">
           <div>Test Content</div>
         </CookieAuthRefreshProvider>
       </TestApiProvider>,

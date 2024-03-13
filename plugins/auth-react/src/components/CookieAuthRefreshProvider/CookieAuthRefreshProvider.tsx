@@ -16,27 +16,31 @@
 
 import React, { ReactNode } from 'react';
 import { ErrorPanel } from '@backstage/core-components';
-import { ApiRef, useApp } from '@backstage/core-plugin-api';
+import { useApp } from '@backstage/core-plugin-api';
 import { Button } from '@material-ui/core';
-import { useCookieAuthRefresh } from '../../hooks';
-import { AuthApi } from '../../types';
+import { useCookieAuthRefresh, CookieAuthRefreshOptions } from '../../hooks';
+
+/**
+ * @public
+ * Props for the {@link CookieAuthRefreshProvider} component.
+ */
+export type CookieAuthRefreshProviderProps = CookieAuthRefreshOptions & {
+  // The children to render when the refresh is successful
+  children: ReactNode;
+};
 
 /**
  * @public
  * A provider that will refresh the cookie when it is about to expire.
- * It receives an `apiRef` and `children` as props, and expects that apiRef extends the `AuthApi` interface.
  */
-export function CookieAuthRefreshProvider<T extends AuthApi>({
-  apiRef,
+export function CookieAuthRefreshProvider({
   children,
-}: {
-  apiRef: ApiRef<T>;
-  children: ReactNode;
-}) {
+  ...rest
+}: CookieAuthRefreshProviderProps) {
   const app = useApp();
   const { Progress } = app.getComponents();
 
-  const { state, actions } = useCookieAuthRefresh({ apiRef });
+  const { state, actions } = useCookieAuthRefresh(rest);
 
   if (state.status === 'error' && state.error) {
     return (

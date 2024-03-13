@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
-export { useCookieAuthRefresh } from './useCookieAuthRefresh';
+export {
+  useCookieAuthRefresh,
+  type CookieAuthRefreshOptions,
+} from './useCookieAuthRefresh';

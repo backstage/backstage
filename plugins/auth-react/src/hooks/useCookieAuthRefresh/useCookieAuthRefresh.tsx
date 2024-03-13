@@ -15,9 +15,13 @@
  */
 
 import { useEffect, useState, useCallback } from 'react';
-import { ApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  discoveryApiRef,
+  fetchApiRef,
+  useApi,
+} from '@backstage/core-plugin-api';
 import { useAsync, useMountEffect } from '@react-hookz/web';
-import { AuthApi } from '../../types';
+import { ResponseError } from '@backstage/errors';
 
 type CookieAuthRefreshMessage = MessageEvent<{
   action: string;
@@ -28,22 +32,43 @@ type CookieAuthRefreshMessage = MessageEvent<{
 
 /**
  * @public
- * It receives an `apiRef` as options, and expects that apiRef extends the `AuthApi` interface.
+ * The options for the {@link useCookieAuthRefresh} hook.
+ */
+export type CookieAuthRefreshOptions = {
+  // The plugin ID to used for discovering the API origin
+  pluginId: string;
+  // The path to used for calling the refresh cookie endpoint, default to '/cookie'
+  path?: string;
+};
+
+/**
+ * @public
+ * A hook that will refresh the cookie when it is about to expire.
  * @remarks
  * This hook expects a `BroadcastChannel` to be available in the global scope.
  */
-export function useCookieAuthRefresh<T extends AuthApi>({
-  apiRef,
-}: {
-  apiRef: ApiRef<T>;
-}) {
-  const api = useApi(apiRef);
+export function useCookieAuthRefresh({
+  pluginId,
+  path = '/cookie',
+}: CookieAuthRefreshOptions) {
+  const fetchApi = useApi(fetchApiRef);
+  const discoveryApi = useApi(discoveryApiRef);
 
   const [channel] = useState(
-    () => new BroadcastChannel(`${apiRef.id}-auth-cookie-channel`),
+    () => new BroadcastChannel(`${pluginId}-auth-cookie-channel`),
   );
 
-  const [state, actions] = useAsync(async () => await api.getCookie());
+  const [state, actions] = useAsync(async () => {
+    const apiOrigin = await discoveryApi.getBaseUrl(pluginId);
+    const requestUrl = `${apiOrigin}${path}`;
+    const response = await fetchApi.fetch(`${requestUrl}`, {
+      credentials: 'include',
+    });
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+    return await response.json();
+  });
 
   useMountEffect(actions.execute);
 

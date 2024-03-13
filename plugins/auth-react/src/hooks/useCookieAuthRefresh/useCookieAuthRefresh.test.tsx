@@ -16,16 +16,28 @@
 
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
-import { createApiRef } from '@backstage/core-plugin-api';
+import { fetchApiRef, discoveryApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 import { useCookieAuthRefresh } from './useCookieAuthRefresh';
-import { AuthApi } from '../../types';
 
 describe('useCookieAuthRefresh', () => {
+  const discoveryApiMock = {
+    getBaseUrl: jest
+      .fn()
+      .mockResolvedValue('http://localhost:7000/techdocs/api'),
+  };
+
   const now = 1710316886171;
   const tenMinutesInMilliseconds = 10 * 60 * 1000;
   const tenMinutesFromNowInMilliseconds = now + tenMinutesInMilliseconds;
   const expiresAt = new Date(tenMinutesFromNowInMilliseconds).toISOString();
+
+  const fetchApiMock = {
+    fetch: jest.fn().mockResolvedValue({
+      ok: true,
+      json: jest.fn().mockResolvedValue({ expiresAt }),
+    }),
+  };
 
   type Listener = (event: { data: any }) => void;
 
@@ -34,6 +46,7 @@ describe('useCookieAuthRefresh', () => {
 
   beforeEach(() => {
     jest.useFakeTimers({ now });
+    jest.clearAllMocks();
     listeners = [];
     channelMock = {
       postMessage: jest.fn((message: any) => {
@@ -58,32 +71,53 @@ describe('useCookieAuthRefresh', () => {
   });
 
   it('should return a loading status when the refresh is in progress', () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
-    const apiMock = {
-      getCookie: jest.fn(),
-    };
-
-    const { result } = renderHook(() => useCookieAuthRefresh({ apiRef }), {
-      wrapper: ({ children }) => (
-        <TestApiProvider apis={[[apiRef, apiMock]]}>{children}</TestApiProvider>
-      ),
-    });
+    const { result } = renderHook(
+      () => useCookieAuthRefresh({ pluginId: 'techdocs' }),
+      {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[
+              [
+                fetchApiRef,
+                {
+                  fetch: jest.fn(),
+                },
+              ],
+              [discoveryApiRef, discoveryApiMock],
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      },
+    );
 
     expect(result.current.state.status).toBe('loading');
   });
 
   it('should return an error status when the refresh has failed', async () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
     const error = new Error('Failed to get cookie');
-    const apiMock = {
-      getCookie: jest.fn().mockRejectedValue(error),
-    };
 
-    const { result } = renderHook(() => useCookieAuthRefresh({ apiRef }), {
-      wrapper: ({ children }) => (
-        <TestApiProvider apis={[[apiRef, apiMock]]}>{children}</TestApiProvider>
-      ),
-    });
+    const { result } = renderHook(
+      () => useCookieAuthRefresh({ pluginId: 'techdocs' }),
+      {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[
+              [
+                fetchApiRef,
+                {
+                  fetch: jest.fn().mockRejectedValue(error),
+                },
+              ],
+              [discoveryApiRef, discoveryApiMock],
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      },
+    );
 
     await waitFor(() => expect(result.current.state.status).toBe('error'));
 
@@ -91,38 +125,48 @@ describe('useCookieAuthRefresh', () => {
   });
 
   it('should call the api to get the cookie and use it', async () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
-    const apiMock = {
-      getCookie: jest.fn().mockResolvedValue({ expiresAt }),
-    };
-
-    const { result } = renderHook(() => useCookieAuthRefresh({ apiRef }), {
-      wrapper: ({ children }) => (
-        <TestApiProvider apis={[[apiRef, apiMock]]}>{children}</TestApiProvider>
-      ),
-    });
-
-    expect(apiMock.getCookie).toHaveBeenCalled();
+    const { result } = renderHook(
+      () => useCookieAuthRefresh({ pluginId: 'techdocs' }),
+      {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[
+              [fetchApiRef, fetchApiMock],
+              [discoveryApiRef, discoveryApiMock],
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      },
+    );
 
     await waitFor(() =>
-      expect(result.current.state.result).toMatchObject({ expiresAt }),
+      expect(fetchApiMock.fetch).toHaveBeenCalledWith(
+        'http://localhost:7000/techdocs/api/cookie',
+        { credentials: 'include' },
+      ),
     );
+
+    expect(result.current.state.result).toMatchObject({ expiresAt });
   });
 
   it('should send a message to other tabs when the cookie is refreshed', async () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
-    const apiMock = {
-      getCookie: jest.fn().mockResolvedValue({ expiresAt }),
-    };
-
-    renderHook(() => useCookieAuthRefresh({ apiRef }), {
+    renderHook(() => useCookieAuthRefresh({ pluginId: 'techdocs' }), {
       wrapper: ({ children }) => (
-        <TestApiProvider apis={[[apiRef, apiMock]]}>{children}</TestApiProvider>
+        <TestApiProvider
+          apis={[
+            [fetchApiRef, fetchApiMock],
+            [discoveryApiRef, discoveryApiMock],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
       ),
     });
 
     expect(global.BroadcastChannel).toHaveBeenCalledWith(
-      'auth-test-auth-cookie-channel',
+      'techdocs-auth-cookie-channel',
     );
 
     await waitFor(() =>
@@ -139,14 +183,16 @@ describe('useCookieAuthRefresh', () => {
   });
 
   it('should cancel the refresh when a message is received from another tab', async () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
-    const apiMock = {
-      getCookie: jest.fn().mockResolvedValue({ expiresAt }),
-    };
-
-    renderHook(() => useCookieAuthRefresh({ apiRef }), {
+    renderHook(() => useCookieAuthRefresh({ pluginId: 'techdocs' }), {
       wrapper: ({ children }) => (
-        <TestApiProvider apis={[[apiRef, apiMock]]}>{children}</TestApiProvider>
+        <TestApiProvider
+          apis={[
+            [fetchApiRef, fetchApiMock],
+            [discoveryApiRef, discoveryApiMock],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
       ),
     });
 
@@ -169,37 +215,35 @@ describe('useCookieAuthRefresh', () => {
     jest.advanceTimersByTime(tenMinutesInMilliseconds);
 
     // should not call the api
-    expect(apiMock.getCookie).toHaveBeenCalledTimes(1);
+    expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1);
 
     // advance the timers in more 10 minutes to match the new expires at
     jest.advanceTimersByTime(tenMinutesInMilliseconds);
 
     // should call the api
-    await waitFor(() => expect(apiMock.getCookie).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(2));
   });
 
   it('should cancel the refresh when the component is unmounted', async () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
-    const apiMock = {
-      getCookie: jest.fn().mockResolvedValue({ expiresAt }),
-    };
-
     const { result, unmount } = renderHook(
-      () => useCookieAuthRefresh({ apiRef }),
+      () => useCookieAuthRefresh({ pluginId: 'techdocs' }),
       {
         wrapper: ({ children }) => (
-          <TestApiProvider apis={[[apiRef, apiMock]]}>
+          <TestApiProvider
+            apis={[
+              [fetchApiRef, fetchApiMock],
+              [discoveryApiRef, discoveryApiMock],
+            ]}
+          >
             {children}
           </TestApiProvider>
         ),
       },
     );
 
-    expect(apiMock.getCookie).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1));
 
-    await waitFor(() =>
-      expect(result.current.state.result).toMatchObject({ expiresAt }),
-    );
+    expect(result.current.state.result).toMatchObject({ expiresAt });
 
     unmount();
 
@@ -213,27 +257,31 @@ describe('useCookieAuthRefresh', () => {
     jest.advanceTimersByTime(tenMinutesInMilliseconds);
 
     // should not call the api after unmount
-    await waitFor(() => expect(apiMock.getCookie).not.toHaveBeenCalledTimes(2));
+    await waitFor(() =>
+      expect(fetchApiMock.fetch).not.toHaveBeenCalledTimes(2),
+    );
   });
 
   it('should refresh the cookie when it is about to expire', async () => {
-    const apiRef = createApiRef<AuthApi>({ id: 'auth-test' });
-    const apiMock = {
-      getCookie: jest.fn().mockResolvedValue({ expiresAt }),
-    };
-
-    renderHook(() => useCookieAuthRefresh({ apiRef }), {
+    renderHook(() => useCookieAuthRefresh({ pluginId: 'techdocs' }), {
       wrapper: ({ children }) => (
-        <TestApiProvider apis={[[apiRef, apiMock]]}>{children}</TestApiProvider>
+        <TestApiProvider
+          apis={[
+            [fetchApiRef, fetchApiMock],
+            [discoveryApiRef, discoveryApiMock],
+          ]}
+        >
+          {children}
+        </TestApiProvider>
       ),
     });
 
-    expect(apiMock.getCookie).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1));
 
     // advance the timers to the expiration date
     jest.advanceTimersByTime(tenMinutesInMilliseconds);
 
     // should call the api
-    await waitFor(() => expect(apiMock.getCookie).toHaveBeenCalledTimes(2));
+    await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(2));
   });
 });
