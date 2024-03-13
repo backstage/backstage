@@ -46,8 +46,7 @@ export const NotificationsPage = () => {
   const [sorting, setSorting] = React.useState<SortBy>(
     SortByOptions.newest.sortBy,
   );
-  const [severity, setSeverity] =
-    React.useState<NotificationSeverity>('normal');
+  const [severity, setSeverity] = React.useState<NotificationSeverity>('low');
 
   const { error, value, retry, loading } = useNotificationsApi(
     api => {
@@ -55,7 +54,7 @@ export const NotificationsPage = () => {
         search: containsText,
         limit: pageSize,
         offset: pageNumber * pageSize,
-        minimalSeverity: severity,
+        minimumSeverity: severity,
         ...(sorting || {}),
       };
       if (unreadOnly !== undefined) {

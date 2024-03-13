@@ -35,7 +35,7 @@ export type GetNotificationsOptions = {
   createdAfter?: Date;
   sort?: 'created' | 'topic' | 'origin';
   sortOrder?: 'asc' | 'desc';
-  minimalSeverity?: NotificationSeverity;
+  minimumSeverity?: NotificationSeverity;
 };
 
 /** @public */

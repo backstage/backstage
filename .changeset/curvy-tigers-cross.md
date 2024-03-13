@@ -3,4 +3,4 @@
 '@backstage/plugin-notifications': patch
 ---
 
-all notifications can be marked and filtered by severity critical, high, normal or low, the default is 'normal'
+All notifications can be marked and filtered by severity critical, high, normal or low, the default is 'normal'

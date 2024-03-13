@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
-import {
-  DatabaseNotificationsStore,
-  getNumericSeverity,
-} from './DatabaseNotificationsStore';
+import { DatabaseNotificationsStore } from './DatabaseNotificationsStore';
 import { Knex } from 'knex';
 import {
   Notification,
@@ -300,7 +297,7 @@ describe.each(databases.eachSupportedId())(
       it('normal', async () => {
         const normal = await storage.getNotifications({
           user,
-          minimalSeverity: getNumericSeverity('normal'),
+          minimumSeverity: 'normal',
         });
         expect(normal.map(idOnly)).toEqual([id1, id2, id3, id4]);
       });
@@ -308,7 +305,7 @@ describe.each(databases.eachSupportedId())(
       it('critical', async () => {
         const critical = await storage.getNotifications({
           user,
-          minimalSeverity: getNumericSeverity('critical'),
+          minimumSeverity: 'critical',
         });
         expect(critical.length).toBe(1);
         expect(critical.at(0)?.id).toEqual(id3);
@@ -317,7 +314,7 @@ describe.each(databases.eachSupportedId())(
       it('high', async () => {
         const high = await storage.getNotifications({
           user,
-          minimalSeverity: getNumericSeverity('high'),
+          minimumSeverity: 'high',
         });
         expect(high.map(idOnly)).toEqual([id3, id4]);
       });
@@ -325,7 +322,7 @@ describe.each(databases.eachSupportedId())(
       it('low', async () => {
         const low = await storage.getNotifications({
           user,
-          minimalSeverity: getNumericSeverity('low'),
+          minimumSeverity: 'low',
         });
         expect(low.map(idOnly)).toEqual([id1, id2, id3, id4, id5]);
       });

@@ -18,7 +18,7 @@ import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import {
   DatabaseNotificationsStore,
-  getNumericSeverity,
+  normalizeSeverity,
   NotificationGetOptions,
 } from '../database';
 import { v4 as uuid } from 'uuid';
@@ -239,7 +239,7 @@ export async function createRouter(
       opts.createdAfter = new Date(sinceEpoch);
     }
     if (req.query.minimal_severity) {
-      opts.minimalSeverity = getNumericSeverity(
+      opts.minimumSeverity = normalizeSeverity(
         req.query.minimal_severity.toString(),
       );
     }

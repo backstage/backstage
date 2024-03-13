@@ -39,9 +39,13 @@ const severities: NotificationSeverity[] = [
   'normal',
   'low',
 ];
-export const getNumericSeverity = (severity: string): Number => {
-  const idx = severities.indexOf(severity as NotificationSeverity);
-  return idx >= 0 ? idx : 2 /* normal */;
+
+export const normalizeSeverity = (input?: string): NotificationSeverity => {
+  let lower = (input ?? 'normal').toLowerCase() as NotificationSeverity;
+  if (severities.indexOf(lower) < 0) {
+    lower = 'normal';
+  }
+  return lower;
 };
 
 /** @internal */
@@ -84,7 +88,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         description: row.description,
         link: row.link,
         topic: row.topic,
-        severity: severities[row.severity],
+        severity: row.severity,
         scope: row.scope,
         icon: row.icon,
       },
@@ -101,7 +105,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload?.link,
       title: notification.payload?.title,
       description: notification.payload?.description,
-      severity: getNumericSeverity(notification.payload?.severity ?? 'normal'),
+      severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
       saved: notification.saved,
       read: notification.read,
@@ -169,8 +173,10 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       query.whereNull('notification.saved');
     } // or match both if undefined
 
-    if (options.minimalSeverity !== undefined) {
-      query.where('notification.severity', '<=', options.minimalSeverity);
+    if (options.minimumSeverity !== undefined) {
+      const idx = severities.indexOf(options.minimumSeverity);
+      const equalOrHigher = severities.slice(0, idx + 1);
+      query.whereIn('notification.severity', equalOrHigher);
     }
 
     return query;
@@ -260,7 +266,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload.link,
       topic: notification.payload.topic,
       updated: new Date(),
-      severity: getNumericSeverity(notification.payload?.severity ?? 'normal'),
+      severity: normalizeSeverity(notification.payload?.severity),
       read: null,
     });
 
