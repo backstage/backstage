@@ -22,6 +22,7 @@ export type GetNotificationsOptions = {
   limit?: number;
   search?: string;
   read?: boolean;
+  saved?: boolean;
   createdAfter?: Date;
   sort?: 'created' | 'topic' | 'origin';
   sortOrder?: 'asc' | 'desc';
