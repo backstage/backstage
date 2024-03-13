@@ -34,7 +34,7 @@ export function useCookieAuthRefresh<T extends AuthApi>({
   const api = useApi(apiRef);
 
   const [channel] = useState(
-    () => new BroadcastChannel(`${apiRef.id}.auth.cookie.channel`),
+    () => new BroadcastChannel(`${apiRef.id}-auth-cookie-channel`),
   );
 
   const [state, actions] = useAsync(async () => await api.getCookie());
