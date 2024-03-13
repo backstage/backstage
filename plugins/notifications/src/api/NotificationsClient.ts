@@ -61,6 +61,9 @@ export class NotificationsClient implements NotificationsApi {
     if (options?.read !== undefined) {
       queryString.append('read', options.read ? 'true' : 'false');
     }
+    if (options?.saved !== undefined) {
+      queryString.append('saved', options.saved ? 'true' : 'false');
+    }
     if (options?.createdAfter !== undefined) {
       queryString.append('created_after', options.createdAfter.toISOString());
     }
