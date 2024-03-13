@@ -114,7 +114,6 @@ export async function createRouter(
       targetPluginId: 'catalog',
     });
 
-    // TODO: Support for broadcast
     if (entityRef === null) {
       return [];
     }
@@ -174,7 +173,7 @@ export async function createRouter(
   };
 
   const decorateNotification = async (notification: Notification) => {
-    let ret: Notification = notification;
+    let ret = notification;
     for (const processor of processors ?? []) {
       ret = processor.decorate ? await processor.decorate(ret) : ret;
     }
@@ -308,43 +307,59 @@ export async function createRouter(
     res.status(200).send(notifications);
   });
 
-  // Add new notification
-  router.post('/', async (req, res) => {
-    const { recipients, payload } = req.body;
-    const notifications = [];
-    let users = [];
-
-    const credentials = await httpAuth.credentials(req, { allow: ['service'] });
-
-    const { title, scope } = payload;
-
-    if (!recipients || !title) {
-      logger.error(`Invalid notification request received`);
-      throw new InputError();
-    }
-
-    let entityRef = null;
-    // TODO: Support for broadcast notifications
-    if (recipients.entityRef && recipients.type === 'entity') {
-      entityRef = recipients.entityRef;
-    }
-
-    try {
-      users = await getUsersForEntityRef(entityRef);
-    } catch (e) {
-      throw new InputError();
-    }
-
-    const origin = credentials.principal.subject;
-    const baseNotification: Omit<Notification, 'id' | 'user'> = {
-      payload: {
-        ...payload,
-        severity: payload.severity ?? 'normal',
-      },
-      origin,
-      created: new Date(),
+  const sendBroadcastNotification = async (
+    baseNotification: Omit<Notification, 'user' | 'id'>,
+    opts: { scope?: string; origin: string },
+  ) => {
+    const { scope, origin } = opts;
+    const broadcastNotification = {
+      ...baseNotification,
+      id: uuid(),
     };
+    const notification = await decorateNotification({
+      ...broadcastNotification,
+      user: '',
+    });
+    let existingNotification;
+    if (scope) {
+      existingNotification = await store.getExistingScopeBroadcast({
+        scope,
+        origin,
+      });
+    }
 
+    let ret = notification;
+    if (existingNotification) {
+      const restored = await store.restoreExistingNotification({
+        id: existingNotification.id,
+        notification: { ...notification, user: '' },
+      });
+      ret = restored ?? notification;
+    } else {
+      await store.saveBroadcast(notification);
+    }
+    processorSendNotification(ret);
+
+    if (signals) {
+      await signals.publish<NewNotificationSignal>({
+        recipients: null,
+        message: {
+          action: 'new_notification',
+          notification_id: ret.id,
+        },
+        channel: 'notifications',
+      });
+    }
+    return notification;
+  };
+
+  const sendUserNotifications = async (
+    baseNotification: Omit<Notification, 'user' | 'id'>,
+    users: string[],
+    opts: { scope?: string; origin: string },
+  ) => {
+    const notifications = [];
+    const { scope, origin } = opts;
     const uniqueUsers = [...new Set(users)];
     for (const user of uniqueUsers) {
       const userNotification = {
@@ -387,6 +402,55 @@ export async function createRouter(
           channel: 'notifications',
         });
       }
+    }
+    return notifications;
+  };
+
+  // Add new notification
+  router.post('/', async (req, res) => {
+    const { recipients, payload } = req.body;
+    const notifications = [];
+    let users = [];
+
+    const credentials = await httpAuth.credentials(req, { allow: ['service'] });
+
+    const { title, scope } = payload;
+
+    if (!recipients || !title) {
+      logger.error(`Invalid notification request received`);
+      throw new InputError();
+    }
+
+    const origin = credentials.principal.subject;
+    const baseNotification = {
+      payload: {
+        ...payload,
+        severity: payload.severity ?? 'normal',
+      },
+      origin,
+      created: new Date(),
+    };
+
+    if (recipients.type === 'broadcast') {
+      const broadcast = await sendBroadcastNotification(baseNotification, {
+        scope,
+        origin,
+      });
+      notifications.push(broadcast);
+    } else {
+      const entityRef = recipients.entityRef;
+
+      try {
+        users = await getUsersForEntityRef(entityRef);
+      } catch (e) {
+        throw new InputError();
+      }
+      const userNotifications = await sendUserNotifications(
+        baseNotification,
+        users,
+        { scope, origin },
+      );
+      notifications.push(...userNotifications);
     }
 
     res.json(notifications);
