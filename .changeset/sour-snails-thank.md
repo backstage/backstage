@@ -2,4 +2,4 @@
 '@backstage/plugin-cloudbuild': minor
 ---
 
-Add Trigger Name
+Added a new column to `EntityCloudbuildContent` displaying the trigger name for each build.
