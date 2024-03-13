@@ -3,7 +3,8 @@
   "version": "0.2.35-next.2",
   "description": "A Backstage plugin that lets you browse TODO comments in your source code",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "moved": "@backstage-community/todo"
   },
   "publishConfig": {
     "access": "public",
@@ -54,5 +55,6 @@
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  }
+  },
+  "deprecated": true
 }
