@@ -41,12 +41,13 @@ export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
       columns={columns}
       data={data}
       options={{
+        ...options,
+        // These settings are configured to force server side pagination
         paginationPosition: 'both',
         pageSizeOptions: [],
         showFirstLastPageButtons: false,
         pageSize: Number.MAX_SAFE_INTEGER,
         emptyRowsWhenPaging: false,
-        ...options,
       }}
       onSearchChange={(searchText: string) =>
         updateFilters({
