@@ -18,7 +18,7 @@ import React from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import { Controller, Control, UseFormSetValue } from 'react-hook-form';
 import { FormValues } from '../../types';
-import KeyboardDatePicker from '@material-ui/pickers/KeyboardDatePicker';
+import { KeyboardDatePicker } from '@material-ui/pickers/DatePicker';
 import MuiPickersUtilsProvider from '@material-ui/pickers/MuiPickersUtilsProvider';
 import LuxonUtils from '@date-io/luxon';
 import IconButton from '@material-ui/core/IconButton';
