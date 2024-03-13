@@ -46,7 +46,6 @@ import {
 } from './types/api';
 import { isQueryEntitiesInitialRequest } from './utils';
 import { DefaultApiClient, TypedResponse } from './generated';
-import { featureDetector, hasQueryEntities } from './helpers';
 
 /**
  * A frontend and backend compatible client for communicating with the Backstage
@@ -56,16 +55,20 @@ import { featureDetector, hasQueryEntities } from './helpers';
  */
 export class CatalogClient implements CatalogApi {
   private readonly apiClient: DefaultApiClient;
-  private readonly hasQueryEntities: (
-    options?: CatalogRequestOptions,
-  ) => Promise<boolean | undefined>;
+  private readonly disableQueryEntitiesEmulation: boolean;
 
   constructor(options: {
     discoveryApi: { getBaseUrl(pluginId: string): Promise<string> };
     fetchApi?: { fetch: typeof fetch };
+    /**
+     * If set to true, the client will not attempt to use the more efficient
+     * queryEntities to emulate getEntities calls.
+     */
+    disableQueryEntitiesEmulation?: boolean;
   }) {
     this.apiClient = new DefaultApiClient(options);
-    this.hasQueryEntities = featureDetector(hasQueryEntities(this.apiClient));
+    this.disableQueryEntitiesEmulation =
+      options.disableQueryEntitiesEmulation ?? false;
   }
 
   /**
@@ -119,7 +122,7 @@ export class CatalogClient implements CatalogApi {
   ): Promise<GetEntitiesResponse> {
     const { filter, fields, order, offset, limit, after } = request ?? {};
 
-    if (!offset && !after && (await this.hasQueryEntities(options))) {
+    if (!offset && !after && !this.disableQueryEntitiesEmulation) {
       return await this.emulateGetEntitiesWithQueryEntities(
         { filter, fields, orderFields: order, limit },
         options,

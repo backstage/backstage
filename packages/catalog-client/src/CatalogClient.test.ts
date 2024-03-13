@@ -35,15 +35,9 @@ const discoveryApi: DiscoveryApi = {
 };
 
 describe('CatalogClient', () => {
-  let client: CatalogClient;
-
   beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
   afterAll(() => server.close());
   afterEach(() => server.resetHandlers());
-
-  beforeEach(() => {
-    client = new CatalogClient({ discoveryApi });
-  });
 
   describe('getEntities', () => {
     const defaultServiceResponse: Entity[] = [
@@ -73,14 +67,14 @@ describe('CatalogClient', () => {
         rest.get(`${mockBaseUrl}/entities`, (_, res, ctx) => {
           return res(ctx.json(defaultServiceResponse));
         }),
-        // disable the by-query feature detection
-        rest.get(`${mockBaseUrl}/entities/by-query`, (_, res, ctx) => {
-          return res(ctx.status(404));
-        }),
       );
     });
 
     it('should fetch entities from correct endpoint', async () => {
+      const client = new CatalogClient({
+        discoveryApi,
+        disableQueryEntitiesEmulation: true,
+      });
       const response = await client.getEntities({}, { token });
       expect(response).toEqual(defaultResponse);
     });
@@ -100,6 +94,10 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({
+        discoveryApi,
+        disableQueryEntitiesEmulation: true,
+      });
       const response = await client.getEntities(
         {
           filter: [
@@ -133,6 +131,10 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({
+        discoveryApi,
+        disableQueryEntitiesEmulation: true,
+      });
       const response = await client.getEntities(
         {
           filter: {
@@ -157,6 +159,10 @@ describe('CatalogClient', () => {
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
+      const client = new CatalogClient({
+        discoveryApi,
+        disableQueryEntitiesEmulation: true,
+      });
       const response = await client.queryEntities(
         {
           filter: [
@@ -191,6 +197,10 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({
+        discoveryApi,
+        disableQueryEntitiesEmulation: true,
+      });
       const response = await client.getEntities(
         {
           fields: ['a.b', 'ö'],
@@ -208,6 +218,10 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({
+        discoveryApi,
+        disableQueryEntitiesEmulation: true,
+      });
       const response = await client.getEntities(
         {
           fields: ['apiVersion'],
@@ -231,6 +245,10 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({
+        discoveryApi,
+        disableQueryEntitiesEmulation: true,
+      });
       const response = await client.getEntities(
         { offset: 1, limit: 2, after: '=' },
         { token },
@@ -253,6 +271,10 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({
+        discoveryApi,
+        disableQueryEntitiesEmulation: true,
+      });
       const response = await client.getEntities(
         {
           order: [
@@ -296,7 +318,6 @@ describe('CatalogClient', () => {
       ];
 
       const expectedLimits = [
-        '1', // the feature detection probe
         '1000', // first page
         '1000', // second page
       ];
@@ -312,6 +333,7 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({ discoveryApi });
       const response = await client.getEntities();
 
       expect(response).toEqual({ items: entities });
@@ -350,7 +372,6 @@ describe('CatalogClient', () => {
       ];
 
       const expectedLimits = [
-        '1', // the feature detection probe
         '3', // first page
         '1', // second page
       ];
@@ -366,6 +387,7 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({ discoveryApi });
       const response = await client.getEntities({ limit: 3 });
 
       expect(response).toEqual({ items: entities });
@@ -393,6 +415,7 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({ discoveryApi });
       const response = await client.getEntitiesByRefs(
         {
           entityRefs: ['k:n/a', 'k:n/b'],
@@ -444,6 +467,7 @@ describe('CatalogClient', () => {
     });
 
     it('should fetch entities from correct endpoint', async () => {
+      const client = new CatalogClient({ discoveryApi });
       const response = await client.queryEntities({}, { token });
       expect(response?.items).toEqual(defaultResponse.items);
       expect(response?.totalItems).toEqual(defaultResponse.totalItems);
@@ -460,6 +484,7 @@ describe('CatalogClient', () => {
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
+      const client = new CatalogClient({ discoveryApi });
       const response = await client.queryEntities(
         {
           filter: [
@@ -501,6 +526,7 @@ describe('CatalogClient', () => {
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
+      const client = new CatalogClient({ discoveryApi });
       const response = await client.queryEntities(
         {
           filter: [
@@ -532,6 +558,7 @@ describe('CatalogClient', () => {
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
+      const client = new CatalogClient({ discoveryApi });
       await client.queryEntities({
         fields: ['a', 'b'],
         limit: 100,
@@ -565,6 +592,7 @@ describe('CatalogClient', () => {
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
+      const client = new CatalogClient({ discoveryApi });
       await client.queryEntities({
         fields: ['a', 'b'],
         limit: 100,
@@ -612,6 +640,7 @@ describe('CatalogClient', () => {
 
       server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
 
+      const client = new CatalogClient({ discoveryApi });
       const response = await client.queryEntities({
         limit: 2,
       });
@@ -660,6 +689,7 @@ describe('CatalogClient', () => {
     });
 
     it('finds by string and compound', async () => {
+      const client = new CatalogClient({ discoveryApi });
       await expect(
         client.getEntityByRef('customkind:default/exists'),
       ).resolves.toEqual(existingEntity);
@@ -673,6 +703,7 @@ describe('CatalogClient', () => {
     });
 
     it('returns undefined for 404s', async () => {
+      const client = new CatalogClient({ discoveryApi });
       await expect(
         client.getEntityByRef('customkind:default/missing'),
       ).resolves.toBeUndefined();
@@ -702,6 +733,7 @@ describe('CatalogClient', () => {
     });
 
     it('should locations from correct endpoint', async () => {
+      const client = new CatalogClient({ discoveryApi });
       const response = await client.getLocationById('42', { token });
       expect(response).toEqual(defaultResponse);
     });
@@ -716,6 +748,7 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({ discoveryApi });
       await client.getLocationById('42', { token });
     });
 
@@ -729,6 +762,7 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({ discoveryApi });
       await client.getLocationById('42');
     });
   });
@@ -751,6 +785,7 @@ describe('CatalogClient', () => {
     });
 
     it('should locations from correct endpoint', async () => {
+      const client = new CatalogClient({ discoveryApi });
       const response = await client.getLocationByEntity(
         { kind: 'c', namespace: 'ns', name: 'n' },
         { token },
@@ -771,6 +806,7 @@ describe('CatalogClient', () => {
         ),
       );
 
+      const client = new CatalogClient({ discoveryApi });
       await client.getLocationByEntity(
         { kind: 'c', namespace: 'ns', name: 'n' },
         { token },
@@ -790,6 +826,7 @@ describe('CatalogClient', () => {
         ),
       );
 
+      const client = new CatalogClient({ discoveryApi });
       await client.getLocationByEntity({
         kind: 'c',
         namespace: 'ns',
@@ -815,6 +852,7 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({ discoveryApi });
       expect(
         await client.validateEntity(
           {
@@ -843,6 +881,7 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({ discoveryApi });
       expect(
         await client.validateEntity(
           {
@@ -866,6 +905,7 @@ describe('CatalogClient', () => {
         }),
       );
 
+      const client = new CatalogClient({ discoveryApi });
       await expect(() =>
         client.validateEntity(
           {

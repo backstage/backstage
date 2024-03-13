@@ -94,6 +94,7 @@ export class CatalogClient implements CatalogApi {
     fetchApi?: {
       fetch: typeof fetch;
     };
+    disableQueryEntitiesEmulation?: boolean;
   });
   addLocation(
     request: AddLocationRequest,
