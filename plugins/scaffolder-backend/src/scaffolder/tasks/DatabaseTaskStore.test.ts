@@ -161,6 +161,44 @@ describe('DatabaseTaskStore', () => {
     expect(claimedTask.status).toBe('processing');
   });
 
+  it('should restore the state of the task after the task recovery', async () => {
+    const { store } = await createStore();
+    const { taskId } = await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    const task = await store.getTask(taskId);
+    expect(task.status).toBe('open');
+    await store.claimTask();
+
+    const state = {
+      state: {
+        checkpoints: {
+          'v1.task.checkpoint.deploy.to.stg': {
+            status: 'success',
+            value: true,
+          },
+          'v1.task.checkpoint.deploy.to.pro': {
+            status: 'success',
+            value: true,
+          },
+        },
+      },
+    };
+
+    await store.saveTaskState({
+      taskId,
+      state,
+    });
+
+    await store.recoverTasks({ timeout: { milliseconds: 0 } });
+    await store.claimTask();
+
+    const claimedTask = await store.getTask(taskId);
+    expect(claimedTask.state).toEqual({ state });
+  });
+
   it('should shutdown the running task', async () => {
     const { store } = await createStore();
     const { taskId } = await store.createTask({
