@@ -41,7 +41,9 @@ export default async function createPlugin(
     await env.database.getClient(),
     router,
   );
-  unprocessed.registerRoutes();
+
+  unprocessed.registerRoutes({ permissions: env.permissions });
+
   await processingEngine.start();
   return router;
 }
