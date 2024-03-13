@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-test-utils",
-  "version": "0.3.4-next.1",
+  "version": "0.3.4-next.2",
   "description": "Test helpers library for Backstage backends",
   "backstage": {
     "role": "node-library"

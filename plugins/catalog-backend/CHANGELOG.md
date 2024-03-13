@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-backend
 
+## 1.18.0-next.2
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- 6f830bb: Allow passing optional filter to `getEntitiesByRefs`
+- b65788b: Move @backstage/repo-tools to dev dependencies
+- dad018f: Do not fail on stitching when the entity contains `null` values associated to deeply nested or long keys.
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.18-next.2
+  - @backstage/backend-openapi-utils@0.1.7-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-events-node@0.3.0-next.2
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.2
+
 ## 1.18.0-next.1
 
 ### Patch Changes

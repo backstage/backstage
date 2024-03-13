@@ -31,7 +31,9 @@ export type ActionContext<
   TActionInput extends JsonObject,
   TActionOutput extends JsonObject = JsonObject,
 > = {
+  // TODO(blam): move this to LoggerService
   logger: Logger;
+  /** @deprecated - use `ctx.logger` instead */
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;

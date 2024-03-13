@@ -24,7 +24,7 @@ prismTheme.plain.backgroundColor = '#232323';
 /** @type {import('@docusaurus/types').Config} */
 module.exports = {
   title: 'Backstage Software Catalog and Developer Platform',
-  tagline: 'An open platform for building developer portals',
+  tagline: 'An open source framework for building developer portals',
   url: 'https://backstage.io',
   baseUrl: '/',
   organizationName: 'Spotify',

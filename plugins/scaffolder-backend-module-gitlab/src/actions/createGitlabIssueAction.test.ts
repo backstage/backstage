@@ -70,6 +70,7 @@ describe('gitlab:issues:create', () => {
 
     mockGitlabClient.Issues.create.mockResolvedValue({
       id: 42,
+      iid: 1,
       web_url: 'https://gitlab.com/hangar18-/issues/42',
     });
 
@@ -97,6 +98,7 @@ describe('gitlab:issues:create', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
+    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 1);
     expect(mockContext.output).toHaveBeenCalledWith(
       'issueUrl',
       'https://gitlab.com/hangar18-/issues/42',
@@ -116,6 +118,7 @@ describe('gitlab:issues:create', () => {
 
     mockGitlabClient.Issues.create.mockResolvedValue({
       id: 42,
+      iid: 1,
       web_url: 'https://gitlab.com/hangar18-/issues/42',
     });
 
@@ -143,6 +146,7 @@ describe('gitlab:issues:create', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
+    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 1);
     expect(mockContext.output).toHaveBeenCalledWith(
       'issueUrl',
       'https://gitlab.com/hangar18-/issues/42',
@@ -168,6 +172,7 @@ describe('gitlab:issues:create', () => {
 
     mockGitlabClient.Issues.create.mockResolvedValue({
       id: 42,
+      iid: 1,
       web_url: 'https://gitlab.com/hangar18-/issues/42',
     });
 
@@ -196,6 +201,7 @@ describe('gitlab:issues:create', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
+    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 1);
     expect(mockContext.output).toHaveBeenCalledWith(
       'issueUrl',
       'https://gitlab.com/hangar18-/issues/42',

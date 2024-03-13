@@ -28,6 +28,7 @@ import { ScmAuthApi } from '@backstage/integration-react';
 import { Octokit } from '@octokit/rest';
 import { Base64 } from 'js-base64';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
+import YAML from 'yaml';
 import { getGithubIntegrationConfig } from './GitHub';
 import { getBranchName, getCatalogFilename } from '../components/helpers';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
@@ -175,7 +176,15 @@ the component will become available.\n\nFor more information, read an \
     body: string;
   }): Promise<{ link: string; location: string }> {
     const { repositoryUrl, fileContent, title, body } = options;
+    const parseData = YAML.parse(fileContent);
 
+    const validationResponse = await this.catalogApi.validateEntity(
+      parseData,
+      `url:${repositoryUrl}`,
+    );
+    if (!validationResponse.valid) {
+      throw new Error(validationResponse.errors[0].message);
+    }
     const ghConfig = getGithubIntegrationConfig(
       this.scmIntegrationsApi,
       repositoryUrl,
@@ -190,7 +199,6 @@ the component will become available.\n\nFor more information, read an \
         body,
       });
     }
-
     throw new Error('unimplemented!');
   }
 

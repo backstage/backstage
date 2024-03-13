@@ -43,7 +43,7 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(1),
   },
   icon: {
-    color: theme.palette.common.black,
+    color: theme.palette.text.primary,
   },
   list: {
     width: '100%',

@@ -24,24 +24,19 @@ import {
   Select,
   Typography,
 } from '@material-ui/core';
+import { GetNotificationsOptions } from '../../api';
+
+export type SortBy = Required<
+  Pick<GetNotificationsOptions, 'sort' | 'sortOrder'>
+>;
 
 export type NotificationsFiltersProps = {
   unreadOnly?: boolean;
   onUnreadOnlyChanged: (checked: boolean | undefined) => void;
   createdAfter?: string;
   onCreatedAfterChanged: (value: string) => void;
-
-  // sorting?: {
-  //   orderBy: GetNotificationsOrderByEnum;
-  //   orderByDirec: GetNotificationsOrderByDirecEnum;
-  // };
-  // setSorting: ({
-  //   orderBy,
-  //   orderByDirec,
-  // }: {
-  //   orderBy: GetNotificationsOrderByEnum;
-  //   orderByDirec: GetNotificationsOrderByDirecEnum;
-  // }) => void;
+  sorting: SortBy;
+  onSortingChanged: (sortBy: SortBy) => void;
 };
 
 export const CreatedAfterOptions: {
@@ -61,62 +56,65 @@ export const CreatedAfterOptions: {
   },
 };
 
-// export const SortByOptions: {
-//   [key: string]: {
-//     label: string;
-//     orderBy: GetNotificationsOrderByEnum;
-//     orderByDirec: GetNotificationsOrderByDirecEnum;
-//   };
-// } = {
-//   newest: {
-//     label: 'Newest on top',
-//     orderBy: GetNotificationsOrderByEnum.Created,
-//     orderByDirec: GetNotificationsOrderByDirecEnum.Asc,
-//   },
-//   oldest: {
-//     label: 'Oldest on top',
-//     orderBy: GetNotificationsOrderByEnum.Created,
-//     orderByDirec: GetNotificationsOrderByDirecEnum.Desc,
-//   },
-//   topic: {
-//     label: 'Topic',
-//     orderBy: GetNotificationsOrderByEnum.Topic,
-//     orderByDirec: GetNotificationsOrderByDirecEnum.Asc,
-//   },
-//   origin: {
-//     label: 'Origin',
-//     orderBy: GetNotificationsOrderByEnum.Origin,
-//     orderByDirec: GetNotificationsOrderByDirecEnum.Asc,
-//   },
-// };
+export const SortByOptions: {
+  [key: string]: {
+    label: string;
+    sortBy: SortBy;
+  };
+} = {
+  newest: {
+    label: 'Newest on top',
+    sortBy: {
+      sort: 'created',
+      sortOrder: 'desc',
+    },
+  },
+  oldest: {
+    label: 'Oldest on top',
+    sortBy: {
+      sort: 'created',
+      sortOrder: 'asc',
+    },
+  },
+  topic: {
+    label: 'Topic',
+    sortBy: {
+      sort: 'topic',
+      sortOrder: 'asc',
+    },
+  },
+  origin: {
+    label: 'Origin',
+    sortBy: {
+      sort: 'origin',
+      sortOrder: 'asc',
+    },
+  },
+};
 
-// TODO: Implement sorting on server (to work with pagination)
-// const getSortBy = (sorting: NotificationsFiltersProps['sorting']): string => {
-//   if (
-//     sorting?.orderBy === GetNotificationsOrderByEnum.Created &&
-//     sorting.orderByDirec === GetNotificationsOrderByDirecEnum.Desc
-//   ) {
-//     return 'oldest';
-//   }
-//   if (sorting?.orderBy === GetNotificationsOrderByEnum.Topic) {
-//     return 'topic';
-//   }
-//   if (sorting?.orderBy === GetNotificationsOrderByEnum.Origin) {
-//     return 'origin';
-//   }
+const getSortByText = (sortBy?: SortBy): string => {
+  if (sortBy?.sort === 'created' && sortBy?.sortOrder === 'asc') {
+    return 'oldest';
+  }
+  if (sortBy?.sort === 'topic') {
+    return 'topic';
+  }
+  if (sortBy?.sort === 'origin') {
+    return 'origin';
+  }
 
-//   return 'newest';
-// };
+  return 'newest';
+};
 
 export const NotificationsFilters = ({
-  // sorting,
-  // setSorting,
+  sorting,
+  onSortingChanged,
   unreadOnly,
   onUnreadOnlyChanged,
   createdAfter,
   onCreatedAfterChanged,
 }: NotificationsFiltersProps) => {
-  // const sortBy = getSortBy(sorting);
+  const sortByText = getSortByText(sorting);
 
   const handleOnCreatedAfterChanged = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>,
@@ -133,16 +131,13 @@ export const NotificationsFilters = ({
     onUnreadOnlyChanged(value);
   };
 
-  // const handleOnSortByChanged = (
-  //   event: React.ChangeEvent<{ name?: string; value: unknown }>,
-  // ) => {
-  //   const idx = (event.target.value as string) || 'newest';
-  //   const option = SortByOptions[idx];
-  //   setSorting({
-  //     orderBy: option.orderBy,
-  //     orderByDirec: option.orderByDirec,
-  //   });
-  // };
+  const handleOnSortByChanged = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>,
+  ) => {
+    const idx = (event.target.value as string) || 'newest';
+    const option = SortByOptions[idx];
+    onSortingChanged({ ...option.sortBy });
+  };
 
   let unreadOnlyValue = 'all';
   if (unreadOnly) unreadOnlyValue = 'unread';
@@ -191,7 +186,6 @@ export const NotificationsFilters = ({
           </FormControl>
         </Grid>
 
-        {/*
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
             <InputLabel id="notifications-filter-sort">Sort by</InputLabel>
@@ -199,7 +193,7 @@ export const NotificationsFilters = ({
             <Select
               label="Sort by"
               placeholder="Field to sort by"
-              value={sortBy}
+              value={sortByText}
               onChange={handleOnSortByChanged}
             >
               {Object.keys(SortByOptions).map((key: string) => (
@@ -209,7 +203,7 @@ export const NotificationsFilters = ({
               ))}
             </Select>
           </FormControl>
-        </Grid> */}
+        </Grid>
       </Grid>
     </>
   );

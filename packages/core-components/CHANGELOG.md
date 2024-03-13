@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.14.1-next.2
+
+### Patch Changes
+
+- 0c9d5ea: Updated MUI imports for core-components to not be top level
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/version-bridge@1.0.7
+
 ## 0.14.1-next.1
 
 ### Patch Changes

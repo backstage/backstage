@@ -1,5 +1,24 @@
 # @backstage/backend-app-api
 
+## 0.6.0-next.2
+
+### Patch Changes
+
+- 15fda44: Provide some sane defaults for `WinstonLogger.create` making some of the arguments optional
+- 9d91128: Add the possibility to disable watching files in the new backend system
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-node@0.7.25-next.2
+
 ## 0.6.0-next.1
 
 ### Patch Changes
