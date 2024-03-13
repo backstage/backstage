@@ -32,7 +32,7 @@ type PaginatedCatalogTableProps = {
  * @internal
  */
 export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
-  const { columns, data, next, prev, title, isLoading } = props;
+  const { columns, data, next, prev, title, isLoading, options } = props;
   const { updateFilters } = useEntityList();
 
   return (
@@ -46,6 +46,7 @@ export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
         showFirstLastPageButtons: false,
         pageSize: Number.MAX_SAFE_INTEGER,
         emptyRowsWhenPaging: false,
+        ...options,
       }}
       onSearchChange={(searchText: string) =>
         updateFilters({
