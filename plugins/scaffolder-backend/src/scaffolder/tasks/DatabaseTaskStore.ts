@@ -268,6 +268,16 @@ export class DatabaseTaskStore implements TaskStore {
         return undefined;
       }
 
+      const getState = () => {
+        try {
+          return task.state ? JSON.parse(task.state) : undefined;
+        } catch (error) {
+          throw new Error(
+            `Failed to parse state of the task '${task.id}', ${error}`,
+          );
+        }
+      };
+
       const secrets = this.parseTaskSecrets(task);
       return {
         id: task.id,
@@ -277,6 +287,7 @@ export class DatabaseTaskStore implements TaskStore {
         createdAt: task.created_at,
         createdBy: task.created_by ?? undefined,
         secrets,
+        state: getState(),
       };
     });
   }
