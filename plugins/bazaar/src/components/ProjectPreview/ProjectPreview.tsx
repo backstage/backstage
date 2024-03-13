@@ -19,7 +19,7 @@ import { ProjectCard } from '../ProjectCard/ProjectCard';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import TablePagination from '@material-ui/core/TablePagination';
-import GridSize from '@material-ui/core/GridSize';
+import { GridSize } from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import { BazaarProject } from '../../types';
 import { Entity } from '@backstage/catalog-model';
