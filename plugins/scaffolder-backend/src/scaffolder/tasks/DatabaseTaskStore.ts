@@ -538,7 +538,7 @@ export class DatabaseTaskStore implements TaskStore {
             status: 'open',
             last_heartbeat_at: this.db.fn.now(),
           },
-          ['id', 'spec', 'state'],
+          ['id', 'spec'],
         );
 
       taskIdsToRecover.push(...result.map(i => i.id));
