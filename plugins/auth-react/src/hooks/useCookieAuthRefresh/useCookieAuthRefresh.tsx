@@ -26,6 +26,12 @@ type CookieAuthRefreshMessage = MessageEvent<{
   };
 }>;
 
+/**
+ * @public
+ * It receives an `apiRef` as options, and expects that apiRef extends the `AuthApi` interface.
+ * @remarks
+ * This hook expects a `BroadcastChannel` to be available in the global scope.
+ */
 export function useCookieAuthRefresh<T extends AuthApi>({
   apiRef,
 }: {

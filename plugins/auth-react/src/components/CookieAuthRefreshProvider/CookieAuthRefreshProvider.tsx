@@ -21,6 +21,11 @@ import { Button } from '@material-ui/core';
 import { useCookieAuthRefresh } from '../../hooks';
 import { AuthApi } from '../../types';
 
+/**
+ * @public
+ * A provider that will refresh the cookie when it is about to expire.
+ * It receives an `apiRef` and `children` as props, and expects that apiRef extends the `AuthApi` interface.
+ */
 export function CookieAuthRefreshProvider<T extends AuthApi>({
   apiRef,
   children,

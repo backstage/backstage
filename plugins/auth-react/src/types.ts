@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
+/**
+ * @public
+ * Defines a minimal inteface for auth apis.
+ */
 export type AuthApi = { getCookie(): Promise<{ expiresAt: string }> };
