@@ -67,7 +67,9 @@ export function parseUrl(
     throw new Error('Please provide full path to yaml file from CodeCommit');
   }
 
-  const hostMatch = parsedUrl.host.match(/^([^\.]+).console.aws.amazon.com$/);
+  const hostMatch = parsedUrl.host.match(
+    /^([^\.]+)\.console\.aws\.amazon\.com$/,
+  );
   if (!hostMatch) {
     throw new Error(
       `Invalid AWS CodeCommit URL (unexpected host format): ${url}`,
