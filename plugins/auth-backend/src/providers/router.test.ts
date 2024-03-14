@@ -23,7 +23,7 @@ describe('Auth origin filtering', () => {
       baseUrl: 'http://example.com/extra-path',
     },
     auth: {
-      experimentalExtraAllowedOrigins: ['https://test-*.example.net'],
+      experimentalExtraAllowedOrigins: ['https://test-*\.example\.net'],
     },
   });
 
