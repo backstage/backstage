@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Box } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import { KubernetesMigrationBarChartLegend } from './KubernetesMigrationBarChartLegend';
 import { KubernetesMigrationBarChart } from './KubernetesMigrationBarChart';
 import { KubernetesMigrationData } from '../../alerts';

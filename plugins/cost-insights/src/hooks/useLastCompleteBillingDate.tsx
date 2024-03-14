@@ -21,7 +21,7 @@ import React, {
   useState,
 } from 'react';
 import * as yup from 'yup';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../api';
 import { MapLoadingToProps, useLoading } from './useLoading';
 import { DefaultLoadingAction } from '../utils/loading';
