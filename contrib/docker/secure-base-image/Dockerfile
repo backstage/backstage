@@ -9,7 +9,7 @@
 #
 # Once the commands have been run, you can build the image using `yarn docker-build`
 
-FROM cgr.dev/chainguard/wolfi-base:latest@sha256:3d6dece13cdb5546cd03b20e14f9af354bc1a56ab5a7b47dca3e6c1557211fcf
+FROM cgr.dev/chainguard/wolfi-base:latest
 
 ENV NODE_VERSION 18=~18.19
 ENV PYTHON_VERSION 3.12=~3.12
