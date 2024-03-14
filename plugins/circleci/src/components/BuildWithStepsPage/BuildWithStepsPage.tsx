@@ -17,7 +17,9 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import { BuildWithSteps, BuildStepAction } from '../../api';
-import { Grid, Box, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { ActionOutput } from './lib/ActionOutput/ActionOutput';
 import LaunchIcon from '@material-ui/icons/Launch';
