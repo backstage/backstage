@@ -28,27 +28,27 @@ describe('Auth origin filtering', () => {
   });
 
   it('Will explode, invalid origin', () => {
-    const origin = 'https://test.example.net';
+    const origin = 'https://test\.example\.net';
     expect(createOriginFilter(config)(origin)).toBeFalsy();
   });
 
   it('Will explode, invalid origin domain', () => {
-    const origin = 'https://test-1234.examplee.net';
+    const origin = 'https://test-1234\.examplee\.net';
     expect(createOriginFilter(config)(origin)).toBeFalsy();
   });
 
   it("Won't explode, uses app origin", () => {
-    const origin = 'http://example.com';
+    const origin = 'http://example\.com';
     expect(createOriginFilter(config)(origin)).toBeTruthy();
   });
 
   it("Won't explode, valid origin with numbers", () => {
-    const origin = 'https://test-1234.example.net';
+    const origin = 'https://test-1234\.example\.net';
     expect(createOriginFilter(config)(origin)).toBeTruthy();
   });
 
   it("Won't explode, valid origin with chars and numbers", () => {
-    const origin = 'https://test-test1234.example.net';
+    const origin = 'https://test-test1234\.example\.net';
     expect(createOriginFilter(config)(origin)).toBeTruthy();
   });
 });
