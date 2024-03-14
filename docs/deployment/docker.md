@@ -341,7 +341,7 @@ docker image build . -f packages/backend/Dockerfile --tag backstage --progress=p
 
 ## Community Contributed Dockerfile Alternatives
 
-The `Dockerfile` mentioned above located in `packages/backend` is maintained by the maintainers of Backstage, however there are also community contributed Dockerfile alternatives located in `contrib/docker`.
+The `Dockerfile` mentioned above located in `packages/backend` is maintained by the maintainers of Backstage, however there are also community contributed Dockerfile alternatives located in `contrib/docker`. The `Dockerfile`s in `contrib/docker` are not maintained by the maintainers of Backstage and are not necessarily updated when the `Dockerfile` located in `packages/backend` is updated.
 
 ### Minimal Hardened Image
 
