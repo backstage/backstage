@@ -31,7 +31,12 @@ import qs from 'qs';
 import React from 'react';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
-import { Breadcrumbs, Link, WarningPanel } from '@backstage/core-components';
+import {
+  Breadcrumbs,
+  ErrorPanel,
+  Link,
+  WarningPanel,
+} from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,11 +68,7 @@ export const WorkflowRunDetails = () => {
 
   const classes = useStyles();
   if (details.error) {
-    return (
-      <WarningPanel title="Error:">
-        Failed to load build, {details.error.message}.
-      </WarningPanel>
-    );
+    return <ErrorPanel error={details.error} title="Error:" />;
   } else if (details.loading) {
     return <LinearProgress />;
   } else if (details.value?.logUrl === undefined) {

@@ -83,7 +83,7 @@ spec:
 
 The former config will link the component to a single GCP cloudbuild project.
 
-If fetching builds from multiple GCP projects define all the project slugs separated by a semicolon:
+If fetching builds from multiple GCP projects define all the project slugs separated by a comma:
 
 ```diff
 // component-info.yaml
@@ -93,7 +93,7 @@ metadata:
   name: backstage
   description: Backstage application.
 +  annotations:
-+    google.com/cloudbuild-project-slug: your-project-name; your-project-name-2; your-project-name-3
++    google.com/cloudbuild-project-slug: your-project-name, your-project-name-2, your-project-name-3
 spec:
   type: website
   lifecycle: development
@@ -158,7 +158,7 @@ spec:
   lifecycle: development
 ```
 
-Semicolon separated config values are all supported for `google.com/cloudbuild-repo-name`, `google.com/cloudbuild-trigger-name` and `google.com/cloudbuild-location` annotations.
+Comma separated config values are all supported for `google.com/cloudbuild-repo-name`, `google.com/cloudbuild-trigger-name` and `google.com/cloudbuild-location` annotations.
 
 ```diff
 // component-info.yaml
@@ -168,7 +168,7 @@ metadata:
   name: backstage
   description: Backstage application.
 +  annotations:
-+    google.com/cloudbuild-project-slug: project-name; project-name-2; project-name-3
++    google.com/cloudbuild-project-slug: project-name, project-name-2, project-name-3
 +    google.com/cloudbuild-repo-name: my-backstage
 spec:
   type: website
@@ -185,8 +185,8 @@ metadata:
   name: backstage
   description: Backstage application.
 +  annotations:
-+    google.com/cloudbuild-project-slug: project-name; project-name-2; project-name-3
-+    google.com/cloudbuild-repo-name: my-backstage; my-backstage
++    google.com/cloudbuild-project-slug: project-name, project-name-2, project-name-3
++    google.com/cloudbuild-repo-name: my-backstage, my-backstage
 spec:
   type: website
   lifecycle: development

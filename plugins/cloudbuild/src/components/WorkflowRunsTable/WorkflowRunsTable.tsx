@@ -150,47 +150,50 @@ export const WorkflowRunsTableView = ({
   total,
 }: WorkflowRunsTableViewProps) => {
   return (
-    <Table
-      isLoading={loading}
-      options={{ paging: true, pageSize, padding: 'dense' }}
-      totalCount={total}
-      page={page}
-      actions={[
-        {
-          icon: () => <SyncIcon />,
-          tooltip: 'Reload workflow runs',
-          isFreeAction: true,
-          onClick: () => retry(),
-        },
-      ]}
-      data={runs ?? []}
-      onPageChange={onChangePage}
-      onRowsPerPageChange={onChangePageSize}
-      style={{ width: '100%' }}
-      title={
-        <Grid container direction="column">
-          <Grid container alignItems="center" direction="row">
-            <Grid item>
-              <GoogleIcon />
-            </Grid>
-            <Grid item>
-              <Typography variant="h6">GCP Cloudbuild</Typography>
-            </Grid>
+    <Grid container direction="column">
+      <Grid item>
+        <Grid item container alignItems="center" direction="row">
+          <Grid item>
+            <GoogleIcon />
           </Grid>
           <Grid item>
-            <Select
-              label="Project"
-              selected={project}
-              items={projects}
-              onChange={selection => {
-                setProject(selection);
-              }}
-            />
+            <Typography variant="h5">GCP Cloudbuild</Typography>
           </Grid>
         </Grid>
-      }
-      columns={generatedColumns}
-    />
+        <Grid item>
+          <Select
+            label="Project"
+            selected={project}
+            items={projects}
+            onChange={selection => {
+              setProject(selection);
+            }}
+          />
+        </Grid>
+      </Grid>
+      <Grid item>
+        <Table
+          isLoading={loading}
+          options={{ paging: true, pageSize, padding: 'dense' }}
+          totalCount={total}
+          page={page}
+          actions={[
+            {
+              icon: () => <SyncIcon />,
+              tooltip: 'Reload workflow runs',
+              isFreeAction: true,
+              onClick: () => retry(),
+            },
+          ]}
+          title="Builds"
+          data={runs ?? []}
+          onPageChange={onChangePage}
+          onRowsPerPageChange={onChangePageSize}
+          style={{ width: '100%' }}
+          columns={generatedColumns}
+        />
+      </Grid>
+    </Grid>
   );
 };
 
@@ -205,7 +208,7 @@ export const WorkflowRunsTable = ({ entity }: WorkflowRunsTableProps) => {
 
   useEffect(() => {
     const _projects =
-      projectAnnotationValue?.split(';')?.map(projectName => ({
+      projectAnnotationValue?.split(',')?.map(projectName => ({
         label: projectName.trim(),
         value: projectName.trim(),
       })) || [];

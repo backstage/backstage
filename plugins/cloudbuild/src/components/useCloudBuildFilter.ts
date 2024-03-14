@@ -27,11 +27,11 @@ const CLOUDBUILD_FILTER_TRIGGER_ANNOTATION =
 export const getCloudbuildFilter = (entity: Entity, project: number = 0) => {
   const repoAnnotation =
     entity?.metadata.annotations?.[CLOUDBUILD_FILTER_REPO_ANNOTATION]?.split(
-      ';',
+      ',',
     )?.[project]?.trim() ?? '';
   const triggerAnnotation =
     entity?.metadata.annotations?.[CLOUDBUILD_FILTER_TRIGGER_ANNOTATION]?.split(
-      ';',
+      ',',
     )?.[project]?.trim() ?? '';
   if (repoAnnotation) {
     const cloudbuildFilter = CLOUDBUILD_FILTER_REPO_STRING + repoAnnotation;

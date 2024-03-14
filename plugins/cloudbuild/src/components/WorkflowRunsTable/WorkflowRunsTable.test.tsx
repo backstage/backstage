@@ -25,7 +25,7 @@ import {
   cloudbuildApiRef,
 } from '../../api';
 import { errorApiRef } from '@backstage/core-plugin-api';
-import { fireEvent, within } from '@testing-library/react';
+import { act, fireEvent, within } from '@testing-library/react';
 
 describe('<WorkflowRunsTableView />', () => {
   let runs: WorkflowRun[] = [];
@@ -128,7 +128,7 @@ describe('<WorkflowRunsTableView />', () => {
         name: 'test-component',
         annotations: {
           'google.com/cloudbuild-project-slug':
-            'project-1; project-2; project-3',
+            'project-1, project-2, project-3',
           'google.com/cloudbuild-repo-name': 'repo-name',
         },
       },
@@ -169,14 +169,15 @@ describe('<WorkflowRunsTableView />', () => {
     expect(input.textContent).toBe('project-1');
 
     fireEvent.mouseDown(within(input).getByRole('button'));
-
     expect(renderResult.getAllByText('project-1').length).toBe(2);
     expect(renderResult.getByText('project-2')).toBeInTheDocument();
     expect(renderResult.getByText('project-3')).toBeInTheDocument();
 
-    const projectOption = renderResult.getByText('project-3');
+    await act(() => {
+      const projectOption = renderResult.getByText('project-3');
+      fireEvent.click(projectOption);
+    });
 
-    fireEvent.click(projectOption);
     expect(input.textContent).toBe('project-3');
 
     expect(cloudBuildApiClient.listWorkflowRuns).toHaveBeenNthCalledWith(1, {
