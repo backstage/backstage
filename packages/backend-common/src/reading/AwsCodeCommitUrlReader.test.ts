@@ -420,7 +420,7 @@ describe('AwsCodeCommitUrlReader', () => {
         ),
         commitId: `123abc`,
         blobId: '999',
-        path: 'catalog.yaml',
+        filePath: 'catalog.yaml',
         fileMode: 'EXECUTABLE',
         fileSize: 123,
       });
