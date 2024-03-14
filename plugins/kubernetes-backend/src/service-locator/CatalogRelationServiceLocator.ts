@@ -44,18 +44,23 @@ export class CatalogRelationServiceLocator implements KubernetesServiceLocator {
       return this.clusterSupplier.getClusters().then(clusters => {
         return {
           clusters: clusters.filter(c =>
-            entity.relations!.some(
-              rel =>
-                rel.type === 'dependsOn' &&
-                rel.targetRef ===
-                  `resource:${entity.metadata.namespace ?? 'default'}/${
-                    c.name
-                  }`,
-            ),
+            this.doesEntityDependOnCluster(entity, c),
           ),
         };
       });
     }
     return Promise.resolve({ clusters: [] });
+  }
+
+  protected doesEntityDependOnCluster(
+    entity: Entity,
+    cluster: ClusterDetails,
+  ): boolean {
+    return entity.relations!.some(
+      rel =>
+        rel.type === 'dependsOn' &&
+        rel.targetRef ===
+          `resource:${entity.metadata.namespace ?? 'default'}/${cluster.name}`,
+    );
   }
 }
