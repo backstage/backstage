@@ -15,23 +15,23 @@
  */
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { Writable } from 'stream';
 import { createDebugLogAction } from './log';
 import { join } from 'path';
 import yaml from 'yaml';
 import { examples } from './log.examples';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { Logger } from 'winston';
 
 describe('debug:log examples', () => {
-  const logStream = {
-    write: jest.fn(),
-  } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
+  const logger = {
+    info: jest.fn(),
+  } as unknown as jest.Mocked<Logger>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
 
   const mockContext = createMockActionContext({
-    logStream,
+    logger,
     workspacePath,
   });
 
@@ -51,8 +51,7 @@ describe('debug:log examples', () => {
       input: yaml.parse(examples[0].example).steps[0].input,
     });
 
-    expect(logStream.write).toHaveBeenCalledTimes(1);
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('Hello Backstage!'),
     );
   });
@@ -63,11 +62,10 @@ describe('debug:log examples', () => {
       input: yaml.parse(examples[1].example).steps[0].input,
     });
 
-    expect(logStream.write).toHaveBeenCalledTimes(1);
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('README.md'),
     );
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining(join('a-directory', 'index.md')),
     );
   });

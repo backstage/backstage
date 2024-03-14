@@ -19,7 +19,7 @@ import { JsonObject } from '@backstage/types';
 /**
  * @public
  */
-export type SignalServiceOptions = {
+export type SignalsServiceOptions = {
   events: EventsService;
 };
 

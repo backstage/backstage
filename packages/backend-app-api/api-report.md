@@ -273,6 +273,8 @@ export function readHttpServerOptions(config?: Config): HttpServerOptions;
 export interface RootConfigFactoryOptions {
   argv?: string[];
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
+  // (undocumented)
+  watch?: boolean;
 }
 
 // @public (undocumented)
@@ -365,12 +367,12 @@ export class WinstonLogger implements RootLoggerService {
 // @public (undocumented)
 export interface WinstonLoggerOptions {
   // (undocumented)
-  format: Format;
+  format?: Format;
   // (undocumented)
-  level: string;
+  level?: string;
   // (undocumented)
   meta?: JsonObject;
   // (undocumented)
-  transports: transport[];
+  transports?: transport[];
 }
 ```

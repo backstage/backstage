@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-pagerduty",
-  "version": "0.7.3-next.1",
+  "version": "0.7.3-next.2",
   "description": "This plugin has been deprecated, consider using [@pagerduty/backstage-plugin](https://github.com/pagerduty/backstage-plugin) instead.",
   "backstage": {
     "role": "frontend-plugin"

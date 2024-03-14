@@ -30,7 +30,7 @@ Given that the app element tree is most of what builds up the app, it's likely a
 The helper is called `convertLegacyApp` and is exported from the `@backstage/core-compat-api` package, which you will need to add as a dependency to your app package:
 
 ```bash
-yarn add --cwd packages/app @backstage/core-compat-api
+yarn --cwd packages/app add @backstage/core-compat-api
 ```
 
 Once installed, import `convertLegacyApp`. If your app currently looks like this:

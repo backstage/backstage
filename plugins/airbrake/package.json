@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-airbrake",
-  "version": "0.3.31-next.1",
+  "version": "0.3.31-next.2",
   "backstage": {
     "role": "frontend-plugin"
   },

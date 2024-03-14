@@ -1,5 +1,41 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.0-next.2
+
+### Minor Changes
+
+- e9663a9: Move away from using `ctx.logStream`
+- e9663a9: Enable the redaction of secrets using the redacting logger and the secrets from the `TaskSpec`
+
+### Patch Changes
+
+- 703ebc9: Fix support for unauthenticated requests to create scaffolder tasks
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.4-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.4-next.2
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.4-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.6-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.4-next.2
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.11-next.2
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.2
+  - @backstage/plugin-scaffolder-common@1.5.1-next.1
+
 ## 1.22.0-next.1
 
 ### Minor Changes

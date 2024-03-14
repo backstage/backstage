@@ -21,7 +21,7 @@ import {
   FieldError,
   ValidationRule,
 } from 'react-hook-form';
-import { TextField } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 import { FormValues } from '../../types';
 
 type Rules = {

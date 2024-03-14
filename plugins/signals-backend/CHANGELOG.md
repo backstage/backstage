@@ -1,5 +1,19 @@
 # @backstage/plugin-signals-backend
 
+## 0.1.0-next.2
+
+### Patch Changes
+
+- 6d84ee6: Changed to use the refactored signal service naming
+- Updated dependencies
+  - @backstage/plugin-signals-node@0.1.0-next.2
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.0-next.2
+
 ## 0.1.0-next.1
 
 ### Minor Changes

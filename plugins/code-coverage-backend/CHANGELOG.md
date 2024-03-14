@@ -1,5 +1,20 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.28-next.2
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- 1914e2a: Updated README
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+
 ## 0.2.28-next.1
 
 ### Patch Changes

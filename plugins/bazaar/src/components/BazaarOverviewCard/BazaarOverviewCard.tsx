@@ -26,7 +26,7 @@ import { fetchCatalogItems } from '../../util/fetchMethods';
 import { parseBazaarProject } from '../../util/parseMethods';
 import { ErrorPanel, InfoCard, Link } from '@backstage/core-components';
 import { bazaarPlugin } from '../../plugin';
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import StorefrontIcon from '@material-ui/icons/Storefront';
 
 /** @public */

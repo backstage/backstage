@@ -1,5 +1,19 @@
 # @backstage/plugin-tech-radar
 
+## 0.7.0-next.2
+
+### Minor Changes
+
+- 0453619: Fixed example snippet in `README.md` to reflect correct timeline item order.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/core-compat-api@0.2.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+
 ## 0.6.14-next.1
 
 ### Patch Changes

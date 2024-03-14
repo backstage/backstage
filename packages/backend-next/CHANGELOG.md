@@ -1,5 +1,53 @@
 # example-backend-next
 
+## 0.0.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend@1.22.0-next.2
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.1.7-next.2
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.3.11-next.2
+  - @backstage/plugin-catalog-backend@1.18.0-next.2
+  - @backstage/plugin-devtools-backend@0.3.0-next.2
+  - @backstage/plugin-jenkins-backend@0.4.0-next.2
+  - @backstage/plugin-search-backend@1.5.4-next.2
+  - @backstage/plugin-techdocs-backend@1.10.0-next.2
+  - @backstage/plugin-notifications-backend@0.1.0-next.2
+  - @backstage/plugin-linguist-backend@0.5.11-next.2
+  - @backstage/plugin-kubernetes-backend@0.16.0-next.2
+  - @backstage/plugin-todo-backend@0.3.12-next.2
+  - @backstage/plugin-signals-backend@0.1.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.4-next.2
+  - @backstage/plugin-catalog-backend-module-openapi@0.1.31-next.2
+  - @backstage/plugin-adr-backend@0.4.11-next.2
+  - @backstage/plugin-azure-devops-backend@0.6.0-next.2
+  - @backstage/plugin-search-backend-module-techdocs@0.1.18-next.2
+  - @backstage/plugin-auth-backend@0.22.0-next.2
+  - @backstage/backend-defaults@0.2.14-next.2
+  - @backstage/plugin-app-backend@0.3.62-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/plugin-badges-backend@0.3.11-next.2
+  - @backstage/plugin-entity-feedback-backend@0.2.11-next.2
+  - @backstage/plugin-lighthouse-backend@0.4.6-next.2
+  - @backstage/plugin-playlist-backend@0.3.18-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.18-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.11-next.2
+  - @backstage/plugin-auth-backend-module-guest-provider@0.1.0-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.11-next.2
+  - @backstage/plugin-nomad-backend@0.1.16-next.2
+  - @backstage/plugin-permission-backend@0.5.37-next.2
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.1.11-next.2
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.2
+  - @backstage/plugin-proxy-backend@0.4.12-next.2
+  - @backstage/plugin-search-backend-module-explore@0.1.18-next.2
+  - @backstage/plugin-search-backend-node@1.2.18-next.2
+  - @backstage/plugin-sonarqube-backend@0.2.16-next.2
+
 ## 0.0.21-next.1
 
 ### Patch Changes
