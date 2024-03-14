@@ -25,6 +25,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { GetNotificationsOptions } from '../../api';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 
 export type SortBy = Required<
   Pick<GetNotificationsOptions, 'sort' | 'sortOrder'>
@@ -39,6 +40,8 @@ export type NotificationsFiltersProps = {
   onSortingChanged: (sortBy: SortBy) => void;
   saved?: boolean;
   onSavedChanged: (checked: boolean | undefined) => void;
+  severity: NotificationSeverity;
+  onSeverityChanged: (severity: NotificationSeverity) => void;
 };
 
 export const CreatedAfterOptions: {
@@ -108,6 +111,13 @@ const getSortByText = (sortBy?: SortBy): string => {
   return 'newest';
 };
 
+const AllSeverityOptions: { [key in NotificationSeverity]: string } = {
+  critical: 'Critical',
+  high: 'High',
+  normal: 'Normal',
+  low: 'Low',
+};
+
 export const NotificationsFilters = ({
   sorting,
   onSortingChanged,
@@ -117,6 +127,8 @@ export const NotificationsFilters = ({
   onCreatedAfterChanged,
   saved,
   onSavedChanged,
+  severity,
+  onSeverityChanged,
 }: NotificationsFiltersProps) => {
   const sortByText = getSortByText(sorting);
 
@@ -162,6 +174,14 @@ export const NotificationsFilters = ({
     viewValue = 'read';
   }
 
+  const handleOnSeverityChanged = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>,
+  ) => {
+    const value: NotificationSeverity =
+      (event.target.value as NotificationSeverity) || 'normal';
+    onSeverityChanged(value);
+  };
+
   return (
     <>
       <Grid container>
@@ -169,6 +189,7 @@ export const NotificationsFilters = ({
           <Typography variant="h6">Filters</Typography>
           <Divider variant="fullWidth" />
         </Grid>
+
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
             <InputLabel id="notifications-filter-view">View</InputLabel>
@@ -185,14 +206,16 @@ export const NotificationsFilters = ({
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel id="notifications-filter-view">
+            <InputLabel id="notifications-filter-created">
               Created after
             </InputLabel>
 
             <Select
               label="Created after"
+              labelId="notifications-filter-created"
               placeholder="Notifications since"
               value={createdAfter}
               onChange={handleOnCreatedAfterChanged}
@@ -212,6 +235,7 @@ export const NotificationsFilters = ({
 
             <Select
               label="Sort by"
+              labelId="notifications-filter-sort"
               placeholder="Field to sort by"
               value={sortByText}
               onChange={handleOnSortByChanged}
@@ -219,6 +243,25 @@ export const NotificationsFilters = ({
               {Object.keys(SortByOptions).map((key: string) => (
                 <MenuItem value={key} key={key}>
                   {SortByOptions[key].label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12}>
+          <FormControl fullWidth variant="outlined" size="small">
+            <InputLabel id="notifications-filter-severity">Severity</InputLabel>
+
+            <Select
+              label="Severity"
+              labelId="notifications-filter-severity"
+              value={severity}
+              onChange={handleOnSeverityChanged}
+            >
+              {Object.keys(AllSeverityOptions).map((key: string) => (
+                <MenuItem value={key} key={key}>
+                  {AllSeverityOptions[key as NotificationSeverity]}
                 </MenuItem>
               ))}
             </Select>

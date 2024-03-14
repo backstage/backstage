@@ -16,7 +16,10 @@
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { DatabaseNotificationsStore } from './DatabaseNotificationsStore';
 import { Knex } from 'knex';
-import { Notification } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  NotificationSeverity,
+} from '@backstage/plugin-notifications-common';
 
 jest.setTimeout(60_000);
 
@@ -48,6 +51,7 @@ const id4 = '04e0871e-e60a-4f68-8110-5ae3513f992e';
 const id5 = '05e0871e-e60a-4f68-8110-5ae3513f992e';
 const id6 = '06e0871e-e60a-4f68-8110-5ae3513f992e';
 const id7 = '07e0871e-e60a-4f68-8110-5ae3513f992e';
+const ids = [id1, id2, id3, id4, id5, id6, id7];
 
 const now = Date.now();
 const timeDelay = 5 * 1000; /* 5 secs */
@@ -266,6 +270,64 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
+    describe('getNotifications filters on severity', () => {
+      beforeEach(async () => {
+        const severities: (NotificationSeverity | undefined)[] = [
+          'normal',
+          undefined,
+          'critical',
+          'high',
+          'low',
+        ];
+        await Promise.all(
+          severities.map((severity, idx) =>
+            storage.saveNotification({
+              id: ids[idx],
+              user,
+              origin: 'test-origin',
+              created: new Date(now - idx * timeDelay),
+              payload: {
+                title: severity || 'default',
+                severity,
+              },
+            }),
+          ),
+        );
+      });
+      it('normal', async () => {
+        const normal = await storage.getNotifications({
+          user,
+          minimumSeverity: 'normal',
+        });
+        expect(normal.map(idOnly)).toEqual([id1, id2, id3, id4]);
+      });
+
+      it('critical', async () => {
+        const critical = await storage.getNotifications({
+          user,
+          minimumSeverity: 'critical',
+        });
+        expect(critical.length).toBe(1);
+        expect(critical.at(0)?.id).toEqual(id3);
+      });
+
+      it('high', async () => {
+        const high = await storage.getNotifications({
+          user,
+          minimumSeverity: 'high',
+        });
+        expect(high.map(idOnly)).toEqual([id3, id4]);
+      });
+
+      it('low', async () => {
+        const low = await storage.getNotifications({
+          user,
+          minimumSeverity: 'low',
+        });
+        expect(low.map(idOnly)).toEqual([id1, id2, id3, id4, id5]);
+      });
+    });
+
     describe('getNotifications pagination', () => {
       beforeEach(async () => {
         await storage.saveNotification(testNotification1);
@@ -439,13 +501,14 @@ describe.each(databases.eachSupportedId())(
             payload: {
               title: 'New notification',
               link: '/scaffolder/task/1234',
-              severity: 'normal',
+              severity: 'low',
             },
           } as any,
         });
         expect(existing).not.toBeNull();
         expect(existing?.id).toEqual(id2);
         expect(existing?.payload.title).toEqual('New notification');
+        expect(existing?.payload.severity).toEqual('low');
         expect(existing?.read).toBeNull();
       });
     });
