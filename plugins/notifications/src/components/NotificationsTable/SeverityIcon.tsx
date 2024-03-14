@@ -19,21 +19,39 @@ import NormalIcon from '@material-ui/icons/CheckOutlined';
 import CriticalIcon from '@material-ui/icons/ErrorOutline';
 import HighIcon from '@material-ui/icons/WarningOutlined';
 import LowIcon from '@material-ui/icons/InfoOutlined';
+import { makeStyles } from '@material-ui/core';
+
+const useStyles = makeStyles(theme => ({
+  critical: {
+    color: theme.palette.error.main,
+  },
+  high: {
+    color: theme.palette.warning.main,
+  },
+  normal: {
+    color: theme.palette.success.main,
+  },
+  low: {
+    color: theme.palette.primary.main,
+  },
+}));
 
 export const SeverityIcon = ({
   severity,
 }: {
   severity?: NotificationSeverity;
 }) => {
+  const classes = useStyles();
+
   switch (severity) {
     case 'critical':
-      return <CriticalIcon htmlColor="#C9190B" />;
+      return <CriticalIcon className={classes.critical} />;
     case 'high':
-      return <HighIcon htmlColor="#F0AB00" />;
+      return <HighIcon className={classes.high} />;
     case 'low':
-      return <LowIcon htmlColor="#2B9AF3" />;
+      return <LowIcon className={classes.low} />;
     case 'normal':
     default:
-      return <NormalIcon htmlColor="#5BA352" />;
+      return <NormalIcon className={classes.normal} />;
   }
 };

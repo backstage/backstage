@@ -68,7 +68,7 @@ export class NotificationsClient implements NotificationsApi {
       queryString.append('created_after', options.createdAfter.toISOString());
     }
     if (options?.minimumSeverity !== undefined) {
-      queryString.append('minimal_severity', options.minimumSeverity);
+      queryString.append('minimumSeverity', options.minimumSeverity);
     }
     const urlSegment = `?${queryString}`;
 
