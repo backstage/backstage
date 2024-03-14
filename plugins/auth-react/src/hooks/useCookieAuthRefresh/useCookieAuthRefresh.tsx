@@ -14,51 +14,38 @@
  * limitations under the License.
  */
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useCallback } from 'react';
 import {
   discoveryApiRef,
   fetchApiRef,
+  storageApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { ResponseError } from '@backstage/errors';
 
-type CookieAuthRefreshMessage = MessageEvent<{
-  action: string;
-  payload: {
-    expiresAt: string;
-  };
-}>;
-
-/**
- * @public
- * The options for the {@link useCookieAuthRefresh} hook.
- */
-export type CookieAuthRefreshOptions = {
-  // The plugin ID to used for discovering the API origin
-  pluginId: string;
-  // The path to used for calling the refresh cookie endpoint, default to '/cookie'
-  path?: string;
-};
-
 /**
  * @public
  * A hook that will refresh the cookie when it is about to expire.
- * @remarks
- * This hook expects a `BroadcastChannel` to be available in the global scope.
  */
-export function useCookieAuthRefresh({
-  pluginId,
-  path = '/cookie',
-}: CookieAuthRefreshOptions) {
+export function useCookieAuthRefresh(params: {
+  // The plugin ID to used for discovering the API origin
+  pluginId: string;
+  // Options for configuring the refresh cookie endpoint
+  options?: {
+    // The path to used for calling the refresh cookie endpoint, default to '/cookie'
+    path?: string;
+  };
+}) {
+  const { pluginId, options: { path = '/cookie' } = {} } = params;
+
   const fetchApi = useApi(fetchApiRef);
+  const storageApi = useApi(storageApiRef);
   const discoveryApi = useApi(discoveryApiRef);
 
-  const [channel] = useState(
-    () => new BroadcastChannel(`${pluginId}-auth-cookie-channel`),
-  );
+  const store = storageApi.forBucket(`${pluginId}-auth-cookie-storage`);
 
-  const [state, actions] = useAsync(async () => {
+  const [state, actions] = useAsync<{ expiresAt: string }>(async () => {
     const apiOrigin = await discoveryApi.getBaseUrl(pluginId);
     const requestUrl = `${apiOrigin}${path}`;
     const response = await fetchApi.fetch(`${requestUrl}`, {
@@ -86,28 +73,27 @@ export function useCookieAuthRefresh({
   useEffect(() => {
     if (!state.result) return () => {};
 
-    channel.postMessage({
-      action: 'COOKIE_REFRESHED',
-      payload: state.result,
-    });
+    store.set('expiresAt', state.result.expiresAt);
 
     let cancel = refresh(state.result);
 
-    const handleMessage = (event: CookieAuthRefreshMessage): void => {
-      const { action, payload } = event.data;
-      if (action === 'COOKIE_REFRESHED') {
-        cancel();
-        cancel = refresh(payload);
-      }
-    };
-
-    channel.addEventListener('message', handleMessage);
+    const observable = store.observe$<string>('expiresAt');
+    const subscription = observable.subscribe(({ value }) => {
+      if (!value) return;
+      cancel();
+      cancel = refresh({ expiresAt: value });
+    });
 
     return () => {
       cancel();
-      channel.removeEventListener('message', handleMessage);
+      subscription.unsubscribe();
     };
-  }, [state, refresh, channel]);
+  }, [state, refresh, store]);
 
-  return { state, actions };
+  return {
+    loading: state.status === 'loading',
+    error: state.error,
+    value: state.result,
+    retry: actions.execute,
+  };
 }

@@ -18,13 +18,20 @@ import React, { ReactNode } from 'react';
 import { ErrorPanel } from '@backstage/core-components';
 import { useApp } from '@backstage/core-plugin-api';
 import { Button } from '@material-ui/core';
-import { useCookieAuthRefresh, CookieAuthRefreshOptions } from '../../hooks';
+import { useCookieAuthRefresh } from '../../hooks';
 
 /**
  * @public
  * Props for the {@link CookieAuthRefreshProvider} component.
  */
-export type CookieAuthRefreshProviderProps = CookieAuthRefreshOptions & {
+export type CookieAuthRefreshProviderProps = {
+  // The plugin ID to used for discovering the API origin
+  pluginId: string;
+  // Options for configuring the refresh cookie endpoint
+  options?: {
+    // The path to used for calling the refresh cookie endpoint, default to '/cookie'
+    path?: string;
+  };
   // The children to render when the refresh is successful
   children: ReactNode;
 };
@@ -33,28 +40,28 @@ export type CookieAuthRefreshProviderProps = CookieAuthRefreshOptions & {
  * @public
  * A provider that will refresh the cookie when it is about to expire.
  */
-export function CookieAuthRefreshProvider({
-  children,
-  ...rest
-}: CookieAuthRefreshProviderProps) {
+export function CookieAuthRefreshProvider(
+  props: CookieAuthRefreshProviderProps,
+): JSX.Element {
+  const { children, ...params } = props;
   const app = useApp();
   const { Progress } = app.getComponents();
 
-  const { state, actions } = useCookieAuthRefresh(rest);
+  const { loading, error, retry } = useCookieAuthRefresh(params);
 
-  if (state.status === 'error' && state.error) {
+  if (loading) {
+    return <Progress />;
+  }
+
+  if (error) {
     return (
-      <ErrorPanel error={state.error}>
-        <Button variant="outlined" onClick={actions.execute}>
+      <ErrorPanel error={error}>
+        <Button variant="outlined" onClick={retry}>
           Retry
         </Button>
       </ErrorPanel>
     );
   }
 
-  if (state.status === 'loading') {
-    return <Progress />;
-  }
-
-  return children;
+  return <>{children}</>;
 }

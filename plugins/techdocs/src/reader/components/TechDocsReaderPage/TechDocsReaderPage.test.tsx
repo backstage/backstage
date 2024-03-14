@@ -19,6 +19,7 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   MockConfigApi,
+  MockStorageApi,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -38,6 +39,7 @@ import {
   configApiRef,
   discoveryApiRef,
   fetchApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
 
 const mockEntityMetadata = {
@@ -80,6 +82,8 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
+const storageApiMock = MockStorageApi.create();
+
 const discoveryApiMock = {
   getBaseUrl: jest
     .fn()
@@ -117,6 +121,7 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
     <TestApiProvider
       apis={[
         [fetchApiRef, fetchApiMock],
+        [storageApiRef, storageApiMock],
         [discoveryApiRef, discoveryApiMock],
         [scmIntegrationsApiRef, {}],
         [configApiRef, configApi],
@@ -137,29 +142,6 @@ const mountedRoutes = {
 
 describe('<TechDocsReaderPage />', () => {
   beforeEach(() => {
-    type Listener = (event: { data: any }) => void;
-
-    global.BroadcastChannel = jest
-      .fn()
-      .mockImplementation((_channelName: string) => {
-        let listeners: Listener[] = [];
-        return {
-          postMessage: jest.fn((message: any) => {
-            listeners.forEach(listener => listener({ data: message }));
-          }),
-          addEventListener: jest.fn((event: string, listener: Listener) => {
-            if (event === 'message') {
-              listeners.push(listener);
-            }
-          }),
-          removeEventListener: jest.fn((event: string, listener: Listener) => {
-            if (event === 'message') {
-              listeners = listeners.filter(l => l !== listener);
-            }
-          }),
-        };
-      });
-
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
     getCookie.mockResolvedValue({

@@ -16,8 +16,12 @@
 
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
-import { fetchApiRef, discoveryApiRef } from '@backstage/core-plugin-api';
-import { TestApiProvider } from '@backstage/test-utils';
+import {
+  fetchApiRef,
+  discoveryApiRef,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
+import { MockStorageApi, TestApiProvider } from '@backstage/test-utils';
 import { useCookieAuthRefresh } from './useCookieAuthRefresh';
 
 describe('useCookieAuthRefresh', () => {
@@ -39,31 +43,11 @@ describe('useCookieAuthRefresh', () => {
     }),
   };
 
-  type Listener = (event: { data: any }) => void;
-
-  let listeners: Listener[];
-  let channelMock: any;
+  const storageApiMock = MockStorageApi.create();
 
   beforeEach(() => {
     jest.useFakeTimers({ now });
     jest.clearAllMocks();
-    listeners = [];
-    channelMock = {
-      postMessage: jest.fn((message: any) => {
-        listeners.forEach(listener => listener({ data: message }));
-      }),
-      addEventListener: jest.fn((event: string, listener: Listener) => {
-        if (event === 'message') {
-          listeners.push(listener);
-        }
-      }),
-      removeEventListener: jest.fn((event: string, listener: Listener) => {
-        if (event === 'message') {
-          listeners = listeners.filter(l => l !== listener);
-        }
-      }),
-    };
-    global.BroadcastChannel = jest.fn().mockImplementation(() => channelMock);
   });
 
   afterEach(() => {
@@ -83,6 +67,7 @@ describe('useCookieAuthRefresh', () => {
                   fetch: jest.fn(),
                 },
               ],
+              [storageApiRef, storageApiMock],
               [discoveryApiRef, discoveryApiMock],
             ]}
           >
@@ -92,7 +77,7 @@ describe('useCookieAuthRefresh', () => {
       },
     );
 
-    expect(result.current.state.status).toBe('loading');
+    expect(result.current.loading).toBeTruthy();
   });
 
   it('should return an error status when the refresh has failed', async () => {
@@ -110,6 +95,7 @@ describe('useCookieAuthRefresh', () => {
                   fetch: jest.fn().mockRejectedValue(error),
                 },
               ],
+              [storageApiRef, storageApiMock],
               [discoveryApiRef, discoveryApiMock],
             ]}
           >
@@ -119,9 +105,7 @@ describe('useCookieAuthRefresh', () => {
       },
     );
 
-    await waitFor(() => expect(result.current.state.status).toBe('error'));
-
-    expect(result.current.state.error).toStrictEqual(error);
+    await waitFor(() => expect(result.current.error).toStrictEqual(error));
   });
 
   it('should call the api to get the cookie and use it', async () => {
@@ -132,6 +116,7 @@ describe('useCookieAuthRefresh', () => {
           <TestApiProvider
             apis={[
               [fetchApiRef, fetchApiMock],
+              [storageApiRef, storageApiMock],
               [discoveryApiRef, discoveryApiMock],
             ]}
           >
@@ -148,46 +133,18 @@ describe('useCookieAuthRefresh', () => {
       ),
     );
 
-    expect(result.current.state.result).toMatchObject({ expiresAt });
-  });
-
-  it('should send a message to other tabs when the cookie is refreshed', async () => {
-    renderHook(() => useCookieAuthRefresh({ pluginId: 'techdocs' }), {
-      wrapper: ({ children }) => (
-        <TestApiProvider
-          apis={[
-            [fetchApiRef, fetchApiMock],
-            [discoveryApiRef, discoveryApiMock],
-          ]}
-        >
-          {children}
-        </TestApiProvider>
-      ),
-    });
-
-    expect(global.BroadcastChannel).toHaveBeenCalledWith(
-      'techdocs-auth-cookie-channel',
-    );
-
-    await waitFor(() =>
-      expect(channelMock.postMessage).toHaveBeenCalledTimes(1),
-    );
-
-    // posting the message to other tabs when the cookie is requested in the first time
-    await waitFor(() =>
-      expect(channelMock.postMessage).toHaveBeenCalledWith({
-        action: 'COOKIE_REFRESHED',
-        payload: { expiresAt },
-      }),
-    );
+    expect(result.current.value).toMatchObject({ expiresAt });
   });
 
   it('should cancel the refresh when a message is received from another tab', async () => {
-    renderHook(() => useCookieAuthRefresh({ pluginId: 'techdocs' }), {
+    const pluginId = 'techdocs';
+
+    renderHook(() => useCookieAuthRefresh({ pluginId }), {
       wrapper: ({ children }) => (
         <TestApiProvider
           apis={[
             [fetchApiRef, fetchApiMock],
+            [storageApiRef, storageApiMock],
             [discoveryApiRef, discoveryApiMock],
           ]}
         >
@@ -195,30 +152,26 @@ describe('useCookieAuthRefresh', () => {
         </TestApiProvider>
       ),
     });
-
-    await waitFor(() =>
-      expect(channelMock.addEventListener).toHaveBeenCalledTimes(1),
-    );
 
     const twentyMinutesFromNowInMilliseconds =
       now + 2 * tenMinutesInMilliseconds;
 
     // simulating other tab refreshing the cookie
-    channelMock.postMessage({
-      action: 'COOKIE_REFRESHED',
-      payload: {
-        expiresAt: new Date(twentyMinutesFromNowInMilliseconds).toISOString(),
-      },
-    });
+    storageApiMock
+      .forBucket(`${pluginId}-auth-cookie-storage`)
+      .set(
+        'expiresAt',
+        new Date(twentyMinutesFromNowInMilliseconds).toISOString(),
+      );
 
     // advance the timers in 10 minutes to match the old expires at
     jest.advanceTimersByTime(tenMinutesInMilliseconds);
 
     // should not call the api
-    expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1);
+    await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1));
 
     // advance the timers in more 10 minutes to match the new expires at
-    jest.advanceTimersByTime(tenMinutesInMilliseconds);
+    jest.advanceTimersByTime(tenMinutesInMilliseconds - 1000);
 
     // should call the api
     await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(2));
@@ -232,6 +185,7 @@ describe('useCookieAuthRefresh', () => {
           <TestApiProvider
             apis={[
               [fetchApiRef, fetchApiMock],
+              [storageApiRef, storageApiMock],
               [discoveryApiRef, discoveryApiMock],
             ]}
           >
@@ -243,15 +197,9 @@ describe('useCookieAuthRefresh', () => {
 
     await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1));
 
-    expect(result.current.state.result).toMatchObject({ expiresAt });
+    expect(result.current.value).toMatchObject({ expiresAt });
 
     unmount();
-
-    expect(channelMock.removeEventListener).toHaveBeenCalledTimes(1);
-    expect(channelMock.removeEventListener).toHaveBeenCalledWith(
-      'message',
-      expect.any(Function),
-    );
 
     // advance the timers to ensure that the refresh is not called
     jest.advanceTimersByTime(tenMinutesInMilliseconds);
@@ -268,6 +216,7 @@ describe('useCookieAuthRefresh', () => {
         <TestApiProvider
           apis={[
             [fetchApiRef, fetchApiMock],
+            [storageApiRef, storageApiMock],
             [discoveryApiRef, discoveryApiMock],
           ]}
         >
@@ -279,7 +228,7 @@ describe('useCookieAuthRefresh', () => {
     await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1));
 
     // advance the timers to the expiration date
-    jest.advanceTimersByTime(tenMinutesInMilliseconds);
+    jest.advanceTimersByTime(tenMinutesInMilliseconds - 1000);
 
     // should call the api
     await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(2));

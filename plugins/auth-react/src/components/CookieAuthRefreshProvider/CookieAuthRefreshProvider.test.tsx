@@ -18,10 +18,19 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { CookieAuthRefreshProvider } from './CookieAuthRefreshProvider';
-import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
-import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
+import {
+  MockStorageApi,
+  TestApiProvider,
+  renderInTestApp,
+} from '@backstage/test-utils';
+import {
+  discoveryApiRef,
+  fetchApiRef,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
 
 describe('CookieAuthRefreshProvider', () => {
+  const storageApiMock = MockStorageApi.create();
   const discoveryApiMock = {
     getBaseUrl: jest
       .fn()
@@ -33,12 +42,6 @@ describe('CookieAuthRefreshProvider', () => {
     return new Date(Date.now() + tenMinutesInMilliseconds).toISOString();
   }
 
-  global.BroadcastChannel = jest.fn().mockImplementation(() => ({
-    postMessage: jest.fn(),
-    addEventListener: jest.fn(),
-    removeEventListener: jest.fn(),
-  }));
-
   it('should render a progress bar', async () => {
     const fetchApiMock = {
       fetch: jest.fn().mockReturnValue(new Promise(() => {})),
@@ -48,6 +51,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
+          [storageApiRef, storageApiMock],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >
@@ -57,7 +61,9 @@ describe('CookieAuthRefreshProvider', () => {
       </TestApiProvider>,
     );
 
-    expect(screen.getByTestId('progress')).toBeInTheDocument();
+    expect(screen.queryByText('Test Content')).not.toBeInTheDocument();
+
+    expect(screen.getByTestId('progress')).toBeVisible();
   });
 
   it('should render an error panel', async () => {
@@ -70,6 +76,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
+          [storageApiRef, storageApiMock],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >
@@ -100,6 +107,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
+          [storageApiRef, storageApiMock],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >
@@ -117,6 +125,8 @@ describe('CookieAuthRefreshProvider', () => {
     );
 
     expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1);
+
+    expect(screen.queryByText('Test Content')).not.toBeInTheDocument();
 
     expect(screen.getByText(error.message)).toBeInTheDocument();
 
@@ -143,6 +153,7 @@ describe('CookieAuthRefreshProvider', () => {
       <TestApiProvider
         apis={[
           [fetchApiRef, fetchApiMock],
+          [storageApiRef, storageApiMock],
           [discoveryApiRef, discoveryApiMock],
         ]}
       >

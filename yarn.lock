@@ -5120,7 +5120,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.9.13
-    "@react-hookz/web": ^24.0.4
+    "@react-hookz/web": ^24.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
@@ -15728,7 +15728,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-hookz/web@npm:^24.0.0, @react-hookz/web@npm:^24.0.4":
+"@react-hookz/web@npm:^24.0.0":
   version: 24.0.4
   resolution: "@react-hookz/web@npm:24.0.4"
   dependencies:
