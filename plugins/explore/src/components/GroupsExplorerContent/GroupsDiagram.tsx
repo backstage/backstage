@@ -33,7 +33,8 @@ import {
   getEntityRelations,
   EntityDisplayName,
 } from '@backstage/plugin-catalog-react';
-import { makeStyles, Typography, useTheme } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import classNames from 'classnames';
 import React from 'react';
