@@ -1,4 +1,4 @@
-# Secure Base Image for Backstage
+# Minimal Hardened Image for Backstage
 
 DockerHub images in general did not seem ideal for Backstage as the number of vulnerabilities were quite high regardless of the image used.
 
