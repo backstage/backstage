@@ -15,18 +15,16 @@
  */
 import { StreamLanguage } from '@codemirror/language';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  FormControl,
-  IconButton,
-  InputLabel,
-  makeStyles,
-  MenuItem,
-  Select,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import FormControl from '@material-ui/core/FormControl';
+import IconButton from '@material-ui/core/IconButton';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import CodeMirror from '@uiw/react-codemirror';
 import React, { useCallback, useMemo, useState } from 'react';

@@ -15,7 +15,7 @@
  */
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
-import { TextField } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
