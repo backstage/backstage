@@ -6,5 +6,5 @@
 
 **BREAKING** Type definition added to signal recipients
 
-Update to use `{type: 'broadcast'}` instead `null` and `{type: 'user', entityRefs: ''}`
+Update to use `{type: 'broadcast'}` instead `null` and `{type: 'user', entityRef: ''}`
 instead string entity references

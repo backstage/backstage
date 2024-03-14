@@ -135,9 +135,9 @@ export class SignalManager {
     const jsonMessage = JSON.stringify({ channel, message });
     let users: string[] = [];
     if (recipients.type === 'user') {
-      users = Array.isArray(recipients.entityRefs)
-        ? recipients.entityRefs
-        : [recipients.entityRefs];
+      users = Array.isArray(recipients.entityRef)
+        ? recipients.entityRef
+        : [recipients.entityRef];
     }
 
     // Actual websocket message sending

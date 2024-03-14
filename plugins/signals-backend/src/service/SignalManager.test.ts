@@ -152,7 +152,7 @@ describe('SignalManager', () => {
     await onEvent({
       topic: 'signals',
       eventPayload: {
-        recipients: { type: 'user', entityRefs: 'user:default/john.doe' },
+        recipients: { type: 'user', entityRef: 'user:default/john.doe' },
         channel: 'test',
         message: { msg: 'test' },
       },

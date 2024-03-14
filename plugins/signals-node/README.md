@@ -118,7 +118,7 @@ to work:
 eventBroker.publish({
   topic: 'signals',
   eventPayload: {
-    recipients: { type: 'user', entityRefs: ['user:default/user1'] },
+    recipients: { type: 'user', entityRef: 'user:default/user1' },
     message: {
       message: 'hello world',
     },

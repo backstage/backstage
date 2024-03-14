@@ -26,7 +26,7 @@ export type SignalsServiceOptions = {
 /** @public */
 export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
   recipients:
-    | { type: 'user'; entityRefs: string | string[] }
+    | { type: 'user'; entityRef: string | string[] }
     | { type: 'broadcast' };
   channel: string;
   message: TMessage;
