@@ -18,7 +18,7 @@ import {
   ComponentEntity,
   RELATION_API_PROVIDED_BY,
 } from '@backstage/catalog-model';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   EntityTable,
   useEntity,
