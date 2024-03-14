@@ -16,15 +16,7 @@
 
 import React, { MouseEvent, useState, useCallback } from 'react';
 
-import {
-  Box,
-  makeStyles,
-  Toolbar,
-  ToolbarProps,
-  Menu,
-  Tooltip,
-  IconButton,
-} from '@material-ui/core';
+import Box, { ToolbarProps } from '@material-ui/core/Box';
 import SettingsIcon from '@material-ui/icons/Settings';
 
 import {

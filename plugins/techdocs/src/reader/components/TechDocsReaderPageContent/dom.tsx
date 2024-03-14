@@ -16,7 +16,8 @@
 
 import { useCallback, useEffect, useState } from 'react';
 
-import { useTheme, useMediaQuery } from '@material-ui/core';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useTheme } from '@material-ui/core/styles';
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { useAnalytics, useApi } from '@backstage/core-plugin-api';

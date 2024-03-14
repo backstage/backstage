@@ -19,7 +19,7 @@ import { ErrorPanel } from '@backstage/core-components';
 import { techdocsApiRef } from '@backstage/plugin-techdocs-react';
 import { useApi, useApp } from '@backstage/core-plugin-api';
 import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 
 type TechDocsRefreshCookieMessage = MessageEvent<{
   action: string;
