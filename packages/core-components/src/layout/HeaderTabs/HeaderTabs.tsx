@@ -17,6 +17,7 @@ import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import TabUI, { TabProps } from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import React, { useCallback, useEffect, useState } from 'react';
 
 // TODO(blam): Remove this implementation when the Tabs are ready
@@ -57,17 +58,41 @@ const useStyles = makeStyles(
   { name: 'BackstageHeaderTabs' },
 );
 
-export type Tab = {
+export type TabProp = {
   id: string;
   label: string;
   tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
 };
 
 type HeaderTabsProps = {
-  tabs: Tab[];
+  tabs: TabProp[];
   onChange?: (index: number) => void;
   selectedIndex?: number;
 };
+
+function a11yProps(index: any) {
+  return {
+    id: `nav-tab-${index}`,
+    'aria-controls': `nav-tabpanel-${index}`,
+  };
+}
+
+interface LinkTabProps {
+  label?: string;
+  href?: string;
+}
+
+function LinkTab(props: LinkTabProps) {
+  return (
+    <Tab
+      component="a"
+      onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
+        event.preventDefault();
+      }}
+      {...props}
+    />
+  );
+}
 
 /**
  * Horizontal Tabs component
@@ -108,7 +133,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
         value={selectedTab}
       >
         {tabs.map((tab, index) => (
-          <TabUI
+          <LinkTab
             {...tab.tabProps}
             data-testid={`header-tab-${index}`}
             label={tab.label}
@@ -116,6 +141,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
             value={index}
             className={styles.defaultTab}
             classes={{ selected: styles.selected, root: styles.tabRoot }}
+            {...a11yProps(index)}
           />
         ))}
       </Tabs>
