@@ -45,6 +45,7 @@ import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { relative } from 'path/posix';
+import { AbortController } from '@aws-sdk/abort-controller';
 
 export function parseUrl(
   url: string,
@@ -111,7 +112,7 @@ export function parseUrl(
 }
 
 /**
- * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for AWS S3 buckets.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for AWS CodeCommit.
  *
  * @public
  */
@@ -210,11 +211,11 @@ export class AwsCodeCommitUrlReader implements UrlReader {
       integration,
     );
 
-    const s3 = new CodeCommitClient({
+    const codeCommit = new CodeCommitClient({
       region: region,
       credentials: credentials,
     });
-    return s3;
+    return codeCommit;
   }
 
   async readUrl(
