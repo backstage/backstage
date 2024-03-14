@@ -15,6 +15,7 @@
  */
 
 import {
+  CacheService,
   HttpAuthService,
   HttpRouterServiceAuthPolicy,
   RootConfigService,
@@ -24,6 +25,7 @@ import { RequestHandler } from 'express';
 import { pathToRegexp } from 'path-to-regexp';
 import { rateLimit } from 'express-rate-limit';
 import { readDurationFromConfig } from '@backstage/config';
+import { RateLimitStore } from './rateLimitStore';
 
 export function createPathPolicyPredicate(policyPath: string) {
   if (policyPath === '/' || policyPath === '*') {
@@ -42,11 +44,12 @@ export function createPathPolicyPredicate(policyPath: string) {
 export function createCredentialsBarrier(options: {
   httpAuth: HttpAuthService;
   config: RootConfigService;
+  cache: CacheService;
 }): {
   middleware: RequestHandler;
   addAuthPolicy: (policy: HttpRouterServiceAuthPolicy) => void;
 } {
-  const { httpAuth, config } = options;
+  const { httpAuth, config, cache } = options;
 
   const disableDefaultAuthPolicy = config.getOptionalBoolean(
     'backend.auth.dangerouslyDisableDefaultAuthPolicy',
@@ -78,7 +81,8 @@ export function createCredentialsBarrier(options: {
     windowMs,
     max,
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers,
+    store: RateLimitStore.fromOptions({ cache }),
   });
 
   const middleware: RequestHandler = (req, res, next) => {

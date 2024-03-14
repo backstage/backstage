@@ -39,20 +39,32 @@ export const httpRouterServiceFactory = createServiceFactory(
   (options?: HttpRouterFactoryOptions) => ({
     service: coreServices.httpRouter,
     deps: {
+      cache: coreServices.cache,
       plugin: coreServices.pluginMetadata,
       config: coreServices.rootConfig,
       lifecycle: coreServices.lifecycle,
       rootHttpRouter: coreServices.rootHttpRouter,
       httpAuth: coreServices.httpAuth,
     },
-    async factory({ httpAuth, config, plugin, rootHttpRouter, lifecycle }) {
+    async factory({
+      httpAuth,
+      config,
+      cache,
+      plugin,
+      rootHttpRouter,
+      lifecycle,
+    }) {
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
 
       const router = PromiseRouter();
       rootHttpRouter.use(path, router);
 
-      const credentialsBarrier = createCredentialsBarrier({ httpAuth, config });
+      const credentialsBarrier = createCredentialsBarrier({
+        httpAuth,
+        config,
+        cache,
+      });
 
       router.use(createLifecycleMiddleware({ lifecycle }));
       router.use(credentialsBarrier.middleware);
