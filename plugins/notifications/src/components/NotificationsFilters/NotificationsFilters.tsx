@@ -37,6 +37,8 @@ export type NotificationsFiltersProps = {
   onCreatedAfterChanged: (value: string) => void;
   sorting: SortBy;
   onSortingChanged: (sortBy: SortBy) => void;
+  saved?: boolean;
+  onSavedChanged: (checked: boolean | undefined) => void;
 };
 
 export const CreatedAfterOptions: {
@@ -113,6 +115,8 @@ export const NotificationsFilters = ({
   onUnreadOnlyChanged,
   createdAfter,
   onCreatedAfterChanged,
+  saved,
+  onSavedChanged,
 }: NotificationsFiltersProps) => {
   const sortByText = getSortByText(sorting);
 
@@ -122,13 +126,23 @@ export const NotificationsFilters = ({
     onCreatedAfterChanged(event.target.value as string);
   };
 
-  const handleOnUnreadOnlyChanged = (
+  const handleOnViewChanged = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
-    let value = undefined;
-    if (event.target.value === 'unread') value = true;
-    if (event.target.value === 'read') value = false;
-    onUnreadOnlyChanged(value);
+    if (event.target.value === 'unread') {
+      onUnreadOnlyChanged(true);
+      onSavedChanged(undefined);
+    } else if (event.target.value === 'read') {
+      onUnreadOnlyChanged(false);
+      onSavedChanged(undefined);
+    } else if (event.target.value === 'saved') {
+      onUnreadOnlyChanged(undefined);
+      onSavedChanged(true);
+    } else {
+      // All
+      onUnreadOnlyChanged(undefined);
+      onSavedChanged(undefined);
+    }
   };
 
   const handleOnSortByChanged = (
@@ -139,9 +153,14 @@ export const NotificationsFilters = ({
     onSortingChanged({ ...option.sortBy });
   };
 
-  let unreadOnlyValue = 'all';
-  if (unreadOnly) unreadOnlyValue = 'unread';
-  if (unreadOnly === false) unreadOnlyValue = 'read';
+  let viewValue = 'all';
+  if (saved) {
+    viewValue = 'saved';
+  } else if (unreadOnly) {
+    viewValue = 'unread';
+  } else if (unreadOnly === false) {
+    viewValue = 'read';
+  }
 
   return (
     <>
@@ -156,10 +175,11 @@ export const NotificationsFilters = ({
             <Select
               labelId="notifications-filter-view"
               label="View"
-              value={unreadOnlyValue}
-              onChange={handleOnUnreadOnlyChanged}
+              value={viewValue}
+              onChange={handleOnViewChanged}
             >
               <MenuItem value="unread">New only</MenuItem>
+              <MenuItem value="saved">Saved</MenuItem>
               <MenuItem value="read">Marked as read</MenuItem>
               <MenuItem value="all">All</MenuItem>
             </Select>

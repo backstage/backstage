@@ -15,7 +15,7 @@
  */
 
 import { ApiEntity, RELATION_HAS_PART } from '@backstage/catalog-model';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   EntityTable,
   useEntity,

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-lighthouse",
-  "version": "0.4.16-next.1",
+  "version": "0.4.16-next.2",
   "description": "A Backstage plugin that integrates towards Lighthouse",
   "backstage": {
     "role": "frontend-plugin"

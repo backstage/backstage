@@ -18,7 +18,8 @@ import React from 'react';
 import { Control, UseFormSetValue } from 'react-hook-form';
 import { FormValues } from '../../types';
 import { DateSelector } from '../DateSelector/DateSelector';
-import { Typography, makeStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
 type Props = {
   control: Control<FormValues, object>;

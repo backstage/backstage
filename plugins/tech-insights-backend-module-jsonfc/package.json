@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-tech-insights-backend-module-jsonfc",
-  "version": "0.1.46-next.1",
+  "version": "0.1.46-next.2",
   "backstage": {
     "role": "backend-plugin-module"
   },

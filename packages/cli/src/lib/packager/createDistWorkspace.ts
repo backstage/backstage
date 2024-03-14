@@ -21,6 +21,7 @@ import {
   resolve as resolvePath,
   relative as relativePath,
 } from 'path';
+import pLimit from 'p-limit';
 import { tmpdir } from 'os';
 import tar, { CreateOptions, FileOptions } from 'tar';
 import partition from 'lodash/partition';
@@ -352,9 +353,11 @@ async function moveToDistWorkspace(
   }
 
   // Repacking in parallel is much faster and safe for all packages outside of the Backstage repo
+  // Limit concurrency to 10 to avoid resource exhaustion on larger monorepos.
+  const limit = pLimit(10);
   await Promise.all(
-    safePackages.map(async (target, index) =>
-      pack(target, `temp-package-${index}.tgz`),
+    safePackages.map((target, index) =>
+      limit(() => pack(target, `temp-package-${index}.tgz`)),
     ),
   );
 }

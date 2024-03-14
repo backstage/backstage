@@ -23,6 +23,7 @@ import { createFetchCookiecutterAction } from './cookiecutter';
 import { join } from 'path';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { Writable } from 'stream';
 
 const executeShellCommand = jest.fn();
 const commandExists = jest.fn();
@@ -166,7 +167,7 @@ describe('fetch:cookiecutter', () => {
           join(mockTmpDir, 'template'),
           '--verbose',
         ],
-        logStream: mockContext.logStream,
+        logStream: expect.any(Writable),
       }),
     );
   });
@@ -187,7 +188,7 @@ describe('fetch:cookiecutter', () => {
         },
         workingDir: '/input',
         envVars: { HOME: '/tmp' },
-        logStream: mockContext.logStream,
+        logStream: expect.any(Writable),
       }),
     );
   });
