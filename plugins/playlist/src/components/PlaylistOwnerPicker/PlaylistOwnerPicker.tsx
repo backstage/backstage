@@ -17,18 +17,16 @@
 import { parseEntityRef } from '@backstage/catalog-model';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { Playlist } from '@backstage/plugin-playlist-common';
-import {
-  Box,
-  Checkbox,
-  Chip,
-  FormControlLabel,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Autocomplete } from '@material-ui/lab';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useEffect, useMemo, useState } from 'react';
 
 import { usePlaylistList } from '../../hooks';
