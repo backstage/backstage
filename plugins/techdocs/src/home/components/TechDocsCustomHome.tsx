@@ -17,7 +17,7 @@
 import React, { useState } from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import { makeStyles } from '@material-ui/core/styles';
-import CSSProperties from '@material-ui/styles/CSSProperties';
+import { CSSProperties } from '@material-ui/styles/withStyles';
 import {
   CATALOG_FILTER_EXISTS,
   catalogApiRef,

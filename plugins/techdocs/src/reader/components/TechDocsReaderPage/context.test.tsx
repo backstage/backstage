@@ -17,7 +17,7 @@
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
 
-import ThemeProvider from '@material-ui/core/ThemeProvider';
+import { ThemeProvider } from '@material-ui/core/styles';
 
 import { lightTheme } from '@backstage/theme';
 import { TestApiProvider } from '@backstage/test-utils';

@@ -16,7 +16,7 @@
 
 import React, { useState, useCallback } from 'react';
 import { renderReactElement } from './renderReactElement';
-import ThemeProvider from '@material-ui/core/ThemeProvider';
+import { ThemeProvider } from '@material-ui/core/styles';
 import SvgIcon from '@material-ui/core/SvgIcon';
 import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles, Theme } from '@material-ui/core/styles';

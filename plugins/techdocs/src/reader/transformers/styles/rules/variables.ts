@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import alpha from '@material-ui/core/alpha';
-import lighten from '@material-ui/core/lighten';
+import { alpha, lighten } from '@material-ui/core/styles';
 import { RuleOptions } from './types';
 
 export default ({ theme }: RuleOptions) => `
