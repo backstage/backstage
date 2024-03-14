@@ -15,13 +15,11 @@
  */
 
 import React, { useState } from 'react';
-import {
-  Dialog,
-  DialogActions,
-  Button,
-  DialogContent,
-  makeStyles,
-} from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import DialogContent from '@material-ui/core/DialogContent';
+import { makeStyles } from '@material-ui/core/styles';
 import { ProjectSelector } from '../ProjectSelector';
 import { CustomDialogTitle } from '../CustomDialogTitle';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';

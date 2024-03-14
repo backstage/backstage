@@ -16,6 +16,7 @@
 
 import {
   Notification,
+  NotificationSeverity,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
 
@@ -32,6 +33,7 @@ export type NotificationGetOptions = {
   read?: boolean;
   saved?: boolean;
   createdAfter?: Date;
+  minimumSeverity?: NotificationSeverity;
 };
 
 /** @internal */

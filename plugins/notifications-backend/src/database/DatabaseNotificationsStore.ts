@@ -22,7 +22,10 @@ import {
   NotificationModifyOptions,
   NotificationsStore,
 } from './NotificationsStore';
-import { Notification } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  NotificationSeverity,
+} from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
@@ -45,6 +48,21 @@ const NOTIFICATION_COLUMNS = [
   'read',
   'saved',
 ];
+
+const severities: NotificationSeverity[] = [
+  'critical',
+  'high',
+  'normal',
+  'low',
+];
+
+export const normalizeSeverity = (input?: string): NotificationSeverity => {
+  let lower = (input ?? 'normal').toLowerCase() as NotificationSeverity;
+  if (severities.indexOf(lower) < 0) {
+    lower = 'normal';
+  }
+  return lower;
+};
 
 /** @internal */
 export class DatabaseNotificationsStore implements NotificationsStore {
@@ -107,7 +125,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload?.link,
       title: notification.payload?.title,
       description: notification.payload?.description,
-      severity: notification.payload?.severity,
+      severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
       saved: notification.saved,
       read: notification.read,
@@ -197,6 +215,12 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     } else if (options.saved === false) {
       query.whereNull('saved');
     } // or match both if undefined
+
+    if (options.minimumSeverity !== undefined) {
+      const idx = severities.indexOf(options.minimumSeverity);
+      const equalOrHigher = severities.slice(0, idx + 1);
+      query.whereIn('notification.severity', equalOrHigher);
+    }
 
     return query;
   };
@@ -296,17 +320,20 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return rows[0] as Notification;
   }
 
-  async restoreExistingNotification(options: {
+  async restoreExistingNotification({
+    id,
+    notification,
+  }: {
     id: string;
     notification: Notification;
   }) {
     const updateColumns = {
-      title: options.notification.payload.title,
-      description: options.notification.payload.description,
-      link: options.notification.payload.link,
-      topic: options.notification.payload.topic,
+      title: notification.payload.title,
+      description: notification.payload.description,
+      link: notification.payload.link,
+      topic: notification.payload.topic,
       updated: new Date(),
-      severity: options.notification.payload.severity,
+      severity: normalizeSeverity(notification.payload?.severity),
       read: null,
     };
 
@@ -320,7 +347,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       broadcastQuery.update({ ...updateColumns, read: undefined }),
     ]);
 
-    return await this.getNotification(options);
+    return await this.getNotification({ id });
   }
 
   async getNotification(options: { id: string }): Promise<Notification | null> {
