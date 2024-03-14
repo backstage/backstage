@@ -135,6 +135,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
         {tabs.map((tab, index) => (
           <LinkTab
             {...tab.tabProps}
+            href={window.location.href}
             data-testid={`header-tab-${index}`}
             label={tab.label}
             key={tab.id}
