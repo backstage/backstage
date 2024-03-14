@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { Builds } from './lib/Builds';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
 export const BuildsPage = () => (
   <Grid container spacing={3} direction="column">
