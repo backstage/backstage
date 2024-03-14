@@ -45,7 +45,7 @@ import {
   Notification,
   NotificationReadSignal,
 } from '@backstage/plugin-notifications-common';
-import { parseEntityOrderFieldParams } from '@backstage/plugin-catalog-backend';
+import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 
 /** @internal */
 export interface RouterOptions {

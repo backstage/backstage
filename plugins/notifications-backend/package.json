@@ -37,7 +37,6 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-notifications-node": "workspace:^",
