@@ -66,7 +66,7 @@ export const normalizeSeverity = (input?: string): NotificationSeverity => {
 
 /** @internal */
 export class DatabaseNotificationsStore implements NotificationsStore {
-  private isSQLite = false;
+  private readonly isSQLite = false;
 
   private constructor(private readonly db: Knex) {
     this.isSQLite = this.db.client.config.client.includes('sqlite3');
@@ -141,7 +141,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload?.link,
       title: notification.payload?.title,
       description: notification.payload?.description,
-      severity: notification.payload?.severity,
+      severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
     };
   };
@@ -219,7 +219,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     if (options.minimumSeverity !== undefined) {
       const idx = severities.indexOf(options.minimumSeverity);
       const equalOrHigher = severities.slice(0, idx + 1);
-      query.whereIn('notification.severity', equalOrHigher);
+      query.whereIn('severity', equalOrHigher);
     }
 
     return query;
@@ -338,9 +338,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     };
 
     const notificationQuery = this.db('notification')
-      .where('id', options.id)
-      .where('user', options.notification.user);
-    const broadcastQuery = this.db('broadcast').where('id', options.id);
+      .where('id', id)
+      .where('user', notification.user);
+    const broadcastQuery = this.db('broadcast').where('id', id);
 
     await Promise.all([
       notificationQuery.update(updateColumns),
