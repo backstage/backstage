@@ -21,7 +21,14 @@ export class DefaultSignalsService implements SignalsService {
 
 // @public (undocumented)
 export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
-  recipients: string[] | string | null;
+  recipients:
+    | {
+        type: 'user';
+        entityRef: string | string[];
+      }
+    | {
+        type: 'broadcast';
+      };
   channel: string;
   message: TMessage;
 };

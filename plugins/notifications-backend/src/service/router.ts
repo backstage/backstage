@@ -286,7 +286,7 @@ export async function createRouter(
 
       if (signals) {
         await signals.publish<NotificationReadSignal>({
-          recipients: [user],
+          recipients: { type: 'user', entityRef: [user] },
           message: { action: 'notification_read', notification_ids: ids },
           channel: 'notifications',
         });
@@ -296,7 +296,7 @@ export async function createRouter(
 
       if (signals) {
         await signals.publish<NotificationReadSignal>({
-          recipients: [user],
+          recipients: { type: 'user', entityRef: [user] },
           message: { action: 'notification_unread', notification_ids: ids },
           channel: 'notifications',
         });
@@ -348,7 +348,7 @@ export async function createRouter(
 
     if (signals) {
       await signals.publish<NewNotificationSignal>({
-        recipients: null,
+        recipients: { type: 'broadcast' },
         message: {
           action: 'new_notification',
           notification_id: ret.id,
@@ -400,7 +400,7 @@ export async function createRouter(
 
       if (signals) {
         await signals.publish<NewNotificationSignal>({
-          recipients: user,
+          recipients: { type: 'user', entityRef: [user] },
           message: {
             action: 'new_notification',
             notification_id: ret.id,

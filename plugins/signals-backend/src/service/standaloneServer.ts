@@ -97,7 +97,7 @@ export async function startStandaloneServer(
 
     setInterval(() => {
       signals.publish({
-        recipients: null,
+        recipients: { type: 'broadcast' },
         channel: 'test',
         message: { hello: 'world' },
       });
