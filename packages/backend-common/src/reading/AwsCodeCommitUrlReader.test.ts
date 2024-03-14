@@ -23,8 +23,17 @@ import { UrlReaderPredicateTuple } from './types';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
 import { mockClient } from 'aws-sdk-client-mock';
-import { CodeCommitClient, GetFileCommand } from '@aws-sdk/client-codecommit';
+import {
+  CodeCommitClient,
+  GetFileCommand,
+  GetFolderCommand,
+} from '@aws-sdk/client-codecommit';
 import fs from 'fs';
+import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
+import {
+  AwsCodeCommitIntegration,
+  readAwsCodeCommitIntegrationConfig,
+} from '@backstage/integration';
 
 const AMAZON_AWS_CODECOMMIT_HOST = 'console.aws.amazon.com';
 
@@ -33,33 +42,34 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
 });
 
 describe('parseUrl', () => {
-  it('supports all formats', () => {
+  it('supports all formats (requireGitPath = true)', () => {
     expect(
       parseUrl(
         'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml?region=eu-west-1',
+        true,
       ),
     ).toEqual({
-      filePath: 'catalog-info.yaml',
+      path: 'catalog-info.yaml',
       repositoryName: 'my-repo',
       region: 'eu-west-1',
-      commitSpecifier: 'refs/heads/main',
     });
     expect(
       parseUrl(
         'https://us-east-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo2/browse/--/test1/test2/catalog-info.yaml',
+        true,
       ),
     ).toEqual({
-      filePath: 'test1/test2/catalog-info.yaml',
+      path: 'test1/test2/catalog-info.yaml',
       repositoryName: 'my-repo2',
       region: 'us-east-1',
-      commitSpecifier: 'refs/heads/main',
     });
     expect(
       parseUrl(
         'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-repo/browse/refs/heads/develop/--/some-path/catalog-info.yaml',
+        true,
       ),
     ).toEqual({
-      filePath: 'some-path/catalog-info.yaml',
+      path: 'some-path/catalog-info.yaml',
       repositoryName: 'my-test-repo',
       region: 'eu-west-1',
       commitSpecifier: 'refs/heads/develop',
@@ -67,9 +77,10 @@ describe('parseUrl', () => {
     expect(
       parseUrl(
         'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-repo/browse/refs/tags/v1.0/--/some-path/catalog-info.yaml',
+        true,
       ),
     ).toEqual({
-      filePath: 'some-path/catalog-info.yaml',
+      path: 'some-path/catalog-info.yaml',
       repositoryName: 'my-test-repo',
       region: 'eu-west-1',
       commitSpecifier: 'refs/tags/v1.0',
@@ -77,28 +88,110 @@ describe('parseUrl', () => {
     expect(
       parseUrl(
         'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-repo/browse/c1234/--/some-path/catalog-info.yaml',
+        true,
       ),
     ).toEqual({
-      filePath: 'some-path/catalog-info.yaml',
+      path: 'some-path/catalog-info.yaml',
       repositoryName: 'my-test-repo',
       region: 'eu-west-1',
       commitSpecifier: 'c1234',
     });
   });
-  it('throw correct error when not providing full url to file', () => {
+  it('throw correct error when not providing full url to file (requireGitPath = true)', () => {
     expect(() =>
       parseUrl(
         `https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo`,
+        true,
       ),
     ).toThrow('Please provide full path to yaml file from CodeCommit');
   });
+  it('supports all formats (requireGitPath = false)', () => {
+    expect(
+      parseUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs',
+      ),
+    ).toEqual({
+      path: '/',
+      repositoryName: 'my-test-techdocs',
+      region: 'eu-west-1',
+    });
+    expect(
+      parseUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs/',
+      ),
+    ).toEqual({
+      path: '/',
+      repositoryName: 'my-test-techdocs',
+      region: 'eu-west-1',
+    });
+    expect(
+      parseUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs/browse?region=eu-west-1',
+      ),
+    ).toEqual({
+      path: '/',
+      repositoryName: 'my-test-techdocs',
+      region: 'eu-west-1',
+    });
+    expect(
+      parseUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs/browse/refs/heads/develop',
+      ),
+    ).toEqual({
+      path: '/',
+      repositoryName: 'my-test-techdocs',
+      region: 'eu-west-1',
+      commitSpecifier: 'refs/heads/develop',
+    });
+    expect(
+      parseUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs/browse/refs/tags/v1.0',
+      ),
+    ).toEqual({
+      path: '/',
+      repositoryName: 'my-test-techdocs',
+      region: 'eu-west-1',
+      commitSpecifier: 'refs/tags/v1.0',
+    });
+    expect(
+      parseUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs/browse/c1234',
+      ),
+    ).toEqual({
+      path: '/',
+      repositoryName: 'my-test-techdocs',
+      region: 'eu-west-1',
+      commitSpecifier: 'c1234',
+    });
+    expect(
+      parseUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs/browse/c1234/',
+      ),
+    ).toEqual({
+      path: '/',
+      repositoryName: 'my-test-techdocs',
+      region: 'eu-west-1',
+      commitSpecifier: 'c1234',
+    });
+    expect(
+      parseUrl(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs/browse/c1234/--/folder/',
+      ),
+    ).toEqual({
+      path: 'folder/',
+      repositoryName: 'my-test-techdocs',
+      region: 'eu-west-1',
+      commitSpecifier: 'c1234',
+    });
+  });
+
   it('throw correct error when providing edit url', () => {
     expect(() =>
       parseUrl(
         `https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/files/edit/refs/heads/develop/--/test/catalog-info.yaml`,
       ),
     ).toThrow(
-      'Please provide the view path to yaml file from CodeCommit, not the edit path',
+      'Please provide the view url to yaml file from CodeCommit, not the edit url',
     );
   });
 });
@@ -327,7 +420,7 @@ describe('AwsCodeCommitUrlReader', () => {
         ),
         commitId: `123abc`,
         blobId: '999',
-        filePath: 'catalog.yaml',
+        path: 'catalog.yaml',
         fileMode: 'EXECUTABLE',
         fileSize: 123,
       });
@@ -342,6 +435,108 @@ describe('AwsCodeCommitUrlReader', () => {
           },
         ),
       ).rejects.toThrow(NotModifiedError);
+    });
+  });
+
+  describe('readTree', () => {
+    let awsCodeCommitUrlReader: AwsCodeCommitUrlReader;
+
+    beforeEach(() => {
+      codeCommitClient.reset();
+
+      codeCommitClient
+        .on(GetFolderCommand, {
+          folderPath: `/`,
+          repositoryName: `my-test-techdocs`,
+          commitSpecifier: undefined,
+        })
+        .resolves({
+          files: [
+            {
+              absolutePath: `awsCodeCommit-mock-object.yaml`,
+              relativePath: `awsCodeCommit-mock-object.yaml`,
+            },
+          ],
+          subFolders: [
+            {
+              absolutePath: `subFolder`,
+              relativePath: `subFolder`,
+            },
+          ],
+        });
+      codeCommitClient
+        .on(GetFolderCommand, {
+          folderPath: `subFolder`,
+          repositoryName: `my-test-techdocs`,
+          commitSpecifier: undefined,
+        })
+        .resolves({
+          files: [
+            {
+              absolutePath: `subFolder/awsCodeCommit-mock-object2.yaml`,
+              relativePath: `subFolder/awsCodeCommit-mock-object2.yaml`,
+            },
+          ],
+        });
+
+      codeCommitClient
+        .on(GetFileCommand, {
+          filePath: `awsCodeCommit-mock-object.yaml`,
+          commitSpecifier: undefined,
+          repositoryName: `my-test-techdocs`,
+        })
+        .resolves({
+          fileContent: fs.readFileSync(
+            path.resolve(
+              __dirname,
+              '__fixtures__/awsCodeCommit/awsCodeCommit-mock-object.yaml',
+            ),
+          ),
+        });
+      codeCommitClient
+        .on(GetFileCommand, {
+          filePath: `subFolder/awsCodeCommit-mock-object2.yaml`,
+          commitSpecifier: undefined,
+          repositoryName: `my-test-techdocs`,
+        })
+        .resolves({
+          fileContent: fs.readFileSync(
+            path.resolve(
+              __dirname,
+              '__fixtures__/awsCodeCommit/subFolder/awsCodeCommit-mock-object2.yaml',
+            ),
+          ),
+        });
+
+      const config = new ConfigReader({
+        host: AMAZON_AWS_CODECOMMIT_HOST,
+        accessKeyId: 'fake-access-key',
+        secretAccessKey: 'fake-secret-key',
+      });
+
+      const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+
+      awsCodeCommitUrlReader = new AwsCodeCommitUrlReader(
+        credsManager,
+        new AwsCodeCommitIntegration(
+          readAwsCodeCommitIntegrationConfig(config),
+        ),
+        { treeResponseFactory },
+      );
+    });
+
+    it('returns contents of a file in a repository', async () => {
+      const response = await awsCodeCommitUrlReader.readTree(
+        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs',
+      );
+
+      const files = await response.files();
+      const bodyRootFile = await files[0].content();
+      const bodySubfolderFile = await files[1].content();
+
+      expect(files.length).toEqual(2);
+      expect(bodyRootFile.toString().trim()).toBe('site_name: Test');
+      expect(bodySubfolderFile.toString().trim()).toBe('site_name: Test2');
     });
   });
 });
