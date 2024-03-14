@@ -31,7 +31,8 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 
-import { makeStyles, Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 
 /**
