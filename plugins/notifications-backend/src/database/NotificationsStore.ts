@@ -48,8 +48,15 @@ export interface NotificationsStore {
 
   saveNotification(notification: Notification): Promise<void>;
 
+  saveBroadcast(notification: Notification): Promise<void>;
+
   getExistingScopeNotification(options: {
     user: string;
+    scope: string;
+    origin: string;
+  }): Promise<Notification | null>;
+
+  getExistingScopeBroadcast(options: {
     scope: string;
     origin: string;
   }): Promise<Notification | null>;
