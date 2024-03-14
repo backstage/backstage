@@ -31,12 +31,7 @@ import qs from 'qs';
 import React from 'react';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
-import {
-  Breadcrumbs,
-  ErrorPanel,
-  Link,
-  WarningPanel,
-} from '@backstage/core-components';
+import { Breadcrumbs, ErrorPanel, Link } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({
   root: {
