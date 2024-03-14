@@ -19,8 +19,11 @@ import {
   HttpRouterServiceAuthPolicy,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
+import { durationToMilliseconds } from '@backstage/types';
 import { RequestHandler } from 'express';
 import { pathToRegexp } from 'path-to-regexp';
+import { rateLimit } from 'express-rate-limit';
+import { readDurationFromConfig } from '@backstage/config';
 
 export function createPathPolicyPredicate(policyPath: string) {
   if (policyPath === '/' || policyPath === '*') {
@@ -59,13 +62,32 @@ export function createCredentialsBarrier(options: {
   const unauthenticatedPredicates = new Array<(path: string) => boolean>();
   const cookiePredicates = new Array<(path: string) => boolean>();
 
-  const middleware: RequestHandler = (req, _, next) => {
+  // Default rate limit is 100 requests per 15 minutes
+  const max = config?.has('backend.auth.rateLimit.max')
+    ? config.getNumber('backend.auth.rateLimit.max')
+    : 100;
+
+  const duration = config?.has('backend.auth.rateLimit.window')
+    ? readDurationFromConfig(config.getConfig('backend.auth.rateLimit.window'))
+    : undefined;
+
+  // Default rate limit window is 15 minutes
+  const windowMs = duration ? durationToMilliseconds(duration) : 15 * 60 * 1000;
+
+  const limiter = rateLimit({
+    windowMs,
+    max,
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+  });
+
+  const middleware: RequestHandler = (req, res, next) => {
     const allowsUnauthenticated = unauthenticatedPredicates.some(predicate =>
       predicate(req.path),
     );
 
     if (allowsUnauthenticated) {
-      next();
+      limiter(req, res, next);
       return;
     }
 

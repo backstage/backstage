@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   backend?: {
     auth?: {
@@ -32,6 +34,16 @@ export interface Config {
        * unless you configure credentials for service calls.
        */
       dangerouslyDisableDefaultAuthPolicy?: boolean;
+      rateLimit?: {
+        /**
+         * Limit each IP to max requests per window
+         */
+        max?: number;
+        /**
+         * The duration for which the rate limit is enforced
+         */
+        window?: HumanDuration;
+      };
     };
   };
 
