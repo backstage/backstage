@@ -39,18 +39,32 @@ import {
   GetFileCommand,
   GetFileCommandInput,
   GetFileCommandOutput,
+  GetFolderCommand,
 } from '@aws-sdk/client-codecommit';
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { relative } from 'path/posix';
 
-export function parseUrl(url: string): {
-  filePath: string;
+export function parseUrl(
+  url: string,
+  requireGitPath: boolean = false,
+): {
+  path: string;
   repositoryName: string;
   region: string;
-  commitSpecifier: string;
+  commitSpecifier?: string;
 } {
   const parsedUrl = new URL(url);
+
+  if (parsedUrl.pathname.includes('/files/edit/')) {
+    throw new Error(
+      'Please provide the view url to yaml file from CodeCommit, not the edit url',
+    );
+  }
+  if (requireGitPath && !parsedUrl.pathname.includes('/browse/')) {
+    throw new Error('Please provide full path to yaml file from CodeCommit');
+  }
 
   const hostMatch = parsedUrl.host.match(/^([^\.]+).console.aws.amazon.com$/);
   if (!hostMatch) {
@@ -63,29 +77,36 @@ export function parseUrl(url: string): {
   const pathMatch = parsedUrl.pathname.match(
     /^\/codesuite\/codecommit\/repositories\/([^\/]+)\/browse\/((.*)\/)?--\/(.*)$/,
   );
+
   if (!pathMatch) {
-    if (!parsedUrl.pathname.includes('/browse/')) {
-      if (parsedUrl.pathname.includes('/files/edit/')) {
-        throw new Error(
-          'Please provide the view path to yaml file from CodeCommit, not the edit path',
-        );
-      } else {
-        throw new Error(
-          'Please provide full path to yaml file from CodeCommit',
-        );
-      }
+    if (!requireGitPath) {
+      const pathname = parsedUrl.pathname
+        .split('/--/')[0]
+        .replace('/codesuite/codecommit/repositories/', '');
+      const [repositoryName, commitSpecifier] = pathname.split('/browse');
+
+      return {
+        region,
+        repositoryName: repositoryName.replace(/^\/|\/$/g, ''),
+        path: '/',
+        commitSpecifier:
+          commitSpecifier === ''
+            ? undefined
+            : commitSpecifier?.replace(/^\/|\/$/g, ''),
+      };
     }
     throw new Error(
       `Invalid AWS CodeCommit URL (unexpected path format): ${url}`,
     );
   }
-  const [, repositoryName, , commitSpecifier, filePath] = pathMatch;
+  const [, repositoryName, , commitSpecifier, path] = pathMatch;
 
   return {
     region,
     repositoryName,
-    filePath,
-    commitSpecifier: commitSpecifier || `refs/heads/main`,
+    path,
+    // the commitSpecifier is passed to AWS SDK which does not allow empty strings so replace empty string with undefined
+    commitSpecifier: commitSpecifier === '' ? undefined : commitSpecifier,
   };
 }
 
@@ -117,8 +138,6 @@ export class AwsCodeCommitUrlReader implements UrlReader {
   constructor(
     private readonly credsManager: AwsCredentialsManager,
     private readonly integration: AwsCodeCommitIntegration,
-    // TODO: Delete
-    // @ts-ignore
     private readonly deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
@@ -204,8 +223,10 @@ export class AwsCodeCommitUrlReader implements UrlReader {
   ): Promise<ReadUrlResponse> {
     // etag and lastModifiedAfter are not supported by the CodeCommit API
     try {
-      const { filePath, repositoryName, region, commitSpecifier } =
-        parseUrl(url);
+      const { path, repositoryName, region, commitSpecifier } = parseUrl(
+        url,
+        true,
+      );
       const codeCommitClient = await this.buildCodeCommitClient(
         this.credsManager,
         region,
@@ -216,7 +237,7 @@ export class AwsCodeCommitUrlReader implements UrlReader {
       const input: GetFileCommandInput = {
         repositoryName: repositoryName,
         commitSpecifier: commitSpecifier,
-        filePath: filePath,
+        filePath: path,
       };
 
       options?.signal?.addEventListener('abort', () => abortController.abort());
@@ -250,20 +271,113 @@ export class AwsCodeCommitUrlReader implements UrlReader {
     }
   }
 
+  async readTreePath(
+    codeCommitClient: CodeCommitClient,
+    abortSignal: any,
+    path: string,
+    repositoryName: string,
+    commitSpecifier?: string,
+    etag?: string,
+  ): Promise<string[]> {
+    const getFolderCommand = new GetFolderCommand({
+      folderPath: path,
+      repositoryName: repositoryName,
+      commitSpecifier: commitSpecifier,
+    });
+    const response = await codeCommitClient.send(getFolderCommand, {
+      abortSignal: abortSignal,
+    });
+
+    if (etag && etag === response.commitId) {
+      throw new NotModifiedError();
+    }
+
+    const output: string[] = [];
+    if (response.files) {
+      response.files.forEach(file => {
+        if (file.absolutePath) {
+          output.push(file.absolutePath);
+        }
+      });
+    }
+    if (!response.subFolders) {
+      return output;
+    }
+
+    for (const subFolder of response.subFolders) {
+      if (subFolder.absolutePath) {
+        output.push(
+          ...(await this.readTreePath(
+            codeCommitClient,
+            abortSignal,
+            subFolder.absolutePath,
+            repositoryName,
+            commitSpecifier,
+            etag,
+          )),
+        );
+      }
+    }
+    return output;
+  }
+
   async readTree(
-    // TODO: Delete
-    // @ts-ignore
     url: string,
-    // TODO: Delete
-    // @ts-ignore
     options?: ReadTreeOptions,
   ): Promise<ReadTreeResponse> {
-    // TODO: Implement
-    throw new Error('AwsCodeCommitReader does not implement readTree');
+    // url: https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/test-stijn-delete-techdocs/browse?region=eu-west-1
+    try {
+      const { path, repositoryName, region, commitSpecifier } = parseUrl(url);
+      const codeCommitClient = await this.buildCodeCommitClient(
+        this.credsManager,
+        region,
+        this.integration,
+      );
+
+      const abortController = new AbortController();
+      options?.signal?.addEventListener('abort', () => abortController.abort());
+
+      const allFiles: string[] = await this.readTreePath(
+        codeCommitClient,
+        abortController.signal,
+        path,
+        repositoryName,
+        commitSpecifier,
+        options?.etag,
+      );
+      const responses = [];
+
+      for (let i = 0; i < allFiles.length; i++) {
+        const getFileCommand = new GetFileCommand({
+          repositoryName: repositoryName,
+          filePath: String(allFiles[i]),
+          commitSpecifier: commitSpecifier,
+        });
+        const response = await codeCommitClient.send(getFileCommand);
+        const objectData = await Readable.from([response?.fileContent] || []);
+
+        responses.push({
+          data: objectData,
+          path: relative(
+            path.startsWith('/') ? path : `/${path}`,
+            allFiles[i].startsWith('/') ? allFiles[i] : `/${allFiles[i]}`,
+          ),
+        });
+      }
+
+      return await this.deps.treeResponseFactory.fromReadableArray(responses);
+    } catch (e) {
+      if (e.name && e.name === 'NotModifiedError') {
+        throw new NotModifiedError();
+      }
+      throw new ForwardedError(
+        'Could not retrieve file tree from CodeCommit',
+        e,
+      );
+    }
   }
 
   async search(): Promise<SearchResponse> {
-    // TODO: Implement
     throw new Error('AwsCodeCommitReader does not implement search');
   }
 
