@@ -23,7 +23,9 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Box, Theme, Typography, makeStyles } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 
 import { UnprocessedEntity } from '../types';
 import { EntityDialog } from './EntityDialog';
