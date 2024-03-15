@@ -21379,8 +21379,8 @@ __metadata:
   linkType: hard
 
 "archiver@npm:^6.0.0":
-  version: 6.0.1
-  resolution: "archiver@npm:6.0.1"
+  version: 6.0.2
+  resolution: "archiver@npm:6.0.2"
   dependencies:
     archiver-utils: ^4.0.1
     async: ^3.2.4
@@ -21389,7 +21389,7 @@ __metadata:
     readdir-glob: ^1.1.2
     tar-stream: ^3.0.0
     zip-stream: ^5.0.1
-  checksum: 20549eef7366173440a86873387412226568744a410626f826998b0dda85fe84e739c542d9db9aca3923b772436eb795eafdff29c2983e683355fdd9faaa0fdb
+  checksum: 17a20a1291d9bf41e25c96f029373bec5306d6e381063b3ab06ea805d234afaf55a7829c3577dd003558c188c6631769a80c51f245175fdb8310631df36ceb4b
   languageName: node
   linkType: hard
 
