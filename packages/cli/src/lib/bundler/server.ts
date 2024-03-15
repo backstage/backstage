@@ -246,13 +246,16 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
           // The index needs to be rewritten relative to the new public path, including subroutes.
           index: `${config.output?.publicPath}index.html`,
         },
-        https:
+        server:
           url.protocol === 'https:'
             ? {
-                cert: fullConfig.getString('app.https.certificate.cert'),
-                key: fullConfig.getString('app.https.certificate.key'),
+                type: 'https',
+                options: {
+                  cert: fullConfig.getString('app.https.certificate.cert'),
+                  key: fullConfig.getString('app.https.certificate.key'),
+                },
               }
-            : false,
+            : {},
         host,
         port,
         proxy: targetPkg.proxy,
