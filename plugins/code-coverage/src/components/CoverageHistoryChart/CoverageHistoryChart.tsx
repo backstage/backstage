@@ -15,19 +15,17 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
-import { Alert } from '@material-ui/lab';
-import { ClassNameMap } from '@material-ui/styles';
+import Alert from '@material-ui/lab/Alert';
+import ClassNameMap from '@material-ui/styles/ClassNameMap';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import {
