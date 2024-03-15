@@ -4,7 +4,7 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncState } from 'react-use/lib/useAsync';
+import { AsyncState } from 'react-use/esm/useAsync';
 import { ComponentType } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
