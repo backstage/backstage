@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  FormHelperText,
-  StepLabel,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import StepLabel from '@material-ui/core/StepLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { BackButton } from '../Buttons';
 import { asInputRef } from '../helpers';
