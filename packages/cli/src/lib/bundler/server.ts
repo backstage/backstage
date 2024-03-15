@@ -286,7 +286,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
-        webpackServer?.close();
+        webpackServer?.stop();
         viteServer?.close();
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
         process.exit();
