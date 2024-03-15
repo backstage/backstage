@@ -29,7 +29,8 @@ import {
 } from '../../utils/commonUtil';
 import { DateTime } from 'luxon';
 import { MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
-import { Grid, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 export const CodeSceneEntityKPICard = () => {
   const { entity } = useEntity();

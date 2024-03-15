@@ -32,14 +32,17 @@ type PaginatedCatalogTableProps = {
  * @internal
  */
 export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
-  const { columns, data, next, prev } = props;
+  const { columns, data, next, prev, title, isLoading, options } = props;
   const { updateFilters } = useEntityList();
 
   return (
     <Table
+      title={isLoading ? '' : title}
       columns={columns}
       data={data}
       options={{
+        ...options,
+        // These settings are configured to force server side pagination
         paginationPosition: 'both',
         pageSizeOptions: [],
         showFirstLastPageButtons: false,

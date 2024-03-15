@@ -4,6 +4,7 @@ status: provisional
 authors:
   - '@ghost'
 owners:
+  - '@ghost'
 project-areas:
   - aaa
   - bbb

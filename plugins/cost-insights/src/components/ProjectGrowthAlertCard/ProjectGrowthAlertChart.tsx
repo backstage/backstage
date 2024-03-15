@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { DateTime } from 'luxon';
-import { Box } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import { BarChart, BarChartLegend, BarChartLegendOptions } from '../BarChart';
 import { LegendItem } from '../LegendItem';
 import { CostGrowth } from '../CostGrowth';

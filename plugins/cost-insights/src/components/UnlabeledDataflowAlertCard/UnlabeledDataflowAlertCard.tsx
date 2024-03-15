@@ -16,7 +16,7 @@
 
 import React from 'react';
 import pluralize from 'pluralize';
-import { Box } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import { BarChart, BarChartLegend } from '../BarChart';
 import { UnlabeledDataflowData, ResourceData } from '../../types';
 import { useBarChartLayoutStyles as useStyles } from '../../utils/styles';

@@ -21,7 +21,8 @@ import {
   TableColumn,
   Table,
 } from '@backstage/core-components';
-import { Theme, Typography, makeStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 
 import { UnprocessedEntity } from '../types';
 

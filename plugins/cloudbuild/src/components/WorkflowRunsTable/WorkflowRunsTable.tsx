@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import React, { useEffect, useState } from 'react';
-import { Typography, Box, IconButton, Tooltip, Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import RetryIcon from '@material-ui/icons/Replay';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';

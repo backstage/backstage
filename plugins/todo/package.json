@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-todo",
-  "version": "0.2.35-next.1",
+  "version": "0.2.35-next.2",
   "description": "A Backstage plugin that lets you browse TODO comments in your source code",
   "backstage": {
     "role": "frontend-plugin"

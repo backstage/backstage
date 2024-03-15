@@ -306,6 +306,7 @@ export type EntityListContextProps<
     next?: () => void;
     prev?: () => void;
   };
+  totalItems?: number;
 };
 
 // @public

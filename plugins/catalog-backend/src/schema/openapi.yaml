@@ -862,6 +862,8 @@ paths:
                     - component:default/backstage
                   fields:
                     - metadata.annotations
+      parameters:
+        - $ref: '#/components/parameters/filter'
   /entities/by-query:
     get:
       operationId: GetEntitiesByQuery

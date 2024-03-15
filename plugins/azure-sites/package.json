@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-azure-sites",
-  "version": "0.1.20-next.1",
+  "version": "0.1.20-next.2",
   "backstage": {
     "role": "frontend-plugin"
   },

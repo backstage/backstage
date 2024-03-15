@@ -461,13 +461,15 @@ export async function createRouter(
         defaultKind: 'template',
       });
 
-      const credentials = await httpAuth.credentials(req, { allow: ['user'] });
-
+      const credentials = await httpAuth.credentials(req);
       const { token } = await auth.getPluginRequestToken({
         onBehalfOf: credentials,
         targetPluginId: 'catalog',
       });
-      const userEntityRef = credentials.principal.userEntityRef;
+
+      const userEntityRef = auth.isPrincipal(credentials, 'user')
+        ? credentials.principal.userEntityRef
+        : undefined;
 
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })

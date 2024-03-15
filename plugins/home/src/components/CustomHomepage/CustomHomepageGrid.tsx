@@ -25,13 +25,13 @@ import {
 } from '@backstage/core-plugin-api';
 import 'react-grid-layout/css/styles.css';
 import 'react-resizable/css/styles.css';
+import Dialog from '@material-ui/core/Dialog';
 import {
   createStyles,
-  Dialog,
   makeStyles,
   Theme,
   useTheme,
-} from '@material-ui/core';
+} from '@material-ui/core/styles';
 import { compact } from 'lodash';
 import useObservable from 'react-use/lib/useObservable';
 import { ContentHeader, ErrorBoundary } from '@backstage/core-components';

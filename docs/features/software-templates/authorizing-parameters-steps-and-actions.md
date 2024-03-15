@@ -15,6 +15,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: my_custom_template
+spec:
+  type: service
   parameters:
     - title: Provide some simple information
       properties:

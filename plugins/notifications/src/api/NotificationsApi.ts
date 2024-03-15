@@ -16,6 +16,7 @@
 import { createApiRef } from '@backstage/core-plugin-api';
 import {
   Notification,
+  NotificationSeverity,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
 
@@ -30,7 +31,11 @@ export type GetNotificationsOptions = {
   limit?: number;
   search?: string;
   read?: boolean;
+  saved?: boolean;
   createdAfter?: Date;
+  sort?: 'created' | 'topic' | 'origin';
+  sortOrder?: 'asc' | 'desc';
+  minimumSeverity?: NotificationSeverity;
 };
 
 /** @public */

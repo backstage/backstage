@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { Visit } from '../../api/VisitsApi';
 import { DateTime } from 'luxon';
 

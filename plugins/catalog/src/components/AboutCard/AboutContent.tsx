@@ -25,7 +25,9 @@ import {
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { JsonArray } from '@backstage/types';
-import { Chip, Grid, makeStyles } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
 import { MarkdownContent } from '@backstage/core-components';
 import React from 'react';
 import { AboutField } from './AboutField';

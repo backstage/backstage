@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-guest-provider",
-  "version": "0.1.0-next.1",
+  "version": "0.1.0-next.2",
   "description": "The guest-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module"

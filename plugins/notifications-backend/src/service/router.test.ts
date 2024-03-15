@@ -23,7 +23,7 @@ import request from 'supertest';
 
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
-import { SignalService } from '@backstage/plugin-signals-node';
+import { SignalsService } from '@backstage/plugin-signals-node';
 import { mockServices } from '@backstage/backend-test-utils';
 
 function createDatabase(): PluginDatabaseManager {
@@ -42,7 +42,7 @@ function createDatabase(): PluginDatabaseManager {
 describe('createRouter', () => {
   let app: express.Express;
 
-  const signalService: jest.Mocked<SignalService> = {
+  const signalService: jest.Mocked<SignalsService> = {
     publish: jest.fn(),
   };
 
@@ -56,7 +56,7 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       database: createDatabase(),
       discovery,
-      signalService,
+      signals: signalService,
       userInfo,
       httpAuth,
       auth,

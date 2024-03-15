@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  Button,
-  Grid,
-  List,
-  ListItem,
-  makeStyles,
-  MenuItem,
-  TextField,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {

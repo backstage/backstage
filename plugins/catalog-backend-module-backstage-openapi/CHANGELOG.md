@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.1.7-next.2
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-openapi-utils@0.1.7-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+
 ## 0.1.7-next.1
 
 ### Patch Changes

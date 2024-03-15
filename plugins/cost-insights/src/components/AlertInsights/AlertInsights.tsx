@@ -16,7 +16,9 @@
 
 import React, { useEffect, useState } from 'react';
 import pluralize from 'pluralize';
-import { Box, Grid, Snackbar } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Snackbar from '@material-ui/core/Snackbar';
 import { default as MuiAlert } from '@material-ui/lab/Alert';
 import { AlertDialog } from './AlertDialog';
 import { AlertStatusSummary } from './AlertStatusSummary';

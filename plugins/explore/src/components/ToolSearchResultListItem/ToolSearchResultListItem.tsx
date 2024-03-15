@@ -15,13 +15,11 @@
  */
 
 import React, { ReactNode } from 'react';
-import {
-  Box,
-  Chip,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
 import { Link } from '@backstage/core-components';
 import {
   IndexableDocument,

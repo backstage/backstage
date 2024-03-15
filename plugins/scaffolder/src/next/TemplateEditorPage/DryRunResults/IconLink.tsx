@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Grid, LinkProps, makeStyles, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import { LinkProps } from '@material-ui/core/Link';
 import LanguageIcon from '@material-ui/icons/Language';
 
 import { IconComponent } from '@backstage/core-plugin-api';

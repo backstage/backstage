@@ -46,8 +46,9 @@ import {
   UnregisterEntityDialog,
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
-import { Box, TabProps } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Box from '@material-ui/core/Box';
+import { TabProps } from '@material-ui/core/Tab';
+import Alert from '@material-ui/lab/Alert';
 import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { EntityContextMenu } from '../EntityContextMenu/EntityContextMenu';

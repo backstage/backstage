@@ -13,20 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DefaultSignalService } from './DefaultSignalService';
+import { DefaultSignalsService } from './DefaultSignalsService';
+import { SignalPayload } from './types';
 
-describe('DefaultSignalService', () => {
+describe('DefaultSignalsService', () => {
   const mockEvents = {
     publish: jest.fn(),
     subscribe: jest.fn(),
   };
 
-  const service = DefaultSignalService.create({ events: mockEvents });
+  const service = DefaultSignalsService.create({ events: mockEvents });
 
   it('should publish signal', () => {
-    const signal = {
+    const signal: SignalPayload = {
       channel: 'test-channel',
-      recipients: null,
+      recipients: { type: 'broadcast' },
       message: { msg: 'hello world' },
     };
     service.publish(signal);

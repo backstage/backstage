@@ -1,5 +1,14 @@
 # @backstage/catalog-client
 
+## 1.6.1-next.1
+
+### Patch Changes
+
+- 6f830bb: Allow passing optional filter to `getEntitiesByRefs`
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+
 ## 1.6.1-next.0
 
 ### Patch Changes

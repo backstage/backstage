@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { ListItemIcon, ListItemText, MenuItem } from '@material-ui/core';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
 import CancelIcon from '@material-ui/icons/Cancel';
 
 type VisibleType = 'visible' | 'hidden' | 'disable';

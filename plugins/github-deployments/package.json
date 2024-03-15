@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-github-deployments",
-  "version": "0.1.62-next.1",
+  "version": "0.1.62-next.2",
   "description": "A Backstage plugin that integrates towards GitHub Deployments",
   "backstage": {
     "role": "frontend-plugin"
