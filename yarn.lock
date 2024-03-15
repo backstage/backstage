@@ -32490,16 +32490,16 @@ __metadata:
   linkType: hard
 
 "jose@npm:^4.15.4":
-  version: 4.15.4
-  resolution: "jose@npm:4.15.4"
-  checksum: dccad91cb3357f36423774a0b89ad830dd84b31090de65cd139b85488439f16a00f8c59c0773825e8a1adb0dd9d13ad725ad66e6ea33880ecb3959bb99e1ea5b
+  version: 4.15.5
+  resolution: "jose@npm:4.15.5"
+  checksum: 7dde76447c7707bd4b448f914b216f3858e701aa83f00447434252461af5b9e159dcbffb88badea3f9616739526763581267c9560622f0a058df8d68c86d7f79
   languageName: node
   linkType: hard
 
 "jose@npm:^5.0.0":
-  version: 5.2.2
-  resolution: "jose@npm:5.2.2"
-  checksum: d23def3c1df8aae1ae59d1c027a073804034fe8b971dafe51f0452ca8f6eb7e5cd3e3c90b6e544776443e01e58c8f8eefbd1984dbcde378e693e0ebbd176584d
+  version: 5.2.3
+  resolution: "jose@npm:5.2.3"
+  checksum: 7c41025d3e449f654a4cbf0e18e3a4a3bcb74b242d716e2e665a20be5c93b3f68421032a4531fd984d4bad6aa225c7c517da18da6e0cf778b104cd7e30bde5de
   languageName: node
   linkType: hard
 
