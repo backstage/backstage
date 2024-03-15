@@ -6,5 +6,5 @@ category: Development
 description: Automatically launch fully-contained dev environments with Dev Containers, right from Backstage!
 documentation: https://github.com/coder/backstage-plugins/blob/main/plugins/backstage-plugin-devcontainers-react/README.md
 iconUrl: /img/devcontainers.png
-npmPackageName: "@coder/backstage-plugin-devcontainers-react"
-addedDate: "2024-03-15"
+npmPackageName: '@coder/backstage-plugin-devcontainers-react'
+addedDate: '2024-03-15'
