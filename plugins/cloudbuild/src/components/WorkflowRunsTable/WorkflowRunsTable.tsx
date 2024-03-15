@@ -38,6 +38,7 @@ import { getLocation } from '../useLocation';
 import { useProjectName } from '../useProjectName';
 import GoogleIcon from '@material-ui/icons/CloudCircle';
 import { Entity } from '@backstage/catalog-model';
+import Grid from '@material-ui/core/Grid';
 
 const generatedColumns: TableColumn[] = [
   {
