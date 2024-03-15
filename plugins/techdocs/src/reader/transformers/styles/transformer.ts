@@ -15,7 +15,7 @@
  */
 
 import { useCallback, useMemo } from 'react';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 import { useSidebarPinState } from '@backstage/core-components';
 import { Transformer } from '../transformer';
 import { rules } from './rules';

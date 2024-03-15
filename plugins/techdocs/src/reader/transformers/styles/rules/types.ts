@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Theme } from '@material-ui/core';
+import { Theme } from '@material-ui/core/styles';
 
 /**
  * A Backstage sidebar object that contains properties such as its pin state.
