@@ -27,11 +27,8 @@ import { useCookieAuthRefresh } from '../../hooks';
 export type CookieAuthRefreshProviderProps = {
   // The plugin ID to used for discovering the API origin
   pluginId: string;
-  // Options for configuring the refresh cookie endpoint
-  options?: {
-    // The path to used for calling the refresh cookie endpoint, default to '/cookie'
-    path?: string;
-  };
+  // The path to used for calling the refresh cookie endpoint, default to '/cookie'
+  path?: string;
   // The children to render when the refresh is successful
   children: ReactNode;
 };
@@ -43,17 +40,17 @@ export type CookieAuthRefreshProviderProps = {
 export function CookieAuthRefreshProvider(
   props: CookieAuthRefreshProviderProps,
 ): JSX.Element {
-  const { children, ...params } = props;
+  const { children, ...options } = props;
   const app = useApp();
   const { Progress } = app.getComponents();
 
-  const { loading, error, retry } = useCookieAuthRefresh(params);
+  const { status, error, retry } = useCookieAuthRefresh(options);
 
-  if (loading) {
+  if (status === 'loading') {
     return <Progress />;
   }
 
-  if (error) {
+  if (status === 'error' && error) {
     return (
       <ErrorPanel error={error}>
         <Button variant="outlined" onClick={retry}>

@@ -13,28 +13,20 @@ export function CookieAuthRefreshProvider(
 // @public
 export type CookieAuthRefreshProviderProps = {
   pluginId: string;
-  options?: {
-    path?: string;
-  };
+  path?: string;
   children: ReactNode;
 };
 
 // @public
-export function useCookieAuthRefresh(params: {
+export function useCookieAuthRefresh(options: {
   pluginId: string;
-  options?: {
-    path?: string;
-  };
+  path?: string;
 }): {
-  loading: boolean;
-  error: Error | undefined;
-  value:
-    | {
-        expiresAt: string;
-      }
-    | undefined;
-  retry: (...args: unknown[]) => Promise<{
+  status: 'loading' | 'error' | 'success';
+  error?: Error;
+  result?: {
     expiresAt: string;
-  }>;
+  };
+  retry: () => void;
 };
 ```

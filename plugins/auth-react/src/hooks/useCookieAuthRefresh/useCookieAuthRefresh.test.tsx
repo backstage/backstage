@@ -54,7 +54,9 @@ describe('useCookieAuthRefresh', () => {
     jest.useRealTimers();
   });
 
-  it('should return a loading status when the refresh is in progress', () => {
+  it('should return a loading status when the refresh is in progress first time', () => {
+    const error = new Error('Failed to get cookie');
+
     const { result } = renderHook(
       () => useCookieAuthRefresh({ pluginId: 'techdocs' }),
       {
@@ -64,7 +66,7 @@ describe('useCookieAuthRefresh', () => {
               [
                 fetchApiRef,
                 {
-                  fetch: jest.fn(),
+                  fetch: jest.fn().mockRejectedValue(error),
                 },
               ],
               [storageApiRef, storageApiMock],
@@ -77,7 +79,105 @@ describe('useCookieAuthRefresh', () => {
       },
     );
 
-    expect(result.current.loading).toBeTruthy();
+    expect(result.current.status).toBe('loading');
+    expect(result.current.error).toBeUndefined();
+    expect(result.current.result).toBeUndefined();
+  });
+
+  it('should return a loading status when retrying without previous success', async () => {
+    const error = new Error('Failed to get cookie');
+
+    const { result } = renderHook(
+      () => useCookieAuthRefresh({ pluginId: 'techdocs' }),
+      {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[
+              [
+                fetchApiRef,
+                {
+                  fetch: jest
+                    .fn()
+                    .mockRejectedValueOnce(error)
+                    .mockReturnValue(new Promise(() => {})),
+                },
+              ],
+              [storageApiRef, storageApiMock],
+              [discoveryApiRef, discoveryApiMock],
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      },
+    );
+
+    expect(result.current.status).toBe('loading');
+    expect(result.current.error).toBeUndefined();
+    expect(result.current.result).toBeUndefined();
+
+    await waitFor(() => expect(result.current.status).toBe('error'));
+    expect(result.current.result).toBeUndefined();
+    expect(result.current.error).toStrictEqual(error);
+
+    result.current.retry();
+
+    await waitFor(() => expect(result.current.status).toBe('loading'));
+    expect(result.current.result).toBeUndefined();
+    expect(result.current.error).toStrictEqual(error);
+  });
+
+  it('should return a loading status when retrying with previous success', async () => {
+    const error = new Error('Failed to get cookie');
+
+    const { result } = renderHook(
+      () => useCookieAuthRefresh({ pluginId: 'techdocs' }),
+      {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[
+              [
+                fetchApiRef,
+                {
+                  fetch: jest
+                    .fn()
+                    .mockResolvedValueOnce({
+                      ok: true,
+                      json: jest.fn().mockResolvedValue({ expiresAt }),
+                    })
+                    .mockRejectedValueOnce(error)
+                    .mockReturnValue(new Promise(() => {})),
+                },
+              ],
+              [storageApiRef, storageApiMock],
+              [discoveryApiRef, discoveryApiMock],
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      },
+    );
+
+    expect(result.current.status).toBe('loading');
+    expect(result.current.error).toBeUndefined();
+    expect(result.current.result).toBeUndefined();
+
+    await waitFor(() => expect(result.current.status).toBe('success'));
+    expect(result.current.result).toMatchObject({ expiresAt });
+    expect(result.current.error).toBeUndefined();
+
+    result.current.retry();
+
+    await waitFor(() => expect(result.current.status).toBe('error'));
+    expect(result.current.result).toMatchObject({ expiresAt });
+    expect(result.current.error).toStrictEqual(error);
+
+    result.current.retry();
+
+    await waitFor(() => expect(result.current.status).toBe('loading'));
+    expect(result.current.result).toMatchObject({ expiresAt });
+    expect(result.current.error).toStrictEqual(error);
   });
 
   it('should return an error status when the refresh has failed', async () => {
@@ -133,7 +233,7 @@ describe('useCookieAuthRefresh', () => {
       ),
     );
 
-    expect(result.current.value).toMatchObject({ expiresAt });
+    expect(result.current.result).toMatchObject({ expiresAt });
   });
 
   it('should cancel the refresh when a message is received from another tab', async () => {
@@ -197,7 +297,7 @@ describe('useCookieAuthRefresh', () => {
 
     await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1));
 
-    expect(result.current.value).toMatchObject({ expiresAt });
+    expect(result.current.result).toMatchObject({ expiresAt });
 
     unmount();
 

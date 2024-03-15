@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import {
   discoveryApiRef,
   fetchApiRef,
@@ -27,18 +27,22 @@ import { ResponseError } from '@backstage/errors';
 /**
  * @public
  * A hook that will refresh the cookie when it is about to expire.
+ * @param options - Options for configuring the refresh cookie endpoint
  */
-export function useCookieAuthRefresh(params: {
-  // The plugin ID to used for discovering the API origin
+export function useCookieAuthRefresh(options: {
+  // The plugin id to used for discovering the API origin
   pluginId: string;
-  // Options for configuring the refresh cookie endpoint
-  options?: {
-    // The path to used for calling the refresh cookie endpoint, default to '/cookie'
-    path?: string;
+  // The path to used for calling the refresh cookie endpoint, default to '/cookie'
+  path?: string;
+}): {
+  status: 'loading' | 'error' | 'success';
+  error?: Error;
+  result?: {
+    expiresAt: string;
   };
-}) {
-  const { pluginId, options: { path = '/cookie' } = {} } = params;
-
+  retry: () => void;
+} {
+  const { pluginId, path = '/cookie' } = options ?? {};
   const fetchApi = useApi(fetchApiRef);
   const storageApi = useApi(storageApiRef);
   const discoveryApi = useApi(discoveryApiRef);
@@ -60,10 +64,10 @@ export function useCookieAuthRefresh(params: {
   useMountEffect(actions.execute);
 
   const refresh = useCallback(
-    (options: { expiresAt: string }) => {
+    (params: { expiresAt: string }) => {
       // Randomize the refreshing margin to avoid all tabs refreshing at the same time
       const margin = (1 + 3 * Math.random()) * 60000;
-      const delay = Date.parse(options.expiresAt) - Date.now() - margin;
+      const delay = Date.parse(params.expiresAt) - Date.now() - margin;
       const timeout = setTimeout(actions.execute, delay);
       return () => clearTimeout(timeout);
     },
@@ -71,7 +75,10 @@ export function useCookieAuthRefresh(params: {
   );
 
   useEffect(() => {
-    if (!state.result) return () => {};
+    // Only start the refresh process if we have a successful response
+    if (state.status !== 'success' || !state.result) {
+      return () => {};
+    }
 
     store.set('expiresAt', state.result.expiresAt);
 
@@ -90,10 +97,43 @@ export function useCookieAuthRefresh(params: {
     };
   }, [state, refresh, store]);
 
+  const status = useMemo(() => {
+    // Initialising
+    if (state.status === 'not-executed') {
+      return 'loading';
+    }
+
+    // First refresh or retrying without any success before
+    // Possible states transitions:
+    // e.g. not-executed -> loading (first-refresh)
+    // e.g. not-executed -> loading (first-refresh) -> error -> loading (manual-retry)
+    if (state.status === 'loading' && !state.result) {
+      return 'loading';
+    }
+
+    // Retrying after having succeeding at least once
+    // Current states is: { status: 'loading', result: {...}, error: undefined | Error }
+    // e.g. not-executed -> loading (first-refresh) -> success -> loading (scheduled-refresh) -> error -> loading (manual-retry)
+    if (state.status === 'loading' && state.error) {
+      return 'loading';
+    }
+
+    // Something went wrong during the any situation of a refresh
+    if (state.status === 'error' && state.error) {
+      return 'error';
+    }
+
+    return 'success';
+  }, [state]);
+
+  const retry = useCallback(() => {
+    actions.execute();
+  }, [actions]);
+
   return {
-    loading: state.status === 'loading',
+    retry,
+    status,
+    result: state.result,
     error: state.error,
-    value: state.result,
-    retry: actions.execute,
   };
 }
