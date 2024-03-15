@@ -15,7 +15,10 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles, IconButton, Grid, Button } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 import FilterList from '@material-ui/icons/FilterList';
 import { InfoCard, Select } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
