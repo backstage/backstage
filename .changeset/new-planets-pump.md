@@ -6,7 +6,6 @@
 '@backstage/plugin-microsoft-calendar': patch
 '@backstage/plugin-newrelic-dashboard': patch
 '@backstage/plugin-entity-validation': patch
-'@internal/plugin-todo-list': patch
 '@backstage/core-components': patch
 '@backstage/plugin-kubernetes-react': patch
 '@backstage/plugin-scaffolder-react': patch
@@ -75,7 +74,6 @@
 '@backstage/plugin-kafka': patch
 '@backstage/plugin-nomad': patch
 '@backstage/plugin-vault': patch
-'example-app': patch
 '@backstage/plugin-gocd': patch
 '@backstage/plugin-home': patch
 '@backstage/plugin-adr': patch
