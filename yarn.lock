@@ -40217,12 +40217,12 @@ __metadata:
   linkType: hard
 
 "react-virtualized-auto-sizer@npm:^1.0.11":
-  version: 1.0.23
-  resolution: "react-virtualized-auto-sizer@npm:1.0.23"
+  version: 1.0.24
+  resolution: "react-virtualized-auto-sizer@npm:1.0.24"
   peerDependencies:
     react: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
     react-dom: ^15.3.0 || ^16.0.0-alpha || ^17.0.0 || ^18.0.0
-  checksum: a5b37b2201f09f957d2398f1415fcec9b2aa0cbfb75ae193bd324a0bc5ef00dc30d3a40f60b31fe5a450d8ec66c0911213f9f3be0e8410ae1b180547030fd8e8
+  checksum: e7d98563735dabbd1c58727c9d3e9f08f6a60a9964d25507cf4ef08f8964b6e421491c892ee0a99e47630118fdca42f1c60cef15ebda3659face58025dba3e98
   languageName: node
   linkType: hard
 
