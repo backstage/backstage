@@ -160,7 +160,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   private getNotificationsBaseQuery = (
     options: NotificationGetOptions | NotificationModifyOptions,
   ) => {
-    const { user } = options;
+    const { user, orderField } = options;
 
     const subQuery = this.db('notification')
       .select(NOTIFICATION_COLUMNS)
@@ -171,10 +171,12 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       q.where('user', user).orWhereNull('user');
     });
 
-    if (options.sort !== undefined && options.sort !== null) {
-      query.orderBy(options.sort, options.sortOrder ?? 'desc');
-    } else if (options.sort !== null) {
-      query.orderBy('created', options.sortOrder ?? 'desc');
+    if (orderField && orderField.length > 0) {
+      orderField.forEach(orderBy => {
+        query.orderBy(orderBy.field, orderBy.order);
+      });
+    } else if (!orderField) {
+      query.orderBy('created', 'desc');
     }
 
     if (options.createdAfter) {
@@ -235,7 +237,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const countOptions: NotificationGetOptions = { ...options };
     countOptions.limit = undefined;
     countOptions.offset = undefined;
-    countOptions.sort = null;
+    countOptions.orderField = [];
     const notificationQuery = this.getNotificationsBaseQuery(countOptions);
     const response = await notificationQuery.count('id as CNT');
     return Number(response[0].CNT);
@@ -266,7 +268,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   async getStatus(options: NotificationGetOptions) {
     const notificationQuery = this.getNotificationsBaseQuery({
       ...options,
-      sort: null,
+      orderField: [],
     });
     const readSubQuery = notificationQuery
       .clone()
