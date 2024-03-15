@@ -22,7 +22,7 @@ import FolderIcon from '@material-ui/icons/Folder';
 import FileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
 import Alert from '@material-ui/lab/Alert';
 import React, { Fragment, useEffect, useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { codeCoverageApiRef } from '../../api';
 import { FileEntry } from '../../types';
 import { FileContent } from './FileContent';

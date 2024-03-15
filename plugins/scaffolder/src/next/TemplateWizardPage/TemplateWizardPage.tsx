@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import {
   stringifyEntityRef,
   ANNOTATION_EDIT_URL,

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import useEffectOnce from 'react-use/lib/useEffectOnce';
+import useAsync from 'react-use/esm/useAsync';
+import useEffectOnce from 'react-use/esm/useEffectOnce';
 import { GetEntityFacetsRequest } from '@backstage/catalog-client';
 import { makeValidator } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';

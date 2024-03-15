@@ -15,8 +15,8 @@
  */
 
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsync from 'react-use/esm/useAsync';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import React from 'react';
 
 import { CalverTagParts } from '../../../helpers/tagParts/getCalverTagParts';

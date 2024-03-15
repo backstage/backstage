@@ -18,7 +18,7 @@ import { configApiRef, useApi, useApp } from '@backstage/core-plugin-api';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { codesceneApiRef } from '../../api/api';
 import { Analysis } from '../../api/types';
 import { CodeHealthKpisCard } from '../CodeHealthKpisCard/CodeHealthKpisCard';

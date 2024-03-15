@@ -27,7 +27,7 @@ import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import Alert from '@material-ui/lab/Alert';
 import { ClassNameMap } from '@material-ui/styles/withStyles';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import {
   CartesianGrid,
   Legend,

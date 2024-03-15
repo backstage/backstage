@@ -114,6 +114,7 @@ env
 Env
 esbuild
 eslint
+esm
 ESModule
 ESModules
 etag

@@ -28,7 +28,7 @@ import Check from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';
 import Typography from '@material-ui/core/Typography';
 import { DateTime, Interval } from 'luxon';
-import useInterval from 'react-use/lib/useInterval';
+import useInterval from 'react-use/esm/useInterval';
 import humanizeDuration from 'humanize-duration';
 import classNames from 'classnames';
 

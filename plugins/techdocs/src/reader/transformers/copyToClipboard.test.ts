@@ -18,7 +18,7 @@ import { createTestShadowDom } from '../../test-utils';
 import { copyToClipboard } from './copyToClipboard';
 import { lightTheme } from '@backstage/theme';
 import { act, waitFor } from '@testing-library/react';
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
 const clipboardSpy = jest.fn();
 Object.defineProperty(window.navigator, 'clipboard', {

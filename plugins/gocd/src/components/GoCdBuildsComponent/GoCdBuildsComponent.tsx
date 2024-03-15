@@ -26,7 +26,7 @@ import {
   Page,
 } from '@backstage/core-components';
 import { useApi, configApiRef } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { gocdApiRef } from '../../plugin';
 import { GoCdBuildsTable } from '../GoCdBuildsTable/GoCdBuildsTable';
 import { GoCdBuildsInsights } from '../GoCdBuildsInsights/GoCdBuildsInsights';

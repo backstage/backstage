@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { useNavigate } from 'react-router-dom';
 import {
   FormControl,

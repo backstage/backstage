@@ -22,7 +22,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import {
   ApiProvider,
   AppThemeSelector,

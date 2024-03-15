@@ -41,7 +41,7 @@ import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { ManifestYaml } from './ManifestYaml';
 import { useApi } from '@backstage/core-plugin-api';
 import { kubernetesClusterLinkFormatterApiRef } from '../../api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({

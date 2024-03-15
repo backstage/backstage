@@ -21,7 +21,7 @@ import {
 } from '@backstage/catalog-model';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { useMemo } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { getEntityRelations } from '../utils/getEntityRelations';
 
 /**

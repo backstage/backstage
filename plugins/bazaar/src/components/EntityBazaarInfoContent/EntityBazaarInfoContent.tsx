@@ -35,7 +35,7 @@ import { useApi, identityApiRef } from '@backstage/core-plugin-api';
 import { BazaarProject, Member } from '../../types';
 import { bazaarApiRef } from '../../api';
 import Alert from '@material-ui/lab/Alert';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { ConfirmationDialog } from '../ConfirmationDialog';

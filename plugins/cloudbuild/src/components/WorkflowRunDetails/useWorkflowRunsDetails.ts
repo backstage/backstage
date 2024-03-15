@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { cloudbuildApiRef } from '../../api';
 import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
 import { buildRouteRef } from '../../routes';

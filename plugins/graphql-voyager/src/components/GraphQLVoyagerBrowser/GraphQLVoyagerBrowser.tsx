@@ -23,7 +23,7 @@ import { makeStyles, Tab, Tabs, Typography } from '@material-ui/core';
 import React, { Suspense } from 'react';
 import { Content, ErrorPanel, Progress } from '@backstage/core-components';
 import { Voyager } from 'graphql-voyager';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 const useStyles = makeStyles({
   root: {

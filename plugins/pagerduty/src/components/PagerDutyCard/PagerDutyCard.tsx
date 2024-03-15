@@ -24,7 +24,7 @@ import {
 } from '@material-ui/core';
 import { Incidents } from '../Incident';
 import { EscalationPolicy } from '../Escalation';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Alert } from '@material-ui/lab';
 import { pagerDutyApiRef, UnauthorizedError } from '../../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';

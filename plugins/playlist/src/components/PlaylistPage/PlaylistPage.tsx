@@ -29,7 +29,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
 import { PlaylistEntitiesTable } from './PlaylistEntitiesTable';

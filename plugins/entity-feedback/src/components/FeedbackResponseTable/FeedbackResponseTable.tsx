@@ -21,7 +21,7 @@ import { FeedbackResponse } from '@backstage/plugin-entity-feedback-common';
 import { Chip, makeStyles } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 import { entityFeedbackApiRef } from '../../api';
 

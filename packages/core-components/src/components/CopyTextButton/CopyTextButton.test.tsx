@@ -19,7 +19,7 @@ import { act, fireEvent } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { CopyTextButton } from './CopyTextButton';
 import { errorApiRef } from '@backstage/core-plugin-api';
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
 jest.mock('popper.js', () => {
   const PopperJS = jest.requireActual('popper.js');

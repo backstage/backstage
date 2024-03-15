@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';

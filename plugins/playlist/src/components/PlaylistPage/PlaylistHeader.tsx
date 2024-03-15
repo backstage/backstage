@@ -43,7 +43,7 @@ import EditIcon from '@material-ui/icons/Edit';
 import DeleteIcon from '@material-ui/icons/Delete';
 import React, { useCallback, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
 import { rootRouteRef } from '../../routes';

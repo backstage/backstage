@@ -22,7 +22,7 @@ import {
 } from '@backstage/core-components';
 import { useRouteRef, useApi } from '@backstage/core-plugin-api';
 import Alert from '@material-ui/lab/Alert';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Link as RouterLink } from 'react-router-dom';
 import { rootRouteRef } from '../../routes';
 import { codesceneApiRef } from '../../api/api';

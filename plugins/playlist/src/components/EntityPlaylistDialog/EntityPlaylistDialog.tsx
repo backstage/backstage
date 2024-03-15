@@ -46,7 +46,7 @@ import PlaylistAddIcon from '@material-ui/icons/PlaylistAdd';
 import SearchIcon from '@material-ui/icons/Search';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
 import { useTitle } from '../../hooks';

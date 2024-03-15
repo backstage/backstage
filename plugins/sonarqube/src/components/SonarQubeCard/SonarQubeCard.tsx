@@ -33,7 +33,7 @@ import Security from '@material-ui/icons/Security';
 import SentimentVeryDissatisfied from '@material-ui/icons/SentimentVeryDissatisfied';
 import SentimentVerySatisfied from '@material-ui/icons/SentimentVerySatisfied';
 import React, { useMemo } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Percentage } from './Percentage';
 import { Rating } from './Rating';
 import { RatingCard } from './RatingCard';

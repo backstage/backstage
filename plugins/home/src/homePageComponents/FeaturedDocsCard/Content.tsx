@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import {
   LinkButton,
   EmptyState,

@@ -24,7 +24,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
 import React, { useState } from 'react';
-import useDebounce from 'react-use/lib/useDebounce';
+import useDebounce from 'react-use/esm/useDebounce';
 
 import { usePlaylistList } from '../../hooks';
 import { PlaylistFilter } from '../../types';

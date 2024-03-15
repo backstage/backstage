@@ -33,7 +33,7 @@ import PlaylistPlayIcon from '@material-ui/icons/PlaylistPlay';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { compact } from 'lodash';
 import React, { Fragment, useEffect, useMemo, useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 import { usePlaylistList } from '../../hooks';
 import { PlaylistFilter } from '../../types';

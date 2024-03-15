@@ -21,7 +21,7 @@ import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useState } from 'react';
-import useLocalStorage from 'react-use/lib/useLocalStorage';
+import useLocalStorage from 'react-use/esm/useLocalStorage';
 import LighthouseSupportButton from '../SupportButton';
 import {
   ContentHeader,
