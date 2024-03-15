@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 import React, { useMemo, useState } from 'react';
-import { Box, makeStyles } from '@material-ui/core';
+import { Box, makeStyles, Tooltip } from '@material-ui/core';
 import CodeMirror from '@uiw/react-codemirror';
 import { showPanel } from '@codemirror/view';
 import { StreamLanguage } from '@codemirror/language';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 import { useKeyboardEvent } from '@react-hookz/web';
+import FileCopyIcon from '@material-ui/icons/FileCopy';
+import DoneIcon from '@material-ui/icons/Done';
+import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
 
 const useStyles = makeStyles(theme => ({
   container: {
@@ -55,6 +58,8 @@ export const EntityTextArea = ({
 }: TemplateTextAreaProps) => {
   const classes = useStyles();
   const [close, setClose] = useState(false);
+  const [showDoneIcon, setShowDoneIcon] = useState(false);
+  const [, copyToClipboard] = useCopyToClipboard();
 
   const panelExtension = useMemo(() => {
     if (close) {
@@ -78,6 +83,12 @@ export const EntityTextArea = ({
     },
   );
 
+  const handleCopyToClipboard = () => {
+    copyToClipboard(catalogYaml);
+    setShowDoneIcon(true);
+    setTimeout(() => setShowDoneIcon(false), 1000);
+  };
+
   return (
     <Box className={classes.container}>
       <CodeMirror
@@ -88,10 +99,30 @@ export const EntityTextArea = ({
         value={catalogYaml}
         onChange={onChange}
         onKeyDownCapture={e => {
-          // Prevent new line if Ctrl + Enter was clicked
           if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) e.preventDefault();
         }}
       />
+      {!showDoneIcon && (
+        <FileCopyIcon
+          onClick={handleCopyToClipboard}
+          style={{
+            cursor: 'pointer',
+            position: 'absolute',
+            right: '40px',
+            top: '30px',
+          }}
+        />
+      )}
+      {showDoneIcon && (
+        <DoneIcon
+          style={{
+            position: 'absolute',
+            right: '40px',
+            top: '30px',
+            color: 'green',
+          }}
+        />
+      )}
     </Box>
   );
 };
