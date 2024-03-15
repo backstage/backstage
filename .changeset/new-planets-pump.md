@@ -82,4 +82,4 @@
 '@backstage/plugin-org': patch
 ---
 
-Use esm exports of react-use library
+Use ESM exports of react-use library
