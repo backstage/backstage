@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import { Link, Table, TableColumn } from '@backstage/core-components';
-import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import { default as React } from 'react';
 import JenkinsLogo from './../../assets/JenkinsLogo.svg';
 import { useJobRuns } from './../useJobRuns';
