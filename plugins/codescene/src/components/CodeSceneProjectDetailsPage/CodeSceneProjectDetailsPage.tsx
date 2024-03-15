@@ -25,7 +25,8 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useApp } from '@backstage/core-plugin-api';
-import { Grid, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useParams } from 'react-router-dom';

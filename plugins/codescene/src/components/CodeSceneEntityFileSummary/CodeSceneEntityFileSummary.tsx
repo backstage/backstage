@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Content, EmptyState, InfoCard } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import {
