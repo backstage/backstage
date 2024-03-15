@@ -25,7 +25,7 @@ import TrendingDownIcon from '@material-ui/icons/TrendingDown';
 import TrendingFlatIcon from '@material-ui/icons/TrendingFlat';
 import TrendingUpIcon from '@material-ui/icons/TrendingUp';
 import Alert from '@material-ui/lab/Alert';
-import { ClassNameMap } from '@material-ui/styles';
+import { ClassNameMap } from '@material-ui/styles/withStyles';
 import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import {
