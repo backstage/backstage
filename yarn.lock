@@ -18719,7 +18719,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/dockerode@npm:^3.3.0, @types/dockerode@npm:^3.3.21":
+"@types/dockerode@npm:^3.3.0, @types/dockerode@npm:^3.3.24":
   version: 3.3.26
   resolution: "@types/dockerode@npm:3.3.26"
   dependencies:
@@ -21735,7 +21735,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"async-lock@npm:^1.1.0, async-lock@npm:^1.4.0":
+"async-lock@npm:^1.1.0, async-lock@npm:^1.4.1":
   version: 1.4.1
   resolution: "async-lock@npm:1.4.1"
   checksum: 29e70cd892932b7c202437786cedc39ff62123cb6941014739bd3cabd6106326416e9e7c21285a5d1dc042cad239a0f7ec9c44658491ee4a615fd36a21c1d10a
@@ -25796,12 +25796,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"docker-compose@npm:^0.24.2":
-  version: 0.24.6
-  resolution: "docker-compose@npm:0.24.6"
+"docker-compose@npm:^0.24.6":
+  version: 0.24.7
+  resolution: "docker-compose@npm:0.24.7"
   dependencies:
     yaml: ^2.2.2
-  checksum: 7926e72d7feb9e7feb9e9d46460e18a61cf759cdb9004d7783b58a815eb22b3fbd6402db903cdb764be289cacb1960ef6d19904a9ee435991d8937b146be590f
+  checksum: 54daa1985fd7a57a1881dfdb7d294a189b9ba4e097de81127bfb4ff2f7727d249cc1514ee6a5a06c0085f9f6b5bcafe55b3e463f30b87c4d682bd8b0dac0450e
   languageName: node
   linkType: hard
 
@@ -43475,7 +43475,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tar-fs@npm:^3.0.4":
+"tar-fs@npm:^3.0.5":
   version: 3.0.5
   resolution: "tar-fs@npm:3.0.5"
   dependencies:
@@ -43675,25 +43675,25 @@ __metadata:
   linkType: hard
 
 "testcontainers@npm:^10.0.0":
-  version: 10.7.1
-  resolution: "testcontainers@npm:10.7.1"
+  version: 10.7.2
+  resolution: "testcontainers@npm:10.7.2"
   dependencies:
     "@balena/dockerignore": ^1.0.2
-    "@types/dockerode": ^3.3.21
+    "@types/dockerode": ^3.3.24
     archiver: ^5.3.2
-    async-lock: ^1.4.0
+    async-lock: ^1.4.1
     byline: ^5.0.0
     debug: ^4.3.4
-    docker-compose: ^0.24.2
+    docker-compose: ^0.24.6
     dockerode: ^3.3.5
     get-port: ^5.1.1
     node-fetch: ^2.7.0
     proper-lockfile: ^4.1.2
     properties-reader: ^2.3.0
     ssh-remote-port-forward: ^1.0.4
-    tar-fs: ^3.0.4
+    tar-fs: ^3.0.5
     tmp: ^0.2.1
-  checksum: 3ecb439914fab1147943d7d97e4021309fa69f3fcdbc153f4cf3fcf1feb03415da402fb914811189a3606409d58de1174910e144fb4c6c7e3510cc2cb59911b2
+  checksum: b4650509e3e072b96cd8ed75fdeeaa8a51a81cc9d45aabec26d4915cf9942e051f14fce4d23a29e70a007c2e8b3ce46f72dac602962f21c5a8d27976c846ef24
   languageName: node
   linkType: hard
 
