@@ -93,6 +93,7 @@ export async function makeRollupConfigs(
         entryFileNames: `[name].cjs.js`,
         chunkFileNames: `cjs/[name]-[hash].cjs.js`,
         format: 'commonjs',
+        interop: 'compat',
         sourcemap: true,
         exports: 'named',
       });
