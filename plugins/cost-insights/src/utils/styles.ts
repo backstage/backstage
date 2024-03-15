@@ -15,14 +15,12 @@
  */
 
 import {
-  createStyles,
   emphasize,
+  lighten,
   darken,
   getLuminance,
-  lighten,
-  makeStyles,
-  Theme,
-} from '@material-ui/core';
+} from '@material-ui/core/styles/colorManipulator';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { CostInsightsTheme, CostInsightsThemeOptions } from '../types';
 
 export const costInsightsLightTheme = {

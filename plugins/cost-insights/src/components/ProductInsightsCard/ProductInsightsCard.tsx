@@ -22,7 +22,7 @@ import React, {
   useState,
 } from 'react';
 import pluralize from 'pluralize';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { default as Alert } from '@material-ui/lab/Alert';
 import { PeriodSelect } from '../PeriodSelect';
 import { ProductInsightsChart } from './ProductInsightsChart';

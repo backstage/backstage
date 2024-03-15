@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Box, useTheme } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import { useTheme } from '@material-ui/core/styles';
 import { CostGrowth, LegendItem } from '../../../components';
 import { CostInsightsTheme, Duration } from '../../../types';
 import { ChangeStatistic } from '@backstage/plugin-cost-insights-common';
