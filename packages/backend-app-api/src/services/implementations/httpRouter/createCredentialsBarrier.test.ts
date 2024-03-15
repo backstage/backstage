@@ -21,18 +21,21 @@ import request from 'supertest';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { MiddlewareFactory } from '../../../http';
+import { CacheService } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 
 const errorMiddleware = MiddlewareFactory.create({
   config: mockServices.rootConfig(),
   logger: mockServices.rootLogger(),
 }).error();
 
-function setup() {
+function setup(options?: { cache?: CacheService; config?: JsonObject }) {
   const barrier = createCredentialsBarrier({
     httpAuth: mockServices.httpAuth({
       defaultCredentials: mockCredentials.none(),
     }),
-    config: mockServices.rootConfig(),
+    config: mockServices.rootConfig({ data: options?.config }),
+    cache: options?.cache ?? mockServices.cache.mock(),
   });
 
   const app = express();
@@ -172,4 +175,130 @@ describe('createCredentialsBarrier', () => {
       .expect(200);
     await request(app).get('/other').send().expect(200);
   });
+});
+
+it('do not limit authenticated requests', async () => {
+  const now = Date.now();
+  jest.useFakeTimers({ now });
+  const cacheMock = mockServices.cache.mock();
+  const twoMinutesInMilliseconds = 2 * 60 * 1000;
+  const resetTime = now + twoMinutesInMilliseconds;
+  cacheMock.get.mockResolvedValue({ totalHits: 2, resetTime });
+
+  const max = 2;
+  const configMock = {
+    backend: {
+      auth: {
+        rateLimit: {
+          max, // 2 requests per window
+          window: { minutes: 2 }, // rate limit window expiration time,
+        },
+      },
+    },
+  };
+  const { app, barrier } = setup({
+    cache: cacheMock,
+    config: configMock,
+  });
+
+  // exceed the rate limit for authenticated requests
+  for (let i = 0; i < max + 1; i += 1) {
+    await request(app)
+      .get('/')
+      .set('authorization', mockCredentials.user.header())
+      .send()
+      .expect(200);
+  }
+
+  barrier.addAuthPolicy({ allow: 'user-cookie', path: '/' });
+
+  for (let i = 0; i < max + 1; i += 1) {
+    await request(app)
+      .get('/')
+      .set('cookie', mockCredentials.limitedUser.cookie())
+      .send()
+      .expect(200);
+  }
+});
+
+it('limit the number of unauthenticated requests', async () => {
+  const now = Date.now();
+  jest.useFakeTimers({ now });
+  const cacheMock = mockServices.cache.mock();
+  const twoMinutesInMilliseconds = 2 * 60 * 1000;
+  const resetTime = now + twoMinutesInMilliseconds;
+  cacheMock.get
+    .mockResolvedValueOnce(undefined) // Request 1
+    .mockResolvedValueOnce({ totalHits: 1, resetTime }) // Request 2
+    .mockResolvedValueOnce({ totalHits: 2, resetTime }) // Request 3
+    .mockResolvedValueOnce(undefined); // Request 4
+
+  const configMock = {
+    backend: {
+      auth: {
+        rateLimit: {
+          max: 2, // 2 requests per window
+          window: { minutes: 2 }, // rate limit window expiration time,
+        },
+      },
+    },
+  };
+  const { app, barrier } = setup({
+    cache: cacheMock,
+    config: configMock,
+  });
+
+  barrier.addAuthPolicy({ allow: 'unauthenticated', path: '/public' });
+
+  const randomIp = '48.105.15.17';
+  // Enable trust proxy to get the real IP from the X-Forwarded-For header
+  app.enable('trust proxy');
+  await request(app)
+    .get('/public')
+    .set('X-Forwarded-For', randomIp)
+    .send()
+    .expect(200);
+  await request(app)
+    .get('/public')
+    .set('X-Forwarded-For', randomIp)
+    .send()
+    .expect(200);
+  await request(app)
+    .get('/public')
+    .set('X-Forwarded-For', randomIp)
+    .send()
+    .expect(429);
+  await request(app)
+    .get('/public')
+    .set('X-Forwarded-For', randomIp)
+    .send()
+    .expect(200);
+
+  expect(cacheMock.get).toHaveBeenCalledTimes(4);
+  expect(cacheMock.set).toHaveBeenNthCalledWith(
+    1,
+    `rl_${randomIp}`, // rl is the default prefix for the rate limit store
+    { resetTime, totalHits: 1 },
+    { ttl: twoMinutesInMilliseconds },
+  );
+  expect(cacheMock.set).toHaveBeenNthCalledWith(
+    2,
+    `rl_${randomIp}`,
+    { resetTime, totalHits: 2 },
+    { ttl: twoMinutesInMilliseconds },
+  );
+  expect(cacheMock.set).toHaveBeenNthCalledWith(
+    3,
+    `rl_${randomIp}`,
+    { resetTime, totalHits: 3 },
+    { ttl: twoMinutesInMilliseconds },
+  );
+  expect(cacheMock.set).toHaveBeenNthCalledWith(
+    4,
+    `rl_${randomIp}`,
+    { resetTime, totalHits: 1 },
+    { ttl: twoMinutesInMilliseconds },
+  );
+
+  jest.useRealTimers();
 });
