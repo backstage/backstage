@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Grid, Button, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Illo } from './Illo';
 
