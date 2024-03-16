@@ -34,6 +34,9 @@ export type GitlabProjectForkedFrom = {
 
 export type GitLabProject = {
   id: number;
+  description?: string;
+  name?: string;
+  path?: string;
   default_branch?: string;
   archived: boolean;
   last_activity_at: string;
@@ -76,7 +79,6 @@ export type GitLabGroup = {
   name: string;
   full_path: string;
   description?: string;
-  visibility?: string;
   parent_id?: number;
 };
 
@@ -116,7 +118,6 @@ export type GitLabDescendantGroupsResponse = {
             name: string;
             description: string;
             fullPath: string;
-            visibility: string;
             parent: {
               id: string;
             };
@@ -180,6 +181,11 @@ export type GitlabProviderConfig = {
    */
   groupPattern: RegExp;
 
+  /**
+   * If true, the provider will also ingest add inherited users to the ingested groups
+   */
+  allowInherited?: boolean;
+
   orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;
   /**
@@ -242,3 +248,72 @@ export interface GroupTransformerOptions {
   providerConfig: GitlabProviderConfig;
   groupNameTransformer: GroupNameTransformer;
 }
+
+/**
+ * Represents the schema for system hook events related to groups.
+ * https://docs.gitlab.com/ee/administration/system_hooks.html
+ *
+ * @public
+ */
+export type SystemHookBaseGroupEventsSchema = {
+  created_at: string;
+  updated_at: string;
+  name: string;
+  path: string;
+  full_path: string;
+  group_id: number;
+};
+
+/**
+ * Represents the schema for system hook events related to users.
+ * https://docs.gitlab.com/ee/administration/system_hooks.html
+ *
+ * @public
+ */
+export type SystemHookBaseUserEventsSchema = {
+  created_at: string;
+  updated_at: string;
+  email: string;
+  name: string;
+  username: string;
+  user_id: number;
+};
+
+/**
+ * Represents the schema for system hook events related to user memberships.
+ * https://docs.gitlab.com/ee/administration/system_hooks.html
+ *
+ * @public
+ */
+export type SystemHookBaseMembershipEventsSchema = {
+  created_at: string;
+  updated_at: string;
+  group_name: string;
+  group_path: string;
+  group_id: number;
+  user_username: string;
+  user_email: string;
+  user_name: string;
+  user_id: number;
+  group_access: string;
+};
+
+/**
+ * Represents the schema for system hook events related to projects.
+ * https://docs.gitlab.com/ee/administration/system_hooks.html
+ *
+ * @public
+ */
+export type SystemHookBaseProjectEventsSchema = {
+  created_at: string;
+  updated_at: string;
+  event_name: string;
+  name: string;
+  owner_email: string;
+  owner_name: string;
+  owners: { name: string; email: string }[];
+  path: string;
+  path_with_namespace: string;
+  project_id: number;
+  project_visibility: string;
+};

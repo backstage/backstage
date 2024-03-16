@@ -1,5 +1,21 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 {
   "name": "@backstage/plugin-catalog-backend-module-gitlab",
+  "version": "0.3.10-next.0",
   "description": "A Backstage catalog backend module that helps integrate towards GitLab",
   "version": "0.3.15",
   "main": "src/index.ts",
@@ -8,11 +24,23 @@
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-gitlab"
+  },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -23,26 +51,18 @@
       ]
     }
   },
-  "backstage": {
-    "role": "backend-plugin-module"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/catalog-backend-module-gitlab"
-  },
-  "keywords": [
-    "backstage"
+  "files": [
+    "config.d.ts",
+    "dist"
   ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -51,7 +71,10 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@gitbeaker/rest": "^39.25.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "uuid": "^9.0.0"
@@ -59,14 +82,11 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
+    "@backstage/plugin-events-backend-test-utils": "workspace:^",
     "@types/lodash": "^4.14.151",
     "@types/uuid": "^9.0.0",
     "luxon": "^3.0.0",
     "msw": "^1.0.0"
   },
-  "files": [
-    "config.d.ts",
-    "dist"
-  ],
   "configSchema": "config.d.ts"
 }
