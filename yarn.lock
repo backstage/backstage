@@ -12855,8 +12855,8 @@ __metadata:
   linkType: hard
 
 "@material-table/core@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@material-table/core@npm:3.1.0"
+  version: 3.2.5
+  resolution: "@material-table/core@npm:3.2.5"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@date-io/date-fns": ^1.3.13
@@ -12869,12 +12869,13 @@ __metadata:
     prop-types: ^15.7.2
     react-beautiful-dnd: ^13.0.0
     react-double-scrollbar: 0.0.15
+    uuid: ^3.4.0
   peerDependencies:
     "@date-io/core": ^1.3.13
     "@material-ui/core": ^4.11.2
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: c54114733c061d99424859465c25fdd0c51314f533d37269ee41062195bb34b5bd7eabae8e7b14532b90baee9363d00333b00d1619c01b821a7ee974053c4947
+  checksum: 707e85cfcb8c1cfc8eb78ea6991509879f774081d7a54ad428f702fe00478b6d3707d0fd85f4ad443ebcfac0c0cab79c046c4d5083adcbc767615445667b50cf
   languageName: node
   linkType: hard
 
@@ -45200,7 +45201,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"uuid@npm:^3.3.2":
+"uuid@npm:^3.3.2, uuid@npm:^3.4.0":
   version: 3.4.0
   resolution: "uuid@npm:3.4.0"
   bin:
