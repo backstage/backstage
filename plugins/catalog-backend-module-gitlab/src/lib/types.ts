@@ -79,6 +79,7 @@ export type GitLabGroup = {
   name: string;
   full_path: string;
   description?: string;
+  visibility?: string;
   parent_id?: number;
 };
 
@@ -118,6 +119,7 @@ export type GitLabDescendantGroupsResponse = {
             name: string;
             description: string;
             fullPath: string;
+            visibility: string;
             parent: {
               id: string;
             };

@@ -170,6 +170,7 @@ export class GitLabClient {
                       name
                       description
                       fullPath
+                      visibility
                       parent {
                         id
                       }
@@ -204,6 +205,7 @@ export class GitLabClient {
           name: groupItem.name,
           description: groupItem.description,
           full_path: groupItem.fullPath,
+          visibility: groupItem.visibility,
           parent_id: Number(
             groupItem.parent.id.replace(/^gid:\/\/gitlab\/Group\//, ''),
           ),
