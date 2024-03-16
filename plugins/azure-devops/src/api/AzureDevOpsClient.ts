@@ -130,8 +130,16 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     );
   }
 
-  public getAllTeams(): Promise<Team[]> {
-    return this.get<Team[]>('all-teams');
+  public getAllTeams(topTeams?: number): Promise<Team[]> {
+    const queryString = new URLSearchParams();
+    if (topTeams) {
+      queryString.append('topTeams', topTeams.toString());
+    }
+    let urlSegment = 'all-teams';
+    if (queryString.toString()) {
+      urlSegment += `?${queryString}`;
+    }
+    return this.get<Team[]>(urlSegment);
   }
 
   public getUserTeamIds(userId: string): Promise<string[]> {

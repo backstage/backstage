@@ -25,6 +25,8 @@ import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { Logger } from 'winston';
 import limiterFactory from 'p-limit';
 
+const DEFAULT_TOP_TEAMS = 100;
+
 export class PullRequestsDashboardProvider {
   private teams = new Map<string, Team>();
 
@@ -43,10 +45,10 @@ export class PullRequestsDashboardProvider {
     return provider;
   }
 
-  public async readTeams(): Promise<void> {
+  public async readTeams(topTeams?: number): Promise<void> {
     this.logger.info('Reading teams.');
 
-    let teams = await this.azureDevOpsApi.getAllTeams();
+    let teams = await this.azureDevOpsApi.getAllTeams(topTeams);
 
     // This is used to filter out the default Azure Devops project teams.
     teams = teams.filter(team =>
@@ -134,9 +136,10 @@ export class PullRequestsDashboardProvider {
     );
   }
 
-  public async getAllTeams(): Promise<Team[]> {
+  public async getAllTeams(topTeams?: number): Promise<Team[]> {
     if (!this.teams.size) {
-      await this.readTeams();
+      const maxTeams = topTeams ?? DEFAULT_TOP_TEAMS;
+      await this.readTeams(maxTeams);
     }
 
     return Array.from(this.teams.values());
