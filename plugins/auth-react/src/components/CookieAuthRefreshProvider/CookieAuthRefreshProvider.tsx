@@ -44,16 +44,16 @@ export function CookieAuthRefreshProvider(
   const app = useApp();
   const { Progress } = app.getComponents();
 
-  const { status, error, retry } = useCookieAuthRefresh(options);
+  const result = useCookieAuthRefresh(options);
 
-  if (status === 'loading') {
+  if (result.status === 'loading') {
     return <Progress />;
   }
 
-  if (status === 'error' && error) {
+  if (result.status === 'error') {
     return (
-      <ErrorPanel error={error}>
-        <Button variant="outlined" onClick={retry}>
+      <ErrorPanel error={result.error}>
+        <Button variant="outlined" onClick={result.retry}>
           Retry
         </Button>
       </ErrorPanel>

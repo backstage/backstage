@@ -80,8 +80,6 @@ describe('useCookieAuthRefresh', () => {
     );
 
     expect(result.current.status).toBe('loading');
-    expect(result.current.error).toBeUndefined();
-    expect(result.current.result).toBeUndefined();
   });
 
   it('should return a loading status when retrying without previous success', async () => {
@@ -112,19 +110,25 @@ describe('useCookieAuthRefresh', () => {
       },
     );
 
-    expect(result.current.status).toBe('loading');
-    expect(result.current.error).toBeUndefined();
-    expect(result.current.result).toBeUndefined();
+    expect(result.current).toStrictEqual({ status: 'loading' });
 
-    await waitFor(() => expect(result.current.status).toBe('error'));
-    expect(result.current.result).toBeUndefined();
-    expect(result.current.error).toStrictEqual(error);
+    await waitFor(() =>
+      expect(result.current).toStrictEqual({
+        status: 'error',
+        error,
+        retry: expect.any(Function),
+      }),
+    );
 
-    result.current.retry();
+    if (result.current.status === 'error') {
+      result.current.retry();
+    }
 
-    await waitFor(() => expect(result.current.status).toBe('loading'));
-    expect(result.current.result).toBeUndefined();
-    expect(result.current.error).toStrictEqual(error);
+    await waitFor(() =>
+      expect(result.current).toStrictEqual({
+        status: 'loading',
+      }),
+    );
   });
 
   it('should return a loading status when retrying with previous success', async () => {
@@ -159,25 +163,34 @@ describe('useCookieAuthRefresh', () => {
       },
     );
 
-    expect(result.current.status).toBe('loading');
-    expect(result.current.error).toBeUndefined();
-    expect(result.current.result).toBeUndefined();
+    expect(result.current).toStrictEqual({ status: 'loading' });
 
-    await waitFor(() => expect(result.current.status).toBe('success'));
-    expect(result.current.result).toMatchObject({ expiresAt });
-    expect(result.current.error).toBeUndefined();
+    await waitFor(() =>
+      expect(result.current).toStrictEqual({
+        status: 'success',
+        data: { expiresAt },
+      }),
+    );
 
-    result.current.retry();
+    jest.advanceTimersByTime(tenMinutesInMilliseconds);
 
-    await waitFor(() => expect(result.current.status).toBe('error'));
-    expect(result.current.result).toMatchObject({ expiresAt });
-    expect(result.current.error).toStrictEqual(error);
+    await waitFor(() =>
+      expect(result.current).toStrictEqual({
+        status: 'error',
+        error,
+        retry: expect.any(Function),
+      }),
+    );
 
-    result.current.retry();
+    if (result.current.status === 'error') {
+      result.current.retry();
+    }
 
-    await waitFor(() => expect(result.current.status).toBe('loading'));
-    expect(result.current.result).toMatchObject({ expiresAt });
-    expect(result.current.error).toStrictEqual(error);
+    await waitFor(() =>
+      expect(result.current).toStrictEqual({
+        status: 'loading',
+      }),
+    );
   });
 
   it('should return an error status when the refresh has failed', async () => {
@@ -205,7 +218,13 @@ describe('useCookieAuthRefresh', () => {
       },
     );
 
-    await waitFor(() => expect(result.current.error).toStrictEqual(error));
+    await waitFor(() =>
+      expect(result.current).toStrictEqual({
+        status: 'error',
+        error,
+        retry: expect.any(Function),
+      }),
+    );
   });
 
   it('should call the api to get the cookie and use it', async () => {
@@ -233,7 +252,12 @@ describe('useCookieAuthRefresh', () => {
       ),
     );
 
-    expect(result.current.result).toMatchObject({ expiresAt });
+    await waitFor(() =>
+      expect(result.current).toStrictEqual({
+        status: 'success',
+        data: { expiresAt },
+      }),
+    );
   });
 
   it('should cancel the refresh when a message is received from another tab', async () => {
@@ -295,9 +319,14 @@ describe('useCookieAuthRefresh', () => {
       },
     );
 
-    await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1));
+    await waitFor(() =>
+      expect(result.current).toStrictEqual({
+        status: 'success',
+        data: { expiresAt },
+      }),
+    );
 
-    expect(result.current.result).toMatchObject({ expiresAt });
+    await waitFor(() => expect(fetchApiMock.fetch).toHaveBeenCalledTimes(1));
 
     unmount();
 

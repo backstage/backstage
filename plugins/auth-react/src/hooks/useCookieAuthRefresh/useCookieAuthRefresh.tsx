@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useEffect, useCallback, useMemo } from 'react';
+import { useEffect, useCallback } from 'react';
 import {
   discoveryApiRef,
   fetchApiRef,
@@ -34,14 +34,10 @@ export function useCookieAuthRefresh(options: {
   pluginId: string;
   // The path to used for calling the refresh cookie endpoint, default to '/cookie'
   path?: string;
-}): {
-  status: 'loading' | 'error' | 'success';
-  error?: Error;
-  result?: {
-    expiresAt: string;
-  };
-  retry: () => void;
-} {
+}):
+  | { status: 'loading' }
+  | { status: 'error'; error: Error; retry: () => void }
+  | { status: 'success'; data: { expiresAt: string } } {
   const { pluginId, path = '/cookie' } = options ?? {};
   const fetchApi = useApi(fetchApiRef);
   const storageApi = useApi(storageApiRef);
@@ -58,14 +54,19 @@ export function useCookieAuthRefresh(options: {
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);
     }
-    return await response.json();
+    const data = await response.json();
+    if (!data.expiresAt) {
+      throw new Error('No expiration date found in response');
+    }
+    return data;
   });
 
   useMountEffect(actions.execute);
 
   const refresh = useCallback(
     (params: { expiresAt: string }) => {
-      // Randomize the refreshing margin to avoid all tabs refreshing at the same time
+      // Randomize the refreshing margin with a margin of 1-4 minutes to avoid all tabs refreshing at the same time
+      // It cannot be less than 5 minutes otherwise the backend will return the same expiration date
       const margin = (1 + 3 * Math.random()) * 60000;
       const delay = Date.parse(params.expiresAt) - Date.now() - margin;
       const timeout = setTimeout(actions.execute, delay);
@@ -97,43 +98,35 @@ export function useCookieAuthRefresh(options: {
     };
   }, [state, refresh, store]);
 
-  const status = useMemo(() => {
-    // Initialising
-    if (state.status === 'not-executed') {
-      return 'loading';
-    }
-
-    // First refresh or retrying without any success before
-    // Possible states transitions:
-    // e.g. not-executed -> loading (first-refresh)
-    // e.g. not-executed -> loading (first-refresh) -> error -> loading (manual-retry)
-    if (state.status === 'loading' && !state.result) {
-      return 'loading';
-    }
-
-    // Retrying after having succeeding at least once
-    // Current states is: { status: 'loading', result: {...}, error: undefined | Error }
-    // e.g. not-executed -> loading (first-refresh) -> success -> loading (scheduled-refresh) -> error -> loading (manual-retry)
-    if (state.status === 'loading' && state.error) {
-      return 'loading';
-    }
-
-    // Something went wrong during the any situation of a refresh
-    if (state.status === 'error' && state.error) {
-      return 'error';
-    }
-
-    return 'success';
-  }, [state]);
-
   const retry = useCallback(() => {
     actions.execute();
   }, [actions]);
 
-  return {
-    retry,
-    status,
-    result: state.result,
-    error: state.error,
-  };
+  // Initialising
+  if (state.status === 'not-executed') {
+    return { status: 'loading' };
+  }
+
+  // First refresh or retrying without any success before
+  // Possible state transitions:
+  // e.g. not-executed -> loading (first-refresh)
+  // e.g. not-executed -> loading (first-refresh) -> error -> loading (manual-retry)
+  if (state.status === 'loading' && !state.result) {
+    return { status: 'loading' };
+  }
+
+  // Retrying after having succeeding at least once
+  // Current state is: { status: 'loading', result: {...}, error: undefined | Error }
+  // e.g. not-executed -> loading (first-refresh) -> success -> loading (scheduled-refresh) -> error -> loading (manual-retry)
+  if (state.status === 'loading' && state.error) {
+    return { status: 'loading' };
+  }
+
+  // Something went wrong during any situation of a refresh
+  if (state.status === 'error' && state.error) {
+    return { status: 'error', error: state.error, retry };
+  }
+
+  // At this point it should be safe to assume that we have a successful refresh
+  return { status: 'success', data: state.result! };
 }

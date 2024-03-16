@@ -21,12 +21,19 @@ export type CookieAuthRefreshProviderProps = {
 export function useCookieAuthRefresh(options: {
   pluginId: string;
   path?: string;
-}): {
-  status: 'loading' | 'error' | 'success';
-  error?: Error;
-  result?: {
-    expiresAt: string;
-  };
-  retry: () => void;
-};
+}):
+  | {
+      status: 'loading';
+    }
+  | {
+      status: 'error';
+      error: Error;
+      retry: () => void;
+    }
+  | {
+      status: 'success';
+      data: {
+        expiresAt: string;
+      };
+    };
 ```
