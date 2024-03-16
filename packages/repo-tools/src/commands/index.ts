@@ -59,6 +59,10 @@ function registerPackageCommand(program: Command) {
       'Package to where the React Query output should be generated.',
     )
     .option('--react-query-client-import [import]', 'Import for the client.')
+    .option(
+      '--react-query-api-ref-namespace [namespace]',
+      'If creating a new API ref, the namespace to use.',
+    )
     .option('--server')
     .description(
       'Command to generate a client and/or a server stub from an OpenAPI spec.',

@@ -4,11 +4,22 @@ import type {
     {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
     {{/operation}}
     {{/operations}}
+
+    {{#imports}}
+    {{classname}},
+    {{/imports}}
 } from '{{clientImport}}'
 import { {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client } from '{{clientImport}}'
-import {useQuery} from '@tanstack/react-query'
+import {
+  UseMutationOptions,
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query';
 import {createApiFactory, createApiRef, discoveryApiRef, fetchApiRef, useApi} from '@backstage/core-plugin-api'
 
+{{^apiRef}}
 export const {{appName}}ApiRef = createApiRef<{{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client>({
   id: '{{apiRefNamespace}}.{{appName}}',
 });
@@ -22,6 +33,7 @@ export const default{{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Api =
     factory: ({ discoveryApi, fetchApi }) =>
         new {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client({ discoveryApi, fetchApi }),
 });
+{{/apiRef}}
 
 {{#operations}}
 export const queryKeys = {
@@ -35,12 +47,40 @@ export const queryKeys = {
 
 {{#operations}}
     {{#operation}}
-    {{#isRestfulIndex}}{{httpMethod}}{{/isRestfulIndex}} {{#isRestfulShow}}{{httpMethod}}{{/isRestfulShow}}
 
-export function use{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}(request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}){
-    const {{appName}}Api = useApi({{appName}}ApiRef);
-    return useQuery(queryKeys.{{nickname}}(request), () => {
-        return {{appName}}Api.{{nickname}}(request)
+export function useQuery_{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}(
+    request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}, 
+    options?: UseQueryOptions<
+        {{{returnType}}} {{^returnType}}void{{/returnType}}, 
+        unknown,
+    >
+){
+    const {{appName}}Api = useApi({{apiRef}}{{^apiRef}}{{appName}}ApiRef{{/apiRef}});
+    return useQuery<
+        {{{returnType}}} {{^returnType}}void{{/returnType}}, 
+        unknown,
+    >({
+        queryKey: queryKeys.{{nickname}}(request),
+        queryFn: async () => {
+            return (await {{appName}}Api.{{nickname}}(request)).json()
+        },
+        ...options
+    })
+}
+
+export function useMutation_{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}(
+    options?: UseMutationOptions<
+        Awaited<ReturnType<typeof {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client.prototype.{{nickname}}>>, 
+        unknown, 
+        {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}
+    >
+){
+    const {{appName}}Api = useApi({{apiRef}}{{^apiRef}}{{appName}}ApiRef{{/apiRef}});
+    return useMutation<Awaited<ReturnType<typeof {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client.prototype.{{nickname}}>>, unknown, {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}>({
+        mutationFn: (data: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}) => {
+            return {{appName}}Api.{{nickname}}(data);
+        },
+        ...options,
     })
 }
 

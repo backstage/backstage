@@ -30,9 +30,23 @@ import type {
   GetLocations,
   RefreshEntity,
   ValidateEntity,
+  AnalyzeLocationResponse,
+  CreateLocation201Response,
+  EntitiesBatchResponse,
+  EntitiesQueryResponse,
+  Entity,
+  EntityAncestryResponse,
+  EntityFacetsResponse,
+  GetLocations200ResponseInner,
+  Location,
 } from '@backstage/catalog-client/alpha';
 import { CatalogClient } from '@backstage/catalog-client/alpha';
-import { useQuery } from '@tanstack/react-query';
+import {
+  UseMutationOptions,
+  UseQueryOptions,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
 import {
   createApiFactory,
   createApiRef,
@@ -93,114 +107,546 @@ export const queryKeys = {
     [{ ...queryKeys.all[0], request, reqName: 'validateEntity' }] as const,
 };
 
-export function useAnalyzeLocation(request: AnalyzeLocation) {
+export function useQuery_AnalyzeLocation(
+  request: AnalyzeLocation,
+  options?: UseQueryOptions<AnalyzeLocationResponse, unknown>,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.analyzeLocation(request), () => {
-    return catalogApi.analyzeLocation(request);
+  return useQuery<AnalyzeLocationResponse, unknown>({
+    queryKey: queryKeys.analyzeLocation(request),
+    queryFn: async () => {
+      return (await catalogApi.analyzeLocation(request)).json();
+    },
+    ...options,
   });
 }
 
-export function useCreateLocation(request: CreateLocation) {
+export function useMutation_AnalyzeLocation(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.analyzeLocation>>,
+    unknown,
+    AnalyzeLocation
+  >,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.createLocation(request), () => {
-    return catalogApi.createLocation(request);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.analyzeLocation>>,
+    unknown,
+    AnalyzeLocation
+  >({
+    mutationFn: (data: AnalyzeLocation) => {
+      return catalogApi.analyzeLocation(data);
+    },
+    ...options,
   });
 }
 
-export function useDeleteEntityByUid(request: DeleteEntityByUid) {
+export function useQuery_CreateLocation(
+  request: CreateLocation,
+  options?: UseQueryOptions<CreateLocation201Response, unknown>,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.deleteEntityByUid(request), () => {
-    return catalogApi.deleteEntityByUid(request);
+  return useQuery<CreateLocation201Response, unknown>({
+    queryKey: queryKeys.createLocation(request),
+    queryFn: async () => {
+      return (await catalogApi.createLocation(request)).json();
+    },
+    ...options,
   });
 }
 
-export function useDeleteLocation(request: DeleteLocation) {
+export function useMutation_CreateLocation(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.createLocation>>,
+    unknown,
+    CreateLocation
+  >,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.deleteLocation(request), () => {
-    return catalogApi.deleteLocation(request);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.createLocation>>,
+    unknown,
+    CreateLocation
+  >({
+    mutationFn: (data: CreateLocation) => {
+      return catalogApi.createLocation(data);
+    },
+    ...options,
   });
 }
 
-export function useGetEntities(request: GetEntities) {
+export function useQuery_DeleteEntityByUid(
+  request: DeleteEntityByUid,
+  options?: UseQueryOptions<void, unknown>,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.getEntities(request), () => {
-    return catalogApi.getEntities(request);
+  return useQuery<void, unknown>({
+    queryKey: queryKeys.deleteEntityByUid(request),
+    queryFn: async () => {
+      return (await catalogApi.deleteEntityByUid(request)).json();
+    },
+    ...options,
   });
 }
 
-export function useGetEntitiesByQuery(request: GetEntitiesByQuery) {
+export function useMutation_DeleteEntityByUid(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.deleteEntityByUid>>,
+    unknown,
+    DeleteEntityByUid
+  >,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.getEntitiesByQuery(request), () => {
-    return catalogApi.getEntitiesByQuery(request);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.deleteEntityByUid>>,
+    unknown,
+    DeleteEntityByUid
+  >({
+    mutationFn: (data: DeleteEntityByUid) => {
+      return catalogApi.deleteEntityByUid(data);
+    },
+    ...options,
   });
 }
 
-export function useGetEntitiesByRefs(request: GetEntitiesByRefs) {
+export function useQuery_DeleteLocation(
+  request: DeleteLocation,
+  options?: UseQueryOptions<void, unknown>,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.getEntitiesByRefs(request), () => {
-    return catalogApi.getEntitiesByRefs(request);
+  return useQuery<void, unknown>({
+    queryKey: queryKeys.deleteLocation(request),
+    queryFn: async () => {
+      return (await catalogApi.deleteLocation(request)).json();
+    },
+    ...options,
   });
 }
 
-export function useGetEntityAncestryByName(request: GetEntityAncestryByName) {
+export function useMutation_DeleteLocation(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.deleteLocation>>,
+    unknown,
+    DeleteLocation
+  >,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.getEntityAncestryByName(request), () => {
-    return catalogApi.getEntityAncestryByName(request);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.deleteLocation>>,
+    unknown,
+    DeleteLocation
+  >({
+    mutationFn: (data: DeleteLocation) => {
+      return catalogApi.deleteLocation(data);
+    },
+    ...options,
   });
 }
 
-export function useGetEntityByName(request: GetEntityByName) {
+export function useQuery_GetEntities(
+  request: GetEntities,
+  options?: UseQueryOptions<Array<Entity>, unknown>,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.getEntityByName(request), () => {
-    return catalogApi.getEntityByName(request);
+  return useQuery<Array<Entity>, unknown>({
+    queryKey: queryKeys.getEntities(request),
+    queryFn: async () => {
+      return (await catalogApi.getEntities(request)).json();
+    },
+    ...options,
   });
 }
 
-export function useGetEntityByUid(request: GetEntityByUid) {
+export function useMutation_GetEntities(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntities>>,
+    unknown,
+    GetEntities
+  >,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.getEntityByUid(request), () => {
-    return catalogApi.getEntityByUid(request);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntities>>,
+    unknown,
+    GetEntities
+  >({
+    mutationFn: (data: GetEntities) => {
+      return catalogApi.getEntities(data);
+    },
+    ...options,
   });
 }
 
-export function useGetEntityFacets(request: GetEntityFacets) {
+export function useQuery_GetEntitiesByQuery(
+  request: GetEntitiesByQuery,
+  options?: UseQueryOptions<EntitiesQueryResponse, unknown>,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.getEntityFacets(request), () => {
-    return catalogApi.getEntityFacets(request);
+  return useQuery<EntitiesQueryResponse, unknown>({
+    queryKey: queryKeys.getEntitiesByQuery(request),
+    queryFn: async () => {
+      return (await catalogApi.getEntitiesByQuery(request)).json();
+    },
+    ...options,
   });
 }
 
-export function useGetLocation(request: GetLocation) {
+export function useMutation_GetEntitiesByQuery(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntitiesByQuery>>,
+    unknown,
+    GetEntitiesByQuery
+  >,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.getLocation(request), () => {
-    return catalogApi.getLocation(request);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntitiesByQuery>>,
+    unknown,
+    GetEntitiesByQuery
+  >({
+    mutationFn: (data: GetEntitiesByQuery) => {
+      return catalogApi.getEntitiesByQuery(data);
+    },
+    ...options,
   });
 }
 
-export function useGetLocationByEntity(request: GetLocationByEntity) {
+export function useQuery_GetEntitiesByRefs(
+  request: GetEntitiesByRefs,
+  options?: UseQueryOptions<EntitiesBatchResponse, unknown>,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.getLocationByEntity(request), () => {
-    return catalogApi.getLocationByEntity(request);
+  return useQuery<EntitiesBatchResponse, unknown>({
+    queryKey: queryKeys.getEntitiesByRefs(request),
+    queryFn: async () => {
+      return (await catalogApi.getEntitiesByRefs(request)).json();
+    },
+    ...options,
   });
 }
 
-export function useGetLocations(request: GetLocations) {
+export function useMutation_GetEntitiesByRefs(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntitiesByRefs>>,
+    unknown,
+    GetEntitiesByRefs
+  >,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.getLocations(request), () => {
-    return catalogApi.getLocations(request);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntitiesByRefs>>,
+    unknown,
+    GetEntitiesByRefs
+  >({
+    mutationFn: (data: GetEntitiesByRefs) => {
+      return catalogApi.getEntitiesByRefs(data);
+    },
+    ...options,
   });
 }
 
-export function useRefreshEntity(request: RefreshEntity) {
+export function useQuery_GetEntityAncestryByName(
+  request: GetEntityAncestryByName,
+  options?: UseQueryOptions<EntityAncestryResponse, unknown>,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.refreshEntity(request), () => {
-    return catalogApi.refreshEntity(request);
+  return useQuery<EntityAncestryResponse, unknown>({
+    queryKey: queryKeys.getEntityAncestryByName(request),
+    queryFn: async () => {
+      return (await catalogApi.getEntityAncestryByName(request)).json();
+    },
+    ...options,
   });
 }
 
-export function useValidateEntity(request: ValidateEntity) {
+export function useMutation_GetEntityAncestryByName(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityAncestryByName>>,
+    unknown,
+    GetEntityAncestryByName
+  >,
+) {
   const catalogApi = useApi(catalogApiRef);
-  return useQuery(queryKeys.validateEntity(request), () => {
-    return catalogApi.validateEntity(request);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityAncestryByName>>,
+    unknown,
+    GetEntityAncestryByName
+  >({
+    mutationFn: (data: GetEntityAncestryByName) => {
+      return catalogApi.getEntityAncestryByName(data);
+    },
+    ...options,
+  });
+}
+
+export function useQuery_GetEntityByName(
+  request: GetEntityByName,
+  options?: UseQueryOptions<Entity, unknown>,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useQuery<Entity, unknown>({
+    queryKey: queryKeys.getEntityByName(request),
+    queryFn: async () => {
+      return (await catalogApi.getEntityByName(request)).json();
+    },
+    ...options,
+  });
+}
+
+export function useMutation_GetEntityByName(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityByName>>,
+    unknown,
+    GetEntityByName
+  >,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityByName>>,
+    unknown,
+    GetEntityByName
+  >({
+    mutationFn: (data: GetEntityByName) => {
+      return catalogApi.getEntityByName(data);
+    },
+    ...options,
+  });
+}
+
+export function useQuery_GetEntityByUid(
+  request: GetEntityByUid,
+  options?: UseQueryOptions<Entity, unknown>,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useQuery<Entity, unknown>({
+    queryKey: queryKeys.getEntityByUid(request),
+    queryFn: async () => {
+      return (await catalogApi.getEntityByUid(request)).json();
+    },
+    ...options,
+  });
+}
+
+export function useMutation_GetEntityByUid(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityByUid>>,
+    unknown,
+    GetEntityByUid
+  >,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityByUid>>,
+    unknown,
+    GetEntityByUid
+  >({
+    mutationFn: (data: GetEntityByUid) => {
+      return catalogApi.getEntityByUid(data);
+    },
+    ...options,
+  });
+}
+
+export function useQuery_GetEntityFacets(
+  request: GetEntityFacets,
+  options?: UseQueryOptions<EntityFacetsResponse, unknown>,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useQuery<EntityFacetsResponse, unknown>({
+    queryKey: queryKeys.getEntityFacets(request),
+    queryFn: async () => {
+      return (await catalogApi.getEntityFacets(request)).json();
+    },
+    ...options,
+  });
+}
+
+export function useMutation_GetEntityFacets(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityFacets>>,
+    unknown,
+    GetEntityFacets
+  >,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getEntityFacets>>,
+    unknown,
+    GetEntityFacets
+  >({
+    mutationFn: (data: GetEntityFacets) => {
+      return catalogApi.getEntityFacets(data);
+    },
+    ...options,
+  });
+}
+
+export function useQuery_GetLocation(
+  request: GetLocation,
+  options?: UseQueryOptions<Location, unknown>,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useQuery<Location, unknown>({
+    queryKey: queryKeys.getLocation(request),
+    queryFn: async () => {
+      return (await catalogApi.getLocation(request)).json();
+    },
+    ...options,
+  });
+}
+
+export function useMutation_GetLocation(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getLocation>>,
+    unknown,
+    GetLocation
+  >,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getLocation>>,
+    unknown,
+    GetLocation
+  >({
+    mutationFn: (data: GetLocation) => {
+      return catalogApi.getLocation(data);
+    },
+    ...options,
+  });
+}
+
+export function useQuery_GetLocationByEntity(
+  request: GetLocationByEntity,
+  options?: UseQueryOptions<Location, unknown>,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useQuery<Location, unknown>({
+    queryKey: queryKeys.getLocationByEntity(request),
+    queryFn: async () => {
+      return (await catalogApi.getLocationByEntity(request)).json();
+    },
+    ...options,
+  });
+}
+
+export function useMutation_GetLocationByEntity(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getLocationByEntity>>,
+    unknown,
+    GetLocationByEntity
+  >,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getLocationByEntity>>,
+    unknown,
+    GetLocationByEntity
+  >({
+    mutationFn: (data: GetLocationByEntity) => {
+      return catalogApi.getLocationByEntity(data);
+    },
+    ...options,
+  });
+}
+
+export function useQuery_GetLocations(
+  request: GetLocations,
+  options?: UseQueryOptions<Array<GetLocations200ResponseInner>, unknown>,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useQuery<Array<GetLocations200ResponseInner>, unknown>({
+    queryKey: queryKeys.getLocations(request),
+    queryFn: async () => {
+      return (await catalogApi.getLocations(request)).json();
+    },
+    ...options,
+  });
+}
+
+export function useMutation_GetLocations(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getLocations>>,
+    unknown,
+    GetLocations
+  >,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.getLocations>>,
+    unknown,
+    GetLocations
+  >({
+    mutationFn: (data: GetLocations) => {
+      return catalogApi.getLocations(data);
+    },
+    ...options,
+  });
+}
+
+export function useQuery_RefreshEntity(
+  request: RefreshEntity,
+  options?: UseQueryOptions<void, unknown>,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useQuery<void, unknown>({
+    queryKey: queryKeys.refreshEntity(request),
+    queryFn: async () => {
+      return (await catalogApi.refreshEntity(request)).json();
+    },
+    ...options,
+  });
+}
+
+export function useMutation_RefreshEntity(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.refreshEntity>>,
+    unknown,
+    RefreshEntity
+  >,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.refreshEntity>>,
+    unknown,
+    RefreshEntity
+  >({
+    mutationFn: (data: RefreshEntity) => {
+      return catalogApi.refreshEntity(data);
+    },
+    ...options,
+  });
+}
+
+export function useQuery_ValidateEntity(
+  request: ValidateEntity,
+  options?: UseQueryOptions<void, unknown>,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useQuery<void, unknown>({
+    queryKey: queryKeys.validateEntity(request),
+    queryFn: async () => {
+      return (await catalogApi.validateEntity(request)).json();
+    },
+    ...options,
+  });
+}
+
+export function useMutation_ValidateEntity(
+  options?: UseMutationOptions<
+    Awaited<ReturnType<typeof CatalogClient.prototype.validateEntity>>,
+    unknown,
+    ValidateEntity
+  >,
+) {
+  const catalogApi = useApi(catalogApiRef);
+  return useMutation<
+    Awaited<ReturnType<typeof CatalogClient.prototype.validateEntity>>,
+    unknown,
+    ValidateEntity
+  >({
+    mutationFn: (data: ValidateEntity) => {
+      return catalogApi.validateEntity(data);
+    },
+    ...options,
   });
 }
