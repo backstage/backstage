@@ -333,6 +333,10 @@ export interface GetEntitiesByQuery {
 export interface GetEntitiesByRefs {
   // (undocumented)
   body: GetEntitiesByRefsRequest;
+  // (undocumented)
+  query: {
+    filter?: Array<string>;
+  };
 }
 
 // @public (undocumented)

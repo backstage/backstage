@@ -57,9 +57,9 @@ import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import { UseMutationOptions } from '@tanstack/react-query';
-import { UseMutationResult } from '@tanstack/react-query';
+import { UseMutationResult } from '@tanstack/react-query/build/legacy/types';
 import { UseQueryOptions } from '@tanstack/react-query';
-import { UseQueryResult } from '@tanstack/react-query';
+import { UseQueryResult } from '@tanstack/react-query/build/legacy/types';
 import type { ValidateEntity } from '@backstage/catalog-client/alpha';
 
 // @public (undocumented)
