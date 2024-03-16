@@ -55,10 +55,16 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 
+/**
+ * @public
+ */
 export const catalogApiRef = createApiRef<CatalogClient>({
   id: 'core.catalog',
 });
 
+/**
+ * @public
+ */
 export const defaultCatalogApi = createApiFactory({
   api: catalogApiRef,
   deps: {
@@ -69,6 +75,9 @@ export const defaultCatalogApi = createApiFactory({
     new CatalogClient({ discoveryApi, fetchApi }),
 });
 
+/**
+ * @public
+ */
 export const queryKeys = {
   all: [{ scope: 'catalog' }] as const,
   analyzeLocation: (request: AnalyzeLocation) =>
@@ -107,6 +116,9 @@ export const queryKeys = {
     [{ ...queryKeys.all[0], request, reqName: 'validateEntity' }] as const,
 };
 
+/**
+ * @public
+ */
 export function useQuery_AnalyzeLocation(
   request: AnalyzeLocation,
   options?: UseQueryOptions<AnalyzeLocationResponse, unknown>,
@@ -121,6 +133,9 @@ export function useQuery_AnalyzeLocation(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_AnalyzeLocation(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.analyzeLocation>>,
@@ -141,6 +156,9 @@ export function useMutation_AnalyzeLocation(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_CreateLocation(
   request: CreateLocation,
   options?: UseQueryOptions<CreateLocation201Response, unknown>,
@@ -155,6 +173,9 @@ export function useQuery_CreateLocation(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_CreateLocation(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.createLocation>>,
@@ -175,6 +196,9 @@ export function useMutation_CreateLocation(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_DeleteEntityByUid(
   request: DeleteEntityByUid,
   options?: UseQueryOptions<void, unknown>,
@@ -189,6 +213,9 @@ export function useQuery_DeleteEntityByUid(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_DeleteEntityByUid(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.deleteEntityByUid>>,
@@ -209,6 +236,9 @@ export function useMutation_DeleteEntityByUid(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_DeleteLocation(
   request: DeleteLocation,
   options?: UseQueryOptions<void, unknown>,
@@ -223,6 +253,9 @@ export function useQuery_DeleteLocation(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_DeleteLocation(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.deleteLocation>>,
@@ -243,6 +276,9 @@ export function useMutation_DeleteLocation(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_GetEntities(
   request: GetEntities,
   options?: UseQueryOptions<Array<Entity>, unknown>,
@@ -257,6 +293,9 @@ export function useQuery_GetEntities(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_GetEntities(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.getEntities>>,
@@ -277,6 +316,9 @@ export function useMutation_GetEntities(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_GetEntitiesByQuery(
   request: GetEntitiesByQuery,
   options?: UseQueryOptions<EntitiesQueryResponse, unknown>,
@@ -291,6 +333,9 @@ export function useQuery_GetEntitiesByQuery(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_GetEntitiesByQuery(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.getEntitiesByQuery>>,
@@ -311,6 +356,9 @@ export function useMutation_GetEntitiesByQuery(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_GetEntitiesByRefs(
   request: GetEntitiesByRefs,
   options?: UseQueryOptions<EntitiesBatchResponse, unknown>,
@@ -325,6 +373,9 @@ export function useQuery_GetEntitiesByRefs(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_GetEntitiesByRefs(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.getEntitiesByRefs>>,
@@ -345,6 +396,9 @@ export function useMutation_GetEntitiesByRefs(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_GetEntityAncestryByName(
   request: GetEntityAncestryByName,
   options?: UseQueryOptions<EntityAncestryResponse, unknown>,
@@ -359,6 +413,9 @@ export function useQuery_GetEntityAncestryByName(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_GetEntityAncestryByName(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.getEntityAncestryByName>>,
@@ -379,6 +436,9 @@ export function useMutation_GetEntityAncestryByName(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_GetEntityByName(
   request: GetEntityByName,
   options?: UseQueryOptions<Entity, unknown>,
@@ -393,6 +453,9 @@ export function useQuery_GetEntityByName(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_GetEntityByName(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.getEntityByName>>,
@@ -413,6 +476,9 @@ export function useMutation_GetEntityByName(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_GetEntityByUid(
   request: GetEntityByUid,
   options?: UseQueryOptions<Entity, unknown>,
@@ -427,6 +493,9 @@ export function useQuery_GetEntityByUid(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_GetEntityByUid(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.getEntityByUid>>,
@@ -447,6 +516,9 @@ export function useMutation_GetEntityByUid(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_GetEntityFacets(
   request: GetEntityFacets,
   options?: UseQueryOptions<EntityFacetsResponse, unknown>,
@@ -461,6 +533,9 @@ export function useQuery_GetEntityFacets(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_GetEntityFacets(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.getEntityFacets>>,
@@ -481,6 +556,9 @@ export function useMutation_GetEntityFacets(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_GetLocation(
   request: GetLocation,
   options?: UseQueryOptions<Location, unknown>,
@@ -495,6 +573,9 @@ export function useQuery_GetLocation(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_GetLocation(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.getLocation>>,
@@ -515,6 +596,9 @@ export function useMutation_GetLocation(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_GetLocationByEntity(
   request: GetLocationByEntity,
   options?: UseQueryOptions<Location, unknown>,
@@ -529,6 +613,9 @@ export function useQuery_GetLocationByEntity(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_GetLocationByEntity(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.getLocationByEntity>>,
@@ -549,6 +636,9 @@ export function useMutation_GetLocationByEntity(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_GetLocations(
   request: GetLocations,
   options?: UseQueryOptions<Array<GetLocations200ResponseInner>, unknown>,
@@ -563,6 +653,9 @@ export function useQuery_GetLocations(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_GetLocations(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.getLocations>>,
@@ -583,6 +676,9 @@ export function useMutation_GetLocations(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_RefreshEntity(
   request: RefreshEntity,
   options?: UseQueryOptions<void, unknown>,
@@ -597,6 +693,9 @@ export function useQuery_RefreshEntity(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_RefreshEntity(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.refreshEntity>>,
@@ -617,6 +716,9 @@ export function useMutation_RefreshEntity(
   });
 }
 
+/**
+ * @public
+ */
 export function useQuery_ValidateEntity(
   request: ValidateEntity,
   options?: UseQueryOptions<void, unknown>,
@@ -631,6 +733,9 @@ export function useQuery_ValidateEntity(
   });
 }
 
+/**
+ * @public
+ */
 export function useMutation_ValidateEntity(
   options?: UseMutationOptions<
     Awaited<ReturnType<typeof CatalogClient.prototype.validateEntity>>,

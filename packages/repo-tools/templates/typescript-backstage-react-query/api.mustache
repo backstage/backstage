@@ -20,10 +20,16 @@ import {
 import {createApiFactory, createApiRef, discoveryApiRef, fetchApiRef, useApi} from '@backstage/core-plugin-api'
 
 {{^apiRef}}
+/**
+ * @public
+ */
 export const {{appName}}ApiRef = createApiRef<{{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client>({
   id: '{{apiRefNamespace}}.{{appName}}',
 });
 
+/**
+ * @public
+ */
 export const default{{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Api = createApiFactory({
     api: {{appName}}ApiRef,
     deps: {
@@ -36,6 +42,9 @@ export const default{{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Api =
 {{/apiRef}}
 
 {{#operations}}
+/**
+ * @public
+ */
 export const queryKeys = {
     all: [{scope:'{{appName}}'}] as const,
     {{#operation}}
@@ -47,7 +56,9 @@ export const queryKeys = {
 
 {{#operations}}
     {{#operation}}
-
+/**
+ * @public
+ */
 export function useQuery_{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}(
     request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}, 
     options?: UseQueryOptions<
@@ -68,6 +79,9 @@ export function useQuery_{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}
     })
 }
 
+/**
+ * @public
+ */
 export function useMutation_{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}(
     options?: UseMutationOptions<
         Awaited<ReturnType<typeof {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client.prototype.{{nickname}}>>, 

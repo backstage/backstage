@@ -121,6 +121,10 @@ Usage: backstage-repo-tools package schema openapi generate [options]
 
 Options:
   --client-package [package]
+  --enable-react-query
+  --react-query-output-package [package]
+  --react-query-client-import [import]
+  --react-query-api-ref-namespace [namespace]
   -h, --help
 ```
 

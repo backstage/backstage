@@ -19,6 +19,9 @@
 // ******************************************************************
 import { ValidateEntity400ResponseErrorsInner } from '../models/ValidateEntity400ResponseErrorsInner.model';
 
+/**
+ * @public
+ */
 export interface ValidateEntity400Response {
   errors: Array<ValidateEntity400ResponseErrorsInner>;
 }

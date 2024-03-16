@@ -20,6 +20,9 @@ export type TypedResponse<T> = Omit<Response, 'json'> & {
 
 {{#operations}}
 {{#operation}}
+/**
+ * @public
+ */
 export interface {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}} {
     {{#hasPathParams}}
     path: {
@@ -64,6 +67,7 @@ export interface RequestOptions {
 
 /**
  * {{{description}}}{{^description}}no description{{/description}}
+ * @public
  */
 export class {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client {
     private readonly discoveryApi: DiscoveryApi;
@@ -86,7 +90,7 @@ export class {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client {
      * {{&summary}}
      {{/summary}}
      {{#allParams}}
-     * @param {{paramName}} {{description}}
+     * @param {{paramName}} - {{description}}
      {{/allParams}}
      */
     public async {{nickname}}(

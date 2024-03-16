@@ -22,6 +22,7 @@ import { LocationSpec } from '../models/LocationSpec.model';
 
 /**
  * If the folder pointed to already contained catalog info yaml files, they are read and emitted like this so that the frontend can inform the user that it located them and can make sure to register them as well if they weren't already
+ * @public
  */
 export interface AnalyzeLocationExistingEntity {
   entity: Entity;

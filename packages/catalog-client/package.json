@@ -53,9 +53,7 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
-    "@tanstack/react-query": "^4.1.3",
     "cross-fetch": "^4.0.0",
     "uri-template": "^2.0.0"
   },

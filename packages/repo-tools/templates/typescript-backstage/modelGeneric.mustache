@@ -6,7 +6,13 @@
 {{#description}}
 /**
 * {{{.}}}
+* @public
 */
+{{/description}}
+{{^description}}
+/**
+ * @public
+ */
 {{/description}}
 {{^isEnum}}
 export interface {{classname}} {
@@ -25,6 +31,9 @@ export interface {{classname}} {
 
 {{#vars}}
 {{#isEnum}}
+/**
+ * @public
+ */
 export type {{classname}}{{enumName}} ={{#allowableValues}}{{#values}} "{{.}}" {{^-last}}|{{/-last}}{{/values}}{{/allowableValues}};
 {{/isEnum}}
 {{/vars}}
@@ -32,6 +41,9 @@ export type {{classname}}{{enumName}} ={{#allowableValues}}{{#values}} "{{.}}" {
 {{/hasEnums}}
 {{/isEnum}}
 {{#isEnum}}
+/**
+ * @public
+ */
 export type {{classname}} ={{#allowableValues}}{{#values}} "{{.}}" {{^-last}}|{{/-last}}{{/values}}{{/allowableValues}};
 {{/isEnum}}
 {{/model}}

@@ -10,6 +10,12 @@ export interface {{classname}} { {{>modelGenericAdditionalProperties}}
     {{#description}}
     /**
     * {{{.}}}
+    * @public
+    */
+    {{/description}}
+    {{^description}}
+    /**
+    * @public
     */
     {{/description}}
     {{name}}{{^required}}?{{/required}}: {{#discriminatorValue}}'{{.}}'{{/discriminatorValue}}{{^discriminatorValue}}{{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{/discriminatorValue}}{{#isNullable}} | null{{/isNullable}};

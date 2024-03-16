@@ -19,6 +19,9 @@
 // ******************************************************************
 import { EntityLink } from '../models/EntityLink.model';
 
+/**
+ * @public
+ */
 export interface RecursivePartialEntityMeta {
   /**
    * A list of external hyperlinks related to the entity.

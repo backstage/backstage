@@ -11,6 +11,12 @@ import {
 {{#description}}
     /**
     * {{{.}}}
+    * @public
     */
+{{/description}}
+{{^description}}
+/**
+ * @public
+ */
 {{/description}}
 export type {{classname}} = {{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}};

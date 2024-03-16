@@ -19,6 +19,9 @@
 // ******************************************************************
 import { Location } from '../models/Location.model';
 
+/**
+ * @public
+ */
 export interface GetLocations200ResponseInner {
   data: Location;
 }

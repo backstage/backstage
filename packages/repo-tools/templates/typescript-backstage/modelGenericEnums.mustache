@@ -8,6 +8,9 @@ export namespace {{classname}} {
 {{#vars}}
     {{#isEnum}}
 {{#stringEnums}}
+/**
+ * @public
+ */
 export enum {{classname}}{{enumName}} {
 {{#allowableValues}}
 {{#enumVars}}
@@ -17,7 +20,14 @@ export enum {{classname}}{{enumName}} {
 };
 {{/stringEnums}}
 {{^stringEnums}}
+    /**
+    * @public
+    */
     export type {{enumName}} = {{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}} | {{/-last}}{{/enumVars}}{{/allowableValues}};
+    
+    /**
+    * @public
+    */
     export const {{enumName}} = {
     {{#allowableValues}}
     {{#enumVars}}

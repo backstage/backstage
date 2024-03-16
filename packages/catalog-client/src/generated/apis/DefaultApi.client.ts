@@ -47,25 +47,40 @@ export type TypedResponse<T> = Omit<Response, 'json'> & {
   json: () => Promise<T>;
 };
 
+/**
+ * @public
+ */
 export interface AnalyzeLocation {
   body: AnalyzeLocationRequest;
 }
+/**
+ * @public
+ */
 export interface CreateLocation {
   body: CreateLocationRequest;
   query: {
     dryRun?: string;
   };
 }
+/**
+ * @public
+ */
 export interface DeleteEntityByUid {
   path: {
     uid: string;
   };
 }
+/**
+ * @public
+ */
 export interface DeleteLocation {
   path: {
     id: string;
   };
 }
+/**
+ * @public
+ */
 export interface GetEntities {
   query: {
     fields?: Array<string>;
@@ -76,6 +91,9 @@ export interface GetEntities {
     order?: Array<string>;
   };
 }
+/**
+ * @public
+ */
 export interface GetEntitiesByQuery {
   query: {
     fields?: Array<string>;
@@ -87,9 +105,18 @@ export interface GetEntitiesByQuery {
     fullTextFilterFields?: Array<string>;
   };
 }
+/**
+ * @public
+ */
 export interface GetEntitiesByRefs {
   body: GetEntitiesByRefsRequest;
+  query: {
+    filter?: Array<string>;
+  };
 }
+/**
+ * @public
+ */
 export interface GetEntityAncestryByName {
   path: {
     kind: string;
@@ -97,6 +124,9 @@ export interface GetEntityAncestryByName {
     name: string;
   };
 }
+/**
+ * @public
+ */
 export interface GetEntityByName {
   path: {
     kind: string;
@@ -104,22 +134,34 @@ export interface GetEntityByName {
     name: string;
   };
 }
+/**
+ * @public
+ */
 export interface GetEntityByUid {
   path: {
     uid: string;
   };
 }
+/**
+ * @public
+ */
 export interface GetEntityFacets {
   query: {
     facet: Array<string>;
     filter?: Array<string>;
   };
 }
+/**
+ * @public
+ */
 export interface GetLocation {
   path: {
     id: string;
   };
 }
+/**
+ * @public
+ */
 export interface GetLocationByEntity {
   path: {
     kind: string;
@@ -127,10 +169,19 @@ export interface GetLocationByEntity {
     name: string;
   };
 }
+/**
+ * @public
+ */
 export interface GetLocations {}
+/**
+ * @public
+ */
 export interface RefreshEntity {
   body: RefreshEntityRequest;
 }
+/**
+ * @public
+ */
 export interface ValidateEntity {
   body: ValidateEntityRequest;
 }
@@ -146,6 +197,7 @@ export interface RequestOptions {
 
 /**
  * no description
+ * @public
  */
 export class CatalogClient {
   private readonly discoveryApi: DiscoveryApi;
@@ -161,7 +213,7 @@ export class CatalogClient {
 
   /**
    * Validate a given location.
-   * @param analyzeLocationRequest
+   * @param analyzeLocationRequest -
    */
   public async analyzeLocation(
     // @ts-ignore
@@ -186,8 +238,8 @@ export class CatalogClient {
 
   /**
    * Create a location for a given target.
-   * @param createLocationRequest
-   * @param dryRun
+   * @param createLocationRequest -
+   * @param dryRun -
    */
   public async createLocation(
     // @ts-ignore
@@ -214,7 +266,7 @@ export class CatalogClient {
 
   /**
    * Delete a single entity by UID.
-   * @param uid
+   * @param uid -
    */
   public async deleteEntityByUid(
     // @ts-ignore
@@ -240,7 +292,7 @@ export class CatalogClient {
 
   /**
    * Delete a location by id.
-   * @param id
+   * @param id -
    */
   public async deleteLocation(
     // @ts-ignore
@@ -266,12 +318,12 @@ export class CatalogClient {
 
   /**
    * Get all entities matching a given filter.
-   * @param fields Restrict to just these fields in the response.
-   * @param limit Number of records to return in the response.
-   * @param filter Filter for just the entities defined by this filter.
-   * @param offset Number of records to skip in the query page.
-   * @param after Pointer to the previous page of results.
-   * @param order
+   * @param fields - Restrict to just these fields in the response.
+   * @param limit - Number of records to return in the response.
+   * @param filter - Filter for just the entities defined by this filter.
+   * @param offset - Number of records to skip in the query page.
+   * @param after - Pointer to the previous page of results.
+   * @param order -
    */
   public async getEntities(
     // @ts-ignore
@@ -297,13 +349,13 @@ export class CatalogClient {
 
   /**
    * Search for entities by a given query.
-   * @param fields Restrict to just these fields in the response.
-   * @param limit Number of records to return in the response.
-   * @param orderField The fields to sort returned results by.
-   * @param cursor Cursor to a set page of results.
-   * @param filter Filter for just the entities defined by this filter.
-   * @param fullTextFilterTerm Text search term.
-   * @param fullTextFilterFields A comma separated list of fields to sort returned results by.
+   * @param fields - Restrict to just these fields in the response.
+   * @param limit - Number of records to return in the response.
+   * @param orderField - The fields to sort returned results by.
+   * @param cursor - Cursor to a set page of results.
+   * @param filter - Filter for just the entities defined by this filter.
+   * @param fullTextFilterTerm - Text search term.
+   * @param fullTextFilterFields - A comma separated list of fields to sort returned results by.
    */
   public async getEntitiesByQuery(
     // @ts-ignore
@@ -329,7 +381,8 @@ export class CatalogClient {
 
   /**
    * Get a batch set of entities given an array of entityRefs.
-   * @param getEntitiesByRefsRequest
+   * @param filter - Filter for just the entities defined by this filter.
+   * @param getEntitiesByRefsRequest -
    */
   public async getEntitiesByRefs(
     // @ts-ignore
@@ -338,9 +391,11 @@ export class CatalogClient {
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/entities/by-refs/{?filter*}`;
+    const uriTemplate = `/entities/by-refs{?filter*}`;
 
-    const uri = parser.parse(uriTemplate).expand({});
+    const uri = parser.parse(uriTemplate).expand({
+      ...request.query,
+    });
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {
@@ -354,9 +409,9 @@ export class CatalogClient {
 
   /**
    * Get an entity's ancestry by entity ref.
-   * @param kind
-   * @param namespace
-   * @param name
+   * @param kind -
+   * @param namespace -
+   * @param name -
    */
   public async getEntityAncestryByName(
     // @ts-ignore
@@ -384,9 +439,9 @@ export class CatalogClient {
 
   /**
    * Get an entity by an entity ref.
-   * @param kind
-   * @param namespace
-   * @param name
+   * @param kind -
+   * @param namespace -
+   * @param name -
    */
   public async getEntityByName(
     // @ts-ignore
@@ -414,7 +469,7 @@ export class CatalogClient {
 
   /**
    * Get a single entity by the UID.
-   * @param uid
+   * @param uid -
    */
   public async getEntityByUid(
     // @ts-ignore
@@ -440,8 +495,8 @@ export class CatalogClient {
 
   /**
    * Get all entity facets that match the given filters.
-   * @param facet
-   * @param filter Filter for just the entities defined by this filter.
+   * @param facet -
+   * @param filter - Filter for just the entities defined by this filter.
    */
   public async getEntityFacets(
     // @ts-ignore
@@ -467,7 +522,7 @@ export class CatalogClient {
 
   /**
    * Get a location by id.
-   * @param id
+   * @param id -
    */
   public async getLocation(
     // @ts-ignore
@@ -493,9 +548,9 @@ export class CatalogClient {
 
   /**
    * Get a location for entity.
-   * @param kind
-   * @param namespace
-   * @param name
+   * @param kind -
+   * @param namespace -
+   * @param name -
    */
   public async getLocationByEntity(
     // @ts-ignore
@@ -546,7 +601,7 @@ export class CatalogClient {
 
   /**
    * Refresh the entity related to entityRef.
-   * @param refreshEntityRequest
+   * @param refreshEntityRequest -
    */
   public async refreshEntity(
     // @ts-ignore
@@ -571,7 +626,7 @@ export class CatalogClient {
 
   /**
    * Validate that a passed in entity has no errors in schema.
-   * @param validateEntityRequest
+   * @param validateEntityRequest -
    */
   public async validateEntity(
     // @ts-ignore
