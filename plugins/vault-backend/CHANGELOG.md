@@ -1,5 +1,11 @@
 # @backstage/plugin-vault-backend
 
+## 0.4.7-next.3
+
+### Patch Changes
+
+- 594a994: Removed deadlock https://github.com/backstage/backstage/issues/23633
+
 ## 0.4.7-next.2
 
 ### Patch Changes
