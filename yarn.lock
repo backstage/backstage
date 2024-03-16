@@ -45466,7 +45466,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"vite@npm:^4.4.9":
+"vite@npm:4.5.2":
   version: 4.5.2
   resolution: "vite@npm:4.5.2"
   dependencies:
@@ -45503,6 +45503,46 @@ __metadata:
   bin:
     vite: bin/vite.js
   checksum: 9d1f84f703c2660aced34deee7f309278ed368880f66e9570ac115c793d91f7fffb80ab19c602b3c8bc1341fe23437d86a3fcca2a9ef82f7ef0cdac5a40d0c86
+  languageName: node
+  linkType: hard
+
+"vite@patch:vite@npm%3A4.5.2#./.yarn/patches/vite-npm-4.5.2-e430b2c117.patch::locator=root%40workspace%3A.":
+  version: 4.5.2
+  resolution: "vite@patch:vite@npm%3A4.5.2#./.yarn/patches/vite-npm-4.5.2-e430b2c117.patch::version=4.5.2&hash=d9898c&locator=root%40workspace%3A."
+  dependencies:
+    esbuild: ^0.18.10
+    fsevents: ~2.3.2
+    postcss: ^8.4.27
+    rollup: ^3.27.1
+  peerDependencies:
+    "@types/node": ">= 14"
+    less: "*"
+    lightningcss: ^1.21.0
+    sass: "*"
+    stylus: "*"
+    sugarss: "*"
+    terser: ^5.4.0
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  peerDependenciesMeta:
+    "@types/node":
+      optional: true
+    less:
+      optional: true
+    lightningcss:
+      optional: true
+    sass:
+      optional: true
+    stylus:
+      optional: true
+    sugarss:
+      optional: true
+    terser:
+      optional: true
+  bin:
+    vite: bin/vite.js
+  checksum: 04608e03eb15d561bc1f1af714d503c3b17f523854be1b9b020f9b74d789da9c99f5dfbb9a8b6bca49b8c9ec45a171e5125d5f92aadfceb31eea65a8f4d318c1
   languageName: node
   linkType: hard
 
