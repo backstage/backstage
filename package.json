@@ -88,7 +88,8 @@
     "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@types/react": "^18",
     "@types/react-dom": "^18",
-    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch"
+    "jest-haste-map@^29.7.0": "patch:jest-haste-map@npm%3A29.7.0#./.yarn/patches/jest-haste-map-npm-29.7.0-e3be419eff.patch",
+    "vite@^4.4.9": "patch:vite@npm%3A4.5.2#./.yarn/patches/vite-npm-4.5.2-e430b2c117.patch"
   },
   "dependencies": {
     "@backstage/errors": "workspace:^",
