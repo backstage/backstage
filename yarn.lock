@@ -11670,14 +11670,14 @@ __metadata:
   linkType: hard
 
 "@google-cloud/firestore@npm:^7.0.0":
-  version: 7.3.1
-  resolution: "@google-cloud/firestore@npm:7.3.1"
+  version: 7.4.0
+  resolution: "@google-cloud/firestore@npm:7.4.0"
   dependencies:
     fast-deep-equal: ^3.1.1
     functional-red-black-tree: ^1.0.1
     google-gax: ^4.0.4
     protobufjs: ^7.2.5
-  checksum: 635f1dbe17091cff6b822e83ca8b9931def442779a0cec5b80b9387cc7ec6c052ae3d658561df2e021421d4869f57b92bb610086d05a8698be8376a3c2b3e98a
+  checksum: df0094c3be5473a96f925d7bcd4234f376e4928065bdd96bdc2debc73b4c976df160c2553dfc8ed3d73f859778996159e69770983fa0224a53afbe4e77754db3
   languageName: node
   linkType: hard
 
