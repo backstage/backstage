@@ -18824,11 +18824,11 @@ __metadata:
   linkType: hard
 
 "@types/express-session@npm:^1.17.2":
-  version: 1.17.10
-  resolution: "@types/express-session@npm:1.17.10"
+  version: 1.18.0
+  resolution: "@types/express-session@npm:1.18.0"
   dependencies:
     "@types/express": "*"
-  checksum: 2fb63b53e164f615a538d4be292695789a7f3105ce3246b8d3816e78eca05c8cce43d703af55c4f675c99cfb6fa512ae70a787e536e2b064f001fda897e0d5ab
+  checksum: f624bc956d223eda618dc3ee5908cfc91d5cf67252aa83e667c1260b96c2d2ac302407d57d2a57b29728a21bf521f09c6409da5e727509c01a2b50d7a012f0a1
   languageName: node
   linkType: hard
 
