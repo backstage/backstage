@@ -626,7 +626,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       );
     }
 
-    let user: GitLabUser | undefined;
+    let user: GitLabUser;
     if (event.event_name === 'user_destroy') {
       user = {
         id: event.user_id,
@@ -704,19 +704,6 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       groupToRebuild.full_path,
       relations,
     );
-
-    // if (groupMembers.items.length !== 0) {
-    //   groupMembers.items.forEach(element => {
-    //     if (
-    //       event.event_name === 'user_remove_from_group' &&
-    //       element.username === event.user_username
-    //     ) {
-    //       return;
-    //     }
-
-    //     usersToBeAdded.push(element.username);
-    //   });
-    // }
 
     // new members of the group
     const usersToBeAdded =
