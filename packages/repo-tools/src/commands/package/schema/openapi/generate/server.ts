@@ -79,8 +79,8 @@ async function generate(abortSignal?: AbortController) {
   );
 
   const additionalProperties = [];
-  if (clientPackage) {
-    additionalProperties.push(`clientPackageName=${clientPackage}`);
+  if (clientImport) {
+    additionalProperties.push(`clientImport=${clientImport}`);
   }
 
   await exec(

@@ -276,13 +276,14 @@ export class DefaultApiClient {
 
   /**
    * Get a batch set of entities given an array of entityRefs.
+   * @param filter Filter for just the entities defined by this filter.
    * @param getEntitiesByRefsRequest
    */
   public async getEntitiesByRefs(
     // @ts-ignore
     request: {
       body: GetEntitiesByRefsRequest;
-      query?: {
+      query: {
         filter?: Array<string>;
       };
     },
@@ -290,9 +291,11 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/entities/by-refs/{?filter*}`;
+    const uriTemplate = `/entities/by-refs{?filter*}`;
 
-    const uri = parser.parse(uriTemplate).expand({ ...request.query });
+    const uri = parser.parse(uriTemplate).expand({
+      ...request.query,
+    });
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {

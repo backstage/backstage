@@ -37,7 +37,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "alpha"
   ],
   "scripts": {
     "build": "backstage-cli package build",
