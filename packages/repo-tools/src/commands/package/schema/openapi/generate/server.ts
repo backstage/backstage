@@ -66,7 +66,7 @@ export const createOpenApiRouter = async (
   }
 }
 
-async function generate(clientPackage: string | undefined) {
+async function generate(clientImport: string | undefined) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
   const resolvedOutputDirectory = await getRelativePathToFile(OUTPUT_PATH);
   mkdirpSync(resolvedOutputDirectory);
@@ -79,8 +79,8 @@ async function generate(clientPackage: string | undefined) {
   );
 
   const additionalProperties = [];
-  if (clientPackage) {
-    additionalProperties.push(`clientPackageName=${clientPackage}`);
+  if (clientImport) {
+    additionalProperties.push(`clientImport=${clientImport}`);
   }
 
   await exec(
@@ -132,13 +132,14 @@ async function generate(clientPackage: string | undefined) {
 }
 
 export async function command(
+  serverClientImport: string | undefined,
   clientPackage: string | undefined,
 ): Promise<void> {
   try {
     const { name } = clientPackage
       ? require(cliPaths.resolveTargetRoot(clientPackage, 'package.json'))
       : { name: undefined };
-    await generate(name);
+    await generate(serverClientImport || name);
     console.log(chalk.green(`Generated all files`));
   } catch (err) {
     console.log();

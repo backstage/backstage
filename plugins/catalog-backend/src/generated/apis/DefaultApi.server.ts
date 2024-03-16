@@ -32,7 +32,7 @@ import type {
   Location,
   RefreshEntityRequest,
   ValidateEntityRequest,
-} from '@backstage/catalog-client';
+} from '@backstage/catalog-client/alpha';
 
 /**
  * no description
@@ -100,7 +100,9 @@ export type EndpointMap = {
 
   '#post|/entities/by-refs': {
     path: {};
-    query: {};
+    query: {
+      filter?: Array<string>;
+    };
     body: GetEntitiesByRefsRequest;
     response: EntitiesBatchResponse;
   };
