@@ -14929,12 +14929,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pnpm/error@npm:5.0.2":
-  version: 5.0.2
-  resolution: "@pnpm/error@npm:5.0.2"
+"@pnpm/error@npm:5.0.3":
+  version: 5.0.3
+  resolution: "@pnpm/error@npm:5.0.3"
   dependencies:
     "@pnpm/constants": 7.1.1
-  checksum: 490e90b3a6fa6527a5a2b07dfd46982e005d8834036871a30cf03fcb389497b9828ed01c0d39e88b6352a340556de316eae9dbefcb3246f368815a03241576e6
+  checksum: b0c5b8b18c4302aeef59554b07107046679189d24eac6b34df59a28f6567f999bd589d7f64c75fcfee2e25f4175f5c0b1089fb2c5b633257836ced185e531726
   languageName: node
   linkType: hard
 
@@ -14978,12 +14978,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pnpm/npm-resolver@npm:18.1.0":
-  version: 18.1.0
-  resolution: "@pnpm/npm-resolver@npm:18.1.0"
+"@pnpm/npm-resolver@npm:18.1.1":
+  version: 18.1.1
+  resolution: "@pnpm/npm-resolver@npm:18.1.1"
   dependencies:
     "@pnpm/core-loggers": 9.0.6
-    "@pnpm/error": 5.0.2
+    "@pnpm/error": 5.0.3
     "@pnpm/fetching-types": 5.0.0
     "@pnpm/graceful-fs": 3.2.0
     "@pnpm/resolve-workspace-range": 5.0.1
@@ -15005,7 +15005,7 @@ __metadata:
     version-selector-type: ^3.0.0
   peerDependencies:
     "@pnpm/logger": ^5.0.0
-  checksum: 81b0dd97a0062374db7aecd68a94e7e52dd19c9675bd052c7fa7a2b5edb6219dc525e71dccb70bf4bae90faf44f6e1cd0d4f155606bc754ffcec4f9ab6852c08
+  checksum: 6157882e654c088b2a4b4948e911fd0e8e9e1eca8cf54637757b17ac13330d3a22f429b0183cb7dbbd1015830acdd476e4b719d038ebe0c020f34e33f2b823d5
   languageName: node
   linkType: hard
 
@@ -15034,15 +15034,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pnpm/workspace.pkgs-graph@npm:^2.0.14":
-  version: 2.0.14
-  resolution: "@pnpm/workspace.pkgs-graph@npm:2.0.14"
+"@pnpm/workspace.pkgs-graph@npm:^2.0.15":
+  version: 2.0.15
+  resolution: "@pnpm/workspace.pkgs-graph@npm:2.0.15"
   dependencies:
     "@pnpm/npm-package-arg": ^1.0.0
-    "@pnpm/npm-resolver": 18.1.0
+    "@pnpm/npm-resolver": 18.1.1
     "@pnpm/resolve-workspace-range": 5.0.1
     ramda: "npm:@pnpm/ramda@0.28.1"
-  checksum: ff3b5234611da1ec4b636616554abcb4720c4fcd3db33bcb7b4b1e4ed5ebd091a854163876c1b1f7d56d2ec6e4f344c22eaf02054f2963d9a50a49462412793d
+  checksum: f16cebedb0aed369ffe744792859e8cca016069013e4a0e0317f9e4dec72fd0f44042999b30d490f37ed29aaa64fcb92e0ff715069b1854a3c96926f417d3255
   languageName: node
   linkType: hard
 
@@ -33397,15 +33397,15 @@ __metadata:
   linkType: hard
 
 "knip@npm:^5.0.0":
-  version: 5.0.2
-  resolution: "knip@npm:5.0.2"
+  version: 5.1.1
+  resolution: "knip@npm:5.1.1"
   dependencies:
     "@ericcornelissen/bash-parser": 0.5.2
     "@nodelib/fs.walk": 2.0.0
     "@npmcli/map-workspaces": 3.0.4
     "@npmcli/package-json": 5.0.0
     "@pnpm/logger": 5.0.0
-    "@pnpm/workspace.pkgs-graph": ^2.0.14
+    "@pnpm/workspace.pkgs-graph": ^2.0.15
     "@snyk/github-codeowners": 1.1.0
     "@types/picomatch": 2.3.3
     easy-table: 1.2.0
@@ -33417,18 +33417,17 @@ __metadata:
     picocolors: 1.0.0
     picomatch: 4.0.1
     pretty-ms: 9.0.0
-    semver: 7.6.0
     smol-toml: 1.1.4
     strip-json-comments: 5.0.1
     summary: 2.1.0
     zod: 3.22.4
-    zod-validation-error: 3.0.2
+    zod-validation-error: 3.0.3
   peerDependencies:
     "@types/node": ">=18"
     typescript: ">=5.0.4"
   bin:
     knip: bin/knip.js
-  checksum: af0e395ab1f8a9974fa0e83711d13b252017cc7aacd92293d13b8a0219c9f4d98a04f0ea074202c9adf5af3aa3fd22a1b5bbbbe3f00effc143656961b92c6512
+  checksum: 33fd81860f9dc5b3ad58ca13c4874443c68d4dc4f07061bfd3d0fb2336b68271362d92e4a739a8d422d7de78fdd0beed470e4fa94c2a2e84c54ab1deac4f5f8f
   languageName: node
   linkType: hard
 
@@ -41672,7 +41671,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.6.0, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.1.3, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.4.0, semver@npm:^7.5.3, semver@npm:^7.5.4":
+"semver@npm:^6.0.0, semver@npm:^6.1.0, semver@npm:^6.2.0, semver@npm:^6.3.0, semver@npm:^6.3.1":
+  version: 6.3.1
+  resolution: "semver@npm:6.3.1"
+  bin:
+    semver: bin/semver.js
+  checksum: ae47d06de28836adb9d3e25f22a92943477371292d9b665fb023fae278d345d508ca1958232af086d85e0155aee22e313e100971898bbb8d5d89b8b1d4054ca2
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.1.3, semver@npm:^7.3.2, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8, semver@npm:^7.4.0, semver@npm:^7.5.3, semver@npm:^7.5.4":
   version: 7.6.0
   resolution: "semver@npm:7.6.0"
   dependencies:
@@ -41680,15 +41688,6 @@ __metadata:
   bin:
     semver: bin/semver.js
   checksum: 7427f05b70786c696640edc29fdd4bc33b2acf3bbe1740b955029044f80575fc664e1a512e4113c3af21e767154a94b4aa214bf6cd6e42a1f6dba5914e0b208c
-  languageName: node
-  linkType: hard
-
-"semver@npm:^6.0.0, semver@npm:^6.1.0, semver@npm:^6.2.0, semver@npm:^6.3.0, semver@npm:^6.3.1":
-  version: 6.3.1
-  resolution: "semver@npm:6.3.1"
-  bin:
-    semver: bin/semver.js
-  checksum: ae47d06de28836adb9d3e25f22a92943477371292d9b665fb023fae278d345d508ca1958232af086d85e0155aee22e313e100971898bbb8d5d89b8b1d4054ca2
   languageName: node
   linkType: hard
 
@@ -46746,12 +46745,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-validation-error@npm:3.0.2":
-  version: 3.0.2
-  resolution: "zod-validation-error@npm:3.0.2"
+"zod-validation-error@npm:3.0.3":
+  version: 3.0.3
+  resolution: "zod-validation-error@npm:3.0.3"
   peerDependencies:
     zod: ^3.18.0
-  checksum: 5127ff75f50db2f195d739142d4e56b1d8f7294b82c08d1b308978bc546afc7c3b2958f677d00eca1e3254342704d48a34ba93f8e88ae5799feefda6b6dc911e
+  checksum: 08ff4ccb2eb27bc1dd24dbf5cbd3196a21304cac05e554e4ef3e65ca7269fc4311fad2d0047878ed745077b8990b4f274c69f8ef79a29d13d255736889b87df3
   languageName: node
   linkType: hard
 
