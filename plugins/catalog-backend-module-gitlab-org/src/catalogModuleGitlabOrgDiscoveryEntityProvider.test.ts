@@ -17,15 +17,15 @@
 import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Duration } from 'luxon';
-import { GitlabDiscoveryEntityProvider } from '../providers';
-import { catalogModuleGitlabDiscoveryEntityProvider } from './catalogModuleGitlabDiscoveryEntityProvider';
+import { catalogModuleGitlabOrgDiscoveryEntityProvider } from './catalogModuleGitlabOrgDiscoveryEntityProvider';
 
-describe('catalogModuleGitlabDiscoveryEntityProvider', () => {
+describe('catalogModuleGitlabOrgDiscoveryEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
     const events = new TestEventsService();
     const eventsServiceFactory = createServiceFactory({
@@ -35,7 +35,7 @@ describe('catalogModuleGitlabDiscoveryEntityProvider', () => {
         return events;
       },
     });
-    let addedProviders: Array<GitlabDiscoveryEntityProvider> | undefined;
+    let addedProviders: Array<GitlabOrgDiscoveryEntityProvider> | undefined;
     let usedSchedule: TaskScheduleDefinition | undefined;
 
     const extensionPoint = {
@@ -68,6 +68,7 @@ describe('catalogModuleGitlabDiscoveryEntityProvider', () => {
             'test-id': {
               host: 'test-gitlab',
               group: 'test-group',
+              orgEnabled: true,
               schedule: {
                 frequency: 'P1M',
                 timeout: 'PT3M',
@@ -82,7 +83,7 @@ describe('catalogModuleGitlabDiscoveryEntityProvider', () => {
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
         eventsServiceFactory(),
-        catalogModuleGitlabDiscoveryEntityProvider(),
+        catalogModuleGitlabOrgDiscoveryEntityProvider(),
         mockServices.rootConfig.factory({ data: config }),
         mockServices.logger.factory(),
         scheduler.factory,
@@ -96,12 +97,12 @@ describe('catalogModuleGitlabDiscoveryEntityProvider', () => {
 
     const provider = addedProviders!.pop()!;
     expect(provider.getProviderName()).toEqual(
-      'GitlabDiscoveryEntityProvider:test-id',
+      'GitlabOrgDiscoveryEntityProvider:test-id',
     );
     await provider.connect(connection);
     expect(events.subscribed).toHaveLength(1);
     expect(events.subscribed[0].id).toEqual(
-      'GitlabDiscoveryEntityProvider:test-id',
+      'GitlabOrgDiscoveryEntityProvider:test-id',
     );
     expect(runner).toHaveBeenCalledTimes(1);
   });

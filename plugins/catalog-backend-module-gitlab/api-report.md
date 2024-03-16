@@ -8,6 +8,7 @@ import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
@@ -26,13 +27,13 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     config: Config,
     options: {
       logger: Logger;
+      events?: EventsService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
   ): GitlabDiscoveryEntityProvider[];
   // (undocumented)
   getProviderName(): string;
-  // (undocumented)
   refresh(logger: Logger): Promise<void>;
 }
 
@@ -63,7 +64,6 @@ export type GitLabGroup = {
   name: string;
   full_path: string;
   description?: string;
-  visibility?: string;
   parent_id?: number;
 };
 
@@ -81,6 +81,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     config: Config,
     options: {
       logger: Logger;
+      events?: EventsService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
       userTransformer?: UserTransformer;
@@ -103,6 +104,7 @@ export type GitlabProviderConfig = {
   projectPattern: RegExp;
   userPattern: RegExp;
   groupPattern: RegExp;
+  allowInherited?: boolean;
   orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;
   skipForkedRepos?: boolean;
