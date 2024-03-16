@@ -267,7 +267,10 @@ export async function createRouter(
   });
 
   router.get('/all-teams', async (_req, res) => {
-    const allTeams = await pullRequestsDashboardProvider.getAllTeams();
+    const topTeams = _req.query.topTeams
+      ? Number(_req.query.topTeams)
+      : undefined;
+    const allTeams = await pullRequestsDashboardProvider.getAllTeams(topTeams);
     res.status(200).json(allTeams);
   });
 
