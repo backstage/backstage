@@ -5,7 +5,7 @@ authors:
   - 'bnechyporenko@bol.com'
   - 'benjaminl@spotify.com'
 owners: 
-  - @backstage/scaffolder-maintainers
+  - '@backstage/scaffolder-maintainers'
 project-areas:
   - scaffolder
 creation-date: 2024-01-31
