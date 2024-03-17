@@ -44,6 +44,7 @@
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
     "openapi-merge": "^1.3.2",
+    "openapi3-ts": "^4.2.2",
     "react": "^18.2.0",
     "uri-template": "^2.0.0",
     "winston": "^3.2.1",

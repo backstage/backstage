@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-continuous-integration-backend-module-test
+  title: backstage-plugin-continuous-integration-backend-module-test
+  description: The test backend module for the continuous-integration plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers
