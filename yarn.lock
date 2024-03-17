@@ -3564,6 +3564,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/cli-builder@workspace:plugins/cli-builder"
   dependencies:
+    "@apidevtools/swagger-parser": ^10.1.0
     "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -3571,20 +3572,29 @@ __metadata:
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
+    "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@types/express": "*"
     "@types/supertest": ^2.0.8
     cli-table: ^0.3.11
     commander: ^12.0.0-1
+    cross-fetch: ^4.0.0
+    fs-extra: ^11.2.0
     ink: ^4.4.1
+    lodash: ^4.17.21
     msw: ^1.0.0
     node-fetch: ^2.6.7
+    openapi-merge: ^1.3.2
     react: ^18.2.0
     supertest: ^6.2.4
+    ts-node: ^10.9.2
+    uri-template: ^2.0.0
     winston: ^3.2.1
     yn: ^4.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
+  bin:
+    my: bin/my
   languageName: unknown
   linkType: soft
 
@@ -44097,7 +44107,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ts-node@npm:^10.9.1":
+"ts-node@npm:^10.9.1, ts-node@npm:^10.9.2":
   version: 10.9.2
   resolution: "ts-node@npm:10.9.2"
   dependencies:

@@ -18,7 +18,6 @@ import {
   discoveryServiceFactory,
   lifecycleServiceFactory,
   loggerServiceFactory,
-  rootConfigServiceFactory,
   rootLifecycleServiceFactory,
   rootLoggerServiceFactory,
 } from '@backstage/backend-app-api';
@@ -26,6 +25,7 @@ import {
   commanderServiceFactory,
   rootCommanderServiceFactory,
 } from '../impls/commanderServiceFactory';
+import { rootConfigServiceFactory } from '../impls/rootConfigServiceFactory';
 
 export function createCli() {
   return createSpecializedBackend({

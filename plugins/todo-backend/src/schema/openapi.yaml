@@ -95,7 +95,7 @@ paths:
       parameters:
         - name: entity
           in: query
-          required: false
+          required: true
           allowReserved: true
           schema:
             type: string
