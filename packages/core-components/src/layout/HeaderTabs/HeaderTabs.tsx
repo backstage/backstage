@@ -106,7 +106,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
       setSelectedTab(selectedIndex);
     }
   }, [selectedIndex]);
-  function clean(path: string) {
+  function removeLeadingSlash(path: string) {
     let newPath = path;
     newPath = path.replace(/^\//, '');
     return newPath;
@@ -129,7 +129,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
             label={tab.label}
             key={tab.id}
             component={Link}
-            to={clean(tab.id)}
+            to={removeLeadingSlash(tab.id)}
             value={index}
             className={styles.defaultTab}
             classes={{ selected: styles.selected, root: styles.tabRoot }}
