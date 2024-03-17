@@ -18774,13 +18774,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/eslint@npm:*, @types/eslint@npm:^8.37.0":
-  version: 8.56.2
-  resolution: "@types/eslint@npm:8.56.2"
+"@types/eslint@npm:*, @types/eslint@npm:^8.56.5":
+  version: 8.56.5
+  resolution: "@types/eslint@npm:8.56.5"
   dependencies:
     "@types/estree": "*"
     "@types/json-schema": "*"
-  checksum: 38e054971596f5c0413f66a62dc26b10e0a21ac46ceacb06fbf8cfb838d20820787209b17218b3916e4c23d990ff77cfdb482d655cac0e0d2b837d430fcc5db8
+  checksum: 95a7a23ca38c78e5c27a2ed36ef60f094d5e6589e3473c320b6ff69eb3ca6333d5b7f0d5053416369f5ab2fb86874df19562d4d67a98237c17def6e30abff540
   languageName: node
   linkType: hard
 
@@ -21114,7 +21114,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv-keywords@npm:^5.0.0":
+"ajv-keywords@npm:^5.1.0":
   version: 5.1.0
   resolution: "ajv-keywords@npm:5.1.0"
   dependencies:
@@ -21137,7 +21137,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ajv@npm:^8.0.0, ajv@npm:^8.10.0, ajv@npm:^8.11.0, ajv@npm:^8.11.2, ajv@npm:^8.12.0, ajv@npm:^8.6.0, ajv@npm:^8.6.3, ajv@npm:^8.8.0, ajv@npm:^8.8.2":
+"ajv@npm:^8.0.0, ajv@npm:^8.10.0, ajv@npm:^8.11.0, ajv@npm:^8.11.2, ajv@npm:^8.12.0, ajv@npm:^8.6.0, ajv@npm:^8.6.3, ajv@npm:^8.8.2, ajv@npm:^8.9.0":
   version: 8.12.0
   resolution: "ajv@npm:8.12.0"
   dependencies:
@@ -27319,18 +27319,18 @@ __metadata:
   linkType: hard
 
 "eslint-webpack-plugin@npm:^4.0.0":
-  version: 4.0.1
-  resolution: "eslint-webpack-plugin@npm:4.0.1"
+  version: 4.1.0
+  resolution: "eslint-webpack-plugin@npm:4.1.0"
   dependencies:
-    "@types/eslint": ^8.37.0
-    jest-worker: ^29.5.0
+    "@types/eslint": ^8.56.5
+    jest-worker: ^29.7.0
     micromatch: ^4.0.5
     normalize-path: ^3.0.0
-    schema-utils: ^4.0.0
+    schema-utils: ^4.2.0
   peerDependencies:
     eslint: ^8.0.0
     webpack: ^5.0.0
-  checksum: 94fe0817fc580729dc6edc4a31c9f7dbeb97ad134c6c4192feab66aae711ed5afe35c5bc8d5e99b39626b469300196df72e631f5e53c55723adbf850765924e5
+  checksum: 1676ff08b0424e4656aa638a0c2a7b2f3f6a504651689a2d86b237c9a52ad65e17aeb5abbe13663e25353d8a706dcf45f49dbe4795dad27b6b0650db8aa21b16
   languageName: node
   linkType: hard
 
@@ -32502,7 +32502,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jest-worker@npm:^29.5.0, jest-worker@npm:^29.7.0":
+"jest-worker@npm:^29.7.0":
   version: 29.7.0
   resolution: "jest-worker@npm:29.7.0"
   dependencies:
@@ -41644,15 +41644,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"schema-utils@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "schema-utils@npm:4.0.0"
+"schema-utils@npm:^4.0.0, schema-utils@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "schema-utils@npm:4.2.0"
   dependencies:
     "@types/json-schema": ^7.0.9
-    ajv: ^8.8.0
+    ajv: ^8.9.0
     ajv-formats: ^2.1.1
-    ajv-keywords: ^5.0.0
-  checksum: c843e92fdd1a5c145dbb6ffdae33e501867f9703afac67bdf35a685e49f85b1dcc10ea250033175a64bd9d31f0555bc6785b8359da0c90bcea30cf6dfbb55a8f
+    ajv-keywords: ^5.1.0
+  checksum: 26a0463d47683258106e6652e9aeb0823bf0b85843039e068b57da1892f7ae6b6b1094d48e9ed5ba5cbe9f7166469d880858b9d91abe8bd249421eb813850cde
   languageName: node
   linkType: hard
 
