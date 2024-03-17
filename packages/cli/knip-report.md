@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (27)
+## Unused dependencies (28)
 
 | Name                             | Location     | Severity |
 | :------------------------------- | :----------- | :------- |
@@ -25,6 +25,7 @@
 | @swc/core                        | package.json | error    |
 | @swc/jest                        | package.json | error    |
 | esbuild                          | package.json | error    |
+| pirates                          | package.json | error    |
 | postcss                          | package.json | error    |
 | process                          | package.json | error    |
 | sucrase                          | package.json | error    |
