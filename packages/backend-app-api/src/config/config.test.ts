@@ -17,6 +17,7 @@
 import { loadConfigSchema } from '@backstage/config-loader';
 import { createConfigSecretEnumerator } from './config';
 import { mockServices } from '@backstage/backend-test-utils';
+import path from 'path';
 
 describe('createConfigSecretEnumerator', () => {
   it('should enumerate secrets', async () => {
@@ -24,6 +25,7 @@ describe('createConfigSecretEnumerator', () => {
 
     const enumerate = await createConfigSecretEnumerator({
       logger,
+      dir: path.resolve('../../packages/backend'),
     });
     const secrets = enumerate(
       mockServices.rootConfig({
