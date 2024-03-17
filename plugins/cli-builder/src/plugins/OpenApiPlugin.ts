@@ -71,7 +71,7 @@ async function handleResponse(
   }
 }
 
-const examplePlugin = createBackendPlugin({
+const openapiPlugin = createBackendPlugin({
   pluginId: 'api',
   register(env) {
     env.registerInit({
@@ -165,4 +165,4 @@ const examplePlugin = createBackendPlugin({
   },
 });
 
-export default examplePlugin;
+export default openapiPlugin;
