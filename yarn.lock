@@ -8985,7 +8985,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
     "@elastic/elasticsearch": ^7.13.0
-    "@elastic/elasticsearch-mock": ^1.0.0
+    "@elastic/elasticsearch-mock": ^2.0.0
     "@opensearch-project/opensearch": ^2.2.1
     "@short.io/opensearch-mock": ^0.3.1
     aws4: ^1.12.0
@@ -10724,14 +10724,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@elastic/elasticsearch-mock@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@elastic/elasticsearch-mock@npm:1.0.0"
+"@elastic/elasticsearch-mock@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@elastic/elasticsearch-mock@npm:2.0.0"
   dependencies:
     fast-deep-equal: ^3.1.3
-    find-my-way: ^4.3.3
+    find-my-way: ^5.2.0
     into-stream: ^6.0.0
-  checksum: 2367ea444619dc4248741a3e98743b512bf9efbfc4b1cb2a566ecaf513e7d1266218880d202cb933b36d1f5e9c0c5a958e85f4bc7f7f835e6161df9de3964a6e
+  checksum: 8f4eef41e267593f7db4441b03f1c6b43c3e2b4dd8ce9475576d6a8313a1f2ed12a1eb7e55e001479d4da20290e87e797cda6482a6656838cf9bd13115fe38b3
   languageName: node
   linkType: hard
 
@@ -28601,6 +28601,17 @@ __metadata:
     safe-regex2: ^2.0.0
     semver-store: ^0.3.0
   checksum: 85b8c07d34a36f0203438e0c0f0cdbfaf5e1c521ed2e56f9250bed846ceb0eea074127fad7f70137d61bed56387047f212969cc0ba5d818ed5e37b3e3606c43f
+  languageName: node
+  linkType: hard
+
+"find-my-way@npm:^5.2.0":
+  version: 5.6.0
+  resolution: "find-my-way@npm:5.6.0"
+  dependencies:
+    fast-decode-uri-component: ^1.0.1
+    fast-deep-equal: ^3.1.3
+    safe-regex2: ^2.0.0
+  checksum: 1686f8d1c0fd1a84302fd06f1cd87e8514833aa35cb57f42d4badbddedc2112bedf65b8333adeddeda44d10c6712ded80fc3828a0f02899d1bc7e7547be8064a
   languageName: node
   linkType: hard
 
