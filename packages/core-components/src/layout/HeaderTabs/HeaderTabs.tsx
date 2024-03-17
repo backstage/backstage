@@ -17,8 +17,9 @@ import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import TabUI, { TabProps } from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
-import Tab from '@material-ui/core/Tab';
 import React, { useCallback, useEffect, useState } from 'react';
+import { LinkProps } from '../../components';
+import { Link } from '@backstage/core-components';
 
 // TODO(blam): Remove this implementation when the Tabs are ready
 // This is just a temporary solution to implementing tabs for now
@@ -58,41 +59,26 @@ const useStyles = makeStyles(
   { name: 'BackstageHeaderTabs' },
 );
 
-export type TabProp = {
+export type Tab = {
   id: string;
   label: string;
-  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
+  tabProps?: {
+    component?: React.ElementType<LinkProps>;
+    to: string;
+    value?: number;
+    className?: string;
+    classes?: {
+      selected: string;
+      root: string;
+    };
+  };
 };
 
 type HeaderTabsProps = {
-  tabs: TabProp[];
+  tabs: Tab[];
   onChange?: (index: number) => void;
   selectedIndex?: number;
 };
-
-function a11yProps(index: any) {
-  return {
-    id: `nav-tab-${index}`,
-    'aria-controls': `nav-tabpanel-${index}`,
-  };
-}
-
-interface LinkTabProps {
-  label?: string;
-  href?: string;
-}
-
-function LinkTab(props: LinkTabProps) {
-  return (
-    <Tab
-      component="a"
-      onClick={(event: React.MouseEvent<HTMLAnchorElement, MouseEvent>) => {
-        event.preventDefault();
-      }}
-      {...props}
-    />
-  );
-}
 
 /**
  * Horizontal Tabs component
@@ -120,7 +106,11 @@ export function HeaderTabs(props: HeaderTabsProps) {
       setSelectedTab(selectedIndex);
     }
   }, [selectedIndex]);
-
+  function clean(path: string) {
+    let newPath = path;
+    newPath = path.replace(/^\//, '');
+    return newPath;
+  }
   return (
     <Box className={styles.tabsWrapper}>
       <Tabs
@@ -133,16 +123,16 @@ export function HeaderTabs(props: HeaderTabsProps) {
         value={selectedTab}
       >
         {tabs.map((tab, index) => (
-          <LinkTab
+          <TabUI
             {...tab.tabProps}
-            href={window.location.href}
             data-testid={`header-tab-${index}`}
             label={tab.label}
             key={tab.id}
+            component={Link}
+            to={clean(tab.id)}
             value={index}
             className={styles.defaultTab}
             classes={{ selected: styles.selected, root: styles.tabRoot }}
-            {...a11yProps(index)}
           />
         ))}
       </Tabs>
