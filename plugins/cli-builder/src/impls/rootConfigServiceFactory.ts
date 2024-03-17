@@ -13,25 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getRootLogger } from '@backstage/backend-common';
-import { createCli } from '../src/start/plugin';
 
-async function startBackend() {
-  const backend = createCli();
+import { RootConfigFactoryOptions } from '@backstage/backend-app-api';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { ConfigSources } from '@backstage/config-loader';
 
-  backend.add(import('../src/plugins/ExamplePlugin'));
-  backend.add(import('../src/plugins/OpenApiPlugin'));
-
-  await backend.start();
-}
-
-const logger = getRootLogger();
-
-startBackend().catch(err => {
-  logger.error(err);
-  process.exit(1);
-});
-
-process.on('SIGINT', () => {
-  process.exit(0);
-});
+export const rootConfigServiceFactory = createServiceFactory(
+  (options?: RootConfigFactoryOptions) => ({
+    service: coreServices.rootConfig,
+    deps: {},
+    async factory() {
+      const source = ConfigSources.default({
+        argv: options?.argv,
+        remote: options?.remote,
+      });
+      return await ConfigSources.toConfig(source);
+    },
+  }),
+);

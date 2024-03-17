@@ -20,9 +20,8 @@ import {
 import { coreCliServices } from '../services';
 import { CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-// @ts-expect-error
-import { render } from 'ink';
-import App from './test';
+// import { render } from 'ink';
+// import App from './test';
 
 const examplePlugin = createBackendPlugin({
   pluginId: 'catalog',
@@ -43,7 +42,7 @@ const examplePlugin = createBackendPlugin({
               ref: stringifyEntityRef(item),
             })),
           );
-          render(App);
+          // render(App);
         });
         commander.command('get <entityRef>').action(async entityRef => {
           try {

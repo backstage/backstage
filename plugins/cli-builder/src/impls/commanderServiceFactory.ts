@@ -28,7 +28,7 @@ export const commanderServiceFactory = createServiceFactory({
     plugin: coreServices.pluginMetadata,
   },
   factory({ plugin, rootCommander }) {
-    return rootCommander.command(plugin.getId()).exitOverride(() => {});
+    return rootCommander.command(plugin.getId());
   },
 });
 
@@ -38,9 +38,9 @@ export const rootCommanderServiceFactory = createServiceFactory({
     rootLifecycle: coreServices.rootLifecycle,
   },
   async factory({ rootLifecycle }) {
-    const command = new Command().version('0.0.0').exitOverride(() => {});
+    const command = new Command().version('0.0.0');
     rootLifecycle.addStartupHook(async () => {
-      await command.parseAsync([...process.argv, 'catalog', 'list']);
+      await command.parseAsync(process.argv);
 
       process.kill(process.pid, 'SIGINT');
     });
