@@ -18,7 +18,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import TabUI, { TabProps } from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import React, { useCallback, useEffect, useState } from 'react';
-import { LinkProps } from '../../components';
 import { Link } from '@backstage/core-components';
 
 // TODO(blam): Remove this implementation when the Tabs are ready
@@ -63,7 +62,7 @@ export type Tab = {
   id: string;
   label: string;
   tabProps?: {
-    component?: React.ElementType<LinkProps>;
+    component?: React.ElementType<TabProps>;
     to: string;
     value?: number;
     className?: string;
