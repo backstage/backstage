@@ -229,6 +229,13 @@ export async function createRouter(
     });
   });
 
+  router.get('/status', async (req, res) => {
+    const user = await getUser(req);
+    const status = await store.getStatus({ user });
+    res.send(status);
+  });
+
+  // Make sure this is the last "GET" handler
   router.get('/:id', async (req, res) => {
     const user = await getUser(req);
     const opts: NotificationGetOptions = {
@@ -242,12 +249,6 @@ export async function createRouter(
       return;
     }
     res.send(notifications[0]);
-  });
-
-  router.get('/status', async (req, res) => {
-    const user = await getUser(req);
-    const status = await store.getStatus({ user });
-    res.send(status);
   });
 
   router.post('/update', async (req, res) => {
