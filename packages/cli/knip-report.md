@@ -33,7 +33,7 @@
 | glob                             | package.json | error    |
 | util                             | package.json | error    |
 
-## Unused devDependencies (12)
+## Unused devDependencies (11)
 
 | Name                                    | Location     | Severity |
 | :-------------------------------------- | :----------- | :------- |
@@ -47,7 +47,6 @@
 | @types/svgo                             | package.json | error    |
 | @types/ejs                              | package.json | error    |
 | nodemon                                 | package.json | error    |
-| ts-node                                 | package.json | error    |
 | del                                     | package.json | error    |
 
 ## Referenced optional peerDependencies (4)
