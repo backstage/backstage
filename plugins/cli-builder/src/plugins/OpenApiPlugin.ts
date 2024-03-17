@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  LoggerService,
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
@@ -23,21 +24,7 @@ import { kebabCase } from 'lodash';
 import { readFile } from 'fs-extra';
 import { parse } from 'uri-template';
 import Parser from '@apidevtools/swagger-parser';
-
-export type ParameterLocation = 'query' | 'header' | 'path' | 'cookie';
-
-interface OperationObject {
-  operationId: string;
-  description?: string;
-  parameters?: {
-    in: ParameterLocation;
-    name: string;
-    required?: boolean;
-    explode?: boolean;
-    schema: any;
-  }[];
-  requestBody?: any;
-}
+import { PathObject, OpenAPIObject } from 'openapi3-ts/oas30';
 
 async function fetchOpenApiSpec(baseUrl: string) {
   const response = await fetch(`${baseUrl}/openapi.json`);
@@ -48,9 +35,7 @@ async function fetchOpenApiSpec(baseUrl: string) {
   return (await Parser.dereference(spec)) as any;
 }
 
-function getOperations(spec: {
-  paths: Record<string, Record<string, OperationObject>>;
-}) {
+function getOperations(spec: OpenAPIObject) {
   const operations = [];
   for (const [path, methods] of Object.entries(spec.paths)) {
     for (const [method, operation] of Object.entries(methods)) {
@@ -58,6 +43,32 @@ function getOperations(spec: {
     }
   }
   return operations;
+}
+
+async function handleResponse(
+  response: Response,
+  logger: LoggerService,
+  options: { json: boolean },
+) {
+  if (!response.ok) {
+    logger.error(`Request failed with code (${response.status})`);
+    console.error(await response.text());
+    return;
+  }
+  if (response.headers.get('Content-Type')?.startsWith('application/json')) {
+    const parsedResponse = await response.json();
+    if (options.json) {
+      console.log(JSON.stringify(parsedResponse, null, 2));
+      return;
+    }
+    console.table(parsedResponse);
+  } else {
+    const parsedResponse = await response.text();
+    if (options.json) {
+      throw new Error('Unable to coerce value into json.');
+    }
+    console.log(parsedResponse);
+  }
 }
 
 const examplePlugin = createBackendPlugin({
@@ -87,29 +98,33 @@ const examplePlugin = createBackendPlugin({
               .option('--json');
 
             for (const parameter of operation.parameters ?? []) {
-              const isArray = parameter.schema.type === 'array';
+              const isArray =
+                parameter.schema.type === 'array' ||
+                parameter.style === 'deepObject';
               const flagName = `--${kebabCase(parameter.name)} <${
                 parameter.name
               }${isArray ? '...' : ''}>`;
-              // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-              parameter.required
+              const option = parameter.required
                 ? operationCommand.requiredOption(flagName)
                 : operationCommand.option(flagName);
+              if (parameter.description) {
+                option.description(parameter.description);
+              }
             }
 
             if (operation.requestBody) {
-              operationCommand.requiredOption('--body <filename>');
+              operationCommand.requiredOption('--body-file <filename>');
             }
 
             operationCommand.action(async options => {
               const fetchOptions: RequestInit = {};
-              const headers: any = {};
-              if (operation.requestBody && options.body) {
-                const fileContents = await readFile(options.body);
-                fetchOptions.body = JSON.parse(fileContents.toString());
+              const headers: Record<string, string> = {};
+              if (operation.requestBody && options.bodyFile) {
+                const fileContents = await readFile(options.bodyFile);
+                fetchOptions.body = fileContents.toString();
                 headers['Content-Type'] = 'application/json';
               }
-              const expandOptions: any = {};
+              const expandOptions: Record<string, string> = {};
               const queryParams: string[] = [];
               for (const parameter of operation.parameters ?? []) {
                 if (parameter.in === 'path' || parameter.in === 'query') {
@@ -123,7 +138,7 @@ const examplePlugin = createBackendPlugin({
                   );
                 }
               }
-              let pathToTemplate = `${path}`;
+              let pathToTemplate = path;
               if (queryParams.length) {
                 pathToTemplate += `{?${queryParams.join(',')}}`;
               }
@@ -141,33 +156,7 @@ const examplePlugin = createBackendPlugin({
                 headers,
                 ...fetchOptions,
               });
-              logger.info('sent');
-              if (!response.ok) {
-                console.error(
-                  `Request to ${templatedUri} failed with ${response.statusText} (${response.status})`,
-                );
-                console.error(await response.text());
-                return;
-              }
-              logger.info(`Request succeeded!`);
-              if (
-                response.headers
-                  .get('Content-Type')
-                  ?.startsWith('application/json')
-              ) {
-                const parsedResponse = await response.json();
-                if (options.json) {
-                  console.log(parsedResponse);
-                  return;
-                }
-                console.table(parsedResponse);
-              } else {
-                const parsedResponse = await response.text();
-                if (options.json) {
-                  throw new Error('Unable to coerce value into json.');
-                }
-                console.log(parsedResponse);
-              }
+              await handleResponse(response, logger, options);
             });
           }
         }

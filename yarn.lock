@@ -3585,6 +3585,7 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     openapi-merge: ^1.3.2
+    openapi3-ts: ^4.2.2
     react: ^18.2.0
     supertest: ^6.2.4
     ts-node: ^10.9.2
@@ -23759,7 +23760,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:*, commander@npm:^12.0.0":
+"commander@npm:*, commander@npm:^12.0.0, commander@npm:^12.0.0-1":
   version: 12.0.0
   resolution: "commander@npm:12.0.0"
   checksum: bce9e243dc008baba6b8d923f95b251ad115e6e7551a15838d7568abebcca0fc832da1800cf37caf37852f35ce4b7fb794ba7a4824b88c5adb1395f9268642df
@@ -23791,13 +23792,6 @@ __metadata:
   version: 10.0.1
   resolution: "commander@npm:10.0.1"
   checksum: 436901d64a818295803c1996cd856621a74f30b9f9e28a588e726b2b1670665bccd7c1a77007ebf328729f0139838a88a19265858a0fa7a8728c4656796db948
-  languageName: node
-  linkType: hard
-
-"commander@npm:^12.0.0-1":
-  version: 12.0.0-1
-  resolution: "commander@npm:12.0.0-1"
-  checksum: 403a111f09ecd3de4f18ee019e188f331a656efbdf235aa4b91d9d0f29eebfa7363d5b17647eac3ffee646acb092ebf5ca9cc4af50d93b63320e6c6b82f01b58
   languageName: node
   linkType: hard
 
@@ -36956,6 +36950,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"openapi3-ts@npm:^4.2.2":
+  version: 4.2.2
+  resolution: "openapi3-ts@npm:4.2.2"
+  dependencies:
+    yaml: ^2.3.4
+  checksum: 06bcfdd53b5da0d7c2db5ef1af314a27481749699dd3a43374f13bff19c0dcca75ef0d95c084acf6fba3a9a401905aaf591c71d42883e71d600cbbb499442069
+  languageName: node
+  linkType: hard
+
 "openid-client@npm:^5.2.1, openid-client@npm:^5.3.0, openid-client@npm:^5.4.3, openid-client@npm:^5.5.0":
   version: 5.6.5
   resolution: "openid-client@npm:5.6.5"
@@ -46443,7 +46446,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2, yaml@npm:^2.3.3":
+"yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2, yaml@npm:^2.3.3, yaml@npm:^2.3.4":
   version: 2.4.1
   resolution: "yaml@npm:2.4.1"
   bin:

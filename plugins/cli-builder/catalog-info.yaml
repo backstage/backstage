@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-cli-builder
+  title: '@backstage/cli-builder'
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers
