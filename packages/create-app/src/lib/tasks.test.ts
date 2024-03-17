@@ -60,6 +60,7 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-auth-backend': '1.0.0',
     '@backstage/plugin-auth-node': '1.0.0',
     '@backstage/plugin-auth-backend-module-github-provider': '1.0.0',
+    '@backstage/plugin-auth-backend-module-guest-provider': '1.0.0',
     '@backstage/plugin-catalog-backend': '1.0.0',
     '@backstage/plugin-catalog-backend-module-scaffolder-entity-model': '1.0.0',
     '@backstage/plugin-permission-common': '1.0.0',

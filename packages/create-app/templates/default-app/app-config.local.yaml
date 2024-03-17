@@ -1,1 +1,5 @@
 # Backstage override configuration for your local development environment
+auth:
+  providers:
+    guest: {}
+      # See https://github.com/backstage/backstage/blob/master/docs/auth/guest/provider.md
