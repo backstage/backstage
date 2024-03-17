@@ -39827,11 +39827,11 @@ __metadata:
   linkType: hard
 
 "react-hook-form@npm:^7.12.2, react-hook-form@npm:^7.13.0":
-  version: 7.50.1
-  resolution: "react-hook-form@npm:7.50.1"
+  version: 7.51.1
+  resolution: "react-hook-form@npm:7.51.1"
   peerDependencies:
     react: ^16.8.0 || ^17 || ^18
-  checksum: 40dcb64d2ff631f6da76db2c5788957da3429f07649a6f3aed76545c616fae8eee557a6b06d0d0842be1f80ac8244f44d87f4d8d83fddabec76d7ab9921f8781
+  checksum: 6ed9060ac9230a7e9e6ca46fc001cc5f44f35e6485e0c951ab1a5e85bd698c200a7230c5514f0642875e4f45f6cb8f79479deac0253f1c2b8db1445d1c96d796
   languageName: node
   linkType: hard
 
