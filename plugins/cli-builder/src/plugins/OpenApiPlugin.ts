@@ -47,6 +47,13 @@ function getOperations(spec: OpenAPIObject) {
 }
 
 function flattenObjectArray(objArray: object[]) {
+  const highestNumberOfKeys = Math.max(
+    ...objArray.map(o => Object.keys(dot.dot(o)).length),
+  );
+  if (highestNumberOfKeys > 5) {
+    // Don't try to flatten objects with more than 5 keys
+    return objArray;
+  }
   return objArray.map(o => dot.dot(o));
 }
 
