@@ -30,9 +30,9 @@ import { ResponseError } from '@backstage/errors';
  * @param options - Options for configuring the refresh cookie endpoint
  */
 export function useCookieAuthRefresh(options: {
-  // The plugin id to used for discovering the API origin
+  // The plugin id used for discovering the API origin
   pluginId: string;
-  // The path to used for calling the refresh cookie endpoint, default to '/cookie'
+  // The path used for calling the refresh cookie endpoint, default to '/cookie'
   path?: string;
 }):
   | { status: 'loading' }
@@ -63,44 +63,42 @@ export function useCookieAuthRefresh(options: {
 
   useMountEffect(actions.execute);
 
+  const retry = useCallback(() => {
+    actions.execute();
+  }, [actions]);
+
   const refresh = useCallback(
     (params: { expiresAt: string }) => {
       // Randomize the refreshing margin with a margin of 1-4 minutes to avoid all tabs refreshing at the same time
       // It cannot be less than 5 minutes otherwise the backend will return the same expiration date
       const margin = (1 + 3 * Math.random()) * 60000;
       const delay = Date.parse(params.expiresAt) - Date.now() - margin;
-      const timeout = setTimeout(actions.execute, delay);
+      const timeout = setTimeout(retry, delay);
       return () => clearTimeout(timeout);
     },
-    [actions],
+    [retry],
   );
 
   useEffect(() => {
-    // Only start the refresh process if we have a successful response
+    // Only schedule a refresh if we have a successful response
     if (state.status !== 'success' || !state.result) {
       return () => {};
     }
-
-    store.set('expiresAt', state.result.expiresAt);
-
-    let cancel = refresh(state.result);
-
-    const observable = store.observe$<string>('expiresAt');
-    const subscription = observable.subscribe(({ value }) => {
-      if (!value) return;
-      cancel();
-      cancel = refresh({ expiresAt: value });
-    });
-
+    const expiresAt = state.result.expiresAt;
+    store.set('expiresAt', expiresAt);
+    let cancel = refresh({ expiresAt });
+    const subscription = store
+      .observe$<string>('expiresAt')
+      .subscribe(({ value }) => {
+        if (!value) return;
+        cancel();
+        cancel = refresh({ expiresAt: value });
+      });
     return () => {
       cancel();
       subscription.unsubscribe();
     };
   }, [state, refresh, store]);
-
-  const retry = useCallback(() => {
-    actions.execute();
-  }, [actions]);
 
   // Initialising
   if (state.status === 'not-executed') {

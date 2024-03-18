@@ -25,9 +25,9 @@ import { useCookieAuthRefresh } from '../../hooks';
  * Props for the {@link CookieAuthRefreshProvider} component.
  */
 export type CookieAuthRefreshProviderProps = {
-  // The plugin ID to used for discovering the API origin
+  // The plugin ID used for discovering the API origin
   pluginId: string;
-  // The path to used for calling the refresh cookie endpoint, default to '/cookie'
+  // The path used for calling the refresh cookie endpoint, default to '/cookie'
   path?: string;
   // The children to render when the refresh is successful
   children: ReactNode;
