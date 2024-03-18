@@ -41,6 +41,9 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
+      - name: enable corepack
+        run: corepack enable
+
       # Windows file operation slowness means there's no point caching this
       - name: yarn install
         run: yarn install --immutable

@@ -39,6 +39,9 @@ jobs:
           node-version: 18.x
           registry-url: https://registry.npmjs.org/
 
+      - name: enable corepack
+        run: corepack enable
+
       - name: yarn install
         uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
         with:
