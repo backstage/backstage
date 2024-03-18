@@ -4028,7 +4028,7 @@ __metadata:
     rc-progress: 3.5.1
     react-helmet: 6.1.0
     react-hook-form: ^7.12.2
-    react-idle-timer: 5.6.2
+    react-idle-timer: 5.7.2
     react-markdown: ^8.0.0
     react-sparklines: ^1.7.0
     react-syntax-highlighter: ^15.4.5
@@ -39702,6 +39702,16 @@ __metadata:
     react: ">=16"
     react-dom: ">=16"
   checksum: 23c31be5490be8b22f21ba374e01b751eb845a0e37d077e6369d9a95cf45625ca43b7402f46c53dffaae9e55866920c30f2b1a316e0a9500f73ed91155dd0041
+  languageName: node
+  linkType: hard
+
+"react-idle-timer@npm:5.7.2":
+  version: 5.7.2
+  resolution: "react-idle-timer@npm:5.7.2"
+  peerDependencies:
+    react: ">=16"
+    react-dom: ">=16"
+  checksum: 6faf3cfa87c9d65ae7a87078a2d82db5b821936a45565a98d69e7341e4b4acd5610b1f26cf1a6809b5551e4c30357f2ab5ce729c4c33751f66cb9ce6072dfb02
   languageName: node
   linkType: hard
 
