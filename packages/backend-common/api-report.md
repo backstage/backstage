@@ -589,6 +589,28 @@ export const legacyPlugin: (
       >
     >;
   }>,
+  createMiddleware?:
+    | LegacyCreateRouter<
+        TransformedEnv<
+          {
+            cache: CacheClient;
+            config: RootConfigService;
+            database: PluginDatabaseManager;
+            discovery: PluginEndpointDiscovery;
+            logger: LoggerService;
+            permissions: PermissionsService;
+            scheduler: SchedulerService;
+            tokenManager: TokenManager;
+            reader: UrlReader;
+            identity: IdentityService;
+          },
+          {
+            logger: (log: LoggerService) => Logger;
+            cache: (cache: CacheClient) => PluginCacheManager;
+          }
+        >
+      >
+    | undefined,
 ) => BackendFeature;
 
 // @public
@@ -627,6 +649,7 @@ export function makeLegacyPlugin<
   createRouterImport: Promise<{
     default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
   }>,
+  createMiddleware?: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>,
 ) => BackendFeature;
 
 // @public

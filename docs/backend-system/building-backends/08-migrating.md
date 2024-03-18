@@ -48,8 +48,9 @@ async function main() {
   // ... early init
   const createEnv = makeCreateEnv(config);
   const todoEnv = useHotMemoize(module, () => createEnv('todo')); // repeated for N plugins
+  const authMiddleware = await createAuthMiddleware(todoEnv); // optional middleware
   const apiRouter = Router();
-  apiRouter.use('/todo', await todo(todoEnv)); // repeated for N plugins
+  apiRouter.use('/todo', authMiddleware, await todo(todoEnv)); // repeated for N plugins
   // ... wire up and start http server
 }
 
@@ -98,7 +99,9 @@ import { legacyPlugin } from '@backstage/backend-common';
 
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(legacyPlugin('todo', import('./plugins/todo')));
+backend.add(
+  legacyPlugin('todo', import('./plugins/todo'), createAuthMiddleware),
+);
 backend.start();
 ```
 

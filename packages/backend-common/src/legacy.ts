@@ -59,12 +59,16 @@ export function makeLegacyPlugin<
     createRouterImport: Promise<{
       default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
     }>,
+    createMiddleware?: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>,
   ) => {
     const compatPlugin = createBackendPlugin({
       pluginId: name,
       register(env) {
         env.registerInit({
-          deps: { ...envMapping, _router: coreServices.httpRouter },
+          deps: {
+            ...envMapping,
+            _router: coreServices.httpRouter,
+          },
           async init({ _router, ...envDeps }) {
             const { default: createRouter } = await createRouterImport;
             const pluginEnv = Object.fromEntries(
@@ -75,10 +79,14 @@ export function makeLegacyPlugin<
                 }
                 return [key, dep];
               }),
-            );
-            const router = await createRouter(
-              pluginEnv as TransformedEnv<TEnv, TEnvTransforms>,
-            );
+            ) as TransformedEnv<TEnv, TEnvTransforms>;
+
+            if (createMiddleware) {
+              const middleware = await createMiddleware(pluginEnv);
+              _router.use(middleware);
+            }
+
+            const router = await createRouter(pluginEnv);
             _router.use(router);
           },
         });
