@@ -40,6 +40,7 @@ import {
 import { ConfigSchema } from '@backstage/config-loader';
 import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
+import { createCookieAuthRefreshMiddleware } from '@backstage/plugin-auth-node';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -184,8 +185,7 @@ export async function createRouter(
   if (enablePublicEntryPoint && auth && httpAuth) {
     const publicRouter = Router();
 
-    // TODO
-    // publicRouter.use(createCookieAuthRouter({ httpAuth }))
+    publicRouter.use(createCookieAuthRefreshMiddleware({ httpAuth }));
 
     publicRouter.use(async (req, _res, next) => {
       const credentials = await httpAuth.credentials(req, {

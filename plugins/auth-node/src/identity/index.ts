@@ -22,3 +22,4 @@ export {
 } from './DefaultIdentityClient';
 export { IdentityClient } from './IdentityClient';
 export type { IdentityApi, IdentityApiGetIdentityRequest } from './IdentityApi';
+export { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
