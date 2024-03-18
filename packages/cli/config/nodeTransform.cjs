@@ -23,6 +23,12 @@ addHook(
       filename,
       sourceMaps: 'inline',
       module: { type: 'commonjs' },
+      jsc: {
+        target: 'es2022',
+        parser: {
+          syntax: 'typescript',
+        },
+      },
     });
     process.send?.({ type: 'watch', path: filename });
     return transformed.code;
