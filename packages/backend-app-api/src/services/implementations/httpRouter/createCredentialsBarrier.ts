@@ -65,17 +65,17 @@ export function createCredentialsBarrier(options: {
   const unauthenticatedPredicates = new Array<(path: string) => boolean>();
   const cookiePredicates = new Array<(path: string) => boolean>();
 
-  // Default rate limit is 100 requests per 15 minutes
+  // Default rate limit is 60 requests per 1 minute
   const max = config?.has('backend.auth.rateLimit.max')
     ? config.getNumber('backend.auth.rateLimit.max')
-    : 100;
+    : 60;
 
   const duration = config?.has('backend.auth.rateLimit.window')
     ? readDurationFromConfig(config.getConfig('backend.auth.rateLimit.window'))
     : undefined;
 
-  // Default rate limit window is 15 minutes
-  const windowMs = duration ? durationToMilliseconds(duration) : 15 * 60 * 1000;
+  // Default rate limit window is 1 minute
+  const windowMs = duration ? durationToMilliseconds(duration) : 1 * 60 * 1000;
 
   const limiter = rateLimit({
     windowMs,

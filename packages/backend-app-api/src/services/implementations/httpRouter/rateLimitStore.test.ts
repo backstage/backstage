@@ -34,7 +34,7 @@ describe('RateLimitStore', () => {
   });
 
   it('should initialize with default options', () => {
-    expect(rateLimitStore.windowMs).toBe(15 * 60 * 1000);
+    expect(rateLimitStore.windowMs).toBe(1 * 60 * 1000);
   });
 
   it('should initialize with custom options', () => {

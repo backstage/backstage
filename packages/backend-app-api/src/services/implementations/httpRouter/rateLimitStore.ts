@@ -44,9 +44,9 @@ type CacheStoreValue = {
 export class RateLimitStore implements Store {
   /**
    * The duration of time before which all hit counts are reset (in milliseconds).
-   * default: 15 minutes
+   * default: 60 requests per minute
    */
-  windowMs: number = 15 * 60 * 1000;
+  windowMs: number = 1 * 60 * 1000;
   prefix: string;
   #cache: CacheService;
 
