@@ -35,6 +35,9 @@ jobs:
         with:
           node-version: 18.x
 
+      - name: enable corepack
+        run: corepack enable
+
         # Skip caching of microsite dependencies, it keeps the global cache size
         # smaller, which make Windows builds a lot faster for the rest of the project.
       - name: top-level install
