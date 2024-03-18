@@ -169,7 +169,7 @@ export class UnprocessedEntitiesModule {
         return res.json(
           await this.unprocessed({
             reason: 'failed',
-            owner: req.query.owner as string,
+            owner: String(req.query.owner),
           }),
         );
       })
@@ -177,7 +177,7 @@ export class UnprocessedEntitiesModule {
         return res.json(
           await this.unprocessed({
             reason: 'pending',
-            owner: req.query.owner as string,
+            owner: String(req.query.owner),
           }),
         );
       })
@@ -185,7 +185,7 @@ export class UnprocessedEntitiesModule {
         '/entities/unprocessed/delete/:entity_id',
         async (request, response) => {
           const authorized = await isRequestAuthorized(
-            request as any as Request,
+            request,
             unprocessedEntitiesDeletePermission,
           );
 
