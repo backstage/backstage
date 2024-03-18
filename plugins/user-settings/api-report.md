@@ -24,7 +24,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
-import { TabProps } from '@material-ui/core';
+import { TabProps } from '@material-ui/core/Tab';
 
 // @public (undocumented)
 export const DefaultProviderSettings: (props: {

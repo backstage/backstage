@@ -15,7 +15,8 @@
  */
 import React, { MouseEventHandler } from 'react';
 import classnames from 'classnames';
-import { Card, CardHeader } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
 import { useScroll } from '../../hooks';
 import { Alert } from '../../types';
 import { useActionItemCardStyles as useStyles } from '../../utils/styles';

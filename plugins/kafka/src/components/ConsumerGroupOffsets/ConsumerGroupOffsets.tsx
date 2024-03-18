@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Box, Grid, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import RetryIcon from '@material-ui/icons/Replay';
 import React from 'react';
 import { useConsumerGroupsOffsetsForEntity } from './useConsumerGroupsOffsetsForEntity';

@@ -15,7 +15,8 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { Box, useTheme } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import { useTheme } from '@material-ui/core/styles';
 import { LegendItem } from '../LegendItem';
 import { CostInsightsTheme } from '../../types';
 import {

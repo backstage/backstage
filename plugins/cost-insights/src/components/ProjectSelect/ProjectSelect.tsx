@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { MenuItem, Select } from '@material-ui/core';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import { Maybe, Project } from '@backstage/plugin-cost-insights-common';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 

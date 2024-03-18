@@ -15,17 +15,15 @@
  */
 
 import React, { useEffect, useRef, useState } from 'react';
-import {
-  capitalize,
-  Box,
-  Button,
-  Divider,
-  Dialog,
-  DialogActions,
-  IconButton,
-  DialogContent,
-  Typography,
-} from '@material-ui/core';
+import { capitalize } from '@material-ui/core/utils';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import IconButton from '@material-ui/core/IconButton';
+import DialogContent from '@material-ui/core/DialogContent';
+import Typography from '@material-ui/core/Typography';
 import { default as CloseIcon } from '@material-ui/icons/Close';
 import { useAlertDialogStyles as useStyles } from '../../utils/styles';
 import { Alert, AlertStatus } from '../../types';

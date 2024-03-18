@@ -15,7 +15,8 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { Paper, Slide } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
+import Slide from '@material-ui/core/Slide';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { BarChartStepperButton } from './BarChartStepperButton';

@@ -1,33 +1,45 @@
 {
   "name": "@backstage/cli",
-  "description": "CLI for developing Backstage plugins and apps",
   "version": "0.25.3-next.2",
-  "publishConfig": {
-    "access": "public"
-  },
+  "description": "CLI for developing Backstage plugins and apps",
   "backstage": {
     "role": "cli"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/cli"
   },
-  "keywords": [
-    "backstage"
-  ],
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
-  "scripts": {
-    "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
-    "clean": "backstage-cli package clean",
-    "start": "nodemon --"
-  },
   "bin": {
     "backstage-cli": "bin/backstage-cli"
+  },
+  "files": [
+    "asset-types",
+    "templates",
+    "config",
+    "bin",
+    "dist/**/*.js"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "start": "nodemon --",
+    "test": "backstage-cli package test"
+  },
+  "nodemonConfig": {
+    "exec": "bin/backstage-cli",
+    "ext": "ts",
+    "watch": "./src"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -50,9 +62,9 @@
     "@rollup/plugin-json": "^6.0.0",
     "@rollup/plugin-node-resolve": "^15.0.0",
     "@rollup/plugin-yaml": "^4.0.0",
-    "@spotify/eslint-config-base": "^14.0.0",
-    "@spotify/eslint-config-react": "^14.0.0",
-    "@spotify/eslint-config-typescript": "^14.0.0",
+    "@spotify/eslint-config-base": "^15.0.0",
+    "@spotify/eslint-config-react": "^15.0.0",
+    "@spotify/eslint-config-typescript": "^15.0.0",
     "@sucrase/webpack-loader": "^2.0.0",
     "@svgr/core": "6.5.x",
     "@svgr/plugin-jsx": "6.5.x",
@@ -168,10 +180,14 @@
     "@types/tar": "^6.1.1",
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/yarnpkg__lockfile": "^1.1.4",
+    "@vitejs/plugin-react": "^4.0.4",
     "del": "^7.0.0",
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
-    "ts-node": "^10.0.0"
+    "ts-node": "^10.0.0",
+    "vite": "^4.4.9",
+    "vite-plugin-html": "^3.2.0",
+    "vite-plugin-node-polyfills": "^0.21.0"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": "^4.0.4",
@@ -192,18 +208,6 @@
     "vite-plugin-node-polyfills": {
       "optional": true
     }
-  },
-  "files": [
-    "asset-types",
-    "templates",
-    "config",
-    "bin",
-    "dist/**/*.js"
-  ],
-  "nodemonConfig": {
-    "watch": "./src",
-    "exec": "bin/backstage-cli",
-    "ext": "ts"
   },
   "configSchema": {
     "$schema": "https://backstage.io/schema/config-v1",

@@ -22,7 +22,7 @@ import {
   MockStarredEntitiesApi,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import React, { ComponentType, PropsWithChildren } from 'react';
 
 const starredEntitiesApi = new MockStarredEntitiesApi();

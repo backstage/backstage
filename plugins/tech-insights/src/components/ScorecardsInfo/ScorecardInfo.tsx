@@ -15,10 +15,12 @@
  */
 
 import React from 'react';
-import { makeStyles, Grid, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { InfoCard } from '@backstage/core-components';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { ScorecardsList } from '../ScorecardsList';
 
 const useStyles = makeStyles(theme => ({

@@ -36,7 +36,7 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
 import { TableProps } from '@backstage/core-components';
-import { TabProps } from '@material-ui/core';
+import { TabProps } from '@material-ui/core/Tab';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public

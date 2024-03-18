@@ -19,7 +19,7 @@ import {
   EntityRefLink,
   EntityRefLinks,
 } from '@backstage/plugin-catalog-react';
-import { Chip } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
 import { CatalogTableRow } from './types';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';

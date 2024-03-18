@@ -25,9 +25,9 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import { xcmetricsApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { StatusMatrix } from '../StatusMatrix';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import { OverviewTrends } from '../OverviewTrends';
 import { overviewColumns } from '../BuildTableColumns';
 

@@ -26,7 +26,7 @@ import {
 } from '@backstage/plugin-permission-react';
 import { permissions, Playlist } from '@backstage/plugin-playlist-common';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import { fireEvent, waitFor, act } from '@testing-library/react';
 import React from 'react';
 import { SWRConfig } from 'swr';

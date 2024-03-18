@@ -60,7 +60,7 @@ describe('NotificationsClient', () => {
       server.use(
         rest.get(`${mockBaseUrl}/`, (req, res, ctx) => {
           expect(req.url.search).toBe(
-            '?limit=10&offset=0&search=find+me&read=true&created_after=1970-01-01T00%3A00%3A00.005Z',
+            '?limit=10&offset=0&search=find+me&read=true&createdAfter=1970-01-01T00%3A00%3A00.005Z',
           );
           return res(ctx.json(expectedResp));
         }),

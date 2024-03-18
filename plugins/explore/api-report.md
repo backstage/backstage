@@ -23,7 +23,7 @@ import { ReactNode } from 'react';
 import { ResultHighlight } from '@backstage/plugin-search-common';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SearchResultListItemExtensionProps } from '@backstage/plugin-search-react';
-import { TabProps } from '@material-ui/core';
+import { TabProps } from '@material-ui/core/Tab';
 
 // @public @deprecated (undocumented)
 export const catalogEntityRouteRef: ExternalRouteRef<

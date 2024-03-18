@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { DefaultSignalsService } from './DefaultSignalsService';
+import { SignalPayload } from './types';
 
 describe('DefaultSignalsService', () => {
   const mockEvents = {
@@ -24,9 +25,9 @@ describe('DefaultSignalsService', () => {
   const service = DefaultSignalsService.create({ events: mockEvents });
 
   it('should publish signal', () => {
-    const signal = {
+    const signal: SignalPayload = {
       channel: 'test-channel',
-      recipients: null,
+      recipients: { type: 'broadcast' },
       message: { msg: 'hello world' },
     };
     service.publish(signal);

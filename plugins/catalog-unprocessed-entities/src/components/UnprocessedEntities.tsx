@@ -16,8 +16,11 @@
 import React, { useState } from 'react';
 
 import { Page, Header, Content } from '@backstage/core-components';
-import { Tab, makeStyles } from '@material-ui/core';
-import { TabContext, TabList, TabPanel } from '@material-ui/lab';
+import Tab from '@material-ui/core/Tab';
+import { makeStyles } from '@material-ui/core/styles';
+import TabContext from '@material-ui/lab/TabContext';
+import TabList from '@material-ui/lab/TabList';
+import TabPanel from '@material-ui/lab/TabPanel';
 
 import { FailedEntities } from './FailedEntities';
 import { PendingEntities } from './PendingEntities';
