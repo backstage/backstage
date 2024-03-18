@@ -3641,6 +3641,7 @@ __metadata:
     "@types/yarnpkg__lockfile": ^1.1.4
     "@typescript-eslint/eslint-plugin": ^6.12.0
     "@typescript-eslint/parser": ^6.7.2
+    "@vitejs/plugin-react": ^4.0.4
     "@yarnpkg/lockfile": ^1.1.0
     "@yarnpkg/parsers": ^3.0.0-rc.4
     bfj: ^8.0.0
@@ -3712,6 +3713,9 @@ __metadata:
     ts-node: ^10.0.0
     tsx: ^4.0.0
     util: ^0.12.3
+    vite: ^4.4.9
+    vite-plugin-html: ^3.2.0
+    vite-plugin-node-polyfills: ^0.21.0
     webpack: ^5.70.0
     webpack-dev-server: ^4.7.3
     webpack-node-externals: ^3.0.0

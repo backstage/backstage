@@ -168,10 +168,14 @@
     "@types/tar": "^6.1.1",
     "@types/terser-webpack-plugin": "^5.0.4",
     "@types/yarnpkg__lockfile": "^1.1.4",
+    "@vitejs/plugin-react": "^4.0.4",
     "del": "^7.0.0",
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
-    "ts-node": "^10.0.0"
+    "ts-node": "^10.0.0",
+    "vite": "^4.4.9",
+    "vite-plugin-html": "^3.2.0",
+    "vite-plugin-node-polyfills": "^0.21.0"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": "^4.0.4",
