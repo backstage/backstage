@@ -84,6 +84,14 @@ export const httpRouterServiceFactory = createServiceFactory(
         },
         addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
           credentialsBarrier.addAuthPolicy(policy);
+          if (policy.allow === 'user-cookie') {
+            // Endpoint that sets the cookie for the user
+            // TODO: Extract this to a separate createCookieAuthRefreshMiddleware function
+            router.get('/.backstage/v1-cookie', async (_, res) => {
+              const { expiresAt } = await httpAuth.issueUserCookie(res);
+              res.json({ expiresAt: expiresAt.toISOString() });
+            });
+          }
         },
       };
     },

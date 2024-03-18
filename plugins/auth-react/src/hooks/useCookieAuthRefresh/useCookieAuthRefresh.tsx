@@ -31,13 +31,13 @@ import { ResponseError } from '@backstage/errors';
 export function useCookieAuthRefresh(options: {
   // The plugin id used for discovering the API origin
   pluginId: string;
-  // The path used for calling the refresh cookie endpoint, default to '/cookie'
+  // The path used for calling the refresh cookie endpoint, default to '/.backstage/v1-cookie'
   path?: string;
 }):
   | { status: 'loading' }
   | { status: 'error'; error: Error; retry: () => void }
   | { status: 'success'; data: { expiresAt: string } } {
-  const { pluginId, path = '/cookie' } = options ?? {};
+  const { pluginId, path = '/.backstage/v1-cookie' } = options ?? {};
   const fetchApi = useApi(fetchApiRef);
   const discoveryApi = useApi(discoveryApiRef);
 
