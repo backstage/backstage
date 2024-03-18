@@ -13,6 +13,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventParams } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegrationConfig } from '@backstage/integration';
@@ -88,6 +89,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   static fromConfig(
     config: Config,
     options: {
+      events?: EventsService;
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
