@@ -49,7 +49,7 @@ export class UnprocessedEntitiesModule {
 
   private readonly httpAuth: HttpAuthService;
 
-  constructor(
+  private constructor(
     private readonly database: Knex,
     private readonly router: Pick<HttpRouterService, 'use'>,
     private readonly permissions: PermissionsService,
@@ -63,6 +63,22 @@ export class UnprocessedEntitiesModule {
       discovery,
       httpAuth,
     }).httpAuth;
+  }
+
+  static create(options: {
+    router: Pick<HttpRouterService, 'use'>;
+    database: Knex;
+    discovery: DiscoveryService;
+    permissions: PermissionsService;
+    httpAuth?: HttpAuthService;
+  }) {
+    return new UnprocessedEntitiesModule(
+      options.database,
+      options.router,
+      options.permissions,
+      options.discovery,
+      options.httpAuth,
+    );
   }
 
   private async unprocessed(

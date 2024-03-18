@@ -46,13 +46,13 @@ export const catalogModuleUnprocessedEntities = createBackendModule({
         httpAuth,
         discovery,
       }) {
-        const module = new UnprocessedEntitiesModule(
-          await database.getClient(),
+        const module = UnprocessedEntitiesModule.create({
+          database: await database.getClient(),
           router,
           permissions,
           discovery,
           httpAuth,
-        );
+        });
 
         module.registerRoutes();
 
