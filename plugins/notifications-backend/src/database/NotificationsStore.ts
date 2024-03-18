@@ -16,8 +16,15 @@
 
 import {
   Notification,
+  NotificationSeverity,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
+
+/** @internal */
+export type EntityOrder = {
+  field: string;
+  order: 'asc' | 'desc';
+};
 
 // TODO: reuse the common part of the type with front-end
 /** @internal */
@@ -27,11 +34,11 @@ export type NotificationGetOptions = {
   offset?: number;
   limit?: number;
   search?: string;
-  sort?: 'created' | 'topic' | 'origin' | null;
-  sortOrder?: 'asc' | 'desc';
+  orderField?: EntityOrder[];
   read?: boolean;
   saved?: boolean;
   createdAfter?: Date;
+  minimumSeverity?: NotificationSeverity;
 };
 
 /** @internal */
@@ -46,8 +53,15 @@ export interface NotificationsStore {
 
   saveNotification(notification: Notification): Promise<void>;
 
+  saveBroadcast(notification: Notification): Promise<void>;
+
   getExistingScopeNotification(options: {
     user: string;
+    scope: string;
+    origin: string;
+  }): Promise<Notification | null>;
+
+  getExistingScopeBroadcast(options: {
     scope: string;
     origin: string;
   }): Promise<Notification | null>;

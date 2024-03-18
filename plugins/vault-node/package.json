@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-vault-node",
-  "version": "0.1.7-next.1",
+  "version": "0.1.7-next.2",
   "description": "Node.js library for the vault plugin",
   "backstage": {
     "role": "node-library"

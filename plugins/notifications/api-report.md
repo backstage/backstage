@@ -11,6 +11,7 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
@@ -22,9 +23,11 @@ export type GetNotificationsOptions = {
   limit?: number;
   search?: string;
   read?: boolean;
+  saved?: boolean;
   createdAfter?: Date;
   sort?: 'created' | 'topic' | 'origin';
   sortOrder?: 'asc' | 'desc';
+  minimumSeverity?: NotificationSeverity;
 };
 
 // @public (undocumented)

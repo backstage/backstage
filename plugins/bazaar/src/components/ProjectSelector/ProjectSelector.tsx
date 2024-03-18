@@ -17,8 +17,9 @@
 import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import Typography from '@material-ui/core/Typography';
-import { Autocomplete } from '@material-ui/lab';
-import { TextField, makeStyles } from '@material-ui/core';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 
 type Props = {
   catalogEntities: Entity[];

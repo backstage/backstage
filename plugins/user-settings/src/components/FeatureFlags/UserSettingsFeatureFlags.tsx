@@ -15,13 +15,11 @@
  */
 
 import React, { useCallback, useState } from 'react';
-import {
-  List,
-  TextField,
-  IconButton,
-  Grid,
-  Typography,
-} from '@material-ui/core';
+import List from '@material-ui/core/List';
+import TextField from '@material-ui/core/TextField';
+import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import { EmptyFlags } from './EmptyFlags';
 import { FlagItem } from './FeatureFlagsItem';
 import {

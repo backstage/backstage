@@ -16,7 +16,7 @@
 
 import { ApiEntity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { apiDocsConfigRef } from '../../config';
 import { PlainApiDefinitionWidget } from '../PlainApiDefinitionWidget';

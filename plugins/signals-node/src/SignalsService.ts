@@ -17,7 +17,7 @@ import { SignalPayload } from './types';
 import { JsonObject } from '@backstage/types';
 
 /** @public */
-export interface SignalService {
+export interface SignalsService {
   /**
    * Publishes a signal to user refs to specific topic
    * @param signal - Signal to publish
@@ -26,3 +26,9 @@ export interface SignalService {
     signal: SignalPayload<TMessage>,
   ): Promise<void>;
 }
+
+/**
+ * @public
+ * @deprecated Use `SignalsService` instead
+ */
+export interface SignalService extends SignalsService {}

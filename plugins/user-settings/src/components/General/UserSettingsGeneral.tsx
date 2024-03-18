@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import { UserSettingsProfileCard } from './UserSettingsProfileCard';
 import { UserSettingsAppearanceCard } from './UserSettingsAppearanceCard';

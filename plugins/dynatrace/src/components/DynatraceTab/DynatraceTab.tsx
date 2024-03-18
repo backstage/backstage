@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import { Page, Content } from '@backstage/core-components';
 import {
   useEntity,

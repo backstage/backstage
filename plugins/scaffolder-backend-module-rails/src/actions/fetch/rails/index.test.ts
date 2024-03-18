@@ -35,6 +35,7 @@ import { createFetchRailsAction } from './index';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { Writable } from 'stream';
 
 describe('fetch:rails', () => {
   const mockDir = createMockDirectory();
@@ -104,7 +105,7 @@ describe('fetch:rails', () => {
 
     expect(mockRailsTemplater.run).toHaveBeenCalledWith({
       workspacePath: mockContext.workspacePath,
-      logStream: mockContext.logStream,
+      logStream: expect.any(Writable),
       values: mockContext.input.values,
     });
   });
@@ -120,7 +121,7 @@ describe('fetch:rails', () => {
 
     expect(mockRailsTemplater.run).toHaveBeenCalledWith({
       workspacePath: mockContext.workspacePath,
-      logStream: mockContext.logStream,
+      logStream: expect.any(Writable),
       values: {
         ...mockContext.input.values,
         imageName: 'foo/rails-custom-image',

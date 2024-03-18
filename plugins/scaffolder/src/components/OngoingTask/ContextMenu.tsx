@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  MenuItem,
-  MenuList,
-  Popover,
-  Theme,
-  useTheme,
-} from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Popover from '@material-ui/core/Popover';
+import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import { useAsync } from '@react-hookz/web';
 import Cancel from '@material-ui/icons/Cancel';
 import Retry from '@material-ui/icons/Repeat';

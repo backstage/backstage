@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { DeleteEntityDialog } from './DeleteEntityDialog';

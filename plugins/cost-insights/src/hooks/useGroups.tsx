@@ -20,7 +20,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../api';
 import { MapLoadingToProps, useLoading } from './useLoading';
 import { Group, Maybe } from '@backstage/plugin-cost-insights-common';

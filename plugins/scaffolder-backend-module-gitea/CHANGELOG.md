@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-gitea
 
+## 0.1.4-next.2
+
+### Patch Changes
+
+- 9f19476: Updated README
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0-next.2
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+
 ## 0.1.4-next.1
 
 ### Patch Changes

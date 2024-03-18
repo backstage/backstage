@@ -1,5 +1,20 @@
 # @backstage/plugin-linguist
 
+## 0.1.16-next.2
+
+### Patch Changes
+
+- 051fda1: Removed unused `dependencies` and `devDependencies` identified in Knip Report
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/core-compat-api@0.2.1-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-linguist-common@0.1.2
+
 ## 0.1.16-next.1
 
 ### Patch Changes

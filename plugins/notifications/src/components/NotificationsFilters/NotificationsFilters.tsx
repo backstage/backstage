@@ -25,6 +25,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import { GetNotificationsOptions } from '../../api';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 
 export type SortBy = Required<
   Pick<GetNotificationsOptions, 'sort' | 'sortOrder'>
@@ -37,6 +38,10 @@ export type NotificationsFiltersProps = {
   onCreatedAfterChanged: (value: string) => void;
   sorting: SortBy;
   onSortingChanged: (sortBy: SortBy) => void;
+  saved?: boolean;
+  onSavedChanged: (checked: boolean | undefined) => void;
+  severity: NotificationSeverity;
+  onSeverityChanged: (severity: NotificationSeverity) => void;
 };
 
 export const CreatedAfterOptions: {
@@ -106,6 +111,13 @@ const getSortByText = (sortBy?: SortBy): string => {
   return 'newest';
 };
 
+const AllSeverityOptions: { [key in NotificationSeverity]: string } = {
+  critical: 'Critical',
+  high: 'High',
+  normal: 'Normal',
+  low: 'Low',
+};
+
 export const NotificationsFilters = ({
   sorting,
   onSortingChanged,
@@ -113,6 +125,10 @@ export const NotificationsFilters = ({
   onUnreadOnlyChanged,
   createdAfter,
   onCreatedAfterChanged,
+  saved,
+  onSavedChanged,
+  severity,
+  onSeverityChanged,
 }: NotificationsFiltersProps) => {
   const sortByText = getSortByText(sorting);
 
@@ -122,13 +138,23 @@ export const NotificationsFilters = ({
     onCreatedAfterChanged(event.target.value as string);
   };
 
-  const handleOnUnreadOnlyChanged = (
+  const handleOnViewChanged = (
     event: React.ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
-    let value = undefined;
-    if (event.target.value === 'unread') value = true;
-    if (event.target.value === 'read') value = false;
-    onUnreadOnlyChanged(value);
+    if (event.target.value === 'unread') {
+      onUnreadOnlyChanged(true);
+      onSavedChanged(undefined);
+    } else if (event.target.value === 'read') {
+      onUnreadOnlyChanged(false);
+      onSavedChanged(undefined);
+    } else if (event.target.value === 'saved') {
+      onUnreadOnlyChanged(undefined);
+      onSavedChanged(true);
+    } else {
+      // All
+      onUnreadOnlyChanged(undefined);
+      onSavedChanged(undefined);
+    }
   };
 
   const handleOnSortByChanged = (
@@ -139,9 +165,22 @@ export const NotificationsFilters = ({
     onSortingChanged({ ...option.sortBy });
   };
 
-  let unreadOnlyValue = 'all';
-  if (unreadOnly) unreadOnlyValue = 'unread';
-  if (unreadOnly === false) unreadOnlyValue = 'read';
+  let viewValue = 'all';
+  if (saved) {
+    viewValue = 'saved';
+  } else if (unreadOnly) {
+    viewValue = 'unread';
+  } else if (unreadOnly === false) {
+    viewValue = 'read';
+  }
+
+  const handleOnSeverityChanged = (
+    event: React.ChangeEvent<{ name?: string; value: unknown }>,
+  ) => {
+    const value: NotificationSeverity =
+      (event.target.value as NotificationSeverity) || 'normal';
+    onSeverityChanged(value);
+  };
 
   return (
     <>
@@ -150,29 +189,33 @@ export const NotificationsFilters = ({
           <Typography variant="h6">Filters</Typography>
           <Divider variant="fullWidth" />
         </Grid>
+
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
             <InputLabel id="notifications-filter-view">View</InputLabel>
             <Select
               labelId="notifications-filter-view"
               label="View"
-              value={unreadOnlyValue}
-              onChange={handleOnUnreadOnlyChanged}
+              value={viewValue}
+              onChange={handleOnViewChanged}
             >
               <MenuItem value="unread">New only</MenuItem>
+              <MenuItem value="saved">Saved</MenuItem>
               <MenuItem value="read">Marked as read</MenuItem>
               <MenuItem value="all">All</MenuItem>
             </Select>
           </FormControl>
         </Grid>
+
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" size="small">
-            <InputLabel id="notifications-filter-view">
+            <InputLabel id="notifications-filter-created">
               Created after
             </InputLabel>
 
             <Select
               label="Created after"
+              labelId="notifications-filter-created"
               placeholder="Notifications since"
               value={createdAfter}
               onChange={handleOnCreatedAfterChanged}
@@ -192,6 +235,7 @@ export const NotificationsFilters = ({
 
             <Select
               label="Sort by"
+              labelId="notifications-filter-sort"
               placeholder="Field to sort by"
               value={sortByText}
               onChange={handleOnSortByChanged}
@@ -199,6 +243,25 @@ export const NotificationsFilters = ({
               {Object.keys(SortByOptions).map((key: string) => (
                 <MenuItem value={key} key={key}>
                   {SortByOptions[key].label}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+
+        <Grid item xs={12}>
+          <FormControl fullWidth variant="outlined" size="small">
+            <InputLabel id="notifications-filter-severity">Severity</InputLabel>
+
+            <Select
+              label="Severity"
+              labelId="notifications-filter-severity"
+              value={severity}
+              onChange={handleOnSeverityChanged}
+            >
+              {Object.keys(AllSeverityOptions).map((key: string) => (
+                <MenuItem value={key} key={key}>
+                  {AllSeverityOptions[key as NotificationSeverity]}
                 </MenuItem>
               ))}
             </Select>

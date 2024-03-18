@@ -16,7 +16,8 @@
 
 import { InfoCard } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Chip, Typography } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { catalogImportApiRef } from '../../api';
 import { useCatalogFilename } from '../../hooks';

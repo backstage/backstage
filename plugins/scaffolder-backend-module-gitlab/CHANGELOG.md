@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.3.0-next.2
+
+### Minor Changes
+
+- 6bfb7b1: Output the `iid` as `issuesIid` from the `gitlab:issues:create` action
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0-next.2
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+
 ## 0.2.17-next.1
 
 ### Patch Changes

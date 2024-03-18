@@ -17,7 +17,7 @@
 import { Entity } from '@backstage/catalog-model';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { createDevApp, EntityGridItem } from '@backstage/dev-utils';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import {
   EntityCodeClimateCard,

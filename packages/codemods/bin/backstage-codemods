@@ -24,14 +24,6 @@ const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
 if (!isLocal) {
   require('..');
 } else {
-  require('ts-node').register({
-    transpileOnly: true,
-    /* eslint-disable-next-line no-restricted-syntax */
-    project: path.resolve(__dirname, '../../../tsconfig.json'),
-    compilerOptions: {
-      module: 'CommonJS',
-    },
-  });
-
+  require('@backstage/cli/config/nodeTransform.cjs');
   require('../src');
 }

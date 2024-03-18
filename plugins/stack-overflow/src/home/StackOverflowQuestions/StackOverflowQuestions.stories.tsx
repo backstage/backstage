@@ -18,7 +18,7 @@ import { HomePageStackOverflowQuestions } from '../../plugin';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import React, { ComponentType, PropsWithChildren } from 'react';
 import { StackOverflowIcon } from '../../icons';
 import { stackOverflowApiRef } from '../../api';

@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import { memo } from 'react';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
 import Stepper from '@material-ui/core/Stepper';
 import { ScaffolderTaskStatus } from '@backstage/plugin-scaffolder-react';
-import {
-  StepButton,
-  StepIconProps,
-  Theme,
-  createStyles,
-  makeStyles,
-  CircularProgress,
-} from '@material-ui/core';
+import StepButton from '@material-ui/core/StepButton';
+import { StepIconProps } from '@material-ui/core/StepIcon';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Cancel from '@material-ui/icons/Cancel';
 import Check from '@material-ui/icons/Check';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';

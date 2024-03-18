@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend",
-  "version": "0.1.0-next.1",
+  "version": "0.1.0-next.2",
   "backstage": {
     "role": "backend-plugin"
   },
@@ -18,7 +18,8 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "dist"
+    "dist",
+    "migrations/**/*.{js,d.ts}"
   ],
   "scripts": {
     "build": "backstage-cli package build",

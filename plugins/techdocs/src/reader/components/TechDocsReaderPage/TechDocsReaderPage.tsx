@@ -35,6 +35,7 @@ import {
   getComponentData,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
+import { TechDocsAuthProvider } from './TechDocsAuthProvider';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -177,29 +178,33 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
     // As explained above, "page" is configuration 4 and <TechDocsReaderLayout> is 1
     return (
-      <TechDocsReaderPageProvider entityRef={entityRef}>
-        {(page as JSX.Element) || <TechDocsReaderLayout />}
-      </TechDocsReaderPageProvider>
+      <TechDocsAuthProvider>
+        <TechDocsReaderPageProvider entityRef={entityRef}>
+          {(page as JSX.Element) || <TechDocsReaderLayout />}
+        </TechDocsReaderPageProvider>
+      </TechDocsAuthProvider>
     );
   }
 
   // As explained above, a render function is configuration 3 and React element is 2
   return (
-    <TechDocsReaderPageProvider entityRef={entityRef}>
-      {({ metadata, entityMetadata, onReady }) => (
-        <div className="techdocs-reader-page">
-          <Page themeId="documentation">
-            {children instanceof Function
-              ? children({
-                  entityRef,
-                  techdocsMetadataValue: metadata.value,
-                  entityMetadataValue: entityMetadata.value,
-                  onReady,
-                })
-              : children}
-          </Page>
-        </div>
-      )}
-    </TechDocsReaderPageProvider>
+    <TechDocsAuthProvider>
+      <TechDocsReaderPageProvider entityRef={entityRef}>
+        {({ metadata, entityMetadata, onReady }) => (
+          <div className="techdocs-reader-page">
+            <Page themeId="documentation">
+              {children instanceof Function
+                ? children({
+                    entityRef,
+                    techdocsMetadataValue: metadata.value,
+                    entityMetadataValue: entityMetadata.value,
+                    onReady,
+                  })
+                : children}
+            </Page>
+          </div>
+        )}
+      </TechDocsReaderPageProvider>
+    </TechDocsAuthProvider>
   );
 };

@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { makeStyles, Avatar, Theme } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import { sidebarConfig } from '@backstage/core-components';
 
 const useStyles = makeStyles<Theme, { size: number }>(theme => ({

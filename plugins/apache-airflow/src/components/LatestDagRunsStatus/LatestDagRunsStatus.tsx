@@ -18,17 +18,15 @@ import { apacheAirflowApiRef } from '../../api';
 import useAsync from 'react-use/lib/useAsync';
 import { DagRun } from '../../api/types/Dags';
 import { useApi } from '@backstage/core-plugin-api';
-import {
-  Box,
-  Button,
-  CircularProgress,
-  List,
-  ListItem,
-  ListItemIcon,
-  makeStyles,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   Link,
   StatusError,
