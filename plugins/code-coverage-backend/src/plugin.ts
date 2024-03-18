@@ -54,6 +54,10 @@ export const codeCoveragePlugin = createBackendPlugin({
             database,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

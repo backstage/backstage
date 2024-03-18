@@ -46,6 +46,10 @@ export const azureDevOpsPlugin = createBackendPlugin({
             permissions,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },
