@@ -45,7 +45,7 @@
     "start:lighthouse": "concurrently 'yarn start' 'yarn start-backend:next'",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn workspace example-app-next start",
-    "storybook": "yarn ./storybook run start",
+    "storybook": "cd storybook && yarn install && yarn start",
     "techdocs-cli": "node scripts/techdocs-cli.js",
     "techdocs-cli:dev": "cross-env TECHDOCS_CLI_DEV_MODE=true node scripts/techdocs-cli.js",
     "test": "backstage-cli repo test",
