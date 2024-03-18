@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { useEffect, useCallback } from 'react';
+import { useEffect, useCallback, useMemo } from 'react';
 import {
   discoveryApiRef,
   fetchApiRef,
-  storageApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
 import { useAsync, useMountEffect } from '@react-hookz/web';
@@ -40,10 +39,13 @@ export function useCookieAuthRefresh(options: {
   | { status: 'success'; data: { expiresAt: string } } {
   const { pluginId, path = '/cookie' } = options ?? {};
   const fetchApi = useApi(fetchApiRef);
-  const storageApi = useApi(storageApiRef);
   const discoveryApi = useApi(discoveryApiRef);
 
-  const store = storageApi.forBucket(`${pluginId}-auth-cookie-storage`);
+  const channel = useMemo(() => {
+    return 'BroadcastChannel' in window
+      ? new BroadcastChannel(`${pluginId}-auth-cookie-expires-at`)
+      : null;
+  }, [pluginId]);
 
   const [state, actions] = useAsync<{ expiresAt: string }>(async () => {
     const apiOrigin = await discoveryApi.getBaseUrl(pluginId);
@@ -84,21 +86,26 @@ export function useCookieAuthRefresh(options: {
     if (state.status !== 'success' || !state.result) {
       return () => {};
     }
-    const expiresAt = state.result.expiresAt;
-    store.set('expiresAt', expiresAt);
-    let cancel = refresh({ expiresAt });
-    const subscription = store
-      .observe$<string>('expiresAt')
-      .subscribe(({ value }) => {
-        if (!value) return;
+    channel?.postMessage({
+      action: 'COOKIE_REFRESH_SUCCESS',
+      payload: state.result,
+    });
+    let cancel = refresh(state.result);
+    const listener = (
+      event: MessageEvent<{ action: string; payload: { expiresAt: string } }>,
+    ) => {
+      const { action, payload } = event.data;
+      if (action === 'COOKIE_REFRESH_SUCCESS') {
         cancel();
-        cancel = refresh({ expiresAt: value });
-      });
+        cancel = refresh(payload);
+      }
+    };
+    channel?.addEventListener('message', listener);
     return () => {
       cancel();
-      subscription.unsubscribe();
+      channel?.removeEventListener('message', listener);
     };
-  }, [state, refresh, store]);
+  }, [state, refresh, channel]);
 
   // Initialising
   if (state.status === 'not-executed') {

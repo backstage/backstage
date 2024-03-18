@@ -14,3 +14,36 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
+
+global.BroadcastChannel = jest
+  .fn()
+  .mockImplementation((_channelName: string) => {
+    const listeners: ((event: { data: any }) => void)[] = [];
+
+    return {
+      addEventListener: (
+        type: string,
+        listener: (event: { data: any }) => void,
+      ) => {
+        if (type === 'message') {
+          listeners.push(listener);
+        }
+      },
+      removeEventListener: (
+        type: string,
+        listener: (event: { data: any }) => void,
+      ) => {
+        if (type === 'message') {
+          const index = listeners.indexOf(listener);
+          if (index !== -1) {
+            listeners.splice(index, 1);
+          }
+        }
+      },
+      postMessage: (message: any) => {
+        listeners.forEach(listener => {
+          listener({ data: message });
+        });
+      },
+    };
+  });

@@ -22,17 +22,12 @@ import { screen } from 'testing-library__dom';
 import { Route } from 'react-router-dom';
 import { act, render } from '@testing-library/react';
 
-import {
-  wrapInTestApp,
-  TestApiProvider,
-  MockStorageApi,
-} from '@backstage/test-utils';
+import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FlatRoutes } from '@backstage/core-app-api';
 import {
   ApiRef,
   discoveryApiRef,
   fetchApiRef,
-  storageApiRef,
 } from '@backstage/core-plugin-api';
 
 import {
@@ -77,8 +72,6 @@ const searchApi = {
 const scmIntegrationsApi = {
   fromConfig: jest.fn().mockReturnValue({}),
 };
-
-const storageApiMock = MockStorageApi.create();
 
 const discoveryApi = {
   getBaseUrl: jest
@@ -232,7 +225,6 @@ export class TechDocsAddonTester {
   build() {
     const apis: TechdocsAddonTesterApis<any[]> = [
       [fetchApiRef, fetchApi],
-      [storageApiRef, storageApiMock],
       [discoveryApiRef, discoveryApi],
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],

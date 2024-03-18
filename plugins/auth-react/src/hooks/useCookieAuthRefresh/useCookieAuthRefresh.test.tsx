@@ -16,12 +16,8 @@
 
 import React from 'react';
 import { renderHook, waitFor } from '@testing-library/react';
-import {
-  fetchApiRef,
-  discoveryApiRef,
-  storageApiRef,
-} from '@backstage/core-plugin-api';
-import { MockStorageApi, TestApiProvider } from '@backstage/test-utils';
+import { fetchApiRef, discoveryApiRef } from '@backstage/core-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
 import { useCookieAuthRefresh } from './useCookieAuthRefresh';
 
 describe('useCookieAuthRefresh', () => {
@@ -42,8 +38,6 @@ describe('useCookieAuthRefresh', () => {
       json: jest.fn().mockResolvedValue({ expiresAt }),
     }),
   };
-
-  const storageApiMock = MockStorageApi.create();
 
   beforeEach(() => {
     jest.useFakeTimers({ now });
@@ -69,7 +63,6 @@ describe('useCookieAuthRefresh', () => {
                   fetch: jest.fn().mockRejectedValue(error),
                 },
               ],
-              [storageApiRef, storageApiMock],
               [discoveryApiRef, discoveryApiMock],
             ]}
           >
@@ -100,7 +93,6 @@ describe('useCookieAuthRefresh', () => {
                     .mockReturnValue(new Promise(() => {})),
                 },
               ],
-              [storageApiRef, storageApiMock],
               [discoveryApiRef, discoveryApiMock],
             ]}
           >
@@ -153,7 +145,6 @@ describe('useCookieAuthRefresh', () => {
                     .mockReturnValue(new Promise(() => {})),
                 },
               ],
-              [storageApiRef, storageApiMock],
               [discoveryApiRef, discoveryApiMock],
             ]}
           >
@@ -208,7 +199,6 @@ describe('useCookieAuthRefresh', () => {
                   fetch: jest.fn().mockRejectedValue(error),
                 },
               ],
-              [storageApiRef, storageApiMock],
               [discoveryApiRef, discoveryApiMock],
             ]}
           >
@@ -235,7 +225,6 @@ describe('useCookieAuthRefresh', () => {
           <TestApiProvider
             apis={[
               [fetchApiRef, fetchApiMock],
-              [storageApiRef, storageApiMock],
               [discoveryApiRef, discoveryApiMock],
             ]}
           >
@@ -268,7 +257,6 @@ describe('useCookieAuthRefresh', () => {
         <TestApiProvider
           apis={[
             [fetchApiRef, fetchApiMock],
-            [storageApiRef, storageApiMock],
             [discoveryApiRef, discoveryApiMock],
           ]}
         >
@@ -281,12 +269,14 @@ describe('useCookieAuthRefresh', () => {
       now + 2 * tenMinutesInMilliseconds;
 
     // simulating other tab refreshing the cookie
-    storageApiMock
-      .forBucket(`${pluginId}-auth-cookie-storage`)
-      .set(
-        'expiresAt',
-        new Date(twentyMinutesFromNowInMilliseconds).toISOString(),
-      );
+    new global.BroadcastChannel(
+      `${pluginId}-auth-cookie-expires-at`,
+    ).postMessage({
+      action: 'COOKIE_REFRESH_SUCCESS',
+      payload: {
+        expiresAt: new Date(twentyMinutesFromNowInMilliseconds).toISOString(),
+      },
+    });
 
     // advance the timers in 10 minutes to match the old expires at
     jest.advanceTimersByTime(tenMinutesInMilliseconds);
@@ -309,7 +299,6 @@ describe('useCookieAuthRefresh', () => {
           <TestApiProvider
             apis={[
               [fetchApiRef, fetchApiMock],
-              [storageApiRef, storageApiMock],
               [discoveryApiRef, discoveryApiMock],
             ]}
           >
@@ -345,7 +334,6 @@ describe('useCookieAuthRefresh', () => {
         <TestApiProvider
           apis={[
             [fetchApiRef, fetchApiMock],
-            [storageApiRef, storageApiMock],
             [discoveryApiRef, discoveryApiMock],
           ]}
         >

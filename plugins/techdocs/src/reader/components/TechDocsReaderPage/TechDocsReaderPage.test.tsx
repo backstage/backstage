@@ -19,7 +19,6 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import {
   MockConfigApi,
-  MockStorageApi,
   renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
@@ -39,7 +38,6 @@ import {
   configApiRef,
   discoveryApiRef,
   fetchApiRef,
-  storageApiRef,
 } from '@backstage/core-plugin-api';
 
 const mockEntityMetadata = {
@@ -82,8 +80,6 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
-const storageApiMock = MockStorageApi.create();
-
 const discoveryApiMock = {
   getBaseUrl: jest
     .fn()
@@ -121,7 +117,6 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
     <TestApiProvider
       apis={[
         [fetchApiRef, fetchApiMock],
-        [storageApiRef, storageApiMock],
         [discoveryApiRef, discoveryApiMock],
         [scmIntegrationsApiRef, {}],
         [configApiRef, configApi],
