@@ -129,7 +129,7 @@
     "sort-package-json": "^2.8.0",
     "typescript": "~5.1.0"
   },
-  "packageManager": "yarn@3.8.1",
+  "packageManager": "yarn@4.1.1",
   "engines": {
     "node": "18 || 20"
   }
