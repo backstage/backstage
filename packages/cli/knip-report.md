@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (27)
+## Unused dependencies (28)
 
 | Name                             | Location     | Severity |
 | :------------------------------- | :----------- | :------- |
@@ -25,6 +25,7 @@
 | @swc/core                        | package.json | error    |
 | @swc/jest                        | package.json | error    |
 | esbuild                          | package.json | error    |
+| pirates                          | package.json | error    |
 | postcss                          | package.json | error    |
 | process                          | package.json | error    |
 | sucrase                          | package.json | error    |
@@ -32,7 +33,7 @@
 | glob                             | package.json | error    |
 | util                             | package.json | error    |
 
-## Unused devDependencies (12)
+## Unused devDependencies (11)
 
 | Name                                    | Location     | Severity |
 | :-------------------------------------- | :----------- | :------- |
@@ -46,7 +47,6 @@
 | @types/svgo                             | package.json | error    |
 | @types/ejs                              | package.json | error    |
 | nodemon                                 | package.json | error    |
-| ts-node                                 | package.json | error    |
 | del                                     | package.json | error    |
 
 ## Referenced optional peerDependencies (4)
