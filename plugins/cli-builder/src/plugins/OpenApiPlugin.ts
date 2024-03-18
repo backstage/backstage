@@ -24,7 +24,8 @@ import { kebabCase } from 'lodash';
 import { readFile } from 'fs-extra';
 import { parse } from 'uri-template';
 import Parser from '@apidevtools/swagger-parser';
-import { PathObject, OpenAPIObject } from 'openapi3-ts/oas30';
+import { OpenAPIObject } from 'openapi3-ts/oas30';
+import dot from 'dot-object';
 
 async function fetchOpenApiSpec(baseUrl: string) {
   const response = await fetch(`${baseUrl}/openapi.json`);
@@ -45,6 +46,10 @@ function getOperations(spec: OpenAPIObject) {
   return operations;
 }
 
+function flattenObjectArray(objArray: object[]) {
+  return objArray.map(o => dot.dot(o));
+}
+
 async function handleResponse(
   response: Response,
   logger: LoggerService,
@@ -61,7 +66,7 @@ async function handleResponse(
       console.log(JSON.stringify(parsedResponse, null, 2));
       return;
     }
-    console.table(parsedResponse);
+    console.table(flattenObjectArray(parsedResponse));
   } else {
     const parsedResponse = await response.text();
     if (options.json) {

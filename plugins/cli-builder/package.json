@@ -39,6 +39,7 @@
     "cli-table": "^0.3.11",
     "commander": "^12.0.0-1",
     "cross-fetch": "^4.0.0",
+    "dot-object": "^2.1.4",
     "fs-extra": "^11.2.0",
     "ink": "^4.4.1",
     "lodash": "^4.17.21",
@@ -52,6 +53,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@types/dot-object": "^2.1.6",
     "@types/supertest": "^2.0.8",
     "msw": "^1.0.0",
     "supertest": "^6.2.4",
