@@ -5,7 +5,7 @@ description: Guide for how to migrate a Backstage project to use Yarn 3
 ---
 
 While Backstage projects created with `@backstage/create-app` use [Yarn 1](https://classic.yarnpkg.com/) by default, it
-is possible to switch them to instead use [Yarn 3](https://yarnpkg.com/). Tools like `yarn backstage-cli versions:bump` will
+is possible to switch them to instead use [Yarn 4](https://yarnpkg.com/). Tools like `yarn backstage-cli versions:bump` will
 still work, as they recognize both lockfile formats.
 
 ## Migration
@@ -41,13 +41,7 @@ And this to `.dockerignore`:
 Let's move on to the actual installation. We'd recommend making separate Git commits of most of these steps, in case you need to go back and debug anything. To install Yarn 3, run the following command in the project root:
 
 ```bash
-yarn set version 3.x
-```
-
-We'll need the Yarn workspace tools plugin later on, so let's install that too:
-
-```bash
-yarn plugin import @yarnpkg/plugin-workspace-tools
+yarn set version 4.x
 ```
 
 Now we're ready to re-install all dependencies. This will update your `yarn.lock` and switch the project to use `node-modules` as the Yarn node linker.
