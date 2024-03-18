@@ -21,17 +21,23 @@ import {
   UnprocessedEntitiesResponse,
 } from './types';
 import { Knex } from 'knex';
-import { HttpRouterService } from '@backstage/backend-plugin-api';
+import {
+  DiscoveryService,
+  HttpAuthService,
+  HttpRouterService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import type { Request } from 'express';
+
 import {
   AuthorizeResult,
   BasicPermission,
-  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
 import { NotAllowedError } from '@backstage/errors';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 
 /**
  * Module providing Unprocessed Entities API endpoints
@@ -41,12 +47,22 @@ import { NotAllowedError } from '@backstage/errors';
 export class UnprocessedEntitiesModule {
   private readonly moduleRouter;
 
+  private readonly httpAuth: HttpAuthService;
+
   constructor(
     private readonly database: Knex,
     private readonly router: Pick<HttpRouterService, 'use'>,
+    private readonly permissions: PermissionsService,
+    discovery: DiscoveryService,
+    httpAuth?: HttpAuthService,
   ) {
     this.moduleRouter = Router();
     this.router.use(this.moduleRouter);
+
+    this.httpAuth = createLegacyAuthAdapters({
+      discovery,
+      httpAuth,
+    }).httpAuth;
   }
 
   private async unprocessed(
@@ -112,7 +128,7 @@ export class UnprocessedEntitiesModule {
     return res;
   }
 
-  registerRoutes({ permissions }: { permissions: PermissionEvaluator }) {
+  registerRoutes() {
     const permissionIntegrationRouter = createPermissionIntegrationRouter({
       permissions: [unprocessedEntitiesDeletePermission],
     });
@@ -121,14 +137,9 @@ export class UnprocessedEntitiesModule {
       req: Request,
       permission: BasicPermission,
     ): Promise<boolean> => {
-      const token = getBearerTokenFromAuthorizationHeader(
-        // @ts-ignore
-        req.header('authorization'),
-      );
-
       const decision = (
-        await permissions.authorize([{ permission }], {
-          token,
+        await this.permissions.authorize([{ permission }], {
+          credentials: await this.httpAuth.credentials(req),
         })
       )[0];
 

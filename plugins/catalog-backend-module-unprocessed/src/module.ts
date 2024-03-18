@@ -34,15 +34,27 @@ export const catalogModuleUnprocessedEntities = createBackendModule({
         database: coreServices.database,
         router: coreServices.httpRouter,
         logger: coreServices.logger,
+        httpAuth: coreServices.httpAuth,
+        discovery: coreServices.discovery,
         permissions: coreServices.permissions,
       },
-      async init({ database, router, logger, permissions }) {
+      async init({
+        database,
+        router,
+        logger,
+        permissions,
+        httpAuth,
+        discovery,
+      }) {
         const module = new UnprocessedEntitiesModule(
           await database.getClient(),
           router,
+          permissions,
+          discovery,
+          httpAuth,
         );
 
-        module.registerRoutes({ permissions });
+        module.registerRoutes();
 
         logger.info(
           'registered additional routes for catalogModuleUnprocessedEntities',
