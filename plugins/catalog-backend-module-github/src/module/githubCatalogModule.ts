@@ -40,7 +40,6 @@ export const githubCatalogModule = createBackendModule({
         catalog: catalogProcessingExtensionPoint,
         analyzers: catalogAnalysisExtensionPoint,
         auth: coreServices.auth,
-        tokenManager: coreServices.tokenManager,
         discovery: coreServices.discovery,
         config: coreServices.rootConfig,
         logger: coreServices.logger,
