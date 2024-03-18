@@ -17,11 +17,15 @@
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import {
+  catalogAnalysisExtensionPoint,
+  catalogProcessingExtensionPoint,
+} from '@backstage/plugin-catalog-node/alpha';
 import { Duration } from 'luxon';
-import { catalogModuleGithubEntityProvider } from './catalogModuleGithubEntityProvider';
+import { githubCatalogModule } from './githubCatalogModule';
+import { GithubLocationAnalyzer } from '../analyzers/GithubLocationAnalyzer';
 
-describe('catalogModuleGithubEntityProvider', () => {
+describe('githubCatalogModule', () => {
   it('should register provider at the catalog extension point', async () => {
     let addedProviders: Array<EntityProvider> | undefined;
     let usedSchedule: TaskScheduleDefinition | undefined;
@@ -31,6 +35,11 @@ describe('catalogModuleGithubEntityProvider', () => {
         addedProviders = providers;
       },
     };
+
+    const analysisExtensionPoint = {
+      addLocationAnalyzer: jest.fn(),
+    };
+
     const runner = jest.fn();
     const scheduler = mockServices.scheduler.mock({
       createScheduledTaskRunner(schedule) {
@@ -54,9 +63,12 @@ describe('catalogModuleGithubEntityProvider', () => {
     };
 
     await startTestBackend({
-      extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
+      extensionPoints: [
+        [catalogProcessingExtensionPoint, extensionPoint],
+        [catalogAnalysisExtensionPoint, analysisExtensionPoint],
+      ],
       features: [
-        catalogModuleGithubEntityProvider(),
+        githubCatalogModule(),
         mockServices.rootConfig.factory({ data: config }),
         scheduler.factory,
       ],
@@ -69,5 +81,8 @@ describe('catalogModuleGithubEntityProvider', () => {
       'github-provider:default',
     );
     expect(runner).not.toHaveBeenCalled();
+    expect(analysisExtensionPoint.addLocationAnalyzer).toHaveBeenCalledWith(
+      expect.any(GithubLocationAnalyzer),
+    );
   });
 });
