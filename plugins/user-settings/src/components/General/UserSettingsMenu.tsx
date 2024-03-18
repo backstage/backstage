@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
-import { IconButton, ListItemIcon, Menu, MenuItem } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import SignOutIcon from '@material-ui/icons/MeetingRoom';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import {

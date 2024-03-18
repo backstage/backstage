@@ -19,12 +19,10 @@ import {
   useTranslationRef,
   appLanguageApiRef,
 } from '@backstage/core-plugin-api/alpha';
-import {
-  ListItem,
-  ListItemText,
-  ListItemSecondaryAction,
-  makeStyles,
-} from '@material-ui/core';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import { makeStyles } from '@material-ui/core/styles';
 import { userSettingsTranslationRef } from '../../translation';
 import { useApi } from '@backstage/core-plugin-api';
 import useObservable from 'react-use/lib/useObservable';

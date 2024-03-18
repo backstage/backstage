@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { TabProps } from '@material-ui/core';
+import { TabProps } from '@material-ui/core/Tab';
 import {
   Header,
   Page,
