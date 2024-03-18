@@ -27,7 +27,11 @@ import {
   configApiRef,
 } from '@backstage/core-plugin-api';
 
+import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder-react';
+
 import { Entity } from '@backstage/catalog-model';
+import { ProjectGroupDropdown } from './components/ScaffolderDropdown';
+import { ProjectGroupDropdownSchema } from './components/ScaffolderDropdown/schema';
 
 /** @public */
 export const isOctopusDeployAvailable = (entity: Entity) =>
@@ -59,5 +63,13 @@ export const EntityOctopusDeployContent = octopusDeployPlugin.provide(
         m => m.EntityPageOctopusDeploy,
       ),
     mountPoint: octopusDeployEntityContentRouteRef,
+  }),
+);
+
+export const OctopusDeployDropdownFieldExtension = octopusDeployPlugin.provide(
+  createScaffolderFieldExtension({
+    name: 'OctopusDeployProjectGroupDropdown',
+    schema: ProjectGroupDropdownSchema,
+    component: ProjectGroupDropdown,
   }),
 );

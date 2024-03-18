@@ -63,6 +63,13 @@ export type OctopusProject = {
 };
 
 /** @public */
+export type OctopusProjectGroup = {
+  Id: string;
+  Name: string;
+  Description: string;
+};
+
+/** @public */
 export type OctopusPluginConfig = {
   WebUiBaseUrl: string;
 };
@@ -82,6 +89,7 @@ export interface OctopusDeployApi {
     releaseHistoryCount: number;
   }): Promise<OctopusProgression>;
   getProjectInfo(projectReference: ProjectReference): Promise<OctopusProject>;
+  getProjectGroups(): Promise<OctopusProjectGroup[]>;
   getConfig(): Promise<OctopusPluginConfig>;
 }
 
@@ -135,6 +143,30 @@ export class OctopusDeployClient implements OctopusDeployApi {
     projectReference: ProjectReference,
   ): Promise<OctopusProject> {
     const url = await this.getProjectApiUrl(projectReference);
+    const response = await this.fetchApi.fetch(url);
+
+    let responseJson;
+
+    try {
+      responseJson = await response.json();
+    } catch (e) {
+      responseJson = { releases: [] };
+    }
+
+    if (response.status !== 200) {
+      throw new Error(
+        `Error communicating with Octopus Deploy: ${
+          responseJson?.error?.title || response.statusText
+        }`,
+      );
+    }
+
+    return responseJson;
+  }
+
+  async getProjectGroups(): Promise<OctopusProjectGroup[]> {
+    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
+    const url = `${proxyUrl}${this.proxyPathBase}/projectgroups/all`;
     const response = await this.fetchApi.fetch(url);
 
     let responseJson;
