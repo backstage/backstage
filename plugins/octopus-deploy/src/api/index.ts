@@ -117,80 +117,45 @@ export class OctopusDeployClient implements OctopusDeployApi {
     releaseHistoryCount: number;
   }): Promise<OctopusProgression> {
     const url = await this.getProgressionApiUrl(opts);
-
-    const response = await this.fetchApi.fetch(url);
-
-    let responseJson;
-
-    try {
-      responseJson = await response.json();
-    } catch (e) {
-      responseJson = { releases: [] };
-    }
-
-    if (response.status !== 200) {
-      throw new Error(
-        `Error communicating with Octopus Deploy: ${
-          responseJson?.error?.title || response.statusText
-        }`,
-      );
-    }
-
-    return responseJson;
+    return this.fetchAndHandleErrors(url);
   }
 
   async getProjectInfo(
     projectReference: ProjectReference,
   ): Promise<OctopusProject> {
     const url = await this.getProjectApiUrl(projectReference);
-    const response = await this.fetchApi.fetch(url);
-
-    let responseJson;
-
-    try {
-      responseJson = await response.json();
-    } catch (e) {
-      responseJson = { releases: [] };
-    }
-
-    if (response.status !== 200) {
-      throw new Error(
-        `Error communicating with Octopus Deploy: ${
-          responseJson?.error?.title || response.statusText
-        }`,
-      );
-    }
-
-    return responseJson;
+    return this.fetchAndHandleErrors(url);
   }
 
   async getProjectGroups(): Promise<OctopusProjectGroup[]> {
     const url = await this.getProjectGroupApiUrl();
-    const response = await this.fetchApi.fetch(url);
-
-    let responseJson;
-
-    try {
-      responseJson = await response.json();
-    } catch (e) {
-      responseJson = { releases: [] };
-    }
-
-    if (response.status !== 200) {
-      throw new Error(
-        `Error communicating with Octopus Deploy: ${
-          responseJson?.error?.title || response.statusText
-        }`,
-      );
-    }
-
-    return responseJson;
+    return this.fetchAndHandleErrors(url);
   }
 
   async getConfig(): Promise<OctopusPluginConfig> {
     return {
       WebUiBaseUrl: this.configApi.getString(WEB_UI_BASE_URL_CONFIG_KEY),
     };
+  }
+
+  private async fetchAndHandleErrors<T>(url: string): Promise<T> {
+    const response = await this.fetchApi.fetch(url);
+
+    let responseJson: T;
+
+    try {
+      responseJson = await response.json();
+    } catch (e) {
+      throw new Error(`Failed to parse JSON response: ${e}`);
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        `Error communicating with Octopus Deploy: ${response.status}`,
+      );
+    }
+
+    return responseJson;
   }
 
   private async getProgressionApiUrl(opts: {
