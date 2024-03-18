@@ -66,6 +66,7 @@ export const EntityOctopusDeployContent = octopusDeployPlugin.provide(
   }),
 );
 
+/** @public */
 export const OctopusDeployDropdownFieldExtension = octopusDeployPlugin.provide(
   createScaffolderFieldExtension({
     name: 'OctopusDeployProjectGroupDropdown',
