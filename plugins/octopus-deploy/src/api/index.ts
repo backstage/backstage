@@ -165,8 +165,7 @@ export class OctopusDeployClient implements OctopusDeployApi {
   }
 
   async getProjectGroups(): Promise<OctopusProjectGroup[]> {
-    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
-    const url = `${proxyUrl}${this.proxyPathBase}/projectgroups/all`;
+    const url = await this.getProjectGroupApiUrl();
     const response = await this.fetchApi.fetch(url);
 
     let responseJson;
@@ -216,5 +215,10 @@ export class OctopusDeployClient implements OctopusDeployApi {
     return `${proxyUrl}${this.proxyPathBase}/projects/${encodeURIComponent(
       projectReference.projectId,
     )}`;
+  }
+
+  private async getProjectGroupApiUrl(): Promise<string> {
+    const proxyUrl = await this.discoveryApi.getBaseUrl('proxy');
+    return `${proxyUrl}${this.proxyPathBase}/projectgroups/all`;
   }
 }

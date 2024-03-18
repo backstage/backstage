@@ -18,7 +18,7 @@ import useAsync from 'react-use/lib/useAsync';
 import { octopusDeployApiRef, OctopusProjectGroup } from '../api';
 
 export function useProjectGroups(): {
-  projectGroups?: OctopusProjectGroup[];
+  projectGroups: OctopusProjectGroup[];
   loading: boolean;
   error?: Error;
 } {
@@ -29,7 +29,7 @@ export function useProjectGroups(): {
   }, [api]);
 
   return {
-    projectGroups: value,
+    projectGroups: value ? value : [],
     loading,
     error,
   };

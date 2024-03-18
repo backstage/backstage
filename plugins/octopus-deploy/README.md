@@ -23,7 +23,7 @@ This plugin (currently) uses the Backstage proxy to securely communicate with th
 
 To use it, you will need to generate an [API Key](https://octopus.com/docs/octopus-rest-api/how-to-create-an-api-key) within Octopus Deploy.
 
-1. Add the following to your app-config.yaml to enable the proxy:
+Add the following to your app-config.yaml to enable the proxy:
 
 ```
 // app-config.yaml
@@ -44,7 +44,7 @@ octopusdeploy:
 
 #### Adding the Entities
 
-1. Add the following to `EntityPage.tsx` to display Octopus Releases
+Add the following to `EntityPage.tsx` to display Octopus Releases
 
 ```
 // In packages/app/src/components/catalog/EntityPage.tsx
@@ -63,7 +63,7 @@ const cicdContent = (
 )
 ```
 
-2. Add `octopus.com/project-id` annotation in the catalog descriptor file.
+Add `octopus.com/project-id` annotation in the catalog descriptor file.
 
 To obtain a projects ID you will have to query the Octopus API. In the future we'll add support for using a projects slug as well.
 

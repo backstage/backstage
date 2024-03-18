@@ -15,8 +15,12 @@
  */
 
 import React from 'react';
-import FormControl from '@material-ui/core/FormControl';
-import { InputLabel, Input, FormHelperText } from '@material-ui/core';
+import {
+  InputLabel,
+  Input,
+  FormControl,
+  FormHelperText,
+} from '@material-ui/core';
 import { Select, SelectItem } from '@backstage/core-components';
 import { useProjectGroups } from '../../hooks/useProjectGroups';
 import { ProjectGroupDropdownProps } from './schema';
@@ -50,6 +54,8 @@ export const ProjectGroupDropdown = ({
         <Select
           label="Project Group"
           onChange={p => {
+            // param p is an array if the select is multi-select,
+            // since this is single-select we can just take the first element
             updateProjectGroup(String(Array.isArray(p) ? p[0] : p));
           }}
           disabled={projectGroups.length === 1}
