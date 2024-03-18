@@ -109,7 +109,7 @@
       ]
     },
     "rule": {
-      "type": "string",
+      "type": "object",
       "required": ["conditions"],
       "properties": {
         "conditions": {
