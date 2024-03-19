@@ -1,5 +1,56 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.3.47-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.3.47-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.3.47-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+
+## 0.3.46
+
+### Patch Changes
+
+- 984d508: Add a `x-google-api-client` header for calls towards Google Cloud Projects
+- 09cedb9: Updated dependency `@react-hookz/web` to `^24.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+
+## 0.3.46-next.2
+
+### Patch Changes
+
+- 09cedb9: Updated dependency `@react-hookz/web` to `^24.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+
 ## 0.3.46-next.1
 
 ### Patch Changes

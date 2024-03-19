@@ -15,7 +15,7 @@
  */
 
 import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
-import { SerializedTaskEvent } from './types';
+import { SerializedTaskEvent } from '@backstage/plugin-scaffolder-node';
 
 const toLogEvent = (stepId: string) =>
   ({

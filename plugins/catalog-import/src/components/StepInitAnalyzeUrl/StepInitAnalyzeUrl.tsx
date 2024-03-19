@@ -15,7 +15,9 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import { FormHelperText, Grid, TextField } from '@material-ui/core';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
 import React, { useCallback, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';

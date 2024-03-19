@@ -1,5 +1,120 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.4.0
+
+### Minor Changes
+
+- 55191cc: **BREAKING**: Both `createRouter` and `DefaultJenkinsInfoProvider.fromConfig` now require the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+
+  The `JenkinsInfoProvider` interface has been updated to receive `credentials` of the type `BackstageCredentials` rather than a token.
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-jenkins-common@0.1.25
+
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- Updated dependencies
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-jenkins-common@0.1.25-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.2
+
+## 0.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+  - @backstage/plugin-jenkins-common@0.1.25-next.1
+
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 55191cc: **BREAKING**: Both `createRouter` and `DefaultJenkinsInfoProvider.fromConfig` now require the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+
+  The `JenkinsInfoProvider` interface has been updated to receive `credentials` of the type `BackstageCredentials` rather than a token.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/plugin-permission-node@0.7.24-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/plugin-jenkins-common@0.1.25-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/plugin-permission-node@0.7.21
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-jenkins-common@0.1.24
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.3.4-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/plugin-catalog-node@1.6.2-next.3
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/plugin-permission-node@0.7.21-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-jenkins-common@0.1.24-next.0
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 0.3.4-next.2
 
 ### Patch Changes

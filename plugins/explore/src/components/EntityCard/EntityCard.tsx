@@ -21,14 +21,12 @@ import {
   getEntityRelations,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import {
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Chip,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Chip from '@material-ui/core/Chip';
 import React from 'react';
 
 import { LinkButton, ItemCardHeader } from '@backstage/core-components';

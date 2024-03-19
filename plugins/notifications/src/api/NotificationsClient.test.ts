@@ -60,18 +60,47 @@ describe('NotificationsClient', () => {
       server.use(
         rest.get(`${mockBaseUrl}/`, (req, res, ctx) => {
           expect(req.url.search).toBe(
-            '?type=undone&limit=10&offset=0&search=find+me',
+            '?limit=10&offset=0&search=find+me&read=true&createdAfter=1970-01-01T00%3A00%3A00.005Z',
           );
           return res(ctx.json(expectedResp));
         }),
       );
       const response = await client.getNotifications({
-        type: 'undone',
         limit: 10,
         offset: 0,
         search: 'find me',
+        read: true,
+        createdAfter: new Date(5),
       });
       expect(response).toEqual(expectedResp);
+    });
+
+    it('should omit unselected fetch options', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/`, (req, res, ctx) => {
+          expect(req.url.search).toBe('?limit=10');
+          return res(ctx.json(expectedResp));
+        }),
+      );
+      const response = await client.getNotifications({
+        limit: 10,
+        // do not put more options here
+      });
+      expect(response).toEqual(expectedResp);
+    });
+
+    it('should fetch single notification', async () => {
+      server.use(
+        rest.get(`${mockBaseUrl}/:id`, (req, res, ctx) => {
+          expect(req.params.id).toBe('acdaa8ca-262b-43c1-b74b-de06e5f3b3c7');
+          return res(ctx.json(testNotification));
+        }),
+      );
+
+      const response = await client.getNotification(
+        'acdaa8ca-262b-43c1-b74b-de06e5f3b3c7',
+      );
+      expect(response).toEqual(testNotification);
     });
 
     it('should fetch status from correct endpoint', async () => {
@@ -89,14 +118,12 @@ describe('NotificationsClient', () => {
         rest.post(`${mockBaseUrl}/update`, async (req, res, ctx) => {
           expect(await req.json()).toEqual({
             ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
-            done: true,
           });
           return res(ctx.json(expectedResp));
         }),
       );
       const response = await client.updateNotifications({
         ids: ['acdaa8ca-262b-43c1-b74b-de06e5f3b3c7'],
-        done: true,
       });
       expect(response).toEqual(expectedResp);
     });

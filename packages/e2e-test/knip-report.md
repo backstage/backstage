@@ -1,10 +1,9 @@
 # Knip report
 
-## Unused devDependencies (3)
+## Unused devDependencies (2)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| ts-node          | package.json |
-| nodemon          | package.json |
-| @types/puppeteer | package.json |
+| Name             | Location     | Severity |
+| :--------------- | :----------- | :------- |
+| @types/puppeteer | package.json | error    |
+| nodemon          | package.json | error    |
 

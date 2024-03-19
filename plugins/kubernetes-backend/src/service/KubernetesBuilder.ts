@@ -64,6 +64,13 @@ import {
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesProxy } from './KubernetesProxy';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
+import {
+  AuthService,
+  BackstageCredentials,
+  DiscoveryService,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
 
 /**
  *
@@ -73,7 +80,10 @@ export interface KubernetesEnvironment {
   logger: Logger;
   config: Config;
   catalogApi: CatalogApi;
+  discovery: DiscoveryService;
   permissions: PermissionEvaluator;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 }
 
 /**
@@ -131,6 +141,13 @@ export class KubernetesBuilder {
         router: Router(),
       } as unknown as KubernetesBuilderReturn;
     }
+
+    const { auth, httpAuth } = createLegacyAuthAdapters({
+      auth: this.env.auth,
+      httpAuth: this.env.httpAuth,
+      discovery: this.env.discovery,
+    });
+
     const customResources = this.buildCustomResources();
 
     const fetcher = this.getFetcher();
@@ -158,6 +175,8 @@ export class KubernetesBuilder {
       this.env.catalogApi,
       proxy,
       permissions,
+      auth,
+      httpAuth,
     );
 
     return {
@@ -239,12 +258,14 @@ export class KubernetesBuilder {
     refreshInterval: Duration,
   ): KubernetesClustersSupplier {
     const config = this.env.config;
+    const { auth } = createLegacyAuthAdapters(this.env);
     this.clusterSupplier = getCombinedClusterSupplier(
       config,
       this.env.catalogApi,
       new DispatchStrategy({ authStrategyMap: this.getAuthStrategyMap() }),
       this.env.logger,
       refreshInterval,
+      auth,
     );
 
     return this.clusterSupplier;
@@ -337,6 +358,8 @@ export class KubernetesBuilder {
     catalogApi: CatalogApi,
     proxy: KubernetesProxy,
     permissionApi: PermissionEvaluator,
+    authService: AuthService,
+    httpAuth: HttpAuthService,
   ): express.Router {
     const logger = this.env.logger;
     const router = Router();
@@ -365,8 +388,11 @@ export class KubernetesBuilder {
       }
     });
 
-    router.get('/clusters', async (_, res) => {
-      const clusterDetails = await this.fetchClusterDetails(clusterSupplier);
+    router.get('/clusters', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+      const clusterDetails = await this.fetchClusterDetails(clusterSupplier, {
+        credentials,
+      });
       res.json({
         items: clusterDetails.map(cd => {
           const oidcTokenProvider =
@@ -381,6 +407,7 @@ export class KubernetesBuilder {
 
           return {
             name: cd.name,
+            title: cd.title,
             dashboardUrl: cd.dashboardUrl,
             authProvider,
             ...(oidcTokenProvider && { oidcTokenProvider }),
@@ -390,7 +417,13 @@ export class KubernetesBuilder {
       });
     });
 
-    addResourceRoutesToRouter(router, catalogApi, objectsProvider);
+    addResourceRoutesToRouter(
+      router,
+      catalogApi,
+      objectsProvider,
+      authService,
+      httpAuth,
+    );
 
     return router;
   }
@@ -411,8 +444,9 @@ export class KubernetesBuilder {
 
   protected async fetchClusterDetails(
     clusterSupplier: KubernetesClustersSupplier,
+    options: { credentials: BackstageCredentials },
   ) {
-    const clusterDetails = await clusterSupplier.getClusters();
+    const clusterDetails = await clusterSupplier.getClusters(options);
 
     this.env.logger.info(
       `action=loadClusterDetails numOfClustersLoaded=${clusterDetails.length}`,

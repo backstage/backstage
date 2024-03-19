@@ -46,7 +46,11 @@ import {
   satisfiesVisibilityFilter,
 } from '../lib/util';
 
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import {
+  EventParams,
+  EventsService,
+  EventSubscriber,
+} from '@backstage/plugin-events-node';
 import { PushEvent, Commit } from '@octokit/webhooks-types';
 import { Minimatch } from 'minimatch';
 
@@ -73,6 +77,7 @@ type Repository = {
  */
 export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   private readonly config: GithubEntityProviderConfig;
+  private readonly events?: EventsService;
   private readonly logger: Logger;
   private readonly integration: GithubIntegrationConfig;
   private readonly scheduleFn: () => Promise<void>;
@@ -82,6 +87,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   static fromConfig(
     config: Config,
     options: {
+      events?: EventsService;
       logger: Logger;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
@@ -118,6 +124,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         integration,
         options.logger,
         taskRunner,
+        options.events,
       );
     });
   }
@@ -127,8 +134,10 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     integration: GithubIntegration,
     logger: Logger,
     taskRunner: TaskRunner,
+    events?: EventsService,
   ) {
     this.config = config;
+    this.events = events;
     this.integration = integration.config;
     this.logger = logger.child({
       target: this.getProviderName(),
@@ -146,6 +155,11 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
+    await this.events?.subscribe({
+      id: this.getProviderName(),
+      topics: [TOPIC_REPO_PUSH],
+      onEvent: params => this.onEvent(params),
+    });
     return await this.scheduleFn();
   }
 

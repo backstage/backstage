@@ -158,6 +158,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
       this.config.project,
       this.config.repository,
       this.config.path,
+      this.config.branch || '',
     );
 
     logger.info(`Discovered ${files.length} catalog files`);

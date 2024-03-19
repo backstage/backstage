@@ -1,5 +1,175 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.5.4
+
+### Patch Changes
+
+- a936a8f: Migrated the `GithubLocationAnalyzer` to support new auth services.
+- 999224f: Bump dependency `minimatch` to v9
+- 2eb0da3: Support EventsService and events with the new backend system (through EventsService) for `GithubOrgEntityProvider` and `GithubMultiOrgEntityProvider`.
+
+  _New/Current Backend System:_
+
+  The events support for the provider will be enabled always, making it ready to consume events from its subscribed topics.
+  In order to receive events and make use of this feature, you still need to set up receiving events from the event source as before.
+
+  _Legacy Backend System:_
+
+  You can pass the `EventsService` instance to the factory method as one of its options:
+
+  ```diff
+    // packages/backend/src/plugins/catalog.ts
+    const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
+      events: env.events,
+      // ...
+    });
+  - env.eventBroker.subscribe(githubOrgProvider);
+  ```
+
+  ```diff
+    // packages/backend/src/plugins/catalog.ts
+    const githubMultiOrgProvider = GithubMultiOrgEntityProvider.fromConfig(env.config, {
+      events: env.events,
+      // ...
+    });
+  - env.eventBroker.subscribe(githubMultiOrgProvider);
+  ```
+
+- bcf55d5: Support EventsService and events with the new backend system (through EventsService).
+
+  _New/Current Backend System:_
+
+  The events support for the provider will be enabled always, making it ready to consume events from its subscribed topics.
+  In order to receive events and make use of this feature, you still need to set up receiving events from the event source as before.
+
+  _Legacy Backend System:_
+
+  You can pass the `EventsService` instance to the factory method as one of its options:
+
+  ```diff
+    // packages/backend/src/plugins/catalog.ts
+    const githubProvider = GithubEntityProvider.fromConfig(env.config, {
+  +   events: env.events,
+      logger: env.logger,
+      scheduler: env.scheduler,
+    });
+  - env.eventBroker.subscribe(githubProvider);
+  ```
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- 9eab52a: Add location analyzer when installing the module
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0
+  - @backstage/plugin-catalog-backend@1.18.0
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 0.5.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.18.0-next.2
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-events-node@0.3.0-next.2
+
+## 0.5.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/backend-tasks@0.5.19-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/plugin-catalog-backend@1.18.0-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+  - @backstage/plugin-events-node@0.3.0-next.1
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- a936a8f: Migrated the `GithubLocationAnalyzer` to support new auth services.
+- 999224f: Bump dependency `minimatch` to v9
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0-next.0
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-catalog-backend@1.18.0-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+
+## 0.5.0
+
+### Minor Changes
+
+- a950ed0: Prevent Entity Providers from eliminating Users and Groups from the DB when the synchronisation fails
+
+### Patch Changes
+
+- 785ff24: Added `validateLocationsExist` to the config
+- 9477133: Decreased number of teams fetched by GraphQL Query responsible for fetching Teams and Members in organization, due to timeouts when running against big organizations
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/plugin-catalog-backend@1.17.0
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration@1.9.0
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21
+  - @backstage/plugin-events-node@0.2.19
+
+## 0.5.0-next.3
+
+### Patch Changes
+
+- 785ff24: Added `validateLocationsExist` to the config
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/backend-tasks@0.5.15-next.3
+  - @backstage/plugin-catalog-backend@1.17.0-next.3
+  - @backstage/plugin-catalog-node@1.6.2-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-events-node@0.2.19-next.3
+
 ## 0.5.0-next.2
 
 ### Patch Changes

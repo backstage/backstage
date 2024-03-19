@@ -1,5 +1,88 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.20
+
+### Patch Changes
+
+- 083ba28: Added the `no-top-level-material-ui-4-imports` ESLint rule to aid with the migration to Material UI v5
+- 1b4fd09: Updated dependency `yup` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/theme@0.5.2
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/plugin-cost-insights-common@0.1.2
+
+## 0.12.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/plugin-cost-insights-common@0.1.2
+
+## 0.12.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/plugin-cost-insights-common@0.1.2
+
+## 0.12.20-next.0
+
+### Patch Changes
+
+- 1b4fd09: Updated dependency `yup` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/plugin-cost-insights-common@0.1.2
+
+## 0.12.19
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/theme@0.5.1
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-cost-insights-common@0.1.2
+
+## 0.12.19-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.1-next.1
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-cost-insights-common@0.1.2
+
 ## 0.12.19-next.2
 
 ### Patch Changes

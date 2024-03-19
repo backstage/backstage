@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| @types/supertest | package.json |
+| Name             | Location     | Severity |
+| :--------------- | :----------- | :------- |
+| @types/supertest | package.json | error    |
 

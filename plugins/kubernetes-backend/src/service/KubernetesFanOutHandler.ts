@@ -335,6 +335,7 @@ export class KubernetesFanOutHandler {
     const objects: ClusterObjects = {
       cluster: {
         name: clusterDetails.name,
+        ...(clusterDetails.title && { title: clusterDetails.title }),
       },
       podMetrics: toClientSafePodMetrics(metrics),
       resources: result.responses,

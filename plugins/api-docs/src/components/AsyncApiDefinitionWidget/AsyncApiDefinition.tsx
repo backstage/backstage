@@ -18,7 +18,7 @@ import AsyncApi from '@asyncapi/react-component';
 import '@asyncapi/react-component/styles/default.css';
 import { makeStyles, alpha, darken } from '@material-ui/core/styles';
 import React from 'react';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
   root: {

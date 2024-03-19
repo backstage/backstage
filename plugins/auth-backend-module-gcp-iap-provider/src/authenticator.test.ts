@@ -45,7 +45,10 @@ describe('GcpIapProvider', () => {
         },
         ctx,
       ),
-    ).resolves.toEqual({ result: { iapToken: { sub: 's', email: 'e' } } });
+    ).resolves.toEqual({
+      result: { iapToken: { sub: 's', email: 'e' } },
+      providerInfo: { iapToken: { sub: 's', email: 'e' } },
+    });
   });
 
   it('should find custom JWT header', async () => {
@@ -66,7 +69,10 @@ describe('GcpIapProvider', () => {
         },
         ctx,
       ),
-    ).resolves.toEqual({ result: { iapToken: { sub: 's', email: 'e' } } });
+    ).resolves.toEqual({
+      result: { iapToken: { sub: 's', email: 'e' } },
+      providerInfo: { iapToken: { sub: 's', email: 'e' } },
+    });
   });
 
   it('should throw if header is missing', async () => {

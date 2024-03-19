@@ -15,6 +15,7 @@
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { DocsBuildStrategy } from './techdocsTypes';
+import { TechdocsGenerator } from './stages';
 
 /**
  * Extension point type for configuring Techdocs builds.
@@ -33,4 +34,23 @@ export interface TechdocsBuildsExtensionPoint {
 export const techdocsBuildsExtensionPoint =
   createExtensionPoint<TechdocsBuildsExtensionPoint>({
     id: 'techdocs.builds',
+  });
+
+/**
+ * Extension point type for configuring a custom Techdocs generator
+ *
+ * @public
+ */
+export interface TechdocsGeneratorExtensionPoint {
+  setTechdocsGenerator(generator: TechdocsGenerator): void;
+}
+
+/**
+ * Extension point for configuring a custom Techdocs generator
+ *
+ * @public
+ */
+export const techdocsGeneratorExtensionPoint =
+  createExtensionPoint<TechdocsGeneratorExtensionPoint>({
+    id: 'techdocs.generator',
   });

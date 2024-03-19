@@ -19,6 +19,7 @@ exports[`CatalogClusterLocator returns the aws cluster details provided by annot
   "name": "owned",
   "skipMetricsLookup": false,
   "skipTLSVerify": false,
+  "title": undefined,
   "url": "https://apiserver.com",
 }
 `;
@@ -42,6 +43,7 @@ exports[`CatalogClusterLocator returns the cluster details provided by annotatio
   "name": "owned",
   "skipMetricsLookup": true,
   "skipTLSVerify": true,
+  "title": "title",
   "url": "https://apiserver.com",
 }
 `;

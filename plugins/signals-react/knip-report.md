@@ -2,14 +2,14 @@
 
 ## Unused dependencies (1)
 
-| Name              | Location     |
-|:------------------|:-------------|
-| @material-ui/core | package.json |
+| Name              | Location     | Severity |
+| :---------------- | :----------- | :------- |
+| @material-ui/core | package.json | error    |
 
 ## Unused devDependencies (2)
 
-| Name                   | Location     |
-|:-----------------------|:-------------|
-| @backstage/test-utils  | package.json |
-| @testing-library/react | package.json |
+| Name                   | Location     | Severity |
+| :--------------------- | :----------- | :------- |
+| @testing-library/react | package.json | error    |
+| @backstage/test-utils  | package.json | error    |
 

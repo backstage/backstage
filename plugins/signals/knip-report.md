@@ -1,21 +1,20 @@
 # Knip report
 
-## Unused dependencies (4)
+## Unused dependencies (3)
 
-| Name               | Location     |
-|:-------------------|:-------------|
-| react-use          | package.json |
-| @material-ui/lab   | package.json |
-| @backstage/theme   | package.json |
-| @material-ui/icons | package.json |
+| Name               | Location     | Severity |
+| :----------------- | :----------- | :------- |
+| @material-ui/icons | package.json | error    |
+| @material-ui/lab   | package.json | error    |
+| react-use          | package.json | error    |
 
 ## Unused devDependencies (5)
 
-| Name                        | Location     |
-|:----------------------------|:-------------|
-| msw                         | package.json |
-| @backstage/test-utils       | package.json |
-| @testing-library/react      | package.json |
-| @backstage/core-app-api     | package.json |
-| @testing-library/user-event | package.json |
+| Name                        | Location     | Severity |
+| :-------------------------- | :----------- | :------- |
+| @testing-library/user-event | package.json | error    |
+| @backstage/core-app-api     | package.json | error    |
+| @testing-library/react      | package.json | error    |
+| @backstage/test-utils       | package.json | error    |
+| msw                         | package.json | error    |
 

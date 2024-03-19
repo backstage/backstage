@@ -197,6 +197,8 @@ export function readLdapOrg(
 // @public
 export type TLSConfig = {
   rejectUnauthorized?: boolean;
+  keys?: string;
+  certs?: string;
 };
 
 // @public

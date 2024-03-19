@@ -194,6 +194,18 @@ export interface TaskStore {
 
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
 
+  getTaskState?({ taskId }: { taskId: string }): Promise<
+    | {
+        state: JsonObject;
+      }
+    | undefined
+  >;
+
+  saveTaskState?(options: {
+    taskId: string;
+    state?: JsonObject;
+  }): Promise<void>;
+
   listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }>;

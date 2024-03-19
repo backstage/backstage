@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name                          | Location     |
-|:------------------------------|:-------------|
-| @aws-sdk/credential-providers | package.json |
+| Name                          | Location     | Severity |
+| :---------------------------- | :----------- | :------- |
+| @aws-sdk/credential-providers | package.json | error    |
 

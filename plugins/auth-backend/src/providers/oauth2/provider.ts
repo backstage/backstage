@@ -15,13 +15,16 @@
  */
 
 import { OAuthResult } from '../../lib/oauth';
-import { AuthHandler, SignInResolver } from '../types';
+import { AuthHandler } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import {
   adaptLegacyOAuthHandler,
   adaptLegacyOAuthSignInResolver,
 } from '../../lib/legacy';
-import { createOAuthProviderFactory } from '@backstage/plugin-auth-node';
+import {
+  SignInResolver,
+  createOAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
 import { oauth2Authenticator } from '@backstage/plugin-auth-backend-module-oauth2-provider';
 
 /**

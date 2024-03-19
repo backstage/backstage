@@ -108,6 +108,14 @@ export class EntityTextFilter implements EntityFilter {
     return true;
   }
 
+  getFullTextFilters() {
+    return {
+      term: this.value,
+      // Update this to be more dynamic based on table columns.
+      fields: ['metadata.name', 'metadata.title', 'spec.profile.displayName'],
+    };
+  }
+
   private toUpperArray(
     value: Array<string | string[] | undefined>,
   ): Array<string> {

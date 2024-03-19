@@ -23,6 +23,7 @@ export const EntityMembersListCard: (props: {
   memberDisplayTitle?: string | undefined;
   pageSize?: number | undefined;
   showAggregateMembersToggle?: boolean | undefined;
+  relationsType?: EntityRelationAggregation | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -54,6 +55,7 @@ export const MembersListCard: (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
   showAggregateMembersToggle?: boolean;
+  relationsType?: EntityRelationAggregation;
 }) => React_2.JSX.Element;
 
 // @public

@@ -15,26 +15,22 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  TextField,
-  DialogActions,
-  Button,
-  DialogContent,
-  Typography,
-  CircularProgress,
-  Select,
-  MenuItem,
-  createStyles,
-  makeStyles,
-  Theme,
-  FormControl,
-  InputLabel,
-} from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import DialogContent from '@material-ui/core/DialogContent';
+import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { splunkOnCallApiRef } from '../../api';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { TriggerAlarmRequest } from '../../api';
 import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 

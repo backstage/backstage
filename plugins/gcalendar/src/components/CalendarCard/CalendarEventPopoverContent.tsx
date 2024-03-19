@@ -19,14 +19,12 @@ import DOMPurify from 'dompurify';
 
 import { useAnalytics } from '@backstage/core-plugin-api';
 import { Link } from '@backstage/core-components';
-import {
-  Box,
-  Divider,
-  IconButton,
-  Tooltip,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 
 import { AttendeeChip } from './AttendeeChip';

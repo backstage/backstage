@@ -35,7 +35,9 @@ export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';
 
 const useStyles = makeStyles(
   {
+    root: {},
     input: {},
+    label: {},
   },
   {
     name: 'CatalogReactEntityProcessingStatusPickerPicker',
@@ -69,8 +71,8 @@ export const EntityProcessingStatusPicker = () => {
   const availableAdvancedItems = ['Is Orphan', 'Has Error'];
 
   return (
-    <Box pb={1} pt={1}>
-      <Typography variant="button" component="label">
+    <Box className={classes.root} pb={1} pt={1}>
+      <Typography className={classes.label} variant="button" component="label">
         Processing Status
         <Autocomplete<string, true>
           multiple

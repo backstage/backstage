@@ -1,5 +1,120 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.10.0
+
+### Minor Changes
+
+- 718b734: Create extension point `TechdocsGeneratorExtensionPoint` to allow adding a custom generator
+
+### Patch Changes
+
+- 3f14e9f: Migrate plugin to use the new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-techdocs-node@1.12.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-backend-module-techdocs@0.1.18
+  - @backstage/catalog-client@1.6.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 1.10.0-next.2
+
+### Minor Changes
+
+- 718b734: Create extension point `TechdocsGeneratorExtensionPoint` to allow adding a custom generator
+
+### Patch Changes
+
+- 3f14e9f: Migrate plugin to use the new auth services.
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/plugin-techdocs-node@1.12.0-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-search-backend-module-techdocs@0.1.18-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+
+## 1.9.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.18-next.1
+  - @backstage/plugin-techdocs-node@1.11.6-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+
+## 1.9.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-techdocs-node@1.11.5-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.17-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+
+## 1.9.3
+
+### Patch Changes
+
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- d2e3ab9: Updated dependency `dockerode` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.14
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration@1.9.0
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-techdocs-node@1.11.2
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.21
+  - @backstage/plugin-permission-common@0.7.12
+
+## 1.9.3-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/plugin-techdocs-node@1.11.2-next.3
+  - @backstage/plugin-search-backend-module-techdocs@0.1.14-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-permission-common@0.7.12
+
 ## 1.9.3-next.2
 
 ### Patch Changes

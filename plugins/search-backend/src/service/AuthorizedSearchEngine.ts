@@ -18,26 +18,28 @@ import { compact, zipObject } from 'lodash';
 import qs from 'qs';
 import DataLoader from 'dataloader';
 import {
-  EvaluatePermissionResponse,
-  EvaluatePermissionRequest,
-  AuthorizeResult,
-  isResourcePermission,
-  PermissionEvaluator,
   AuthorizePermissionRequest,
+  AuthorizeResult,
+  EvaluatePermissionRequest,
+  EvaluatePermissionResponse,
+  isResourcePermission,
   QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
 import {
   DocumentTypeInfo,
   IndexableResult,
   IndexableResultSet,
+  SearchQuery,
+} from '@backstage/plugin-search-common';
+import {
   QueryRequestOptions,
   QueryTranslator,
   SearchEngine,
-  SearchQuery,
-} from '@backstage/plugin-search-common';
+} from '@backstage/plugin-search-backend-node';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import { Writable } from 'stream';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 
 export function decodePageCursor(pageCursor?: string): { page: number } {
   if (!pageCursor) {
@@ -63,13 +65,12 @@ export function encodePageCursor({ page }: { page: number }): string {
 }
 
 export class AuthorizedSearchEngine implements SearchEngine {
-  private readonly pageSize = 25;
   private readonly queryLatencyBudgetMs: number;
 
   constructor(
     private readonly searchEngine: SearchEngine,
     private readonly types: Record<string, DocumentTypeInfo>,
-    private readonly permissions: PermissionEvaluator,
+    private readonly permissions: PermissionsService,
     config: Config,
   ) {
     this.queryLatencyBudgetMs =
@@ -162,8 +163,9 @@ export class AuthorizedSearchEngine implements SearchEngine {
       );
     }
 
+    const pageSize = query.pageLimit || 25;
     const { page } = decodePageCursor(query.pageCursor);
-    const targetResults = (page + 1) * this.pageSize;
+    const targetResults = (page + 1) * pageSize;
 
     let filteredResults: IndexableResult[] = [];
     let nextPageCursor: string | undefined;
@@ -190,12 +192,12 @@ export class AuthorizedSearchEngine implements SearchEngine {
 
     return {
       results: filteredResults
-        .slice(page * this.pageSize, (page + 1) * this.pageSize)
+        .slice(page * pageSize, (page + 1) * pageSize)
         .map((result, index) => {
           // Overwrite any/all rank entries to avoid leaking knowledge of filtered results.
           return {
             ...result,
-            rank: page * this.pageSize + index + 1,
+            rank: page * pageSize + index + 1,
           };
         }),
       previousPageCursor:

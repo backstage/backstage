@@ -2,8 +2,8 @@
 
 ## Unused dependencies (2)
 
-| Name       | Location     |
-|:-----------|:-------------|
-| winston    | package.json |
-| node-fetch | package.json |
+| Name       | Location     | Severity |
+| :--------- | :----------- | :------- |
+| node-fetch | package.json | error    |
+| winston    | package.json | error    |
 

@@ -84,6 +84,7 @@ debuggability
 declaratively
 deduplicated
 deliverables
+denormalized
 dependabot
 deps
 destructured
@@ -92,6 +93,7 @@ Deutsche
 dev
 devops
 devs
+dialogs
 discoverability
 Discoverability
 dls
@@ -158,6 +160,7 @@ hotspots
 http
 https
 Iain
+idempotency
 Iglesias
 iLert
 img
@@ -322,6 +325,7 @@ repos
 rerender
 rerenders
 resourcequotas
+retryable
 reusability
 Reusability
 roadmaps

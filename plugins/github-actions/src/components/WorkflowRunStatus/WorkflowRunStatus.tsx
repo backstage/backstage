@@ -52,7 +52,8 @@ export function WorkflowIcon({
       return <StatusRunning />;
     case 'completed':
       switch (conclusion?.toLocaleLowerCase('en-US')) {
-        case 'skipped' || 'canceled':
+        case 'skipped':
+        case 'cancelled':
           return <StatusAborted />;
 
         case 'timed_out':
@@ -82,7 +83,8 @@ export function getStatusDescription({
       return 'In progress';
     case 'completed':
       switch (conclusion?.toLocaleLowerCase('en-US')) {
-        case 'skipped' || 'canceled':
+        case 'skipped':
+        case 'cancelled':
           return 'Aborted';
         case 'timed_out':
           return 'Timed out';

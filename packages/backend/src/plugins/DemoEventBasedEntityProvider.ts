@@ -18,40 +18,36 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import {
-  EventBroker,
-  EventParams,
-  EventSubscriber,
-} from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 
-export class DemoEventBasedEntityProvider
-  implements EntityProvider, EventSubscriber
-{
+export class DemoEventBasedEntityProvider implements EntityProvider {
   private readonly logger: Logger;
+  private readonly events: EventsService;
   private readonly topics: string[];
 
   constructor(opts: {
-    eventBroker: EventBroker;
+    events: EventsService;
     logger: Logger;
     topics: string[];
   }) {
-    const { eventBroker, logger, topics } = opts;
-    this.logger = logger;
-    this.topics = topics;
-    eventBroker.subscribe(this);
+    this.events = opts.events;
+    this.logger = opts.logger;
+    this.topics = opts.topics;
   }
 
-  async onEvent(params: EventParams): Promise<void> {
-    this.logger.info(
-      `onEvent: topic=${params.topic}, metadata=${JSON.stringify(
-        params.metadata,
-      )}, payload=${JSON.stringify(params.eventPayload)}`,
-    );
-  }
-
-  supportsEventTopics(): string[] {
-    return this.topics;
+  async subscribe() {
+    await this.events.subscribe({
+      id: 'DemoEventBasedEntityProvider',
+      topics: this.topics,
+      onEvent: async (params: EventParams): Promise<void> => {
+        this.logger.info(
+          `onEvent: topic=${params.topic}, metadata=${JSON.stringify(
+            params.metadata,
+          )}, payload=${JSON.stringify(params.eventPayload)}`,
+        );
+      },
+    });
   }
 
   async connect(_: EntityProviderConnection): Promise<void> {

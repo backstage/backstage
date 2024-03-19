@@ -34,6 +34,7 @@ import { IngressesAccordions } from '../IngressesAccordions';
 import { ServicesAccordions } from '../ServicesAccordions';
 import { CronJobsAccordions } from '../CronJobsAccordions';
 import { CustomResources } from '../CustomResources';
+import { DaemonSetsAccordions } from '../DaemonSetsAccordions';
 import {
   ClusterContext,
   GroupedResponsesContext,
@@ -132,7 +133,9 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
             <Accordion TransitionProps={{ unmountOnExit: true }}>
               <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                 <ClusterSummary
-                  clusterName={clusterObjects.cluster.name}
+                  clusterName={
+                    clusterObjects.cluster.title || clusterObjects.cluster.name
+                  }
                   totalNumberOfPods={groupedResponses.pods.length}
                   numberOfPodsWithErrors={podsWithErrors.size}
                 />
@@ -147,6 +150,11 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                   {groupedResponses.deployments.length > 0 ? (
                     <Grid item>
                       <DeploymentsAccordions />
+                    </Grid>
+                  ) : undefined}
+                  {groupedResponses.daemonSets.length > 0 ? (
+                    <Grid item>
+                      <DaemonSetsAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.statefulsets.length > 0 ? (

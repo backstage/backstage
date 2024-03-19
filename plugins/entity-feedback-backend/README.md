@@ -59,11 +59,13 @@ The Entity Feedback backend plugin has support for the [new backend system](http
 In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
-+ import { entityFeedbackPlugin } from '@backstage/plugin-entity-feedback-backend';
+  import { createBackend } from '@backstage/backend-defaults';
 
-const backend = createBackend();
-+ backend.add(entityFeedbackPlugin());
-// ... other feature additions
+  const backend = createBackend();
+
+  // ... other feature additions
+
++ backend.add(import(@backstage/plugin-entity-feedback-backend));
 
 backend.start();
 ```

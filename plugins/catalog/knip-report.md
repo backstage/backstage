@@ -2,13 +2,13 @@
 
 ## Unused dependencies (1)
 
-| Name    | Location     |
-|:--------|:-------------|
-| history | package.json |
+| Name    | Location     | Severity |
+| :------ | :----------- | :------- |
+| history | package.json | error    |
 
 ## Unused devDependencies (1)
 
-| Name                 | Location     |
-|:---------------------|:-------------|
-| @testing-library/dom | package.json |
+| Name                 | Location     | Severity |
+| :------------------- | :----------- | :------- |
+| @testing-library/dom | package.json | error    |
 

@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import { TaskContext, TaskBroker, WorkflowRunner } from './types';
+import { WorkflowRunner } from './types';
+import {
+  TaskContext,
+  TaskBroker,
+  TemplateFilter,
+  TemplateGlobal,
+} from '@backstage/plugin-scaffolder-node';
 import PQueue from 'p-queue';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { Logger } from 'winston';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
 import { assertError, stringifyError } from '@backstage/errors';
-import { TemplateFilter, TemplateGlobal } from '../../lib';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 /**

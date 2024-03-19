@@ -18,7 +18,7 @@ import { FeaturedDocsCard } from '../../plugin';
 import React, { ComponentType, PropsWithChildren } from 'react';
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
 const docsEntities = [
   {

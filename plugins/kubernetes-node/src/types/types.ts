@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import {
   CustomResourceMatcher,
@@ -67,9 +68,13 @@ export type AuthMetadata = Record<string, string>;
  */
 export interface ClusterDetails {
   /**
-   * Specifies the name of the Kubernetes cluster.
+   * Name of the Kubernetes cluster; used as an internal identifier.
    */
   name: string;
+  /**
+   * Human-readable name for the cluster, to be dispayed in UIs.
+   */
+  title?: string;
   url: string;
   authMetadata: AuthMetadata;
   skipTLSVerify?: boolean;
@@ -130,7 +135,9 @@ export interface KubernetesClustersSupplier {
    * Implementations _should_ cache the clusters and refresh them periodically,
    * as getClusters is called whenever the list of clusters is needed.
    */
-  getClusters(): Promise<ClusterDetails[]>;
+  getClusters(options?: {
+    credentials: BackstageCredentials;
+  }): Promise<ClusterDetails[]>;
 }
 
 /**

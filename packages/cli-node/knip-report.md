@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name   | Location     |
-|:-------|:-------------|
-| semver | package.json |
+| Name   | Location     | Severity |
+| :----- | :----------- | :------- |
+| semver | package.json | error    |
 

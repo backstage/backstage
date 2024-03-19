@@ -15,19 +15,17 @@
  */
 
 import React from 'react';
-import _unescape from 'lodash/unescape';
 import { Link } from '@backstage/core-components';
-import {
-  Divider,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Box,
-  Chip,
-} from '@material-ui/core';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
 import { useAnalytics } from '@backstage/core-plugin-api';
-import { ResultHighlight } from '@backstage/plugin-search-common';
+import type { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';
+import { decodeHtml } from '../../util';
 
 /**
  * Props for {@link StackOverflowSearchResultListItem}
@@ -45,6 +43,7 @@ export const StackOverflowSearchResultListItem = (
   props: StackOverflowSearchResultListItemProps,
 ) => {
   const { result, highlight } = props;
+
   const analytics = useAnalytics();
 
   const handleClick = () => {
@@ -69,12 +68,12 @@ export const StackOverflowSearchResultListItem = (
               <Link to={result.location} noTrack onClick={handleClick}>
                 {highlight?.fields?.title ? (
                   <HighlightedSearchResultText
-                    text={highlight.fields.title}
+                    text={decodeHtml(highlight.fields.title)}
                     preTag={highlight.preTag}
                     postTag={highlight.postTag}
                   />
                 ) : (
-                  _unescape(result.title)
+                  decodeHtml(result.title)
                 )}
               </Link>
             }
@@ -83,13 +82,13 @@ export const StackOverflowSearchResultListItem = (
                 <>
                   Author:{' '}
                   <HighlightedSearchResultText
-                    text={highlight.fields.text}
+                    text={decodeHtml(highlight.fields.text)}
                     preTag={highlight.preTag}
                     postTag={highlight.postTag}
                   />
                 </>
               ) : (
-                `Author: ${result.text}`
+                `Author: ${decodeHtml(result.text)}`
               )
             }
           />

@@ -18,9 +18,9 @@ import express from 'express';
 import passport from 'passport';
 import { decodeJwt } from 'jose';
 import { InternalOAuthError } from 'passport-oauth2';
-
+import { ProfileInfo } from '@backstage/plugin-auth-node';
 import { PassportProfile } from './types';
-import { ProfileInfo, OAuthStartResponse } from '../../providers/types';
+import { OAuthStartResponse } from '../../providers/types';
 
 export type PassportDoneCallback<Res, Private = never> = (
   err?: Error,

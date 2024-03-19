@@ -58,7 +58,7 @@ export async function applyConfigTransforms(
     if (typeof obj !== 'object') {
       return obj;
     } else if (obj === null) {
-      return undefined;
+      return null;
     } else if (Array.isArray(obj)) {
       const arr = new Array<JsonValue>();
 

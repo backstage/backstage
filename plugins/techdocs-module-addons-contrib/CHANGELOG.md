@@ -1,5 +1,77 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/core-components@0.14.1
+  - @backstage/integration-react@1.1.25
+  - @backstage/plugin-techdocs-react@1.2.0
+  - @backstage/core-plugin-api@1.9.1
+
+## 1.1.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/plugin-techdocs-react@1.2.0-next.2
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/integration-react@1.1.25-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 1.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/integration-react@1.1.25-next.1
+  - @backstage/plugin-techdocs-react@1.1.17-next.1
+
+## 1.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/integration-react@1.1.25-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/plugin-techdocs-react@1.1.17-next.0
+
+## 1.1.5
+
+### Patch Changes
+
+- ab9c9eb: Fixed the value label text color in dark mode for the TextSize addon.
+- 09cedb9: Updated dependency `@react-hookz/web` to `^24.0.0`.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- 131ffdc: Fix position of the ReportIssue component when is displaying at the top of the container.
+- Updated dependencies
+  - @backstage/core-components@0.14.0
+  - @backstage/plugin-techdocs-react@1.1.16
+  - @backstage/integration@1.9.0
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/integration-react@1.1.24
+
+## 1.1.5-next.3
+
+### Patch Changes
+
+- 09cedb9: Updated dependency `@react-hookz/web` to `^24.0.0`.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/integration-react@1.1.24-next.2
+  - @backstage/plugin-techdocs-react@1.1.16-next.2
+
 ## 1.1.5-next.2
 
 ### Patch Changes

@@ -23,7 +23,8 @@ import {
   useProjectInfo,
 } from '@backstage/plugin-sonarqube-react';
 import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '@backstage/plugin-sonarqube-react';
-import { Chip, Grid } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import BugReport from '@material-ui/icons/BugReport';
 import Lock from '@material-ui/icons/Lock';

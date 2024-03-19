@@ -15,8 +15,7 @@ Add the following into your `app-config.yaml` or `app-config.production.yaml` fi
 auth:
   environment: development
   providers:
-    azure-easyauth:
-      development: {}
+    azure-easyauth: {}
 ```
 
 Add a `providerFactories` entry to the router in

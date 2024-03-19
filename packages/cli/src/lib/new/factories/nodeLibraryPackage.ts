@@ -31,7 +31,8 @@ type Options = {
 
 export const nodeLibraryPackage = createFactory<Options>({
   name: 'node-library',
-  description: 'A new node-library package',
+  description:
+    'A new node-library package, exporting shared functionality for backend plugins and modules',
   optionsDiscovery: async () => ({
     codeOwnersPath: await getCodeownersFilePath(paths.targetRoot),
   }),

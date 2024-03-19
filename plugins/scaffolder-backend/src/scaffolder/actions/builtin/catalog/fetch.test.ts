@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
-import os from 'os';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { createFetchCatalogEntityAction } from './fetch';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 describe('catalog:fetch', () => {
   const getEntityByRef = jest.fn();
@@ -32,16 +31,20 @@ describe('catalog:fetch', () => {
 
   const action = createFetchCatalogEntityAction({
     catalogClient: catalogClient as unknown as CatalogApi,
+    auth: mockServices.auth(),
   });
 
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-    secrets: { backstageToken: 'secret' },
-  };
+  const credentials = mockCredentials.user();
+
+  const token = mockCredentials.service.token({
+    onBehalfOf: credentials,
+    targetPluginId: 'catalog',
+  });
+
+  const mockContext = createMockActionContext({
+    secrets: { backstageToken: token },
+  });
+
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -64,7 +67,7 @@ describe('catalog:fetch', () => {
       });
 
       expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
-        token: 'secret',
+        token,
       });
       expect(mockContext.output).toHaveBeenCalledWith('entity', {
         metadata: {
@@ -90,7 +93,7 @@ describe('catalog:fetch', () => {
       ).rejects.toThrow('Not found');
 
       expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
-        token: 'secret',
+        token,
       });
       expect(mockContext.output).not.toHaveBeenCalled();
     });
@@ -108,7 +111,7 @@ describe('catalog:fetch', () => {
       ).rejects.toThrow('Entity component:default/test not found');
 
       expect(getEntityByRef).toHaveBeenCalledWith('component:default/test', {
-        token: 'secret',
+        token,
       });
       expect(mockContext.output).not.toHaveBeenCalled();
     });
@@ -133,7 +136,7 @@ describe('catalog:fetch', () => {
       });
 
       expect(getEntityByRef).toHaveBeenCalledWith('group:ns/test', {
-        token: 'secret',
+        token,
       });
       expect(mockContext.output).toHaveBeenCalledWith('entity', entity);
     });
@@ -163,7 +166,7 @@ describe('catalog:fetch', () => {
       expect(getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['component:default/test'] },
         {
-          token: 'secret',
+          token,
         },
       );
       expect(mockContext.output).toHaveBeenCalledWith('entities', [
@@ -204,7 +207,7 @@ describe('catalog:fetch', () => {
       expect(getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['component:default/test', 'component:default/test2'] },
         {
-          token: 'secret',
+          token,
         },
       );
       expect(mockContext.output).not.toHaveBeenCalled();
@@ -235,7 +238,7 @@ describe('catalog:fetch', () => {
       expect(getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['component:default/test', 'component:default/test2'] },
         {
-          token: 'secret',
+          token,
         },
       );
       expect(mockContext.output).toHaveBeenCalledWith('entities', [
@@ -281,7 +284,7 @@ describe('catalog:fetch', () => {
       expect(getEntitiesByRefs).toHaveBeenCalledWith(
         { entityRefs: ['group:ns/test', 'user:default/test'] },
         {
-          token: 'secret',
+          token,
         },
       );
 

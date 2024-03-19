@@ -84,12 +84,12 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { badgesPlugin } from '@backstage/plugin-badges-backend';
+
   const backend = createBackend();
 
   // ... other feature additions
 
-+ backend.add(badgesPlugin());
++ backend.add(import('@backstage/plugin-badges-backend'));
 
   backend.start();
 ```

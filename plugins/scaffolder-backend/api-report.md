@@ -4,12 +4,15 @@
 
 ```ts
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
+import { AuthService } from '@backstage/backend-plugin-api';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
 import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
@@ -18,15 +21,18 @@ import { fetchContents as fetchContents_2 } from '@backstage/plugin-scaffolder-n
 import * as gerrit from '@backstage/plugin-scaffolder-backend-module-gerrit';
 import * as github from '@backstage/plugin-scaffolder-backend-module-github';
 import * as gitlab from '@backstage/plugin-scaffolder-backend-module-gitlab';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
+import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
@@ -78,9 +84,10 @@ export const createBuiltinActions: (
 
 // @public
 export interface CreateBuiltInActionsOptions {
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+  auth?: AuthService;
   catalogClient: CatalogApi;
   config: Config;
   integrations: ScmIntegrations;
@@ -91,6 +98,7 @@ export interface CreateBuiltInActionsOptions {
 export function createCatalogRegisterAction(options: {
   catalogClient: CatalogApi;
   integrations: ScmIntegrations;
+  auth?: AuthService;
 }): TemplateAction_2<
   | {
       catalogInfoUrl: string;
@@ -125,6 +133,7 @@ export function createDebugLogAction(): TemplateAction_2<
 // @public
 export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
+  auth?: AuthService;
 }): TemplateAction_2<
   {
     entityRef?: string | undefined;
@@ -169,8 +178,8 @@ export function createFetchPlainFileAction(options: {
 export function createFetchTemplateAction(options: {
   reader: UrlReader;
   integrations: ScmIntegrations;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
 }): TemplateAction_2<
   {
     url: string;
@@ -343,14 +352,14 @@ export function createWaitAction(options?: {
 
 // @public
 export type CreateWorkerOptions = {
-  taskBroker: TaskBroker;
+  taskBroker: TaskBroker_2;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
   logger: Logger;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
+  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   concurrentTasksLimit?: number;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   permissions?: PermissionEvaluator;
 };
 
@@ -359,6 +368,7 @@ export interface CurrentClaimedTask {
   createdBy?: string;
   secrets?: TaskSecrets_2;
   spec: TaskSpec;
+  state?: JsonObject;
   taskId: string;
 }
 
@@ -397,6 +407,13 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask_2>;
   // (undocumented)
+  getTaskState({ taskId }: { taskId: string }): Promise<
+    | {
+        state: JsonObject;
+      }
+    | undefined
+  >;
+  // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
   list(options: { createdBy?: string }): Promise<{
@@ -417,6 +434,8 @@ export class DatabaseTaskStore implements TaskStore {
   recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<{
     ids: string[];
   }>;
+  // (undocumented)
+  saveTaskState(options: { taskId: string; state?: JsonObject }): Promise<void>;
   // (undocumented)
   shutdownTask(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -441,12 +460,18 @@ export interface RouterOptions {
   // (undocumented)
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
+  auth?: AuthService;
+  // (undocumented)
   catalogClient: CatalogApi;
   concurrentTasksLimit?: number;
   // (undocumented)
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  discovery?: DiscoveryService;
+  // (undocumented)
+  httpAuth?: HttpAuthService;
   // (undocumented)
   identity?: IdentityApi;
   // (undocumented)
@@ -458,7 +483,7 @@ export interface RouterOptions {
     TemplatePermissionRuleInput | ActionPermissionRuleInput
   >;
   // (undocumented)
-  permissions?: PermissionEvaluator;
+  permissions?: PermissionsService;
   // (undocumented)
   reader: UrlReader;
   // (undocumented)
@@ -500,17 +525,18 @@ export type TaskContext = TaskContext_2;
 export type TaskEventType = TaskEventType_2;
 
 // @public
-export class TaskManager implements TaskContext {
+export class TaskManager implements TaskContext_2 {
   // (undocumented)
   get cancelSignal(): AbortSignal;
   // (undocumented)
-  complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
+  complete(result: TaskCompletionState_2, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
     task: CurrentClaimedTask,
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
+    auth?: AuthService,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;
@@ -519,11 +545,34 @@ export class TaskManager implements TaskContext {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
+  // (undocumented)
+  getTaskState?(): Promise<
+    | {
+        state?: JsonObject;
+      }
+    | undefined
+  >;
+  // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
   get secrets(): TaskSecrets_2 | undefined;
   // (undocumented)
   get spec(): TaskSpecV1beta3;
+  // (undocumented)
+  updateCheckpoint?(
+    options:
+      | {
+          key: string;
+          status: 'success';
+          value: JsonValue;
+        }
+      | {
+          key: string;
+          status: 'failed';
+          reason: string;
+        },
+  ): Promise<void>;
 }
 
 // @public @deprecated (undocumented)
@@ -553,6 +602,13 @@ export interface TaskStore {
   // (undocumented)
   getTask(taskId: string): Promise<SerializedTask>;
   // (undocumented)
+  getTaskState?({ taskId }: { taskId: string }): Promise<
+    | {
+        state: JsonObject;
+      }
+    | undefined
+  >;
+  // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
   list?(options: { createdBy?: string }): Promise<{
@@ -572,6 +628,11 @@ export interface TaskStore {
   recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<{
     ids: string[];
   }>;
+  // (undocumented)
+  saveTaskState?(options: {
+    taskId: string;
+    state?: JsonObject;
+  }): Promise<void>;
   // (undocumented)
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 }
@@ -619,7 +680,7 @@ export class TaskWorker {
   // (undocumented)
   recoverTasks(): Promise<void>;
   // (undocumented)
-  runOneTask(task: TaskContext): Promise<void>;
+  runOneTask(task: TaskContext_2): Promise<void>;
   // (undocumented)
   start(): void;
   // (undocumented)

@@ -1,5 +1,95 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.1.19
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+
+## 0.1.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/backend-tasks@0.5.19-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+
+## 0.1.18-next.0
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.15
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- bc644fb: Added `latest_report_status` parameter from the PuppetDB node api and added it as a tag to the nodes. The status is valuable information as it displays which nodes are compliant to your configuration and which ones are failing are making changes.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/catalog-model@1.4.4
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.1.15-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/backend-tasks@0.5.15-next.3
+  - @backstage/plugin-catalog-node@1.6.2-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.1.15-next.2
 
 ### Patch Changes

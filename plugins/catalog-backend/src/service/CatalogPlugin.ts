@@ -17,7 +17,7 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { Entity } from '@backstage/catalog-model';
+import { Entity, Validators } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
   CatalogAnalysisExtensionPoint,
@@ -26,14 +26,18 @@ import {
   catalogProcessingExtensionPoint,
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
+  CatalogModelExtensionPoint,
+  catalogModelExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
+  CatalogProcessorParser,
   EntityProvider,
+  PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { PlaceholderResolver } from '../modules';
+import { merge } from 'lodash';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -124,6 +128,33 @@ class CatalogPermissionExtensionPointImpl
   }
 }
 
+class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
+  #fieldValidators: Partial<Validators> = {};
+
+  setFieldValidators(validators: Partial<Validators>): void {
+    merge(this.#fieldValidators, validators);
+  }
+
+  get fieldValidators() {
+    return this.#fieldValidators;
+  }
+
+  #entityDataParser?: CatalogProcessorParser;
+
+  setEntityDataParser(parser: CatalogProcessorParser): void {
+    if (this.#entityDataParser) {
+      throw new Error(
+        'Attempted to install second EntityDataParser. Only one can be set.',
+      );
+    }
+    this.#entityDataParser = parser;
+  }
+
+  get entityDataParser() {
+    return this.#entityDataParser;
+  }
+}
+
 /**
  * Catalog plugin
  * @alpha
@@ -150,6 +181,9 @@ export const catalogPlugin = createBackendPlugin({
       permissionExtensions,
     );
 
+    const modelExtensions = new CatalogModelExtensionPointImpl();
+    env.registerExtensionPoint(catalogModelExtensionPoint, modelExtensions);
+
     env.registerInit({
       deps: {
         logger: coreServices.logger,
@@ -160,6 +194,9 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.lifecycle,
         scheduler: coreServices.scheduler,
+        discovery: coreServices.discovery,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
       async init({
         logger,
@@ -170,6 +207,9 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter,
         lifecycle,
         scheduler,
+        discovery,
+        auth,
+        httpAuth,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
@@ -179,6 +219,9 @@ export const catalogPlugin = createBackendPlugin({
           database,
           scheduler,
           logger: winstonLogger,
+          discovery,
+          auth,
+          httpAuth,
         });
         if (processingExtensions.onProcessingErrorHandler) {
           builder.subscribe({
@@ -187,11 +230,17 @@ export const catalogPlugin = createBackendPlugin({
         }
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
+
+        if (modelExtensions.entityDataParser) {
+          builder.setEntityDataParser(modelExtensions.entityDataParser);
+        }
+
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
         builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
+        builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 
         const { processingEngine, router } = await builder.build();
 

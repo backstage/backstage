@@ -1,5 +1,144 @@
 # @backstage/plugin-techdocs
 
+## 1.10.1
+
+### Patch Changes
+
+- 7c2d022: Fixed bug in TechDocs sidebar render that prevented scrollbar from being displayed
+- 3f14e9f: Implement a client cookie refresh mechanism.
+- 62bcaf8: Use the new generic refresh user cookie provider.
+- 28f27f0: Added ESLint rule `no-top-level-material-ui-4-imports` to aid with the migration to Material UI v5.
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-react@0.0.1
+  - @backstage/theme@0.5.2
+  - @backstage/integration-react@1.1.25
+  - @backstage/plugin-techdocs-react@1.2.0
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-search-react@1.7.7
+
+## 1.10.1-next.2
+
+### Patch Changes
+
+- 7c2d022: Fixed bug in TechDocs sidebar render that prevented scrollbar from being displayed
+- 3f14e9f: Implement a client cookie refresh mechanism.
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/plugin-techdocs-react@1.2.0-next.2
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/integration-react@1.1.25-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/plugin-search-react@1.7.7-next.2
+  - @backstage/core-compat-api@0.2.1-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 1.10.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/integration-react@1.1.25-next.1
+  - @backstage/plugin-techdocs-react@1.1.17-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/plugin-search-react@1.7.7-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-compat-api@0.2.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 1.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/integration-react@1.1.25-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/plugin-search-common@1.2.11-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/plugin-search-react@1.7.7-next.0
+  - @backstage/plugin-techdocs-react@1.1.17-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+  - @backstage/core-compat-api@0.2.1-next.0
+
+## 1.10.0
+
+### Minor Changes
+
+- af4d147: Updated the styling for `<code>` tags to avoid word break.
+
+### Patch Changes
+
+- 912ca7b: Use `convertLegacyRouteRefs` to define routes in `/alpha` export plugin.
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 3631fb4: Updated dependency `dompurify` to `^3.0.0`.
+  Updated dependency `@types/dompurify` to `^3.0.0`.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-compat-api@0.2.0
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/plugin-techdocs-react@1.1.16
+  - @backstage/catalog-model@1.4.4
+  - @backstage/theme@0.5.1
+  - @backstage/integration@1.9.0
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/plugin-search-react@1.7.6
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/integration-react@1.1.24
+  - @backstage/plugin-search-common@1.2.10
+
+## 1.10.0-next.3
+
+### Patch Changes
+
+- 3631fb4: Updated dependency `dompurify` to `^3.0.0`.
+  Updated dependency `@types/dompurify` to `^3.0.0`.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/theme@0.5.1-next.1
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/core-compat-api@0.2.0-next.3
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/frontend-plugin-api@0.6.0-next.3
+  - @backstage/integration-react@1.1.24-next.2
+  - @backstage/plugin-search-common@1.2.10
+  - @backstage/plugin-search-react@1.7.6-next.3
+  - @backstage/plugin-techdocs-react@1.1.16-next.2
+
 ## 1.10.0-next.2
 
 ### Patch Changes
@@ -25,7 +164,7 @@
 
 ### Minor Changes
 
-- af4d147: Updated the styling for <code> tags to avoid word break.
+- af4d147: Updated the styling for `<code>` tags to avoid word break.
 
 ### Patch Changes
 

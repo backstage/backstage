@@ -23,6 +23,7 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { CatalogApi } from '@backstage/catalog-client';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 const mockCatalogApi = {
   getEntityByRef: jest.fn(),
@@ -43,6 +44,7 @@ const mockCatalogApi = {
             'kubernetes.io/dashboard-app': 'my-app',
           },
           name: 'owned',
+          title: 'title',
           namespace: 'default',
         },
       },
@@ -76,29 +78,46 @@ describe('CatalogClusterLocator', () => {
         items: [],
       }),
     } as Partial<CatalogApi> as CatalogApi;
+    const auth = mockServices.auth();
 
-    const clusterSupplier =
-      CatalogClusterLocator.fromConfig(emptyMockCatalogApi);
+    const clusterSupplier = CatalogClusterLocator.fromConfig(
+      emptyMockCatalogApi,
+      auth,
+    );
 
-    const result = await clusterSupplier.getClusters();
+    const credentials = mockCredentials.user();
+
+    const result = await clusterSupplier.getClusters({ credentials });
 
     expect(result).toHaveLength(0);
     expect(result).toStrictEqual([]);
   });
 
   it('returns the cluster details provided by annotations', async () => {
-    const clusterSupplier = CatalogClusterLocator.fromConfig(mockCatalogApi);
+    const auth = mockServices.auth();
+    const clusterSupplier = CatalogClusterLocator.fromConfig(
+      mockCatalogApi,
+      auth,
+    );
 
-    const result = await clusterSupplier.getClusters();
+    const credentials = mockCredentials.user();
+
+    const result = await clusterSupplier.getClusters({ credentials });
 
     expect(result).toHaveLength(2);
     expect(result[0]).toMatchSnapshot();
   });
 
   it('returns the aws cluster details provided by annotations', async () => {
-    const clusterSupplier = CatalogClusterLocator.fromConfig(mockCatalogApi);
+    const auth = mockServices.auth();
+    const clusterSupplier = CatalogClusterLocator.fromConfig(
+      mockCatalogApi,
+      auth,
+    );
 
-    const result = await clusterSupplier.getClusters();
+    const credentials = mockCredentials.user();
+
+    const result = await clusterSupplier.getClusters({ credentials });
 
     expect(result).toHaveLength(2);
     expect(result[1]).toMatchSnapshot();

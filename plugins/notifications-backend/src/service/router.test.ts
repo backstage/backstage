@@ -17,16 +17,14 @@ import {
   DatabaseManager,
   getVoidLogger,
   PluginDatabaseManager,
-  PluginEndpointDiscovery,
-  TokenManager,
 } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { ConfigReader } from '@backstage/config';
-import { SignalService } from '@backstage/plugin-signals-node';
+import { SignalsService } from '@backstage/plugin-signals-node';
+import { mockServices } from '@backstage/backend-test-utils';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -44,40 +42,24 @@ function createDatabase(): PluginDatabaseManager {
 describe('createRouter', () => {
   let app: express.Express;
 
-  const identityMock: IdentityApi = {
-    async getIdentity() {
-      return {
-        identity: {
-          type: 'user',
-          ownershipEntityRefs: [],
-          userEntityRef: 'user:default/guest',
-        },
-        token: 'no-token',
-      };
-    },
-  };
-  const mockedTokenManager: jest.Mocked<TokenManager> = {
-    getToken: jest.fn(),
-    authenticate: jest.fn(),
-  };
-
-  const discovery: jest.Mocked<PluginEndpointDiscovery> = {
-    getBaseUrl: jest.fn(),
-    getExternalBaseUrl: jest.fn(),
-  };
-
-  const signalService: jest.Mocked<SignalService> = {
+  const signalService: jest.Mocked<SignalsService> = {
     publish: jest.fn(),
   };
+
+  const discovery = mockServices.discovery();
+  const userInfo = mockServices.userInfo();
+  const httpAuth = mockServices.httpAuth();
+  const auth = mockServices.auth();
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      identity: identityMock,
       database: createDatabase(),
-      tokenManager: mockedTokenManager,
       discovery,
-      signalService,
+      signals: signalService,
+      userInfo,
+      httpAuth,
+      auth,
     });
     app = express().use(router);
   });

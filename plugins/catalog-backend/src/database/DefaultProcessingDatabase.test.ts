@@ -29,7 +29,7 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from './tables';
-import { createRandomProcessingInterval } from '../processing/refresh';
+import { createRandomProcessingInterval } from '../processing';
 import { timestampToDateTime } from './conversion';
 import { generateStableHash } from './util';
 

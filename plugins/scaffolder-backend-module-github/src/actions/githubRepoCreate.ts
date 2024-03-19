@@ -95,6 +95,10 @@ export function createGithubRepoCreateAction(options: {
     topics?: string[];
     repoVariables?: { [key: string]: string };
     secrets?: { [key: string]: string };
+    oidcCustomization?: {
+      useDefault: boolean;
+      includeClaimKeys?: string[];
+    };
     requireCommitSigning?: boolean;
   }>({
     id: 'github:repo:create',
@@ -133,6 +137,7 @@ export function createGithubRepoCreateAction(options: {
           topics: inputProps.topics,
           repoVariables: inputProps.repoVariables,
           secrets: inputProps.secrets,
+          oidcCustomization: inputProps.oidcCustomization,
           requiredCommitSigning: inputProps.requiredCommitSigning,
         },
       },
@@ -165,6 +170,7 @@ export function createGithubRepoCreateAction(options: {
         topics,
         repoVariables,
         secrets,
+        oidcCustomization,
         token: providedToken,
       } = ctx.input;
 
@@ -204,6 +210,7 @@ export function createGithubRepoCreateAction(options: {
         topics,
         repoVariables,
         secrets,
+        oidcCustomization,
         ctx.logger,
       );
 

@@ -16,7 +16,10 @@
 
 import { EventBroker, EventPublisher } from '@backstage/plugin-events-node';
 
-/** @public */
+/**
+ * @public
+ * @deprecated `EventPublisher` was replaced by `EventsService.publish`
+ */
 export class TestEventPublisher implements EventPublisher {
   #eventBroker?: EventBroker;
 

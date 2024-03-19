@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import { EventBroker } from './EventBroker';
 import { EventParams } from './EventParams';
-import { EventPublisher } from './EventPublisher';
-import { EventSubscriber } from './EventSubscriber';
+import { EventsService } from './EventsService';
 
 /**
  * Subscribes to a topic and - depending on a set of conditions -
@@ -26,12 +24,40 @@ import { EventSubscriber } from './EventSubscriber';
  * @see {@link https://www.enterpriseintegrationpatterns.com/MessageRouter.html | Message Router pattern}.
  * @public
  */
-export abstract class EventRouter implements EventPublisher, EventSubscriber {
-  private eventBroker?: EventBroker;
+export abstract class EventRouter {
+  private readonly events: EventsService;
+  private readonly topics: string[];
+  private subscribed: boolean = false;
+
+  protected constructor(options: { events: EventsService; topics: string[] }) {
+    this.events = options.events;
+    this.topics = options.topics;
+  }
+
+  protected abstract getSubscriberId(): string;
 
   protected abstract determineDestinationTopic(
     params: EventParams,
   ): string | undefined;
+
+  /**
+   * Subscribes itself to the topic(s),
+   * after which events potentially can be received
+   * and processed by {@link EventRouter.onEvent}.
+   */
+  async subscribe(): Promise<void> {
+    if (this.subscribed) {
+      return;
+    }
+
+    this.subscribed = true;
+
+    await this.events.subscribe({
+      id: this.getSubscriberId(),
+      topics: this.topics,
+      onEvent: this.onEvent.bind(this),
+    });
+  }
 
   async onEvent(params: EventParams): Promise<void> {
     const topic = this.determineDestinationTopic(params);
@@ -41,15 +67,9 @@ export abstract class EventRouter implements EventPublisher, EventSubscriber {
     }
 
     // republish to different topic
-    this.eventBroker?.publish({
+    await this.events.publish({
       ...params,
       topic,
     });
   }
-
-  async setEventBroker(eventBroker: EventBroker): Promise<void> {
-    this.eventBroker = eventBroker;
-  }
-
-  abstract supportsEventTopics(): string[];
 }

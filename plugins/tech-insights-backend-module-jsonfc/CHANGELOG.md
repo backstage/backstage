@@ -1,5 +1,123 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.46
+
+### Patch Changes
+
+- 6ce8c0b: Fixes an invalid line in the schema that was causing AJV to complain.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-tech-insights-node@0.5.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.1.46-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+  - @backstage/plugin-tech-insights-node@0.5.0-next.2
+
+## 0.1.46-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-tech-insights-node@0.5.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.1.45-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-tech-insights-node@0.5.0-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.1.42
+
+### Patch Changes
+
+- 25cfb76: Add support for the new backend system.
+
+  A new backend module for the tech-insights backend
+  was added and exported as `default`.
+
+  The module will register the `JsonRulesEngineFactCheckerFactory`
+  as `FactCheckerFactory`, loading checks from the config.
+
+  You can use it with the new backend system like
+
+  ```ts title="packages/backend/src/index.ts"
+  backend.add(import('@backstage/plugin-tech-insights-backend-module-jsonfc'));
+  ```
+
+- bc72782: Support loading `TechInsightsJsonRuleCheck` instances from config.
+
+  Uses the check `id` as key.
+
+  Example:
+
+  ```yaml title="app-config.yaml"
+  techInsights:
+    factChecker:
+      checks:
+        groupOwnerCheck:
+          type: json-rules-engine
+          name: Group Owner Check
+          description: Verifies that a group has been set as the spec.owner for this entity
+          factIds:
+            - entityOwnershipFactRetriever
+          rule:
+            conditions:
+              all:
+                - fact: hasGroupOwner
+                  operator: equal
+                  value: true
+  ```
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-tech-insights-node@0.4.16
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
+## 0.1.42-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/plugin-tech-insights-node@0.4.16-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.1.42-next.2
 
 ### Patch Changes

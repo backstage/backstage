@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name         | Location     |
-|:-------------|:-------------|
-| react-helmet | package.json |
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| react-helmet | package.json | error    |
 

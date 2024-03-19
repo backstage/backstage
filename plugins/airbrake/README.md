@@ -124,10 +124,13 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { airbrakePlugin } from '@backstage/plugin-airbrake-backend';
+
   const backend = createBackend();
+
   // ... other feature additions
-+ backend.add(airbrakePlugin());
+
++ backend.add(import('@backstage/plugin-airbrake-backend'));
+
   backend.start();
 ```
 

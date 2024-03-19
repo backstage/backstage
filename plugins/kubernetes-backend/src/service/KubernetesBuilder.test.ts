@@ -36,6 +36,7 @@ import {
 import { setupServer } from 'msw/node';
 import {
   ServiceMock,
+  mockCredentials,
   mockServices,
   setupRequestMockHandlers,
   startTestBackend,
@@ -276,6 +277,32 @@ describe('API integration tests', () => {
             },
           },
         ],
+      });
+    });
+
+    it('surfaces cluster title', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          minimalValidConfigService,
+          import('@backstage/plugin-kubernetes-backend/alpha'),
+          withClusters([
+            {
+              name: 'cluster-name',
+              title: 'cluster-title',
+              url: 'url',
+              authMetadata: {
+                [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+              },
+            },
+          ]),
+        ],
+      });
+      app = server;
+
+      const response = await request(app).get('/api/kubernetes/clusters');
+
+      expect(response.body).toEqual({
+        items: [expect.objectContaining({ title: 'cluster-title' })],
       });
     });
   });
@@ -731,9 +758,9 @@ metadata:
   });
 
   it('serves permission integration endpoint', async () => {
-    const response = await request(app).get(
-      '/api/kubernetes/.well-known/backstage/permissions/metadata',
-    );
+    const response = await request(app)
+      .get('/api/kubernetes/.well-known/backstage/permissions/metadata')
+      .set('authorization', mockCredentials.service.header());
 
     expect(response.status).toEqual(200);
     expect(response.body).toMatchObject({

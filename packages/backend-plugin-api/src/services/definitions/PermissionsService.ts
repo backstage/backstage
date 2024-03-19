@@ -14,7 +14,38 @@
  * limitations under the License.
  */
 
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import {
+  AuthorizePermissionRequest,
+  AuthorizePermissionResponse,
+  PermissionEvaluator,
+  QueryPermissionRequest,
+  QueryPermissionResponse,
+} from '@backstage/plugin-permission-common';
+import { BackstageCredentials } from './AuthService';
+
+/**
+ * Options for {@link @backstage/plugin-permission-common#PermissionEvaluator} requests.
+ *
+ * @public
+ */
+export type PermissionsServiceRequestOptions =
+  | {
+      /** @deprecated use the `credentials` option instead. */
+      token?: string;
+    }
+  | {
+      credentials: BackstageCredentials;
+    };
 
 /** @public */
-export interface PermissionsService extends PermissionEvaluator {}
+export interface PermissionsService extends PermissionEvaluator {
+  authorize(
+    requests: AuthorizePermissionRequest[],
+    options?: PermissionsServiceRequestOptions,
+  ): Promise<AuthorizePermissionResponse[]>;
+
+  authorizeConditional(
+    requests: QueryPermissionRequest[],
+    options?: PermissionsServiceRequestOptions,
+  ): Promise<QueryPermissionResponse[]>;
+}

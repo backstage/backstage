@@ -15,18 +15,14 @@
  */
 
 import React from 'react';
-import {
-  createStyles,
-  List,
-  ListSubheader,
-  makeStyles,
-  Theme,
-} from '@material-ui/core';
+import List from '@material-ui/core/List';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { EscalationUsersEmptyState } from './EscalationUsersEmptyState';
 import { EscalationUser } from './EscalationUser';
 import useAsync from 'react-use/lib/useAsync';
 import { splunkOnCallApiRef } from '../../api';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { User } from '../types';
 
 import { useApi } from '@backstage/core-plugin-api';

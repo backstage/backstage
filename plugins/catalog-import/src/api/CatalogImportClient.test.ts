@@ -556,10 +556,29 @@ describe('CatalogImportClient', () => {
 
   describe('submitPullRequest', () => {
     it('should create GitHub pull request', async () => {
+      catalogApi.validateEntity.mockResolvedValueOnce({
+        valid: true,
+      });
       await expect(
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/backstage/backstage',
-          fileContent: 'some content 🤖',
+          fileContent: `
+            {
+                "apiVersion": "backstage.io/v1alpha1",
+                "kind": "Component",
+                "metadata": {
+                  "name": "valid-name",
+                  "annotations": {
+                      "github.com/project-slug": "backstage/example-repo"
+                }
+              },
+              "spec": {
+                  "type": "other",
+                  "lifecycle": "unknown",
+                  "owner": "backstage"
+              }
+            }
+          `,
           title: 'A title/message',
           body: 'A body',
         }),
@@ -568,7 +587,7 @@ describe('CatalogImportClient', () => {
         location:
           'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
       });
-
+      expect(catalogApi.validateEntity).toHaveBeenCalledTimes(1);
       expect(
         (new Octokit().git.createRef as any as jest.Mock).mock.calls[0][0],
       ).toEqual({
@@ -585,7 +604,8 @@ describe('CatalogImportClient', () => {
         repo: 'backstage',
         path: 'catalog-info.yaml',
         message: 'A title/message',
-        content: 'c29tZSBjb250ZW50IPCfpJY=',
+        content:
+          'CiAgICAgICAgICAgIHsKICAgICAgICAgICAgICAgICJhcGlWZXJzaW9uIjogImJhY2tzdGFnZS5pby92MWFscGhhMSIsCiAgICAgICAgICAgICAgICAia2luZCI6ICJDb21wb25lbnQiLAogICAgICAgICAgICAgICAgIm1ldGFkYXRhIjogewogICAgICAgICAgICAgICAgICAibmFtZSI6ICJ2YWxpZC1uYW1lIiwKICAgICAgICAgICAgICAgICAgImFubm90YXRpb25zIjogewogICAgICAgICAgICAgICAgICAgICAgImdpdGh1Yi5jb20vcHJvamVjdC1zbHVnIjogImJhY2tzdGFnZS9leGFtcGxlLXJlcG8iCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgfSwKICAgICAgICAgICAgICAic3BlYyI6IHsKICAgICAgICAgICAgICAgICAgInR5cGUiOiAib3RoZXIiLAogICAgICAgICAgICAgICAgICAibGlmZWN5Y2xlIjogInVua25vd24iLAogICAgICAgICAgICAgICAgICAib3duZXIiOiAiYmFja3N0YWdlIgogICAgICAgICAgICAgIH0KICAgICAgICAgICAgfQogICAgICAgICAg',
         branch: 'backstage-integration',
       });
       expect(
@@ -599,8 +619,39 @@ describe('CatalogImportClient', () => {
         base: 'main',
       });
     });
-
+    it('Submit Pull Request with invalid component name', async () => {
+      const ErrorMessage =
+        'Policy check failed for component:default/invalid name; caused by Error: "metadata.name" is not valid; expected a string that is sequences of [a-zA-Z0-9] separated by any of [-_.], at most 63 characters in total but found "invalid name". To learn more about catalog file format, visit: https://github.com/backstage/backstage/blob/master/docs/architecture-decisions/adr002-default-catalog-file-format.md';
+      catalogApi.validateEntity.mockRejectedValueOnce(new Error(ErrorMessage));
+      await expect(
+        catalogImportClient.submitPullRequest({
+          repositoryUrl: 'https://github.com/acme-corp/our-awesome-api',
+          fileContent: `
+            {
+                "apiVersion": "backstage.io/v1alpha1",
+                "kind": "Component",
+                "metadata": {
+                  "name": "invalid name",
+                  "annotations": {
+                      "github.com/project-slug": "backstage/example-repo"
+                }
+              },
+              "spec": {
+                  "type": "other",
+                  "lifecycle": "unknown",
+                  "owner": "backstage"
+              }
+            }
+          `,
+          title: 'A title/message',
+          body: 'A body',
+        }),
+      ).rejects.toThrow(ErrorMessage);
+    });
     it('should create GitHub pull request with custom filename and branch name', async () => {
+      catalogApi.validateEntity.mockResolvedValueOnce({
+        valid: true,
+      });
       const entityFilename = 'anvil.yaml';
       const pullRequestBranchName = 'anvil-integration';
 
@@ -623,7 +674,23 @@ describe('CatalogImportClient', () => {
       await expect(
         catalogImportClient.submitPullRequest({
           repositoryUrl: 'https://github.com/acme-corp/our-awesome-api',
-          fileContent: '',
+          fileContent: `
+            {
+                "apiVersion": "backstage.io/v1alpha1",
+                "kind": "Component",
+                "metadata": {
+                  "name": "valid-name",
+                  "annotations": {
+                      "github.com/project-slug": "backstage/example-repo"
+                }
+              },
+              "spec": {
+                  "type": "other",
+                  "lifecycle": "unknown",
+                  "owner": "backstage"
+              }
+            }
+          `,
           title: `Add ${entityFilename} config file`,
           body: `Add ${entityFilename} config file`,
         }),

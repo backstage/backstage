@@ -17,12 +17,13 @@ import React, { useEffect } from 'react';
 import { useNotificationsApi } from '../../hooks';
 import { SidebarItem } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
+import { NotificationSignal } from '@backstage/plugin-notifications-common';
 import { useWebNotifications } from '../../hooks/useWebNotifications';
 import { useTitleCounter } from '../../hooks/useTitleCounter';
-import { JsonObject } from '@backstage/types';
+import { notificationsApiRef } from '../../api';
 
 /** @public */
 export const NotificationsSidebarItem = (props?: {
@@ -35,11 +36,11 @@ export const NotificationsSidebarItem = (props?: {
   const { loading, error, value, retry } = useNotificationsApi(api =>
     api.getStatus(),
   );
+  const notificationsApi = useApi(notificationsApiRef);
   const [unreadCount, setUnreadCount] = React.useState(0);
   const notificationsRoute = useRouteRef(rootRouteRef);
-  // TODO: Add signal type support to `useSignal` to make it a bit easier to use
   // TODO: Do we want to add long polling in case signals are not available
-  const { lastSignal } = useSignal('notifications');
+  const { lastSignal } = useSignal<NotificationSignal>('notifications');
   const { sendWebNotification } = useWebNotifications();
   const [refresh, setRefresh] = React.useState(false);
   const { setNotificationCount } = useTitleCounter();
@@ -52,39 +53,35 @@ export const NotificationsSidebarItem = (props?: {
   }, [refresh, retry]);
 
   useEffect(() => {
-    const handleWebNotification = (signal: JsonObject) => {
-      if (!webNotificationsEnabled || !('notification' in signal)) {
+    const handleWebNotification = (signal: NotificationSignal) => {
+      if (!webNotificationsEnabled || signal.action !== 'new_notification') {
         return;
       }
 
-      const notificationData = signal.notification as JsonObject;
-
-      if (
-        !notificationData ||
-        !('title' in notificationData) ||
-        !('description' in notificationData) ||
-        !('title' in notificationData)
-      ) {
-        return;
-      }
-      const notification = sendWebNotification({
-        title: notificationData.title as string,
-        description: notificationData.description as string,
-      });
-      if (notification) {
-        notification.onclick = event => {
-          event.preventDefault();
-          notification.close();
-          window.open(notificationData.link as string, '_blank');
-        };
-      }
+      notificationsApi
+        .getNotification(signal.notification_id)
+        .then(notification => {
+          if (!notification) {
+            return;
+          }
+          sendWebNotification({
+            title: notification.payload.title,
+            description: notification.payload.description ?? '',
+            link: notification.payload.link,
+          });
+        });
     };
 
     if (lastSignal && lastSignal.action) {
       handleWebNotification(lastSignal);
       setRefresh(true);
     }
-  }, [lastSignal, sendWebNotification, webNotificationsEnabled]);
+  }, [
+    lastSignal,
+    sendWebNotification,
+    webNotificationsEnabled,
+    notificationsApi,
+  ]);
 
   useEffect(() => {
     if (!loading && !error && value) {

@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
-import os from 'os';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
@@ -24,6 +22,7 @@ import { createCatalogRegisterAction } from './register';
 import { Entity } from '@backstage/catalog-model';
 import { examples } from './register.examples';
 import yaml from 'yaml';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 describe('catalog:register', () => {
   const integrations = ScmIntegrations.fromConfig(
@@ -42,15 +41,17 @@ describe('catalog:register', () => {
   const action = createCatalogRegisterAction({
     integrations,
     catalogClient: catalogClient as unknown as CatalogApi,
+    auth: mockServices.auth(),
   });
 
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const credentials = mockCredentials.user();
+
+  const token = mockCredentials.service.token({
+    onBehalfOf: credentials,
+    targetPluginId: 'catalog',
+  });
+
+  const mockContext = createMockActionContext();
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -83,7 +84,7 @@ describe('catalog:register', () => {
         target:
           'http://github.com/backstage/backstage/blob/master/catalog-info.yaml',
       },
-      {},
+      { token },
     );
     expect(addLocation).toHaveBeenNthCalledWith(
       2,
@@ -93,7 +94,7 @@ describe('catalog:register', () => {
         target:
           'http://github.com/backstage/backstage/blob/master/catalog-info.yaml',
       },
-      {},
+      { token },
     );
 
     expect(mockContext.output).toHaveBeenCalledWith(

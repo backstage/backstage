@@ -18,7 +18,8 @@ import {
   useEntity,
   MissingAnnotationEmptyState,
 } from '@backstage/plugin-catalog-react';
-import { Grid, Tooltip } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Tooltip from '@material-ui/core/Tooltip';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { DateTime } from 'luxon';

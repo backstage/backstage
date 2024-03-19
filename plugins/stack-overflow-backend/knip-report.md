@@ -2,15 +2,15 @@
 
 ## Unused dependencies (3)
 
-| Name       | Location     |
-|:-----------|:-------------|
-| qs         | package.json |
-| winston    | package.json |
-| node-fetch | package.json |
+| Name       | Location     | Severity |
+| :--------- | :----------- | :------- |
+| node-fetch | package.json | error    |
+| winston    | package.json | error    |
+| qs         | package.json | error    |
 
 ## Unused devDependencies (1)
 
-| Name                          | Location     |
-|:------------------------------|:-------------|
-| @backstage/backend-test-utils | package.json |
+| Name                          | Location     | Severity |
+| :---------------------------- | :----------- | :------- |
+| @backstage/backend-test-utils | package.json | error    |
 

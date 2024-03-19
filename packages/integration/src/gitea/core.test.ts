@@ -30,6 +30,22 @@ describe('gitea core', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
+  describe('getGiteaFileCatalogInfoCntentsUrl', () => {
+    it('can create an url from arguments', () => {
+      const config: GiteaIntegrationConfig = {
+        host: 'gitea.com',
+      };
+      expect(
+        getGiteaFileContentsUrl(
+          config,
+          'https://gitea.com/org1/repo1/src/branch/main/catalog-info.yaml',
+        ),
+      ).toEqual(
+        'https://gitea.com/api/v1/repos/org1/repo1/contents/catalog-info.yaml?ref=main',
+      );
+    });
+  });
+
   describe('getGiteaFileContentsUrl', () => {
     it('can create an url from arguments', () => {
       const config: GiteaIntegrationConfig = {
@@ -94,24 +110,10 @@ describe('gitea core', () => {
     });
   });
 
-  describe('getGerritRequestOptions', () => {
-    it('adds token header when only a password is specified', () => {
-      const authRequest: GiteaIntegrationConfig = {
-        host: 'gerrit.com',
-        password: 'P',
-      };
-      const anonymousRequest: GiteaIntegrationConfig = {
-        host: 'gerrit.com',
-      };
-      expect(
-        (getGiteaRequestOptions(authRequest).headers as any).Authorization,
-      ).toEqual('token P');
-      expect(getGiteaRequestOptions(anonymousRequest).headers).toBeUndefined();
-    });
-
+  describe('getGiteaRequestOptions', () => {
     it('adds basic auth when username and password are specified', () => {
       const authRequest: GiteaIntegrationConfig = {
-        host: 'gerrit.com',
+        host: 'gitea.com',
         username: 'username',
         password: 'P',
       };

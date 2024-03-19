@@ -1,5 +1,99 @@
 # @backstage/plugin-lighthouse-backend
 
+## 0.4.6
+
+### Patch Changes
+
+- 9f9ba70: **BREAKING**: The `createScheduler` function now requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-lighthouse-common@0.1.5
+
+## 0.4.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-lighthouse-common@0.1.5-next.1
+
+## 0.4.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/backend-tasks@0.5.19-next.1
+  - @backstage/plugin-lighthouse-common@0.1.5-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+
+## 0.4.5-next.0
+
+### Patch Changes
+
+- 9f9ba70: **BREAKING**: The `createScheduler` function now requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-lighthouse-common@0.1.5-next.0
+
+## 0.4.2
+
+### Patch Changes
+
+- b64ce5a: Updated New Backend System instructions to use default import
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/catalog-model@1.4.4
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-lighthouse-common@0.1.4
+
+## 0.4.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/backend-tasks@0.5.15-next.3
+  - @backstage/plugin-catalog-node@1.6.2-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-client@1.6.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-lighthouse-common@0.1.4
+
 ## 0.4.2-next.2
 
 ### Patch Changes

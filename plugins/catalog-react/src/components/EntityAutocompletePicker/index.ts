@@ -16,6 +16,7 @@
 
 export { EntityAutocompletePicker } from './EntityAutocompletePicker';
 export type {
+  CatalogReactEntityAutocompletePickerClassKey,
   EntityAutocompletePickerProps,
   AllowedEntityFilters,
 } from './EntityAutocompletePicker';

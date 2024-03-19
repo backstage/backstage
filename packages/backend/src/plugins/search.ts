@@ -23,9 +23,9 @@ import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-modu
 import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
 import {
   IndexBuilder,
+  SearchEngine,
   LunrSearchEngine,
 } from '@backstage/plugin-search-backend-node';
-import { SearchEngine } from '@backstage/plugin-search-common';
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -117,6 +117,7 @@ export default async function createPlugin(
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
     types: indexBuilder.getDocumentTypes(),
+    discovery: env.discovery,
     permissions: env.permissions,
     config: env.config,
     logger: env.logger,

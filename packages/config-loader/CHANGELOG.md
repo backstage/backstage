@@ -1,5 +1,68 @@
 # @backstage/config-loader
 
+## 1.7.0
+
+### Minor Changes
+
+- db8358d: Forward `null` values read from configuration files in configuration data, rather than treating them as an absence of config.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+
+## 1.7.0-next.1
+
+### Minor Changes
+
+- db8358d: Forward `null` values read from configuration files in configuration data, rather than treating them as an absence of config.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+
+## 1.6.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+
+## 1.6.2
+
+### Patch Changes
+
+- 0a9a03c: Make schema processing gracefully handle an empty config.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- bf3da16: Updated dependency `typescript-json-schema` to `^0.63.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 1.6.2-next.0
+
+### Patch Changes
+
+- 0a9a03c: Make schema processing gracefully handle an empty config.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 1.6.1
 
 ### Patch Changes

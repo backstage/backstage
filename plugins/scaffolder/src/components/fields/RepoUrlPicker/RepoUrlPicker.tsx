@@ -32,7 +32,9 @@ import { RepoUrlPickerProps } from './schema';
 import { RepoUrlPickerState } from './types';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
-import { Box, Divider, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 
 export { RepoUrlPickerSchema } from './schema';
 

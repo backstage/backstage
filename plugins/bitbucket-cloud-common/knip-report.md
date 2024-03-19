@@ -2,8 +2,8 @@
 
 ## Unused devDependencies (2)
 
-| Name                                | Location     |
-|:------------------------------------|:-------------|
-| ts-morph                            | package.json |
-| @openapitools/openapi-generator-cli | package.json |
+| Name                                | Location     | Severity |
+| :---------------------------------- | :----------- | :------- |
+| @openapitools/openapi-generator-cli | package.json | error    |
+| ts-morph                            | package.json | error    |
 

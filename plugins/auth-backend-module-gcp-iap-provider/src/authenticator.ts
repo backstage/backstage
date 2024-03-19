@@ -47,6 +47,9 @@ export const gcpIapAuthenticator = createProxyAuthenticator({
 
     const iapToken = await tokenValidator(token);
 
-    return { result: { iapToken } };
+    return {
+      result: { iapToken },
+      providerInfo: { iapToken },
+    };
   },
 });

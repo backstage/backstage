@@ -48,6 +48,7 @@ export const createGitlabIssueAction: (options: {
   {
     issueUrl: string;
     issueId: number;
+    issueIid: number;
   }
 >;
 
@@ -62,6 +63,7 @@ export const createGitlabProjectAccessTokenAction: (options: {
     name?: string | undefined;
     accessLevel?: number | undefined;
     scopes?: string[] | undefined;
+    expiresAt?: string | undefined;
   },
   {
     access_token: string;

@@ -32,6 +32,12 @@ backend:
   # auth:
   #   keys:
   #     - secret: ${BACKEND_SECRET}
+
+  auth:
+    # TODO: once plugins have been migrated we can remove this, but right now it
+    # is require for the backend-next to work in this repo
+    dangerouslyDisableDefaultAuthPolicy: true
+
   baseUrl: http://localhost:7007
   listen:
     port: 7007
@@ -236,7 +242,7 @@ catalog:
         - Domain
         - Location
   providers:
-    openapi:
+    backstageOpenapi:
       plugins:
         - catalog
         - search
@@ -391,8 +397,9 @@ auth:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
         scopes: ${AUTH_ATLASSIAN_SCOPES}
-    myproxy:
-      development: {}
+    myproxy: {}
+    guest: {}
+
 costInsights:
   engineerCost: 200000
   engineerThreshold: 0.5

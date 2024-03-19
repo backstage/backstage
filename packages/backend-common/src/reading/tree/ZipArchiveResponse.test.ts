@@ -246,7 +246,7 @@ describe('ZipArchiveResponse', () => {
     const filesPromise = res.files();
 
     await expect(filesPromise).rejects.toThrow(
-      'invalid comment length. expected: 55. found: 0',
+      /Invalid comment length. Expected: 55. Found: 0/,
     );
   });
 

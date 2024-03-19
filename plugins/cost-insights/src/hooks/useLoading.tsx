@@ -25,7 +25,8 @@ import React, {
   useReducer,
   useState,
 } from 'react';
-import { Backdrop, CircularProgress } from '@material-ui/core';
+import Backdrop from '@material-ui/core/Backdrop';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { Loading } from '../types';
 import {
   DefaultLoadingAction,

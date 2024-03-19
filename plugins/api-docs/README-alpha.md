@@ -71,7 +71,7 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
        # Auto discovering all plugins extensions
        packages: all
      extensions:
-       # Enabling some entity Cards
+       # Enabling some entity cards
        # The cards will be displayed in the same order it appears in this setting list
        # Shows a table of components that provides a particular api
        - entity-card:api-docs/providing-components:
@@ -83,7 +83,7 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
            config:
              # Presenting the card ony for entites of kind api
              filter: kind:api
-       # Enabling some Contents
+       # Enabling some contents
        # The contents will be displayed in the same order it appears in this setting list
        # Shows a "Definition" tab for entities of kind api
        - entity-content:api-docs/definition
@@ -98,7 +98,7 @@ To link that a component provides or consumes an API, see the [`providesApis`](h
 
 ### Packages
 
-By default, the `api-docs` can be automatically discovered, and it is also possible to enable this plugin only in certain [environments](https://backstage.io/docs/conf/writing/#configuration-files). For more package configuration options, see [this](https://backstage.io/docs/frontend-system/architecture/app/#feature-discovery) documentation.
+The `api-docs` plugin can be automatically discovered, and it is also possible to enable it only in certain [environments](https://backstage.io/docs/conf/writing/#configuration-files). See [this](https://backstage.io/docs/frontend-system/architecture/app/#feature-discovery) packages documentation for more details.
 
 ### Routes
 
@@ -203,7 +203,7 @@ Here is an example overriding the nav item extension with a custom icon componen
 
 ```tsx
 import { createExtensionOverrides, createNavItemExtension } from '@backstage/backstage-plugin-api';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
+import { MyCustomApiDocsIcon } from './components';
 
 export default createExtensionOverrides(
   extensions: [
@@ -212,10 +212,8 @@ export default createExtensionOverrides(
       namespace: 'api-docs',
       // It's your choice whether to use the original extension's title or a different one
       title: 'APIs',
-      // To continue pointing to the same page as the original extension, use the same route ref
-      routeRef: convertLegacyRouteRef(rootRoute),
-      // Custom icon components are loaded here
-      loader: () => import('./components').then(m => <m.MyCustomApiDocsComponent />)
+      // Setting a custom icon component
+      icon: MyCustomApiDocsIcon,
     })
   ]
 );

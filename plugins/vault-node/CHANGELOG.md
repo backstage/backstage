@@ -1,5 +1,49 @@
 # @backstage/plugin-vault-node
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14
+
+## 0.1.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.2
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.13-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10
+
+## 0.1.3-next.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.3
+
 ## 0.1.3-next.2
 
 ### Patch Changes

@@ -1,5 +1,162 @@
 # @backstage/backend-common
 
+## 0.21.4
+
+### Patch Changes
+
+- 7422430: Resolve the `basePath` before constructing the target path
+- 999224f: Bump dependency `minimatch` to v9
+- e0b997c: Fix issue where `resolveSafeChildPath` path would incorrectly resolve when operating on a symlink
+- 9802004: Added the `UserInfoApi` as both an optional input and as an output for `createLegacyAuthAdapters`
+- 2af5354: Bump dependency `jose` to v5
+- ff40ada: Updated dependency `mysql2` to `^3.0.0`.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- 568881f: Updated dependency `yauzl` to `^3.0.0`.
+- 4a3d434: Added a `createLegacyAuthAdapters` function that can be used as a compatibility adapter for backend plugins who want to start using the new [`auth`](https://backstage.io/docs/backend-system/core-services/auth/) and [`httpAuth`](https://backstage.io/docs/backend-system/core-services/http-auth) services that were created as part of [BEP-0003](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution).
+
+  See the [Auth Service Migration tutorial](https://backstage.io/docs/tutorials/auth-service-migration) for more information on the usage of this adapter.
+
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/backend-app-api@0.6.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/integration-aws-node@0.1.10
+  - @backstage/types@1.1.1
+
+## 0.21.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/backend-app-api@0.6.0-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/integration-aws-node@0.1.10-next.1
+  - @backstage/types@1.1.1
+
+## 0.21.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/backend-app-api@0.6.0-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/integration-aws-node@0.1.10-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+
+## 0.21.3-next.0
+
+### Patch Changes
+
+- 7422430: Resolve the `basePath` before constructing the target path
+- 999224f: Bump dependency `minimatch` to v9
+- e0b997c: Fix issue where `resolveSafeChildPath` path would incorrectly resolve when operating on a symlink
+- 9802004: Added the `UserInfoApi` as both an optional input and as an output for `createLegacyAuthAdapters`
+- 2af5354: Bump dependency `jose` to v5
+- ff40ada: Updated dependency `mysql2` to `^3.0.0`.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- 568881f: Updated dependency `yauzl` to `^3.0.0`.
+- 4a3d434: Added a `createLegacyAuthAdapters` function that can be used as a compatibility adapter for backend plugins who want to start using the new [`auth`](https://backstage.io/docs/backend-system/core-services/auth/) and [`httpAuth`](https://backstage.io/docs/backend-system/core-services/http-auth) services that were created as part of [BEP-0003](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution).
+
+  See the [Auth Service Migration tutorial](https://backstage.io/docs/tutorials/auth-service-migration) for more information on the usage of this adapter.
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/backend-app-api@0.6.0-next.0
+  - @backstage/config-loader@1.6.3-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/integration-aws-node@0.1.10-next.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+
+## 0.21.0
+
+### Minor Changes
+
+- bbe374e: **BREAKING**: `A gitilesBaseUrl` must be provided for the Gerrit integration to work.
+  You can disable this check by setting `DISABLE_GERRIT_GITILES_REQUIREMENT=1` but
+  this will be removed in a future release. If you are not able to use the Gitiles
+  Gerrit plugin, please open an issue towards `https://github.com/backstage/backstage`
+- e85aa98: drop databases after unit tests if the database instance is not running in docker
+
+### Patch Changes
+
+- 6707216: Added a new `LegacyRootDatabaseService` interface that can be used to avoid direct dependencies on the `DatabaseManager`.
+- 842171a: Fix a bug with S3 Fetch that caused all objects to be flattened within a single folder on the local file system.
+- 3489d05: `FetchUrlReader#readUrl()` now supports passing an optional `token` to authenticate requests.
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- ece5a8f: Add a User-Agent header for calls towards Google Cloud Storage.
+- 1f020fe: Support `token` in `readTree`, `readUrl` and `search`
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- d2e3ab9: Updated dependency `dockerode` to `^4.0.0`.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- e27b7f3: Fix rate limit detection by looking for HTTP status code 429 and updating the header `x-ratelimit-remaining` to look for in case of a 403 code is returned
+- 7fb7a79: Add a config declaration for `workingDirectory`
+- Updated dependencies
+  - @backstage/backend-app-api@0.5.11
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/integration-aws-node@0.1.9
+  - @backstage/integration@1.9.0
+  - @backstage/config-loader@1.6.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.21.0-next.3
+
+### Minor Changes
+
+- bbe374e: **BREAKING**: `A gitilesBaseUrl` must be provided for the Gerrit integration to work.
+  You can disable this check by setting `DISABLE_GERRIT_GITILES_REQUIREMENT=1` but
+  this will be removed in a future release. If you are not able to use the Gitiles
+  Gerrit plugin, please open an issue towards `https://github.com/backstage/backstage`
+
+### Patch Changes
+
+- 6707216: Added a new `LegacyRootDatabaseService` interface that can be used to avoid direct dependencies on the `DatabaseManager`.
+- 842171a: Fix a bug with S3 Fetch that caused all objects to be flattened within a single folder on the local file system.
+- ece5a8f: Add a User-Agent header for calls towards Google Cloud Storage.
+- 1cae748: Updated dependency `git-url-parse` to `^14.0.0`.
+- Updated dependencies
+  - @backstage/integration-aws-node@0.1.9-next.0
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/backend-app-api@0.5.11-next.3
+  - @backstage/config-loader@1.6.2-next.0
+  - @backstage/backend-dev-utils@0.1.4-next.0
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.21.0-next.2
 
 ### Patch Changes

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Button, Grid } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import Pagination from '@material-ui/lab/Pagination';
 import React, { ChangeEvent, ReactNode, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';

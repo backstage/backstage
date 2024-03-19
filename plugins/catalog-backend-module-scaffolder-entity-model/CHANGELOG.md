@@ -1,5 +1,73 @@
 # @backstage/plugin-catalog-backend-module-scaffolder-entity-model
 
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-scaffolder-common@1.5.1
+
+## 0.1.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-scaffolder-common@1.5.1-next.1
+
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+  - @backstage/plugin-scaffolder-common@1.5.1-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+  - @backstage/plugin-scaffolder-common@1.5.1-next.0
+
+## 0.1.7
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/plugin-scaffolder-common@1.5.0
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/plugin-catalog-common@1.0.21
+
+## 0.1.7-next.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.6.2-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/plugin-catalog-common@1.0.21-next.0
+  - @backstage/plugin-scaffolder-common@1.5.0-next.1
+
 ## 0.1.7-next.2
 
 ### Patch Changes

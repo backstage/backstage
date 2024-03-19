@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name | Location     |
-|:-----|:-------------|
-| yaml | package.json |
+| Name | Location     | Severity |
+| :--- | :----------- | :------- |
+| yaml | package.json | error    |
 

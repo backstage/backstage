@@ -18,10 +18,13 @@ import {
   createServiceBuilder,
   loadBackendConfig,
   UrlReaders,
+  ServerTokenManager,
+  HostDiscovery,
 } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 export interface ServerOptions {
   port: number;
@@ -34,13 +37,23 @@ export async function startStandaloneServer(
 ): Promise<Server> {
   const logger = options.logger.child({ service: 'azure-devops-backend' });
   const config = await loadBackendConfig({ logger, argv: process.argv });
+  const discovery = HostDiscovery.fromConfig(config);
 
   logger.debug('Starting application server...');
+
+  const tokenManager = ServerTokenManager.fromConfig(config, {
+    logger,
+  });
+  const permissions = ServerPermissionClient.fromConfig(config, {
+    discovery,
+    tokenManager,
+  });
 
   const router = await createRouter({
     logger,
     config,
     reader: UrlReaders.default({ logger, config }),
+    permissions,
   });
 
   let service = createServiceBuilder(module)

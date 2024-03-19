@@ -2,7 +2,7 @@
 
 ## Unused devDependencies (1)
 
-| Name      | Location     |
-|:----------|:-------------|
-| jest-when | package.json |
+| Name      | Location     | Severity |
+| :-------- | :----------- | :------- |
+| jest-when | package.json | error    |
 

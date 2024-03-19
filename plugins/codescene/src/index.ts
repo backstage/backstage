@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,5 +17,11 @@ export {
   codescenePlugin,
   CodeScenePage,
   CodeSceneProjectDetailsPage,
+  CodeSceneEntityFileSummary,
+  CodeSceneEntityKPICard,
 } from './plugin';
 export { CodeSceneIcon } from './CodeSceneIcon';
+export {
+  isCodeSceneAvailable,
+  CODESCENE_PROJECT_ANNOTATION,
+} from './utils/commonUtil';

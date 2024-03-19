@@ -21,15 +21,13 @@ import { ScmIntegrations } from '@backstage/integration';
 import {
   createTemplateAction,
   fetchContents,
+  TemplateFilter,
+  TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import globby from 'globby';
 import fs from 'fs-extra';
 import { isBinaryFile } from 'isbinaryfile';
-import {
-  TemplateFilter,
-  SecureTemplater,
-  TemplateGlobal,
-} from '../../../../lib/templating/SecureTemplater';
+import { SecureTemplater } from '../../../../lib/templating/SecureTemplater';
 import { createDefaultFilters } from '../../../../lib/templating/filters';
 import { examples } from './template.examples';
 

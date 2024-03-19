@@ -2,15 +2,14 @@
 
 ## Unused dependencies (1)
 
-| Name         | Location     |
-|:-------------|:-------------|
-| global-agent | package.json |
+| Name         | Location     | Severity |
+| :----------- | :----------- | :------- |
+| global-agent | package.json | error    |
 
-## Unused devDependencies (3)
+## Unused devDependencies (2)
 
-| Name               | Location     |
-|:-------------------|:-------------|
-| ts-node            | package.json |
-| nodemon            | package.json |
-| @types/webpack-env | package.json |
+| Name               | Location     | Severity |
+| :----------------- | :----------- | :------- |
+| @types/webpack-env | package.json | error    |
+| nodemon            | package.json | error    |
 

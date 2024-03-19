@@ -26,6 +26,7 @@ import { Router } from 'express';
 import request from 'supertest';
 
 import { startTestBackend } from './TestBackend';
+import { mockCredentials } from '../services';
 
 // This bit makes sure that test backends are cleaned up properly
 let globalTestBackendHasBeenStopped = false;
@@ -199,9 +200,11 @@ describe('TestBackend', () => {
             scheduler: coreServices.scheduler,
             tokenManager: coreServices.tokenManager,
             urlReader: coreServices.urlReader,
+            auth: coreServices.auth,
+            httpAuth: coreServices.httpAuth,
           },
           async init(deps) {
-            expect(Object.keys(deps)).toHaveLength(15);
+            expect(Object.keys(deps)).toHaveLength(17);
             expect(Object.values(deps)).not.toContain(undefined);
           },
         });
@@ -232,7 +235,9 @@ describe('TestBackend', () => {
 
     const { server } = await startTestBackend({ features: [testPlugin()] });
 
-    const res = await request(server).get('/api/test/ping-me');
+    const res = await request(server)
+      .get('/api/test/ping-me')
+      .set('authorization', mockCredentials.user.header());
     expect(res.status).toEqual(200);
     expect(res.body).toEqual({ message: 'pong' });
   });

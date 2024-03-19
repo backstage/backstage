@@ -15,6 +15,7 @@
  */
 
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 jest.mock('./gitHelpers', () => {
   return {
@@ -23,7 +24,6 @@ jest.mock('./gitHelpers', () => {
   };
 });
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -31,7 +31,6 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { when } from 'jest-when';
-import { PassThrough } from 'stream';
 import { createGithubRepoCreateAction } from './githubRepoCreate';
 import { entityRefToName } from './gitHelpers';
 
@@ -58,6 +57,7 @@ const mockOctokit = {
       getRepoPublicKey: jest.fn(),
     },
   },
+  request: jest.fn(),
 };
 jest.mock('octokit', () => ({
   Octokit: class {
@@ -81,19 +81,14 @@ describe('github:repo:create', () => {
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;
 
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
       description: 'description',
       repoVisibility: 'private' as const,
       access: 'owner/blam',
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     githubCredentialsProvider =
@@ -650,6 +645,40 @@ describe('github:repo:create', () => {
       key_id: 'keyid',
       encrypted_value: expect.any(String),
     });
+  });
+
+  it('should configure oidc customizations when provided', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {
+        clone_url: 'https://github.com/clone/url.git',
+        html_url: 'https://github.com/html/url',
+      },
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        oidcCustomization: {
+          useDefault: false,
+          includeClaimKeys: ['foo', 'bar'],
+        },
+      },
+    });
+
+    expect(mockOctokit.request).toHaveBeenCalledWith(
+      'PUT /repos/{owner}/{repo}/actions/oidc/customization/sub',
+      {
+        include_claim_keys: ['foo', 'bar'],
+        owner: 'owner',
+        repo: 'repo',
+        use_default: false,
+      },
+    );
   });
 
   it('should call output with the remoteUrl', async () => {

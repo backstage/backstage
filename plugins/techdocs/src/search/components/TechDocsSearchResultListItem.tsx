@@ -15,7 +15,9 @@
  */
 
 import React, { PropsWithChildren, ReactNode } from 'react';
-import { ListItemIcon, ListItemText, makeStyles } from '@material-ui/core';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 import { ResultHighlight } from '@backstage/plugin-search-common';

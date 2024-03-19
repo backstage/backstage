@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import { SignInResolver, AuthHandler } from '../types';
-import { OAuthResult } from '../../lib/oauth';
-import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { createOAuthProviderFactory } from '@backstage/plugin-auth-node';
+import { atlassianAuthenticator } from '@backstage/plugin-auth-backend-module-atlassian-provider';
+import {
+  SignInResolver,
+  createOAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
 import {
   adaptLegacyOAuthHandler,
   adaptLegacyOAuthSignInResolver,
 } from '../../lib/legacy';
-import { atlassianAuthenticator } from '@backstage/plugin-auth-backend-module-atlassian-provider';
+import { OAuthResult } from '../../lib/oauth';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { AuthHandler } from '../types';
 
 /**
  * Auth provider integration for Atlassian auth

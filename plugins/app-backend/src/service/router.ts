@@ -37,6 +37,7 @@ import {
   CACHE_CONTROL_NO_CACHE,
   CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
+import { ConfigSchema } from '@backstage/config-loader';
 
 // express uses mime v1 while we only have types for mime v2
 type Mime = { lookup(arg0: string): string };
@@ -85,6 +86,13 @@ export interface RouterOptions {
    * This also disables configuration injection though `APP_CONFIG_` environment variables.
    */
   disableConfigInjection?: boolean;
+
+  /**
+   *
+   * Provides a ConfigSchema.
+   *
+   */
+  schema?: ConfigSchema;
 }
 
 /** @public */
@@ -121,6 +129,7 @@ export async function createRouter(
       config,
       appDistDir,
       env: process.env,
+      schema: options.schema,
     });
 
     injectedConfigPath = await injectConfig({ appConfigs, logger, staticDir });

@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGithubDeployKeyAction } from './githubDeployKey';
 import yaml from 'yaml';
 import { examples } from './githubDeployKey.examples';
-import { PassThrough } from 'stream';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 
@@ -55,13 +54,7 @@ describe('Usage examples', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   let action: TemplateAction<any>;
 
-  const mockContext = {
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
 
   beforeEach(() => {
     jest.resetAllMocks();

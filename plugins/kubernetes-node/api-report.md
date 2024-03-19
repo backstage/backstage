@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { ClusterDetails as ClusterDetails_2 } from '@backstage/plugin-kubernetes-node';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Entity } from '@backstage/catalog-model';
@@ -51,6 +52,7 @@ export interface ClusterDetails {
   skipMetricsLookup?: boolean;
   // (undocumented)
   skipTLSVerify?: boolean;
+  title?: string;
   // (undocumented)
   url: string;
 }
@@ -86,7 +88,9 @@ export const kubernetesAuthStrategyExtensionPoint: ExtensionPoint<KubernetesAuth
 
 // @public
 export interface KubernetesClustersSupplier {
-  getClusters(): Promise<ClusterDetails[]>;
+  getClusters(options?: {
+    credentials: BackstageCredentials;
+  }): Promise<ClusterDetails[]>;
 }
 
 // @public

@@ -1,5 +1,61 @@
 # @backstage/plugin-stackstorm
 
+## 0.1.12
+
+### Patch Changes
+
+- b8234ce: Added ESLint rule `no-top-level-material-ui-4-imports` in the `stackstorm` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+
+## 0.1.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+
+## 0.1.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+
+## 0.1.11
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/errors@1.2.3
+
+## 0.1.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+
 ## 0.1.11-next.1
 
 ### Patch Changes

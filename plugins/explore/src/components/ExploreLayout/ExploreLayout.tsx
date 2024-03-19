@@ -19,7 +19,7 @@ import {
   attachComponentData,
   useElementFilter,
 } from '@backstage/core-plugin-api';
-import { TabProps } from '@material-ui/core';
+import { TabProps } from '@material-ui/core/Tab';
 import { default as React } from 'react';
 
 // TODO: This layout could be a shared based component if it was possible to create custom TabbedLayouts

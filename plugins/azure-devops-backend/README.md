@@ -6,28 +6,26 @@ Simple plugin that proxies requests to the [Azure DevOps](https://docs.microsoft
 
 The following sections will help you get the Azure DevOps Backend plugin setup and running.
 
-### Configuration
+### Credentials
 
-The Azure DevOps plugin requires the following YAML to be added to your `app-config.yaml`:
+In order to support **Multiple Organizations** as well as **Service Principals** and **Managed Identity** the Azure DevOps plugin relies on the `integrations.azure` section of your `app-config.yaml` being properly configured to be able to access the needed credentials. More details on this can be found in the [Azure DevOps Locations](https://backstage.io/docs/integrations/azure/locations) documentation.
+
+### Single Organization Configuration
+
+For those with a single organization the Azure DevOps plugin requires the following YAML configuration to be added to your `app-config.yaml`:
 
 ```yaml
 azureDevOps:
   host: dev.azure.com
-  token: ${AZURE_TOKEN}
   organization: my-company
 ```
 
 Configuration Details:
 
-- `host` and `token` can be the same as the ones used for the `integration` section
-- `AZURE_TOKEN` environment variable must be set to a [Personal Access Token](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate?view=azure-devops&tabs=preview-page) with read access to both Code and Build
+- `host` can be the same as the ones used for the `integration` section
 - `organization` is your Azure DevOps Services (cloud) Organization name or for Azure DevOps Server (on-premise) this will be your Collection name
 
-#### Multi Organization & Service Principals
-
-To support cases where you have multiple Azure DevOps organizations and/or you want to use a Service Principal you will want to make sure to configure them in the `integrations.azure` section of your `app-config.yaml` as detailed in the [Azure DevOps Locations](https://backstage.io/docs/integrations/azure/locations) documentation.
-
-**Note:** You will still need to define the [configuration above](#configuration).
+> Note: The credentials in this setup would still need to be defined in your `integrations.azure` section of your `app-config.yaml` as noted in the [Credentials](#credentials) section above.
 
 ### Up and Running
 
@@ -84,13 +82,12 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { azureDevOpsPlugin } from '@backstage/plugin-azure-devops-backend';
 
   const backend = createBackend();
 
   // ... other feature additions
 
-+ backend.add(azureDevOpsPlugin());
++ backend.add(import('@backstage/plugin-azure-devops-backend'));
 
   backend.start();
 ```

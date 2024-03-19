@@ -22,7 +22,9 @@ import { ErrorGraph } from '../ErrorGraph/ErrorGraph';
 import { Table, TableColumn } from '@backstage/core-components';
 import Select from '@material-ui/core/Select';
 import { Options } from '@material-table/core';
-import { FormControl, Grid, MenuItem } from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import MenuItem from '@material-ui/core/MenuItem';
 
 const ONE_DAY_IN_MILLIS = 86400000;
 const SEVEN_DAYS_IN_MILLIS = ONE_DAY_IN_MILLIS * 7;

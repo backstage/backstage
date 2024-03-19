@@ -2,14 +2,14 @@
 
 ## Unused dependencies (1)
 
-| Name | Location     |
-|:----|:-------------|
-| jss | package.json |
+| Name | Location     | Severity |
+| :-- | :----------- | :------- |
+| jss | package.json | error    |
 
 ## Unused devDependencies (2)
 
-| Name                 | Location     |
-|:---------------------|:-------------|
-| canvas               | package.json |
-| @testing-library/dom | package.json |
+| Name                 | Location     | Severity |
+| :------------------- | :----------- | :------- |
+| @testing-library/dom | package.json | error    |
+| canvas               | package.json | error    |
 

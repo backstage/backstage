@@ -93,6 +93,8 @@ _Note:_
 5. In the window that appears, enter the name of the branch you want to add and click "Add".
 6. The added branch will now appear in the "Searchable branches" list.
 
+It may take some time before the branch is indexed and searchable.
+
 As this provider is not one of the default providers, you will first need to install
 the Azure catalog plugin:
 
@@ -160,11 +162,14 @@ catalog:
     # Or use a custom file format and location
     - type: azure-discovery
       target: https://dev.azure.com/myorg/myproject/_git/*?path=/src/*/catalog-info.yaml
+    # And optionally provide a specific branch name using the version parameter
+    - type: azure-discovery
+      target: https://dev.azure.com/myorg/myproject/_git/*?path=/catalog-info.yaml&version=GBtopic/catalog-info
 ```
 
 Note the `azure-discovery` type, as this is not a regular `url` processor.
 
-When using a custom pattern, the target is composed of five parts:
+When using a custom pattern, the target is composed of these parts:
 
 - The base instance URL, `https://dev.azure.com` in this case
 - The organization name which is required, `myorg` in this case
@@ -175,3 +180,4 @@ When using a custom pattern, the target is composed of five parts:
 - The path within each repository to find the catalog YAML file. This will
   usually be `/catalog-info.yaml`, `/src/*/catalog-info.yaml` or a similar
   variation for catalog files stored in the root directory of each repository.
+- The repository branch to scan which is optional, `topic/catalog-info` in this case. If omitted, the repo's default branch will be scanned. The `GB` prefix is required, as this is how Azure DevOps identifies the version as a branch.

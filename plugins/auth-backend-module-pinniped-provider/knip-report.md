@@ -2,9 +2,9 @@
 
 ## Unused devDependencies (3)
 
-| Name            | Location     |
-|:----------------|:-------------|
-| passport        | package.json |
-| cookie-parser   | package.json |
-| express-session | package.json |
+| Name            | Location     | Severity |
+| :-------------- | :----------- | :------- |
+| express-session | package.json | error    |
+| cookie-parser   | package.json | error    |
+| passport        | package.json | error    |
 

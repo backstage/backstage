@@ -1,5 +1,61 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+
+## 0.1.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+
+## 0.1.1
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+
+## 0.1.1-next.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.3
+
 ## 0.1.1-next.2
 
 ### Patch Changes

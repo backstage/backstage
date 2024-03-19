@@ -17,3 +17,4 @@
 export * from './service/router';
 export * from './api';
 export * from './config';
+export { azureSitesPlugin as default } from './plugin';

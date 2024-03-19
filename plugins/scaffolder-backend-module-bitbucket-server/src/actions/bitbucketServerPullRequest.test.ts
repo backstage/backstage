@@ -32,8 +32,7 @@ import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('publish:bitbucketServer:pull-request', () => {
   const config = new ConfigReader({
@@ -62,7 +61,7 @@ describe('publish:bitbucketServer:pull-request', () => {
     integrations,
     config,
   });
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'hosted.bitbucket.com?project=project&repo=repo',
       title: 'Add Scaffolder actions for Bitbucket Server',
@@ -71,12 +70,7 @@ describe('publish:bitbucketServer:pull-request', () => {
       targetBranch: 'master',
       sourceBranch: 'develop',
     },
-    workspacePath: 'wsp',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
   const responseOfBranches = {
     size: 3,
     limit: 25,

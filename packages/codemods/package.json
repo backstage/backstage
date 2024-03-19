@@ -1,58 +1,57 @@
 {
   "name": "@backstage/codemods",
+  "version": "0.1.48",
   "description": "A collection of codemods for Backstage projects",
-  "version": "0.1.46",
+  "backstage": {
+    "role": "cli"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js"
   },
-  "backstage": {
-    "role": "cli"
-  },
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/codemods"
   },
-  "keywords": [
-    "backstage"
-  ],
   "license": "Apache-2.0",
   "main": "src/index.ts",
-  "scripts": {
-    "start": "nodemon --",
-    "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
-    "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
-  },
   "bin": {
     "backstage-codemods": "bin/backstage-codemods"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "transforms"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "nodemon --",
+    "test": "backstage-cli package test"
+  },
+  "nodemonConfig": {
+    "exec": "bin/backstage-codemods",
+    "ext": "ts",
+    "watch": "./src"
   },
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
     "chalk": "^4.0.0",
-    "commander": "^9.1.0",
+    "commander": "^12.0.0",
     "jscodeshift": "^0.15.0",
     "jscodeshift-add-imports": "^1.0.10"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/jscodeshift": "^0.11.0",
-    "@types/node": "^18.17.8",
-    "ts-node": "^10.0.0"
-  },
-  "nodemonConfig": {
-    "watch": "./src",
-    "exec": "bin/backstage-codemods",
-    "ext": "ts"
-  },
-  "files": [
-    "bin",
-    "dist",
-    "transforms"
-  ]
+    "@types/node": "^18.17.8"
+  }
 }

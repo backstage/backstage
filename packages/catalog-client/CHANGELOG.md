@@ -1,5 +1,45 @@
 # @backstage/catalog-client
 
+## 1.6.1
+
+### Patch Changes
+
+- 6f830bb: Allow passing optional filter to `getEntitiesByRefs`
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/catalog-model@1.4.5
+
+## 1.6.1-next.1
+
+### Patch Changes
+
+- 6f830bb: Allow passing optional filter to `getEntitiesByRefs`
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+
+## 1.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+
+## 1.6.0
+
+### Minor Changes
+
+- 43dad25: Add API to get location by entity
+- 04907c3: Updates the OpenAPI specification title to plugin ID instead of package name.
+
+### Patch Changes
+
+- c04c42b: Internal updates to auto-generated files.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4
+  - @backstage/errors@1.2.3
+
 ## 1.6.0-next.1
 
 ### Minor Changes

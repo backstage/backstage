@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name              | Location     |
-|:------------------|:-------------|
-| winston-transport | package.json |
+| Name              | Location     | Severity |
+| :---------------- | :----------- | :------- |
+| winston-transport | package.json | error    |
 

@@ -39,6 +39,11 @@ import {
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
+/**
+ * Helper for generating octokit configuration options for given repoUrl.
+ * If no token is provided, it will attempt to get a token from the credentials provider.
+ * @public
+ */
 export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
@@ -137,6 +142,12 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   topics: string[] | undefined,
   repoVariables: { [key: string]: string } | undefined,
   secrets: { [key: string]: string } | undefined,
+  oidcCustomization:
+    | {
+        useDefault: boolean;
+        includeClaimKeys?: string[];
+      }
+    | undefined,
   logger: Logger,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
@@ -302,6 +313,18 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         key_id: publicKeyResponse.data.key_id,
       });
     }
+  }
+
+  if (oidcCustomization) {
+    await client.request(
+      'PUT /repos/{owner}/{repo}/actions/oidc/customization/sub',
+      {
+        owner,
+        repo,
+        use_default: oidcCustomization.useDefault,
+        include_claim_keys: oidcCustomization.includeClaimKeys,
+      },
+    );
   }
 
   return newRepo;

@@ -108,7 +108,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
       <DialogTitle>{feedbackDialogTitle}</DialogTitle>
       <DialogContent>
         <FormControl component="fieldset">
-          <FormLabel component="legend">Choose all that applies</FormLabel>
+          <FormLabel component="legend">Choose all that apply</FormLabel>
           <FormGroup>
             {feedbackDialogResponses.map(response => (
               <FormControlLabel

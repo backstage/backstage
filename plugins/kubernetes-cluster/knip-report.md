@@ -2,18 +2,18 @@
 
 ## Unused dependencies (5)
 
-| Name                    | Location     |
-|:------------------------|:-------------|
-| luxon                   | package.json |
-| lodash                  | package.json |
-| js-yaml                 | package.json |
-| cronstrue               | package.json |
-| @kubernetes-models/base | package.json |
+| Name                    | Location     | Severity |
+| :---------------------- | :----------- | :------- |
+| @kubernetes-models/base | package.json | error    |
+| cronstrue               | package.json | error    |
+| js-yaml                 | package.json | error    |
+| lodash                  | package.json | error    |
+| luxon                   | package.json | error    |
 
 ## Unused devDependencies (2)
 
-| Name                   | Location     |
-|:-----------------------|:-------------|
-| @testing-library/dom   | package.json |
-| @testing-library/react | package.json |
+| Name                   | Location     | Severity |
+| :--------------------- | :----------- | :------- |
+| @testing-library/react | package.json | error    |
+| @testing-library/dom   | package.json | error    |
 

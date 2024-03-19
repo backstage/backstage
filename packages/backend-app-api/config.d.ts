@@ -14,7 +14,46 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
+  backend?: {
+    auth?: {
+      /**
+       * This disables the otherwise default auth policy, which requires all
+       * requests to be authenticated with either user or service credentials.
+       *
+       * Disabling this check means that the backend will no longer block
+       * unauthenticated requests, but instead allow them to pass through to
+       * plugins.
+       *
+       * If permissions are enabled, unauthenticated requests will be treated
+       * exactly as such, leaving it to the permission policy to determine what
+       * permissions should be allowed for an unauthenticated identity. Note
+       * that this will also apply to service-to-service calls between plugins
+       * unless you configure credentials for service calls.
+       */
+      dangerouslyDisableDefaultAuthPolicy?: boolean;
+    };
+    /** @visibility frontend */
+    rateLimit?:
+      | false
+      | {
+          /**
+           * Limit each IP to max requests per window, defaults to 60 requests.
+           */
+          max?: number;
+          /**
+           * The duration for which the rate limit is enforced, defaults to 1 minute.
+           */
+          window?: HumanDuration;
+          /**
+           * Disable the rate limit verification.
+           */
+          disable?: true;
+        };
+  };
+
   /** Discovery options. */
   discovery?: {
     /**

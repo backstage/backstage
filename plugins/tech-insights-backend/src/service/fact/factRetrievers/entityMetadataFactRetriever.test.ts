@@ -23,6 +23,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { GetEntitiesResponse } from '@backstage/catalog-client';
 import { entityMetadataFactRetriever } from './entityMetadataFactRetriever';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const getEntitiesMock = jest.fn();
 jest.mock('@backstage/catalog-client', () => {
@@ -104,6 +105,7 @@ const defaultEntityListResponse: GetEntitiesResponse = {
 const handlerContext = {
   discovery,
   logger: getVoidLogger(),
+  auth: mockServices.auth(),
   config: ConfigReader.fromConfigs([]),
   tokenManager: ServerTokenManager.noop(),
 };

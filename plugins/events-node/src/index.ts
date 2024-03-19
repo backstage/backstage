@@ -21,3 +21,5 @@
  */
 
 export * from './api';
+export * from './deprecated';
+export { eventsServiceRef } from './service';

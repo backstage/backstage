@@ -20,8 +20,9 @@ import { GetEntityFacetsRequest } from '@backstage/catalog-client';
 import { makeValidator } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { FormControl, TextField } from '@material-ui/core';
-import { Autocomplete } from '@material-ui/lab';
+import FormControl from '@material-ui/core/FormControl';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { EntityTagsPickerProps } from './schema';
 
 export { EntityTagsPickerSchema } from './schema';

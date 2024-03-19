@@ -65,11 +65,9 @@ The ADR backend plugin has support for the [new backend system](https://backstag
 In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
-
-+ import { adrPlugin } from '@backstage/plugin-adr-backend';
   const backend = createBackend();
 
-+ backend.add(adrPlugin());
++ backend.add(import('@backstage/plugin-adr-backend'));
 
 // ... other feature additions
 

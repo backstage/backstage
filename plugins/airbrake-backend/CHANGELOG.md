@@ -1,5 +1,60 @@
 # @backstage/plugin-airbrake-backend
 
+## 0.3.11
+
+### Patch Changes
+
+- 4467036: Allow unauthenticated access to health check endpoint.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+
+## 0.3.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+
+## 0.3.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+
+## 0.3.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/config@1.1.2-next.0
+
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/config@1.1.1
+
+## 0.3.7-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/config@1.1.1
+
 ## 0.3.7-next.2
 
 ### Patch Changes

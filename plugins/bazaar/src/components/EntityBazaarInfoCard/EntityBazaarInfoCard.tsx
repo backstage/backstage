@@ -21,7 +21,7 @@ import { stringifyEntityRef } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { bazaarApiRef } from '../../api';
 import { EntityBazaarInfoContent } from '../EntityBazaarInfoContent';
-import { Card } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
 import { parseBazaarResponse } from '../../util/parseMethods';
 
 /** @public */

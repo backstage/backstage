@@ -1,5 +1,142 @@
 # @backstage/backend-app-api
 
+## 0.6.0
+
+### Minor Changes
+
+- 4a3d434: **BREAKING**: For users that have migrated to the new backend system, incoming requests will now be rejected if they are not properly authenticated (e.g. with a Backstage bearer token or a backend token). Please see the [Auth Service Migration tutorial](https://backstage.io/docs/tutorials/auth-service-migration) for more information on how to circumvent this behavior in the short term and how to properly leverage it in the longer term.
+
+  Added service factories for the new [`auth`](https://backstage.io/docs/backend-system/core-services/auth/), [`httpAuth`](https://backstage.io/docs/backend-system/core-services/http-auth), and [`userInfo`](https://backstage.io/docs/backend-system/core-services/user-info) services that were created as part of [BEP-0003](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution).
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+- 81e0120: Fixed an issue where configuration schema for the purpose of redacting secrets from logs was not being read correctly.
+- 15fda44: Provide some sane defaults for `WinstonLogger.create` making some of the arguments optional
+- 0502d82: Updated the `permissionsServiceFactory` to forward the `AuthService` to the implementation.
+- 9d91128: Add the possibility to disable watching files in the new backend system
+- a5d341e: Adds an initial rate-limiting implementation so that any incoming requests that have a `'none'` principal are rate-limited automatically.
+- 9802004: Made the `DefaultUserInfoService` claims check stricter
+- f235ca7: Make sure to not filter out schemas in `createConfigSecretEnumerator`
+- af5f7a6: The experimental feature discovery service exported at the `/alpha` sub-path will no longer attempt to load packages that are not Backstage backend packages.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/config-loader@1.7.0
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/cli-node@0.2.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+
+## 0.6.0-next.2
+
+### Patch Changes
+
+- 15fda44: Provide some sane defaults for `WinstonLogger.create` making some of the arguments optional
+- 9d91128: Add the possibility to disable watching files in the new backend system
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-node@0.7.25-next.2
+
+## 0.6.0-next.1
+
+### Patch Changes
+
+- 81e0120: Fixed an issue where configuration schema for the purpose of redacting secrets from logs was not being read correctly.
+- f235ca7: Make sure to not filter out schemas in `createConfigSecretEnumerator`
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/backend-tasks@0.5.19-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+
+## 0.6.0-next.0
+
+### Minor Changes
+
+- 4a3d434: **BREAKING**: For users that have migrated to the new backend system, incoming requests will now be rejected if they are not properly authenticated (e.g. with a Backstage bearer token or a backend token). Please see the [Auth Service Migration tutorial](https://backstage.io/docs/tutorials/auth-service-migration) for more information on how to circumvent this behavior in the short term and how to properly leverage it in the longer term.
+
+  Added service factories for the new [`auth`](https://backstage.io/docs/backend-system/core-services/auth/), [`httpAuth`](https://backstage.io/docs/backend-system/core-services/http-auth), and [`userInfo`](https://backstage.io/docs/backend-system/core-services/user-info) services that were created as part of [BEP-0003](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution).
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+- 0502d82: Updated the `permissionsServiceFactory` to forward the `AuthService` to the implementation.
+- 9802004: Made the `DefaultUserInfoService` claims check stricter
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/plugin-permission-node@0.7.24-next.0
+  - @backstage/cli-node@0.2.4-next.0
+  - @backstage/config-loader@1.6.3-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+
+## 0.5.11
+
+### Patch Changes
+
+- e0c18ef: Include the extension point ID and the module ID in the backend init error message.
+- 7ae5704: Updated the default error handling middleware to filter out certain known error types that should never be returned in responses. The errors are instead logged along with a correlation ID, which is also returned in the response. Initially only PostgreSQL protocol errors from the `pg-protocol` package are filtered out.
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 54ad8e1: Allow the `createConfigSecretEnumerator` to take an optional `schema` argument with an already-loaded global configuration schema.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/cli-node@0.2.3
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/config-loader@1.6.2
+  - @backstage/plugin-permission-node@0.7.21
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
+## 0.5.11-next.3
+
+### Patch Changes
+
+- 54ad8e1: Allow the `createConfigSecretEnumerator` to take an optional `schema` argument with an already-loaded global configuration schema.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/cli-node@0.2.3-next.0
+  - @backstage/backend-tasks@0.5.15-next.3
+  - @backstage/config-loader@1.6.2-next.0
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/plugin-permission-node@0.7.21-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.5.11-next.2
 
 ### Patch Changes

@@ -1,5 +1,60 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.43
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/core-components@0.14.1
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.3.43-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.3.43-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/integration@1.9.1-next.1
+
+## 0.3.43-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/integration@1.9.1-next.0
+
+## 0.3.42
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0
+  - @backstage/integration@1.9.0
+  - @backstage/core-plugin-api@1.9.0
+
+## 0.3.42-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+
 ## 0.3.42-next.1
 
 ### Patch Changes

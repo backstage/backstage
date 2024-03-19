@@ -14,35 +14,73 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import {
   Content,
-  ErrorPanel,
   PageWithHeader,
+  ResponseErrorPanel,
 } from '@backstage/core-components';
-import { NotificationsTable } from '../NotificationsTable';
-import { useNotificationsApi } from '../../hooks';
-import { Button, Grid, makeStyles } from '@material-ui/core';
-import Bookmark from '@material-ui/icons/Bookmark';
-import Check from '@material-ui/icons/Check';
-import Inbox from '@material-ui/icons/Inbox';
-import { NotificationType } from '@backstage/plugin-notifications-common';
+import { Grid } from '@material-ui/core';
 import { useSignal } from '@backstage/plugin-signals-react';
 
-const useStyles = makeStyles(_theme => ({
-  filterButton: {
-    width: '100%',
-    justifyContent: 'start',
-  },
-}));
+import { NotificationsTable } from '../NotificationsTable';
+import { useNotificationsApi } from '../../hooks';
+import {
+  CreatedAfterOptions,
+  NotificationsFilters,
+  SortBy,
+  SortByOptions,
+} from '../NotificationsFilters';
+import { GetNotificationsOptions } from '../../api';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 
 export const NotificationsPage = () => {
-  const [type, setType] = useState<NotificationType>('undone');
   const [refresh, setRefresh] = React.useState(false);
+  const { lastSignal } = useSignal('notifications');
+  const [unreadOnly, setUnreadOnly] = React.useState<boolean | undefined>(true);
+  const [saved, setSaved] = React.useState<boolean | undefined>(undefined);
+  const [pageNumber, setPageNumber] = React.useState(0);
+  const [pageSize, setPageSize] = React.useState(5);
+  const [containsText, setContainsText] = React.useState<string>();
+  const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
+  const [sorting, setSorting] = React.useState<SortBy>(
+    SortByOptions.newest.sortBy,
+  );
+  const [severity, setSeverity] = React.useState<NotificationSeverity>('low');
 
-  const { error, value, retry } = useNotificationsApi(
-    api => api.getNotifications({ type }),
-    [type],
+  const { error, value, retry, loading } = useNotificationsApi(
+    api => {
+      const options: GetNotificationsOptions = {
+        search: containsText,
+        limit: pageSize,
+        offset: pageNumber * pageSize,
+        minimumSeverity: severity,
+        ...(sorting || {}),
+      };
+      if (unreadOnly !== undefined) {
+        options.read = !unreadOnly;
+      }
+      if (saved !== undefined) {
+        options.saved = saved;
+      }
+
+      const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
+      if (createdAfterDate.valueOf() > 0) {
+        options.createdAfter = createdAfterDate;
+      }
+
+      return api.getNotifications(options);
+    },
+    [
+      containsText,
+      unreadOnly,
+      createdAfter,
+      pageNumber,
+      pageSize,
+      sorting,
+      saved,
+      severity,
+    ],
   );
 
   useEffect(() => {
@@ -52,7 +90,6 @@ export const NotificationsPage = () => {
     }
   }, [refresh, setRefresh, retry]);
 
-  const { lastSignal } = useSignal('notifications');
   useEffect(() => {
     if (lastSignal && lastSignal.action) {
       setRefresh(true);
@@ -63,9 +100,8 @@ export const NotificationsPage = () => {
     setRefresh(true);
   };
 
-  const styles = useStyles();
   if (error) {
-    return <ErrorPanel error={new Error('Failed to load notifications')} />;
+    return <ResponseErrorPanel error={error} />;
   }
 
   return (
@@ -73,36 +109,30 @@ export const NotificationsPage = () => {
       <Content>
         <Grid container>
           <Grid item xs={2}>
-            <Button
-              className={styles.filterButton}
-              startIcon={<Inbox />}
-              variant={type === 'undone' ? 'contained' : 'text'}
-              onClick={() => setType('undone')}
-            >
-              Inbox
-            </Button>
-            <Button
-              className={styles.filterButton}
-              startIcon={<Check />}
-              variant={type === 'done' ? 'contained' : 'text'}
-              onClick={() => setType('done')}
-            >
-              Done
-            </Button>
-            <Button
-              className={styles.filterButton}
-              startIcon={<Bookmark />}
-              variant={type === 'saved' ? 'contained' : 'text'}
-              onClick={() => setType('saved')}
-            >
-              Saved
-            </Button>
+            <NotificationsFilters
+              unreadOnly={unreadOnly}
+              onUnreadOnlyChanged={setUnreadOnly}
+              createdAfter={createdAfter}
+              onCreatedAfterChanged={setCreatedAfter}
+              onSortingChanged={setSorting}
+              sorting={sorting}
+              saved={saved}
+              onSavedChanged={setSaved}
+              severity={severity}
+              onSeverityChanged={setSeverity}
+            />
           </Grid>
           <Grid item xs={10}>
             <NotificationsTable
-              notifications={value}
-              type={type}
+              isLoading={loading}
+              notifications={value?.notifications}
               onUpdate={onUpdate}
+              setContainsText={setContainsText}
+              onPageChange={setPageNumber}
+              onRowsPerPageChange={setPageSize}
+              page={pageNumber}
+              pageSize={pageSize}
+              totalCount={value?.totalCount}
             />
           </Grid>
         </Grid>

@@ -1,5 +1,138 @@
 # @backstage/plugin-azure-devops
 
+## 0.4.0
+
+### Minor Changes
+
+- 9fdb86a: Ability to fetch the README file from a different Azure DevOps path.
+
+  Defaults to the current, Azure DevOps default behaviour (`README.md` in the root of the git repo); to use a different path, add the annotation `dev.azure.com/readme-path`
+
+  Example:
+
+  ```yaml
+  dev.azure.com/readme-path: /my-path/README.md
+  ```
+
+- a9e7bd6: **BREAKING** The `AzureDevOpsClient` no longer requires `identityAPi` but now requires `fetchApi`.
+
+  Updated to use `fetchApi` as per [ADR013](https://backstage.io/docs/architecture-decisions/adrs-adr013)
+
+- 3270b1b: Azure DevOps plugin is now integrated with permission framework for its core features, see the https://github.com/backstage/backstage/blob/master/plugins/azure-devops/README.md#permission-framework for more details.
+
+### Patch Changes
+
+- b7b0466: Remove the use of the deprecated `customStyles` for `Avatar`
+- 9f19476: Updated README
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/plugin-azure-devops-common@0.4.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 9f19476: Updated README
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/core-compat-api@0.2.1-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-azure-devops-common@0.4.0-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+
+## 0.4.0-next.1
+
+### Minor Changes
+
+- 3270b1b: Azure DevOps plugin is now integrated with permission framework for its core features, see the https://github.com/backstage/backstage/blob/master/plugins/azure-devops/README.md#permission-framework for more details.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/plugin-azure-devops-common@0.4.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-compat-api@0.2.1-next.1
+  - @backstage/errors@1.2.4-next.0
+
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 9fdb86a: Ability to fetch the README file from a different Azure DevOps path.
+
+  Defaults to the current, Azure DevOps default behaviour (`README.md` in the root of the git repo); to use a different path, add the annotation `dev.azure.com/readme-path`
+
+  Example:
+
+  ```yaml
+  dev.azure.com/readme-path: /my-path/README.md
+  ```
+
+- a9e7bd6: **BREAKING** The `AzureDevOpsClient` no longer requires `identityAPi` but now requires `fetchApi`.
+
+  Updated to use `fetchApi` as per [ADR013](https://backstage.io/docs/architecture-decisions/adrs-adr013)
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/plugin-azure-devops-common@0.4.0-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+  - @backstage/core-compat-api@0.2.1-next.0
+
+## 0.3.12
+
+### Patch Changes
+
+- e2083df: Added alpha support for the New Frontend System (Declarative Integration)
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 995d280: Updated imports from named to default imports to help with the Material UI v4 to v5 migration
+- cb0afaa: Prefer `dev.azure.com/build-definition` annotation when it is provided, as it is more specific than `dev.azure.com/project-repo`. This can also be used as a filter for mono-repos.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-compat-api@0.2.0
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-azure-devops-common@0.3.2
+
+## 0.3.12-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-compat-api@0.2.0-next.3
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/frontend-plugin-api@0.6.0-next.3
+  - @backstage/plugin-azure-devops-common@0.3.2
+
 ## 0.3.12-next.2
 
 ### Patch Changes

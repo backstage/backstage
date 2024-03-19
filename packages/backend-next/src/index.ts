@@ -18,6 +18,10 @@ import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
 
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('./authModuleGithubProvider'));
+backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
+
 backend.add(import('@backstage/plugin-adr-backend'));
 backend.add(import('@backstage/plugin-app-backend/alpha'));
 backend.add(import('@backstage/plugin-azure-devops-backend'));
@@ -41,6 +45,7 @@ backend.add(
 backend.add(import('@backstage/plugin-permission-backend/alpha'));
 backend.add(import('@backstage/plugin-proxy-backend/alpha'));
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
 backend.add(import('@backstage/plugin-search-backend-module-explore/alpha'));
 backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));

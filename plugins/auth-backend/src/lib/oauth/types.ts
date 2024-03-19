@@ -18,9 +18,10 @@ import express from 'express';
 import { Profile as PassportProfile } from 'passport';
 import {
   BackstageSignInResult,
+  ProfileInfo,
   OAuthState as _OAuthState,
 } from '@backstage/plugin-auth-node';
-import { OAuthStartResponse, ProfileInfo } from '../../providers/types';
+import { OAuthStartResponse } from '../../providers/types';
 
 /**
  * Common options for passport.js-based OAuth providers

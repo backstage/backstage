@@ -47,7 +47,9 @@ const RadarTimeline = (props: Props): JSX.Element => {
         <Table aria-label="simple table">
           <TableHead>
             <TableRow>
-              <TableCell align="left">Moved in direction</TableCell>
+              <TableCell align="left" style={{ wordBreak: 'normal' }}>
+                Moved in direction
+              </TableCell>
               <TableCell align="left">Moved to ring</TableCell>
               <TableCell align="left">Moved on date</TableCell>
               <TableCell align="left">Description</TableCell>

@@ -16,10 +16,10 @@
 
 import React, { PropsWithChildren } from 'react';
 import {
-  createTheme as createMuiTheme,
-  Theme,
   ThemeProvider,
-} from '@material-ui/core';
+  createTheme as createMuiTheme,
+} from '@material-ui/core/styles';
+import { Theme } from '@material-ui/core/styles';
 import {
   costInsightsDarkTheme,
   costInsightsLightTheme,

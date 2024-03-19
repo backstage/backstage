@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name                     | Location     |
-|:-------------------------|:-------------|
-| @backstage/catalog-model | package.json |
+| Name                     | Location     | Severity |
+| :----------------------- | :----------- | :------- |
+| @backstage/catalog-model | package.json | error    |
 

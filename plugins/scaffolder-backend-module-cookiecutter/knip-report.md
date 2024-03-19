@@ -2,8 +2,8 @@
 
 ## Unused dependencies (2)
 
-| Name    | Location     |
-|:--------|:-------------|
-| yn      | package.json |
-| winston | package.json |
+| Name    | Location     | Severity |
+| :------ | :----------- | :------- |
+| winston | package.json | error    |
+| yn      | package.json | error    |
 

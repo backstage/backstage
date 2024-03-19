@@ -1,5 +1,73 @@
 # @backstage/plugin-home-react
 
+## 0.1.9
+
+### Patch Changes
+
+- 0cecb09: Updated dependency `@rjsf/utils` to `5.17.1`.
+  Updated dependency `@rjsf/core` to `5.17.1`.
+  Updated dependency `@rjsf/material-ui` to `5.17.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.17.1`.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.1.9-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- 0cecb09: Updated dependency `@rjsf/utils` to `5.17.1`.
+  Updated dependency `@rjsf/core` to `5.17.1`.
+  Updated dependency `@rjsf/material-ui` to `5.17.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.17.1`.
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+
+## 0.1.8
+
+### Patch Changes
+
+- e6f0831: Updated dependency `@rjsf/utils` to `5.17.0`.
+  Updated dependency `@rjsf/core` to `5.17.0`.
+  Updated dependency `@rjsf/material-ui` to `5.17.0`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.17.0`.
+- 6a74ffd: Updated dependency `@rjsf/utils` to `5.16.1`.
+  Updated dependency `@rjsf/core` to `5.16.1`.
+  Updated dependency `@rjsf/material-ui` to `5.16.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.16.1`.
+- Updated dependencies
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+
+## 0.1.8-next.3
+
+### Patch Changes
+
+- e6f0831: Updated dependency `@rjsf/utils` to `5.17.0`.
+  Updated dependency `@rjsf/core` to `5.17.0`.
+  Updated dependency `@rjsf/material-ui` to `5.17.0`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.17.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+
 ## 0.1.8-next.2
 
 ### Patch Changes

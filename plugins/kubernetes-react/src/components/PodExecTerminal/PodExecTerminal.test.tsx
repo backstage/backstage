@@ -32,7 +32,7 @@ global.TextEncoder = require('util').TextEncoder;
 const textEncoder = new TextEncoder();
 
 describe('PodExecTerminal', () => {
-  const clusterName = 'cluster1';
+  const cluster = { name: 'cluster1' };
   const containerName = 'container2';
   const podName = 'pod1';
   const podNamespace = 'podNamespace';
@@ -45,7 +45,7 @@ describe('PodExecTerminal', () => {
     await renderInTestApp(
       <TestApiProvider apis={[[discoveryApiRef, mockDiscoveryApi]]}>
         <PodExecTerminal
-          clusterName={clusterName}
+          cluster={cluster}
           containerName={containerName}
           podName={podName}
           podNamespace={podNamespace}
@@ -68,7 +68,7 @@ describe('PodExecTerminal', () => {
     await renderInTestApp(
       <TestApiProvider apis={[[discoveryApiRef, mockDiscoveryApi]]}>
         <PodExecTerminal
-          clusterName={clusterName}
+          cluster={cluster}
           containerName={containerName}
           podName={podName}
           podNamespace={podNamespace}

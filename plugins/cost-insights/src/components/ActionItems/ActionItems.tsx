@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 import React, { Fragment, MouseEventHandler } from 'react';
-import {
-  Avatar,
-  Badge,
-  Box,
-  IconButtonProps,
-  IconButton,
-  Paper,
-  Divider,
-  Tooltip,
-} from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
+import { IconButtonProps } from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import Badge from '@material-ui/core/Badge';
+import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
+import Divider from '@material-ui/core/Divider';
 import { default as SnoozeIcon } from '@material-ui/icons/AccessTime';
 import { default as AcceptIcon } from '@material-ui/icons/Check';
 import { default as DismissIcon } from '@material-ui/icons/Delete';

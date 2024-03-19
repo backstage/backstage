@@ -15,7 +15,11 @@
  */
 
 import React, { useState } from 'react';
-import { Menu, MenuItem, Tab, Tabs, Typography } from '@material-ui/core';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { mapLoadingToProps, mapFiltersToProps } from './selector';
 import { Group } from '@backstage/plugin-cost-insights-common';

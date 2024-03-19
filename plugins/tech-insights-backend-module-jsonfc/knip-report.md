@@ -2,8 +2,8 @@
 
 ## Unused dependencies (2)
 
-| Name             | Location     |
-|:-----------------|:-------------|
-| luxon            | package.json |
-| @backstage/types | package.json |
+| Name             | Location     | Severity |
+| :--------------- | :----------- | :------- |
+| @backstage/types | package.json | error    |
+| luxon            | package.json | error    |
 

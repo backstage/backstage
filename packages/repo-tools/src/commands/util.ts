@@ -13,29 +13,41 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { execFile } from 'child_process';
+import os from 'os';
+import pLimit from 'p-limit';
+
+// Some commands launch full node processes doing heavy work, which at high
+// concurrency levels risk exhausting system resources. Placing the limiter here
+// at the root level ensures that the concurrency boundary applies globally, not
+// just per-runner.
+const limiter = pLimit(os.cpus().length);
 
 export function createBinRunner(cwd: string, path: string) {
   return async (...command: string[]) =>
-    new Promise<string>((resolve, reject) => {
-      execFile(
-        'node',
-        [path, ...command],
-        {
-          cwd,
-          shell: true,
-          timeout: 60000,
-          maxBuffer: 1024 * 1024,
-        },
-        (err, stdout, stderr) => {
-          if (err) {
-            reject(new Error(`${err.message}\n${stderr}`));
-          } else if (stderr) {
-            reject(new Error(`Command printed error output: ${stderr}`));
-          } else {
-            resolve(stdout);
-          }
-        },
-      );
-    });
+    limiter(
+      () =>
+        new Promise<string>((resolve, reject) => {
+          execFile(
+            'node',
+            [path, ...command],
+            {
+              cwd,
+              shell: true,
+              timeout: 60000,
+              maxBuffer: 1024 * 1024,
+            },
+            (err, stdout, stderr) => {
+              if (err) {
+                reject(new Error(`${err.message}\n${stderr}`));
+              } else if (stderr) {
+                reject(new Error(`Command printed error output: ${stderr}`));
+              } else {
+                resolve(stdout);
+              }
+            },
+          );
+        }),
+    );
 }

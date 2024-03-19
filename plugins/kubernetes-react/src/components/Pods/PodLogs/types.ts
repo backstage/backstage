@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 
 /**
  * Contains the details needed to make a log request to Kubernetes, except the container name
@@ -22,7 +23,7 @@
 export interface PodScope {
   podName: string;
   podNamespace: string;
-  clusterName: string;
+  cluster: ClusterAttributes;
 }
 
 /**

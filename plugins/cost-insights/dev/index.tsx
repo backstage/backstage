@@ -26,7 +26,7 @@ import {
   EntityCostInsightsContent,
 } from '../src/plugin';
 import { Content, Header, Page } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import { EntityProvider } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 

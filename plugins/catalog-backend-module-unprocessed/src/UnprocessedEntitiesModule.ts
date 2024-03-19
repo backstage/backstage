@@ -21,9 +21,23 @@ import {
   UnprocessedEntitiesResponse,
 } from './types';
 import { Knex } from 'knex';
-import { HttpRouterService } from '@backstage/backend-plugin-api';
+import {
+  DiscoveryService,
+  HttpAuthService,
+  HttpRouterService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import type { Request } from 'express';
+
+import {
+  AuthorizeResult,
+  BasicPermission,
+} from '@backstage/plugin-permission-common';
+import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
+import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
+import { NotAllowedError } from '@backstage/errors';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 
 /**
  * Module providing Unprocessed Entities API endpoints
@@ -33,12 +47,38 @@ import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-no
 export class UnprocessedEntitiesModule {
   private readonly moduleRouter;
 
-  constructor(
+  private readonly httpAuth: HttpAuthService;
+
+  private constructor(
     private readonly database: Knex,
-    private readonly router: HttpRouterService,
+    private readonly router: Pick<HttpRouterService, 'use'>,
+    private readonly permissions: PermissionsService,
+    discovery: DiscoveryService,
+    httpAuth?: HttpAuthService,
   ) {
     this.moduleRouter = Router();
     this.router.use(this.moduleRouter);
+
+    this.httpAuth = createLegacyAuthAdapters({
+      discovery,
+      httpAuth,
+    }).httpAuth;
+  }
+
+  static create(options: {
+    router: Pick<HttpRouterService, 'use'>;
+    database: Knex;
+    discovery: DiscoveryService;
+    permissions: PermissionsService;
+    httpAuth?: HttpAuthService;
+  }) {
+    return new UnprocessedEntitiesModule(
+      options.database,
+      options.router,
+      options.permissions,
+      options.discovery,
+      options.httpAuth,
+    );
   }
 
   private async unprocessed(
@@ -105,15 +145,31 @@ export class UnprocessedEntitiesModule {
   }
 
   registerRoutes() {
+    const permissionIntegrationRouter = createPermissionIntegrationRouter({
+      permissions: [unprocessedEntitiesDeletePermission],
+    });
+
+    const isRequestAuthorized = async (
+      req: Request,
+      permission: BasicPermission,
+    ): Promise<boolean> => {
+      const decision = (
+        await this.permissions.authorize([{ permission }], {
+          credentials: await this.httpAuth.credentials(req),
+        })
+      )[0];
+
+      return decision.result !== AuthorizeResult.DENY;
+    };
+
+    this.router.use(permissionIntegrationRouter);
+
     this.moduleRouter
       .get('/entities/unprocessed/failed', async (req, res) => {
         return res.json(
           await this.unprocessed({
             reason: 'failed',
-            owner: req.query.owner as string,
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
+            owner: String(req.query.owner),
           }),
         );
       })
@@ -121,12 +177,28 @@ export class UnprocessedEntitiesModule {
         return res.json(
           await this.unprocessed({
             reason: 'pending',
-            owner: req.query.owner as string,
-            authorizationToken: getBearerTokenFromAuthorizationHeader(
-              req.header('authorization'),
-            ),
+            owner: String(req.query.owner),
           }),
         );
-      });
+      })
+      .delete(
+        '/entities/unprocessed/delete/:entity_id',
+        async (request, response) => {
+          const authorized = await isRequestAuthorized(
+            request,
+            unprocessedEntitiesDeletePermission,
+          );
+
+          if (!authorized) {
+            throw new NotAllowedError('Unauthorized');
+          }
+
+          await this.database('refresh_state')
+            .where({ entity_id: request.params.entity_id })
+            .delete();
+
+          response.status(204).send();
+        },
+      );
   }
 }

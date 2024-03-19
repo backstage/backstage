@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Grid, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import React from 'react';
 import { BackButton, ViewComponentButton } from '../Buttons';
@@ -22,7 +23,7 @@ import { EntityListComponent } from '../EntityListComponent';
 import { PrepareResult } from '../useImportState';
 import { Link } from '@backstage/core-components';
 import partition from 'lodash/partition';
-import { CompoundEntityRef } from '@backstage/catalog-model';
+import { CompoundEntityRef, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 
@@ -46,7 +47,12 @@ const filterComponentEntity = (
           entity.kind.toLocaleLowerCase('en-US'),
         )
       ) {
-        return entity;
+        return {
+          kind: entity.kind.toLocaleLowerCase('en-US'),
+          namespace:
+            entity.namespace?.toLocaleLowerCase('en-US') ?? DEFAULT_NAMESPACE,
+          name: entity.name,
+        };
       }
     }
   }
@@ -76,7 +82,6 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
         <Grid container spacing={0}>
           <BackButton onClick={onReset}>Register another</BackButton>
         </Grid>
-        ;
       </>
     );
   }

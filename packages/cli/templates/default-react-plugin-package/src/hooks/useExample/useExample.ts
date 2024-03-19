@@ -11,5 +11,5 @@ export function useExample() {
 
   useEffect(() => {
     alertApi.post({ message: 'Hello World!' });
-  }, [alertApi])
+  }, [alertApi]);
 }

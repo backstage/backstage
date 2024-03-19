@@ -185,11 +185,20 @@ export interface Config {
       /** @visibility frontend */
       cfaccess?: {
         teamName: string;
+        /** @deepVisibility secret */
+        serviceTokens?: Array<{
+          token: string;
+          subject: string;
+        }>;
       };
       /**
        * The backstage token expiration.
        */
       backstageTokenExpiration?: HumanDuration;
     };
+    /**
+     * Additional app origins to allow for authenticating
+     */
+    experimentalExtraAllowedOrigins?: string[];
   };
 }

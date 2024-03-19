@@ -25,6 +25,7 @@ export const ANNOTATION_ADR_LOCATION = 'backstage.io/adr-location';
 export const getAdrLocationUrl: (
   entity: Entity,
   scmIntegration: ScmIntegrationRegistry,
+  adrFilePath?: String,
 ) => string;
 
 // @public

@@ -2,7 +2,7 @@
 
 ## Unused dependencies (1)
 
-| Name    | Location     |
-|:--------|:-------------|
-| p-limit | package.json |
+| Name    | Location     | Severity |
+| :------ | :----------- | :------- |
+| p-limit | package.json | error    |
 

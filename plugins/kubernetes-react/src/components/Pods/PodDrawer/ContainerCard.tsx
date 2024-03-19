@@ -233,7 +233,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
         />
         {isPodExecTerminalEnabled && (
           <PodExecTerminalDialog
-            clusterName={podScope.clusterName}
+            cluster={podScope.cluster}
             containerName={containerStatus.name}
             podName={podScope.podName}
             podNamespace={podScope.podNamespace}

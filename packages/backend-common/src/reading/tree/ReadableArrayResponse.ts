@@ -15,7 +15,7 @@
  */
 
 import concatStream from 'concat-stream';
-import platformPath, { basename } from 'path';
+import platformPath, { dirname } from 'path';
 
 import getRawBody from 'raw-body';
 import fs from 'fs-extra';
@@ -96,12 +96,9 @@ export class ReadableArrayResponse implements ReadTreeResponse {
 
     for (let i = 0; i < this.stream.length; i++) {
       if (!this.stream[i].path.endsWith('/')) {
-        await pipeline(
-          this.stream[i].data,
-          fs.createWriteStream(
-            platformPath.join(dir, basename(this.stream[i].path)),
-          ),
-        );
+        const filePath = platformPath.join(dir, this.stream[i].path);
+        await fs.mkdir(dirname(filePath), { recursive: true });
+        await pipeline(this.stream[i].data, fs.createWriteStream(filePath));
       }
     }
 

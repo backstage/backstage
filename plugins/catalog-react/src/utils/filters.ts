@@ -27,15 +27,30 @@ import {
   UserListFilter,
 } from '../filters';
 
-export function reduceCatalogFilters(
-  filters: EntityFilter[],
-): Record<string, string | symbol | (string | symbol)[]> {
-  return filters.reduce((compoundFilter, filter) => {
-    return {
-      ...compoundFilter,
-      ...(filter.getCatalogFilters ? filter.getCatalogFilters() : {}),
-    };
-  }, {} as Record<string, string | symbol | (string | symbol)[]>);
+export interface CatalogFilters {
+  filter: Record<string, string | symbol | (string | symbol)[]>;
+  fullTextFilter?: {
+    term: string;
+  };
+}
+
+function isEntityTextFilter(t: EntityFilter): t is EntityTextFilter {
+  return !!(t as EntityTextFilter).getFullTextFilters;
+}
+
+export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
+  const condensedFilters = filters.reduce<CatalogFilters['filter']>(
+    (compoundFilter, filter) => {
+      return {
+        ...compoundFilter,
+        ...(filter.getCatalogFilters ? filter.getCatalogFilters() : {}),
+      };
+    },
+    {},
+  );
+
+  const fullTextFilter = filters.find(isEntityTextFilter)?.getFullTextFilters();
+  return { filter: condensedFilters, fullTextFilter };
 }
 
 /**

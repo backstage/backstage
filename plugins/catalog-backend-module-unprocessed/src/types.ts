@@ -60,7 +60,6 @@ export type RefreshStateError = {
 export interface UnprocessedEntitiesRequest {
   reason: 'failed' | 'pending';
   owner?: string;
-  authorizationToken?: string;
 }
 
 export interface UnprocessedEntitiesResponse {

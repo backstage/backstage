@@ -1,5 +1,55 @@
 # @backstage/plugin-graphql-voyager
 
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.1.13-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.1.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+
+## 0.1.12
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+
+## 0.1.12-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-plugin-api@1.9.0-next.1
+
 ## 0.1.12-next.1
 
 ### Patch Changes

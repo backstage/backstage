@@ -1,5 +1,76 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.25
+
+### Patch Changes
+
+- 3c2d7c0: The `CardHeader` component in the `github-pull-requests-board` plugin will show the status for the PR
+- 402d991: Align `p-limit` dependency version to v3
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.1.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.1.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- 3c2d7c0: The `CardHeader` component in the `github-pull-requests-board` plugin will show the status for the PR
+- 402d991: Align `p-limit` dependency version to v3
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/integration@1.9.1-next.0
+
+## 0.1.24
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration@1.9.0
+  - @backstage/core-plugin-api@1.9.0
+
+## 0.1.24-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.9.0-next.1
+
 ## 0.1.24-next.2
 
 ### Patch Changes

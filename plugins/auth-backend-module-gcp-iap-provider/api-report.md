@@ -20,6 +20,9 @@ export const gcpIapAuthenticator: ProxyAuthenticator<
   },
   {
     iapToken: GcpIapTokenInfo;
+  },
+  {
+    iapToken: GcpIapTokenInfo;
   }
 >;
 

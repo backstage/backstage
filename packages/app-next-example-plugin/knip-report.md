@@ -2,8 +2,8 @@
 
 ## Unused devDependencies (2)
 
-| Name        | Location     |
-|:------------|:-------------|
-| msw         | package.json |
-| cross-fetch | package.json |
+| Name        | Location     | Severity |
+| :---------- | :----------- | :------- |
+| cross-fetch | package.json | error    |
+| msw         | package.json | error    |
 

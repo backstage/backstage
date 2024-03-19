@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
-import os from 'os';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { createFetchCatalogEntityAction } from './fetch';
 import { examples } from './fetch.examples';
 import yaml from 'yaml';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 describe('catalog:fetch examples', () => {
   const getEntityByRef = jest.fn();
@@ -34,16 +33,19 @@ describe('catalog:fetch examples', () => {
 
   const action = createFetchCatalogEntityAction({
     catalogClient: catalogClient as unknown as CatalogApi,
+    auth: mockServices.auth(),
   });
 
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-    secrets: { backstageToken: 'secret' },
-  };
+  const credentials = mockCredentials.user();
+
+  const token = mockCredentials.service.token({
+    onBehalfOf: credentials,
+    targetPluginId: 'catalog',
+  });
+
+  const mockContext = createMockActionContext({
+    secrets: { backstageToken: token },
+  });
   beforeEach(() => {
     jest.resetAllMocks();
   });
@@ -64,7 +66,7 @@ describe('catalog:fetch examples', () => {
       });
 
       expect(getEntityByRef).toHaveBeenCalledWith('component:default/name', {
-        token: 'secret',
+        token,
       });
       expect(mockContext.output).toHaveBeenCalledWith('entity', {
         metadata: {

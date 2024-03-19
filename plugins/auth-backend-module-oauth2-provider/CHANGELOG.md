@@ -1,5 +1,55 @@
 # @backstage/plugin-auth-backend-module-oauth2-provider
 
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/backend-plugin-api@0.6.14
+
+## 0.1.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+
+## 0.1.7
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.4
+  - @backstage/backend-plugin-api@0.6.10
+
+## 0.1.7-next.3
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.4-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+
 ## 0.1.7-next.2
 
 ### Patch Changes

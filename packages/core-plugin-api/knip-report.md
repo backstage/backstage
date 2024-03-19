@@ -2,8 +2,8 @@
 
 ## Unused devDependencies (2)
 
-| Name                        | Location     |
-|:----------------------------|:-------------|
-| @testing-library/dom        | package.json |
-| @testing-library/user-event | package.json |
+| Name                        | Location     | Severity |
+| :-------------------------- | :----------- | :------- |
+| @testing-library/user-event | package.json | error    |
+| @testing-library/dom        | package.json | error    |
 

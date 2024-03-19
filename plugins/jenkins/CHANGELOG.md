@@ -1,5 +1,80 @@
 # @backstage/plugin-jenkins
 
+## 0.9.6
+
+### Patch Changes
+
+- 75277ab: Added ESLint rule `no-top-level-material-ui-4-imports` in the Jenkins plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/plugin-jenkins-common@0.1.25
+
+## 0.9.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-jenkins-common@0.1.25-next.1
+
+## 0.9.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-jenkins-common@0.1.25-next.1
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/plugin-jenkins-common@0.1.25-next.0
+
+## 0.9.5
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-jenkins-common@0.1.24
+
+## 0.9.5-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-jenkins-common@0.1.24-next.0
+
 ## 0.9.5-next.2
 
 ### Patch Changes

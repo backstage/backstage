@@ -22,7 +22,10 @@ import {
   NotificationModifyOptions,
   NotificationsStore,
 } from './NotificationsStore';
-import { Notification } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  NotificationSeverity,
+} from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
@@ -30,9 +33,44 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
+const NOTIFICATION_COLUMNS = [
+  'id',
+  'title',
+  'description',
+  'severity',
+  'link',
+  'origin',
+  'scope',
+  'topic',
+  'created',
+  'updated',
+  'user',
+  'read',
+  'saved',
+];
+
+const severities: NotificationSeverity[] = [
+  'critical',
+  'high',
+  'normal',
+  'low',
+];
+
+export const normalizeSeverity = (input?: string): NotificationSeverity => {
+  let lower = (input ?? 'normal').toLowerCase() as NotificationSeverity;
+  if (severities.indexOf(lower) < 0) {
+    lower = 'normal';
+  }
+  return lower;
+};
+
 /** @internal */
 export class DatabaseNotificationsStore implements NotificationsStore {
-  private constructor(private readonly db: Knex) {}
+  private readonly isSQLite = false;
+
+  private constructor(private readonly db: Knex) {
+    this.isSQLite = this.db.client.config.client.includes('sqlite3');
+  }
 
   static async create({
     database,
@@ -60,8 +98,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return rows.map(row => ({
       id: row.id,
       user: row.user,
-      created: row.created,
-      done: row.done,
+      created: new Date(row.created),
       saved: row.saved,
       read: row.read,
       updated: row.updated,
@@ -78,24 +115,76 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     }));
   };
 
+  private mapNotificationToDbRow = (notification: Notification) => {
+    return {
+      id: notification.id,
+      user: notification.user,
+      origin: notification.origin,
+      created: notification.created,
+      topic: notification.payload?.topic,
+      link: notification.payload?.link,
+      title: notification.payload?.title,
+      description: notification.payload?.description,
+      severity: normalizeSeverity(notification.payload?.severity),
+      scope: notification.payload?.scope,
+      saved: notification.saved,
+      read: notification.read,
+    };
+  };
+
+  private mapBroadcastToDbRow = (notification: Notification) => {
+    return {
+      id: notification.id,
+      origin: notification.origin,
+      created: notification.created,
+      topic: notification.payload?.topic,
+      link: notification.payload?.link,
+      title: notification.payload?.title,
+      description: notification.payload?.description,
+      severity: normalizeSeverity(notification.payload?.severity),
+      scope: notification.payload?.scope,
+    };
+  };
+
+  private getBroadcastUnion = () => {
+    return this.db('broadcast')
+      .leftJoin(
+        'broadcast_user_status',
+        'id',
+        '=',
+        'broadcast_user_status.broadcast_id',
+      )
+      .select(NOTIFICATION_COLUMNS);
+  };
+
   private getNotificationsBaseQuery = (
     options: NotificationGetOptions | NotificationModifyOptions,
   ) => {
-    const { user, type } = options;
-    const query = this.db('notification').where('user', user);
+    const { user, orderField } = options;
 
-    if (options.sort !== undefined && options.sort !== null) {
-      query.orderBy(options.sort, options.sortOrder ?? 'desc');
-    } else if (options.sort !== null) {
-      query.orderBy('created', options.sortOrder ?? 'desc');
+    const subQuery = this.db('notification')
+      .select(NOTIFICATION_COLUMNS)
+      .unionAll([this.getBroadcastUnion()])
+      .as('notifications');
+
+    const query = this.db.from(subQuery).where(q => {
+      q.where('user', user).orWhereNull('user');
+    });
+
+    if (orderField && orderField.length > 0) {
+      orderField.forEach(orderBy => {
+        query.orderBy(orderBy.field, orderBy.order);
+      });
+    } else if (!orderField) {
+      query.orderBy('created', 'desc');
     }
 
-    if (type === 'undone') {
-      query.whereNull('done');
-    } else if (type === 'done') {
-      query.whereNotNull('done');
-    } else if (type === 'saved') {
-      query.whereNotNull('saved');
+    if (options.createdAfter) {
+      if (this.isSQLite) {
+        query.where('created', '>=', options.createdAfter.valueOf());
+      } else {
+        query.where('created', '>=', options.createdAfter.toISOString());
+      }
     }
 
     if (options.limit) {
@@ -108,13 +197,31 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
     if (options.search) {
       query.whereRaw(
-        `(LOWER(notification.title) LIKE LOWER(?) OR LOWER(notification.description) LIKE LOWER(?))`,
+        `(LOWER(title) LIKE LOWER(?) OR LOWER(description) LIKE LOWER(?))`,
         [`%${options.search}%`, `%${options.search}%`],
       );
     }
 
     if (options.ids) {
-      query.whereIn('notification.id', options.ids);
+      query.whereIn('id', options.ids);
+    }
+
+    if (options.read) {
+      query.whereNotNull('read');
+    } else if (options.read === false) {
+      query.whereNull('read');
+    } // or match both if undefined
+
+    if (options.saved) {
+      query.whereNotNull('saved');
+    } else if (options.saved === false) {
+      query.whereNull('saved');
+    } // or match both if undefined
+
+    if (options.minimumSeverity !== undefined) {
+      const idx = severities.indexOf(options.minimumSeverity);
+      const equalOrHigher = severities.slice(0, idx + 1);
+      query.whereIn('severity', equalOrHigher);
     }
 
     return query;
@@ -122,18 +229,46 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   async getNotifications(options: NotificationGetOptions) {
     const notificationQuery = this.getNotificationsBaseQuery(options);
-    const notifications = await notificationQuery.select();
+    const notifications = await notificationQuery.select(NOTIFICATION_COLUMNS);
     return this.mapToNotifications(notifications);
   }
 
+  async getNotificationsCount(options: NotificationGetOptions) {
+    const countOptions: NotificationGetOptions = { ...options };
+    countOptions.limit = undefined;
+    countOptions.offset = undefined;
+    countOptions.orderField = [];
+    const notificationQuery = this.getNotificationsBaseQuery(countOptions);
+    const response = await notificationQuery.count('id as CNT');
+    return Number(response[0].CNT);
+  }
+
   async saveNotification(notification: Notification) {
-    await this.db.insert(notification).into('notification');
+    await this.db
+      .insert(this.mapNotificationToDbRow(notification))
+      .into('notification');
+  }
+
+  async saveBroadcast(notification: Notification) {
+    await this.db
+      .insert(this.mapBroadcastToDbRow(notification))
+      .into('broadcast');
+    if (notification.saved || notification.read) {
+      await this.db
+        .insert({
+          user: notification.user,
+          broadcast_id: notification.id,
+          saved: notification.saved,
+          read: notification.read,
+        })
+        .into('broadcast_user_status');
+    }
   }
 
   async getStatus(options: NotificationGetOptions) {
     const notificationQuery = this.getNotificationsBaseQuery({
       ...options,
-      sort: null,
+      orderField: [],
     });
     const readSubQuery = notificationQuery
       .clone()
@@ -165,7 +300,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .where('user', options.user)
       .where('scope', options.scope)
       .where('origin', options.origin)
-      .select()
       .limit(1);
 
     const rows = await query;
@@ -175,32 +309,59 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return rows[0] as Notification;
   }
 
-  async restoreExistingNotification(options: {
+  async getExistingScopeBroadcast(options: { scope: string; origin: string }) {
+    const query = this.db('broadcast')
+      .where('scope', options.scope)
+      .where('origin', options.origin)
+      .limit(1);
+
+    const rows = await query;
+    if (!rows || rows.length === 0) {
+      return null;
+    }
+    return rows[0] as Notification;
+  }
+
+  async restoreExistingNotification({
+    id,
+    notification,
+  }: {
     id: string;
     notification: Notification;
   }) {
-    const query = this.db('notification')
-      .where('id', options.id)
-      .where('user', options.notification.user);
-
-    await query.update({
-      title: options.notification.payload.title,
-      description: options.notification.payload.description,
-      link: options.notification.payload.link,
-      topic: options.notification.payload.topic,
-      updated: options.notification.created,
-      severity: options.notification.payload.severity,
+    const updateColumns = {
+      title: notification.payload.title,
+      description: notification.payload.description,
+      link: notification.payload.link,
+      topic: notification.payload.topic,
+      updated: new Date(),
+      severity: normalizeSeverity(notification.payload?.severity),
       read: null,
-      done: null,
-    });
+    };
 
-    return await this.getNotification(options);
+    const notificationQuery = this.db('notification')
+      .where('id', id)
+      .where('user', notification.user);
+    const broadcastQuery = this.db('broadcast').where('id', id);
+
+    await Promise.all([
+      notificationQuery.update(updateColumns),
+      broadcastQuery.update({ ...updateColumns, read: undefined }),
+    ]);
+
+    return await this.getNotification({ id });
   }
 
   async getNotification(options: { id: string }): Promise<Notification | null> {
-    const rows = await this.db('notification')
+    const rows = await this.db
+      .select('*')
+      .from(
+        this.db('notification')
+          .select(NOTIFICATION_COLUMNS)
+          .unionAll([this.getBroadcastUnion()])
+          .as('notifications'),
+      )
       .where('id', options.id)
-      .select()
       .limit(1);
     if (!rows || rows.length === 0) {
       return null;
@@ -208,33 +369,65 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return this.mapToNotifications(rows)[0];
   }
 
+  private markReadSaved = async (
+    ids: string[],
+    user: string,
+    read?: Date | null,
+    saved?: Date | null,
+  ) => {
+    await this.db('notification')
+      .whereIn('id', ids)
+      .where('user', user)
+      .update({ read, saved });
+
+    const broadcasts = this.mapToNotifications(
+      await this.db('broadcast').whereIn('id', ids).select(),
+    );
+
+    if (broadcasts.length > 0)
+      if (!this.isSQLite) {
+        await this.db('broadcast_user_status')
+          .insert(
+            broadcasts.map(b => ({
+              broadcast_id: b.id,
+              user,
+              read,
+              saved,
+            })),
+          )
+          .onConflict(['broadcast_id', 'user'])
+          .merge(['read', 'saved']);
+      } else {
+        // SQLite does not support upsert so fall back to this (mostly for tests and local dev)
+        for (const b of broadcasts) {
+          const baseQuery = this.db('broadcast_user_status')
+            .where('broadcast_id', b.id)
+            .where('user', user);
+          const exists = await baseQuery.clone().limit(1).select().first();
+          if (exists) {
+            await baseQuery.clone().update({ read, saved });
+          } else {
+            await baseQuery
+              .clone()
+              .insert({ broadcast_id: b.id, user, read, saved });
+          }
+        }
+      }
+  };
+
   async markRead(options: NotificationModifyOptions): Promise<void> {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
-    await notificationQuery.update({ read: new Date() });
+    await this.markReadSaved(options.ids, options.user, new Date(), undefined);
   }
 
   async markUnread(options: NotificationModifyOptions): Promise<void> {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
-    await notificationQuery.update({ read: null });
-  }
-
-  async markDone(options: NotificationModifyOptions): Promise<void> {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
-    await notificationQuery.update({ done: new Date(), read: new Date() });
-  }
-
-  async markUndone(options: NotificationModifyOptions): Promise<void> {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
-    await notificationQuery.update({ done: null, read: null });
+    await this.markReadSaved(options.ids, options.user, null, undefined);
   }
 
   async markSaved(options: NotificationModifyOptions): Promise<void> {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
-    await notificationQuery.update({ saved: new Date() });
+    await this.markReadSaved(options.ids, options.user, undefined, new Date());
   }
 
   async markUnsaved(options: NotificationModifyOptions): Promise<void> {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
-    await notificationQuery.update({ saved: null });
+    await this.markReadSaved(options.ids, options.user, undefined, null);
   }
 }

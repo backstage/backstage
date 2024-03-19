@@ -194,3 +194,47 @@ parameters:
   input:
     message: 'production step'
 ```
+
+## Use parameters as conditional for fields
+
+```yaml
+parameters:
+  - title: Fill in some steps
+    properties:
+      includeName:
+        title: Include Name?
+        type: boolean
+        default: true
+
+    dependencies:
+      includeName:
+        allOf:
+          - if:
+              properties:
+                includeName:
+                  const: true
+            then:
+              properties:
+                lastName:
+                  title: Last Name
+                  type: string
+```
+
+## Conditionally set parameters
+
+```yaml
+spec:
+  parameters:
+    - title: Fill in some steps
+      properties:
+        path:
+          title: path
+          type: string
+
+  steps:
+    - id: fetch
+      name: Fetch template
+      action: fetch:template
+      input:
+        url: ${{ parameters.path if parameters.path else '/root' }}
+```

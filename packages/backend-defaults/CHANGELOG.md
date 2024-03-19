@@ -1,5 +1,56 @@
 # @backstage/backend-defaults
 
+## 0.2.14
+
+### Patch Changes
+
+- 7cbb760: Added support for the new auth services, which are now installed by default. See the [migration guide](https://backstage.io/docs/tutorials/auth-service-migration) for details.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/backend-app-api@0.6.0
+
+## 0.2.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.0-next.2
+  - @backstage/backend-common@0.21.4-next.2
+
+## 0.2.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+
+## 0.2.13-next.0
+
+### Patch Changes
+
+- 7cbb760: Added support for the new auth services, which are now installed by default. See the [migration guide](https://backstage.io/docs/tutorials/auth-service-migration) for details.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-app-api@0.6.0-next.0
+
+## 0.2.10
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-app-api@0.5.11
+
+## 0.2.10-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/backend-app-api@0.5.11-next.3
+
 ## 0.2.10-next.2
 
 ### Patch Changes

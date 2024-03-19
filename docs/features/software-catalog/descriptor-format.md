@@ -838,7 +838,7 @@ The current set of well-known and common values for this field is:
 - `openapi` - An API definition in YAML or JSON format based on the
   [OpenAPI](https://swagger.io/specification/) version 2 or version 3 spec.
 - `asyncapi` - An API definition based on the
-  [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest) spec.
+  [AsyncAPI](https://www.asyncapi.com/docs/reference/specification/latest) version 2 or version 3 spec.
 - `graphql` - An API definition based on
   [GraphQL schemas](https://spec.graphql.org/) for consuming
   [GraphQL](https://graphql.org/) based APIs.
@@ -955,6 +955,14 @@ some form, that the group may wish to be used for contacting them. The picture
 is expected to be a URL pointing to an image that's representative of the group,
 and that a browser could fetch and render on a group page or similar.
 
+The fields of a profile are:
+
+| Field                    | Type   | Description                                                    |
+| ------------------------ | ------ | -------------------------------------------------------------- |
+| `displayName` (optional) | String | A human-readable name for the group.                           |
+| `email` (optional)       | String | An email the group may wish to be used for contacting them.    |
+| `picture` (optional)     | String | A URL pointing to an image that's representative of the group. |
+
 ### `spec.parent` [optional]
 
 The immediate parent group in the hierarchy, if any. Not all groups must have a
@@ -1040,6 +1048,14 @@ of some form, that the user may wish to be used for contacting them. The picture
 is expected to be a URL pointing to an image that's representative of the user,
 and that a browser could fetch and render on a profile page or similar.
 
+The fields of a profile are:
+
+| Field                    | Type   | Description                                                   |
+| ------------------------ | ------ | ------------------------------------------------------------- |
+| `displayName` (optional) | String | A human-readable name for the user.                           |
+| `email` (optional)       | String | An email the user may wish to be used for contacting them.    |
+| `picture` (optional)     | String | A URL pointing to an image that's representative of the user. |
+
 ### `spec.memberOf` [required]
 
 The list of groups that the user is a direct member of (i.e., no transitive
@@ -1119,7 +1135,7 @@ Some common values for this field could be:
 
 - `database`
 - `s3-bucket`
-- `cluster`
+- `kubernetes-cluster`
 
 ### `spec.system` [optional]
 

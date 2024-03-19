@@ -2,8 +2,8 @@
 
 ## Unused dependencies (2)
 
-| Name     | Location     |
-|:---------|:-------------|
-| express  | package.json |
-| passport | package.json |
+| Name     | Location     | Severity |
+| :------- | :----------- | :------- |
+| passport | package.json | error    |
+| express  | package.json | error    |
 

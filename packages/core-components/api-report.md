@@ -67,6 +67,15 @@ export type AlertDisplayProps = {
 };
 
 // @public
+export function AppIcon(props: AppIconProps): React_2.JSX.Element;
+
+// @public
+export type AppIconProps = IconComponentProps & {
+  id: string;
+  Fallback?: IconComponent;
+};
+
+// @public
 export const AutoLogout: (props: AutoLogoutProps) => JSX.Element | null;
 
 // @public (undocumented)
@@ -86,6 +95,10 @@ export type AvatarClassKey = 'avatar';
 
 // @public
 export interface AvatarProps {
+  classes?: {
+    [key in 'avatar' | 'avatarText']?: string;
+  };
+  // @deprecated
   customStyles?: CSSProperties;
   displayName?: string;
   picture?: string;
@@ -128,10 +141,11 @@ export function Breadcrumbs(props: Props_18): React_2.JSX.Element;
 export type BreadcrumbsClickableTextClassKey = 'root';
 
 // @public (undocumented)
+export type BreadcrumbsCurrentPageClassKey = 'root';
+
+// @public (undocumented)
 export type BreadcrumbsStyledBoxClassKey = 'root';
 
-// Warning: (ae-forgotten-export) The symbol "IconComponentProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export function BrokenImageIcon(props: IconComponentProps): React_2.JSX.Element;
 
@@ -540,6 +554,9 @@ export type HorizontalScrollGridClassKey =
   | 'button'
   | 'buttonLeft'
   | 'buttonRight';
+
+// @public
+export type IconComponentProps = ComponentProps<IconComponent>;
 
 // @public (undocumented)
 export function IconLinkVertical({
