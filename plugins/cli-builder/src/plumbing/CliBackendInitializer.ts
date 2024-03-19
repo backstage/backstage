@@ -237,7 +237,6 @@ export class CliBackendInitializer {
     // All plugins are initialized in parallel
     await Promise.all(
       allPluginIds.map(async pluginId => {
-        console.time(pluginId);
         // Modules are initialized before plugins, so that they can provide extension to the plugin
         const modules = moduleInits.get(pluginId);
         if (modules) {
@@ -291,7 +290,6 @@ export class CliBackendInitializer {
             );
           });
         }
-        console.timeEnd(pluginId);
 
         // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
         // const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
