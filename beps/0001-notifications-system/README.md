@@ -380,9 +380,38 @@ interface SignalApi {
 - Render dynamic values with various different React elements such as the `EntityRefLink` for entity references (for example `{{ user:default/john.doe }}`) in the notification payload
 - Handle `link` values that use route references. For example instead hard-coding link to `/catalog/default/component/artist-web` it should be possible to use `catalogPlugin.catalogEntity` route reference as a link of the notification. This should also allow using parameters to be passed to the route reference. Links to external systems are still supported.
 - Add support for `analyticsApi` to notification actions like marking notifications done, saved or opening links in the notifications
-- Add support for user settings to control how notifications are shown to the user and which notifications user wants to receive. This should also include support for different `NotificationProcessor`s that can send notification to external systems
 - Add a sound to be played when notification is received
 - Add i18n internationalization support for the notification payload
+
+### User specific notification settings
+
+To allow the users more fine-grained control of notifications, user must have an option to unsubscribe from specific origins, topics and channels.
+
+By default, all notifications are enabled for the user in all notification channels. Frontend plugin provides an user interface to change these settings for example as described in the following image:
+
+![user notification settings UI example](./UserNotificationSettings.png)
+
+Each notification processor with `send` functionality will be listed as a separate channel among the Backstage internal notification channel `Web`. For this, each notification processor must implement a function to get a human readable name to be rendered in the frontend.
+
+User must be able to save these settings to the notification database, and they are be checked each time a new notification is sent to the user.
+
+Disabling a notification from specific origin or topic in the `Web` channel will not remove the old notifications being visible in the frontend from that source but instead, it only prevents new notifications being sent.
+
+For performance reasons the notification settings will ignore all broadcast notifications and those will be sent to all users despite their origin or channel.
+
+```ts
+export type NotificationSetting = {
+  origin: string;
+  topic?: string;
+  channels: Record<string, boolean>;
+};
+
+export type UserNotificationSettings = {
+  settings: NotificationSetting[];
+};
+```
+
+The backend plugin returns user notification settings for all known origins, topics and channels it knows of. As new origins, topics and channels will get added, also the notification settings list will get longer. This allows an easy way to add new notification origins, topics and channels without need to change the notification plugin. If the user is missing notification setting from specific origin/topic/channel, the backend considers it as enabled.
 
 ## Release Plan
 
