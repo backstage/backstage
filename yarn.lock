@@ -5593,6 +5593,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-catalog-backend-module-github": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
     luxon: ^3.0.0
   languageName: unknown
   linkType: soft
