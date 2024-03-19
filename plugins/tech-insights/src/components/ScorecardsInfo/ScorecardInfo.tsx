@@ -54,11 +54,22 @@ export const ScorecardInfo = (props: {
   checkResults: CheckResult[];
   title: string;
   description?: string;
+  noWarning?: boolean;
 }) => {
-  const { checkResults, title, description } = props;
+  const { checkResults, title, description, noWarning } = props;
   const classes = useStyles();
 
   if (!checkResults.length) {
+    if (noWarning) {
+      return infoCard(
+        title,
+        description,
+        classes.subheader,
+        <Alert severity="info">
+          All checks passed, or no checks have been performed yet
+        </Alert>,
+      );
+    }
     return infoCard(
       title,
       description,

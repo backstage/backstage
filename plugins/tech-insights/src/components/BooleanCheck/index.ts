@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { BooleanCheck } from './BooleanCheck';
+export { BooleanCheck, isBooleanCheckFailed } from './BooleanCheck';

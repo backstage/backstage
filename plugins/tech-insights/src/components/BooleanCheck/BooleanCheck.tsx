@@ -29,3 +29,9 @@ export const BooleanCheck = (props: { checkResult: CheckResult }) => {
     <ErrorOutlineIcon color="error" />
   );
 };
+
+/**
+ * @public
+ */
+export const isBooleanCheckFailed = (checkResult: CheckResult) =>
+  !checkResult.result;
