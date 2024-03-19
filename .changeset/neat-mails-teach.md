@@ -1,5 +1,5 @@
 ---
-'@backstage/frontend-app-api': minor
+'@backstage/frontend-app-api': patch
 ---
 
 Add `loadingComponent` parameter to `createApp()`
