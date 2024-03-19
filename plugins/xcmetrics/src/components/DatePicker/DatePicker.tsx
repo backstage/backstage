@@ -15,15 +15,13 @@
  */
 
 import React from 'react';
-import {
-  createStyles,
-  InputBase,
-  InputProps,
-  makeStyles,
-  Theme,
-  Typography,
-  withStyles,
-} from '@material-ui/core';
+import { createStyles } from '@material-ui/core/styles';
+import { InputProps } from '@material-ui/core/Input';
+import withStyles from '@material-ui/core/styles/withStyles';
+import { Theme } from '@material-ui/core/styles/createTheme';
+import InputBase from '@material-ui/core/InputBase/InputBase';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography/Typography';
 
 const BootstrapInput = withStyles((theme: Theme) =>
   createStyles({

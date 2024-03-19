@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { TrendLine } from '@backstage/core-components';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 
 interface TrendProps {
   data?: number[];

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import { SentryIssue } from '../../api';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Link } from '@backstage/core-components';
 

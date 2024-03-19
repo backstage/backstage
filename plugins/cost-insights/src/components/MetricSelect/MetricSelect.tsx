@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
-import { InputLabel, FormControl, Select, MenuItem } from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
+import FormControl from '@material-ui/core/FormControl';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
 import { Maybe, Metric } from '@backstage/plugin-cost-insights-common';
 import { useSelectStyles as useStyles } from '../../utils/styles';
 

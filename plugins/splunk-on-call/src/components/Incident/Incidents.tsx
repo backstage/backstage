@@ -15,18 +15,14 @@
  */
 
 import React, { useEffect } from 'react';
-import {
-  createStyles,
-  List,
-  ListSubheader,
-  makeStyles,
-  Theme,
-} from '@material-ui/core';
+import List from '@material-ui/core/List';
+import ListSubheader from '@material-ui/core/ListSubheader';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { IncidentListItem } from './IncidentListItem';
 import { IncidentsEmptyState } from './IncidentEmptyState';
 import useAsyncFn from 'react-use/lib/useAsyncFn';
 import { splunkOnCallApiRef } from '../../api';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 
 import { useApi } from '@backstage/core-plugin-api';
 import { Progress } from '@backstage/core-components';

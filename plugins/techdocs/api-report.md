@@ -9,7 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { CSSProperties } from '@material-ui/styles';
+import { CSSProperties } from '@material-ui/styles/withStyles';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
@@ -29,7 +29,7 @@ import { TechDocsApi as TechDocsApi_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsEntityMetadata as TechDocsEntityMetadata_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsMetadata as TechDocsMetadata_2 } from '@backstage/plugin-techdocs-react';
 import { TechDocsStorageApi as TechDocsStorageApi_2 } from '@backstage/plugin-techdocs-react';
-import { ToolbarProps } from '@material-ui/core';
+import { ToolbarProps } from '@material-ui/core/Toolbar';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public

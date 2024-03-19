@@ -19,23 +19,21 @@ import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import { PlaylistMetadata } from '@backstage/plugin-playlist-common';
 import { playlistApiRef } from '../../api';
-import {
-  Button,
-  CircularProgress,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  FormControl,
-  FormControlLabel,
-  InputLabel,
-  makeStyles,
-  MenuItem,
-  LinearProgress,
-  Radio,
-  RadioGroup,
-  Select,
-  TextField,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Select from '@material-ui/core/Select';
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
 import useAsync from 'react-use/lib/useAsync';

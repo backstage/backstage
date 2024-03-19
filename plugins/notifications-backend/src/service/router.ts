@@ -45,6 +45,7 @@ import {
   Notification,
   NotificationReadSignal,
 } from '@backstage/plugin-notifications-common';
+import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 
 /** @internal */
 export interface RouterOptions {
@@ -58,28 +59,6 @@ export interface RouterOptions {
   catalog?: CatalogApi;
   processors?: NotificationProcessor[];
 }
-
-const getSort = (input: string): NotificationGetOptions['sort'] | undefined => {
-  const valid: NotificationGetOptions['sort'][] = [
-    'created',
-    'topic',
-    'origin',
-  ];
-
-  if ((valid as string[]).includes(input)) {
-    return input as NotificationGetOptions['sort'];
-  }
-  return undefined;
-};
-
-const getSortOrder = (input: string): NotificationGetOptions['sortOrder'] => {
-  const valid: NotificationGetOptions['sortOrder'][] = ['asc', 'desc'];
-
-  if ((valid as string[]).includes(input)) {
-    return input as NotificationGetOptions['sortOrder'];
-  }
-  return 'desc';
-};
 
 /** @internal */
 export async function createRouter(
@@ -209,11 +188,8 @@ export async function createRouter(
     if (req.query.limit) {
       opts.limit = Number.parseInt(req.query.limit.toString(), 10);
     }
-    if (req.query.sort) {
-      opts.sort = getSort(req.query.sort.toString());
-    }
-    if (req.query.sort_order) {
-      opts.sortOrder = getSortOrder(req.query.sort_order.toString());
+    if (req.query.orderField) {
+      opts.orderField = parseEntityOrderFieldParams(req.query);
     }
     if (req.query.search) {
       opts.search = req.query.search.toString();
@@ -230,8 +206,8 @@ export async function createRouter(
       opts.saved = false;
       // or keep undefined
     }
-    if (req.query.created_after) {
-      const sinceEpoch = Date.parse(String(req.query.created_after));
+    if (req.query.createdAfter) {
+      const sinceEpoch = Date.parse(String(req.query.createdAfter));
       if (isNaN(sinceEpoch)) {
         throw new InputError('Unexpected date format');
       }
@@ -286,7 +262,7 @@ export async function createRouter(
 
       if (signals) {
         await signals.publish<NotificationReadSignal>({
-          recipients: [user],
+          recipients: { type: 'user', entityRef: [user] },
           message: { action: 'notification_read', notification_ids: ids },
           channel: 'notifications',
         });
@@ -296,7 +272,7 @@ export async function createRouter(
 
       if (signals) {
         await signals.publish<NotificationReadSignal>({
-          recipients: [user],
+          recipients: { type: 'user', entityRef: [user] },
           message: { action: 'notification_unread', notification_ids: ids },
           channel: 'notifications',
         });
@@ -348,7 +324,7 @@ export async function createRouter(
 
     if (signals) {
       await signals.publish<NewNotificationSignal>({
-        recipients: null,
+        recipients: { type: 'broadcast' },
         message: {
           action: 'new_notification',
           notification_id: ret.id,
@@ -400,7 +376,7 @@ export async function createRouter(
 
       if (signals) {
         await signals.publish<NewNotificationSignal>({
-          recipients: user,
+          recipients: { type: 'user', entityRef: [user] },
           message: {
             action: 'new_notification',
             notification_id: ret.id,

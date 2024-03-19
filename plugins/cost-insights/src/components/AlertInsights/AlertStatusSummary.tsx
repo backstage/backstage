@@ -15,7 +15,11 @@
  */
 
 import React, { Fragment } from 'react';
-import { Avatar, Box, Collapse, Divider, Tooltip } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
+import Box from '@material-ui/core/Box';
+import Collapse from '@material-ui/core/Collapse';
+import Divider from '@material-ui/core/Divider';
+import Tooltip from '@material-ui/core/Tooltip';
 import { default as AcceptIcon } from '@material-ui/icons/Check';
 import { default as DismissIcon } from '@material-ui/icons/Delete';
 import { default as SnoozeIcon } from '@material-ui/icons/AccessTime';

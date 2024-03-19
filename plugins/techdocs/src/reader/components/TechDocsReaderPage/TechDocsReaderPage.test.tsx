@@ -34,7 +34,11 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { FlatRoutes } from '@backstage/core-app-api';
 
 import { Page } from '@backstage/core-components';
-import { configApiRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -76,6 +80,22 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   syncEntityDocs: jest.fn(),
 };
 
+const discoveryApiMock = {
+  getBaseUrl: jest
+    .fn()
+    .mockResolvedValue('https://localhost:7000/api/techdocs'),
+};
+
+const fetchApiMock = {
+  fetch: jest.fn().mockResolvedValue({
+    ok: true,
+    json: jest.fn().mockResolvedValue({
+      // Expires in 10 minutes
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    }),
+  }),
+};
+
 const PageMock = () => {
   const { namespace, kind, name } = useParams();
   return <>{`PageMock: ${namespace}#${kind}#${name}`}</>;
@@ -96,6 +116,8 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <TestApiProvider
       apis={[
+        [fetchApiRef, fetchApiMock],
+        [discoveryApiRef, discoveryApiMock],
         [scmIntegrationsApiRef, {}],
         [configApiRef, configApi],
         [techdocsApiRef, techdocsApiMock],
@@ -115,29 +137,6 @@ const mountedRoutes = {
 
 describe('<TechDocsReaderPage />', () => {
   beforeEach(() => {
-    type Listener = (event: { data: any }) => void;
-
-    global.BroadcastChannel = jest
-      .fn()
-      .mockImplementation((_channelName: string) => {
-        let listeners: Listener[] = [];
-        return {
-          postMessage: jest.fn((message: any) => {
-            listeners.forEach(listener => listener({ data: message }));
-          }),
-          addEventListener: jest.fn((event: string, listener: Listener) => {
-            if (event === 'message') {
-              listeners.push(listener);
-            }
-          }),
-          removeEventListener: jest.fn((event: string, listener: Listener) => {
-            if (event === 'message') {
-              listeners = listeners.filter(l => l !== listener);
-            }
-          }),
-        };
-      });
-
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
     getCookie.mockResolvedValue({
@@ -147,7 +146,7 @@ describe('<TechDocsReaderPage />', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   beforeEach(() => {

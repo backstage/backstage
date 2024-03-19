@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Collapse, List } from '@material-ui/core';
+import Collapse from '@material-ui/core/Collapse';
+import List from '@material-ui/core/List';
 import { Visit } from '../../api/VisitsApi';
 import { VisitListItem } from './VisitListItem';
 import { ItemDetailType } from './ItemDetail';

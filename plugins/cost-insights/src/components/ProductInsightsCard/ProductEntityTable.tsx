@@ -16,7 +16,7 @@
 
 import React from 'react';
 import classnames from 'classnames';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { formatChange } from '../../utils/formatters';
 import { useEntityDialogStyles as useStyles } from '../../utils/styles';
 import { CostGrowthIndicator } from '../CostGrowth';

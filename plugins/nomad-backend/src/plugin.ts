@@ -46,6 +46,10 @@ export const nomadPlugin = createBackendPlugin({
             config,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

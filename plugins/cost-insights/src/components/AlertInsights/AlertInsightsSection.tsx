@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Box, Button } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import { default as SnoozeIcon } from '@material-ui/icons/AccessTime';
 import { default as AcceptIcon } from '@material-ui/icons/Check';
 import { default as DismissIcon } from '@material-ui/icons/Delete';

@@ -20,6 +20,12 @@ import {
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
 
+/** @internal */
+export type EntityOrder = {
+  field: string;
+  order: 'asc' | 'desc';
+};
+
 // TODO: reuse the common part of the type with front-end
 /** @internal */
 export type NotificationGetOptions = {
@@ -28,8 +34,7 @@ export type NotificationGetOptions = {
   offset?: number;
   limit?: number;
   search?: string;
-  sort?: 'created' | 'topic' | 'origin' | null;
-  sortOrder?: 'asc' | 'desc';
+  orderField?: EntityOrder[];
   read?: boolean;
   saved?: boolean;
   createdAfter?: Date;

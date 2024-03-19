@@ -27,10 +27,13 @@ import {
   entityRouteRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import { Grid, makeStyles, Paper, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
-import { ToggleButton } from '@material-ui/lab';
+import ToggleButton from '@material-ui/lab/ToggleButton';
 import React, { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {

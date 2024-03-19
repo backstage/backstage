@@ -39,6 +39,10 @@ export default createBackendPlugin({
         httpRouter.use(
           await createRouter({ config, logger: loggerToWinstonLogger(logger) }),
         );
+        httpRouter.addAuthPolicy({
+          allow: 'unauthenticated',
+          path: '/health',
+        });
       },
     });
   },

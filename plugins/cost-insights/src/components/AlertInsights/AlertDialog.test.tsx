@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { capitalize } from '@material-ui/core';
+import { capitalize } from '@material-ui/core/utils';
 import { AlertDialog } from './AlertDialog';
 import { render } from '@testing-library/react';
 import { Alert, AlertFormProps, AlertStatus } from '../../types';

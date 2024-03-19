@@ -17,17 +17,15 @@
 import React from 'react';
 import capitalize from 'lodash/capitalize';
 import { Progress } from '@backstage/core-components';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Autocomplete } from '@material-ui/lab';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 

@@ -16,7 +16,7 @@
 
 import React from 'react';
 import classnames from 'classnames';
-import { Typography, TypographyProps } from '@material-ui/core';
+import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import { default as ArrowDropUp } from '@material-ui/icons/ArrowDropUp';
 import { default as ArrowDropDown } from '@material-ui/icons/ArrowDropDown';
 import { growthOf } from '../../utils/change';

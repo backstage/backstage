@@ -13,7 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Box, FormControlLabel, makeStyles, Switch } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback } from 'react';
 
 export type Props = {

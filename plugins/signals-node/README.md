@@ -91,13 +91,13 @@ To allow connections from the frontend, you should also install the `@backstage/
 
 Once you have both of the backend plugins installed, you can utilize the signal service by calling the
 `publish` method. This will publish the message to all subscribers in the frontend. To send message to
-all subscribers, you can use `null` as `recipients` parameter.
+all subscribers, you can use `broadcast` type:
 
 ```ts
 // Periodic sending example
 setInterval(async () => {
   await signals.publish({
-    recipients: null,
+    recipients: { type: 'broadcast' },
     channel: 'my_plugin',
     message: {
       message: 'hello world',
@@ -118,7 +118,7 @@ to work:
 eventBroker.publish({
   topic: 'signals',
   eventPayload: {
-    recipients: ['user:default/user1'],
+    recipients: { type: 'user', entityRef: 'user:default/user1' },
     message: {
       message: 'hello world',
     },

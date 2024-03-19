@@ -19,16 +19,14 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { usePermission } from '@backstage/plugin-permission-react';
 import { permissions } from '@backstage/plugin-playlist-common';
-import {
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  LinearProgress,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import useAsyncFn from 'react-use/lib/useAsyncFn';

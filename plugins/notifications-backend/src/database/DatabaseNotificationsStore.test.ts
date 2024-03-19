@@ -405,8 +405,7 @@ describe.each(databases.eachSupportedId())(
       it('should sort created asc', async () => {
         const notificationsCreatedAsc = await storage.getNotifications({
           user,
-          sort: 'created',
-          sortOrder: 'asc',
+          orderField: [{ field: 'created', order: 'asc' }],
         });
         expect(notificationsCreatedAsc.map(idOnly)).toEqual([id1, id3, id2]);
       });
@@ -414,8 +413,7 @@ describe.each(databases.eachSupportedId())(
       it('should sort created desc', async () => {
         const notificationsCreatedDesc = await storage.getNotifications({
           user,
-          sort: 'created',
-          sortOrder: 'desc',
+          orderField: [{ field: 'created', order: 'desc' }],
         });
         expect(notificationsCreatedDesc.map(idOnly)).toEqual([id2, id3, id1]);
       });
@@ -423,8 +421,7 @@ describe.each(databases.eachSupportedId())(
       it('should sort topic asc', async () => {
         const notificationsTopicAsc = await storage.getNotifications({
           user,
-          sort: 'topic',
-          sortOrder: 'asc',
+          orderField: [{ field: 'topic', order: 'asc' }],
         });
         expect(notificationsTopicAsc.map(idOnly)).toEqual([id1, id3, id2]);
       });
@@ -432,8 +429,7 @@ describe.each(databases.eachSupportedId())(
       it('should sort topic desc', async () => {
         const notificationsTopicDesc = await storage.getNotifications({
           user,
-          sort: 'topic',
-          sortOrder: 'desc',
+          orderField: [{ field: 'topic', order: 'desc' }],
         });
         expect(notificationsTopicDesc.map(idOnly)).toEqual([id2, id3, id1]);
       });
@@ -441,8 +437,7 @@ describe.each(databases.eachSupportedId())(
       it('should sort origin asc', async () => {
         const notificationsOrigin = await storage.getNotifications({
           user,
-          sort: 'origin',
-          sortOrder: 'asc',
+          orderField: [{ field: 'origin', order: 'asc' }],
           limit: 2,
           offset: 0,
         });
@@ -452,8 +447,7 @@ describe.each(databases.eachSupportedId())(
       it('should sort origin desc', async () => {
         const notificationsOriginNext = await storage.getNotifications({
           user,
-          sort: 'origin',
-          sortOrder: 'desc',
+          orderField: [{ field: 'origin', order: 'desc' }],
           limit: 2,
           offset: 2,
         });
