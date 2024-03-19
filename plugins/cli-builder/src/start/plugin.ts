@@ -27,6 +27,9 @@ import {
 import { rootConfigServiceFactory } from '../impls/rootConfigServiceFactory';
 import { createSpecializedCli } from '../plumbing/createSpecializedCli';
 
+/**
+ * @public
+ */
 export function createCli() {
   return createSpecializedCli({
     defaultServiceFactories: [
