@@ -1,5 +1,14 @@
 # @backstage/plugin-search-common
 
+## 1.2.11
+
+### Patch Changes
+
+- 744c0cb: Deprecate `QueryTranslator`, `QueryRequestOptions` and `SearchEngine` in favor of the types exported from `@backstage/plugin-search-backend-node`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/types@1.1.1
+
 ## 1.2.11-next.1
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/plugin-devtools
 
+## 0.1.10
+
+### Patch Changes
+
+- a0e3393: Updated to use `fetchApi` as per [ADR013](https://backstage.io/docs/architecture-decisions/adrs-adr013)
+- 8b0026d: Removed unused `devDependencies` identified in Knip Report
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-devtools-common@0.1.9
+  - @backstage/plugin-permission-react@0.4.21
+
 ## 0.1.10-next.2
 
 ### Patch Changes

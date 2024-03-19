@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.1.19
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+
 ## 0.1.19-next.2
 
 ### Patch Changes

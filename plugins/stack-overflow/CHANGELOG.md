@@ -1,5 +1,20 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.26
+
+### Patch Changes
+
+- c6779ac: fix: fix decode issues in title and author fields in `StackOverflowSearchResultListItem`
+- 6429213: Added ESLint rule `no-top-level-material-ui-4-imports` in the `stack-overflow` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/plugin-home-react@0.1.9
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-search-react@1.7.7
+
 ## 0.1.26-next.2
 
 ### Patch Changes

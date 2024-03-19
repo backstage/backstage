@@ -1,5 +1,25 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.28
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- 4467036: Allow unauthenticated access to health check endpoint.
+- cceebae: Fix jacoco convertor to not require annotation to be set to scm-only.
+- 8efe690: Migrated to support new auth services.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- 1914e2a: Updated README
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/catalog-client@1.6.1
+  - @backstage/catalog-model@1.4.5
+
 ## 0.2.28-next.2
 
 ### Patch Changes

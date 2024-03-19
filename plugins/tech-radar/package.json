@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-tech-radar",
-  "version": "0.7.0-next.2",
+  "version": "0.7.0",
   "description": "A Backstage plugin that lets you display a Tech Radar for your organization",
   "backstage": {
     "role": "frontend-plugin"

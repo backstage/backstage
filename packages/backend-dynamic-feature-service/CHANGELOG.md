@@ -1,5 +1,32 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.2.4
+
+### Patch Changes
+
+- 5247909: Add `events: EventsService` to `LegacyPluginEnvironment`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0
+  - @backstage/plugin-events-backend@0.3.0
+  - @backstage/plugin-events-node@0.3.0
+  - @backstage/plugin-catalog-backend@1.18.0
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/backend-app-api@0.6.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/plugin-search-backend-node@1.2.18
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/cli-node@0.2.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.14
+
 ## 0.2.4-next.2
 
 ### Patch Changes

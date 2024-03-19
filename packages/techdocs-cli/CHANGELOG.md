@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.8.6
+
+### Patch Changes
+
+- 1bd4596: Removed the `ts-node` dev dependency.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/plugin-techdocs-node@1.12.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+
 ## 1.8.6-next.2
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-dynatrace
 
+## 10.0.0
+
+### Patch Changes
+
+- e550b2b: Adjusted MUI imports for better tree shaking
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
 ## 10.0.0-next.2
 
 ### Patch Changes

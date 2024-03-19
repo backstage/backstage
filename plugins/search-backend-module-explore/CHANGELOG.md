@@ -1,5 +1,19 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.1.18
+
+### Patch Changes
+
+- bb368a5: Migrated to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/plugin-search-backend-node@1.2.18
+  - @backstage/plugin-explore-common@0.0.2
+
 ## 0.1.18-next.2
 
 ### Patch Changes

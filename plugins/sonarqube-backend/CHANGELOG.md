@@ -1,5 +1,15 @@
 # @backstage/plugin-sonarqube-backend
 
+## 0.2.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+
 ## 0.2.16-next.2
 
 ### Patch Changes

@@ -1,5 +1,16 @@
 # @backstage/plugin-kafka
 
+## 0.3.31
+
+### Patch Changes
+
+- 3913fd8: Added ESLint rule `no-top-level-material-ui-4-imports` in the Kafka plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.3.31-next.2
 
 ### Patch Changes

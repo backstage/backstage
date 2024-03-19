@@ -1,5 +1,30 @@
 # @backstage/plugin-techdocs
 
+## 1.10.1
+
+### Patch Changes
+
+- 7c2d022: Fixed bug in TechDocs sidebar render that prevented scrollbar from being displayed
+- 3f14e9f: Implement a client cookie refresh mechanism.
+- 62bcaf8: Use the new generic refresh user cookie provider.
+- 28f27f0: Added ESLint rule `no-top-level-material-ui-4-imports` to aid with the migration to Material UI v5.
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-react@0.0.1
+  - @backstage/theme@0.5.2
+  - @backstage/integration-react@1.1.25
+  - @backstage/plugin-techdocs-react@1.2.0
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-search-react@1.7.7
+
 ## 1.10.1-next.2
 
 ### Patch Changes

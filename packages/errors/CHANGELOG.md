@@ -1,5 +1,13 @@
 # @backstage/errors
 
+## 1.2.4
+
+### Patch Changes
+
+- 2636075: Fixed an issue that was causing ResponseError not to report the HTTP status from the provided response.
+- Updated dependencies
+  - @backstage/types@1.1.1
+
 ## 1.2.4-next.0
 
 ### Patch Changes

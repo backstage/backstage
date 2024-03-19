@@ -1,5 +1,15 @@
 # @backstage/plugin-cicd-statistics-module-gitlab
 
+## 0.1.27
+
+### Patch Changes
+
+- 402d991: Align `p-limit` dependency version to v3
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/plugin-cicd-statistics@0.1.33
+
 ## 0.1.27-next.2
 
 ### Patch Changes

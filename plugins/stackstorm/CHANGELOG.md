@@ -1,5 +1,15 @@
 # @backstage/plugin-stackstorm
 
+## 0.1.12
+
+### Patch Changes
+
+- b8234ce: Added ESLint rule `no-top-level-material-ui-4-imports` in the `stackstorm` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.1.12-next.2
 
 ### Patch Changes

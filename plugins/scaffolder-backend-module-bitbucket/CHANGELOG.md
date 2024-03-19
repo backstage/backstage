@@ -1,5 +1,23 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket
 
+## 0.2.4
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- f44589d: Introduced `createMockActionContext` to unify the way of creating scaffolder mock context.
+
+  It will help to maintain tests in a long run during structural changes of action context.
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.4
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+
 ## 0.2.4-next.2
 
 ### Patch Changes

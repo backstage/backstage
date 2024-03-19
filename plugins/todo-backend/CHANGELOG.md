@@ -1,5 +1,21 @@
 # @backstage/plugin-todo-backend
 
+## 0.3.12
+
+### Patch Changes
+
+- b65788b: Move @backstage/repo-tools to dev dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/backend-openapi-utils@0.1.7
+  - @backstage/catalog-model@1.4.5
+
 ## 0.3.12-next.2
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-vmware-cloud-provider
 
+## 0.1.6
+
+### Patch Changes
+
+- 2af5354: Bump dependency `jose` to v5
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/catalog-model@1.4.5
+
 ## 0.1.6-next.2
 
 ### Patch Changes

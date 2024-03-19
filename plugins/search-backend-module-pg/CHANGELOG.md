@@ -1,5 +1,19 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.23
+
+### Patch Changes
+
+- 744c0cb: Start importing `QueryTranslator`, `QueryRequestOptions` and `SearchEngine` from the `@backstage/plugin-search-backend-node`.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/plugin-search-backend-node@1.2.18
+
 ## 0.5.23-next.2
 
 ### Patch Changes

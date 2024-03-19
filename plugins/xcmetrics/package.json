@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-xcmetrics",
-  "version": "0.2.49-next.2",
+  "version": "0.2.49",
   "description": "A Backstage plugin that shows XCode build metrics for your components",
   "backstage": {
     "role": "frontend-plugin"

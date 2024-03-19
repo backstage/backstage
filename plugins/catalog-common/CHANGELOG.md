@@ -1,5 +1,14 @@
 # @backstage/plugin-catalog-common
 
+## 1.0.22
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/catalog-model@1.4.5
+
 ## 1.0.22-next.1
 
 ### Patch Changes
