@@ -27,7 +27,7 @@ import {
 } from '@material-ui/core';
 import React, { useEffect, useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
-import { EntityRelationAggregation } from './types';
+import { EntityRelationAggregation } from '../types';
 
 const useStyles = makeStyles(theme => ({
   card: {
