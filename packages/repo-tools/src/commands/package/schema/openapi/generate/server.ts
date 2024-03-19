@@ -25,7 +25,7 @@ import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers'
 
 const exec = promisify(execCb);
 
-async function generate() {
+async function generate(abortSignal?: AbortController) {
   const openapiPath = await getPathToCurrentOpenApiSpec();
   const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
 
@@ -50,19 +50,26 @@ export const createOpenApiRouter = async (
 `,
   );
 
-  await exec(`yarn backstage-cli package lint --fix ${tsPath}`);
+  await exec(`yarn backstage-cli package lint --fix ${tsPath}`, {
+    signal: abortSignal?.signal,
+  });
   if (await cliPaths.resolveTargetRoot('node_modules/.bin/prettier')) {
     await exec(`yarn prettier --write ${tsPath}`, {
       cwd: cliPaths.targetRoot,
+      signal: abortSignal?.signal,
     });
   }
 }
 
-export async function command(): Promise<void> {
+export async function command(abortSignal?: AbortController): Promise<void> {
   try {
-    await generate();
-    console.log(chalk.green('Generated all files.'));
+    await generate(abortSignal);
+    console.log(chalk.green('Generated server files.'));
   } catch (err) {
+    if (err.name === 'AbortError') {
+      console.debug('Server generation aborted.');
+      return;
+    }
     console.log(chalk.red(`OpenAPI server stub generation failed.`));
     console.log(err.message);
     process.exit(1);

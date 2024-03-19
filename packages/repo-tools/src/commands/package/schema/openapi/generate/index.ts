@@ -17,6 +17,8 @@ import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import { command as generateClient } from './client';
 import { command as generateServer } from './server';
+import chokidar from 'chokidar';
+import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
 
 export async function command(opts: OptionValues) {
   if (!opts.clientPackage && !opts.server) {
@@ -25,10 +27,37 @@ export async function command(opts: OptionValues) {
     );
     process.exit(1);
   }
-  if (opts.clientPackage) {
-    await generateClient(opts.clientPackage, opts.clientAdditionalProperties);
-  }
-  if (opts.server) {
-    await generateServer();
+
+  const sharedCommand = async (abortSignal?: AbortController) => {
+    if (opts.clientPackage) {
+      await generateClient(
+        opts.clientPackage,
+        opts.clientAdditionalProperties,
+        abortSignal,
+      );
+    }
+    if (opts.server) {
+      await generateServer(abortSignal);
+    }
+  };
+
+  if (opts.watch) {
+    try {
+      const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
+      let abortController = new AbortController();
+      chokidar.watch(resolvedOpenapiPath).on('change', async () => {
+        console.log('detected changes');
+        abortController.abort();
+        await sharedCommand(abortController);
+        abortController = new AbortController();
+      });
+      await sharedCommand();
+      await new Promise(() => {});
+    } catch (err) {
+      console.error(chalk.red('Error: ', err));
+      process.exit(1);
+    }
+  } else {
+    await sharedCommand();
   }
 }

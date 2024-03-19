@@ -8309,6 +8309,7 @@ __metadata:
     "@types/prettier": ^2.0.0
     "@useoptic/openapi-utilities": ^0.55.0
     chalk: ^4.0.0
+    chokidar: ^3.6.0
     codeowners-utils: ^1.0.2
     command-exists: ^1.2.9
     commander: ^12.0.0
