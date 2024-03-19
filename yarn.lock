@@ -5118,6 +5118,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
   languageName: unknown
@@ -27441,6 +27442,7 @@ __metadata:
     "@backstage/plugin-airbrake": "workspace:^"
     "@backstage/plugin-apache-airflow": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
+    "@backstage/plugin-auth-react": "workspace:^"
     "@backstage/plugin-azure-devops": "workspace:^"
     "@backstage/plugin-azure-sites": "workspace:^"
     "@backstage/plugin-badges": "workspace:^"

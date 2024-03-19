@@ -48,6 +48,7 @@
     "@backstage/plugin-airbrake": "workspace:^",
     "@backstage/plugin-apache-airflow": "workspace:^",
     "@backstage/plugin-api-docs": "workspace:^",
+    "@backstage/plugin-auth-react": "workspace:^",
     "@backstage/plugin-azure-devops": "workspace:^",
     "@backstage/plugin-azure-sites": "workspace:^",
     "@backstage/plugin-badges": "workspace:^",
