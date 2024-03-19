@@ -17,20 +17,20 @@
 import {
   BackendFeature,
   ExtensionPoint,
-  coreServices,
   ServiceRef,
   ServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
-import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
-import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
 import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
+// eslint-disable-next-line @backstage/no-forbidden-package-imports
+import { ServiceOrExtensionPoint } from '@backstage/backend-app-api/src/wiring/types';
+import { ServiceRegistry } from '@backstage/backend-app-api';
+import { DependencyGraph } from '@backstage/backend-app-api';
 import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { DependencyGraph } from '../lib/DependencyGraph';
-import { ServiceRegistry } from './ServiceRegistry';
+import { coreCliServices } from '../services';
+import { Command } from 'commander';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -41,8 +41,8 @@ export interface BackendRegisterInit {
   };
 }
 
-export class BackendInitializer {
-  startPromise?: Promise<void>;
+export class CliBackendInitializer {
+  #startPromise?: Promise<void>;
   #features = new Array<InternalBackendFeature>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
   #serviceRegistry: ServiceRegistry;
@@ -93,7 +93,7 @@ export class BackendInitializer {
   }
 
   add(feature: BackendFeature | Promise<BackendFeature>) {
-    if (this.startPromise) {
+    if (this.#startPromise) {
       throw new Error('feature can not be added after the backend has started');
     }
     this.#registeredFeatures.push(Promise.resolve(feature));
@@ -123,7 +123,7 @@ export class BackendInitializer {
   }
 
   async start(): Promise<void> {
-    if (this.startPromise) {
+    if (this.#startPromise) {
       throw new Error('Backend has already started');
     }
 
@@ -133,6 +133,7 @@ export class BackendInitializer {
       process.removeListener('beforeExit', exitHandler);
 
       try {
+        console.log('stopping');
         await this.stop();
         process.exit(0);
       } catch (error) {
@@ -145,8 +146,9 @@ export class BackendInitializer {
     process.addListener('SIGINT', exitHandler);
     process.addListener('beforeExit', exitHandler);
 
-    this.startPromise = this.#doStart();
-    await this.startPromise;
+    this.#startPromise = this.#doStart();
+    await this.#startPromise;
+    await this.stop();
   }
 
   async #doStart(): Promise<void> {
@@ -170,7 +172,11 @@ export class BackendInitializer {
     }
 
     // Initialize all root scoped services
-    await this.#serviceRegistry.initializeEagerServicesWithScope('root');
+    for (const ref of this.#serviceRegistry.getServiceRefs()) {
+      if (ref.scope === 'root') {
+        await this.#serviceRegistry.get(ref, 'root');
+      }
+    }
 
     const pluginInits = new Map<string, BackendRegisterInit>();
     const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
@@ -224,17 +230,14 @@ export class BackendInitializer {
       }
     }
 
-    const allPluginIds = [...pluginInits.keys()];
+    const allPluginIds = [
+      ...new Set([...pluginInits.keys(), ...moduleInits.keys()]),
+    ];
 
     // All plugins are initialized in parallel
     await Promise.all(
       allPluginIds.map(async pluginId => {
-        // Initialize all eager services
-        await this.#serviceRegistry.initializeEagerServicesWithScope(
-          'plugin',
-          pluginId,
-        );
-
+        console.time(pluginId);
         // Modules are initialized before plugins, so that they can provide extension to the plugin
         const modules = moduleInits.get(pluginId);
         if (modules) {
@@ -288,75 +291,81 @@ export class BackendInitializer {
             );
           });
         }
+        console.timeEnd(pluginId);
 
         // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
-        const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
-        await lifecycleService.startup();
+        // const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
+        // await lifecycleService.startup();
       }),
     );
 
     // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
-    const lifecycleService = await this.#getRootLifecycleImpl();
-    await lifecycleService.startup();
+    // const lifecycleService = await this.#getRootLifecycleImpl();
+    // await lifecycleService.startup();
 
-    // Once the backend is started, any uncaught errors or unhandled rejections are caught
-    // and logged, in order to avoid crashing the entire backend on local failures.
-    if (process.env.NODE_ENV !== 'test') {
-      const rootLogger = await this.#serviceRegistry.get(
-        coreServices.rootLogger,
-        'root',
-      );
-      process.on('unhandledRejection', (reason: Error) => {
-        rootLogger
-          ?.child({ type: 'unhandledRejection' })
-          ?.error('Unhandled rejection', reason);
-      });
-      process.on('uncaughtException', error => {
-        rootLogger
-          ?.child({ type: 'uncaughtException' })
-          ?.error('Uncaught exception', error);
-      });
+    const commanderService = await this.#getRootCommanderImpl();
+    try {
+      await commanderService.parseAsync(process.argv);
+    } catch (err) {
+      if (err.exitCode !== 0) {
+        console.error(
+          `${err.message} ${err.stack} ${err.code} ${
+            err.name
+          } ${err.toString()}`,
+        );
+      }
     }
   }
 
   async stop(): Promise<void> {
-    if (!this.startPromise) {
+    if (!this.#startPromise) {
       return;
     }
 
     try {
-      await this.startPromise;
+      await this.#startPromise;
     } catch (error) {
       // The startup failed, but we may still want to do cleanup so we continue silently
     }
 
-    const lifecycleService = await this.#getRootLifecycleImpl();
-    await lifecycleService.shutdown();
+    // const lifecycleService = await this.#getRootLifecycleImpl();
+    // await lifecycleService.shutdown();
   }
 
-  // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
-  async #getRootLifecycleImpl(): Promise<BackendLifecycleImpl> {
-    const lifecycleService = await this.#serviceRegistry.get(
-      coreServices.rootLifecycle,
+  //   // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
+  //   async #getRootLifecycleImpl(): Promise<BackendLifecycleImpl> {
+  //     const lifecycleService = await this.#serviceRegistry.get(
+  //       coreServices.rootLifecycle,
+  //       'root',
+  //     );
+  //     if (lifecycleService instanceof BackendLifecycleImpl) {
+  //       return lifecycleService;
+  //     }
+  //     throw new Error('Unexpected root lifecycle service implementation');
+  //   }
+
+  //   async #getPluginLifecycleImpl(
+  //     pluginId: string,
+  //   ): Promise<BackendPluginLifecycleImpl> {
+  //     const lifecycleService = await this.#serviceRegistry.get(
+  //       coreServices.lifecycle,
+  //       pluginId,
+  //     );
+  //     if (lifecycleService instanceof BackendPluginLifecycleImpl) {
+  //       return lifecycleService;
+  //     }
+  //     throw new Error('Unexpected plugin lifecycle service implementation');
+  //   }
+
+  async #getRootCommanderImpl() {
+    const commanderService = await this.#serviceRegistry.get(
+      coreCliServices.rootCommander,
       'root',
     );
-    if (lifecycleService instanceof BackendLifecycleImpl) {
-      return lifecycleService;
+    if (commanderService instanceof Command) {
+      return commanderService;
     }
-    throw new Error('Unexpected root lifecycle service implementation');
-  }
-
-  async #getPluginLifecycleImpl(
-    pluginId: string,
-  ): Promise<BackendPluginLifecycleImpl> {
-    const lifecycleService = await this.#serviceRegistry.get(
-      coreServices.lifecycle,
-      pluginId,
-    );
-    if (lifecycleService instanceof BackendPluginLifecycleImpl) {
-      return lifecycleService;
-    }
-    throw new Error('Unexpected plugin lifecycle service implementation');
+    throw new Error('Unexpected root commander service implementation');
   }
 }
 

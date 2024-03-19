@@ -30,7 +30,10 @@ export const rootConfigServiceFactory = createServiceFactory(
         argv: options?.argv,
         remote: options?.remote,
       });
-      return await ConfigSources.toConfig(source);
+      console.time('config');
+      const config = await ConfigSources.toConfig(source);
+      console.timeEnd('config');
+      return config;
     },
   }),
 );
