@@ -60,6 +60,7 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/integration-react": "workspace:^",
+    "@backstage/plugin-auth-react": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-search-react": "workspace:^",

@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-auth-react
+  title: '@backstage/plugin-auth-react'
+  description: Web library for the auth plugin
+spec:
+  lifecycle: experimental
+  type: backstage-web-library
+  owner: maintainers
