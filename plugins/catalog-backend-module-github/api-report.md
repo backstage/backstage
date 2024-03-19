@@ -142,6 +142,7 @@ export type GithubMultiOrgConfig = Array<{
 // @public
 export class GithubMultiOrgEntityProvider implements EntityProvider {
   constructor(options: {
+    events?: EventsService;
     id: string;
     gitHubConfig: GithubIntegrationConfig;
     githubCredentialsProvider: GithubCredentialsProvider;
@@ -165,7 +166,9 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
 // @public
 export interface GithubMultiOrgEntityProviderOptions {
+  // @deprecated
   eventBroker?: EventBroker;
+  events?: EventsService;
   githubCredentialsProvider?: GithubCredentialsProvider;
   githubUrl: string;
   id: string;
@@ -220,6 +223,7 @@ export class GithubOrgEntityProvider
   implements EntityProvider, EventSubscriber
 {
   constructor(options: {
+    events?: EventsService;
     id: string;
     orgUrl: string;
     gitHubConfig: GithubIntegrationConfig;
@@ -249,6 +253,7 @@ export type GitHubOrgEntityProviderOptions = GithubOrgEntityProviderOptions;
 
 // @public
 export interface GithubOrgEntityProviderOptions {
+  events?: EventsService;
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
   logger: Logger;

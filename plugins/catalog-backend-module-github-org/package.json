@@ -36,7 +36,8 @@
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-catalog-backend-module-github": "workspace:^",
-    "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
