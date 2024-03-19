@@ -4,9 +4,11 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 
 // @public
 const catalogModuleUnprocessedEntities: () => BackendFeature;
@@ -14,8 +16,15 @@ export default catalogModuleUnprocessedEntities;
 
 // @public
 export class UnprocessedEntitiesModule {
-  constructor(database: Knex, router: Pick<HttpRouterService, 'use'>);
   // (undocumented)
-  registerRoutes({ permissions }: { permissions: PermissionEvaluator }): void;
+  static create(options: {
+    router: Pick<HttpRouterService, 'use'>;
+    database: Knex;
+    discovery: DiscoveryService;
+    permissions: PermissionsService;
+    httpAuth?: HttpAuthService;
+  }): UnprocessedEntitiesModule;
+  // (undocumented)
+  registerRoutes(): void;
 }
 ```
