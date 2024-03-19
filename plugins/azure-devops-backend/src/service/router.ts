@@ -266,9 +266,9 @@ export async function createRouter(
     res.status(200).json(pullRequests);
   });
 
-  router.get('/all-teams', async (_req, res) => {
-    const topTeams = _req.query.topTeams
-      ? Number(_req.query.topTeams)
+  router.get('/all-teams', async (req, res) => {
+    const topTeams = req.query.topTeams
+      ? Number(req.query.topTeams)
       : undefined;
     const allTeams = await pullRequestsDashboardProvider.getAllTeams(topTeams);
     res.status(200).json(allTeams);
