@@ -19,7 +19,6 @@ import { createCli } from '../src/start/plugin';
 async function startBackend() {
   const backend = createCli();
 
-  backend.add(import('../src/plugins/ExamplePlugin'));
   backend.add(import('../src/plugins/OpenApiPlugin'));
 
   await backend.start();
@@ -33,7 +32,3 @@ startBackend()
     process.exit(1);
   })
   .then(() => process.exit(0));
-
-process.on('SIGINT', () => {
-  process.exit(0);
-});
