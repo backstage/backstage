@@ -31,7 +31,6 @@ import { createScaffolderFieldExtension } from '@backstage/plugin-scaffolder-rea
 
 import { Entity } from '@backstage/catalog-model';
 import { ProjectGroupDropdown } from './components/ScaffolderDropdown';
-import { ProjectGroupDropdownSchema } from './components/ScaffolderDropdown/schema';
 
 /** @public */
 export const isOctopusDeployAvailable = (entity: Entity) =>
@@ -70,7 +69,6 @@ export const EntityOctopusDeployContent = octopusDeployPlugin.provide(
 export const OctopusDeployDropdownFieldExtension = octopusDeployPlugin.provide(
   createScaffolderFieldExtension({
     name: 'OctopusDeployProjectGroupDropdown',
-    schema: ProjectGroupDropdownSchema,
     component: ProjectGroupDropdown,
   }),
 );

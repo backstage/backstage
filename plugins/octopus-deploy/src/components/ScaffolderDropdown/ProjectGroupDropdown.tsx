@@ -15,22 +15,21 @@
  */
 
 import React from 'react';
-import {
-  InputLabel,
-  Input,
-  FormControl,
-  FormHelperText,
-} from '@material-ui/core';
+import { InputLabel, Input } from '@material-ui/core';
 import { Select, SelectItem } from '@backstage/core-components';
 import { useProjectGroups } from '../../hooks/useProjectGroups';
-import { ProjectGroupDropdownProps } from './schema';
+import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
+import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
 
 export const ProjectGroupDropdown = ({
   onChange,
+  errors,
   rawErrors,
   required,
-  formData,
-}: ProjectGroupDropdownProps) => {
+  help,
+  rawDescription,
+  disabled,
+}: FieldExtensionComponentProps<string>) => {
   const [selectedProjectGroup, setSelectedProjectGroup] =
     React.useState<string>('');
   const { projectGroups } = useProjectGroups();
@@ -45,10 +44,13 @@ export const ProjectGroupDropdown = ({
   };
 
   return (
-    <FormControl
-      margin="normal"
+    <ScaffolderField
+      rawErrors={rawErrors}
+      errors={errors}
       required={required}
-      error={rawErrors?.length > 0 && !formData}
+      help={help}
+      rawDescription={rawDescription}
+      disabled={disabled}
     >
       {projectGroups?.length ? (
         <Select
@@ -67,14 +69,11 @@ export const ProjectGroupDropdown = ({
           <InputLabel>Project Group</InputLabel>
           <Input
             id="project-group-input"
-            onChange={e => onChange(e.target.value)}
-            value={formData}
+            onChange={e => updateProjectGroup(e.target.value)}
+            value={selectedProjectGroup}
           />
         </>
       )}
-      <FormHelperText>
-        The project group of the within Octopus Deploy.
-      </FormHelperText>
-    </FormControl>
+    </ScaffolderField>
   );
 };
