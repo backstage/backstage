@@ -110,9 +110,7 @@ const openapiPlugin = createBackendPlugin({
               .option('--json');
 
             for (const parameter of operation.parameters ?? []) {
-              const isArray =
-                parameter.schema.type === 'array' ||
-                parameter.style === 'deepObject';
+              const isArray = parameter.schema.type === 'array';
               const flagName = `--${kebabCase(parameter.name)} <${
                 parameter.name
               }${isArray ? '...' : ''}>`;

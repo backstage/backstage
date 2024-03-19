@@ -22,7 +22,7 @@ const path = require('path');
 const isLocal = require('fs').existsSync(path.resolve(__dirname, '../src'));
 
 if (!isLocal || process.env.BACKSTAGE_E2E_CLI_TEST) {
-  require('..');
+  throw new Error('Cannot use this outside of development.');
 } else {
   require('@backstage/cli/config/nodeTransform.cjs');
   require('../dev');
