@@ -15,7 +15,7 @@
  */
 
 import { ForwardedError, stringifyError } from '@backstage/errors';
-import { readFileSync } from 'fs';
+import { readFile } from 'fs/promises';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { cloneDeep } from 'lodash';
 import tlsLib from 'tls';
@@ -46,13 +46,15 @@ export class LdapClient {
     bind?: BindConfig,
     tls?: TLSConfig,
   ): Promise<LdapClient> {
-    const secureContext =
-      tls && tls.certs && tls.keys
-        ? tlsLib.createSecureContext({
-            cert: readFileSync(tls.certs).toString(),
-            key: readFileSync(tls.keys).toString(),
-          })
-        : undefined;
+    let secureContext;
+    if (tls && tls.certs && tls.keys) {
+      const cert = await readFile(tls.certs).then(f => f.toString());
+      const key = await readFile(tls.keys).then(f => f.toString());
+      secureContext = tlsLib.createSecureContext({
+        cert: cert,
+        key: key,
+      });
+    }
 
     const client = ldap.createClient({
       url: target,
