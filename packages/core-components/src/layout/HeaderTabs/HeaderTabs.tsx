@@ -61,16 +61,7 @@ const useStyles = makeStyles(
 export type Tab = {
   id: string;
   label: string;
-  tabProps?: {
-    component?: React.ElementType<TabProps>;
-    to: string;
-    value?: number;
-    className?: string;
-    classes?: {
-      selected: string;
-      root: string;
-    };
-  };
+  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
 };
 
 type HeaderTabsProps = {
@@ -123,7 +114,6 @@ export function HeaderTabs(props: HeaderTabsProps) {
       >
         {tabs.map((tab, index) => (
           <TabUI
-            {...tab.tabProps}
             data-testid={`header-tab-${index}`}
             label={tab.label}
             key={tab.id}
@@ -132,6 +122,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
             value={index}
             className={styles.defaultTab}
             classes={{ selected: styles.selected, root: styles.tabRoot }}
+            {...tab.tabProps}
           />
         ))}
       </Tabs>

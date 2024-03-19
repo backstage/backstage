@@ -21,14 +21,5 @@ export type SubRoute = {
   path: string;
   title: string;
   children: JSX.Element;
-  tabProps?: {
-    component?: React.ElementType<TabProps>;
-    to: string;
-    value?: number;
-    className?: string;
-    classes?: {
-      selected: string;
-      root: string;
-    };
-  };
+  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
 };
