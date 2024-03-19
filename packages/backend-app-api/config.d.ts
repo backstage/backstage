@@ -34,16 +34,20 @@ export interface Config {
        * unless you configure credentials for service calls.
        */
       dangerouslyDisableDefaultAuthPolicy?: boolean;
-      rateLimit?: {
-        /**
-         * Limit each IP to max requests per window
-         */
-        max?: number;
-        /**
-         * The duration for which the rate limit is enforced
-         */
-        window?: HumanDuration;
-      };
+      rateLimit?:
+        | false
+        | {
+            /**
+             * Limit each IP to max requests per window
+             */
+            max?: number;
+            /**
+             * The duration for which the rate limit is enforced
+             */
+            window?: HumanDuration;
+
+            disable?: true;
+          };
     };
   };
 

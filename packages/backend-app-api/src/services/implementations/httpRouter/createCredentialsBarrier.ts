@@ -65,24 +65,39 @@ export function createCredentialsBarrier(options: {
   const unauthenticatedPredicates = new Array<(path: string) => boolean>();
   const cookiePredicates = new Array<(path: string) => boolean>();
 
-  // Default rate limit is 60 requests per 1 minute
-  const max = config?.has('backend.auth.rateLimit.max')
-    ? config.getNumber('backend.auth.rateLimit.max')
-    : 60;
+  const rateLimitConfig = config.getOptional('backend.auth.rateLimit');
 
-  const duration = config?.has('backend.auth.rateLimit.window')
-    ? readDurationFromConfig(config.getConfig('backend.auth.rateLimit.window'))
-    : undefined;
+  const disabled =
+    rateLimitConfig === false ||
+    (typeof rateLimitConfig === 'object' &&
+      config?.getOptionalBoolean('backend.auth.rateLimit.disabled') === true);
 
-  // Default rate limit window is 1 minute
+  const duration =
+    typeof rateLimitConfig === 'object' &&
+    config?.has('backend.auth.rateLimit.window')
+      ? readDurationFromConfig(
+          config.getConfig('backend.auth.rateLimit.window'),
+        )
+      : undefined;
+
   const windowMs = duration ? durationToMilliseconds(duration) : 1 * 60 * 1000;
 
+  const max =
+    typeof rateLimitConfig === 'object' &&
+    config?.has('backend.auth.rateLimit.max')
+      ? config.getNumber('backend.auth.rateLimit.max')
+      : 60;
+
+  // Default rate limit is 60 requests per 1 minute
   const limiter = rateLimit({
     windowMs,
-    max,
+    limit: max,
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers,
     store: RateLimitStore.fromOptions({ cache }),
+    skip() {
+      return disabled;
+    },
   });
 
   const middleware: RequestHandler = (req, res, next) => {

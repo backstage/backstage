@@ -219,6 +219,8 @@ it('do not limit authenticated requests', async () => {
       .send()
       .expect(200);
   }
+
+  jest.useRealTimers();
 });
 
 it('limit the number of unauthenticated requests', async () => {
@@ -299,6 +301,65 @@ it('limit the number of unauthenticated requests', async () => {
     { resetTime, totalHits: 1 },
     { ttl: twoMinutesInMilliseconds },
   );
+
+  jest.useRealTimers();
+});
+
+it('skip limiting requests when the rate limit is disabled', async () => {
+  const now = Date.now();
+  jest.useFakeTimers({ now });
+  const max = 2;
+  const cacheMock = mockServices.cache.mock();
+  const twoMinutesInMilliseconds = 2 * 60 * 1000;
+  const resetTime = now + twoMinutesInMilliseconds;
+
+  // Simulate that the totalHits exceeds the configured max value
+  cacheMock.get.mockResolvedValue({ totalHits: max + 1, resetTime });
+
+  const { app: app1, barrier: barrier1 } = setup({
+    cache: cacheMock,
+    config: {
+      backend: {
+        auth: {
+          rateLimit: {
+            max,
+            window: { minutes: 2 },
+            disabled: true,
+          },
+        },
+      },
+    },
+  });
+
+  barrier1.addAuthPolicy({ allow: 'unauthenticated', path: '/public' });
+
+  // exceed the rate limit for authenticated requests
+  for (let i = 0; i < max + 1; i += 1) {
+    await request(app1)
+      .get('/public')
+      .set('authorization', mockCredentials.user.header())
+      .send()
+      .expect(200);
+  }
+
+  // Simulate that the totalHits exceeds the default max value
+  cacheMock.get.mockResolvedValue({ totalHits: 61, resetTime });
+
+  const { app: app2, barrier: barrier2 } = setup({
+    cache: cacheMock,
+    config: {
+      backend: {
+        auth: {
+          rateLimit: false,
+        },
+      },
+    },
+  });
+
+  barrier2.addAuthPolicy({ allow: 'unauthenticated', path: '/public' });
+
+  // exceed the rate limit for authenticated requests
+  await request(app2).get('/public').send().expect(200);
 
   jest.useRealTimers();
 });
