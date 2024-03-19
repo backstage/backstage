@@ -43,6 +43,8 @@ import { version as corePluginApi } from '../../../../packages/core-plugin-api/p
 import { version as devUtils } from '../../../../packages/dev-utils/package.json';
 import { version as testUtils } from '../../../../packages/test-utils/package.json';
 import { version as scaffolderNode } from '../../../../plugins/scaffolder-node/package.json';
+import { version as authBackend } from '../../../../plugins/auth-backend/package.json';
+import { version as authBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
 import { version as theme } from '../../../../packages/theme/package.json';
 import { version as backendDefaults } from '../../../../packages/backend-defaults/package.json';
 
@@ -60,6 +62,9 @@ export const packageVersions: Record<string, string> = {
   '@backstage/test-utils': testUtils,
   '@backstage/theme': theme,
   '@backstage/plugin-scaffolder-node': scaffolderNode,
+  '@backstage/plugin-auth-backend': authBackend,
+  '@backstage/plugin-auth-backend-module-guest-provider':
+    authBackendModuleGuestProvider,
 };
 
 export function findVersion() {
