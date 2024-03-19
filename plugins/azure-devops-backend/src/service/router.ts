@@ -23,7 +23,10 @@ import {
 import { AzureDevOpsApi } from '../api';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
-import { PullRequestsDashboardProvider } from '../api/PullRequestsDashboardProvider';
+import {
+  PullRequestsDashboardProvider,
+  DEFAULT_TOP_TEAMS,
+} from '../api/PullRequestsDashboardProvider';
 import Router from 'express-promise-router';
 import { errorHandler, UrlReader } from '@backstage/backend-common';
 import express from 'express';
@@ -227,6 +230,9 @@ export async function createRouter(
     const { projectName } = req.params;
 
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+    const topTeams = req.query.topTeams
+      ? Number(req.query.topTeams)
+      : DEFAULT_TOP_TEAMS;
 
     const status = req.query.status
       ? Number(req.query.status)
@@ -261,6 +267,7 @@ export async function createRouter(
       await pullRequestsDashboardProvider.getDashboardPullRequests(
         projectName,
         pullRequestOptions,
+        topTeams,
       );
 
     res.status(200).json(pullRequests);

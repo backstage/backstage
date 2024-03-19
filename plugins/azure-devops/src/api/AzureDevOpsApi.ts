@@ -64,6 +64,7 @@ export interface AzureDevOpsApi {
 
   getDashboardPullRequests(
     projectName: string,
+    topTeams?: number,
   ): Promise<DashboardPullRequest[]>;
 
   getAllTeams(topTeams?: number): Promise<Team[]>;
