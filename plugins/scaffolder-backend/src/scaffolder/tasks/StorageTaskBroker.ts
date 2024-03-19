@@ -314,6 +314,7 @@ export class StorageTaskBroker implements TaskBroker {
             spec: pendingTask.spec,
             secrets: pendingTask.secrets,
             createdBy: pendingTask.createdBy,
+            state: pendingTask.state,
           },
           this.storage,
           abortController.signal,

@@ -286,6 +286,7 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
+  state?: JsonObject;
 };
 
 // @public
