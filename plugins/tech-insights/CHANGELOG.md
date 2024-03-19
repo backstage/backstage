@@ -1,5 +1,20 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.23
+
+### Patch Changes
+
+- 6aec725: Added ESLint rule `no-top-level-material-ui-4-imports` in the `tech-insights` plugin to migrate the Material UI imports.
+- aa66ae0: Added `onlyFailed` prop to `ScorecardsCard`, and `isFailed` to each check type.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-tech-insights-common@0.2.12
+
 ## 0.3.23-next.2
 
 ### Patch Changes

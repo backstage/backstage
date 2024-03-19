@@ -1,5 +1,15 @@
 # @backstage/plugin-analytics-module-ga4
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+
 ## 0.2.1-next.2
 
 ### Patch Changes

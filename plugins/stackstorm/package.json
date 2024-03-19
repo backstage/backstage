@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-stackstorm",
-  "version": "0.1.12-next.2",
+  "version": "0.1.12",
   "description": "A Backstage plugin that integrates towards StackStorm",
   "backstage": {
     "role": "frontend-plugin"

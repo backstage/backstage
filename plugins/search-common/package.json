@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-common",
-  "version": "1.2.11-next.1",
+  "version": "1.2.11",
   "description": "Common functionalities for Search, to be shared between various search-enabled plugins",
   "backstage": {
     "role": "common-library"

@@ -1,5 +1,28 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.4.0
+
+### Minor Changes
+
+- 55191cc: **BREAKING**: Both `createRouter` and `DefaultJenkinsInfoProvider.fromConfig` now require the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+
+  The `JenkinsInfoProvider` interface has been updated to receive `credentials` of the type `BackstageCredentials` rather than a token.
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-jenkins-common@0.1.25
+
 ## 0.4.0-next.2
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-analytics-module-ga",
-  "version": "0.2.1-next.2",
+  "version": "0.2.1",
   "backstage": {
     "role": "frontend-plugin-module"
   },

@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.4.0
+
+### Minor Changes
+
+- 02ee466: **DEPRECATION** - Deprecated the `logStream` in the `ActionContext`. Please move to using `ctx.logger.x` instead.
+- aa543c9: Update task context type to contain the new auth initiator credentials.
+
+### Patch Changes
+
+- 85f4723: Fixed file corruption for non UTF-8 data in fetch contents
+- 984abfa: Fixing the lost of the initial state after a task recovery.
+- c6b132e: Introducing checkpoints for scaffolder task action idempotency
+- bbd1fe1: Made "checkpoint" on scaffolder action context non-optional
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.1
+
 ## 0.4.0-next.2
 
 ### Minor Changes

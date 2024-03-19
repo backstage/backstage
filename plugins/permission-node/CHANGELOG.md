@@ -1,5 +1,18 @@
 # @backstage/plugin-permission-node
 
+## 0.7.25
+
+### Patch Changes
+
+- 0502d82: The `ServerPermissionClient` has been migrated to implement the `PermissionsService` interface, now accepting the new `BackstageCredentials` object in addition to the `token` option, which is now deprecated. It now also optionally depends on the new `AuthService`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.7.25-next.2
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/plugin-tech-radar
 
+## 0.7.0
+
+### Minor Changes
+
+- 0453619: Fixed example snippet in `README.md` to reflect correct timeline item order.
+
+### Patch Changes
+
+- a2327ac: Fixed an issue with the "moved in direction" table header cell getting squished and becoming unreadable if a timeline description is too long
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+
 ## 0.7.0-next.2
 
 ### Minor Changes

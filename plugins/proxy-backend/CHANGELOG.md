@@ -1,5 +1,17 @@
 # @backstage/plugin-proxy-backend
 
+## 0.4.12
+
+### Patch Changes
+
+- 1b4fd09: Updated dependency `yup` to `^1.0.0`.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+
 ## 0.4.12-next.2
 
 ### Patch Changes

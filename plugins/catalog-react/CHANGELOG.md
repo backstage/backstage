@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-react
 
+## 1.11.0
+
+### Minor Changes
+
+- 72b8827: Number of results is now directly added as the field `totalItems` on `useEntityList`.
+
+### Patch Changes
+
+- 930b5c1: Added 'root' and 'label' class keys for EntityAutocompletePicker, EntityOwnerPicker and EntityProcessingStatusPicker
+- b2a9926: Adds an argument for which filters should be applied when fetching/counting available values
+- a6e237f: Added `DefaultFilters` component
+- 298953b: Added support for providing an `initiallySelectedNamespaces` which accepts an array of Namespaces to have selected by default
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.25
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/catalog-client@1.6.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-react@0.4.21
+
 ## 1.11.0-next.2
 
 ### Minor Changes

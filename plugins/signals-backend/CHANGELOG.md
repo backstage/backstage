@@ -1,5 +1,32 @@
 # @backstage/plugin-signals-backend
 
+## 0.1.0
+
+### Minor Changes
+
+- 6c1547a: **BREAKING** Type definition added to signal recipients
+
+  Update to use `{type: 'broadcast'}` instead `null` and `{type: 'user', entityRef: ''}`
+  instead string entity references
+
+- daf85dc: BREAKING CHANGE: Migrates signals to use the `EventsService` and makes it mandatory
+
+### Patch Changes
+
+- 4467036: Allow unauthenticated access to health check endpoint.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- 6d84ee6: Changed to use the refactored signal service naming
+- df45710: Improved error logging and fixed authentication
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/plugin-signals-node@0.1.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/types@1.1.1
+
 ## 0.1.0-next.2
 
 ### Patch Changes

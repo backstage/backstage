@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-node
 
+## 1.8.0
+
+### Minor Changes
+
+- df12231: Allow setting EntityDataParser using CatalogModelExtensionPoint
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/catalog-client@1.6.1
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.22
+
 ## 1.8.0-next.2
 
 ### Patch Changes

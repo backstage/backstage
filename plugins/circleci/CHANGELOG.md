@@ -1,5 +1,16 @@
 # @backstage/plugin-circleci
 
+## 0.3.31
+
+### Patch Changes
+
+- 88878a4: Added an optional ESLint rule - no-top-level-material-ui-4-imports - in CircleCI plugin which has an auto fix function to migrate the imports and used it to migrate the Material UI imports for `plugins/circleci`.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.3.31-next.2
 
 ### Patch Changes

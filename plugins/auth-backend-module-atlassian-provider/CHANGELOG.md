@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-atlassian-provider
 
+## 0.1.6
+
+### Patch Changes
+
+- c511186: Addressed OAuth flow issue in Atlassian auth module
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/backend-plugin-api@0.6.14
+
 ## 0.1.6-next.2
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.1
+
+### Patch Changes
+
+- d4ff0bb: Added the `no-top-level-material-ui-4-imports` ESLint rule to aid with the migration to Material UI v5
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/types@1.1.1
+
 ## 0.4.1-next.2
 
 ### Patch Changes

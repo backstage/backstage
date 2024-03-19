@@ -1,5 +1,17 @@
 # @backstage/plugin-code-coverage
 
+## 0.2.24
+
+### Patch Changes
+
+- eca0835: Added ESLint rule `no-top-level-material-ui-4-imports` in the Code-Coverage plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.2.24-next.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend-module-gcp-iap-provider
 
+## 0.2.9
+
+### Patch Changes
+
+- 38af71a: Updated dependency `google-auth-library` to `^9.0.0`.
+- b1b012d: Fix issue with `providerInfo` not being set properly for some proxy providers, by making `providerInfo` an explicit optional return from `authenticate`
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/types@1.1.1
+
 ## 0.2.9-next.2
 
 ### Patch Changes

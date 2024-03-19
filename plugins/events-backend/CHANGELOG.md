@@ -1,5 +1,83 @@
 # @backstage/plugin-events-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- c4bd794: BREAKING CHANGE: Migrate `HttpPostIngressEventPublisher` and `eventsPlugin` to use `EventsService`.
+
+  Uses the `EventsService` instead of `EventBroker` at `HttpPostIngressEventPublisher`,
+  dropping the use of `EventPublisher` including `setEventBroker(..)`.
+
+  Now, `HttpPostIngressEventPublisher.fromConfig` requires `events: EventsService` as option.
+
+  ```diff
+    const http = HttpPostIngressEventPublisher.fromConfig({
+      config: env.config,
+  +   events: env.events,
+      logger: env.logger,
+    });
+    http.bind(eventsRouter);
+
+    // e.g. at packages/backend/src/plugins/events.ts
+  - await new EventsBackend(env.logger)
+  -   .setEventBroker(env.eventBroker)
+  -   .addPublishers(http)
+  -   .start();
+
+    // or for other kinds of setups
+  - await Promise.all(http.map(publisher => publisher.setEventBroker(eventBroker)));
+  ```
+
+  `eventsPlugin` uses the `eventsServiceRef` as dependency.
+  Unsupported (and deprecated) extension point methods will throw an error to prevent unintended behavior.
+
+  ```ts
+  import { eventsServiceRef } from '@backstage/plugin-events-node';
+  ```
+
+### Patch Changes
+
+- 56969b6: Add new `EventsService` as well as `eventsServiceRef` for the new backend system.
+
+  **Summary:**
+
+  - new:
+    `EventsService`, `eventsServiceRef`, `TestEventsService`
+  - deprecated:
+    `EventBroker`, `EventPublisher`, `EventSubscriber`, `DefaultEventBroker`, `EventsBackend`,
+    most parts of `EventsExtensionPoint` (alpha),
+    `TestEventBroker`, `TestEventPublisher`, `TestEventSubscriber`
+
+  Add the `eventsServiceRef` as dependency to your backend plugins
+  or backend plugin modules.
+
+  **Details:**
+
+  The previous implementation using the `EventsExtensionPoint` was added in the early stages
+  of the new backend system and does not respect the plugin isolation.
+  This made it not compatible anymore with the new backend system.
+
+  Additionally, the previous interfaces had some room for simplification,
+  supporting less exposure of internal concerns as well.
+
+  Hereby, this change adds a new `EventsService` interface as replacement for the now deprecated `EventBroker`.
+  The new interface does not require any `EventPublisher` or `EventSubscriber` interfaces anymore.
+  Instead, it is expected that the `EventsService` gets passed into publishers and subscribers,
+  and used internally. There is no need to expose anything of that at their own interfaces.
+
+  Most parts of `EventsExtensionPoint` (alpha) are deprecated as well and were not usable
+  (by other plugins or their modules) anyway.
+
+  The `DefaultEventBroker` implementation is deprecated and wraps the new `DefaultEventsService` implementation.
+  Optionally, an instance can be passed as argument to allow mixed setups to operate alongside.
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+
 ## 0.3.0-next.2
 
 ### Patch Changes

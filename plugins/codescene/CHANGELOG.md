@@ -1,5 +1,20 @@
 # @backstage/plugin-codescene
 
+## 0.1.23
+
+### Patch Changes
+
+- e477ec4: Extending code scene plugin in Entity page.
+- f2d3ea0: Added ESLint rule `no-top-level-material-ui-4-imports` in the Codescene plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.2
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.1.23-next.2
 
 ### Patch Changes

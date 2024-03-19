@@ -1,5 +1,15 @@
 # @backstage/plugin-adr-common
 
+## 0.2.21
+
+### Patch Changes
+
+- 5335634: Fixed Azure DevOps ADR file path reading
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/catalog-model@1.4.5
+
 ## 0.2.21-next.2
 
 ### Patch Changes

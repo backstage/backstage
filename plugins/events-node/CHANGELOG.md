@@ -1,5 +1,116 @@
 # @backstage/plugin-events-node
 
+## 0.3.0
+
+### Minor Changes
+
+- eff3ca9: BREAKING CHANGE: Migrate `EventRouter` implementations from `EventBroker` to `EventsService`.
+
+  `EventRouter` uses the new `EventsService` instead of the `EventBroker` now,
+  causing a breaking change to its signature.
+
+  All of its extensions and implementations got adjusted accordingly.
+  (`SubTopicEventRouter`, `AzureDevOpsEventRouter`, `BitbucketCloudEventRouter`,
+  `GerritEventRouter`, `GithubEventRouter`, `GitlabEventRouter`)
+
+  Required adjustments were made to all backend modules for the new backend system,
+  now also making use of the `eventsServiceRef` instead of the `eventsExtensionPoint`.
+
+  **Migration:**
+
+  Example for implementations of `SubTopicEventRouter`:
+
+  ```diff
+    import {
+      EventParams,
+  +   EventsService,
+      SubTopicEventRouter,
+    } from '@backstage/plugin-events-node';
+
+    export class GithubEventRouter extends SubTopicEventRouter {
+  -   constructor() {
+  -     super('github');
+  +   constructor(options: { events: EventsService }) {
+  +     super({
+  +       events: options.events,
+  +       topic: 'github',
+  +     });
+      }
+
+  +   protected getSubscriberId(): string {
+  +     return 'GithubEventRouter';
+  +   }
+  +
+      // ...
+    }
+  ```
+
+  Example for a direct extension of `EventRouter`:
+
+  ```diff
+    class MyEventRouter extends EventRouter {
+  -   constructor(/* ... */) {
+  +   constructor(options: {
+  +     events: EventsService;
+  +     // ...
+  +   }) {
+  -     super();
+        // ...
+  +     super({
+  +       events: options.events,
+  +       topics: topics,
+  +     });
+      }
+  +
+  +   protected getSubscriberId(): string {
+  +     return 'MyEventRouter';
+  +   }
+  -
+  -   supportsEventTopics(): string[] {
+  -     return this.topics;
+  -   }
+    }
+  ```
+
+### Patch Changes
+
+- 56969b6: Add new `EventsService` as well as `eventsServiceRef` for the new backend system.
+
+  **Summary:**
+
+  - new:
+    `EventsService`, `eventsServiceRef`, `TestEventsService`
+  - deprecated:
+    `EventBroker`, `EventPublisher`, `EventSubscriber`, `DefaultEventBroker`, `EventsBackend`,
+    most parts of `EventsExtensionPoint` (alpha),
+    `TestEventBroker`, `TestEventPublisher`, `TestEventSubscriber`
+
+  Add the `eventsServiceRef` as dependency to your backend plugins
+  or backend plugin modules.
+
+  **Details:**
+
+  The previous implementation using the `EventsExtensionPoint` was added in the early stages
+  of the new backend system and does not respect the plugin isolation.
+  This made it not compatible anymore with the new backend system.
+
+  Additionally, the previous interfaces had some room for simplification,
+  supporting less exposure of internal concerns as well.
+
+  Hereby, this change adds a new `EventsService` interface as replacement for the now deprecated `EventBroker`.
+  The new interface does not require any `EventPublisher` or `EventSubscriber` interfaces anymore.
+  Instead, it is expected that the `EventsService` gets passed into publishers and subscribers,
+  and used internally. There is no need to expose anything of that at their own interfaces.
+
+  Most parts of `EventsExtensionPoint` (alpha) are deprecated as well and were not usable
+  (by other plugins or their modules) anyway.
+
+  The `DefaultEventBroker` implementation is deprecated and wraps the new `DefaultEventsService` implementation.
+  Optionally, an instance can be passed as argument to allow mixed setups to operate alongside.
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14
+
 ## 0.3.0-next.2
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/plugin-search-backend
 
+## 1.5.4
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- 744c0cb: Update the router to use the new `auth` services, it now accepts an optional discovery service option to get credentials for the permission service.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/backend-openapi-utils@0.1.7
+  - @backstage/plugin-search-backend-node@1.2.18
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/types@1.1.1
+
 ## 1.5.4-next.2
 
 ### Patch Changes

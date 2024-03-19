@@ -1,5 +1,28 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 6b802a2: **BREAKING**: The `createRouter` method now requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+- acf3e00: Azure Sites list now hides the internal/microsoft only `hidden-` tags from the list of tags that are returned. Updated the log endpoint to /logstream-quickstart rather than just /logstream to stream logs in the Azure Portal UI.
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- 4467036: Allow unauthenticated access to health check endpoint.
+- 85db926: Added new backend system for the Azure Sites backend plugin
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/plugin-azure-sites-common@0.1.3
+
 ## 0.3.0-next.2
 
 ### Minor Changes

@@ -1,5 +1,47 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.1.8
+
+### Patch Changes
+
+- 2eb0da3: Support EventsService and events with the new backend system (through EventsService) for `GithubOrgEntityProvider` and `GithubMultiOrgEntityProvider`.
+
+  _New/Current Backend System:_
+
+  The events support for the provider will be enabled always, making it ready to consume events from its subscribed topics.
+  In order to receive events and make use of this feature, you still need to set up receiving events from the event source as before.
+
+  _Legacy Backend System:_
+
+  You can pass the `EventsService` instance to the factory method as one of its options:
+
+  ```diff
+    // packages/backend/src/plugins/catalog.ts
+    const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
+      events: env.events,
+      // ...
+    });
+  - env.eventBroker.subscribe(githubOrgProvider);
+  ```
+
+  ```diff
+    // packages/backend/src/plugins/catalog.ts
+    const githubMultiOrgProvider = GithubMultiOrgEntityProvider.fromConfig(env.config, {
+      events: env.events,
+      // ...
+    });
+  - env.eventBroker.subscribe(githubMultiOrgProvider);
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-backend-module-github@0.5.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/backend-tasks@0.5.19
+
 ## 0.1.8-next.2
 
 ### Patch Changes

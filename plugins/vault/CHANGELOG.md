@@ -1,5 +1,17 @@
 # @backstage/plugin-vault
 
+## 0.1.26
+
+### Patch Changes
+
+- e780d3a: Added ESLint rule `no-top-level-material-ui-4-imports` in the `vault` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.1.26-next.2
 
 ### Patch Changes

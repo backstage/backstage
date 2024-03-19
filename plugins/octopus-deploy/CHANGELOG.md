@@ -1,5 +1,17 @@
 # @backstage/plugin-octopus-deploy
 
+## 0.2.13
+
+### Patch Changes
+
+- a207927: Added dropdown field extension for Octopus Deploy project groups
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/plugin-scaffolder-react@1.8.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.2.13-next.2
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-github-actions
 
+## 0.6.12
+
+### Patch Changes
+
+- 8ab3218: Fixed bug in WorkflowRunStatus component where skipped and cancelled workflow runs appeared as success
+- 692316d: Fixed bug in WorkflowRunStatus component where status description of skipped and cancelled workflow runs appeared as success
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/core-components@0.14.1
+  - @backstage/integration-react@1.1.25
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.6.12-next.2
 
 ### Patch Changes

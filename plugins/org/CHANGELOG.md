@@ -1,5 +1,23 @@
 # @backstage/plugin-org
 
+## 0.6.21
+
+### Patch Changes
+
+- b7b0466: Remove the use of the deprecated `customStyles` for `Avatar`
+- 526f00a: Document the new frontend system extensions for the org plugin.
+- 2219f8c: Add `relationsType` argument to `MembersListCard`.
+  This can be used to display an aggregated user list for groups by default.
+- a767aaa: Fixed an issue where the `OwnershipCard` component failed to scroll properly when used alongside `react-grid-layout`.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-catalog-common@1.0.22
+
 ## 0.6.21-next.2
 
 ### Patch Changes

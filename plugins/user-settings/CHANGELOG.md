@@ -1,5 +1,21 @@
 # @backstage/plugin-user-settings
 
+## 0.8.2
+
+### Patch Changes
+
+- ee584af: Added ESLint rule `no-top-level-material-ui-4-imports` in the `user-settings` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.2
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/core-app-api@1.12.1
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/types@1.1.1
+
 ## 0.8.2-next.2
 
 ### Patch Changes

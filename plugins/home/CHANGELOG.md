@@ -1,5 +1,31 @@
 # @backstage/plugin-home
 
+## 0.7.0
+
+### Minor Changes
+
+- 8807d2a: Resolved styling inconsistencies and title visibility issues in Top Visited and Recently Visited cards
+
+### Patch Changes
+
+- 0cecb09: Updated dependency `@rjsf/utils` to `5.17.1`.
+  Updated dependency `@rjsf/core` to `5.17.1`.
+  Updated dependency `@rjsf/material-ui` to `5.17.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.17.1`.
+- 2e17681: Added the `no-top-level-material-ui-4-imports` ESLint rule to aid with the migration to Material UI v5
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/theme@0.5.2
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/plugin-home-react@0.1.9
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-app-api@1.12.1
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+
 ## 0.7.0-next.2
 
 ### Minor Changes

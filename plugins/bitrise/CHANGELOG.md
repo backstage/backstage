@@ -1,5 +1,16 @@
 # @backstage/plugin-bitrise
 
+## 0.1.58
+
+### Patch Changes
+
+- afdee56: Added the `no-top-level-material-ui-4-import` ESLint rule to the Bitrise plugin to aid with the migration to Material UI v5.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.1.58-next.2
 
 ### Patch Changes
