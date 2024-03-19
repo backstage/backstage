@@ -13,15 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  octopusDeployPlugin,
-  EntityOctopusDeployContent,
-  OctopusDeployDropdownFieldExtension,
-  isOctopusDeployAvailable,
-} from './plugin';
-
-export * from './api';
-
-export type { ProjectReference } from './utils/getAnnotationFromEntity';
-
-export { OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION } from './constants';
+export { ProjectGroupDropdown } from './ProjectGroupDropdown';

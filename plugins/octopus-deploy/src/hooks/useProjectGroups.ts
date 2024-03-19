@@ -13,15 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export {
-  octopusDeployPlugin,
-  EntityOctopusDeployContent,
-  OctopusDeployDropdownFieldExtension,
-  isOctopusDeployAvailable,
-} from './plugin';
+import { useApi } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/lib/useAsync';
+import { octopusDeployApiRef, OctopusProjectGroup } from '../api';
 
-export * from './api';
+export function useProjectGroups(): {
+  projectGroups: OctopusProjectGroup[];
+  loading: boolean;
+  error?: Error;
+} {
+  const api = useApi(octopusDeployApiRef);
 
-export type { ProjectReference } from './utils/getAnnotationFromEntity';
+  const { value, loading, error } = useAsync(() => {
+    return api.getProjectGroups();
+  }, [api]);
 
-export { OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION } from './constants';
+  return {
+    projectGroups: value ? value : [],
+    loading,
+    error,
+  };
+}
