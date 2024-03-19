@@ -17,14 +17,12 @@ import { getRootLogger } from '@backstage/backend-common';
 import { createCli } from '../src/start/plugin';
 
 async function startBackend() {
-  console.time('starting');
   const backend = createCli();
 
   backend.add(import('../src/plugins/ExamplePlugin'));
   backend.add(import('../src/plugins/OpenApiPlugin'));
 
   await backend.start();
-  console.timeEnd('starting');
 }
 
 const logger = getRootLogger();
