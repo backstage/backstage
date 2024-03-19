@@ -7961,7 +7961,6 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
-    "@backstage/plugin-scaffolder": "workspace:^"
     "@backstage/plugin-scaffolder-react": "workspace:^"
     "@material-ui/core": ^4.9.13
     "@testing-library/dom": ^9.0.0
