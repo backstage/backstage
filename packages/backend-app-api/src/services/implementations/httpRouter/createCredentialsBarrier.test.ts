@@ -21,18 +21,21 @@ import request from 'supertest';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { MiddlewareFactory } from '../../../http';
+import { CacheService } from '@backstage/backend-plugin-api';
+import { JsonObject } from '@backstage/types';
 
 const errorMiddleware = MiddlewareFactory.create({
   config: mockServices.rootConfig(),
   logger: mockServices.rootLogger(),
 }).error();
 
-function setup() {
+function setup(options?: { cache?: CacheService; config?: JsonObject }) {
   const barrier = createCredentialsBarrier({
     httpAuth: mockServices.httpAuth({
       defaultCredentials: mockCredentials.none(),
     }),
-    config: mockServices.rootConfig(),
+    config: mockServices.rootConfig({ data: options?.config }),
+    cache: options?.cache ?? mockServices.cache.mock(),
   });
 
   const app = express();
@@ -172,4 +175,189 @@ describe('createCredentialsBarrier', () => {
       .expect(200);
     await request(app).get('/other').send().expect(200);
   });
+});
+
+it('do not limit authenticated requests', async () => {
+  const now = Date.now();
+  jest.useFakeTimers({ now });
+  const cacheMock = mockServices.cache.mock();
+  const twoMinutesInMilliseconds = 2 * 60 * 1000;
+  const resetTime = now + twoMinutesInMilliseconds;
+  cacheMock.get.mockResolvedValue({ totalHits: 2, resetTime });
+
+  const max = 2;
+  const configMock = {
+    backend: {
+      rateLimit: {
+        unauthorized: {
+          max, // 2 requests per window
+          window: { minutes: 2 }, // rate limit window expiration time,
+        },
+      },
+    },
+  };
+  const { app, barrier } = setup({
+    cache: cacheMock,
+    config: configMock,
+  });
+
+  // exceed the rate limit for authenticated requests
+  for (let i = 0; i < max + 1; i += 1) {
+    await request(app)
+      .get('/')
+      .set('authorization', mockCredentials.user.header())
+      .send()
+      .expect(200);
+  }
+
+  barrier.addAuthPolicy({ allow: 'user-cookie', path: '/' });
+
+  for (let i = 0; i < max + 1; i += 1) {
+    await request(app)
+      .get('/')
+      .set('cookie', mockCredentials.limitedUser.cookie())
+      .send()
+      .expect(200);
+  }
+
+  jest.useRealTimers();
+});
+
+it('limit the number of unauthenticated requests', async () => {
+  const now = Date.now();
+  jest.useFakeTimers({ now });
+  const cacheMock = mockServices.cache.mock();
+  const twoMinutesInMilliseconds = 2 * 60 * 1000;
+  const resetTime = now + twoMinutesInMilliseconds;
+  cacheMock.get
+    .mockResolvedValueOnce(undefined) // Request 1
+    .mockResolvedValueOnce({ totalHits: 1, resetTime }) // Request 2
+    .mockResolvedValueOnce({ totalHits: 2, resetTime }) // Request 3
+    .mockResolvedValueOnce(undefined); // Request 4
+
+  const configMock = {
+    backend: {
+      rateLimit: {
+        unauthorized: {
+          max: 2, // 2 requests per window
+          window: { minutes: 2 }, // rate limit window expiration time,
+        },
+      },
+    },
+  };
+  const { app, barrier } = setup({
+    cache: cacheMock,
+    config: configMock,
+  });
+
+  barrier.addAuthPolicy({ allow: 'unauthenticated', path: '/public' });
+
+  const randomIp = '48.105.15.17';
+  // Enable trust proxy to get the real IP from the X-Forwarded-For header
+  app.enable('trust proxy');
+  await request(app)
+    .get('/public')
+    .set('X-Forwarded-For', randomIp)
+    .send()
+    .expect(200);
+  await request(app)
+    .get('/public')
+    .set('X-Forwarded-For', randomIp)
+    .send()
+    .expect(200);
+  await request(app)
+    .get('/public')
+    .set('X-Forwarded-For', randomIp)
+    .send()
+    .expect(429);
+  await request(app)
+    .get('/public')
+    .set('X-Forwarded-For', randomIp)
+    .send()
+    .expect(200);
+
+  expect(cacheMock.get).toHaveBeenCalledTimes(4);
+  expect(cacheMock.set).toHaveBeenNthCalledWith(
+    1,
+    `unauthorized_rate_limit_${randomIp}`, // unauthorized_rate_limit_ is the default prefix for the rate limit store
+    { resetTime, totalHits: 1 },
+    { ttl: twoMinutesInMilliseconds },
+  );
+  expect(cacheMock.set).toHaveBeenNthCalledWith(
+    2,
+    `unauthorized_rate_limit_${randomIp}`,
+    { resetTime, totalHits: 2 },
+    { ttl: twoMinutesInMilliseconds },
+  );
+  expect(cacheMock.set).toHaveBeenNthCalledWith(
+    3,
+    `unauthorized_rate_limit_${randomIp}`,
+    { resetTime, totalHits: 3 },
+    { ttl: twoMinutesInMilliseconds },
+  );
+  expect(cacheMock.set).toHaveBeenNthCalledWith(
+    4,
+    `unauthorized_rate_limit_${randomIp}`,
+    { resetTime, totalHits: 1 },
+    { ttl: twoMinutesInMilliseconds },
+  );
+
+  jest.useRealTimers();
+});
+
+it('skip limiting requests when the rate limit is disabled', async () => {
+  const now = Date.now();
+  jest.useFakeTimers({ now });
+  const max = 2;
+  const cacheMock = mockServices.cache.mock();
+  const twoMinutesInMilliseconds = 2 * 60 * 1000;
+  const resetTime = now + twoMinutesInMilliseconds;
+
+  // Simulate that the totalHits exceeds the configured max value
+  cacheMock.get.mockResolvedValue({ totalHits: max + 1, resetTime });
+
+  const { app: app1, barrier: barrier1 } = setup({
+    cache: cacheMock,
+    config: {
+      backend: {
+        rateLimit: {
+          unauthorized: {
+            max,
+            window: { minutes: 2 },
+            disabled: true,
+          },
+        },
+      },
+    },
+  });
+
+  barrier1.addAuthPolicy({ allow: 'unauthenticated', path: '/public' });
+
+  for (let i = 0; i < max + 1; i += 1) {
+    await request(app1)
+      .get('/public')
+      .set('authorization', mockCredentials.user.header())
+      .send()
+      .expect(200);
+  }
+
+  // Simulate that the totalHits exceeds the default max value
+  cacheMock.get.mockResolvedValue({ totalHits: 61, resetTime });
+
+  const { app: app2, barrier: barrier2 } = setup({
+    cache: cacheMock,
+    config: {
+      backend: {
+        rateLimit: {
+          unauthorized: false,
+        },
+      },
+    },
+  });
+
+  barrier2.addAuthPolicy({ allow: 'unauthenticated', path: '/public' });
+
+  await request(app2).get('/public').send().expect(200);
+
+  jest.useRealTimers();
 });
