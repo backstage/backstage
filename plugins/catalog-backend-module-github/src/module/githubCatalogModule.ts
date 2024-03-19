@@ -19,26 +19,49 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import {
+  catalogAnalysisExtensionPoint,
+  catalogProcessingExtensionPoint,
+} from '@backstage/plugin-catalog-node/alpha';
 import { GithubEntityProvider } from '../providers/GithubEntityProvider';
+import { GithubLocationAnalyzer } from '../analyzers/GithubLocationAnalyzer';
 
 /**
  * Registers the `GithubEntityProvider` with the catalog processing extension point.
  *
  * @alpha
  */
-export const catalogModuleGithubEntityProvider = createBackendModule({
+export const githubCatalogModule = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'github-entity-provider',
+  moduleId: 'github',
   register(env) {
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
+        analyzers: catalogAnalysisExtensionPoint,
+        auth: coreServices.auth,
+        discovery: coreServices.discovery,
         config: coreServices.rootConfig,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },
-      async init({ catalog, config, logger, scheduler }) {
+      async init({
+        catalog,
+        config,
+        logger,
+        scheduler,
+        analyzers,
+        discovery,
+        auth,
+      }) {
+        analyzers.addLocationAnalyzer(
+          new GithubLocationAnalyzer({
+            discovery,
+            config,
+            auth,
+          }),
+        );
+
         catalog.addEntityProvider(
           GithubEntityProvider.fromConfig(config, {
             logger: loggerToWinstonLogger(logger),
