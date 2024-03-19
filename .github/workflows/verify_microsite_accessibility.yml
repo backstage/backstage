@@ -26,6 +26,9 @@ jobs:
         with:
           node-version: 18.x
 
+      - name: enable corepack
+        run: corepack enable
+
       - name: top-level install
         run: yarn install --immutable
 
