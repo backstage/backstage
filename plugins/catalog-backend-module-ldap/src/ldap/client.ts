@@ -48,8 +48,8 @@ export class LdapClient {
   ): Promise<LdapClient> {
     let secureContext;
     if (tls && tls.certs && tls.keys) {
-      const cert = await readFile(tls.certs).then(f => f.toString());
-      const key = await readFile(tls.keys).then(f => f.toString());
+      const cert = await readFile(tls.certs, 'utf-8');
+      const key = await readFile(tls.keys, 'utf-8');
       secureContext = tlsLib.createSecureContext({
         cert: cert,
         key: key,
