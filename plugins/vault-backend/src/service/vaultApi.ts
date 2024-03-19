@@ -147,11 +147,9 @@ export class VaultClient implements VaultApi {
       result.data.keys.map(async secret => {
         if (secret.endsWith('/')) {
           secrets.push(
-            ...(await this.limit(() =>
-              this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`, {
-                secretEngine: mount,
-              }),
-            )),
+            ...(await this.listSecrets(`${secretPath}/${secret.slice(0, -1)}`, {
+              secretEngine: mount,
+            })),
           );
         } else {
           const vaultUrl =
