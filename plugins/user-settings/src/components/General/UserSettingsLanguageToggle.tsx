@@ -25,7 +25,7 @@ import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
 import { makeStyles } from '@material-ui/core/styles';
 import { userSettingsTranslationRef } from '../../translation';
 import { useApi } from '@backstage/core-plugin-api';
-import useObservable from 'react-use/lib/useObservable';
+import useObservable from 'react-use/esm/useObservable';
 import { Select } from '@backstage/core-components';
 
 const useStyles = makeStyles(theme => ({

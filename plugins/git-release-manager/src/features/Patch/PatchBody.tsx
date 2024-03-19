@@ -15,7 +15,7 @@
  */
 
 import React, { useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Alert, AlertTitle } from '@material-ui/lab';
 import {
   Box,

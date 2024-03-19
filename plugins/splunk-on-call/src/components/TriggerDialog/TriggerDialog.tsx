@@ -28,7 +28,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { splunkOnCallApiRef } from '../../api';
 import Alert from '@material-ui/lab/Alert';
 import { TriggerAlarmRequest } from '../../api';

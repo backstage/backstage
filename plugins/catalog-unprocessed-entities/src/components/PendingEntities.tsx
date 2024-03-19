@@ -28,7 +28,7 @@ import { UnprocessedEntity } from '../types';
 
 import { EntityDialog } from './EntityDialog';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 
 const useStyles = makeStyles((theme: Theme) => ({

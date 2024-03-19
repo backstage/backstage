@@ -20,7 +20,7 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { IncidentListItem } from './IncidentListItem';
 import { IncidentsEmptyState } from './IncidentEmptyState';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { splunkOnCallApiRef } from '../../api';
 import Alert from '@material-ui/lab/Alert';
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { MouseEvent, useState } from 'react';
-import useDebounce from 'react-use/lib/useDebounce';
+import useDebounce from 'react-use/esm/useDebounce';
 import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
 import { EntityEdge, EntityNode } from './types';
 import { useEntityRelationGraph } from './useEntityRelationGraph';

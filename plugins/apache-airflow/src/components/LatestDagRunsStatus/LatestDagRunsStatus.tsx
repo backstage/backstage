@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { apacheAirflowApiRef } from '../../api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { DagRun } from '../../api/types/Dags';
 import { useApi } from '@backstage/core-plugin-api';
 import Box from '@material-ui/core/Box';

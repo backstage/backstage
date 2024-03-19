@@ -38,7 +38,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import classNames from 'classnames';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 const useStyles = makeStyles(
   theme => ({

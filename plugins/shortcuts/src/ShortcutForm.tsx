@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import useObservable from 'react-use/lib/useObservable';
+import useObservable from 'react-use/esm/useObservable';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
 import Button from '@material-ui/core/Button';
 import CardActions from '@material-ui/core/CardActions';

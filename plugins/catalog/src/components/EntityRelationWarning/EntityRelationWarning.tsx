@@ -22,7 +22,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import Box from '@material-ui/core/Box';
 import { ResponseErrorPanel } from '@backstage/core-components';
 import { useApi, ApiHolder } from '@backstage/core-plugin-api';

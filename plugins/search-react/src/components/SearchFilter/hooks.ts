@@ -15,8 +15,8 @@
  */
 
 import { useEffect, useRef } from 'react';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
-import useDebounce from 'react-use/lib/useDebounce';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
+import useDebounce from 'react-use/esm/useDebounce';
 
 import { useSearch } from '../../context';
 

@@ -16,7 +16,7 @@
 
 import { NotificationsApi, notificationsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 
 /** @public */
 export function useNotificationsApi<T>(

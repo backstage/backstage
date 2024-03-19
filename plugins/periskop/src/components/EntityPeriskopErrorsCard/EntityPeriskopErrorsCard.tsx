@@ -33,7 +33,7 @@ import {
   EmptyState,
   Link,
 } from '@backstage/core-components';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { periskopApiRef } from '../../plugin';
 import { AggregatedError, NotFoundInInstance } from '../../types';
 

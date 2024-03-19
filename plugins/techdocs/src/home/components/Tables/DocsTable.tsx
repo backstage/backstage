@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { Entity, RELATION_OWNED_BY } from '@backstage/catalog-model';

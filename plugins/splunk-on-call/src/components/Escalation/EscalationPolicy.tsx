@@ -20,7 +20,7 @@ import ListSubheader from '@material-ui/core/ListSubheader';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import { EscalationUsersEmptyState } from './EscalationUsersEmptyState';
 import { EscalationUser } from './EscalationUser';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { splunkOnCallApiRef } from '../../api';
 import Alert from '@material-ui/lab/Alert';
 import { User } from '../types';

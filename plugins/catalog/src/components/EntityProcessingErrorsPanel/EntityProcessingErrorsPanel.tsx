@@ -29,7 +29,7 @@ import {
   ENTITY_STATUS_CATALOG_PROCESSING_TYPE,
 } from '@backstage/catalog-client';
 import { useApi, ApiHolder } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { SerializedError } from '@backstage/errors';
 
 const errorFilter = (i: EntityStatusItem) =>

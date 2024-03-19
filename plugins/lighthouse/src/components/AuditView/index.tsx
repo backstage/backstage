@@ -30,7 +30,7 @@ import {
   useNavigate,
   useParams,
 } from 'react-router-dom';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Audit, Website } from '@backstage/plugin-lighthouse-common';
 import { lighthouseApiRef } from '../../api';
 import { formatTime } from '../../utils';

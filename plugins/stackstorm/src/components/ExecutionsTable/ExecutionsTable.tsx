@@ -24,7 +24,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { Execution, stackstormApiRef } from '../../api';
 import { Status } from './Status';
 import { ExecutionPanel } from './ExecutionPanel';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 type DenseTableProps = {
   executions: Execution[];

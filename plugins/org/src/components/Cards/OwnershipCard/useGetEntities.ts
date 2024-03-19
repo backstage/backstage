@@ -29,7 +29,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import limiterFactory from 'p-limit';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import qs from 'qs';
 import { EntityRelationAggregation } from '../types';
 import { uniq } from 'lodash';

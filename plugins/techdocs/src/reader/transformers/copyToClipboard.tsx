@@ -22,7 +22,7 @@ import Tooltip from '@material-ui/core/Tooltip';
 import { withStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import type { Transformer } from './transformer';
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
 const CopyToClipboardTooltip = withStyles(theme => ({
   tooltip: {

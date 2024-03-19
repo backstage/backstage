@@ -17,7 +17,7 @@ import React from 'react';
 import { Box, makeStyles, Typography } from '@material-ui/core';
 import { newRelicDashboardApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import {
   Progress,
   InfoCard,

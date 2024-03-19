@@ -16,7 +16,7 @@
 
 import React from 'react';
 import Typography from '@material-ui/core/Typography';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { useCostInsightsStyles } from '../../utils/styles';
 import { Group } from '@backstage/plugin-cost-insights-common';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';

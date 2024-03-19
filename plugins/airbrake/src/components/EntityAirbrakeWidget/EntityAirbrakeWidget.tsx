@@ -26,7 +26,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { airbrakeApiRef } from '../../api';
 import { MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
 import { AIRBRAKE_PROJECT_ID_ANNOTATION, useProjectId } from '../useProjectId';

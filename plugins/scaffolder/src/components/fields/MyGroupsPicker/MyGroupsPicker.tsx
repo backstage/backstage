@@ -26,7 +26,7 @@ import { MyGroupsPickerProps, MyGroupsPickerSchema } from './schema';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
 export { MyGroupsPickerSchema };

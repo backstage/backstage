@@ -19,7 +19,7 @@ import { GitTag } from '@backstage/plugin-azure-devops-common';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { getAnnotationValuesFromEntity } from '../utils';
 
 export function useGitTags(entity: Entity): {

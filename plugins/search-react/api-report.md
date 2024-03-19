@@ -6,7 +6,7 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncState } from 'react-use/lib/useAsync';
+import { AsyncState } from 'react-use/esm/useAsync';
 import { AutocompleteProps } from '@material-ui/lab';
 import { Extension } from '@backstage/core-plugin-api';
 import { ForwardRefExoticComponent } from 'react';

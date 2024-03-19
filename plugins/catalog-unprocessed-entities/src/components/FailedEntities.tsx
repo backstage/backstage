@@ -32,7 +32,7 @@ import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { UnprocessedEntity } from '../types';
 import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme: Theme) => ({

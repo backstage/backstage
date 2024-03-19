@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { useCallback, useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Entity } from '@backstage/catalog-model';
 import {
   useEntity,

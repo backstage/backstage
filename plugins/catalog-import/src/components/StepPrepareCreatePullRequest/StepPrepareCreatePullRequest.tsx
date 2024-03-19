@@ -28,7 +28,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useEffect, useState } from 'react';
 import { UnpackNestedValue, UseFormReturn } from 'react-hook-form';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { useCatalogFilename } from '../../hooks';
