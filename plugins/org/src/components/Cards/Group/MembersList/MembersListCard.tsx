@@ -50,19 +50,25 @@ import {
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { EntityRelationAggregation } from '../../types';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    card: {
-      border: `1px solid ${theme.palette.divider}`,
-      boxShadow: theme.shadows[2],
-      borderRadius: '4px',
-      overflow: 'visible',
-      position: 'relative',
-      margin: theme.spacing(4, 1, 1),
-      flex: '1',
-      minWidth: '0px',
-    },
-  }),
+const useStyles = makeStyles(
+  (theme: Theme) =>
+    createStyles({
+      card: {
+        border: `1px solid ${theme.palette.divider}`,
+        boxShadow: theme.shadows[2],
+        borderRadius: '4px',
+        overflow: 'visible',
+        position: 'relative',
+        margin: theme.spacing(4, 1, 1),
+        flex: '1',
+        minWidth: '0px',
+      },
+      avatar: {
+        position: 'absolute',
+        top: '-2rem',
+      },
+    }),
+  { name: 'MembersListCardComponent' },
 );
 
 const MemberComponent = (props: { member: UserEntity }) => {
@@ -85,10 +91,7 @@ const MemberComponent = (props: { member: UserEntity }) => {
         <Avatar
           displayName={displayName}
           picture={profile?.picture}
-          customStyles={{
-            position: 'absolute',
-            top: '-2rem',
-          }}
+          classes={classes}
         />
         <Box
           pt={2}
