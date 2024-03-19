@@ -5772,9 +5772,16 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-unprocessed@workspace:plugins/catalog-backend-module-unprocessed"
   dependencies:
+    "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-catalog-unprocessed-entities-common": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
+    "@types/express": ^4.17.6
     express-promise-router: ^4.1.1
     knex: ^3.0.0
   languageName: unknown
@@ -6034,6 +6041,15 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-catalog-unprocessed-entities-common@workspace:^, @backstage/plugin-catalog-unprocessed-entities-common@workspace:plugins/catalog-unprocessed-entities-common":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-unprocessed-entities-common@workspace:plugins/catalog-unprocessed-entities-common"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
   languageName: unknown
   linkType: soft
 
