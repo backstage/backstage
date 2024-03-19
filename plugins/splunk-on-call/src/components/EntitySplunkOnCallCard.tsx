@@ -20,17 +20,15 @@ import {
   useEntity,
   MissingAnnotationEmptyState,
 } from '@backstage/plugin-catalog-react';
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import WebIcon from '@material-ui/icons/Web';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { splunkOnCallApiRef, UnauthorizedError } from '../api';
 import { MissingApiKeyOrApiIdError } from './Errors';
 import { EscalationPolicy } from './Escalation';
