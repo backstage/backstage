@@ -25,7 +25,7 @@ import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { Logger } from 'winston';
 import limiterFactory from 'p-limit';
 
-const DEFAULT_TOP_TEAMS = 100;
+export const DEFAULT_TOP_TEAMS = 100;
 
 export class PullRequestsDashboardProvider {
   private teams = new Map<string, Team>();
@@ -108,11 +108,12 @@ export class PullRequestsDashboardProvider {
   public async getDashboardPullRequests(
     projectName: string,
     options: PullRequestOptions,
+    topTeams?: number,
   ): Promise<DashboardPullRequest[]> {
     const dashboardPullRequests =
       await this.azureDevOpsApi.getDashboardPullRequests(projectName, options);
 
-    await this.getAllTeams(); // Make sure team members are loaded
+    await this.getAllTeams(topTeams); // Make sure team members are loaded
 
     return dashboardPullRequests.map(pr => {
       if (pr.createdBy?.id) {

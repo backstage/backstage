@@ -27,6 +27,7 @@ const POLLING_INTERVAL = 10000;
 export function useDashboardPullRequests(
   project?: string,
   pollingInterval: number = POLLING_INTERVAL,
+  topTeams?: number,
 ): {
   pullRequests?: DashboardPullRequest[];
   loading: boolean;
@@ -43,7 +44,7 @@ export function useDashboardPullRequests(
     }
 
     try {
-      return await api.getDashboardPullRequests(project);
+      return await api.getDashboardPullRequests(project, topTeams);
     } catch (error) {
       if (error instanceof Error) {
         errorApi.post(error);
@@ -51,7 +52,7 @@ export function useDashboardPullRequests(
 
       return Promise.reject(error);
     }
-  }, [project, api, errorApi]);
+  }, [project, api, topTeams, errorApi]);
 
   const {
     value: pullRequests,

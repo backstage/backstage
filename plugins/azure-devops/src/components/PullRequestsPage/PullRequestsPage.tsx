@@ -70,14 +70,17 @@ type PullRequestsPageProps = {
   projectName?: string;
   pollingInterval?: number;
   defaultColumnConfigs?: PullRequestColumnConfig[];
+  topTeams?: number;
 };
 
 export const PullRequestsPage = (props: PullRequestsPageProps) => {
-  const { projectName, pollingInterval, defaultColumnConfigs } = props;
+  const { projectName, pollingInterval, defaultColumnConfigs, topTeams } =
+    props;
 
   const { pullRequests, loading, error } = useDashboardPullRequests(
     projectName,
     pollingInterval,
+    topTeams,
   );
 
   const [columnConfigs] = useState(
