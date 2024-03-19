@@ -679,9 +679,10 @@ export class SystemXReaderProcessor implements CatalogProcessor {
       if (error.name === 'NotModifiedError' && cacheItem) {
         // The ETag matches and we have a cached value from the previous run.
         emit(processingResult.entity(location, cacheItem.entity));
+      } else {
+        const message = `Unable to read ${location.type}, ${error}`;
+        emit(processingResult.generalError(location, message));
       }
-      const message = `Unable to read ${location.type}, ${error}`;
-      emit(processingResult.generalError(location, message));
     }
 
     return true;
