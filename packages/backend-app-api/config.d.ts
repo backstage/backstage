@@ -34,21 +34,24 @@ export interface Config {
        * unless you configure credentials for service calls.
        */
       dangerouslyDisableDefaultAuthPolicy?: boolean;
-      rateLimit?:
-        | false
-        | {
-            /**
-             * Limit each IP to max requests per window
-             */
-            max?: number;
-            /**
-             * The duration for which the rate limit is enforced
-             */
-            window?: HumanDuration;
-
-            disable?: true;
-          };
     };
+    /** @visibility frontend */
+    rateLimit?:
+      | false
+      | {
+          /**
+           * Limit each IP to max requests per window, defaults to 60 requests.
+           */
+          max?: number;
+          /**
+           * The duration for which the rate limit is enforced, defaults to 1 minute.
+           */
+          window?: HumanDuration;
+          /**
+           * Disable the rate limit verification.
+           */
+          disable?: true;
+        };
   };
 
   /** Discovery options. */

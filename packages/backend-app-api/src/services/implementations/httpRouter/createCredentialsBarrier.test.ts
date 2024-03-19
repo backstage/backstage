@@ -188,8 +188,8 @@ it('do not limit authenticated requests', async () => {
   const max = 2;
   const configMock = {
     backend: {
-      auth: {
-        rateLimit: {
+      rateLimit: {
+        unauthorized: {
           max, // 2 requests per window
           window: { minutes: 2 }, // rate limit window expiration time,
         },
@@ -237,8 +237,8 @@ it('limit the number of unauthenticated requests', async () => {
 
   const configMock = {
     backend: {
-      auth: {
-        rateLimit: {
+      rateLimit: {
+        unauthorized: {
           max: 2, // 2 requests per window
           window: { minutes: 2 }, // rate limit window expiration time,
         },
@@ -279,25 +279,25 @@ it('limit the number of unauthenticated requests', async () => {
   expect(cacheMock.get).toHaveBeenCalledTimes(4);
   expect(cacheMock.set).toHaveBeenNthCalledWith(
     1,
-    `rl_${randomIp}`, // rl is the default prefix for the rate limit store
+    `unauthorized_rate_limit_${randomIp}`, // unauthorized_rate_limit_ is the default prefix for the rate limit store
     { resetTime, totalHits: 1 },
     { ttl: twoMinutesInMilliseconds },
   );
   expect(cacheMock.set).toHaveBeenNthCalledWith(
     2,
-    `rl_${randomIp}`,
+    `unauthorized_rate_limit_${randomIp}`,
     { resetTime, totalHits: 2 },
     { ttl: twoMinutesInMilliseconds },
   );
   expect(cacheMock.set).toHaveBeenNthCalledWith(
     3,
-    `rl_${randomIp}`,
+    `unauthorized_rate_limit_${randomIp}`,
     { resetTime, totalHits: 3 },
     { ttl: twoMinutesInMilliseconds },
   );
   expect(cacheMock.set).toHaveBeenNthCalledWith(
     4,
-    `rl_${randomIp}`,
+    `unauthorized_rate_limit_${randomIp}`,
     { resetTime, totalHits: 1 },
     { ttl: twoMinutesInMilliseconds },
   );
@@ -320,8 +320,8 @@ it('skip limiting requests when the rate limit is disabled', async () => {
     cache: cacheMock,
     config: {
       backend: {
-        auth: {
-          rateLimit: {
+        rateLimit: {
+          unauthorized: {
             max,
             window: { minutes: 2 },
             disabled: true,
@@ -333,7 +333,6 @@ it('skip limiting requests when the rate limit is disabled', async () => {
 
   barrier1.addAuthPolicy({ allow: 'unauthenticated', path: '/public' });
 
-  // exceed the rate limit for authenticated requests
   for (let i = 0; i < max + 1; i += 1) {
     await request(app1)
       .get('/public')
@@ -349,8 +348,8 @@ it('skip limiting requests when the rate limit is disabled', async () => {
     cache: cacheMock,
     config: {
       backend: {
-        auth: {
-          rateLimit: false,
+        rateLimit: {
+          unauthorized: false,
         },
       },
     },
@@ -358,7 +357,6 @@ it('skip limiting requests when the rate limit is disabled', async () => {
 
   barrier2.addAuthPolicy({ allow: 'unauthenticated', path: '/public' });
 
-  // exceed the rate limit for authenticated requests
   await request(app2).get('/public').send().expect(200);
 
   jest.useRealTimers();

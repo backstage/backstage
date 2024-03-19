@@ -51,7 +51,7 @@ export class RateLimitStore implements Store {
   #cache: CacheService;
 
   private constructor(options: CacheStoreOptions) {
-    this.prefix = options.prefix ?? 'rl_';
+    this.prefix = options.prefix ?? 'unauthorized_rate_limit_';
     this.#cache = options.cache;
   }
 

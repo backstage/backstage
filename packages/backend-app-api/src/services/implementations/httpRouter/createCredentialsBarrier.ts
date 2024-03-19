@@ -65,18 +65,19 @@ export function createCredentialsBarrier(options: {
   const unauthenticatedPredicates = new Array<(path: string) => boolean>();
   const cookiePredicates = new Array<(path: string) => boolean>();
 
-  const rateLimitConfig = config.getOptional('backend.auth.rateLimit');
+  const rateLimitConfig = config.getOptional('backend.rateLimit.unauthorized');
 
   const disabled =
     rateLimitConfig === false ||
     (typeof rateLimitConfig === 'object' &&
-      config?.getOptionalBoolean('backend.auth.rateLimit.disabled') === true);
+      config?.getOptionalBoolean('backend.rateLimit.unauthorized.disabled') ===
+        true);
 
   const duration =
     typeof rateLimitConfig === 'object' &&
-    config?.has('backend.auth.rateLimit.window')
+    config?.has('backend.rateLimit.unauthorized.window')
       ? readDurationFromConfig(
-          config.getConfig('backend.auth.rateLimit.window'),
+          config.getConfig('backend.rateLimit.unauthorized.window'),
         )
       : undefined;
 
@@ -84,8 +85,8 @@ export function createCredentialsBarrier(options: {
 
   const max =
     typeof rateLimitConfig === 'object' &&
-    config?.has('backend.auth.rateLimit.max')
-      ? config.getNumber('backend.auth.rateLimit.max')
+    config?.has('backend.rateLimit.unauthorized.max')
+      ? config.getNumber('backend.rateLimit.unauthorized.max')
       : 60;
 
   // Default rate limit is 60 requests per 1 minute

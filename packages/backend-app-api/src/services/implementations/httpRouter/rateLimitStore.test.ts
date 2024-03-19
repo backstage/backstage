@@ -18,19 +18,22 @@ import { ServiceMock, mockServices } from '@backstage/backend-test-utils';
 import { RateLimitStore } from './rateLimitStore';
 import { CacheService } from '@backstage/backend-plugin-api';
 
-jest.setSystemTime(Date.parse('2024-03-15T08:39:11.869Z'));
-
 describe('RateLimitStore', () => {
   let cacheServiceMock: ServiceMock<CacheService>;
   let rateLimitStore: RateLimitStore;
 
   beforeEach(() => {
+    jest.useFakeTimers({ now: Date.parse('2024-03-15T08:39:11.869Z') });
     jest.clearAllMocks();
     cacheServiceMock = mockServices.cache.mock();
     rateLimitStore = RateLimitStore.fromOptions({
       prefix: 'rl_',
       cache: cacheServiceMock,
     });
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
   });
 
   it('should initialize with default options', () => {
