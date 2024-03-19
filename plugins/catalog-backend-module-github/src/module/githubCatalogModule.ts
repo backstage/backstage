@@ -23,6 +23,7 @@ import {
   catalogAnalysisExtensionPoint,
   catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GithubEntityProvider } from '../providers/GithubEntityProvider';
 import { GithubLocationAnalyzer } from '../analyzers/GithubLocationAnalyzer';
 
@@ -37,17 +38,19 @@ export const githubCatalogModule = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
-        catalog: catalogProcessingExtensionPoint,
         analyzers: catalogAnalysisExtensionPoint,
         auth: coreServices.auth,
-        discovery: coreServices.discovery,
+        catalog: catalogProcessingExtensionPoint,
         config: coreServices.rootConfig,
+        discovery: coreServices.discovery,
+        events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },
       async init({
         catalog,
         config,
+        events,
         logger,
         scheduler,
         analyzers,
@@ -64,6 +67,7 @@ export const githubCatalogModule = createBackendModule({
 
         catalog.addEntityProvider(
           GithubEntityProvider.fromConfig(config, {
+            events,
             logger: loggerToWinstonLogger(logger),
             scheduler,
           }),
