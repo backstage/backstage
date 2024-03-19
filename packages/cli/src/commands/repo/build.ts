@@ -179,6 +179,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
         await buildBackend({
           targetDir: pkg.dir,
           skipBuildDependencies: true,
+          minify: buildOptions.minify,
         });
       },
     });
