@@ -16,3 +16,4 @@
 
 export type { Backend, CreateSpecializedBackendOptions } from './types';
 export { createSpecializedBackend } from './createSpecializedBackend';
+export { ServiceRegistry } from './ServiceRegistry';

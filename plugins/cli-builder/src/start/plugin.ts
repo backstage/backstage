@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import {
-  createSpecializedBackend,
   discoveryServiceFactory,
   lifecycleServiceFactory,
   loggerServiceFactory,
@@ -26,9 +25,10 @@ import {
   rootCommanderServiceFactory,
 } from '../impls/commanderServiceFactory';
 import { rootConfigServiceFactory } from '../impls/rootConfigServiceFactory';
+import { createSpecializedCli } from '../plumbing/createSpecializedCli';
 
 export function createCli() {
-  return createSpecializedBackend({
+  return createSpecializedCli({
     defaultServiceFactories: [
       rootConfigServiceFactory(),
       rootLoggerServiceFactory(),
