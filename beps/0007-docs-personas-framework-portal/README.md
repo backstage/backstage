@@ -1,8 +1,9 @@
 ---
-title: Restructuring Backstage Documentation for Improved Navigation and Clarity
+title: Enhancing Backstage Documentation, Personas, Framework, and Developer Portal
 status: provisional
 authors:
   - '@waldirmontoya25'
+  - '@aramissennyeyd'
 owners:
 project-areas:
   - Documentation
@@ -20,6 +21,17 @@ creation-date: 2024-03-18
     - [Non-Goals](#non-goals)
   - [Proposal](#proposal)
   - [Design Details](#design-details)
+    - [Personas](#personas)
+      - [User](#user)
+        - [Documentation Style](#documentation-style)
+      - [Administrator](#administrator)
+        - [Documentation Style](#documentation-style-1)
+      - [Integrator](#integrator)
+        - [Documentation Style](#documentation-style-2)
+      - [Contributor](#contributor)
+        - [Documentation Style](#documentation-style-3)
+      - [Business Stakeholder](#business-stakeholder)
+        - [Documentation Style](#documentation-style-4)
   - [Release Plan](#release-plan)
   - [Dependencies](#dependencies)
   - [Example Table of Contents](#example-table-of-contents)
@@ -79,40 +91,87 @@ The benefits of restructuring the documentation according to these ideas include
 - The Docs section of the microsite will be divided into two top-level sections: Framework and Developer Portal.
 - The structure of the Table of Contents will align with the outline proposed in https://github.com/backstage/backstage/issues/21946.
 
-### User Persona
+### Personas
 
-Documentation written for the user persona should be high level, assuming little to no technical knowledge. Concepts like the difference between Backstage Framework and Developer Portal should be explained at a high level to give Users a working knowledge, but should not be flushed out completely until we identify the user as a distinct user persona. Users may also be Administrators, Integrators or Product Managers, but documentation for Users should make no assumptions on that.
+#### User
 
-Example explanation of Backstage Framework vs Developer Portal:
-"Backstage has two meanings, the Backstage Framework and the Backstage Developer Portal. Backstage Framework provides the tools you need to build your own developer portal and Backstage Developer Portal is your custom developer portal built using the Backstage Framework."
+Users navigate the developer portal to access tools, information, and plugins essential for their daily tasks. They rely on Backstage to effortlessly find resources, utilize integrations, and connect with other tools and services within their ecosystem. Their interaction is predominantly with the frontend of the portal, where ease of use, accessibility, and relevant content discovery are critical.
 
-### Administrator Persona
+##### Documentation Style
 
-Documentation written for this persona should be DevOps technical, assuming a strong DevOps background with the exception of a Getting Started section. While we should assume an overall technical knowledge, where possible we should link out to existing strong guides for the technologies we use, ex: PostgreSQL, Docker, Kubernetes, etc. The goal with administrator documentation is to give administrators a strong understanding of how to deploy and manage a Backstage Developer Portal, best practices, and possible tripping points.
+Documentation for this persona should be about usability of the portal once it is running. For example:
 
-Example explanation of Backstage Framework vs Developer Portal:
-"Backstage has two meanings, the Backstage Framework and the Backstage Developer Portal. As an administrator, you will be interacting with Backstage Developer Portal primarily -- this is the running Backstage instance that you're managing. It is also useful to have a high level understanding of the Backstage Framework for mitigating issues or better understanding how to scale your Backstage Developer Portal."
+- Understanding the mechanics of the Software Catalog
+- Registering components
+- Deleting components
+- How the source of truth is the external tool linked through the plugins
+- Understand dependencies relations and the overall schema of the catalog
+- Using available scaffolder actions
+- Customizing new workflows with available actions
+- Searching
+- Using available plugins
+- Step by step tutorials
 
-### Integrator Persona
+#### Administrator
 
-Documentation written for this persona should be software technical, assuming a strong software background with the exception of a Getting Started section. While we can assume an overall technical knowledge, where possible we should link out to useful guides for the technologies we use, ex: Node.js, express.js, React, etc. The goal with documentation written for integrators is to give them a strong understanding of where their work fits into their company's Backstage Developer Portal, orient them to get support from the open source community, and prepare them for continuing to deliver value for their Backstage Developer Portal.
+Administrators are responsible for the behind-the-scenes technical setup and maintenance of the Backstage portal. This includes deploying the portal, configuring plugins, managing user access, and ensuring the security and performance of the system. They interact with both the frontend and backend, often using command-line tools, administrative dashboards, and configuration files to perform their tasks.
 
-Example explanation of Backstage Framework vs Developer Portal:
-"Backstage has two meanings, the Backstage Framework and the Backstage Developer Portal. As an integrator, most of your time will be spent working to deliver value on top of the Backstage Framework for your company's Backstage Developer Portal. This means creating plugins, theming your Backstage Developer Portal or adding integrations to internal data stores. You should have a strong understanding of the Backstage Framework and have a strong understaing of code that sits in your Backstage Developer Portal."
+##### Documentation Style
 
-### Business Stakeholder
+Documentation written for this persona should be DevOps technical, assuming a strong DevOps background. The goal with administrator documentation is to give administrators a strong understanding of how to deploy and manage a Backstage Developer Portal, best practices. For example:
 
-Documentation written for this persona should be strategic, assuming a strong background in business development and strategy. The goal for business documentation is to give a strong understanding of what Backstage Developer Portal can do for their company, how to deliver value quickly and continuously and guides for pitching or driving Backstage adoption.
+- Installing and upgrading
+- Configuring
+  - Authentication
+  - Plugins
+- Ingesting data (users/groups/components, etc)
+- Installing plugins
+- Implement Git Flows for the Developer portal
+- Creating Pipelines for Docs generation
+- Troubleshooting
 
-Example explanation of Backstage Framework vs Developer Portal:
-"Backstage has two meanings, the Backstage Framework and the Backstage Developer Portal. As a business stakeholder, your time should be spent with your company's Backstage Developer Portal solely. This means understanding the value proposition of an IDP, what improving the developer experience at your company means and what a successful Backstage Developer Portal looks like. The Backstage Framework is the technical underpinning and will generally be invisible to you."
+#### Integrator
 
-## Contributor
+Integrators actively work on extending and customizing Backstage. This includes developing new plugins, customizing the UI/UX, and integrating external services or data sources. Their work is deeply technical, involving coding, and engaging with the Backstage community for support and collaboration. They need a deep understanding of the Backstage architecture and APIs, working closely with both the framework's backend and frontend aspects.
 
-Documentation written for this role should be technical, but should make no assumptions on technical strength. The goal with this documentation is to onboard new contributors to the technical stack and layout of the project, setting expectations for how to write code, documentation or generally contribute to the library.
+##### Documentation Style
 
-Example explanation of Backstage Framework vs Developer Portal:
-"Backstage has two meanings, the Backstage Framework and the Backstage Developer Portal. You will work with both the Backstage Framework and Backstage Developer Portal. Backstage Framework is the technical framework for Backstage Developer Portal. The Backstage Developer Portal is the end user for your plugins, documentation or other contributions. As a contributor, you will be working to influence either the Backstage Framework or plugins and Backstage Developer Portals across the world may use your contributions."
+Documentation written for this persona should be software technical, assuming a strong software background. While we can assume an overall technical knowledge, where possible we should link out to useful guides for the technologies we use, ex: Node.js, express.js, React, etc. The goal with documentation written for integrators is to give them a strong understanding of how to use the Backstage framework to build/evolve a company's Backstage Developer Portal, orient them to get support from the open source community, and prepare them for continuing to deliver value for their Backstage Developer Portal. For example:
+
+- API references
+- Frontend and Backend systems
+- Package architecture
+- Extending the Software Catalog
+- Creating custom themes
+- Integrating new react components
+- Building custom authentication providers/strategies
+- Accessibility
+
+#### Contributor
+
+Contributors are involved in the development of the Backstage framework itself. They contribute to the core codebase, develop new features, fix bugs, create documentation and maintain the overall health of the project. They are deeply involved in the open-source community, collaborating with maintainers and other contributors to improve the framework and its ecosystem.
+
+##### Documentation Style
+
+The goal with documentation written for contributors is to give them a strong understanding of how to contribute to the Backstage framework, orient them to get support from the open source community, and prepare them for continuing to deliver value for the Backstage framework. For example:
+
+- Contributing to the Backstage framework
+- Setting up a development environment
+- Writing tests
+- Writing documentation
+
+#### Business Stakeholder
+
+Business stakeholders use Backstage to align technical capabilities with business goals, monitoring how features and plugins support operational efficiency, developer satisfaction, and strategic objectives. They are involved in defining the strategy and measuring the impact of the developer portal on the organization. They need to navigate through dashboards, reports, and analytics within Backstage to gather insights and make informed decisions.
+
+##### Documentation Style
+
+Documentation written for this persona should be strategic, assuming a strong background in business development and strategy. The goal for business documentation is to give a strong understanding of what Backstage Developer Portal can do for their company, how to deliver value quickly and continuously and guides for pitching or driving Backstage adoption. For example:
+
+- Adoption use cases
+- Adoption strategies
+- Measuring success
+- Case studies
 
 ## Release Plan
 
