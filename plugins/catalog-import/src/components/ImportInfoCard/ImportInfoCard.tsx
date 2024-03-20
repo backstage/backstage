@@ -29,7 +29,8 @@ import { useCatalogFilename } from '../../hooks';
  */
 export interface ImportInfoCardProps {
   exampleLocationUrl?: string;
-  exampleRepositoryUrl?: string;
+  exampleGitRepositoryUrl?: string;
+  exampleAzureRepositoryUrl?: string;
 }
 
 /**
@@ -40,7 +41,8 @@ export interface ImportInfoCardProps {
 export const ImportInfoCard = (props: ImportInfoCardProps) => {
   const {
     exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
-    exampleRepositoryUrl = 'https://github.com/backstage/backstage',
+    exampleGitRepositoryUrl = 'https://github.com/backstage/backstage',
+    exampleAzureRepositoryUrl = 'https://dev.azure.com/spotify/backstage/_git/backstage',
   } = props;
 
   const configApi = useApi(configApiRef);
@@ -77,10 +79,18 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
         <>
           <Typography component="h4" variant="h6">
             Link to a repository{' '}
-            <Chip label="GitHub only" variant="outlined" size="small" />
+            <Chip
+              label="GitHub and AzureDevops"
+              variant="outlined"
+              size="small"
+            />
+          </Typography>
+
+          <Typography variant="subtitle2" color="textSecondary" paragraph>
+            GitHub Example: <code>{exampleGitRepositoryUrl}</code>
           </Typography>
           <Typography variant="subtitle2" color="textSecondary" paragraph>
-            Example: <code>{exampleRepositoryUrl}</code>
+            Azure Example: <code>{exampleAzureRepositoryUrl}</code>
           </Typography>
           <Typography variant="body2" paragraph>
             The wizard discovers all <code>{catalogFilename}</code> files in the
