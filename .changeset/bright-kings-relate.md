@@ -4,7 +4,7 @@
 ---
 
 **BREAKING** The EntitySwitch component and its associated helpers move from plugin-catalog to plugin-catalog-react.
-There is no associated change in functionality, just the location.
+There is no change in functionality, just the location.
 
 Any imports of EntitySwitch or its helpers must update the source plugin.
 
@@ -17,7 +17,7 @@ import {
   EntityAboutCard,
   EntityLayout,
 - EntitySwitch,
-- isisComponentType,
+- isComponentType,
 } from '@backstage/plugin-catalog';
 + import { EntitySwitch, isComponentType } from '@backstage/plugin-catalog-react';
 ```

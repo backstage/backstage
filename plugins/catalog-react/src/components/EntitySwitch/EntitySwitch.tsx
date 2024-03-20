@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { useAsyncEntity } from '@backstage/plugin-catalog-react';
+import { useAsyncEntity } from '../../hooks';
 import React, { ReactNode, ReactElement } from 'react';
 import {
   attachComponentData,
