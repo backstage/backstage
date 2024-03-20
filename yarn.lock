@@ -4164,7 +4164,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     aws-sdk-client-mock: ^4.0.0
-    aws-sdk-client-mock-jest: ^3.0.0
+    aws-sdk-client-mock-jest: ^4.0.0
   languageName: unknown
   linkType: soft
 
@@ -5275,7 +5275,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     aws-sdk-client-mock: ^4.0.0
-    aws-sdk-client-mock-jest: ^3.0.0
+    aws-sdk-client-mock-jest: ^4.0.0
     luxon: ^3.0.0
     p-limit: ^3.0.2
     uuid: ^9.0.0
@@ -21470,15 +21470,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aws-sdk-client-mock-jest@npm:^3.0.0":
-  version: 3.1.0
-  resolution: "aws-sdk-client-mock-jest@npm:3.1.0"
+"aws-sdk-client-mock-jest@npm:^4.0.0":
+  version: 4.0.0
+  resolution: "aws-sdk-client-mock-jest@npm:4.0.0"
   dependencies:
     expect: ">28.1.3"
     tslib: ^2.1.0
   peerDependencies:
-    aws-sdk-client-mock: 3.1.0
-  checksum: d619e3dbc58009ffa9db766a7781ec1159809825a8e8246f41adeeffa81aa4ec0319cf0ba5a113e4937101b56401396eb117cab4da3fac4974b094ac8fdbeaa3
+    aws-sdk-client-mock: 4.0.0
+  checksum: 177d3317d337e501590ce62769b63407ac9fbfacdea0834b47d46f360c51959e32b598a3c341dcaaf66c4c6e369a72beecff9142e7110149b5bc69891ece2b78
   languageName: node
   linkType: hard
 
