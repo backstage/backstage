@@ -38,7 +38,7 @@ import {
   configApiRef,
   discoveryApiRef,
   fetchApiRef,
-  IErrorPageProps
+  IErrorPageProps,
 } from '@backstage/core-plugin-api';
 
 const mockEntityMetadata = {
