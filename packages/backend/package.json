@@ -82,7 +82,7 @@
     "@gitbeaker/node": "^35.1.0",
     "@octokit/rest": "^19.0.3",
     "@opentelemetry/api": "^1.4.1",
-    "@opentelemetry/exporter-prometheus": "^0.48.0",
+    "@opentelemetry/exporter-prometheus": "^0.49.0",
     "@opentelemetry/sdk-metrics": "^1.13.0",
     "azure-devops-node-api": "^12.0.0",
     "better-sqlite3": "^9.0.0",
