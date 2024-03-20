@@ -3925,7 +3925,6 @@ __metadata:
     "@react-hookz/web": ^23.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     "@types/react-sparklines": ^1.7.0
-    "@types/react-text-truncate": ^0.14.0
     ansi-regex: ^6.0.1
     classnames: ^2.2.6
     d3-selection: ^3.0.0
@@ -3944,7 +3943,6 @@ __metadata:
     react-markdown: ^8.0.0
     react-sparklines: ^1.7.0
     react-syntax-highlighter: ^15.4.5
-    react-text-truncate: ^0.19.0
     react-use: ^17.3.2
     react-virtualized-auto-sizer: ^1.0.11
     react-window: ^1.8.6
@@ -9687,6 +9685,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
+    "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
@@ -28844,6 +28843,15 @@ __metadata:
   dependencies:
     resolve-pkg-maps: ^1.0.0
   checksum: 172358903250eff0103943f816e8a4e51d29b8e5449058bdf7266714a908a48239f6884308bd3a6ff28b09f692b9533dbebfd183ab63e4e14f073cda91f1bca9
+  languageName: node
+  linkType: hard
+
+"get-tsconfig@npm:^4.7.2":
+  version: 4.7.3
+  resolution: "get-tsconfig@npm:4.7.3"
+  dependencies:
+    resolve-pkg-maps: ^1.0.0
+  checksum: d124e6900f8beb3b71f215941096075223158d0abb09fb5daa8d83299f6c17d5e95a97d12847b387e9e716bb9bd256a473f918fb8020f3b1acc0b1e5c2830bbf
   languageName: node
   linkType: hard
 

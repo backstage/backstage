@@ -20,7 +20,9 @@ import {
   RELATION_OWNED_BY,
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
-import { OverflowTooltip, TableColumn } from '@backstage/core-components';
+import { TableColumn } from '@backstage/core-components';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { getEntityRelations } from '../../utils';
 import {
@@ -138,11 +140,11 @@ export const columnFactories = Object.freeze({
       title: 'Description',
       field: 'metadata.description',
       render: entity => (
-        <OverflowTooltip
-          text={entity.metadata.description}
-          placement="bottom-start"
-          line={2}
-        />
+        <Tooltip title={entity.metadata.description} placement="bottom-start">
+          <Typography component="span">
+            {entity.metadata.description.split('\n').slice(0, 2).join('\n')}
+          </Typography>
+        </Tooltip>
       ),
     };
   },

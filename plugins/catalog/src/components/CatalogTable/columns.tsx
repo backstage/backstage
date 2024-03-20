@@ -21,9 +21,12 @@ import {
 } from '@backstage/plugin-catalog-react';
 import Chip from '@material-ui/core/Chip';
 import { CatalogTableRow } from './types';
-import { OverflowTooltip, TableColumn } from '@backstage/core-components';
+import { TableColumn } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
 import { JsonArray } from '@backstage/types';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 
 // The columnFactories symbol is not directly exported, but through the
 // CatalogTable.columns field.
@@ -104,12 +107,18 @@ export const columnFactories = Object.freeze({
       render: ({ entity }) => (
         <>
           {(entity?.spec?.targets || entity?.spec?.target) && (
-            <OverflowTooltip
-              text={(
+            <Tooltip
+              title={(
                 (entity!.spec!.targets as JsonArray) || [entity.spec.target]
               ).join(', ')}
               placement="bottom-start"
-            />
+            >
+              <Box maxWidth="100px" overflow="hidden" whiteSpace="nowrap">
+                {(
+                  (entity!.spec!.targets as JsonArray) || [entity.spec.target]
+                ).join(', ')}
+              </Box>
+            </Tooltip>
           )}
         </>
       ),
@@ -138,10 +147,13 @@ export const columnFactories = Object.freeze({
       title: 'Description',
       field: 'entity.metadata.description',
       render: ({ entity }) => (
-        <OverflowTooltip
-          text={entity.metadata.description}
-          placement="bottom-start"
-        />
+        <Tooltip title={entity.metadata.description} placement="bottom-start">
+          <Box maxWidth="100px" overflow="hidden" whiteSpace="nowrap">
+            <Typography component="span" noWrap textOverFlow="ellipsis">
+              {entity.metadata.description}
+            </Typography>
+          </Box>
+        </Tooltip>
       ),
       width: 'auto',
     };

@@ -22,10 +22,10 @@ import { TodoItem, TodoListOptions } from '../../api/types';
 import {
   Table,
   TableColumn,
-  OverflowTooltip,
   Link,
   ResponseErrorPanel,
 } from '@backstage/core-components';
+import Tooltip from '@material-ui/core';
 import { useApi } from '@backstage/core-plugin-api';
 
 const PAGE_SIZE = 10;
@@ -42,7 +42,12 @@ const columns: TableColumn<TodoItem>[] = [
     field: 'text',
     width: '55%',
     highlight: true,
-    render: ({ text }) => <OverflowTooltip text={text} />,
+    render: ({ text }) => (
+      <Tooltip title={text}>
+        {' '}
+        <span>{text}</span>
+      </Tooltip>
+    ),
   },
   {
     title: 'File',
@@ -51,17 +56,29 @@ const columns: TableColumn<TodoItem>[] = [
     render: ({ viewUrl, repoFilePath }) =>
       viewUrl ? (
         <Link to={viewUrl} target="_blank">
-          <OverflowTooltip text={repoFilePath} />
+          <Tooltip title={repoFilePath}>
+            {' '}
+            <span>{repoFilePath}</span>
+          </Tooltip>
+          ,
         </Link>
       ) : (
-        <OverflowTooltip text={repoFilePath} />
+        <Tooltip title={repoFilePath}>
+          {' '}
+          <span>{repoFilePath}</span>
+        </Tooltip>
       ),
   },
   {
     title: 'Author',
     field: 'author',
     width: '10%',
-    render: ({ author }) => <OverflowTooltip text={author} />,
+    render: ({ author }) => (
+      <Tooltip title={author}>
+        {' '}
+        <span>{author}</span>
+      </Tooltip>
+    ),
   },
 ];
 

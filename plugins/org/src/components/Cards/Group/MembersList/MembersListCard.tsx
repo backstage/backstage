@@ -40,8 +40,8 @@ import {
   Progress,
   ResponseErrorPanel,
   Link,
-  OverflowTooltip,
 } from '@backstage/core-components';
+import Tooltip from '@material-ui/core/Tooltip';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   getAllDesendantMembersForGroupEntity,
@@ -108,9 +108,9 @@ const MemberComponent = (props: { member: UserEntity }) => {
             />
           </Typography>
           {profile?.email && (
-            <Link to={`mailto:${profile.email}`}>
-              <OverflowTooltip text={profile.email} />
-            </Link>
+            <Tooltip title={profile.email} placement="bottom-start">
+              <Link to={`mailto:${profile.email}`} />
+            </Tooltip>
           )}
           {description && (
             <Typography variant="subtitle2">{description}</Typography>

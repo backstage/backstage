@@ -15,12 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  Link,
-  OverflowTooltip,
-  Progress,
-  ResponseErrorPanel,
-} from '@backstage/core-components';
+import { Link, Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import {
   Box,
@@ -29,6 +24,7 @@ import {
   makeStyles,
   Typography,
 } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
 import React from 'react';
 import pluralize from 'pluralize';
 import { catalogIndexRouteRef } from '../../../routes';
@@ -91,14 +87,17 @@ const EntityCountTile = ({
           {counter}
         </Typography>
         <Box sx={{ width: '100%', textAlign: 'center' }}>
-          <Typography
-            className={`${classes.bold} ${isLongText && classes.smallFont}`}
-            variant="h6"
+          <Tooltip
+            title={pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
+            placement="bottom"
           >
-            <OverflowTooltip
-              text={pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
-            />
-          </Typography>
+            <Typography
+              className={`${classes.bold} ${isLongText && classes.smallFont}`}
+              variant="h6"
+            >
+              {pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
+            </Typography>
+          </Tooltip>
         </Box>
         {type && <Typography variant="subtitle1">{kind}</Typography>}
       </Box>
