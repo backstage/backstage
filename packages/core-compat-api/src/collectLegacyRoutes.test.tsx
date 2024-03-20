@@ -20,9 +20,8 @@ import {
   CatalogIndexPage,
   EntityAboutCard,
   EntityLayout,
-  EntitySwitch,
-  isKind,
 } from '@backstage/plugin-catalog';
+import { EntitySwitch, isKind } from '@backstage/plugin-catalog-react';
 import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';

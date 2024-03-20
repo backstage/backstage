@@ -23,6 +23,7 @@ export * from './EntityDisplayName';
 export * from './EntityRefLink';
 export * from './EntityPeekAheadPopover';
 export * from './EntitySearchBar';
+export * from './EntitySwitch';
 export * from './EntityTable';
 export * from './EntityTagPicker';
 export * from './EntityTypePicker';
