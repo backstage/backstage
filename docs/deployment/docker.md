@@ -54,7 +54,7 @@ Once the host build is complete, we are ready to build our image. The following
 `Dockerfile` is included when creating a new app with `@backstage/create-app`:
 
 ```dockerfile
-FROM node:18-bookworm-slim
+FROM node:18-bookworm-slim AS base
 
 # Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -69,6 +69,9 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && \
     apt-get install -y --no-install-recommends libsqlite3-dev
+
+RUN mkdir -p /app
+RUN chown node /app
 
 # From here on we use the least-privileged `node` user to run the backend.
 USER node
@@ -95,6 +98,25 @@ RUN --mount=type=cache,target=/home/node/.cache/yarn,sharing=locked,uid=1000,gid
 # Then copy the rest of the backend bundle, along with any other files we might want.
 COPY --chown=node:node packages/backend/dist/bundle.tar.gz app-config*.yaml ./
 RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+
+FROM node:18-bookworm-slim AS final
+
+# From here on we use the least-privileged `node` user to run the backend.
+RUN mkdir -p /app
+RUN chown node /app
+USER node
+WORKDIR /app
+
+# Copy the install dependencies from the build stage and context
+# COPY --from=base --chown=node:node /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton/ ./
+# Copy the built packages from the build stage
+# COPY --from=base --chown=node:node /app/packages/backend/dist/bundle/ ./
+# Copy the output app folder from base stage
+COPY --from=base /app /app
+
+
+# This switches many Node.js dependencies to production mode.
+ENV NODE_ENV production
 
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
 ```
@@ -191,6 +213,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get update && \
     apt-get install -y --no-install-recommends libsqlite3-dev
 
+RUN mkdir -p /app
+RUN chown node /app
 USER node
 WORKDIR /app
 
@@ -211,7 +235,7 @@ RUN mkdir packages/backend/dist/skeleton packages/backend/dist/bundle \
     && tar xzf packages/backend/dist/bundle.tar.gz -C packages/backend/dist/bundle
 
 # Stage 3 - Build the actual backend image and install production dependencies
-FROM node:18-bookworm-slim
+FROM node:18-bookworm-slim AS stage3
 
 # Install isolate-vm dependencies, these are needed by the @backstage/plugin-scaffolder-backend.
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
@@ -228,6 +252,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     apt-get install -y --no-install-recommends libsqlite3-dev
 
 # From here on we use the least-privileged `node` user to run the backend.
+RUN mkdir -p /app
+RUN chown node /app
 USER node
 
 # This should create the app dir as `node`.
@@ -248,6 +274,24 @@ COPY --from=build --chown=node:node /app/packages/backend/dist/bundle/ ./
 
 # Copy any other files that we need at runtime
 COPY --chown=node:node app-config.yaml ./
+
+FROM node:18-bookworm-slim AS final
+
+RUN mkdir -p /app
+RUN chown node /app
+
+# From here on we use the least-privileged `node` user to run the backend.
+USER node
+WORKDIR /app
+
+
+# Copy the install dependencies from the build stage and context
+COPY --from=build --chown=node:node /app/yarn.lock /app/package.json /app/packages/backend/dist/skeleton/ ./
+# Copy the built packages from the build stage
+COPY --from=build --chown=node:node /app/packages/backend/dist/bundle/ ./
+# Copy the output app folder from stage3
+COPY --from=stage3 /app /app
+
 
 # This switches many Node.js dependencies to production mode.
 ENV NODE_ENV production
