@@ -35,6 +35,8 @@ There are two required npm packages before we start,
 1. `@backstage/repo-tools`, this package contains all OpenAPI related commands for your plugins. We will be using this throughout the tutorial.
 2. `@opticdev/optic`, this package is a dependency of `@backstage/repo-tools` but is only required for OpenAPI related commands.
 
+Further, for generating the client a `java` binary has to be available on your PATH.
+
 You should install both of the above packages in the _root_ of your workspace.
 
 ## Storing your OpenAPI specification
