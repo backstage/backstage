@@ -5086,6 +5086,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": "*"
+    "@types/express-serve-static-core": ^4.17.5
     "@types/passport": ^1.0.3
     cookie-parser: ^1.4.6
     express: ^4.17.1
@@ -5118,7 +5119,6 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
-    msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
   languageName: unknown

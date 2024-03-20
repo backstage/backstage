@@ -254,6 +254,10 @@ class DefaultHttpAuthService implements HttpAuthService {
       throw error;
     }
   }
+
+  removeUserCookie(res: Response): void {
+    res.clearCookie(BACKSTAGE_AUTH_COOKIE);
+  }
 }
 
 /** @public */

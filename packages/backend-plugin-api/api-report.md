@@ -330,6 +330,8 @@ export interface HttpAuthService {
   ): Promise<{
     expiresAt: Date;
   }>;
+  // (undocumented)
+  removeUserCookie(res: Response_2): void;
 }
 
 // @public (undocumented)

@@ -50,6 +50,7 @@ export class AppIdentityProxy implements IdentityApi {
   private waitForTarget: Promise<CompatibilityIdentityApi>;
   private resolveTarget: (api: CompatibilityIdentityApi) => void = () => {};
   private signOutTargetUrl = '/';
+  #signOutCallback?: () => Promise<void>;
 
   constructor() {
     this.waitForTarget = new Promise<CompatibilityIdentityApi>(resolve => {
@@ -65,6 +66,10 @@ export class AppIdentityProxy implements IdentityApi {
     this.target = identityApi;
     this.signOutTargetUrl = targetOptions.signOutTargetUrl;
     this.resolveTarget(identityApi);
+  }
+
+  setSignOutCallback(signOutCallback: () => Promise<void>): void {
+    this.#signOutCallback = signOutCallback;
   }
 
   getUserId(): string {
@@ -124,6 +129,7 @@ export class AppIdentityProxy implements IdentityApi {
 
   async signOut(): Promise<void> {
     await this.waitForTarget.then(target => target.signOut());
+    await this.#signOutCallback?.();
     window.location.href = this.signOutTargetUrl;
   }
 }

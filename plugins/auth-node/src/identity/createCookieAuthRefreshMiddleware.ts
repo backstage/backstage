@@ -17,6 +17,8 @@
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 
+const WELL_KNOWN_COOKIE_PATH_V1 = '/.backstage/v1-cookie';
+
 /**
  * @public
  * Creates a middleware that can be used to refresh the cookie for the user.
@@ -28,9 +30,15 @@ export function createCookieAuthRefreshMiddleware(options: {
   const router = Router();
 
   // Endpoint that sets the cookie for the user
-  router.get('/.backstage/v1-cookie', async (_, res) => {
+  router.get(WELL_KNOWN_COOKIE_PATH_V1, async (_, res) => {
     const { expiresAt } = await httpAuth.issueUserCookie(res);
     res.json({ expiresAt: expiresAt.toISOString() });
+  });
+
+  // Endpoint that removes the cookie for the user
+  router.delete(WELL_KNOWN_COOKIE_PATH_V1, async (_, res) => {
+    httpAuth.removeUserCookie(res);
+    res.send(200);
   });
 
   return router;
