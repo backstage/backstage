@@ -16,8 +16,8 @@
 
 import { useApi } from '@backstage/core-plugin-api';
 import { useMemo, useReducer, useRef } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useAsync from 'react-use/esm/useAsync';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { techdocsStorageApiRef } from '@backstage/plugin-techdocs-react';
 
 /**

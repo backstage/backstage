@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import useInterval from 'react-use/lib/useInterval';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useInterval from 'react-use/esm/useInterval';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 import { AzureSiteListResponse } from '@backstage/plugin-azure-sites-common';
 import { azureSiteApiRef } from '../api';

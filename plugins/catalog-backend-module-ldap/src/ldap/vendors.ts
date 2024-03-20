@@ -105,7 +105,7 @@ function decode(
 function formatGUID(objectGUID: string | Buffer): string {
   let data: Buffer;
   if (typeof objectGUID === 'string') {
-    data = new Buffer(objectGUID, 'binary');
+    data = Buffer.from(objectGUID, 'binary');
   } else {
     data = objectGUID;
   }

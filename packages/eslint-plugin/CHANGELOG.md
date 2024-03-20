@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.1.6
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+
 ## 0.1.6-next.0
 
 ### Patch Changes

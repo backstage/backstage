@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-common",
-  "version": "0.0.2-next.1",
+  "version": "0.0.2",
   "description": "Common functionalities for the notifications plugin",
   "backstage": {
     "role": "common-library"

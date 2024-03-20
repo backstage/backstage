@@ -36,8 +36,8 @@ import TextField from '@material-ui/core/TextField';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import useAsync from 'react-use/lib/useAsync';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsync from 'react-use/esm/useAsync';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { useTitle } from '../../hooks';
 
 const useStyles = makeStyles({

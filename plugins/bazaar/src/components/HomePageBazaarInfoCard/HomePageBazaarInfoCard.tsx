@@ -44,7 +44,7 @@ import {
 import { Member, BazaarProject } from '../../types';
 import { bazaarApiRef } from '../../api';
 import Alert from '@material-ui/lab/Alert';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
 
 import {

@@ -1,5 +1,35 @@
 # @backstage/plugin-scaffolder
 
+## 1.19.0
+
+### Minor Changes
+
+- a3b4d90: Added a menu to the header of template page for direct access to editing the template
+
+### Patch Changes
+
+- 0cecb09: Updated dependency `@rjsf/utils` to `5.17.1`.
+  Updated dependency `@rjsf/core` to `5.17.1`.
+  Updated dependency `@rjsf/material-ui` to `5.17.1`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.17.1`.
+- a7e6fb3: Added the `no-top-level-material-ui-4-imports` ESLint rule to aid with the migration to Material UI v5
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.25
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/plugin-scaffolder-react@1.8.1
+  - @backstage/catalog-client@1.6.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-react@0.4.21
+  - @backstage/plugin-scaffolder-common@1.5.1
+
 ## 1.19.0-next.2
 
 ### Minor Changes

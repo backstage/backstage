@@ -90,6 +90,10 @@ export const notificationsPlugin = createBackendPlugin({
             processors: processingExtensions.processors,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

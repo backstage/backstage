@@ -33,7 +33,7 @@ import {
   useTheme,
 } from '@material-ui/core/styles';
 import { compact } from 'lodash';
-import useObservable from 'react-use/lib/useObservable';
+import useObservable from 'react-use/esm/useObservable';
 import { ContentHeader, ErrorBoundary } from '@backstage/core-components';
 import Typography from '@material-ui/core/Typography';
 import { WidgetSettingsOverlay } from './WidgetSettingsOverlay';

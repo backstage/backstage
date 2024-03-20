@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-azure
 
+## 0.1.33
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/plugin-catalog-common@1.0.22
+
 ## 0.1.33-next.2
 
 ### Patch Changes

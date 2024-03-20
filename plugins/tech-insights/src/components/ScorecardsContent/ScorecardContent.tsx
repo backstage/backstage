@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Content, Page, Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { ScorecardInfo } from '../ScorecardsInfo';

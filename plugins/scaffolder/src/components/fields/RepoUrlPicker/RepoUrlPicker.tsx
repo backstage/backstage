@@ -30,7 +30,7 @@ import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 import { parseRepoPickerUrl, serializeRepoPickerUrl } from './utils';
 import { RepoUrlPickerProps } from './schema';
 import { RepoUrlPickerState } from './types';
-import useDebounce from 'react-use/lib/useDebounce';
+import useDebounce from 'react-use/esm/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';

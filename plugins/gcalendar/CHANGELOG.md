@@ -1,5 +1,15 @@
 # @backstage/plugin-gcalendar
 
+## 0.3.24
+
+### Patch Changes
+
+- 9c9e0a1: Added ESLint rule `no-top-level-material-ui-4-imports` in the `gcalendar` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.3.24-next.2
 
 ### Patch Changes

@@ -16,7 +16,7 @@
 
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { useEffect, useState } from 'react';
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { AnsiLine } from './AnsiProcessor';
 
 export function useLogViewerSelection(lines: AnsiLine[]) {

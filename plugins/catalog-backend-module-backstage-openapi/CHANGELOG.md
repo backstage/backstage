@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.1.7
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- 43a9ae1: Migrated to use new auth service.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/backend-openapi-utils@0.1.7
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/catalog-model@1.4.5
+
 ## 0.1.7-next.2
 
 ### Patch Changes

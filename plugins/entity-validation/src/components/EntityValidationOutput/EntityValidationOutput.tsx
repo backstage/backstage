@@ -20,7 +20,7 @@ import {
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
 import { List, makeStyles, Typography } from '@material-ui/core';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { InfoCard, Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import {

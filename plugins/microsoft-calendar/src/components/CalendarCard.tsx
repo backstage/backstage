@@ -30,7 +30,7 @@ import { CalendarEvent } from './CalendarEvent';
 import { CalendarSelect } from './CalendarSelect';
 import { SignInContent } from './SignInContent';
 import { getStartDate } from './util';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 export const CalendarCard = () => {
   const [date, setDate] = useState(DateTime.now());

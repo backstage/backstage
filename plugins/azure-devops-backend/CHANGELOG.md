@@ -1,5 +1,39 @@
 # @backstage/plugin-azure-devops-backend
 
+## 0.6.0
+
+### Minor Changes
+
+- 9fdb86a: Ability to fetch the README file from a different Azure DevOps path.
+
+  Defaults to the current, Azure DevOps default behaviour (`README.md` in the root of the git repo); to use a different path, add the annotation `dev.azure.com/readme-path`
+
+  Example:
+
+  ```yaml
+  dev.azure.com/readme-path: /my-path/README.md
+  ```
+
+- 3270b1b: Azure DevOps plugin is now integrated with permission framework for its core features, see the https://github.com/backstage/backstage/blob/master/plugins/azure-devops/README.md#permission-framework for more details.
+
+### Patch Changes
+
+- 4467036: Allow unauthenticated access to health check endpoint.
+- 2f77e24: The `azureDevOps` configuration section is now optional and the `azureDevOps.token` has been deprecated. Use `integrations.azure` instead, see the [Azure DevOps Locations](https://backstage.io/docs/integrations/azure/locations) documentation for more details.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-azure-devops-common@0.4.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-catalog-common@1.0.22
+
 ## 0.6.0-next.2
 
 ### Patch Changes

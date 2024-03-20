@@ -1,5 +1,16 @@
 # @backstage/plugin-cloudbuild
 
+## 0.4.1
+
+### Patch Changes
+
+- 7a5e933: Added an optional ESLint rule - no-top-level-material-ui-4-imports -in cloudbuild plugin which has an auto fix function to migrate the imports and used it to migrate the Material UI imports for plugins/cloudbuild.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.4.1-next.2
 
 ### Patch Changes

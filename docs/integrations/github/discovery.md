@@ -51,6 +51,26 @@ export default async function createPlugin(
 
 ## Installation with Events Support
 
+_For the legacy backend system, please read the sub-section below._
+
+The catalog module for GitHub comes with events support enabled.
+This will make it subscribe to its relevant topics (`github.push`)
+and expects these events to be published via the `EventsService`.
+
+Additionally, you should install the
+[event router by `events-backend-module-github`](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md)
+which will route received events from the generic topic `github` to more specific ones
+based on the event type (e.g., `github.push`).
+
+In order to receive Webhook events by GitHub, you have to decide how you want them
+to be ingested into Backstage and published to its `EventsService`.
+You can decide between the following options (extensible):
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+### Legacy Backend System
+
 Please follow the installation instructions at
 
 - <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
@@ -78,10 +98,10 @@ export default async function createPlugin(
   builder.addProcessor(new ScaffolderEntitiesProcessor());
   /* highlight-add-start */
   const githubProvider = GithubEntityProvider.fromConfig(env.config, {
+    events: env.events,
     logger: env.logger,
     scheduler: env.scheduler,
   });
-  env.eventBroker.subscribe(githubProvider);
   builder.addEntityProvider(githubProvider);
   /* highlight-add-end */
   const { processingEngine, router } = await builder.build();

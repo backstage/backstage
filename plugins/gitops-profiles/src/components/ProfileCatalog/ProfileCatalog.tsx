@@ -19,7 +19,7 @@ import { TextField, List, ListItem } from '@material-ui/core';
 
 import ClusterTemplateCardList from '../ClusterTemplateCardList';
 import ProfileCardList from '../ProfileCardList';
-import useLocalStorage from 'react-use/lib/useLocalStorage';
+import useLocalStorage from 'react-use/esm/useLocalStorage';
 import { gitOpsApiRef, Status } from '../../api';
 
 import {

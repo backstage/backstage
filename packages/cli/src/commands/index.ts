@@ -128,7 +128,7 @@ export function registerScriptCommand(program: Command) {
     .option('--role <name>', 'Run the command with an explicit package role')
     .option(
       '--minify',
-      'Minify the generated code. Does not apply to app or backend packages.',
+      'Minify the generated code. Does not apply to app package (app is minified by default).',
     )
     .option(
       '--skip-build-dependencies',

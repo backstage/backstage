@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-linguist-backend",
-  "version": "0.5.11-next.2",
+  "version": "0.5.11",
   "backstage": {
     "role": "backend-plugin"
   },

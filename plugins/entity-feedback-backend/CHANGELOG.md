@@ -1,5 +1,21 @@
 # @backstage/plugin-entity-feedback-backend
 
+## 0.2.11
+
+### Patch Changes
+
+- 45115fd: Add in description for 400 response when encountering an invalid rating request
+- 4f8ecd6: Migrated to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/catalog-client@1.6.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-entity-feedback-common@0.1.3
+
 ## 0.2.11-next.2
 
 ### Patch Changes

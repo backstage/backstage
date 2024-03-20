@@ -1,5 +1,17 @@
 # @backstage/config
 
+## 1.2.0
+
+### Minor Changes
+
+- 50cf9df: The `ConfigReader` now treats `null` values as present but explicitly undefined, meaning it will not fall back to the next level of configuration.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.2.0-next.1
 
 ### Minor Changes

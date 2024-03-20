@@ -68,6 +68,10 @@ export const linguistPlugin = createBackendPlugin({
             tokenManager,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

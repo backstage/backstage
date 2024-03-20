@@ -418,6 +418,9 @@ async function switchToReact17(appDir: string) {
     'react-dom': '^17.0.0',
     '@types/react': '^17.0.0',
     '@types/react-dom': '^17.0.0',
+    'swagger-ui-react/react': '17.0.2',
+    'swagger-ui-react/react-dom': '17.0.2',
+    'swagger-ui-react/react-redux': '^8',
   };
   await fs.writeJson(resolvePath(appDir, 'package.json'), rootPkg, {
     spaces: 2,

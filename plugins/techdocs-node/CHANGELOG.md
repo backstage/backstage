@@ -1,5 +1,24 @@
 # @backstage/plugin-techdocs-node
 
+## 1.12.0
+
+### Minor Changes
+
+- 718b734: Create extension point `TechdocsGeneratorExtensionPoint` to allow adding a custom generator
+
+### Patch Changes
+
+- 5b4f565: Fix handling of default plugins that have configuration
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/catalog-model@1.4.5
+  - @backstage/integration-aws-node@0.1.10
+
 ## 1.12.0-next.2
 
 ### Minor Changes

@@ -19,7 +19,7 @@ import { useQueryEntities } from './useQueryEntities';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../../api';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { useMountEffect } from '@react-hookz/web';
 
 export function useFetchEntities({

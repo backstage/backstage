@@ -1,5 +1,31 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.16.0
+
+### Minor Changes
+
+- e1e540c: **BREAKING**: The `KubernetesBuilder.createBuilder` method now requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+
+### Patch Changes
+
+- b9a0888: Fixed a bug in the proxy endpoint. Now when the `serviceAccount` strategy is used and no `serviceAccountToken` has been provided, the proxy endpoint assumes backstage is running on Kubernetes and gets the URL and CA from the Pod instance.
+- 69d0217: Pass user credentials when calling catalog get entities api.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/plugin-kubernetes-node@0.1.8
+  - @backstage/catalog-client@1.6.1
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/catalog-model@1.4.5
+  - @backstage/integration-aws-node@0.1.10
+  - @backstage/types@1.1.1
+
 ## 0.16.0-next.2
 
 ### Patch Changes

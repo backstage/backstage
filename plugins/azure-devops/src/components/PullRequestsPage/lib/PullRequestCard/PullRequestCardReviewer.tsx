@@ -17,22 +17,36 @@
 import { Avatar } from '@backstage/core-components';
 import React from 'react';
 import { Reviewer } from '@backstage/plugin-azure-devops-common';
+import { makeStyles } from '@material-ui/core/styles';
 
 type PullRequestCardReviewerProps = {
   reviewer: Reviewer;
 };
 
-export const PullRequestCardReviewer = ({
-  reviewer,
-}: PullRequestCardReviewerProps) => (
-  <Avatar
-    displayName={reviewer.displayName}
-    picture={reviewer.imageUrl}
-    customStyles={{
+const useStyles = makeStyles(
+  {
+    avatar: {
       width: '2.5rem',
       height: '2.5rem',
-      fontSize: '1rem',
       border: '0.3rem solid silver',
-    }}
-  />
+    },
+    avatarText: {
+      fontSize: '1rem',
+    },
+  },
+  { name: 'PullRequestCardReviewer' },
 );
+
+export const PullRequestCardReviewer = ({
+  reviewer,
+}: PullRequestCardReviewerProps) => {
+  const classes = useStyles();
+
+  return (
+    <Avatar
+      displayName={reviewer.displayName}
+      picture={reviewer.imageUrl}
+      classes={classes}
+    />
+  );
+};

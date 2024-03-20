@@ -1,5 +1,14 @@
 # @backstage/plugin-azure-sites-common
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-catalog-common@1.0.22
+
 ## 0.1.3-next.1
 
 ### Patch Changes

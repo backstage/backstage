@@ -103,6 +103,11 @@ type Options = {
    * command performance.
    */
   alwaysYarnPack?: boolean;
+
+  /**
+   * If set to true, the generated code will be minified.
+   */
+  minify?: boolean;
 };
 
 function prefixLogFunc(prefix: string, out: 'stdout' | 'stderr') {
@@ -205,8 +210,7 @@ export async function createDistWorkspace(
           packageJson: pkg.packageJson,
           outputs: outputs,
           logPrefix: `${chalk.cyan(relativePath(paths.targetRoot, pkg.dir))}: `,
-          // No need to detect these for the backend builds, we assume no minification or types
-          minify: false,
+          minify: options.minify,
         });
       }
     }

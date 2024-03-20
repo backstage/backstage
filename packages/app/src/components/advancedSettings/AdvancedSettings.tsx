@@ -24,7 +24,7 @@ import {
   ListItemSecondaryAction,
   Switch,
 } from '@material-ui/core';
-import useLocalStorage from 'react-use/lib/useLocalStorage';
+import useLocalStorage from 'react-use/esm/useLocalStorage';
 
 export function AdvancedSettings() {
   const [value, setValue] = useLocalStorage<'on' | 'off'>(

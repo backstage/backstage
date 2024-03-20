@@ -79,13 +79,13 @@ describe('backendPlugin factory', () => {
       'Executing Template:',
       'copying       .eslintrc.js',
       'templating    README.md.hbs',
+      'templating    index.ts.hbs',
       'templating    package.json.hbs',
       'copying       index.ts',
-      'templating    run.ts.hbs',
       'copying       setupTests.ts',
       'copying       router.test.ts',
       'copying       router.ts',
-      'templating    standaloneServer.ts.hbs',
+      'templating    plugin.ts.hbs',
       'Installing:',
       `moving        plugins${sep}test-backend`,
       'backend       adding dependency',
@@ -98,15 +98,6 @@ describe('backendPlugin factory', () => {
         'backstage-plugin-test-backend': '^1.0.0',
       },
     });
-    const standaloneServerFile = await fs.readFile(
-      mockDir.resolve('plugins/test-backend/src/service/standaloneServer.ts'),
-      'utf-8',
-    );
-
-    expect(standaloneServerFile).toContain(
-      `const logger = options.logger.child({ service: 'test-backend' });`,
-    );
-    expect(standaloneServerFile).toContain(`.addRouter('/test', router);`);
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {

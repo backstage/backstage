@@ -1,5 +1,21 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.3.17
+
+### Patch Changes
+
+- 744c0cb: Start importing `QueryTranslator`, `QueryRequestOptions` and `SearchEngine` from the `@backstage/plugin-search-backend-node`.
+- e1f73d0: Added config.d.ts entry with secrets for the shared auth block
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/plugin-search-backend-node@1.2.18
+  - @backstage/integration-aws-node@0.1.10
+
 ## 1.3.17-next.2
 
 ### Patch Changes

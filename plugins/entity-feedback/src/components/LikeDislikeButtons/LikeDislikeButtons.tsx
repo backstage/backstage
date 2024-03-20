@@ -30,8 +30,8 @@ import ThumbUpIcon from '@material-ui/icons/ThumbUp';
 import ThumbDownOutlinedIcon from '@material-ui/icons/ThumbDownOutlined';
 import ThumbUpOutlinedIcon from '@material-ui/icons/ThumbUpOutlined';
 import React, { ReactNode, useCallback, useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsync from 'react-use/esm/useAsync';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 
 import { entityFeedbackApiRef } from '../../api';
 import {

@@ -15,23 +15,21 @@
  */
 
 import React, { useEffect } from 'react';
-import {
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  Tooltip,
-  ListItemText,
-  makeStyles,
-  IconButton,
-  Typography,
-} from '@material-ui/core';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Tooltip from '@material-ui/core/Tooltip';
+import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import DoneIcon from '@material-ui/icons/Done';
 import DoneAllIcon from '@material-ui/icons/DoneAll';
 import { DateTime, Duration } from 'luxon';
 import { Incident, IncidentPhase } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { splunkOnCallApiRef } from '../../api/client';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { TriggerAlarmRequest } from '../../api/types';
 
 import {

@@ -1,5 +1,77 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.5.4
+
+### Patch Changes
+
+- a936a8f: Migrated the `GithubLocationAnalyzer` to support new auth services.
+- 999224f: Bump dependency `minimatch` to v9
+- 2eb0da3: Support EventsService and events with the new backend system (through EventsService) for `GithubOrgEntityProvider` and `GithubMultiOrgEntityProvider`.
+
+  _New/Current Backend System:_
+
+  The events support for the provider will be enabled always, making it ready to consume events from its subscribed topics.
+  In order to receive events and make use of this feature, you still need to set up receiving events from the event source as before.
+
+  _Legacy Backend System:_
+
+  You can pass the `EventsService` instance to the factory method as one of its options:
+
+  ```diff
+    // packages/backend/src/plugins/catalog.ts
+    const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
+      events: env.events,
+      // ...
+    });
+  - env.eventBroker.subscribe(githubOrgProvider);
+  ```
+
+  ```diff
+    // packages/backend/src/plugins/catalog.ts
+    const githubMultiOrgProvider = GithubMultiOrgEntityProvider.fromConfig(env.config, {
+      events: env.events,
+      // ...
+    });
+  - env.eventBroker.subscribe(githubMultiOrgProvider);
+  ```
+
+- bcf55d5: Support EventsService and events with the new backend system (through EventsService).
+
+  _New/Current Backend System:_
+
+  The events support for the provider will be enabled always, making it ready to consume events from its subscribed topics.
+  In order to receive events and make use of this feature, you still need to set up receiving events from the event source as before.
+
+  _Legacy Backend System:_
+
+  You can pass the `EventsService` instance to the factory method as one of its options:
+
+  ```diff
+    // packages/backend/src/plugins/catalog.ts
+    const githubProvider = GithubEntityProvider.fromConfig(env.config, {
+  +   events: env.events,
+      logger: env.logger,
+      scheduler: env.scheduler,
+    });
+  - env.eventBroker.subscribe(githubProvider);
+  ```
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- 9eab52a: Add location analyzer when installing the module
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0
+  - @backstage/plugin-catalog-backend@1.18.0
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-catalog-common@1.0.22
+
 ## 0.5.4-next.2
 
 ### Patch Changes

@@ -17,7 +17,7 @@ import React, { useState } from 'react';
 import { Tab, Tabs, makeStyles, Box } from '@material-ui/core';
 import { newRelicDashboardApiRef } from '../../../api';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Progress, ErrorPanel } from '@backstage/core-components';
 import { DashboardSnapshot } from './DashboardSnapshot';
 import { DashboardEntitySummary } from '../../../api/NewRelicDashboardApi';

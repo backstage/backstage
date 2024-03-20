@@ -1,5 +1,27 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.10.0
+
+### Minor Changes
+
+- 718b734: Create extension point `TechdocsGeneratorExtensionPoint` to allow adding a custom generator
+
+### Patch Changes
+
+- 3f14e9f: Migrate plugin to use the new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-techdocs-node@1.12.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-backend-module-techdocs@0.1.18
+  - @backstage/catalog-client@1.6.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-catalog-common@1.0.22
+
 ## 1.10.0-next.2
 
 ### Minor Changes

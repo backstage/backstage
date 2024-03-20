@@ -1,5 +1,17 @@
 # @backstage/plugin-sonarqube
 
+## 0.7.13
+
+### Patch Changes
+
+- e38b29c: Added ESLint rule `no-top-level-material-ui-4-imports` in the `sonarqube` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/plugin-sonarqube-react@0.1.14
+
 ## 0.7.13-next.2
 
 ### Patch Changes

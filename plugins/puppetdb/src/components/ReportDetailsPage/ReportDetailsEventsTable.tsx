@@ -21,7 +21,7 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { makeStyles } from '@material-ui/core/styles';
 import { StatusField } from '../StatusField';

@@ -31,7 +31,7 @@ import { Box, DialogContentText, makeStyles } from '@material-ui/core';
 import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';
 import { humanizeEntityRef } from '../../EntityRefLink';
 import { entityRouteRef } from '../../../routes';

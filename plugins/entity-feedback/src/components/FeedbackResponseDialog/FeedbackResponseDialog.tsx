@@ -35,7 +35,7 @@ import {
   Typography,
 } from '@material-ui/core';
 import React, { ReactNode, useState } from 'react';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 
 import { entityFeedbackApiRef } from '../../api';
 

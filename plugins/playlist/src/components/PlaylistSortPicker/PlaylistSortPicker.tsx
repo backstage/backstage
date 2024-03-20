@@ -22,7 +22,7 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import SwapVertIcon from '@material-ui/icons/SwapVert';
 import React from 'react';
-import useEffectOnce from 'react-use/lib/useEffectOnce';
+import useEffectOnce from 'react-use/esm/useEffectOnce';
 
 import { usePlaylistList } from '../../hooks/usePlaylistList';
 import { PlaylistSortCompareFunction } from '../../types';

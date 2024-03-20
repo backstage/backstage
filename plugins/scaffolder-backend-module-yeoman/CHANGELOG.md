@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.2.35
+
+### Patch Changes
+
+- f44589d: Introduced `createMockActionContext` to unify the way of creating scaffolder mock context.
+
+  It will help to maintain tests in a long run during structural changes of action context.
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/types@1.1.1
+
 ## 0.2.35-next.2
 
 ### Patch Changes

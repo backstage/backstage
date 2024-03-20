@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.9
+
+### Patch Changes
+
+- 2af5354: Bump dependency `jose` to v5
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/backend-plugin-api@0.6.14
+
 ## 0.1.9-next.2
 
 ### Patch Changes

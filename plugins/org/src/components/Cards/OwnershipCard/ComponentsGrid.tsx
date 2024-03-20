@@ -33,7 +33,7 @@ import React from 'react';
 import pluralize from 'pluralize';
 import { catalogIndexRouteRef } from '../../../routes';
 import { useGetEntities } from './useGetEntities';
-import { EntityRelationAggregation } from './types';
+import { EntityRelationAggregation } from '../types';
 
 const useStyles = makeStyles(theme =>
   createStyles({
