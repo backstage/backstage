@@ -88,6 +88,56 @@ describe('<EntityAutocompletePicker/>', () => {
     });
   });
 
+  it('hides filter if there are no available options', async () => {
+    const mockCatalogApiNoOptions: Partial<jest.Mocked<CatalogApi>> = {
+      getEntityFacets: jest.fn().mockResolvedValue({
+        facets: {
+          'spec.options': [],
+        },
+      }),
+    };
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiNoOptions]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() => {
+      expect(screen.queryByText('Options')).not.toBeInTheDocument();
+    });
+  });
+
+  it('renders filter if there is one available option', async () => {
+    const mockCatalogApiOneOption: Partial<jest.Mocked<CatalogApi>> = {
+      getEntityFacets: jest.fn().mockResolvedValue({
+        facets: {
+          'spec.options': [{ value: 'option1', count: 1 }],
+        },
+      }),
+    };
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiOneOption]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityAutocompletePicker<EntityFilters>
+            label="Options"
+            path="spec.options"
+            name="options"
+            Filter={EntityOptionFilter}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() => {
+      expect(screen.queryByText('Options')).toBeInTheDocument();
+    });
+  });
+
   it('renders unique options in alphabetical order', async () => {
     render(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApi]]}>
