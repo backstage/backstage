@@ -16,12 +16,10 @@
 import React, { useEffect, useState } from 'react';
 import { DateTime } from 'luxon';
 import { ServiceAnalytics } from '../ServiceAnalytics/ServiceAnalytics';
-import {
-  Box,
-  Button as MaterialButton,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import MaterialButton from '@material-ui/core/MaterialButton';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import NotesIcon from '@material-ui/icons/Notes';
 import WhatshotIcon from '@material-ui/icons/Whatshot';
