@@ -15,16 +15,14 @@
  */
 
 import React from 'react';
-import {
-  ListItem,
-  ListItemSecondaryAction,
-  Tooltip,
-  ListItemText,
-  makeStyles,
-  IconButton,
-  Typography,
-  Chip,
-} from '@material-ui/core';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Tooltip from '@material-ui/core/Tooltip';
+import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import Chip from '@material-ui/core/Chip';
+import { makeStyles } from '@material-ui/core/styles';
 import Done from '@material-ui/icons/Done';
 import Warning from '@material-ui/icons/Warning';
 import { DateTime, Duration } from 'luxon';
