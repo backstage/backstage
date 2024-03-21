@@ -1,12 +1,12 @@
 ---
-'@backstage/plugin-catalog': major
 '@backstage/plugin-catalog-react': minor
+'@backstage/create-app': minor
+'@backstage/plugin-catalog': minor
 ---
 
-**BREAKING** The EntitySwitch component and its associated helpers move from plugin-catalog to plugin-catalog-react.
-There is no change in functionality, just the location.
+The EntitySwitch component and its associated helpers are marked deprecated inside plugin-catalog, and added to plugin-catalog-react instead. There is no change in functionality, just the location.
 
-Any imports of EntitySwitch or its helpers must update the source plugin.
+Any imports of EntitySwitch or its helpers should update the source plugin.
 
 For example:
 

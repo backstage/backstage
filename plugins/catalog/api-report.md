@@ -442,11 +442,46 @@ export const EntityListContainer: (props: {
 // @public
 export function EntityOrphanWarning(): React_2.JSX.Element;
 
+// @public @deprecated (undocumented)
+export interface EntityPredicates {
+  // (undocumented)
+  kind?: string | string[];
+  // (undocumented)
+  type?: string | string[];
+}
+
 // @public
 export function EntityProcessingErrorsPanel(): React_2.JSX.Element | null;
 
 // @public
 export function EntityRelationWarning(): React_2.JSX.Element | null;
+
+// @public @deprecated (undocumented)
+export const EntitySwitch: {
+  (props: EntitySwitchProps): React_2.JSX.Element;
+  Case: (_props: EntitySwitchCaseProps) => null;
+};
+
+// @public @deprecated (undocumented)
+export interface EntitySwitchCaseProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  if?: (
+    entity: Entity,
+    context: {
+      apis: ApiHolder;
+    },
+  ) => boolean | Promise<boolean>;
+}
+
+// @public @deprecated
+export interface EntitySwitchProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  renderMultipleMatches?: 'first' | 'all';
+}
 
 // @public @deprecated (undocumented)
 export const FilterContainer: (props: {
@@ -524,8 +559,31 @@ export interface HasSystemsCardProps {
   variant?: InfoCardVariants;
 }
 
+// @public @deprecated
+export function isComponentType(
+  types: string | string[],
+): (entity: Entity) => boolean;
+
+// @public @deprecated
+export function isEntityWith(
+  predicate: EntityPredicates,
+): (entity: Entity) => boolean;
+
+// @public @deprecated
+export function isKind(kinds: string | string[]): (entity: Entity) => boolean;
+
+// @public @deprecated
+export function isNamespace(
+  namespaces: string | string[],
+): (entity: Entity) => boolean;
+
 // @public
 export function isOrphan(entity: Entity): boolean;
+
+// @public @deprecated
+export function isResourceType(
+  types: string | string[],
+): (entity: Entity) => boolean;
 
 // @public (undocumented)
 export type PluginCatalogComponentsNameToClassKey = {
