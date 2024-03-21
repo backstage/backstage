@@ -24,14 +24,14 @@ import {
   renderInTestApp,
   setupRequestMockHandlers,
 } from '@backstage/test-utils';
-import { AppMode } from './AppMode';
+import { ExperimentalAppProtection } from './ExperimentalAppProtection';
 import {
   configApiRef,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 
-describe('AppMode', () => {
+describe('ExperimentalAppProtection', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
 
@@ -62,7 +62,7 @@ describe('AppMode', () => {
           [fetchApiRef, fetchApiMock],
         ]}
       >
-        <AppMode>Test content</AppMode>
+        <ExperimentalAppProtection>Test content</ExperimentalAppProtection>
       </TestApiProvider>,
     );
     expect(screen.getByTestId('progress')).toBeVisible();
@@ -79,7 +79,7 @@ describe('AppMode', () => {
           [fetchApiRef, fetchApiMock],
         ]}
       >
-        <AppMode>Test content</AppMode>
+        <ExperimentalAppProtection>Test content</ExperimentalAppProtection>
       </TestApiProvider>,
     );
     await waitFor(() =>
@@ -98,7 +98,7 @@ describe('AppMode', () => {
           [fetchApiRef, fetchApiMock],
         ]}
       >
-        <AppMode>Test content</AppMode>
+        <ExperimentalAppProtection>Test content</ExperimentalAppProtection>
       </TestApiProvider>,
     );
     await waitFor(() =>
@@ -109,7 +109,9 @@ describe('AppMode', () => {
 
   it('should render the children also when the public index is available', async () => {
     fetchApiMock.fetch.mockResolvedValueOnce({ ok: true });
-    await renderInTestApp(<AppMode>Test content</AppMode>);
+    await renderInTestApp(
+      <ExperimentalAppProtection>Test content</ExperimentalAppProtection>,
+    );
     await waitFor(() =>
       expect(screen.getByText('Test content')).toBeInTheDocument(),
     );
@@ -138,7 +140,7 @@ describe('AppMode', () => {
           [discoveryApiRef, discoveryApiMock],
         ]}
       >
-        <AppMode>Test content</AppMode>
+        <ExperimentalAppProtection>Test content</ExperimentalAppProtection>
       </TestApiProvider>,
     );
     await waitFor(() =>

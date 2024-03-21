@@ -19,6 +19,11 @@ export type CookieAuthRefreshProviderProps = {
 };
 
 // @public
+export function ExperimentalAppProtection(props: {
+  children: ReactNode;
+}): JSX.Element;
+
+// @public
 export function RedirectToRoot(): React_2.JSX.Element | null;
 
 // @public

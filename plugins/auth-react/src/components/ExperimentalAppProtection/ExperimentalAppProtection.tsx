@@ -15,7 +15,6 @@
  */
 
 import React, { ReactNode } from 'react';
-import useAsync from 'react-use/lib/useAsync';
 import {
   configApiRef,
   fetchApiRef,
@@ -23,25 +22,34 @@ import {
   useApp,
 } from '@backstage/core-plugin-api';
 import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
+import { useAsync, useMountEffect } from '@react-hookz/web';
 
-export function AppMode(props: { children: ReactNode }): JSX.Element {
+/**
+ * @public
+ * A provider that will protect the app when running in public experimental mode.
+ */
+export function ExperimentalAppProtection(props: {
+  children: ReactNode;
+}): JSX.Element {
   const { children } = props;
   const fetchApi = useApi(fetchApiRef);
   const configApi = useApi(configApiRef);
   const Components = useApp().getComponents();
 
-  const { loading, error, value } = useAsync(async () => {
+  const [state, actions] = useAsync(async () => {
     const baseUrl = configApi.getString('backend.baseUrl');
     const response = await fetchApi.fetch(`${baseUrl}/public/index.html`);
     return response.ok;
-  }, [fetchApi, configApi]);
+  });
 
-  if (loading) {
+  useMountEffect(actions.execute);
+
+  if (state.status === 'not-executed' || state.status === 'loading') {
     return <Components.Progress />;
   }
 
   // Request failed, or the public index is not available
-  if (error || !value) {
+  if (state.status === 'error' || !state.result) {
     return <>{children}</>;
   }
 

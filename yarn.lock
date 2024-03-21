@@ -5119,6 +5119,7 @@ __metadata:
     "@testing-library/react": ^14.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
   languageName: unknown
@@ -27526,7 +27527,6 @@ __metadata:
     "@vitejs/plugin-react": ^4.0.4
     cross-env: ^7.0.0
     history: ^5.0.0
-    msw: ^1.0.0
     react: ^18.0.2
     react-dom: ^18.0.2
     react-router: ^6.3.0
