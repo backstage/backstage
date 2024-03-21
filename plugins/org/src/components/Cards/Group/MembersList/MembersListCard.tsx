@@ -21,15 +21,11 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
-import {
-  Box,
-  createStyles,
-  Grid,
-  makeStyles,
-  Switch,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Switch from '@material-ui/core/Switch';
+import Typography from '@material-ui/core/Typography';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
 import React, { useState } from 'react';
 import useAsync from 'react-use/esm/useAsync';
