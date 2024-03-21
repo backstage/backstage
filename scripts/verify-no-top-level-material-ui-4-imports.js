@@ -25,17 +25,19 @@ async function main() {
 
   for (const pkg of packages) {
     pkgRole = pkg.packageJson.backstage?.role;
-    if (pkgRole === 'frontend-plugin') {
-      const eslintrcPath = join(pkg.dir, '.eslintrc.js');
-      const targetEslintrc = (await fs.readFile(eslintrcPath)).toString();
-      if (
-        targetEslintrc.includes(
-          "'@backstage/no-top-level-material-ui-4-imports': 'error'",
-        )
-      ) {
-        continue;
+    if (pkgRole === 'frontend-plugin' || pkgRole === 'web-library') {
+      const depKeys = Object.keys(pkg.packageJson.dependencies);
+      if (depKeys.findIndex(d => d.includes('@material-ui')) !== -1) {
+        const eslintrcPath = join(pkg.dir, '.eslintrc.js');
+        const targetEslintrc = (await fs.readFile(eslintrcPath)).toString();
+        if (
+          !targetEslintrc.includes(
+            "'@backstage/no-top-level-material-ui-4-imports': 'error'",
+          )
+        ) {
+          console.log(pkg.packageJson.name);
+        }
       }
-      console.log(pkg.packageJson.name);
     }
   }
 }
