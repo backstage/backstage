@@ -15,7 +15,7 @@
  */
 
 import React, { useCallback, useMemo, useState } from 'react';
-import { Slider } from '@material-ui/core';
+import Slider from '@material-ui/core/Slider';
 import { debounce } from 'lodash';
 
 import { formatDuration, formatDurationFromSeconds } from './utils';
