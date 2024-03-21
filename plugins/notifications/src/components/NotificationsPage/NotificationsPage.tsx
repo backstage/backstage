@@ -20,7 +20,7 @@ import {
   PageWithHeader,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import { useSignal } from '@backstage/plugin-signals-react';
 
 import { NotificationsTable } from '../NotificationsTable';
