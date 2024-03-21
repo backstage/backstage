@@ -23,7 +23,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError, serializeError } from '@backstage/errors';
+import { NotFoundError, serializeError, InputError } from '@backstage/errors';
 import express from 'express';
 import { Logger } from 'winston';
 import yn from 'yn';
@@ -318,7 +318,13 @@ export async function createRouter(
         location: locationInput,
         catalogFilename: z.string().optional(),
       });
-      const output = await locationAnalyzer.analyzeLocation(schema.parse(body));
+      const result = schema.safeParse(body);
+      if (!result.success) {
+        throw new InputError(
+          `Failed to validate input location: ${result.error.message}`,
+        );
+      }
+      const output = await locationAnalyzer.analyzeLocation(result.data);
       res.status(200).json(output);
     });
   }
