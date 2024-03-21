@@ -1,0 +1,13 @@
+diff --git a/dist/node/index.d.ts b/dist/node/index.d.ts
+index d43625125dc350e245cf4fb2f520b41b6d281c56..76ae541c73834f4142ab22c93cd4abac71d6ee3d 100644
+--- a/dist/node/index.d.ts
++++ b/dist/node/index.d.ts
+@@ -842,6 +842,8 @@ export declare function formatPostcssSourceMap(rawMap: ExistingRawSourceMap, fil
+ 
+ export declare class FSWatcher extends EventEmitter implements fs.FSWatcher {
+     options: WatchOptions
++    ref(): this;
++    unref(): this;
+ 
+     /**
+      * Constructs a new FSWatcher instance with optional WatchOptions parameter.
