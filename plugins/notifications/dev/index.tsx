@@ -18,12 +18,11 @@ import { createDevApp } from '@backstage/dev-utils';
 import { NotificationsPage, notificationsPlugin } from '../src/plugin';
 import { NotificationsSidebarItem } from '../src';
 
-// TODO: How to sign in here as guest user?
 createDevApp()
   .registerPlugin(notificationsPlugin)
   .addPage({
     element: <NotificationsPage />,
     path: '/notifications',
-    sidebarItem: <NotificationsSidebarItem />,
   })
+  .addSidebarItem(<NotificationsSidebarItem />)
   .render();
