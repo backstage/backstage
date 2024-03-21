@@ -23,7 +23,7 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { useAsyncEntity } from '@backstage/plugin-catalog-react';
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import ThumbDownIcon from '@material-ui/icons/ThumbDown';
 import ThumbUpIcon from '@material-ui/icons/ThumbUp';

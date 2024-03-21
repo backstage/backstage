@@ -23,7 +23,7 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { useAsyncEntity } from '@backstage/plugin-catalog-react';
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import StarOutlineIcon from '@material-ui/icons/StarOutline';
 import StarIcon from '@material-ui/icons/Star';
 import React, { ReactNode, useCallback, useState } from 'react';
