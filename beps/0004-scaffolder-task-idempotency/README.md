@@ -83,11 +83,11 @@ We believe that idempotency is the best way to do it. Idempotency allows to reru
 
 ### Serialization of workspace
 
-We believe that a serialization of workspace is a way to achieve re-running the task on a non-sticky way. This means that the task can be restored and retried on a different scaffolder backend instance or node. This serialization can be stored in the database, or perhaps additional modules could be installed to provide additional options for storing this seralized workspace data.
+We believe that a serialization of workspace is a way to achieve re-running the task on a non-sticky way. This means that the task can be restored and retried on a different scaffolder backend instance or node. This serialization can be stored in the database, or perhaps additional modules could be installed to provide additional options for storing this serialized workspace data.
 
 ### Secrets
 
-Secrets will be stored for a longer period of time in the database and wiped out once the task going into a complete state (successfully finished or archived). Depending on the life of the task, it's possible that these secrets could expire. The refresh of these tokens is out of scope for now, but perhaps could be achieved by notifing the user that they need to go back to a task page to re-trigger the task.
+Secrets will be stored for a longer period of time in the database and wiped out once the task going into a complete state (successfully finished or archived). Depending on the life of the task, it's possible that these secrets could expire. The refresh of these tokens is out of scope for now, but perhaps could be achieved by notifying the user that they need to go back to a task page to re-trigger the task.
 
 ## Design Details
 
@@ -264,7 +264,7 @@ Task state will be stored in the extra column `state` in the table `tasks` with 
 The workspace will be serialized and stored in the database by default. This serialization should occur at the end of a step, and after each checkpoint. It will be possible to provide additional modules to extend the workspace serialization to other providers, such as GCS or S3 instead of the database.
 This would be useful for larger workspaces, instead of taking up space in the database, we can store these directory structures in a more appropriate place.
 
-The workspace will need to be zipped up into a binary like a `tar` or `zip` and be stored as a binary in the remote store. This is going to be be better for performance than iterating through each file path and storing the contents along with the permissions.
+The workspace will need to be zipped up into a binary like a `tar` or `zip` and be stored as a binary in the remote store. This is going to be better for performance than iterating through each file path and storing the contents along with the permissions.
 
 There could be an impact to the speed of task recovery as it downloads the workspace, but this is an accepted risk and a tradeoff for the benefits of having the workspace stored in a remote store.
 
@@ -277,6 +277,8 @@ If there is any particular feedback to be gathered during the rollout, this shou
 -->
 
 We're going to release this behind `EXPERIMENTAL_` flags in the template schema to enable this on a per template level. And once we're happy with the implementation and after heavy testing, we can consider this being opt in at the plugin level, before being rolled out to all templates and the scaffolder plugin entirely.
+
+There could also be the option to have this behind a `scaffolder.backstage.io/v1beta4` `apiVersion` if the `EXPERIMENTAL_` options are not enough, or causing too much of a headache.
 
 ## Dependencies
 
