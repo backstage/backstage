@@ -504,6 +504,7 @@
       "tutorials/yarn-migration",
       "tutorials/migrate-to-mui5",
       "tutorials/auth-service-migration",
+      "tutorials/enable-public-entry",
       "tutorials/setup-opentelemetry"
     ],
     "Architecture Decision Records (ADRs)": [

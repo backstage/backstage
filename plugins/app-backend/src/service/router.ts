@@ -170,18 +170,6 @@ export async function createRouter(
 
   const enablePublicEntryPoint = await fs.pathExists(publicDistDir);
 
-  /*
-  TODO:
-        - Cookie refresh
-          - Backend endpoint, /.backstage/v1-cookie
-          - Frontend provider
-        - Remove issueUserCookie from HttpAuthService and move to auth-node
-        - Move RedirectToRoot to auth-react
-        - Document index-public-experimental & how to use
-        - Logout? How do we clear the cookie?
-
-  */
-
   if (enablePublicEntryPoint && auth && httpAuth) {
     const publicRouter = Router();
 
