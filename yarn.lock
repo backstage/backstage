@@ -35330,8 +35330,8 @@ __metadata:
   linkType: hard
 
 "msw@npm:^2.0.0, msw@npm:^2.0.8":
-  version: 2.2.7
-  resolution: "msw@npm:2.2.7"
+  version: 2.2.9
+  resolution: "msw@npm:2.2.9"
   dependencies:
     "@bundled-es-modules/cookie": ^2.0.0
     "@bundled-es-modules/statuses": ^1.0.1
@@ -35357,7 +35357,7 @@ __metadata:
       optional: true
   bin:
     msw: cli/index.js
-  checksum: 9a9c12a59fabe56634558a9831bae46a83c306cd828a903f0df4f6ca38724466e1f5b3b217737a787c20a30c713b83676a14bef69e22820da5805ab7381a5163
+  checksum: 5be95eef67bb3e4e407ddd7858ec8930e377e37a9dc4b34eab95ba61751bb118231a10054d22f59e27cb73d8326a7ca6a7c50f862ce3d0416c79c51472b4683a
   languageName: node
   linkType: hard
 
