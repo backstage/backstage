@@ -41,8 +41,7 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/plugin-events-node": "workspace:^",
-    "winston": "^3.2.1"
+    "@backstage/plugin-events-node": "workspace:^"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

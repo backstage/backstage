@@ -15,51 +15,63 @@
  */
 
 import {
-  coreServices,
   createBackendModule,
+  coreServices,
 } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
+  catalogAnalysisExtensionPoint,
   catalogProcessingExtensionPoint,
-  catalogServiceRef,
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { BitbucketServerEntityProvider } from '../providers/BitbucketServerEntityProvider';
+import { GithubEntityProvider } from '../providers/GithubEntityProvider';
+import { GithubLocationAnalyzer } from '../analyzers/GithubLocationAnalyzer';
 
 /**
+ * Registers the `GithubEntityProvider` with the catalog processing extension point.
+ *
  * @alpha
  */
-export const catalogModuleBitbucketServerEntityProvider = createBackendModule({
+export const githubCatalogModule = createBackendModule({
   pluginId: 'catalog',
-  moduleId: 'bitbucket-server-entity-provider',
+  moduleId: 'github',
   register(env) {
     env.registerInit({
       deps: {
+        analyzers: catalogAnalysisExtensionPoint,
+        auth: coreServices.auth,
         catalog: catalogProcessingExtensionPoint,
-        catalogApi: catalogServiceRef,
         config: coreServices.rootConfig,
+        discovery: coreServices.discovery,
         events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
-        tokenManager: coreServices.tokenManager,
       },
       async init({
         catalog,
-        catalogApi,
         config,
         events,
         logger,
         scheduler,
-        tokenManager,
+        analyzers,
+        discovery,
+        auth,
       }) {
-        const providers = BitbucketServerEntityProvider.fromConfig(config, {
-          catalogApi,
-          events,
-          logger,
-          scheduler,
-          tokenManager,
-        });
+        analyzers.addLocationAnalyzer(
+          new GithubLocationAnalyzer({
+            discovery,
+            config,
+            auth,
+          }),
+        );
 
-        catalog.addEntityProvider(providers);
+        catalog.addEntityProvider(
+          GithubEntityProvider.fromConfig(config, {
+            events,
+            logger: loggerToWinstonLogger(logger),
+            scheduler,
+          }),
+        );
       },
     });
   },

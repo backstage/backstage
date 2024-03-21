@@ -37,6 +37,7 @@ import { BitbucketServerPagedResponse } from '../lib';
 import { Entity, LocationEntity } from '@backstage/catalog-model';
 import { BitbucketServerEvents } from '../lib/index';
 import { CatalogApi } from '@backstage/catalog-client';
+import { DefaultEventsService } from '@backstage/plugin-events-node';
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -64,6 +65,8 @@ function pagedResponse(values: any): BitbucketServerPagedResponse<any> {
 }
 
 const logger = getVoidLogger();
+
+const events = DefaultEventsService.create({ logger });
 
 const server = setupServer();
 
@@ -268,6 +271,7 @@ describe('BitbucketServerEntityProvider', () => {
     });
     const providers = BitbucketServerEntityProvider.fromConfig(config, {
       logger,
+      events,
       schedule,
     });
 
@@ -302,6 +306,7 @@ describe('BitbucketServerEntityProvider', () => {
     });
     const providers = BitbucketServerEntityProvider.fromConfig(config, {
       logger,
+      events,
       schedule,
     });
 
@@ -672,6 +677,7 @@ describe('BitbucketServerEntityProvider', () => {
     });
     const providers = BitbucketServerEntityProvider.fromConfig(config, {
       logger,
+      events,
       schedule,
     });
 
@@ -794,11 +800,12 @@ describe('BitbucketServerEntityProvider', () => {
       catalogApi: catalogApi as any as CatalogApi,
       logger,
       schedule,
+      events,
       tokenManager,
     })[0];
 
     await provider.connect(entityProviderConnection);
-    await provider.onEvent(repoPushEventParams);
+    await events.publish(repoPushEventParams);
 
     expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
@@ -864,44 +871,15 @@ describe('BitbucketServerEntityProvider', () => {
       catalogApi: catalogApi as any as CatalogApi,
       logger,
       schedule,
+      events,
       tokenManager,
     })[0];
 
     await provider.connect(entityProviderConnection);
-    await provider.onEvent(repoPushEventParams);
+    await events.publish(repoPushEventParams);
 
     expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
-  });
-
-  it('onRepoPush fail on incomplete setup', async () => {
-    const config = new ConfigReader({
-      integrations: {
-        bitbucketServer: [
-          {
-            host: host,
-          },
-        ],
-      },
-      catalog: {
-        providers: {
-          bitbucketServer: {
-            mainProvider: {
-              host: host,
-              apiBaseUrl: `https://${host}/rest/api/1.0`,
-            },
-          },
-        },
-      },
-    });
-    const schedule = new PersistingTaskRunner();
-    const provider = BitbucketServerEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    })[0];
-    await expect(provider.onEvent(repoPushEventParams)).rejects.toThrow(
-      'bitbucketServer-provider:mainProvider not well configured to handle repo:push. Missing CatalogApi and/or TokenManager.',
-    );
   });
 
   it('add onRepoPush', async () => {
@@ -953,11 +931,12 @@ describe('BitbucketServerEntityProvider', () => {
       catalogApi: catalogApi as any as CatalogApi,
       logger,
       schedule,
+      events,
       tokenManager,
     })[0];
 
     await provider.connect(entityProviderConnection);
-    await provider.onEvent(repoPushEventParams);
+    await events.publish(repoPushEventParams);
     const addedEntities = [
       {
         entity: addedModule,
@@ -1022,11 +1001,12 @@ describe('BitbucketServerEntityProvider', () => {
       catalogApi: catalogApi as any as CatalogApi,
       logger,
       schedule,
+      events,
       tokenManager,
     })[0];
 
     await provider.connect(entityProviderConnection);
-    await provider.onEvent(repoPushEventParams);
+    await events.publish(repoPushEventParams);
 
     expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
 
