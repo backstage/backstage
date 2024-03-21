@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 import React from 'react';
-import {
-  Typography,
-  Box,
-  IconButton,
-  Tooltip,
-  Button,
-} from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@material-ui/core/Button';
 import RetryIcon from '@material-ui/icons/Replay';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { Link as RouterLink } from 'react-router-dom';

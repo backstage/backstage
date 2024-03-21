@@ -15,7 +15,9 @@
  */
 
 import { useEntity } from '@backstage/plugin-catalog-react';
-import { LinearProgress, makeStyles, Typography } from '@material-ui/core';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import React, { useEffect } from 'react';
 import { GITHUB_ACTIONS_ANNOTATION } from '../getProjectNameFromEntity';
