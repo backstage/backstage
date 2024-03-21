@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
-import { Box, makeStyles, MenuItem, Select } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import {
