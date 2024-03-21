@@ -22,9 +22,12 @@ import {
   Sidebar,
   SidebarDivider,
   SidebarItem,
+  SidebarLogOutButton,
   SidebarPage,
   SidebarSpace,
   SidebarSpacer,
+  SignInPage,
+  SignInProviderConfig,
 } from '@backstage/core-components';
 import {
   AnyApiFactory,
@@ -95,6 +98,7 @@ export class DevAppBuilder {
   private readonly rootChildren = new Array<ReactNode>();
   private readonly routes = new Array<JSX.Element>();
   private readonly sidebarItems = new Array<JSX.Element>();
+  private readonly signInProviders = new Array<SignInProviderConfig>();
 
   private defaultPage?: string;
   private themes?: Array<AppTheme>;
@@ -175,6 +179,14 @@ export class DevAppBuilder {
   }
 
   /**
+   * Adds new sign in provider for the dev app
+   */
+  addSignInProvider(provider: SignInProviderConfig) {
+    this.signInProviders.push(provider);
+    return this;
+  }
+
+  /**
    * Build a DevApp component using the resources registered so far
    */
   build(): ComponentType<PropsWithChildren<{}>> {
@@ -197,6 +209,18 @@ export class DevAppBuilder {
       apis,
       plugins: this.plugins,
       themes: this.themes,
+      components: {
+        SignInPage: props => {
+          return (
+            <SignInPage
+              {...props}
+              providers={['guest', 'custom', ...this.signInProviders]}
+              title="Select a sign-in method"
+              align="center"
+            />
+          );
+        },
+      },
       bindRoutes: ({ bind }) => {
         for (const plugin of this.plugins ?? []) {
           const targets: Record<string, RouteRef<any>> = {};
@@ -221,6 +245,7 @@ export class DevAppBuilder {
               <SidebarSpace />
               <SidebarDivider />
               <SidebarThemeSwitcher />
+              <SidebarLogOutButton />
             </Sidebar>
             <FlatRoutes>
               {this.routes}

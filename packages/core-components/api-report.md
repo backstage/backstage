@@ -994,6 +994,12 @@ export type SidebarItemClassKey =
   | 'selected';
 
 // @public
+export const SidebarLogOutButton: (props: {
+  icon?: IconComponent;
+  text?: string;
+}) => React_2.JSX.Element;
+
+// @public
 export type SidebarOpenState = {
   isOpen: boolean;
   setOpen: (open: boolean) => void;

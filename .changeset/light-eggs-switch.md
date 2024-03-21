@@ -2,4 +2,4 @@
 '@backstage/dev-utils': patch
 ---
 
-Allow defining custom side bar item for page
+Allow defining custom sidebar item for page and login for the development app
