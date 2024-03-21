@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { InputLabel, Input } from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
+import Input from '@material-ui/core/Input';
 import { Select, SelectItem } from '@backstage/core-components';
 import { useProjectGroups } from '../../hooks/useProjectGroups';
 import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
