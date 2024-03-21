@@ -27,20 +27,38 @@ import Router from 'express-promise-router';
 import { Duration } from 'luxon';
 import { Logger } from 'winston';
 
-import { getCombinedClusterSupplier } from '../cluster-locator';
 import {
-  AnonymousStrategy,
-  DispatchStrategy,
-  GoogleStrategy,
-  ServiceAccountStrategy,
-  AwsIamStrategy,
-  GoogleServiceAccountStrategy,
-  AzureIdentityStrategy,
-  OidcStrategy,
   AksStrategy,
+  AnonymousStrategy,
+  AwsIamStrategy,
+  AzureIdentityStrategy,
+  DispatchStrategy,
+  GoogleServiceAccountStrategy,
+  GoogleStrategy,
+  OidcStrategy,
+  ServiceAccountStrategy,
 } from '../auth';
+import { getCombinedClusterSupplier } from '../cluster-locator';
 
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
+import {
+  AuthService,
+  BackstageCredentials,
+  DiscoveryService,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
+import {
+  AuthMetadata,
+  AuthenticationStrategy,
+  CustomResource,
+  KubernetesClustersSupplier,
+  KubernetesFetcher,
+  KubernetesObjectTypes,
+  KubernetesObjectsProvider,
+  KubernetesServiceLocator,
+} from '@backstage/plugin-kubernetes-node';
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
+import { CatalogRelationServiceLocator } from '../service-locator/CatalogRelationServiceLocator';
 import { MultiTenantServiceLocator } from '../service-locator/MultiTenantServiceLocator';
 import { SingleTenantServiceLocator } from '../service-locator/SingleTenantServiceLocator';
 import {
@@ -49,28 +67,11 @@ import {
   ServiceLocatorMethod,
 } from '../types/types';
 import {
-  AuthenticationStrategy,
-  AuthMetadata,
-  CustomResource,
-  KubernetesClustersSupplier,
-  KubernetesFetcher,
-  KubernetesObjectsProvider,
-  KubernetesObjectTypes,
-  KubernetesServiceLocator,
-} from '@backstage/plugin-kubernetes-node';
-import {
   DEFAULT_OBJECTS,
   KubernetesFanOutHandler,
 } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { KubernetesProxy } from './KubernetesProxy';
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
-import {
-  AuthService,
-  BackstageCredentials,
-  DiscoveryService,
-  HttpAuthService,
-} from '@backstage/backend-plugin-api';
 
 /**
  *
@@ -306,6 +307,10 @@ export class KubernetesBuilder {
         this.serviceLocator =
           this.buildSingleTenantServiceLocator(clusterSupplier);
         break;
+      case 'catalogRelation':
+        this.serviceLocator =
+          this.buildCatalogRelationServiceLocator(clusterSupplier);
+        break;
       case 'http':
         this.serviceLocator = this.buildHttpServiceLocator(clusterSupplier);
         break;
@@ -328,6 +333,12 @@ export class KubernetesBuilder {
     clusterSupplier: KubernetesClustersSupplier,
   ): KubernetesServiceLocator {
     return new SingleTenantServiceLocator(clusterSupplier);
+  }
+
+  protected buildCatalogRelationServiceLocator(
+    clusterSupplier: KubernetesClustersSupplier,
+  ): KubernetesServiceLocator {
+    return new CatalogRelationServiceLocator(clusterSupplier);
   }
 
   protected buildHttpServiceLocator(
