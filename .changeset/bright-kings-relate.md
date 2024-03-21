@@ -1,6 +1,6 @@
 ---
 '@backstage/plugin-catalog-react': minor
-'@backstage/create-app': minor
+'@backstage/create-app': patch
 '@backstage/plugin-catalog': minor
 ---
 
