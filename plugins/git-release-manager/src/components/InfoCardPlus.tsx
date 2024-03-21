@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { TEST_IDS } from '../test-helpers/test-ids';
 import { InfoCard } from '@backstage/core-components';
 

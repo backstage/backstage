@@ -15,7 +15,8 @@
  */
 
 import React, { ComponentProps } from 'react';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 
 import { CreateReleaseCandidate } from './CreateReleaseCandidate/CreateReleaseCandidate';
 import { GitReleaseManager } from '../GitReleaseManager';

@@ -15,8 +15,9 @@
  */
 
 import React from 'react';
-import { Alert } from '@material-ui/lab';
-import { Box, Button } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 
 import { useProjectContext } from '../../contexts/ProjectContext';
 import { useReleaseStatsContext } from './contexts/ReleaseStatsContext';

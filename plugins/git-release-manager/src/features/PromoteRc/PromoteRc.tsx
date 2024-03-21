@@ -15,8 +15,10 @@
  */
 
 import React from 'react';
-import { Alert, AlertTitle } from '@material-ui/lab';
-import { Box, Typography } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 
 import { ComponentConfig, PromoteRcOnSuccessArgs } from '../../types/types';
 import { GetLatestReleaseResult } from '../../api/GitReleaseClient';

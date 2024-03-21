@@ -15,7 +15,7 @@
  */
 
 import React, { forwardRef, Ref } from 'react';
-import { Slide } from '@material-ui/core';
+import Slide from '@material-ui/core/Slide';
 import { TransitionProps } from '@material-ui/core/transitions';
 
 export const Transition = forwardRef(function Transition(

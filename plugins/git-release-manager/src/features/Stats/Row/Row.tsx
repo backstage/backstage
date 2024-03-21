@@ -16,13 +16,11 @@
 
 import React, { useState } from 'react';
 import { DateTime } from 'luxon';
-import {
-  Collapse,
-  IconButton,
-  makeStyles,
-  TableCell,
-  TableRow,
-} from '@material-ui/core';
+import Collapse from '@material-ui/core/Collapse';
+import IconButton from '@material-ui/core/IconButton';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
+import { makeStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import { ReleaseStats } from '../contexts/ReleaseStatsContext';
