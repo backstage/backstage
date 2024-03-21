@@ -2,8 +2,8 @@
 
 Welcome to the `events-backend-module-bitbucket-server` backend plugin!
 
-This plugin is a module for the `events-backend` backend plugin
-and extends it with an `BitbucketServerEventRouter`.
+This package is a module for the `events-backend` backend plugin
+and extends the event system with an `BitbucketServerEventRouter`.
 
 The event router will subscribe to the topic `bitbucketServer`
 and route the events to more concrete topics based on the value
@@ -21,8 +21,6 @@ Please find all possible webhook event types at the
 
 ## Installation
 
-# Setting up the router
-
 Install the [`events-backend` plugin](../events-backend/README.md).
 
 Install this module:
@@ -32,25 +30,19 @@ Install this module:
 yarn add --cwd packages/backend @backstage/plugin-events-backend-module-bitbucket-server
 ```
 
-Add the event router to the `EventsBackend` instance in `packages/backend/src/plugins/events.ts`:
-
-```diff
-+const bitbucketServerEventRouter = new BitbucketServerEventRouter();
-
-new EventsBackend(env.logger)
-+  .addPublishers(bitbucketServerEventRouter)
-+  .addSubscribers(bitbucketServerEventRouter);
-// [...]
+```ts
+// packages/backend/src/index.ts
+backend.add(
+  import('@backstage/plugin-events-backend-module-bitbucket-server/alpha'),
+);
 ```
 
-# Setting up app-config.yaml
+### Legacy Backend System
 
-Include the `bitbucketServer` as follows:
-
-```yaml
-events:
-  http:
-    topics:
-      - bitbucketServer
-      # other topics...
+```ts
+// packages/backend/src/plugins/events.ts
+const eventRouter = new BitbucketCloudEventRouter({
+  events: env.events,
+});
+await eventRouter.subscribe();
 ```

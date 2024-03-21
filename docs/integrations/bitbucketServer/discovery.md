@@ -14,7 +14,45 @@ This can be useful as an alternative to static locations or manually adding thin
 
 ## Installation
 
-### Installation without Events Support
+You will have to add the entity provider in the catalog initialization code of your
+backend. The provider is not installed by default, therefore you have to add a
+dependency to `@backstage/plugin-catalog-backend-module-bitbucket-server` to your backend
+package.
+
+```bash
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbucket-server
+```
+
+### Installation with New Backend System
+
+```ts
+// optional if you want HTTP endpojnts to receive external events
+// backend.add(import('@backstage/plugin-events-backend/alpha'));
+// optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
+// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));
+backend.add(
+  import('@backstage/plugin-events-backend-module-bitbucket-server/alpha'),
+);
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-bitbucket-server/alpha'),
+);
+```
+
+You need to decide how you want to receive events from external sources like
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+Further documentation:
+
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md>
+- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-server/README.md>
+
+### Installation with Legacy Backend System
+
+#### Installation without Events Support
 
 You will have to add the entity provider in the catalog initialization code of your
 backend. The provider is not installed by default, therefore you have to add a
@@ -49,7 +87,7 @@ export default async function createPlugin(
 }
 ```
 
-### Installation with Events Support
+#### Installation with Events Support
 
 Please follow the installation instructions at
 
@@ -86,6 +124,7 @@ export default async function createPlugin(
       catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
       logger: env.logger,
       scheduler: env.scheduler,
+      events: env.events,
       tokenManager: env.tokenManager,
     },
   );
