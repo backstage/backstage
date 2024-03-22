@@ -448,6 +448,7 @@ export type GaugeProps = {
   inverse?: boolean;
   unit?: string;
   max?: number;
+  size?: 'normal' | 'small';
   description?: ReactNode;
   getColor?: GaugePropsGetColor;
 };
@@ -609,7 +610,11 @@ export type InfoCardClassKey =
   | 'headerContent';
 
 // @public (undocumented)
-export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
+export type InfoCardVariants =
+  | 'flex'
+  | 'fullHeight'
+  | 'fullHeightFixedContent'
+  | 'gridItem';
 
 // Warning: (ae-forgotten-export) The symbol "ItemCardProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ItemCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
