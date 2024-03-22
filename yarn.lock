@@ -5631,6 +5631,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-catalog-unprocessed-entities-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
