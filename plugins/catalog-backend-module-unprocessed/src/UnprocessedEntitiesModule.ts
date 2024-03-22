@@ -34,7 +34,6 @@ import {
   AuthorizeResult,
   BasicPermission,
 } from '@backstage/plugin-permission-common';
-import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { unprocessedEntitiesDeletePermission } from '@backstage/plugin-catalog-unprocessed-entities-common';
 import { NotAllowedError } from '@backstage/errors';
 import { createLegacyAuthAdapters } from '@backstage/backend-common';
@@ -145,10 +144,6 @@ export class UnprocessedEntitiesModule {
   }
 
   registerRoutes() {
-    const permissionIntegrationRouter = createPermissionIntegrationRouter({
-      permissions: [unprocessedEntitiesDeletePermission],
-    });
-
     const isRequestAuthorized = async (
       req: Request,
       permission: BasicPermission,
@@ -161,8 +156,6 @@ export class UnprocessedEntitiesModule {
 
       return decision.result !== AuthorizeResult.DENY;
     };
-
-    this.router.use(permissionIntegrationRouter);
 
     this.moduleRouter
       .get('/entities/unprocessed/failed', async (req, res) => {
