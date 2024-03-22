@@ -1,5 +1,20 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.21
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-catalog-react@1.11.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/theme@0.5.2
+  - @backstage/plugin-azure-sites-common@0.1.3
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-react@0.4.21
+
 ## 0.1.20
 
 ### Patch Changes

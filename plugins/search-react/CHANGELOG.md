@@ -1,5 +1,19 @@
 # @backstage/plugin-search-react
 
+## 1.7.8
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/theme@0.5.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-search-common@1.2.11
+
 ## 1.7.7
 
 ### Patch Changes

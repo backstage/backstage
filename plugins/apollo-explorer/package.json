@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-apollo-explorer",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "backstage": {
     "role": "frontend-plugin"
   },
