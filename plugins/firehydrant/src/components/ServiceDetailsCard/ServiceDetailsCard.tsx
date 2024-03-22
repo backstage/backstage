@@ -17,7 +17,7 @@ import React, { useEffect, useState } from 'react';
 import { DateTime } from 'luxon';
 import { ServiceAnalytics } from '../ServiceAnalytics/ServiceAnalytics';
 import Box from '@material-ui/core/Box';
-import MaterialButton from '@material-ui/core/MaterialButton';
+import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
