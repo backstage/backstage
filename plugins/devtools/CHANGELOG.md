@@ -1,5 +1,19 @@
 # @backstage/plugin-devtools
 
+## 0.1.11
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/core-compat-api@0.2.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.9
+  - @backstage/plugin-permission-react@0.4.21
+
 ## 0.1.10
 
 ### Patch Changes

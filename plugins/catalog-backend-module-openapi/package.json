@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-openapi",
-  "version": "0.1.32",
+  "version": "0.1.33",
   "description": "A Backstage catalog backend module that helps with OpenAPI specifications",
   "backstage": {
     "role": "backend-plugin-module"
