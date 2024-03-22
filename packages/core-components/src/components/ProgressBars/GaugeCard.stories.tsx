@@ -175,6 +175,82 @@ export const InfoMessage = () => (
   </Wrapper>
 );
 
+export const AlignedBottom = () => (
+  <Wrapper>
+    <Grid item>
+      <GaugeCard
+        variant="fullHeightFixedContent"
+        title="Progress"
+        subheader="With a subheader"
+        progress={0.3}
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        variant="fullHeightFixedContent"
+        title="Progress"
+        subheader="With a subheader"
+        progress={0.57}
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        variant="fullHeightFixedContent"
+        title="Progress with longer title"
+        subheader="With a subheader"
+        progress={0.89}
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        variant="fullHeightFixedContent"
+        title="Progress"
+        subheader="With a subheader"
+        inverse
+        progress={0.2}
+      />
+    </Grid>
+  </Wrapper>
+);
+
+export const Small = () => (
+  <Wrapper>
+    <Grid item>
+      <GaugeCard
+        variant="fullHeightFixedContent"
+        size="small"
+        title="Progress"
+        progress={0.3}
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        variant="fullHeightFixedContent"
+        size="small"
+        title="Progress"
+        progress={0.57}
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        variant="fullHeightFixedContent"
+        size="small"
+        title="Progress, longer title"
+        progress={0.89}
+      />
+    </Grid>
+    <Grid item>
+      <GaugeCard
+        variant="fullHeightFixedContent"
+        size="small"
+        title="Progress"
+        inverse
+        progress={0.2}
+      />
+    </Grid>
+  </Wrapper>
+);
+
 export const HoverMessage = () => (
   <Wrapper>
     <Grid item>

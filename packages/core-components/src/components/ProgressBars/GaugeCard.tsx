@@ -27,6 +27,7 @@ type Props = {
   variant?: InfoCardVariants;
   /** Progress in % specified as decimal, e.g. "0.23" */
   progress: number;
+  size?: 'normal' | 'small';
   description?: ReactNode;
   icon?: ReactNode;
   inverse?: boolean;
@@ -42,6 +43,10 @@ const useStyles = makeStyles(
     root: {
       height: '100%',
       width: 250,
+    },
+    rootSmall: {
+      height: '100%',
+      width: 160,
     },
   },
   { name: 'BackstageGaugeCard' },
@@ -64,6 +69,7 @@ export function GaugeCard(props: Props) {
     description,
     icon,
     variant,
+    size = 'normal',
     getColor,
   } = props;
 
@@ -75,15 +81,22 @@ export function GaugeCard(props: Props) {
   };
 
   return (
-    <Box className={classes.root}>
+    <Box className={size === 'small' ? classes.rootSmall : classes.root}>
       <InfoCard
         title={title}
         subheader={subheader}
         deepLink={deepLink}
         variant={variant}
         icon={icon}
+        titleTypographyProps={
+          size === 'small'
+            ? {
+                variant: 'h6',
+              }
+            : undefined
+        }
       >
-        <Gauge {...gaugeProps} />
+        <Gauge {...gaugeProps} size={size} />
       </InfoCard>
     </Box>
   );

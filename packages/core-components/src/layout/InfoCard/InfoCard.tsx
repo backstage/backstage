@@ -46,6 +46,10 @@ const useStyles = makeStyles(
     header: {
       padding: theme.spacing(2, 2, 2, 2.5),
     },
+    headerFixedContent: {
+      flexGrow: 1,
+      alignItems: 'flex-start',
+    },
     headerTitle: {
       fontWeight: theme.typography.fontWeightBold,
     },
@@ -87,6 +91,11 @@ const VARIANT_STYLES = {
       flexDirection: 'column',
       height: '100%',
     },
+    fullHeightFixedContent: {
+      display: 'flex',
+      flexDirection: 'column',
+      height: '100%',
+    },
     gridItem: {
       display: 'flex',
       flexDirection: 'column',
@@ -102,6 +111,9 @@ const VARIANT_STYLES = {
     fullHeight: {
       flex: 1,
     },
+    fullHeightFixedContent: {
+      flex: '0 1 0%',
+    },
     gridItem: {
       flex: 1,
     },
@@ -109,7 +121,11 @@ const VARIANT_STYLES = {
 };
 
 /** @public */
-export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
+export type InfoCardVariants =
+  | 'flex'
+  | 'fullHeight'
+  | 'fullHeightFixedContent'
+  | 'gridItem';
 
 /**
  * InfoCard is used to display a paper-styled block on the screen, similar to a panel.
@@ -228,7 +244,12 @@ export function InfoCard(props: Props): JSX.Element {
         {title && (
           <CardHeader
             classes={{
-              root: classes.header,
+              root: classNames(
+                classes.header,
+                variant === 'fullHeightFixedContent'
+                  ? classes.headerFixedContent
+                  : undefined,
+              ),
               title: classes.headerTitle,
               subheader: classes.headerSubheader,
               avatar: classes.headerAvatar,
