@@ -38236,13 +38236,13 @@ __metadata:
   linkType: hard
 
 "postcss@npm:^8.1.0, postcss@npm:^8.4.27, postcss@npm:^8.4.33":
-  version: 8.4.36
-  resolution: "postcss@npm:8.4.36"
+  version: 8.4.38
+  resolution: "postcss@npm:8.4.38"
   dependencies:
     nanoid: ^3.3.7
     picocolors: ^1.0.0
-    source-map-js: ^1.1.0
-  checksum: 1bb0f2bdfccd5a3ea0ed39700c09098f15501d38110208bfba2df5e3925e4ff7e9a4eaf8abb87bc692ae4d122d9aa0ec13bf4f4d8fd1ad8d8ceaa1f345e50ed1
+    source-map-js: ^1.2.0
+  checksum: 649f9e60a763ca4b5a7bbec446a069edf07f057f6d780a5a0070576b841538d1ecf7dd888f2fbfd1f76200e26c969e405aeeae66332e6927dbdc8bdcb90b9451
   languageName: node
   linkType: hard
 
@@ -41846,10 +41846,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"source-map-js@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "source-map-js@npm:1.1.0"
-  checksum: 6ef39381cdf5451c3db406e4b0fa95657be3c35db76fe6df3be430174b2e6af3c0b57d9728328dc62a211ae6209a0295d6a26442a55d5fccbf7cf1211fffa80e
+"source-map-js@npm:^1.2.0":
+  version: 1.2.0
+  resolution: "source-map-js@npm:1.2.0"
+  checksum: 791a43306d9223792e84293b00458bf102a8946e7188f3db0e4e22d8d530b5f80a4ce468eb5ec0bf585443ad55ebbd630bf379c98db0b1f317fd902500217f97
   languageName: node
   linkType: hard
 
