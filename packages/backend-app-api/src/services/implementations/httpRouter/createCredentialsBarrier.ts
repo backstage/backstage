@@ -67,11 +67,15 @@ export function createCredentialsBarrier(options: {
 
   const rateLimitConfig = config.getOptional('backend.rateLimit.unauthorized');
 
-  const disabled =
-    rateLimitConfig === false ||
-    (typeof rateLimitConfig === 'object' &&
-      config?.getOptionalBoolean('backend.rateLimit.unauthorized.disabled') ===
-        true);
+  const disabled = true;
+  /*
+    // TODO(freben); reintroduce the code below
+    const disabled =
+      rateLimitConfig === false ||
+      (typeof rateLimitConfig === 'object' &&
+        config?.getOptionalBoolean('backend.rateLimit.unauthorized.disabled') ===
+          true);
+  */
 
   const duration =
     typeof rateLimitConfig === 'object' &&
