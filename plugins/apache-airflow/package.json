@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-apache-airflow",
-  "version": "0.2.21",
+  "version": "0.2.22",
   "backstage": {
     "role": "frontend-plugin"
   },

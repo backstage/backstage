@@ -1,5 +1,22 @@
 # @backstage/plugin-explore
 
+## 0.4.18
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-catalog-react@1.11.1
+  - @backstage/plugin-search-react@1.7.8
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-explore-react@0.0.37
+  - @backstage/plugin-search-common@1.2.11
+
 ## 0.4.17
 
 ### Patch Changes

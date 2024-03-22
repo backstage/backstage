@@ -1,5 +1,15 @@
 # @backstage/plugin-newrelic
 
+## 0.3.47
+
+### Patch Changes
+
+- f38f7d8: Added an optional ESLint rule - no-top-level-material-ui-4-imports -in cloudbuild plugin which has an auto fix function to migrate the imports and used it to migrate the Material UI imports for plugins/newrelic.
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.3.46
 
 ### Patch Changes

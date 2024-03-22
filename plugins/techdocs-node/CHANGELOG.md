@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs-node
 
+## 1.12.1
+
+### Patch Changes
+
+- 81a995f: Updated dependency `aws-sdk-client-mock` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/integration-aws-node@0.1.11
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-search-common@1.2.11
+
 ## 1.12.0
 
 ### Minor Changes

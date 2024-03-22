@@ -1,5 +1,17 @@
 # @backstage/plugin-tech-radar
 
+## 0.7.1
+
+### Patch Changes
+
+- 89b093f: Added ESLint rule `no-top-level-material-ui-4-imports` in the `tech-radar` plugin to migrate the Material UI imports.
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/core-compat-api@0.2.2
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.7.0
 
 ### Minor Changes
