@@ -3247,7 +3247,6 @@ __metadata:
     cors: ^2.8.5
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    express-rate-limit: ^7.2.0
     fs-extra: ^11.2.0
     helmet: ^6.0.0
     http-errors: ^2.0.0
@@ -27605,15 +27604,6 @@ __metadata:
     "@types/express":
       optional: true
   checksum: e69ee7eb2c70470d5be71d34cd9275c26aae157c1ef16a21ecf53141e512fd4a6b5a68db89b30f745df941518505d00ec0a5e13f0becbd53ad63ffce3ed885f3
-  languageName: node
-  linkType: hard
-
-"express-rate-limit@npm:^7.2.0":
-  version: 7.2.0
-  resolution: "express-rate-limit@npm:7.2.0"
-  peerDependencies:
-    express: 4 || 5 || ^5.0.0-beta.1
-  checksum: 6adc3e06d430e91cf8ef8da23107466ffd9193b5680b03bc12702894cab0adcbb980634602b839b3a1444620f2379707098af3a4dcc38c909e89214abaf6c1bf
   languageName: node
   linkType: hard
 
