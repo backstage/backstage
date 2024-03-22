@@ -27,6 +27,7 @@ type Props = {
   variant?: InfoCardVariants;
   /** Progress in % specified as decimal, e.g. "0.23" */
   progress: number;
+  alignGauge?: 'normal' | 'bottom';
   size?: 'normal' | 'small';
   description?: ReactNode;
   icon?: ReactNode;
@@ -69,6 +70,7 @@ export function GaugeCard(props: Props) {
     description,
     icon,
     variant,
+    alignGauge = 'normal',
     size = 'normal',
     getColor,
   } = props;
@@ -87,6 +89,7 @@ export function GaugeCard(props: Props) {
         subheader={subheader}
         deepLink={deepLink}
         variant={variant}
+        alignContent={alignGauge}
         icon={icon}
         titleTypographyProps={
           size === 'small'

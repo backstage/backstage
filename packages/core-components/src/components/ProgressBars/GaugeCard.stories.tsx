@@ -179,7 +179,8 @@ export const AlignedBottom = () => (
   <Wrapper>
     <Grid item>
       <GaugeCard
-        variant="fullHeightFixedContent"
+        variant="fullHeight"
+        alignGauge="bottom"
         title="Progress"
         subheader="With a subheader"
         progress={0.3}
@@ -187,7 +188,8 @@ export const AlignedBottom = () => (
     </Grid>
     <Grid item>
       <GaugeCard
-        variant="fullHeightFixedContent"
+        variant="fullHeight"
+        alignGauge="bottom"
         title="Progress"
         subheader="With a subheader"
         progress={0.57}
@@ -195,7 +197,8 @@ export const AlignedBottom = () => (
     </Grid>
     <Grid item>
       <GaugeCard
-        variant="fullHeightFixedContent"
+        variant="fullHeight"
+        alignGauge="bottom"
         title="Progress with longer title"
         subheader="With a subheader"
         progress={0.89}
@@ -203,7 +206,8 @@ export const AlignedBottom = () => (
     </Grid>
     <Grid item>
       <GaugeCard
-        variant="fullHeightFixedContent"
+        variant="fullHeight"
+        alignGauge="bottom"
         title="Progress"
         subheader="With a subheader"
         inverse
@@ -217,7 +221,8 @@ export const Small = () => (
   <Wrapper>
     <Grid item>
       <GaugeCard
-        variant="fullHeightFixedContent"
+        variant="fullHeight"
+        alignGauge="bottom"
         size="small"
         title="Progress"
         progress={0.3}
@@ -225,7 +230,8 @@ export const Small = () => (
     </Grid>
     <Grid item>
       <GaugeCard
-        variant="fullHeightFixedContent"
+        variant="fullHeight"
+        alignGauge="bottom"
         size="small"
         title="Progress"
         progress={0.57}
@@ -233,7 +239,8 @@ export const Small = () => (
     </Grid>
     <Grid item>
       <GaugeCard
-        variant="fullHeightFixedContent"
+        variant="fullHeight"
+        alignGauge="bottom"
         size="small"
         title="Progress, longer title"
         progress={0.89}
@@ -241,7 +248,8 @@ export const Small = () => (
     </Grid>
     <Grid item>
       <GaugeCard
-        variant="fullHeightFixedContent"
+        variant="fullHeight"
+        alignGauge="bottom"
         size="small"
         title="Progress"
         inverse

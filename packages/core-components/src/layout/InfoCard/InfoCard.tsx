@@ -43,12 +43,12 @@ const useStyles = makeStyles(
         paddingBottom: 0,
       },
     },
+    contentAlignBottom: {
+      display: 'flex',
+      alignItems: 'self-end',
+    },
     header: {
       padding: theme.spacing(2, 2, 2, 2.5),
-    },
-    headerFixedContent: {
-      flexGrow: 1,
-      alignItems: 'flex-start',
     },
     headerTitle: {
       fontWeight: theme.typography.fontWeightBold,
@@ -91,11 +91,6 @@ const VARIANT_STYLES = {
       flexDirection: 'column',
       height: '100%',
     },
-    fullHeightFixedContent: {
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-    },
     gridItem: {
       display: 'flex',
       flexDirection: 'column',
@@ -111,9 +106,6 @@ const VARIANT_STYLES = {
     fullHeight: {
       flex: 1,
     },
-    fullHeightFixedContent: {
-      flex: '0 1 0%',
-    },
     gridItem: {
       flex: 1,
     },
@@ -121,11 +113,7 @@ const VARIANT_STYLES = {
 };
 
 /** @public */
-export type InfoCardVariants =
-  | 'flex'
-  | 'fullHeight'
-  | 'fullHeightFixedContent'
-  | 'gridItem';
+export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 
 /**
  * InfoCard is used to display a paper-styled block on the screen, similar to a panel.
@@ -154,6 +142,7 @@ export type Props = {
   slackChannel?: string;
   errorBoundaryProps?: ErrorBoundaryProps;
   variant?: InfoCardVariants;
+  alignContent?: 'normal' | 'bottom';
   children?: ReactNode;
   headerStyle?: object;
   headerProps?: CardHeaderProps;
@@ -183,6 +172,7 @@ export function InfoCard(props: Props): JSX.Element {
     slackChannel,
     errorBoundaryProps,
     variant,
+    alignContent = 'normal',
     children,
     headerStyle,
     headerProps,
@@ -244,12 +234,7 @@ export function InfoCard(props: Props): JSX.Element {
         {title && (
           <CardHeader
             classes={{
-              root: classNames(
-                classes.header,
-                variant === 'fullHeightFixedContent'
-                  ? classes.headerFixedContent
-                  : undefined,
-              ),
+              root: classNames(classes.header),
               title: classes.headerTitle,
               subheader: classes.headerSubheader,
               avatar: classes.headerAvatar,
@@ -271,6 +256,7 @@ export function InfoCard(props: Props): JSX.Element {
         <CardContent
           className={classNames(cardClassName, {
             [classes.noPadding]: noPadding,
+            [classes.contentAlignBottom]: alignContent === 'bottom',
           })}
           style={calculatedCardStyle}
         >
