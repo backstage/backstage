@@ -20,12 +20,32 @@ import {
   HttpRouterServiceAuthPolicy,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { durationToMilliseconds } from '@backstage/types';
+import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import { RequestHandler } from 'express';
 import { pathToRegexp } from 'path-to-regexp';
 import { rateLimit } from 'express-rate-limit';
-import { readDurationFromConfig } from '@backstage/config';
 import { RateLimitStore } from './rateLimitStore';
+
+function getUnauthorizedRateLimitConfig(config: RootConfigService): {
+  max?: number | undefined;
+  window?: HumanDuration | undefined;
+  enabled?: true | undefined;
+} {
+  const value = config.getOptional<
+    | true
+    | {
+        max?: number;
+        window?: HumanDuration;
+      }
+  >('backend.rateLimit.unauthorized');
+  if (value === undefined) {
+    return {};
+  }
+  if (value === true) {
+    return { enabled: true };
+  }
+  return { ...value, enabled: true };
+}
 
 export function createPathPolicyPredicate(policyPath: string) {
   if (policyPath === '/' || policyPath === '*') {
@@ -65,40 +85,26 @@ export function createCredentialsBarrier(options: {
   const unauthenticatedPredicates = new Array<(path: string) => boolean>();
   const cookiePredicates = new Array<(path: string) => boolean>();
 
-  const rateLimitConfig = config.getOptional('backend.rateLimit.unauthorized');
+  const isTrustedProxy =
+    config.getOptional('backend.enableTrustProxy') !== undefined;
+  const unauthorizedRateLimitConfig = getUnauthorizedRateLimitConfig(config);
 
-  const disabled =
-    rateLimitConfig === false ||
-    (typeof rateLimitConfig === 'object' &&
-      config?.getOptionalBoolean('backend.rateLimit.unauthorized.disabled') ===
-        true);
-
-  const duration =
-    typeof rateLimitConfig === 'object' &&
-    config?.has('backend.rateLimit.unauthorized.window')
-      ? readDurationFromConfig(
-          config.getConfig('backend.rateLimit.unauthorized.window'),
-        )
-      : undefined;
-
-  const windowMs = duration ? durationToMilliseconds(duration) : 1 * 60 * 1000;
-
-  const max =
-    typeof rateLimitConfig === 'object' &&
-    config?.has('backend.rateLimit.unauthorized.max')
-      ? config.getNumber('backend.rateLimit.unauthorized.max')
-      : 60;
-
-  // Default rate limit is 60 requests per 1 minute
-  const limiter = rateLimit({
-    windowMs,
-    limit: max,
+  // Default rate limit is 150 requests per 1 minute
+  const unauthorizedLimiter = rateLimit({
+    windowMs: durationToMilliseconds(
+      unauthorizedRateLimitConfig?.window ?? { minutes: 1 },
+    ),
+    limit: unauthorizedRateLimitConfig?.max ?? 150,
     standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
     legacyHeaders: false, // Disable the `X-RateLimit-*` headers,
     store: RateLimitStore.fromOptions({ cache }),
+    validate: {},
     skip() {
-      return disabled;
+      return unauthorizedRateLimitConfig?.enabled !== true;
     },
+    // Preventing ValidationError: The Express 'trust proxy' setting is true, which allows anyone to trivially bypass IP-based rate limiting.
+    // See https://express-rate-limit.github.io/ERR_ERL_PERMISSIVE_TRUST_PROXY/ for more information.
+    ...(isTrustedProxy ? { trustProxy: true } : {}),
   });
 
   const middleware: RequestHandler = (req, res, next) => {
@@ -107,7 +113,7 @@ export function createCredentialsBarrier(options: {
     );
 
     if (allowsUnauthenticated) {
-      limiter(req, res, next);
+      unauthorizedLimiter(req, res, next);
       return;
     }
 

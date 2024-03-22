@@ -224,6 +224,13 @@ export async function startTestBackend<TExtensionPoints extends any[]>(
 
       const app = express();
 
+      const enableTrustProxy = config.getOptional<
+        true | number | string | string[]
+      >('backend.enableTrustPath');
+      if (enableTrustProxy) {
+        app.set('trust proxy', enableTrustProxy);
+      }
+
       const middleware = MiddlewareFactory.create({ config, logger });
 
       app.use(router.handler());
