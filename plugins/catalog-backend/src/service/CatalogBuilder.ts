@@ -84,7 +84,10 @@ import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { Logger } from 'winston';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import {
+  Permission,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
 import { permissionRules as catalogPermissionRules } from '../permissions/rules';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import {
@@ -177,6 +180,7 @@ export class CatalogBuilder {
   }) => Promise<void> | void;
   private processingInterval: ProcessingIntervalFunction;
   private locationAnalyzer: LocationAnalyzer | undefined = undefined;
+  private readonly permissions: Permission[];
   private readonly permissionRules: CatalogPermissionRuleInput[];
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
@@ -200,6 +204,7 @@ export class CatalogBuilder {
     this.locationAnalyzers = [];
     this.processorsReplace = false;
     this.parser = undefined;
+    this.permissions = [...catalogPermissions];
     this.permissionRules = Object.values(catalogPermissionRules);
     this.allowedLocationType = ['url'];
 
@@ -402,6 +407,17 @@ export class CatalogBuilder {
   }
 
   /**
+   * Adds additional permissions. See
+   * {@link @backstage/plugin-permission-node#Permission}.
+   *
+   * @param permissions - Additional permissions
+   */
+  addPermissions(...permissions: Array<Permission | Array<Permission>>) {
+    this.permissions.push(...permissions.flat());
+    return this;
+  }
+
+  /**
    * Adds additional permission rules. Permission rules are used to evaluate
    * catalog resources against queries. See
    * {@link @backstage/plugin-permission-node#PermissionRule}.
@@ -551,7 +567,7 @@ export class CatalogBuilder {
             entitiesByRef[stringifyEntityRef(parseEntityRef(resourceRef))],
         );
       },
-      permissions: catalogPermissions,
+      permissions: this.permissions,
       rules: this.permissionRules,
     });
 
