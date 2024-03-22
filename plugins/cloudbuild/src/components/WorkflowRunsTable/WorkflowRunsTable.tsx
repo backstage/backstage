@@ -55,6 +55,14 @@ const generatedColumns: TableColumn[] = [
     ),
   },
   {
+    title: 'Trigger Name',
+    render: (row: Partial<WorkflowRun>) => (
+      <Typography variant="body2" noWrap>
+        {row.substitutions?.TRIGGER_NAME}
+      </Typography>
+    ),
+  },
+  {
     title: 'Source',
     field: 'source',
     highlight: true,
