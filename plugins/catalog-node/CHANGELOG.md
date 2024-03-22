@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-node
 
+## 1.9.0
+
+### Minor Changes
+
+- 9c7fb30: Added the ability to inject custom permissions from modules, on `CatalogBuilder` and `CatalogPermissionExtensionPoint`
+
 ## 1.8.0
 
 ### Minor Changes

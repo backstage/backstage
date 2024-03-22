@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.1.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+
 ## 0.1.19
 
 ### Patch Changes

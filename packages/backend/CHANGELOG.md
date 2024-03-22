@@ -1,5 +1,27 @@
 # example-backend
 
+## 0.2.94
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.19.0
+  - @backstage/plugin-catalog-node@1.9.0
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.1
+  - @backstage/plugin-permission-backend@0.5.38
+  - @backstage/plugin-auth-backend@0.22.1
+  - @backstage/plugin-azure-devops-backend@0.6.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.12
+  - @backstage/plugin-jenkins-backend@0.4.1
+  - @backstage/plugin-kubernetes-backend@0.16.1
+  - @backstage/plugin-lighthouse-backend@0.4.7
+  - @backstage/plugin-linguist-backend@0.5.12
+  - @backstage/plugin-scaffolder-backend@1.22.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.19
+  - @backstage/plugin-search-backend-module-techdocs@0.1.19
+  - @backstage/plugin-todo-backend@0.3.13
+  - @backstage/plugin-techdocs-backend@1.10.1
+
 ## 0.2.93
 
 ### Patch Changes

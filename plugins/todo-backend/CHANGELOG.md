@@ -1,5 +1,12 @@
 # @backstage/plugin-todo-backend
 
+## 0.3.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+
 ## 0.3.12
 
 ### Patch Changes

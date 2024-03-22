@@ -1,5 +1,11 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.38
+
+### Patch Changes
+
+- 9c7fb30: Properly forward causes of errors from upstream backends in the `PermissionIntegrationClient`
+
 ## 0.5.37
 
 ### Patch Changes

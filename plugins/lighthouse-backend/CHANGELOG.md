@@ -1,5 +1,12 @@
 # @backstage/plugin-lighthouse-backend
 
+## 0.4.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+
 ## 0.4.6
 
 ### Patch Changes

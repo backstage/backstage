@@ -1,5 +1,12 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+
 ## 0.4.0
 
 ### Minor Changes

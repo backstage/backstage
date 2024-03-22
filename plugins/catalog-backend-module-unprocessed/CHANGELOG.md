@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.4.1
+
+### Patch Changes
+
+- 9c7fb30: Internal update that injects custom permissions into the catalog using its extension point
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+
 ## 0.4.0
 
 ### Minor Changes
