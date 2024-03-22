@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,9 @@
  * limitations under the License.
  */
 
-export { readGitlabConfigs } from '../providers/config';
-export { GitLabClient, paginated } from './client';
-export type {
-  GitLabGroup,
-  GitLabGroupSamlIdentity,
-  GitLabProject,
-  GitLabUser,
-  GitlabGroupDescription,
-  GitlabProviderConfig,
-  GroupNameTransformer,
-  GroupNameTransformerOptions,
-  GroupTransformer,
-  GroupTransformerOptions,
-  UserTransformer,
-  UserTransformerOptions,
-} from './types';
+/**
+ * The gitlab-org backend module for the catalog plugin.
+ *
+ * @packageDocumentation
+ */
+export { catalogModuleGitlabOrgDiscoveryEntityProvider as default } from './catalogModuleGitlabOrgDiscoveryEntityProvider';

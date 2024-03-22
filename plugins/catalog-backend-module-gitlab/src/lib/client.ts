@@ -24,6 +24,7 @@ import {
   GitLabDescendantGroupsResponse,
   GitLabGroup,
   GitLabGroupMembersResponse,
+  GitLabProject,
   GitLabUser,
   PagedResponse,
 } from './types';
@@ -75,6 +76,39 @@ export class GitLabClient {
     }
 
     return this.pagedRequest(`/projects`, options);
+  }
+
+  async getProjectById(
+    projectId: number,
+    options?: CommonListOptions,
+  ): Promise<GitLabProject> {
+    // Make the request to the GitLab API
+    const response = await this.nonPagedRequest(
+      `/projects/${projectId}`,
+      options,
+    );
+
+    return response;
+  }
+
+  async getGroupById(
+    groupId: number,
+    options?: CommonListOptions,
+  ): Promise<GitLabGroup> {
+    // Make the request to the GitLab API
+    const response = await this.nonPagedRequest(`/groups/${groupId}`, options);
+
+    return response;
+  }
+
+  async getUserById(
+    userId: number,
+    options?: CommonListOptions,
+  ): Promise<GitLabUser> {
+    // Make the request to the GitLab API
+    const response = await this.nonPagedRequest(`/users/${userId}`, options);
+
+    return response;
   }
 
   async listUsers(
@@ -322,9 +356,13 @@ export class GitLabClient {
     options?: CommonListOptions,
   ): Promise<PagedResponse<T>> {
     const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
+
     for (const key in options) {
-      if (options[key] !== undefined && options[key] !== '') {
-        request.searchParams.append(key, options[key]!.toString());
+      if (options.hasOwnProperty(key)) {
+        const value = options[key];
+        if (value !== undefined && value !== '') {
+          request.searchParams.append(key, value.toString());
+        }
       }
     }
 
@@ -333,6 +371,7 @@ export class GitLabClient {
       request.toString(),
       getGitLabRequestOptions(this.config),
     );
+
     if (!response.ok) {
       throw new Error(
         `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
@@ -340,6 +379,7 @@ export class GitLabClient {
         } - ${response.statusText}`,
       );
     }
+
     return response.json().then(items => {
       const nextPage = response.headers.get('x-next-page');
 
@@ -348,6 +388,37 @@ export class GitLabClient {
         nextPage: nextPage ? Number(nextPage) : null,
       } as PagedResponse<any>;
     });
+  }
+
+  async nonPagedRequest<T = any>(
+    endpoint: string,
+    options?: CommonListOptions,
+  ): Promise<T> {
+    const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
+
+    for (const key in options) {
+      if (options.hasOwnProperty(key)) {
+        const value = options[key];
+        if (value !== undefined && value !== '') {
+          request.searchParams.append(key, value.toString());
+        }
+      }
+    }
+
+    const response = await fetch(
+      request.toString(),
+      getGitLabRequestOptions(this.config),
+    );
+
+    if (!response.ok) {
+      throw new Error(
+        `Unexpected response when fetching ${request.toString()}. Expected 200 but got ${
+          response.status
+        } - ${response.statusText}`,
+      );
+    }
+
+    return response.json();
   }
 }
 
