@@ -5634,7 +5634,6 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-catalog-unprocessed-entities-common": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
-    "@backstage/plugin-permission-node": "workspace:^"
     "@types/express": ^4.17.6
     express-promise-router: ^4.1.1
     knex: ^3.0.0
