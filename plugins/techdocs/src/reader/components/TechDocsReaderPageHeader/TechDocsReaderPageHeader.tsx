@@ -146,7 +146,6 @@ export const TechDocsReaderPageHeader = (
               container
               direction="column"
               alignItems="center"
-              style={{ color: white }}
             >
               <Grid style={{ padding: 0 }} item>
                 <CodeIcon style={{ marginTop: '-25px' }} />
