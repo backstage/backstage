@@ -1,5 +1,12 @@
 # @backstage/plugin-linguist-backend
 
+## 0.5.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+
 ## 0.5.11
 
 ### Patch Changes
