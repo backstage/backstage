@@ -177,4 +177,44 @@ describe('StaticAssetsStore', () => {
       await expect(store.getAsset('old')).resolves.toBeUndefined();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    'should isolate assets in namespace, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      const database = createDatabaseManager(knex);
+      const store = await StaticAssetsStore.create({
+        logger,
+        database,
+      });
+      const otherStore = store.withNamespace('other');
+
+      await store.storeAssets([
+        {
+          path: 'foo',
+          content: async () => Buffer.alloc(0),
+        },
+      ]);
+      await otherStore.storeAssets([
+        {
+          path: 'bar',
+          content: async () => Buffer.alloc(0),
+        },
+      ]);
+
+      await expect(store.getAsset('foo')).resolves.toBeDefined();
+      await expect(store.getAsset('bar')).resolves.not.toBeDefined();
+      await expect(otherStore.getAsset('foo')).resolves.not.toBeDefined();
+      await expect(otherStore.getAsset('bar')).resolves.toBeDefined();
+
+      await store.trimAssets({ maxAgeSeconds: 0 });
+
+      await expect(store.getAsset('foo')).resolves.not.toBeDefined();
+      await expect(otherStore.getAsset('bar')).resolves.toBeDefined();
+
+      await otherStore.trimAssets({ maxAgeSeconds: 0 });
+
+      await expect(otherStore.getAsset('bar')).resolves.not.toBeDefined();
+    },
+  );
 });

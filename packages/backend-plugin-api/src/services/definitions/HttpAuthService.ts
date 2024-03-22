@@ -37,4 +37,6 @@ export interface HttpAuthService {
       credentials?: BackstageCredentials<BackstageUserPrincipal>;
     },
   ): Promise<{ expiresAt: Date }>;
+
+  removeUserCookie(res: Response): void;
 }

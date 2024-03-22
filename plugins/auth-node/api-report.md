@@ -10,6 +10,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 import express from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -17,6 +18,7 @@ import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Profile } from 'passport';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
+import { Router } from 'express-serve-static-core';
 import { Strategy } from 'passport';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
@@ -147,6 +149,11 @@ export type CookieConfigurer = (ctx: {
   secure: boolean;
   sameSite?: 'none' | 'lax' | 'strict';
 };
+
+// @public
+export function createCookieAuthRefreshMiddleware(options: {
+  httpAuth: HttpAuthService;
+}): Router;
 
 // @public (undocumented)
 export function createOAuthAuthenticator<TContext, TProfile>(

@@ -32,6 +32,7 @@ const migrationsDir = resolvePackagePath(
 interface StaticAssetRow {
   path: string;
   content: Buffer;
+  namespace: string | null;
   last_modified_at: Date;
 }
 
@@ -49,6 +50,7 @@ export interface StaticAssetsStoreOptions {
 export class StaticAssetsStore implements StaticAssetProvider {
   #db: Knex;
   #logger: Logger;
+  #namespace: string | null;
 
   static async create(options: StaticAssetsStoreOptions) {
     const { database } = options;
@@ -63,9 +65,17 @@ export class StaticAssetsStore implements StaticAssetProvider {
     return new StaticAssetsStore(client, options.logger);
   }
 
-  private constructor(client: Knex, logger: Logger) {
+  private constructor(client: Knex, logger: Logger, namespace?: string) {
     this.#db = client;
     this.#logger = logger;
+    this.#namespace = namespace ?? null;
+  }
+
+  /**
+   * Creates a new store with the provided namespace, using the same underlying storage.
+   */
+  withNamespace(namespace: string): StaticAssetsStore {
+    return new StaticAssetsStore(this.#db, this.#logger, namespace);
   }
 
   /**
@@ -75,12 +85,12 @@ export class StaticAssetsStore implements StaticAssetProvider {
    * updated, but the contents will not.
    */
   async storeAssets(assets: StaticAssetInput[]) {
-    const existingRows = await this.#db<StaticAssetRow>(
-      'static_assets_cache',
-    ).whereIn(
-      'path',
-      assets.map(a => a.path),
-    );
+    const existingRows = await this.#db<StaticAssetRow>('static_assets_cache')
+      .where('namespace', this.#namespace)
+      .whereIn(
+        'path',
+        assets.map(a => a.path),
+      );
     const existingAssetPaths = new Set(existingRows.map(r => r.path));
 
     const [modified, added] = partition(assets, asset =>
@@ -95,6 +105,7 @@ export class StaticAssetsStore implements StaticAssetProvider {
       .update({
         last_modified_at: this.#db.fn.now(),
       })
+      .where('namespace', this.#namespace)
       .whereIn(
         'path',
         modified.map(a => a.path),
@@ -107,6 +118,7 @@ export class StaticAssetsStore implements StaticAssetProvider {
         .insert({
           path: asset.path,
           content: await asset.content(),
+          namespace: this.#namespace,
         })
         .onConflict('path')
         .ignore();
@@ -119,6 +131,7 @@ export class StaticAssetsStore implements StaticAssetProvider {
   async getAsset(path: string): Promise<StaticAsset | undefined> {
     const [row] = await this.#db<StaticAssetRow>('static_assets_cache').where({
       path,
+      namespace: this.#namespace,
     });
     if (!row) {
       return undefined;
@@ -151,6 +164,7 @@ export class StaticAssetsStore implements StaticAssetProvider {
       ]);
     }
     await this.#db<StaticAssetRow>('static_assets_cache')
+      .where('namespace', this.#namespace)
       .where('last_modified_at', '<=', lastModifiedInterval)
       .delete();
   }

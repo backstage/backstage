@@ -73,7 +73,6 @@ export async function buildBundle(options: BuildOptions) {
     configs.push(
       await createConfig(publicPaths, {
         ...commonConfigOptions,
-        publicSubPath: '/public',
       }),
     );
   }

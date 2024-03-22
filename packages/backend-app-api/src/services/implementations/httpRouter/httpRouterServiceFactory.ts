@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+import { Handler } from 'express';
+import PromiseRouter from 'express-promise-router';
 import {
   coreServices,
   createServiceFactory,
   HttpRouterServiceAuthPolicy,
 } from '@backstage/backend-plugin-api';
-import { Handler } from 'express';
-import PromiseRouter from 'express-promise-router';
+import { createCookieAuthRefreshMiddleware } from '@backstage/plugin-auth-node';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
 
@@ -54,6 +55,7 @@ export const httpRouterServiceFactory = createServiceFactory(
       rootHttpRouter,
       lifecycle,
     }) {
+      let hasRegistedCookieAuthRefreshMiddleware = false;
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
 
@@ -75,6 +77,14 @@ export const httpRouterServiceFactory = createServiceFactory(
         },
         addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
           credentialsBarrier.addAuthPolicy(policy);
+          if (
+            policy.allow === 'user-cookie' &&
+            !hasRegistedCookieAuthRefreshMiddleware
+          ) {
+            // Only add the cookie refresh middleware once
+            hasRegistedCookieAuthRefreshMiddleware = true;
+            router.use(createCookieAuthRefreshMiddleware({ httpAuth }));
+          }
         },
       };
     },

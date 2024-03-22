@@ -220,7 +220,6 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
           config,
           await createConfig(publicPaths, {
             ...commonConfigOptions,
-            publicSubPath: '/public',
           }),
         ])
       : webpack(config);

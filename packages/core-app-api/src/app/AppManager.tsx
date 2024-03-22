@@ -42,6 +42,8 @@ import {
   identityApiRef,
   BackstagePlugin,
   FeatureFlag,
+  fetchApiRef,
+  discoveryApiRef,
 } from '@backstage/core-plugin-api';
 import {
   AppLanguageApi,
@@ -354,8 +356,25 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
       const { ThemeProvider = AppThemeProvider, Progress } = this.components;
 
+      const apis = this.getApiHolder();
+
+      this.appIdentityProxy.setSignOutCallback(async () => {
+        const fetchApi = apis.get(fetchApiRef);
+        const discoveryApi = apis.get(discoveryApiRef);
+        if (!fetchApi || !discoveryApi) return;
+        // It is fine if we do NOT worry yet about deleting cookies for OTHER backends like techdocs
+        const appBaseUrl = await discoveryApi.getBaseUrl('app');
+        try {
+          await fetchApi.fetch(`${appBaseUrl}/.backstage/v1-cookie`, {
+            method: 'DELETE',
+          });
+        } catch {
+          // Ignore the error for those who use static serving of the frontend
+        }
+      });
+
       return (
-        <ApiProvider apis={this.getApiHolder()}>
+        <ApiProvider apis={apis}>
           <AppContextProvider appContext={appContext}>
             <ThemeProvider>
               <RoutingProvider

@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,4 @@
  * limitations under the License.
  */
 
-export { prepareBackstageIdentityResponse } from './prepareBackstageIdentityResponse';
-export { getBearerTokenFromAuthorizationHeader } from './getBearerTokenFromAuthorizationHeader';
-export {
-  DefaultIdentityClient,
-  type IdentityClientOptions,
-} from './DefaultIdentityClient';
-export { IdentityClient } from './IdentityClient';
-export type { IdentityApi, IdentityApiGetIdentityRequest } from './IdentityApi';
-export { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
+export { RedirectToRoot } from './RedirectToRoot';

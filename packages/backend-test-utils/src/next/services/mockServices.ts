@@ -274,6 +274,7 @@ export namespace mockServices {
     export const mock = simpleMock(coreServices.httpAuth, () => ({
       credentials: jest.fn(),
       issueUserCookie: jest.fn(),
+      removeUserCookie: jest.fn(),
     }));
   }
 
