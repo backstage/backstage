@@ -65,7 +65,7 @@ export type AssignedToUserFilter = BaseFilter &
 // @public (undocumented)
 export interface AzureDevOpsApi {
   // (undocumented)
-  getAllTeams(topTeams?: number): Promise<Team[]>;
+  getAllTeams(teamsLimit?: number): Promise<Team[]>;
   // (undocumented)
   getBuildRuns(
     projectName: string,
@@ -81,7 +81,7 @@ export interface AzureDevOpsApi {
   // (undocumented)
   getDashboardPullRequests(
     projectName: string,
-    topTeams?: number,
+    teamsLimit?: number,
   ): Promise<DashboardPullRequest[]>;
   // (undocumented)
   getGitTags(
@@ -127,7 +127,7 @@ export const azureDevOpsApiRef: ApiRef<AzureDevOpsApi>;
 export class AzureDevOpsClient implements AzureDevOpsApi {
   constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi });
   // (undocumented)
-  getAllTeams(topTeams?: number): Promise<Team[]>;
+  getAllTeams(teamsLimit?: number): Promise<Team[]>;
   // (undocumented)
   getBuildRuns(
     projectName: string,
@@ -143,7 +143,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   // (undocumented)
   getDashboardPullRequests(
     projectName: string,
-    topTeams?: number,
+    teamsLimit?: number,
   ): Promise<DashboardPullRequest[]>;
   // (undocumented)
   getGitTags(
@@ -195,7 +195,7 @@ export const AzurePullRequestsPage: (props: {
   projectName?: string | undefined;
   pollingInterval?: number | undefined;
   defaultColumnConfigs?: PullRequestColumnConfig[] | undefined;
-  topTeams?: number | undefined;
+  teamsLimit?: number | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
