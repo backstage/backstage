@@ -193,7 +193,7 @@ export async function buildAppTask(appDir: string) {
 
     if (yarnVersion && !yarnVersion.startsWith('1.')) {
       throw new Error(
-        `@backstage/create-app requires Yarn v1, found '${yarnVersion}'. You can migrate the project to Yarn 3 after creation using https://backstage.io/docs/tutorials/yarn-migration`,
+        `@backstage/create-app requires Yarn v1, found '${yarnVersion}'. You can migrate the project to Yarn 3 after creation using https://backstage.io/docs/upgrading/yarn-migration`,
       );
     }
   });

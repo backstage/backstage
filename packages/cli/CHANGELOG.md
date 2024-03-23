@@ -289,7 +289,7 @@
 - 32018ff: Enable the `tsx` loader to work on Node 18.19 and up
 - 0ffee55: Toned down the warning message when git is not found
 - c6f3743: Added a warning when starting a standalone backend plugin that hasn't been updated to the new backend system.
-- 3e358b0: Added deprecation warning for React Router v6 beta, please make sure you have migrated your apps to use React Router v6 stable as support for the beta version will be removed. See the [migration tutorial](https://backstage.io/docs/tutorials/react-router-stable-migration) for more information.
+- 3e358b0: Added deprecation warning for React Router v6 beta, please make sure you have migrated your apps to use React Router v6 stable as support for the beta version will be removed. See the [migration tutorial](https://backstage.io/docs/upgrading/react-router-stable-migration) for more information.
 - 219d7f0: Updating template generation for scaffolder module
 - 8cda3c7: Tweaked Node.js version check for when to use the new module register API with the new backend `package start` command.
 - a3edc18: Updated dependency `vite-plugin-node-polyfills` to `^0.17.0`.
@@ -362,7 +362,7 @@
 
 - 0ffee55010: Toned down the warning message when git is not found
 - c6f3743172: Added a warning when starting a standalone backend plugin that hasn't been updated to the new backend system.
-- 3e358b0dff: Added deprecation warning for React Router v6 beta, please make sure you have migrated your apps to use React Router v6 stable as support for the beta version will be removed. See the [migration tutorial](https://backstage.io/docs/tutorials/react-router-stable-migration) for more information.
+- 3e358b0dff: Added deprecation warning for React Router v6 beta, please make sure you have migrated your apps to use React Router v6 stable as support for the beta version will be removed. See the [migration tutorial](https://backstage.io/docs/upgrading/react-router-stable-migration) for more information.
 - 8056425e09: Updated dependency `@typescript-eslint/eslint-plugin` to `6.12.0`.
 - 33e96e59e7: Switched the `@typescript-eslint/eslint-plugin` dependency back to using a `^` version range.
 - Updated dependencies
@@ -1768,7 +1768,7 @@
   - `prepack` - Use `package prepack` instead
   - `postpack` - Use `package postpack` instead
 
-  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/tutorials/package-role-migration).
+  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/upgrading/package-role-migration).
 
 ### Patch Changes
 
@@ -1824,7 +1824,7 @@
   - `prepack` - Use `package prepack` instead
   - `postpack` - Use `package postpack` instead
 
-  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/tutorials/package-role-migration).
+  In order to replace these you need to have [migrated to using package roles](https://backstage.io/docs/upgrading/package-role-migration).
 
 ### Patch Changes
 
@@ -1941,7 +1941,7 @@
 
 - 1f7d4763ab: **BREAKING**: Bump the version range of `jest` from `^26.0.1` to `^27.5.1`. You can find the complete list of breaking changes [here](https://github.com/facebook/jest/releases/tag/v27.0.0).
 
-  We strongly recommend to have completed the [package role migration](https://backstage.io/docs/tutorials/package-role-migration) before upgrading to this version, as the package roles are used to automatically determine the testing environment for each package. If you instead want to set an explicit test environment for each package, you can do so for example in the `"jest"` section in `package.json`. The default test environment for all packages is now `node`, which is also the new Jest default.
+  We strongly recommend to have completed the [package role migration](https://backstage.io/docs/upgrading/package-role-migration) before upgrading to this version, as the package roles are used to automatically determine the testing environment for each package. If you instead want to set an explicit test environment for each package, you can do so for example in the `"jest"` section in `package.json`. The default test environment for all packages is now `node`, which is also the new Jest default.
 
   Note that one of the breaking changes of Jest 27 is that the `jsdom` environment no longer includes `setImmediate` and `clearImmediate`, which means you might need to update some of your frontend packages. Another notable change is that `jest.useFakeTimers` now defaults to the `'modern'` implementation, which also mocks microtasks.
 
@@ -2020,7 +2020,7 @@
 
 - 1f7d4763ab: **BREAKING**: Bump the version range of `jest` from `^26.0.1` to `^27.5.1`. You can find the complete list of breaking changes [here](https://github.com/facebook/jest/releases/tag/v27.0.0).
 
-  We strongly recommend to have completed the [package role migration](https://backstage.io/docs/tutorials/package-role-migration) before upgrading to this version, as the package roles are used to automatically determine the testing environment for each package. If you instead want to set an explicit test environment for each package, you can do so for example in the `"jest"` section in `package.json`. The default test environment for all packages is now `node`, which is also the new Jest default.
+  We strongly recommend to have completed the [package role migration](https://backstage.io/docs/upgrading/package-role-migration) before upgrading to this version, as the package roles are used to automatically determine the testing environment for each package. If you instead want to set an explicit test environment for each package, you can do so for example in the `"jest"` section in `package.json`. The default test environment for all packages is now `node`, which is also the new Jest default.
 
   Note that one of the breaking changes of Jest 27 is that the `jsdom` environment no longer includes `setImmediate` and `clearImmediate`, which means you might need to update some of your frontend packages. Another notable change is that `jest.useFakeTimers` now defaults to the `'modern'` implementation, which also mocks microtasks.
 
@@ -2078,7 +2078,7 @@
   Introduced a new `backstage-cli migrate package-lint-configs` command, which migrates old lint configurations to use `@backstage/cli/config/eslint-factory`.
 
 - b1aacbf96a: Applied the fix from version `0.15.1` of this package, which was part of the `v0.70.1` release of Backstage.
-- d2ecde959b: Package roles are now marked as stable and migration is encouraged. Please check out the [migration guide](https://backstage.io/docs/tutorials/package-role-migration).
+- d2ecde959b: Package roles are now marked as stable and migration is encouraged. Please check out the [migration guide](https://backstage.io/docs/upgrading/package-role-migration).
 
   The new `package`, `repo`, and `migrate` command categories are now marked as stable.
 
@@ -2104,7 +2104,7 @@
   Introduced a new `backstage-cli migrate package-lint-configs` command, which migrates old lint configurations to use `@backstage/cli/config/eslint-factory`.
 
 - b1aacbf96a: Applied the fix from version `0.15.1` of this package, which was part of the `v0.70.1` release of Backstage.
-- d2ecde959b: Package roles are now marked as stable and migration is encouraged. Please check out the [migration guide](https://backstage.io/docs/tutorials/package-role-migration).
+- d2ecde959b: Package roles are now marked as stable and migration is encouraged. Please check out the [migration guide](https://backstage.io/docs/upgrading/package-role-migration).
 
   The new `package`, `repo`, and `migrate` command categories are now marked as stable.
 

@@ -246,7 +246,7 @@ export class AppManager implements BackstageApp {
           console.warn(`
 DEPRECATION WARNING: React Router Beta is deprecated and support for it will be removed in a future release.
                      Please migrate to use React Router v6 stable.
-                     See https://backstage.io/docs/tutorials/react-router-stable-migration
+                     See https://backstage.io/docs/upgrading/react-router-stable-migration
 `);
         }
 

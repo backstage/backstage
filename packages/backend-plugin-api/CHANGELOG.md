@@ -19,7 +19,7 @@
 
   At the same time, the [`httpRouter`](https://backstage.io/docs/backend-system/core-services/http-router) service gained a new `addAuthPolicy` method that lets your plugin declare exemptions to the default auth policy - for example if you want to allow unauthenticated or cookie-based access to some subset of your feature routes.
 
-  If you have migrated to the new backend system, please see the [Auth Service Migration tutorial](https://backstage.io/docs/tutorials/auth-service-migration) for more information on how to move toward using these services.
+  If you have migrated to the new backend system, please see the [Auth Service Migration tutorial](https://backstage.io/docs/upgrading/auth-service-migration) for more information on how to move toward using these services.
 
 - 0502d82: Updated the `PermissionsService` methods to accept `BackstageCredentials` through options.
 - Updated dependencies
@@ -59,7 +59,7 @@
 
   At the same time, the [`httpRouter`](https://backstage.io/docs/backend-system/core-services/http-router) service gained a new `addAuthPolicy` method that lets your plugin declare exemptions to the default auth policy - for example if you want to allow unauthenticated or cookie-based access to some subset of your feature routes.
 
-  If you have migrated to the new backend system, please see the [Auth Service Migration tutorial](https://backstage.io/docs/tutorials/auth-service-migration) for more information on how to move toward using these services.
+  If you have migrated to the new backend system, please see the [Auth Service Migration tutorial](https://backstage.io/docs/upgrading/auth-service-migration) for more information on how to move toward using these services.
 
 - 0502d82: Updated the `PermissionsService` methods to accept `BackstageCredentials` through options.
 - Updated dependencies

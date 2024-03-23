@@ -51,7 +51,7 @@
 
   The `@testing-library/*` dependencies have also been updated to the ones compatible with React v18, and the test at `packages/app/src/App.test.tsx` had been updated to use more modern patterns that work better with these new versions.
 
-  For information on how to migrate existing apps to React v18, see the [migration guide](https://backstage.io/docs/tutorials/react18-migration)
+  For information on how to migrate existing apps to React v18, see the [migration guide](https://backstage.io/docs/upgrading/react18-migration)
 
 - Updated dependencies
   - @backstage/cli-common@0.1.13
@@ -89,7 +89,7 @@
 
   The `@testing-library/*` dependencies have also been updated to the ones compatible with React v18, and the test at `packages/app/src/App.test.tsx` had been updated to use more modern patterns that work better with these new versions.
 
-  For information on how to migrate existing apps to React v18, see the [migration guide](https://backstage.io/docs/tutorials/react18-migration)
+  For information on how to migrate existing apps to React v18, see the [migration guide](https://backstage.io/docs/upgrading/react18-migration)
 
 - Updated dependencies
   - @backstage/cli-common@0.1.13
@@ -1079,7 +1079,7 @@
   Migrating to the stable version of `react-router` is optional for the time
   being. But if you want to do the same for your existing repository, please
   follow [this
-  guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+  guide](https://backstage.io/docs/upgrading/react-router-stable-migration).
 
 - e05e0f021b: Update versions of packages used in the create-app template, to match those in the main repo
 - 01dff06be4: Leverage cache mounts in Dockerfile during `yarn install ...` and `apt-get ...` commands to speed up repeated builds.
@@ -1127,7 +1127,7 @@
   Migrating to the stable version of `react-router` is optional for the time
   being. But if you want to do the same for your existing repository, please
   follow [this
-  guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+  guide](https://backstage.io/docs/upgrading/react-router-stable-migration).
 
 - e05e0f021b: Update versions of packages used in the create-app template, to match those in the main repo
 - 52f25858a8: Added `*.session.sql` Visual Studio Code database functionality files to `.gitignore` in the default template. This is optional but potentially helpful if your developers use Visual Studio Code; you can add a line with that exact value to your own root `.gitignore` if you want the same.
@@ -1157,7 +1157,7 @@
   -    "diff": "lerna run diff --",
   ```
 
-- c1f1a4c760: The Backstage packages and plugins have all been updated to support React Router v6 stable. The `create-app` template has not been migrated yet, but if you want to migrate your own app or plugins, check out the [migration guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+- c1f1a4c760: The Backstage packages and plugins have all been updated to support React Router v6 stable. The `create-app` template has not been migrated yet, but if you want to migrate your own app or plugins, check out the [migration guide](https://backstage.io/docs/upgrading/react-router-stable-migration).
 - e83de28e36: Fix typo in the documentation
 - 7d47def9c4: Removed dependency on `@types/jest`.
 - 208d6780c9: The `packages/backend/Dockerfile` received a couple of updates, it now looks as follows:
@@ -1431,7 +1431,7 @@
 
 ### Patch Changes
 
-- c1f1a4c760: The Backstage packages and plugins have all been updated to support React Router v6 stable. The `create-app` template has not been migrated yet, but if you want to migrate your own app or plugins, check out the [migration guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+- c1f1a4c760: The Backstage packages and plugins have all been updated to support React Router v6 stable. The `create-app` template has not been migrated yet, but if you want to migrate your own app or plugins, check out the [migration guide](https://backstage.io/docs/upgrading/react-router-stable-migration).
 - c3c90280be: The options part of `DatabaseManager.fromConfig` now accepts an optional logger
   field. You may want to supply that logger in your backend initialization code to
   ensure that you can get relevant logging data when things happen related to the
@@ -2848,7 +2848,7 @@
   There is no need to make this change in an existing Backstage backend. See [supported search engines](https://backstage.io/docs/features/search/search-engines) for details about production-ready search engines.
 
 - 55150919ed: - **BREAKING**: Support for `backstage.io/v1beta2` Software Templates has been removed. Please migrate your legacy templates to the new `scaffolder.backstage.io/v1beta3` `apiVersion` by following the [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3)
-- bde30664c4: Updated template to use package roles. To apply this change to an existing app, check out the [migration guide](https://backstage.io/docs/tutorials/package-role-migration).
+- bde30664c4: Updated template to use package roles. To apply this change to an existing app, check out the [migration guide](https://backstage.io/docs/upgrading/package-role-migration).
 
   Specifically the following scripts in the root `package.json` have also been updated:
 
@@ -2916,7 +2916,7 @@
   There is no need to make this change in an existing Backstage backend. See [supported search engines](https://backstage.io/docs/features/search/search-engines) for details about production-ready search engines.
 
 - 55150919ed: - **BREAKING**: Support for `backstage.io/v1beta2` Software Templates has been removed. Please migrate your legacy templates to the new `scaffolder.backstage.io/v1beta3` `apiVersion` by following the [migration guide](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3)
-- bde30664c4: Updated template to use package roles. To apply this change to an existing app, check out the [migration guide](https://backstage.io/docs/tutorials/package-role-migration).
+- bde30664c4: Updated template to use package roles. To apply this change to an existing app, check out the [migration guide](https://backstage.io/docs/upgrading/package-role-migration).
 
   Specifically the following scripts in the root `package.json` have also been updated:
 

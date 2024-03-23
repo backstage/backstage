@@ -74,7 +74,7 @@ implemented in a typical Backstage app.
 
 ## Package Roles
 
-> Package roles were introduced in March 2022. To migrate existing projects, see the [migration guide](../tutorials/package-role-migration.md).
+> Package roles were introduced in March 2022. To migrate existing projects, see the [migration guide](../upgrading/package-role-migration.md).
 
 The Backstage build system uses the concept of package roles in order to help keep
 configuration lean, provide utility and tooling, and enable optimizations. A package
