@@ -8,8 +8,46 @@ The scaffolder comes with several built-in actions for fetching content,
 registering in the catalog and of course actions for creating and publishing a
 git repository.
 
-There are several repository providers supported out of the box such as GitHub,
-Azure, GitLab and Bitbucket.
+## Action Modules
+
+The GitHub module is included out of the box, but several other modules are available:
+
+- Azure DevOps: `@backstage/plugin-scaffolder-backend-module-azure`
+- Bitbucket Cloud: `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`
+- Bitbucket Server: `@backstage/plugin-scaffolder-backend-module-bitbucket-server`
+- Gerrit: `@backstage/plugin-scaffolder-backend-module-gerrit`
+- Gittea: `@backstage/plugin-scaffolder-backend-module-gittea`
+- GitLab: `@backstage/plugin-scaffolder-backend-module-gitlab`
+
+Here's how to add an action module, this is a simplified backend for example purposes:
+
+```ts title="/packages/backend/src/index.ts
+import { createBackend } from '@backstage/backend-defaults';
+
+const backend = createBackend();
+
+backend.add(import('@backstage/plugin-app-backend/alpha'));
+
+// catalog plugin
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
+);
+
+// scaffolder plugin
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+{
+  /* highlight-add-start */
+}
+backend.add(import('@backstage/plugin-scaffolder-backend-module-azure'));
+{
+  /* highlight-add-end */
+}
+
+backend.start();
+```
+
+## Listing Actions
 
 A list of all registered actions can be found under `/create/actions`. For local
 development you should be able to reach them at
