@@ -124,21 +124,21 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 
   public getDashboardPullRequests(
     projectName: string,
-    topTeams?: number,
+    teamsLimit?: number,
   ): Promise<DashboardPullRequest[]> {
     const queryString = new URLSearchParams();
     queryString.append('top', '100');
-    if (topTeams) {
-      queryString.append('topTeams', topTeams.toString());
+    if (teamsLimit) {
+      queryString.append('teamsLimit', teamsLimit.toString());
     }
     const urlSegment = `dashboard-pull-requests/${projectName}?${queryString}`;
     return this.get<DashboardPullRequest[]>(urlSegment);
   }
 
-  public getAllTeams(topTeams?: number): Promise<Team[]> {
+  public getAllTeams(teamsLimit?: number): Promise<Team[]> {
     const queryString = new URLSearchParams();
-    if (topTeams) {
-      queryString.append('topTeams', topTeams.toString());
+    if (teamsLimit) {
+      queryString.append('teamsLimit', teamsLimit.toString());
     }
     let urlSegment = 'all-teams';
     if (queryString.toString()) {
