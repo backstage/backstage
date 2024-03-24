@@ -390,6 +390,7 @@ export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 // @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
+  initiatorCredentials?: string;
 };
 
 // @public
