@@ -16,7 +16,9 @@
 
 import React from 'react';
 import { Select, SelectedItems, SelectItem } from '@backstage/core-components';
-import { makeStyles, Box, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
 type RepositoryFiltersProps = {
   items: Array<SelectItem>;

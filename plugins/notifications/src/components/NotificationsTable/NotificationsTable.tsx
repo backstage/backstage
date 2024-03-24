@@ -17,7 +17,11 @@ import React, { useMemo } from 'react';
 import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import { Box, Grid, IconButton, Tooltip, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import { Notification } from '@backstage/plugin-notifications-common';
 
 import { notificationsApiRef } from '../../api';

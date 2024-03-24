@@ -15,7 +15,9 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { TextField, List, ListItem } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 
 import ClusterTemplateCardList from '../ClusterTemplateCardList';
 import ProfileCardList from '../ProfileCardList';

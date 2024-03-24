@@ -1,5 +1,19 @@
 # @backstage/plugin-pagerduty
 
+## 0.7.4
+
+### Patch Changes
+
+- 2b43144: Added ESLint rule `no-top-level-material-ui-4-imports` in the `pagerduty` plugin to migrate the Material UI imports.
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-catalog-react@1.11.1
+  - @backstage/plugin-home-react@0.1.10
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+
 ## 0.7.3
 
 ### Patch Changes

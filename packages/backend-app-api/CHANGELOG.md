@@ -1,5 +1,23 @@
 # @backstage/backend-app-api
 
+## 0.6.1
+
+### Patch Changes
+
+- de1f45d: Temporarily revert the rate limiting
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/plugin-auth-node@0.4.10
+  - @backstage/backend-tasks@0.5.20
+  - @backstage/plugin-permission-node@0.7.26
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.6.0
 
 ### Minor Changes

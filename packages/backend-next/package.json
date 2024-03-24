@@ -1,28 +1,31 @@
 {
   "name": "example-backend-next",
-  "version": "0.0.21",
-  "main": "dist/index.cjs.js",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
-  "private": true,
+  "version": "0.0.23",
   "backstage": {
     "role": "backend"
   },
+  "private": true,
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/backend-next"
   },
-  "keywords": [
-    "backstage"
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
   ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
@@ -70,8 +73,5 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }

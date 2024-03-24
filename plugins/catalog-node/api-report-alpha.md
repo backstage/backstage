@@ -10,6 +10,7 @@ import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PlaceholderResolver } from '@backstage/plugin-catalog-node';
@@ -43,6 +44,8 @@ export interface CatalogPermissionExtensionPoint {
       CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
     >
   ): void;
+  // (undocumented)
+  addPermissions(...permissions: Array<Permission | Array<Permission>>): void;
 }
 
 // @alpha (undocumented)

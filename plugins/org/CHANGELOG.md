@@ -1,5 +1,20 @@
 # @backstage/plugin-org
 
+## 0.6.22
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- 0df5c60: Added ESLint rule `no-top-level-material-ui-4-imports` in the `org` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-catalog-react@1.11.1
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/core-compat-api@0.2.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-catalog-common@1.0.22
+
 ## 0.6.21
 
 ### Patch Changes

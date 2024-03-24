@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Badge, Chip, makeStyles } from '@material-ui/core';
+import Badge from '@material-ui/core/Badge';
+import Chip from '@material-ui/core/Chip';
+import { makeStyles } from '@material-ui/core/styles';
 import CancelIcon from '@material-ui/icons/Cancel';
 import CheckIcon from '@material-ui/icons/CheckCircle';
 import { Attendee, ResponseStatusMap } from '../api';

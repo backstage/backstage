@@ -23,14 +23,12 @@ import React, { useState } from 'react';
 
 import { Link } from '@backstage/core-components';
 
-import {
-  Box,
-  Paper,
-  Popover,
-  Tooltip,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
+import Popover from '@material-ui/core/Popover';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
 import webcamIcon from '../icons/webcam.svg';
 import { CalendarEventPopoverContent } from './CalendarEventPopoverContent';

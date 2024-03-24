@@ -1,16 +1,13 @@
 {
   "name": "@backstage/cli",
+  "version": "0.26.1",
   "description": "CLI for developing Backstage plugins and apps",
-  "version": "0.26.0",
   "backstage": {
     "role": "cli"
   },
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "backstage"
-  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",

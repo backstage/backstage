@@ -257,6 +257,8 @@ export interface Substitutions {
   REVISION_ID: string;
   // (undocumented)
   SHORT_SHA: string;
+  // (undocumented)
+  TRIGGER_NAME: string;
 }
 
 // @public (undocumented)

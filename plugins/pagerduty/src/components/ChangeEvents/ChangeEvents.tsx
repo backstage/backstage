@@ -15,14 +15,15 @@
  */
 
 import React, { useEffect } from 'react';
-import { List, ListSubheader } from '@material-ui/core';
+import List from '@material-ui/core/List';
+import ListSubheader from '@material-ui/core/ListSubheader';
 import { ChangeEventListItem } from './ChangeEventListItem';
 import { ChangeEventEmptyState } from './ChangeEventEmptyState';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { pagerDutyApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
 import { Progress } from '@backstage/core-components';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 
 type Props = {
   serviceId: string;

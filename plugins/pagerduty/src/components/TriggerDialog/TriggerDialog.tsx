@@ -15,19 +15,17 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import {
-  Dialog,
-  DialogTitle,
-  TextField,
-  DialogActions,
-  Button,
-  DialogContent,
-  Typography,
-  CircularProgress,
-} from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import TextField from '@material-ui/core/TextField';
+import DialogActions from '@material-ui/core/DialogActions';
+import Button from '@material-ui/core/Button';
+import DialogContent from '@material-ui/core/DialogContent';
+import Typography from '@material-ui/core/Typography';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { pagerDutyApiRef } from '../../api';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import {
   useApi,
   alertApiRef,
