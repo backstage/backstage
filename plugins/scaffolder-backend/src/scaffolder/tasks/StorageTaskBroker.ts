@@ -179,8 +179,8 @@ export class TaskManager implements TaskContext {
   }
 
   async getInitiatorCredentials(): Promise<BackstageCredentials> {
-    if (this.task.secrets && '__initiatorCredentials' in this.task.secrets) {
-      return JSON.parse(this.task.secrets.__initiatorCredentials);
+    if (this.task.secrets && this.task.secrets.initiatorCredentials) {
+      return JSON.parse(this.task.secrets.initiatorCredentials);
     }
     if (!this.auth) {
       throw new Error(
