@@ -84,7 +84,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   ): BitbucketServerEntityProvider[];
   // (undocumented)
   getProviderName(): string;
-  onRepoPush(event: BitbucketServerEvents.RefsChangedEvent): Promise<void>;
   // (undocumented)
   refresh(logger: LoggerService): Promise<void>;
 }

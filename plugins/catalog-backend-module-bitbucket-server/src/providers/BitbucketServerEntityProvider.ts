@@ -438,7 +438,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
    * if not, it discovers any entity that was added and removed in the list of entities
    * @param event - A Bitbucket Server webhook event for repo:refs_change
    */
-  async onRepoPush(
+  private async onRepoPush(
     event: BitbucketServerEvents.RefsChangedEvent,
   ): Promise<void> {
     if (!this.canHandleEvents()) {
