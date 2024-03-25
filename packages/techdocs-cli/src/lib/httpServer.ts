@@ -59,6 +59,15 @@ export default class HTTPServer {
       const proxyHandler = this.createProxy();
       const server = http.createServer(
         (request: http.IncomingMessage, response: http.ServerResponse) => {
+          // This endpoind is used by the frontend to issue a cookie for the user.
+          // It is necessary because the MkDocs server doesn't expose it.
+          if (request.url === '/api/techdocs/.backstage/v1-cookie') {
+            const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
+            const cookie = { expiresAt: expiresAt.toISOString() };
+            response.end(JSON.stringify(cookie));
+            return;
+          }
+
           if (request.url?.startsWith(this.proxyEndpoint)) {
             const [proxy, forwardPath] = proxyHandler(request);
 
