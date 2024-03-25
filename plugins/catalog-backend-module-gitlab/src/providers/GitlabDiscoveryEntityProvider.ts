@@ -61,6 +61,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private readonly events?: EventsService;
+  private readonly gitLabClient: GitLabClient;
 
   static fromConfig(
     config: Config,
@@ -129,6 +130,10 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     });
     this.scheduleFn = this.createScheduleFn(options.taskRunner);
     this.events = options.events;
+    this.gitLabClient = new GitLabClient({
+      config: this.integration.config,
+      logger: this.logger,
+    });
   }
 
   getProviderName(): string {
@@ -196,13 +201,9 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
         `Gitlab discovery connection not initialized for ${this.getProviderName()}`,
       );
     }
-    const client = new GitLabClient({
-      config: this.integration.config,
-      logger: logger,
-    });
 
     const projects = paginated<GitLabProject>(
-      options => client.listProjects(options),
+      options => this.gitLabClient.listProjects(options),
       {
         archived: false,
         group: this.config.group,
@@ -217,13 +218,17 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     };
 
     for await (const project of projects) {
-      if (await this.shouldProcessProject(project, client)) {
+      if (await this.shouldProcessProject(project, this.gitLabClient)) {
         res.scanned++;
         res.matches.push(project);
       }
     }
 
     const locations = res.matches.map(p => this.createLocationSpec(p));
+
+    logger.info(
+      `Processed ${locations.length} from scanned ${res.scanned} projects.`,
+    );
     await this.connection.applyMutation({
       type: 'full',
       entities: locations.map(location => ({
@@ -261,12 +266,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       `Received push event for ${event.project.path_with_namespace}`,
     );
 
-    const client = new GitLabClient({
-      config: this.integration.config,
-      logger: this.logger,
-    });
-
-    const project = await client.getProjectById(event.project_id);
+    const project = await this.gitLabClient.getProjectById(event.project_id);
 
     if (!project) {
       this.logger.debug(
@@ -276,7 +276,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       return;
     }
 
-    if (!(await this.shouldProcessProject(project, client))) {
+    if (!(await this.shouldProcessProject(project, this.gitLabClient))) {
       this.logger.debug(`Skipping event ${event.project.path_with_namespace}`);
       return;
     }
