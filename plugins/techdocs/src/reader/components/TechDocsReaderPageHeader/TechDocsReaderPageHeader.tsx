@@ -19,7 +19,6 @@ import Helmet from 'react-helmet';
 
 import Grid from '@material-ui/core/Grid';
 import Skeleton from '@material-ui/lab/Skeleton';
-import { useTheme } from '@material-ui/core/styles';
 import CodeIcon from '@material-ui/icons/Code';
 
 import {
