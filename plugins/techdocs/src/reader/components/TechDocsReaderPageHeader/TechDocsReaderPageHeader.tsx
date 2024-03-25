@@ -65,11 +65,6 @@ export type TechDocsReaderPageHeaderProps = PropsWithChildren<{
 export const TechDocsReaderPageHeader = (
   props: TechDocsReaderPageHeaderProps,
 ) => {
-  const {
-    palette: {
-      common: { white },
-    },
-  } = useTheme();
   const { children } = props;
   const addons = useTechDocsAddons();
   const configApi = useApi(configApiRef);
@@ -142,11 +137,7 @@ export const TechDocsReaderPageHeader = (
         <HeaderLabel
           label=""
           value={
-            <Grid
-              container
-              direction="column"
-              alignItems="center"
-            >
+            <Grid container direction="column" alignItems="center">
               <Grid style={{ padding: 0 }} item>
                 <CodeIcon style={{ marginTop: '-25px' }} />
               </Grid>
