@@ -139,7 +139,7 @@ export const config_saas_no_group: MockObject = {
   },
 };
 
-export const config_non_gitlab_host: MockObject = {
+export const config_github_host: MockObject = {
   integrations: {
     github: [
       {
@@ -910,9 +910,9 @@ export const group_destroy_event: EventParams = {
     event_name: 'group_destroy',
     created_at: '2024-02-02T10:53:09Z',
     updated_at: '2024-02-02T10:53:09Z',
-    name: 'group1',
-    path: 'group1',
-    full_path: 'group1',
+    name: 'group3',
+    path: 'group3',
+    full_path: 'group3',
     group_id: 123,
   },
 };
@@ -951,10 +951,10 @@ export const group_create_event: EventParams = {
     event_name: 'group_create',
     created_at: '2024-02-02T10:53:09Z',
     updated_at: '2024-02-02T10:53:09Z',
-    name: 'group1',
-    path: 'group1',
-    full_path: 'group1',
-    group_id: 1,
+    name: 'group3',
+    path: 'group3',
+    full_path: 'group3',
+    group_id: 3,
   },
 };
 export const group_create_event_unmatched: EventParams = {
@@ -1038,9 +1038,9 @@ export const user_remove_from_group_event: EventParams = {
   eventPayload: {
     created_at: '2024-02-02T10:53:09Z',
     updated_at: '2024-02-02T10:53:09Z',
-    group_name: 'group1',
-    group_path: 'my-groups/group1',
-    group_id: 1,
+    group_name: 'group3',
+    group_path: 'my-groups/group3',
+    group_id: 3,
     user_username: 'user1',
     user_name: 'John Doe',
     user_email: 'john.doe@company.com',
@@ -1382,17 +1382,17 @@ export const expected_group_entity: MockObject[] = [
       kind: 'Group',
       metadata: {
         annotations: {
-          'backstage.io/managed-by-location': 'url:https://example.com/group1',
+          'backstage.io/managed-by-location': 'url:https://example.com/group3',
           'backstage.io/managed-by-origin-location':
-            'url:https://example.com/group1',
-          'example.com/team-path': 'group1',
+            'url:https://example.com/group3',
+          'example.com/team-path': 'group3',
         },
-        name: 'group1',
+        name: 'group3',
       },
       spec: {
         children: [],
         profile: {
-          displayName: 'group1',
+          displayName: 'group3',
         },
         type: 'team',
       },
@@ -1489,17 +1489,44 @@ export const expected_transformed_group_entity: MockObject[] = [
       kind: 'Group',
       metadata: {
         annotations: {
-          'backstage.io/managed-by-location': 'url:https://example.com/group1',
+          'backstage.io/managed-by-location': 'url:https://example.com/group3',
           'backstage.io/managed-by-origin-location':
-            'url:https://example.com/group1',
-          'example.com/team-path': 'group1',
+            'url:https://example.com/group3',
+          'example.com/team-path': 'group3',
         },
-        name: '1',
+        name: '3',
       },
       spec: {
         children: [],
         profile: {
-          displayName: 'group1',
+          displayName: 'group3',
+        },
+        type: 'team',
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+];
+
+export const expected_removed_user_entity: MockObject[] = [
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/group3',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/group3',
+          'example.com/team-path': 'group3',
+        },
+        name: '3',
+      },
+      spec: {
+        children: [],
+        members: [],
+        profile: {
+          displayName: 'group3',
         },
         type: 'team',
       },
@@ -1661,8 +1688,29 @@ export const expected_full_org_scan_entities: MockObject[] = [
     },
     locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
   },
-
-  expected_group_entity[0],
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/group1',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/group1',
+          'example.com/team-path': 'group1',
+        },
+        name: 'group1',
+      },
+      spec: {
+        children: [],
+        profile: {
+          displayName: 'group1',
+        },
+        type: 'team',
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
 ];
 
 export const expected_full_org_scan_entities_saas: MockObject[] = [

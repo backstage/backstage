@@ -210,6 +210,22 @@ const graphqlHandlers = [
           }),
         );
       }
+      // group with no associated members
+      if (group === 'group3' && relations.includes('DIRECT')) {
+        return res(
+          ctx.data({
+            group: {
+              groupMembers: {
+                nodes: [{}],
+                pageInfo: {
+                  endCursor: 'end',
+                  hasNextPage: false,
+                },
+              },
+            },
+          }),
+        );
+      }
       if (group === 'saas-multi-user-group') {
         return res(
           ctx.data({

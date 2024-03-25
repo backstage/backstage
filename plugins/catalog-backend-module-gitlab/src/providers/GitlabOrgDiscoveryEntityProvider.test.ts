@@ -63,7 +63,7 @@ describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
 
   it('should throw error when no matching GitLab integration config found', () => {
     const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader(mock.config_non_gitlab_host);
+    const config = new ConfigReader(mock.config_github_host);
 
     expect(() => {
       GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
@@ -625,7 +625,7 @@ describe('GitlabOrgDiscoveryEntityProvider with events support', () => {
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'delta',
-      added: mock.expected_transformed_group_entity,
+      added: mock.expected_removed_user_entity,
       removed: [],
     });
   });

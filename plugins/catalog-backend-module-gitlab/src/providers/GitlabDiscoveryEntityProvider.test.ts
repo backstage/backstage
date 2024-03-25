@@ -87,7 +87,7 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
   });
   it('should throw error when no matching GitLab integration config found', () => {
     const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader(mock.config_non_gitlab_host);
+    const config = new ConfigReader(mock.config_github_host);
 
     expect(() => {
       GitlabDiscoveryEntityProvider.fromConfig(config, {

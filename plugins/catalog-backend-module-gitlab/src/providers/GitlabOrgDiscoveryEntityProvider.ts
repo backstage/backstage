@@ -107,6 +107,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private userTransformer: UserTransformer;
   private groupEntitiesTransformer: GroupEntitiesTransformer;
   private groupNameTransformer: GroupNameTransformer;
+  private readonly gitLabClient: GitLabClient;
 
   static fromConfig(
     config: Config,
@@ -192,6 +193,11 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       options.groupEntitiesTransformer ?? defaultGroupEntitiesTransformer;
     this.groupNameTransformer =
       options.groupNameTransformer ?? defaultGroupNameTransformer;
+
+    this.gitLabClient = new GitLabClient({
+      config: this.integration.config,
+      logger: this.logger,
+    });
   }
 
   getProviderName(): string {
@@ -346,31 +352,33 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       );
     }
 
-    const client = new GitLabClient({
-      config: this.integration.config,
-      logger: logger,
-    });
-
     let groups;
     let users;
 
-    if (client.isSelfManaged()) {
-      groups = paginated<GitLabGroup>(options => client.listGroups(options), {
-        page: 1,
-        per_page: 100,
-        all_available: true,
-      });
+    if (this.gitLabClient.isSelfManaged()) {
+      groups = paginated<GitLabGroup>(
+        options => this.gitLabClient.listGroups(options),
+        {
+          page: 1,
+          per_page: 100,
+          all_available: true,
+        },
+      );
 
-      users = paginated<GitLabUser>(options => client.listUsers(options), {
-        page: 1,
-        per_page: 100,
-        active: true,
-      });
+      users = paginated<GitLabUser>(
+        options => this.gitLabClient.listUsers(options),
+        {
+          page: 1,
+          per_page: 100,
+          active: true,
+        },
+      );
     } else {
-      groups = (await client.listDescendantGroups(this.config.group)).items;
+      groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
+        .items;
       const rootGroup = this.config.group.split('/')[0];
       users = paginated<GitLabUser>(
-        options => client.listSaaSUsers(rootGroup, options),
+        options => this.gitLabClient.listSaaSUsers(rootGroup, options),
         {
           page: 1,
           per_page: 100,
@@ -418,7 +426,10 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         const relations = this.config.allowInherited
           ? ['DIRECT', 'INHERITED']
           : ['DIRECT'];
-        groupUsers = await client.getGroupMembers(group.full_path, relations);
+        groupUsers = await this.gitLabClient.getGroupMembers(
+          group.full_path,
+          relations,
+        );
       } catch (e) {
         logger.error(
           `Failed fetching users for group '${group.full_path}': ${e}`,
@@ -488,12 +499,6 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       );
     }
 
-    const getClient = () =>
-      new GitLabClient({
-        config: this.integration.config,
-        logger: this.logger,
-      });
-
     let group: GitLabGroup | undefined;
     if (event.event_name === 'group_destroy') {
       group = {
@@ -504,8 +509,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         parent_id: 0,
       };
     } else {
-      const client = getClient();
-      group = await client.getGroupById(event.group_id);
+      group = await this.gitLabClient.getGroupById(event.group_id);
     }
 
     if (!this.shouldProcessGroup(group)) {
@@ -522,12 +526,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
     // we need to fetch the parent group's object because its representation might be changed by the groupTransformer
     if (group.parent_id) {
-      const client = new GitLabClient({
-        config: this.integration.config,
-        logger: this.logger,
-      });
-
-      const parentGroup = await client.getGroupById(group.parent_id);
+      const parentGroup = await this.gitLabClient.getGroupById(group.parent_id);
 
       groupEntity[0].spec.parent = this.groupNameTransformer({
         group: parentGroup,
@@ -575,12 +574,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       groupNameTransformer: this.groupNameTransformer,
     });
 
-    const client = new GitLabClient({
-      config: this.integration.config,
-      logger: this.logger,
-    });
-
-    const groupToAdd = await client.getGroupById(event.group_id);
+    const groupToAdd = await this.gitLabClient.getGroupById(event.group_id);
 
     if (!this.shouldProcessGroup(groupToAdd)) {
       this.logger.debug(`Skipped group ${groupToAdd.full_path}.`);
@@ -594,7 +588,9 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     });
 
     if (groupToAdd.parent_id) {
-      const parentGroup = await client.getGroupById(groupToAdd.parent_id);
+      const parentGroup = await this.gitLabClient.getGroupById(
+        groupToAdd.parent_id,
+      );
 
       groupEntityToAdd[0].spec.parent = this.groupNameTransformer({
         group: parentGroup,
@@ -602,8 +598,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       });
     }
 
-    const { added } = createDeltaOperation([...groupEntityToAdd]);
-    const { removed } = createDeltaOperation([...groupEntityToRemove]);
+    const { added } = createDeltaOperation(groupEntityToAdd);
+    const { removed } = createDeltaOperation(groupEntityToRemove);
 
     this.logger.debug(`Applying mutation for group ${groupToAdd.full_path}.`);
     await this.connection.applyMutation({
@@ -626,7 +622,9 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       );
     }
 
-    let user: GitLabUser;
+    let user: GitLabUser | undefined = undefined;
+
+    // if user destroy event is received, retrieve user data from the event itself
     if (event.event_name === 'user_destroy') {
       user = {
         id: event.user_id,
@@ -637,13 +635,18 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         web_url: '',
         avatar_url: '',
       };
-    } else {
-      const client = new GitLabClient({
-        config: this.integration.config,
-        logger: this.logger,
-      });
+    }
 
-      user = await client.getUserById(event.user_id);
+    // if user create event received fetch data from gitlab
+    if (event.event_name === 'user_create') {
+      user = await this.gitLabClient.getUserById(event.user_id);
+    }
+
+    if (!user) {
+      this.logger.debug(
+        `Couldn't retrieve user data. Skipped ${event.event_name} event processing for user ${event.username}`,
+      );
+      return;
     }
 
     if (!this.shouldProcessUser(user)) {
@@ -681,16 +684,19 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       );
     }
 
-    const client = new GitLabClient({
-      config: this.integration.config,
-      logger: this.logger,
-    });
-
-    const groupToRebuild: GitLabGroup = await client.getGroupById(
+    // fetch group data from GitLab
+    const groupToRebuild: GitLabGroup = await this.gitLabClient.getGroupById(
       event.group_id,
     );
 
-    // If the group is outside the scope there is no point creating anything related to it.
+    if (!groupToRebuild) {
+      this.logger.debug(
+        `Couldn't retrieve group data. Skipped ${event.event_name} event processing.`,
+      );
+      return;
+    }
+
+    // if the group is outside the scope there is no point creating anything related to it.
     if (!this.shouldProcessGroup(groupToRebuild)) {
       this.logger.debug(`Skipped group ${groupToRebuild.full_path}.`);
       return;
@@ -700,16 +706,12 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       ? ['DIRECT', 'INHERITED']
       : ['DIRECT'];
 
-    const groupMembers = await client.getGroupMembers(
+    // fetch group members from GitLab
+    const groupMembers = await this.gitLabClient.getGroupMembers(
       groupToRebuild.full_path,
       relations,
     );
-
-    // new members of the group
-    const usersToBeAdded =
-      event.event_name === 'user_remove_from_group'
-        ? groupMembers.items.filter(e => e.username !== event.user_username)
-        : groupMembers.items;
+    const usersToBeAdded = groupMembers.items;
 
     const groupEntityToModify = await this.groupEntitiesTransformer({
       groups: [groupToRebuild],
@@ -719,19 +721,22 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
     // we need to fetch the parent group's object because its representation might be changed by the groupTransformer
     if (groupToRebuild.parent_id) {
-      const parentGroup = await client.getGroupById(groupToRebuild.parent_id);
+      const parentGroup = await this.gitLabClient.getGroupById(
+        groupToRebuild.parent_id,
+      );
 
+      // update parent of the group entity
       groupEntityToModify[0].spec.parent = this.groupNameTransformer({
         group: parentGroup,
         providerConfig: this.config,
       });
     }
 
-    if (usersToBeAdded.length !== 0) {
-      groupEntityToModify[0].spec.members = usersToBeAdded.map(e => e.username);
-    }
+    // update members of the group entity
+    groupEntityToModify[0].spec.members =
+      usersToBeAdded.length !== 0 ? usersToBeAdded.map(e => e.username) : [];
 
-    const { added, removed } = createDeltaOperation([...groupEntityToModify]);
+    const { added, removed } = createDeltaOperation(groupEntityToModify);
 
     this.logger.debug(
       `Applying mutation for group ${groupToRebuild.full_path}.`,
