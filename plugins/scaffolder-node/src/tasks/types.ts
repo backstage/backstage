@@ -25,7 +25,6 @@ import { JsonObject, JsonValue, Observable } from '@backstage/types';
  */
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
-  initiatorCredentials?: string;
 };
 
 /**
