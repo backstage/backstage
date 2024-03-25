@@ -64,6 +64,7 @@ export default class HTTPServer {
           if (request.url === '/api/techdocs/.backstage/v1-cookie') {
             const expiresAt = new Date(Date.now() + 60 * 60 * 1000);
             const cookie = { expiresAt: expiresAt.toISOString() };
+            response.setHeader('Content-Type', 'application/json');
             response.end(JSON.stringify(cookie));
             return;
           }
