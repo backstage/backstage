@@ -155,10 +155,9 @@ describe('RepoApiClient', () => {
   const server = setupServer();
   setupRequestMockHandlers(server);
   const sut = new RepoApiClient({
-    token: 'token',
     project: 'project',
     tenantUrl: 'https://dev.azure.com/acme',
-  });
+  } as any);
   beforeEach(() => {
     server.use(
       mockPrEndpoint(),
@@ -307,8 +306,7 @@ describe('createAzurePullRequest', () => {
       fileContent: 'content',
       branchName: 'backstage-integration',
       description: 'Test Description',
-      token: 'token',
-    };
+    } as any;
     const repo: AzureRepo = {
       name: options.repository,
       defaultBranch: 'ref/heads/main',
