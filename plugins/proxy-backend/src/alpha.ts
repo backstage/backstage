@@ -44,6 +44,10 @@ export default createBackendPlugin({
             logger: loggerToWinstonLogger(logger),
           }),
         );
+        httpRouter.addAuthPolicy({
+          allow: 'unauthenticated',
+          path: '/',
+        });
       },
     });
   },
