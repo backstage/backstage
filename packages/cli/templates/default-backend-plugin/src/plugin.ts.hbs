@@ -26,6 +26,10 @@ export const {{pluginVar}} = createBackendPlugin({
             logger,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },
