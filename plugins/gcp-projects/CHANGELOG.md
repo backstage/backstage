@@ -1,14 +1,5 @@
 # @backstage/plugin-gcp-projects
 
-## 0.3.48
-
-### Patch Changes
-
-- 7dad59c: Added ESLint rule `no-top-level-material-ui-4-imports` in the `gcp-projects` plugin to migrate the Material UI imports.
-- Updated dependencies
-  - @backstage/core-components@0.14.2
-  - @backstage/core-plugin-api@1.9.1
-
 ## 0.3.47
 
 ### Patch Changes

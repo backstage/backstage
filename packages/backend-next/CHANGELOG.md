@@ -1,53 +1,5 @@
 # example-backend-next
 
-## 0.0.23
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/plugin-catalog-backend@1.20.0
-  - @backstage/plugin-kubernetes-backend@0.16.2
-  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.2
-  - @backstage/plugin-permission-backend@0.5.39
-  - @backstage/plugin-catalog-backend-module-openapi@0.1.33
-  - @backstage/plugin-auth-backend@0.22.2
-  - @backstage/plugin-azure-devops-backend@0.6.2
-  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.1.9
-  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.13
-  - @backstage/plugin-jenkins-backend@0.4.2
-  - @backstage/plugin-lighthouse-backend@0.4.8
-  - @backstage/plugin-linguist-backend@0.5.13
-  - @backstage/plugin-scaffolder-backend@1.22.2
-  - @backstage/plugin-search-backend-module-catalog@0.1.20
-  - @backstage/plugin-search-backend-module-techdocs@0.1.20
-  - @backstage/plugin-todo-backend@0.3.14
-  - @backstage/backend-defaults@0.2.15
-  - @backstage/plugin-app-backend@0.3.63
-  - @backstage/plugin-adr-backend@0.4.12
-  - @backstage/plugin-auth-node@0.4.10
-  - @backstage/plugin-badges-backend@0.3.12
-  - @backstage/plugin-entity-feedback-backend@0.2.12
-  - @backstage/plugin-notifications-backend@0.1.1
-  - @backstage/plugin-playlist-backend@0.3.19
-  - @backstage/plugin-techdocs-backend@1.10.2
-  - @backstage/backend-tasks@0.5.20
-  - @backstage/plugin-auth-backend-module-guest-provider@0.1.1
-  - @backstage/plugin-devtools-backend@0.3.1
-  - @backstage/plugin-nomad-backend@0.1.17
-  - @backstage/plugin-permission-node@0.7.26
-  - @backstage/plugin-proxy-backend@0.4.13
-  - @backstage/plugin-scaffolder-backend-module-github@0.2.5
-  - @backstage/plugin-search-backend@1.5.5
-  - @backstage/plugin-search-backend-module-explore@0.1.19
-  - @backstage/plugin-search-backend-node@1.2.19
-  - @backstage/plugin-signals-backend@0.1.1
-  - @backstage/plugin-sonarqube-backend@0.2.17
-  - @backstage/backend-plugin-api@0.6.15
-  - @backstage/catalog-model@1.4.5
-  - @backstage/plugin-auth-backend-module-github-provider@0.1.12
-  - @backstage/plugin-permission-backend-module-allow-all-policy@0.1.12
-  - @backstage/plugin-permission-common@0.7.13
-
 ## 0.0.22
 
 ### Patch Changes

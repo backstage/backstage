@@ -1,14 +1,5 @@
 # @backstage/catalog-client
 
-## 1.6.2
-
-### Patch Changes
-
-- 7e8a7c8: Added missing commas to the example of `queryEntities`
-- Updated dependencies
-  - @backstage/catalog-model@1.4.5
-  - @backstage/errors@1.2.4
-
 ## 1.6.1
 
 ### Patch Changes

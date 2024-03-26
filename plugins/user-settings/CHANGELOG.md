@@ -1,21 +1,5 @@
 # @backstage/plugin-user-settings
 
-## 0.8.3
-
-### Patch Changes
-
-- e8f026a: Use ESM exports of react-use library
-- Updated dependencies
-  - @backstage/core-components@0.14.2
-  - @backstage/core-app-api@1.12.2
-  - @backstage/plugin-catalog-react@1.11.1
-  - @backstage/frontend-plugin-api@0.6.2
-  - @backstage/core-compat-api@0.2.2
-  - @backstage/core-plugin-api@1.9.1
-  - @backstage/errors@1.2.4
-  - @backstage/theme@0.5.2
-  - @backstage/types@1.1.1
-
 ## 0.8.2
 
 ### Patch Changes

@@ -1,16 +1,5 @@
 # @backstage/repo-tools
 
-## 0.7.1
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/backend-common@0.21.5
-  - @backstage/catalog-model@1.4.5
-  - @backstage/cli-common@0.1.13
-  - @backstage/cli-node@0.2.4
-  - @backstage/errors@1.2.4
-
 ## 0.7.0
 
 ### Minor Changes

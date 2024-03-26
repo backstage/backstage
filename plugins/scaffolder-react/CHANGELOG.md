@@ -1,21 +1,5 @@
 # @backstage/plugin-scaffolder-react
 
-## 1.8.2
-
-### Patch Changes
-
-- e8f026a: Use ESM exports of react-use library
-- Updated dependencies
-  - @backstage/catalog-client@1.6.2
-  - @backstage/core-components@0.14.2
-  - @backstage/plugin-catalog-react@1.11.1
-  - @backstage/core-plugin-api@1.9.1
-  - @backstage/catalog-model@1.4.5
-  - @backstage/theme@0.5.2
-  - @backstage/types@1.1.1
-  - @backstage/version-bridge@1.0.7
-  - @backstage/plugin-scaffolder-common@1.5.1
-
 ## 1.8.1
 
 ### Patch Changes

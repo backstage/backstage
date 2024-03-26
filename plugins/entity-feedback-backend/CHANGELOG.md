@@ -1,19 +1,5 @@
 # @backstage/plugin-entity-feedback-backend
 
-## 0.2.12
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/catalog-client@1.6.2
-  - @backstage/backend-common@0.21.5
-  - @backstage/plugin-auth-node@0.4.10
-  - @backstage/backend-plugin-api@0.6.15
-  - @backstage/catalog-model@1.4.5
-  - @backstage/config@1.2.0
-  - @backstage/errors@1.2.4
-  - @backstage/plugin-entity-feedback-common@0.1.3
-
 ## 0.2.11
 
 ### Patch Changes

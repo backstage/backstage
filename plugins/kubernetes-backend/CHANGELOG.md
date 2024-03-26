@@ -1,26 +1,5 @@
 # @backstage/plugin-kubernetes-backend
 
-## 0.16.2
-
-### Patch Changes
-
-- 9b1abac: Added a new service locator `CatalogRelationServiceLocator` that only returns clusters an entity lists in `relations.dependsOn`.
-- Updated dependencies
-  - @backstage/plugin-catalog-node@1.10.0
-  - @backstage/catalog-client@1.6.2
-  - @backstage/backend-common@0.21.5
-  - @backstage/integration-aws-node@0.1.11
-  - @backstage/plugin-kubernetes-node@0.1.9
-  - @backstage/plugin-auth-node@0.4.10
-  - @backstage/plugin-permission-node@0.7.26
-  - @backstage/backend-plugin-api@0.6.15
-  - @backstage/catalog-model@1.4.5
-  - @backstage/config@1.2.0
-  - @backstage/errors@1.2.4
-  - @backstage/types@1.1.1
-  - @backstage/plugin-kubernetes-common@0.7.5
-  - @backstage/plugin-permission-common@0.7.13
-
 ## 0.16.1
 
 ### Patch Changes

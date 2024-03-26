@@ -1,23 +1,5 @@
 # @backstage/backend-common
 
-## 0.21.5
-
-### Patch Changes
-
-- 81a995f: Updated dependency `aws-sdk-client-mock` to `^4.0.0`.
-- Updated dependencies
-  - @backstage/backend-app-api@0.6.1
-  - @backstage/integration-aws-node@0.1.11
-  - @backstage/plugin-auth-node@0.4.10
-  - @backstage/backend-dev-utils@0.1.4
-  - @backstage/backend-plugin-api@0.6.15
-  - @backstage/cli-common@0.1.13
-  - @backstage/config@1.2.0
-  - @backstage/config-loader@1.7.0
-  - @backstage/errors@1.2.4
-  - @backstage/integration@1.9.1
-  - @backstage/types@1.1.1
-
 ## 0.21.4
 
 ### Patch Changes

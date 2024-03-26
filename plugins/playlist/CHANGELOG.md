@@ -1,22 +1,5 @@
 # @backstage/plugin-playlist
 
-## 0.2.6
-
-### Patch Changes
-
-- e8f026a: Use ESM exports of react-use library
-- Updated dependencies
-  - @backstage/core-components@0.14.2
-  - @backstage/plugin-catalog-react@1.11.1
-  - @backstage/plugin-search-react@1.7.8
-  - @backstage/core-plugin-api@1.9.1
-  - @backstage/catalog-model@1.4.5
-  - @backstage/errors@1.2.4
-  - @backstage/plugin-catalog-common@1.0.22
-  - @backstage/plugin-permission-common@0.7.13
-  - @backstage/plugin-permission-react@0.4.21
-  - @backstage/plugin-playlist-common@0.1.15
-
 ## 0.2.5
 
 ### Patch Changes

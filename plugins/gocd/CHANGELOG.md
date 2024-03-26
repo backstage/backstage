@@ -1,18 +1,5 @@
 # @backstage/plugin-gocd
 
-## 0.1.38
-
-### Patch Changes
-
-- e8f026a: Use ESM exports of react-use library
-- 4166b10: Added an optional ESLint rule - no-top-level-material-ui-4-imports - which has an auto fix function to migrate the imports and used it to migrate the Material UI imports.
-- Updated dependencies
-  - @backstage/core-components@0.14.2
-  - @backstage/plugin-catalog-react@1.11.1
-  - @backstage/core-plugin-api@1.9.1
-  - @backstage/catalog-model@1.4.5
-  - @backstage/errors@1.2.4
-
 ## 0.1.37
 
 ### Patch Changes

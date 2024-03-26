@@ -1,15 +1,5 @@
 # @backstage/integration-aws-node
 
-## 0.1.11
-
-### Patch Changes
-
-- 81a995f: Updated dependency `aws-sdk-client-mock` to `^4.0.0`.
-- 823cf8e: Updated dependency `aws-sdk-client-mock-jest` to `^4.0.0`.
-- Updated dependencies
-  - @backstage/config@1.2.0
-  - @backstage/errors@1.2.4
-
 ## 0.1.10
 
 ### Patch Changes
