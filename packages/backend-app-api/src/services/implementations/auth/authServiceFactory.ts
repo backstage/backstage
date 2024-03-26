@@ -24,10 +24,13 @@ import {
   BackstageUserPrincipal,
   coreServices,
   createServiceFactory,
+  DatabaseService,
+  AnyJWK,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 import { decodeJwt } from 'jose';
 import { UserTokenHandler } from './UserTokenHandler';
+import { PluginTokenHandler } from './PluginTokenHandler';
 
 /** @internal */
 export type InternalBackstageCredentials<TPrincipal = unknown> =
@@ -107,11 +110,17 @@ class DefaultAuthService implements AuthService {
     private readonly userTokenHandler: UserTokenHandler,
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
+    private readonly databaseService: DatabaseService,
+    private readonly pluginTokenHandler: PluginTokenHandler,
   ) {}
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {
     const { sub, aud } = decodeJwt(token);
+
+    // # identify new token
+    // 1. generate and store public keys in database
+    // 2. verification of token, by fetching all public keys
 
     // Legacy service-to-service token
     if (sub === 'backstage-server' && !aud) {
@@ -178,10 +187,16 @@ class DefaultAuthService implements AuthService {
       return { token: '' };
     }
 
+    // check whether a plugin support the new auth system
+    // by checking the public keys endpoint existance.
     switch (type) {
       // TODO: Check whether the principal is ourselves
       case 'service':
-        return this.tokenManager.getToken();
+        return this.pluginTokenHandler.issueToken({
+          pluginId: this.pluginId,
+          targetPluginId: options.targetPluginId,
+        });
+      // return this.tokenManager.getToken();
       case 'user':
         if (!internalForward.token) {
           throw new Error('User credentials is unexpectedly missing token');
@@ -215,12 +230,17 @@ class DefaultAuthService implements AuthService {
     }
     return new Date(exp * 1000);
   }
+
+  listPublicKeys(): Promise<AnyJWK[]> {
+    return this.pluginTokenHandler.listPublicKeys();
+  }
 }
 
 /** @public */
 export const authServiceFactory = createServiceFactory({
   service: coreServices.auth,
   deps: {
+    database: coreServices.database,
     config: coreServices.rootConfig,
     logger: coreServices.rootLogger,
     discovery: coreServices.discovery,
@@ -231,7 +251,7 @@ export const authServiceFactory = createServiceFactory({
     // new auth services in the new backend system.
     tokenManager: coreServices.tokenManager,
   },
-  async factory({ config, discovery, plugin, tokenManager }) {
+  async factory({ config, discovery, plugin, tokenManager, database }) {
     const disableDefaultAuthPolicy = Boolean(
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',
@@ -242,6 +262,9 @@ export const authServiceFactory = createServiceFactory({
       new UserTokenHandler({ discovery }),
       plugin.getId(),
       disableDefaultAuthPolicy,
+      database,
+      // TODO(vinzscam): fixme
+      PluginTokenHandler.create(undefined!),
     );
   },
 });
