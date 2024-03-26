@@ -13,14 +13,22 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
+import { EntityPredicates as EntityPredicates_2 } from '@backstage/plugin-catalog-react';
 import { EntityPresentationApi } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentation } from '@backstage/plugin-catalog-react';
 import { EntityRefPresentationSnapshot } from '@backstage/plugin-catalog-react';
+import { EntitySwitchCaseProps as EntitySwitchCaseProps_2 } from '@backstage/plugin-catalog-react';
+import { EntitySwitchProps as EntitySwitchProps_2 } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { InfoCardVariants } from '@backstage/core-components';
+import { isComponentType as isComponentType_2 } from '@backstage/plugin-catalog-react';
+import { isEntityWith as isEntityWith_2 } from '@backstage/plugin-catalog-react';
+import { isKind as isKind_2 } from '@backstage/plugin-catalog-react';
+import { isNamespace as isNamespace_2 } from '@backstage/plugin-catalog-react';
+import { isResourceType as isResourceType_2 } from '@backstage/plugin-catalog-react';
 import { JSX as JSX_2 } from 'react';
 import { Observable } from '@backstage/types';
 import { Overrides } from '@material-ui/core/styles/overrides';
@@ -443,12 +451,7 @@ export const EntityListContainer: (props: {
 export function EntityOrphanWarning(): React_2.JSX.Element;
 
 // @public @deprecated (undocumented)
-export interface EntityPredicates {
-  // (undocumented)
-  kind?: string | string[];
-  // (undocumented)
-  type?: string | string[];
-}
+export type EntityPredicates = EntityPredicates_2;
 
 // @public
 export function EntityProcessingErrorsPanel(): React_2.JSX.Element | null;
@@ -458,30 +461,15 @@ export function EntityRelationWarning(): React_2.JSX.Element | null;
 
 // @public @deprecated (undocumented)
 export const EntitySwitch: {
-  (props: EntitySwitchProps): React_2.JSX.Element;
-  Case: (_props: EntitySwitchCaseProps) => null;
+  (props: EntitySwitchProps_2): JSX_2.Element;
+  Case: (_props: EntitySwitchCaseProps_2) => null;
 };
 
 // @public @deprecated (undocumented)
-export interface EntitySwitchCaseProps {
-  // (undocumented)
-  children: ReactNode;
-  // (undocumented)
-  if?: (
-    entity: Entity,
-    context: {
-      apis: ApiHolder;
-    },
-  ) => boolean | Promise<boolean>;
-}
+export type EntitySwitchCaseProps = EntitySwitchCaseProps_2;
 
-// @public @deprecated
-export interface EntitySwitchProps {
-  // (undocumented)
-  children: ReactNode;
-  // (undocumented)
-  renderMultipleMatches?: 'first' | 'all';
-}
+// @public @deprecated (undocumented)
+export type EntitySwitchProps = EntitySwitchProps_2;
 
 // @public @deprecated (undocumented)
 export const FilterContainer: (props: {
@@ -559,31 +547,23 @@ export interface HasSystemsCardProps {
   variant?: InfoCardVariants;
 }
 
-// @public @deprecated
-export function isComponentType(
-  types: string | string[],
-): (entity: Entity) => boolean;
+// @public @deprecated (undocumented)
+export const isComponentType: typeof isComponentType_2;
 
-// @public @deprecated
-export function isEntityWith(
-  predicate: EntityPredicates,
-): (entity: Entity) => boolean;
+// @public @deprecated (undocumented)
+export const isEntityWith: typeof isEntityWith_2;
 
-// @public @deprecated
-export function isKind(kinds: string | string[]): (entity: Entity) => boolean;
+// @public @deprecated (undocumented)
+export const isKind: typeof isKind_2;
 
-// @public @deprecated
-export function isNamespace(
-  namespaces: string | string[],
-): (entity: Entity) => boolean;
+// @public @deprecated (undocumented)
+export const isNamespace: typeof isNamespace_2;
 
 // @public
 export function isOrphan(entity: Entity): boolean;
 
-// @public @deprecated
-export function isResourceType(
-  types: string | string[],
-): (entity: Entity) => boolean;
+// @public @deprecated (undocumented)
+export const isResourceType: typeof isResourceType_2;
 
 // @public (undocumented)
 export type PluginCatalogComponentsNameToClassKey = {
