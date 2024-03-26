@@ -15,7 +15,9 @@
  */
 import React from 'react';
 import { EntitySearchBar } from '@backstage/plugin-catalog-react';
-import { Toolbar, Typography, makeStyles } from '@material-ui/core';
+import Toolbar from '@material-ui/core/Toolbar';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useToolbarStyles = makeStyles(
   theme => ({
