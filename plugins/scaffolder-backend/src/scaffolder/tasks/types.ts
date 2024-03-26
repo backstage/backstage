@@ -228,3 +228,10 @@ export type TaskTrackType = {
     action: TemplateAction<JsonObject>,
   ) => Promise<void>;
 };
+
+/**
+ * @internal
+ */
+export type InternalTaskSecrets = TaskSecrets & {
+  __initiatorCredentials: string;
+};
