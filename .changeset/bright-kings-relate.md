@@ -1,7 +1,7 @@
 ---
 '@backstage/plugin-catalog-react': minor
 '@backstage/create-app': patch
-'@backstage/plugin-catalog': minor
+'@backstage/plugin-catalog': patch
 ---
 
 The EntitySwitch component and its associated helpers are marked deprecated inside plugin-catalog, and added to plugin-catalog-react instead. There is no change in functionality, just the location.
