@@ -39,7 +39,7 @@ export class DatabaseKeyStore implements PublicKeyStoreService {
     id: string;
     key: JsonObject & { kid: string };
     expiresAt: Date;
-  }): Promise<void> {
+  }) {
     await this.client<Row>(TABLE).insert({
       id: options.key.kid,
       key: JSON.stringify(options.key),
@@ -48,7 +48,7 @@ export class DatabaseKeyStore implements PublicKeyStoreService {
     });
   }
 
-  async listKeys(): Promise<{ keys: { key: JsonObject; expiresAt: Date }[] }> {
+  async listKeys() {
     const rows = await this.client<Row>(TABLE).select();
 
     // TODO: move over filter/delete the logic from listPublicKeys() in plugins/auth-backend/src/identity/TokenFactory.ts

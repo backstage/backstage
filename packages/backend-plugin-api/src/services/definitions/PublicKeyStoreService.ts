@@ -20,7 +20,7 @@ import { JsonObject } from '@backstage/types';
  * @public
  */
 export interface PublicKeyStoreService {
-  listKeys(): Promise<{ keys: JsonObject[] }>;
+  listKeys(): Promise<{ keys: { key: JsonObject; expiresAt: Date }[] }>;
   addKey(options: {
     id: string;
     key: JsonObject;
