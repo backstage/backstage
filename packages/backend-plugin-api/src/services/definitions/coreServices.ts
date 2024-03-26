@@ -133,6 +133,18 @@ export namespace coreServices {
   >({ id: 'core.pluginMetadata' });
 
   /**
+   * The service reference for the plugin scoped {@link PublicKeyStoreService}.
+   *
+   * @public
+   */
+  export const publicKeyStore = createServiceRef<
+    import('./PublicKeyStoreService').PublicKeyStoreService
+  >({
+    id: 'core.publicKeyStore',
+    scope: 'plugin',
+  });
+
+  /**
    * The service reference for the root scoped {@link RootHttpRouterService}.
    *
    * @public
