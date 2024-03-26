@@ -90,6 +90,10 @@ export const permissionPlugin = createBackendPlugin({
           path: '/health',
           allow: 'unauthenticated',
         });
+        http.addAuthPolicy({
+          path: '/authorize',
+          allow: 'unauthenticated',
+        });
       },
     });
   },
