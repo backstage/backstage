@@ -192,7 +192,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         columns={tableColumns}
         emptyContent={emptyContent}
         isLoading={loading}
-        title={title}
+        title={titleDisplay}
         actions={actions}
         subtitle={subtitle}
         options={options}
