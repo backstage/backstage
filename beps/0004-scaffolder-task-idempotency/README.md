@@ -83,11 +83,11 @@ We believe that idempotency is the best way to do it. Idempotency allows to reru
 
 ### Serialization of workspace
 
-We believe that a serialization of workspace is a way to achieve re-running the task on a non-sticky way. This means that the task can be restored and retried on a different scaffolder backend instance or node. This serialization can be stored in the database, or perhaps additional modules could be installed to provide additional options for storing this serialized workspace data.
+We believe that serialization of workspaces is the way to achieve re-running the task in a non-sticky way. This means that the task can be restored and retried on a different scaffolder task worker. This serialization can be stored in the database, or perhaps additional modules could be installed to provide additional options for storing this serialized workspace data since it may be large in some cases.
 
 ### Secrets
 
-Secrets will be stored for a longer period of time in the database and wiped out once the task going into a complete state (successfully finished or archived). Depending on the life of the task, it's possible that these secrets could expire. The refresh of these tokens is out of scope for now, but perhaps could be achieved by notifying the user that they need to go back to a task page to re-trigger the task.
+Secrets will be stored for a longer period of time in the database and wiped out once the task goes into a completed state (successfully finished or archived). Depending on the life of the task, it's possible that these secrets could expire. The refresh of these tokens is out of scope for now, but perhaps could be achieved by notifying the user that they need to go back to a task page to re-trigger the task.
 
 ## Design Details
 
