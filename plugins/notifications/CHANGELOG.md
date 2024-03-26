@@ -1,5 +1,20 @@
 # @backstage/plugin-notifications
 
+## 0.1.2
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- 6a2fe4b: Added ESLint rule `no-top-level-material-ui-4-imports` in the `notifications` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.2
+  - @backstage/plugin-signals-react@0.0.2
+
 ## 0.1.1
 
 ### Patch Changes

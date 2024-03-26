@@ -1,5 +1,36 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.3
+
+### Patch Changes
+
+- 54eb67c: Fixed an issue causing actions to fail when retrieving auth credentials
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/backend-common@0.21.6
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.14
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.2
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/plugin-permission-node@0.7.27
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.6
+  - @backstage/plugin-scaffolder-node@0.4.2
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.6
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.6
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.8
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.6
+  - @backstage/plugin-scaffolder-common@1.5.1
+
 ## 1.22.2
 
 ### Patch Changes

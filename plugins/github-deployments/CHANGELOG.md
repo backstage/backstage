@@ -1,5 +1,20 @@
 # @backstage/plugin-github-deployments
 
+## 0.1.64
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- a1ddc8d: Added ESLint rule `no-top-level-material-ui-4-imports` in the `github-deployments` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/integration-react@1.1.25
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+
 ## 0.1.63
 
 ### Patch Changes

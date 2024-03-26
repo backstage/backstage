@@ -1,5 +1,19 @@
 # @backstage/plugin-permission-backend
 
+## 0.5.40
+
+### Patch Changes
+
+- f3e2e86: Properly forward causes of errors from upstream backends in the `PermissionIntegrationClient`
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/plugin-permission-node@0.7.27
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.5.39
 
 ### Patch Changes

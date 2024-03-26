@@ -1,5 +1,15 @@
 # @backstage/plugin-cicd-statistics
 
+## 0.1.35
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+
 ## 0.1.34
 
 ### Patch Changes

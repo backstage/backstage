@@ -1,5 +1,18 @@
 # @backstage/plugin-airbrake
 
+## 0.3.33
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/dev-utils@1.0.30
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/test-utils@1.5.3
+  - @backstage/catalog-model@1.4.5
+
 ## 0.3.32
 
 ### Patch Changes

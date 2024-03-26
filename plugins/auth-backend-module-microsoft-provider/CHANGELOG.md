@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-plugin-api@0.6.16
+
 ## 0.1.10
 
 ### Patch Changes

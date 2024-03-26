@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.2.2
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/version-bridge@1.0.7
+
 ## 1.2.1
 
 ### Patch Changes
