@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { ChatIcon } from '@backstage/core-components';
-import { Box, Badge } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Badge from '@material-ui/core/Badge';
 
 type CommentsCountProps = {
   commentsCount: number;

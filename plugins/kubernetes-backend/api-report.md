@@ -163,6 +163,10 @@ export class KubernetesBuilder {
     [key: string]: AuthenticationStrategy_2;
   };
   // (undocumented)
+  protected buildCatalogRelationServiceLocator(
+    clusterSupplier: KubernetesClustersSupplier_2,
+  ): KubernetesServiceLocator_2;
+  // (undocumented)
   protected buildClusterSupplier(
     refreshInterval: Duration,
   ): KubernetesClustersSupplier_2;
@@ -397,7 +401,11 @@ export class ServiceAccountStrategy implements AuthenticationStrategy_2 {
 }
 
 // @public (undocumented)
-export type ServiceLocatorMethod = 'multiTenant' | 'singleTenant' | 'http';
+export type ServiceLocatorMethod =
+  | 'multiTenant'
+  | 'singleTenant'
+  | 'catalogRelation'
+  | 'http';
 
 // @public @deprecated (undocumented)
 export type ServiceLocatorRequestContext =

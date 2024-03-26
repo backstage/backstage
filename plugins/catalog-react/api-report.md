@@ -609,6 +609,8 @@ export class EntityTextFilter implements EntityFilter {
     fields: string[];
   };
   // (undocumented)
+  toQueryValue(): string;
+  // (undocumented)
   readonly value: string;
 }
 

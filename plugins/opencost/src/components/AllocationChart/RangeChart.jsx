@@ -23,7 +23,7 @@ import {
   Tooltip,
   ResponsiveContainer,
 } from 'recharts';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import { reverse } from 'lodash';
 import { primary, greyscale, browns } from '../../constants/colors';
 import { toCurrency } from '../../util';

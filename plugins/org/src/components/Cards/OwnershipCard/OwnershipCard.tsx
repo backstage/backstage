@@ -16,15 +16,13 @@
 
 import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  makeStyles,
-  Switch,
-  Tooltip,
-} from '@material-ui/core';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
 import { EntityRelationAggregation } from '../types';

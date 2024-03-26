@@ -17,8 +17,8 @@ import React, { useCallback, useEffect } from 'react';
 import { InfoCard, StructuredMetadataTable } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useCluster } from './useCluster';
-import { Skeleton } from '@material-ui/lab';
-import { Theme, createStyles, makeStyles } from '@material-ui/core';
+import Skeleton from '@material-ui/lab/Skeleton';
+import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import { useKubernetesClusterError } from '../KubernetesClusterErrorContext/KubernetesClusterErrorContext';
 
 const useStyles = makeStyles((_theme: Theme) =>

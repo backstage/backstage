@@ -28,7 +28,7 @@ import {
   TaskCompletionState,
   TaskContext,
 } from '@backstage/plugin-scaffolder-node';
-import { TaskStore } from './types';
+import { InternalTaskSecrets, TaskStore } from './types';
 import { readDuration } from './helper';
 import {
   AuthService,
@@ -179,8 +179,10 @@ export class TaskManager implements TaskContext {
   }
 
   async getInitiatorCredentials(): Promise<BackstageCredentials> {
-    if (this.task.secrets && '__initiatorCredentials' in this.task.secrets) {
-      return JSON.parse(this.task.secrets.__initiatorCredentials);
+    const secrets = this.task.secrets as InternalTaskSecrets;
+
+    if (secrets && secrets.__initiatorCredentials) {
+      return JSON.parse(secrets.__initiatorCredentials);
     }
     if (!this.auth) {
       throw new Error(

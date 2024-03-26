@@ -1,5 +1,22 @@
 # @backstage/plugin-github-issues
 
+## 0.3.0
+
+### Minor Changes
+
+- bc97524: Added ESLint rule `no-top-level-material-ui-4-imports` in the `github-issues` plugin to migrate the Material UI imports.
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-catalog-react@1.11.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+
 ## 0.2.20
 
 ### Patch Changes

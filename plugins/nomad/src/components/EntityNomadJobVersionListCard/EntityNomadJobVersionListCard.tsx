@@ -34,7 +34,7 @@ import {
   isNomadJobIDAvailable,
 } from '../../annotations';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { Chip } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
 
 type rowType = Version & { nomadAddr: string };
 

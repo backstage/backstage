@@ -15,17 +15,12 @@
  */
 
 import {
-  CacheService,
   HttpAuthService,
   HttpRouterServiceAuthPolicy,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { durationToMilliseconds } from '@backstage/types';
 import { RequestHandler } from 'express';
 import { pathToRegexp } from 'path-to-regexp';
-import { rateLimit } from 'express-rate-limit';
-import { readDurationFromConfig } from '@backstage/config';
-import { RateLimitStore } from './rateLimitStore';
 
 export function createPathPolicyPredicate(policyPath: string) {
   if (policyPath === '/' || policyPath === '*') {
@@ -44,12 +39,11 @@ export function createPathPolicyPredicate(policyPath: string) {
 export function createCredentialsBarrier(options: {
   httpAuth: HttpAuthService;
   config: RootConfigService;
-  cache: CacheService;
 }): {
   middleware: RequestHandler;
   addAuthPolicy: (policy: HttpRouterServiceAuthPolicy) => void;
 } {
-  const { httpAuth, config, cache } = options;
+  const { httpAuth, config } = options;
 
   const disableDefaultAuthPolicy = config.getOptionalBoolean(
     'backend.auth.dangerouslyDisableDefaultAuthPolicy',
@@ -65,49 +59,13 @@ export function createCredentialsBarrier(options: {
   const unauthenticatedPredicates = new Array<(path: string) => boolean>();
   const cookiePredicates = new Array<(path: string) => boolean>();
 
-  const rateLimitConfig = config.getOptional('backend.rateLimit.unauthorized');
-
-  const disabled =
-    rateLimitConfig === false ||
-    (typeof rateLimitConfig === 'object' &&
-      config?.getOptionalBoolean('backend.rateLimit.unauthorized.disabled') ===
-        true);
-
-  const duration =
-    typeof rateLimitConfig === 'object' &&
-    config?.has('backend.rateLimit.unauthorized.window')
-      ? readDurationFromConfig(
-          config.getConfig('backend.rateLimit.unauthorized.window'),
-        )
-      : undefined;
-
-  const windowMs = duration ? durationToMilliseconds(duration) : 1 * 60 * 1000;
-
-  const max =
-    typeof rateLimitConfig === 'object' &&
-    config?.has('backend.rateLimit.unauthorized.max')
-      ? config.getNumber('backend.rateLimit.unauthorized.max')
-      : 60;
-
-  // Default rate limit is 60 requests per 1 minute
-  const limiter = rateLimit({
-    windowMs,
-    limit: max,
-    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
-    legacyHeaders: false, // Disable the `X-RateLimit-*` headers,
-    store: RateLimitStore.fromOptions({ cache }),
-    skip() {
-      return disabled;
-    },
-  });
-
-  const middleware: RequestHandler = (req, res, next) => {
+  const middleware: RequestHandler = (req, _, next) => {
     const allowsUnauthenticated = unauthenticatedPredicates.some(predicate =>
       predicate(req.path),
     );
 
     if (allowsUnauthenticated) {
-      limiter(req, res, next);
+      next();
       return;
     }
 

@@ -498,8 +498,8 @@ export interface CatalogApi {
    *   limit: 20,
    *   fullTextFilter: {
    *     term: 'A',
-   *   }
-   *   orderFields: { field: 'metadata.name' order: 'asc' },
+   *   },
+   *   orderFields: { field: 'metadata.name', order: 'asc' },
    * });
    * ```
    *

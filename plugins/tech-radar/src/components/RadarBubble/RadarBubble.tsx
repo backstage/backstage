@@ -15,7 +15,7 @@
  */
 
 import React, { useRef, useLayoutEffect } from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 
 export type Props = {
   visible: boolean;
