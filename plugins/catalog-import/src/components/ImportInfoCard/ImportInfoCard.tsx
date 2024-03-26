@@ -80,7 +80,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
           <Typography component="h4" variant="h6">
             Link to a repository{' '}
             <Chip
-              label="GitHub and AzureDevops"
+              label="GitHub and Azure DevOps"
               variant="outlined"
               size="small"
             />
