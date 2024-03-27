@@ -96,6 +96,12 @@ export async function startBackendExperimental(options: BackendServeOptions) {
           : '--inspect-brk';
       optionArgs.push(inspect);
     }
+    if (options.require) {
+      optionArgs.push(`--require=${options.require}`);
+    }
+    if (options.import) {
+      optionArgs.push(`--import=${options.import}`);
+    }
 
     const userArgs = process.argv
       .slice(['node', 'backstage-cli', 'package', 'start'].length)

@@ -71,18 +71,7 @@ import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import { DefaultEventBroker } from '@backstage/plugin-events-backend';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
-import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
-import { MeterProvider } from '@opentelemetry/sdk-metrics';
-import { metrics } from '@opentelemetry/api';
 import { DefaultSignalsService } from '@backstage/plugin-signals-node';
-
-// Expose opentelemetry metrics using a Prometheus exporter on
-// http://localhost:9464/metrics . See prometheus.yml in packages/backend for
-// more information on how to scrape it.
-const exporter = new PrometheusExporter();
-const meterProvider = new MeterProvider();
-metrics.setGlobalMeterProvider(meterProvider);
-meterProvider.addMetricReader(exporter);
 
 function makeCreateEnv(config: Config) {
   const root = getRootLogger();

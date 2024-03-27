@@ -120,6 +120,8 @@ export function registerScriptCommand(program: Command) {
       '--inspect-brk [host]',
       'Enable debugger in Node.js environments, breaking before code starts',
     )
+    .option('--require <path>', 'Add a --require argument to the node process')
+    .option('--import <path>', 'Add an --import argument to the node process')
     .action(lazy(() => import('./start').then(m => m.command)));
 
   command
