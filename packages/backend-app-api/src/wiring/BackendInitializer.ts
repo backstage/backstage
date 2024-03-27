@@ -56,9 +56,13 @@ export class BackendInitializer {
     deps: { [name: string]: ServiceOrExtensionPoint },
     pluginId: string,
     moduleId?: string,
-  ) {
+  ): Promise<
+    | { error: undefined; result: { [name: string]: unknown } }
+    | { error: 'missing-extension-points'; missing: Set<ExtensionPoint<any>> }
+  > {
     const result = new Map<string, unknown>();
-    const missingRefs = new Set<ServiceOrExtensionPoint>();
+    const missingServices = new Set<ServiceRef<any>>();
+    const missingExtensionPoints = new Set<ExtensionPoint<any>>();
 
     for (const [name, ref] of Object.entries(deps)) {
       const ep = this.#extensionPoints.get(ref.id);
@@ -77,19 +81,29 @@ export class BackendInitializer {
         if (impl) {
           result.set(name, impl);
         } else {
-          missingRefs.add(ref);
+          if (ref.$$type === '@backstage/ExtensionPoint') {
+            missingExtensionPoints.add(ref);
+          } else {
+            missingServices.add(ref);
+          }
         }
       }
     }
 
-    if (missingRefs.size > 0) {
-      const missing = Array.from(missingRefs).join(', ');
+    if (missingServices.size > 0) {
+      const missing = Array.from(missingServices).join(', ');
       throw new Error(
-        `No extension point or service available for the following ref(s): ${missing}`,
+        `No implementation available for the following service(s): ${missing}`,
       );
     }
+    if (missingExtensionPoints.size > 0) {
+      return {
+        error: 'missing-extension-points',
+        missing: missingExtensionPoints,
+      };
+    }
 
-    return Object.fromEntries(result);
+    return { error: undefined, result: Object.fromEntries(result) };
   }
 
   add(feature: BackendFeature | Promise<BackendFeature>) {
@@ -263,7 +277,20 @@ export class BackendInitializer {
                 pluginId,
                 moduleId,
               );
-              await moduleInit.init.func(moduleDeps).catch(error => {
+              if (moduleDeps.error === 'missing-extension-points') {
+                const logger = await this.#serviceRegistry.get(
+                  coreServices.rootLogger,
+                  'root',
+                );
+                const missing = Array.from(moduleDeps.missing)
+                  .map(_ => _.id)
+                  .join(', ');
+                logger?.warn(
+                  `Module '${moduleId}' for plugin '${pluginId}' was not loaded because it depends on these missing extension point(s): ${missing}`,
+                );
+                return;
+              }
+              await moduleInit.init.func(moduleDeps.result).catch(error => {
                 throw new ForwardedError(
                   `Module '${moduleId}' for plugin '${pluginId}' startup failed`,
                   error,
@@ -281,7 +308,15 @@ export class BackendInitializer {
             pluginInit.init.deps,
             pluginId,
           );
-          await pluginInit.init.func(pluginDeps).catch(error => {
+          if (pluginDeps.error === 'missing-extension-points') {
+            const missing = Array.from(pluginDeps.missing)
+              .map(_ => _.id)
+              .join(', ');
+            throw new Error(
+              `Plugin '${pluginId}' is unexpectedly depending on the following extension points: ${missing}`,
+            );
+          }
+          await pluginInit.init.func(pluginDeps.result).catch(error => {
             throw new ForwardedError(
               `Plugin '${pluginId}' startup failed`,
               error,

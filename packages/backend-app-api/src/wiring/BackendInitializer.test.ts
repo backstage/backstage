@@ -324,4 +324,42 @@ describe('BackendInitializer', () => {
       "Illegal dependency: Module 'mod' for plugin 'test-b' attempted to depend on extension point 'a' for plugin 'test-a'. Extension points can only be used within their plugin's scope.",
     );
   });
+
+  it('should warn if plugin for a module is not available', async () => {
+    const init = new BackendInitializer(baseFactories);
+    const extA = createExtensionPoint<string>({ id: 'a' });
+
+    const mockLogger = {
+      child: () => mockLogger,
+      debug: jest.fn(),
+      error: jest.fn(),
+      info: jest.fn(),
+      warn: jest.fn(),
+    };
+    init.add(
+      createServiceFactory({
+        service: coreServices.rootLogger,
+        deps: {},
+        factory: () => mockLogger,
+      })(),
+    );
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: { ext: extA },
+            async init() {},
+          });
+        },
+      })(),
+    );
+
+    await expect(init.start()).resolves.toBeUndefined();
+    expect(mockLogger.warn).toHaveBeenCalledTimes(1);
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      "Module 'mod' for plugin 'test' was not loaded because it depends on these missing extension point(s): a",
+    );
+  });
 });
