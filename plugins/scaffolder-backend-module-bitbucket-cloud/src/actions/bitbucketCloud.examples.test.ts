@@ -194,7 +194,7 @@ describe('publish:bitbucketCloud', () => {
       remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
       auth: { username: 'x-token-auth', password: 'your-default-auth-token' },
       logger: mockContext.logger,
-      defaultBranch: 'main',
+      defaultBranch: 'master',
       commitMessage: 'initial commit',
       gitAuthorInfo: {
         email: 'test_user@BackstageBackend.com',
@@ -231,6 +231,49 @@ describe('publish:bitbucketCloud', () => {
     await action.handler({
       ...mockContext,
       input: yaml.parse(examples[5].example).steps[0].input,
+    });
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
+      auth: { username: 'x-token-auth', password: 'your-custom-auth-token' },
+      logger: mockContext.logger,
+      defaultBranch: 'master',
+      commitMessage: 'initial commit',
+      gitAuthorInfo: {
+        email: 'test_user@BackstageBackend.com',
+        name: 'test_user',
+      },
+    });
+  });
+
+  it('should call initAndPush with all available custom inputs', async () => {
+    server.use(
+      rest.post(
+        'https://api.bitbucket.org/2.0/repositories/workspace/repo',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json({
+              links: {
+                html: {
+                  href: 'https://bitbucket.org/workspace/repo',
+                },
+                clone: [
+                  {
+                    name: 'https',
+                    href: 'https://bitbucket.org/workspace/cloneurl',
+                  },
+                ],
+              },
+            }),
+          ),
+      ),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: yaml.parse(examples[6].example).steps[0].input,
     });
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,

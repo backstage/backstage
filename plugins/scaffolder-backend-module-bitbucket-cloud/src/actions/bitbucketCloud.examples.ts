@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Initializes a git repository of contents in workspace and publish it to Bitbucket Cloud with default configuration.',
+      'Initializes a git repository and publishes it to Bitbucket Cloud with the default configuration.',
     example: yaml.stringify({
       steps: [
         {
@@ -36,7 +36,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Add a description.',
+    description: 'Initializes a git repository with a custom description.',
     example: yaml.stringify({
       steps: [
         {
@@ -53,7 +53,8 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Change visibility of the repository.',
+    description:
+      'Initializes a git repository and sets repo visibility to public.',
     example: yaml.stringify({
       steps: [
         {
@@ -63,7 +64,6 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl:
               'bitbucket.org?repo=repo&workspace=workspace&project=project',
-            description: 'Initialize a git repository',
             repoVisibility: 'public',
           },
         },
@@ -71,7 +71,8 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Set the default branch.',
+    description:
+      'Initializes a git repository and sets default branch to main.',
     example: yaml.stringify({
       steps: [
         {
@@ -81,8 +82,6 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl:
               'bitbucket.org?repo=repo&workspace=workspace&project=project',
-            description: 'Initialize a git repository',
-            repoVisibility: 'public',
             defaultBranch: 'main',
           },
         },
@@ -90,7 +89,8 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Specify a source path within the workspace.',
+    description:
+      'Initializes a git repository with the contents of the specified path.',
     example: yaml.stringify({
       steps: [
         {
@@ -100,9 +100,6 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl:
               'bitbucket.org?repo=repo&workspace=workspace&project=project',
-            description: 'Initialize a git repository',
-            repoVisibility: 'public',
-            defaultBranch: 'main',
             sourcePath: './repoRoot',
           },
         },
@@ -110,7 +107,26 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Provide an authentication token for Bitbucket.',
+    description:
+      'Initializes a git repository using a custom authentication token',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:bitbucketCloud',
+          name: 'Publish to Bitbucket Cloud',
+          input: {
+            repoUrl:
+              'bitbucket.org?repo=repo&workspace=workspace&project=project',
+            token: 'your-custom-auth-token',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description:
+      'Initializes a git repository using all of the custom options together',
     example: yaml.stringify({
       steps: [
         {
