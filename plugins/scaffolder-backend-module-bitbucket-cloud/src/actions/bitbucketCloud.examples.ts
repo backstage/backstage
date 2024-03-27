@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Initializes a git repository and publishes it to Bitbucket Cloud with the default configuration.',
+      'Initializes a Bitbucket Cloud repository of contents in workspace and publish it to Bitbucket Cloud with default configuration.',
     example: yaml.stringify({
       steps: [
         {
@@ -36,7 +36,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Initializes a git repository with a custom description.',
+    description: 'Initializes a Bitbucket Cloud repository with a description.',
     example: yaml.stringify({
       steps: [
         {
@@ -54,7 +54,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a git repository and sets repo visibility to public.',
+      'Initializes a Bitbucket Cloud repository with public repo visibility, if not set defaults to private',
     example: yaml.stringify({
       steps: [
         {
@@ -72,7 +72,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a git repository and sets default branch to main.',
+      'Initializes a Bitbucket Cloud repository with a default Branch, if not set defaults to master',
     example: yaml.stringify({
       steps: [
         {
@@ -90,7 +90,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a git repository with the contents of the specified path.',
+      'Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository',
     example: yaml.stringify({
       steps: [
         {
@@ -108,7 +108,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a git repository using a custom authentication token',
+      'Initializes a Bitbucket Cloud repository with a custom authentication token',
     example: yaml.stringify({
       steps: [
         {
@@ -126,7 +126,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a git repository using all of the custom options together',
+      'Initializes a Bitbucket Cloud repository with all proporties being set',
     example: yaml.stringify({
       steps: [
         {
