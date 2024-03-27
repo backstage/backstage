@@ -53,17 +53,6 @@ export const ProviderSettingsItem = (props: {
   const [signedIn, setSignedIn] = useState(false);
   const [profile, setProfile] = useState<ProfileInfo>(emptyProfile);
 
-  function handleLogout() {
-    return api
-      .signOut()
-      .then(() => {
-        setProfile(emptyProfile);
-        setSignedIn(false);
-        window.location.reload();
-      })
-      .catch(err => err);
-  }
-
   useEffect(() => {
     let didCancel = false;
 
@@ -143,7 +132,7 @@ export const ProviderSettingsItem = (props: {
             variant="outlined"
             color="primary"
             onClick={() => {
-              const action = signedIn ? handleLogout() : api.signIn();
+              const action = signedIn ? api.signOut() : api.signIn();
               action.catch(error => errorApi.post(error));
             }}
           >

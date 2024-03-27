@@ -185,6 +185,7 @@ export class DefaultAuthConnector<AuthSession>
       error.status = res.status;
       throw error;
     }
+    window.location.href = '/';
   }
 
   private async showPopup(scopes: Set<string>): Promise<AuthSession> {
