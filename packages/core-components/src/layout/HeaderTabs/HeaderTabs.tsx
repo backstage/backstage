@@ -97,9 +97,7 @@ export function HeaderTabs(props: HeaderTabsProps) {
     }
   }, [selectedIndex]);
   function removeLeadingSlash(path: string) {
-    let newPath = path;
-    newPath = path.replace(/^\//, '');
-    return newPath;
+    return path.replace(/^\//, '');
   }
   return (
     <Box className={styles.tabsWrapper}>
