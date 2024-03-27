@@ -23,11 +23,11 @@ import {
   SystemEntity,
   UserEntity,
 } from '@backstage/catalog-model';
-import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
+import { SystemEntityModelProcessor } from './processor';
 
-describe('BuiltinKindsEntityProcessor', () => {
+describe('SystemEntityModelProcessor', () => {
   describe('postProcessEntity', () => {
-    const processor = new BuiltinKindsEntityProcessor();
+    const processor = new SystemEntityModelProcessor();
     const location = { type: 'a', target: 'b' };
     const emit = jest.fn();
 

@@ -41,6 +41,7 @@
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^",
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^",
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-system-entity-model": "workspace:^",
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
     "@backstage/plugin-devtools-backend": "workspace:^",
     "@backstage/plugin-entity-feedback-backend": "workspace:^",

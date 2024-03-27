@@ -55,8 +55,13 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 
-/** @public */
-export class BuiltinKindsEntityProcessor implements CatalogProcessor {
+/**
+ * Implements the default System Entity Model for the catalog backend.
+ *
+ * @see https://backstage.io/docs/features/software-catalog/descriptor-format
+ * @public
+ */
+export class SystemEntityModelProcessor implements CatalogProcessor {
   private readonly validators = [
     apiEntityV1alpha1Validator,
     componentEntityV1alpha1Validator,
@@ -69,6 +74,9 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
   ];
 
   getProcessorName(): string {
+    // NOTE: This name should not change for historical reasons. The catalog
+    // backend used to take special action based on this processor name being
+    // what it is.
     return 'BuiltinKindsEntityProcessor';
   }
 

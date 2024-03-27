@@ -60,6 +60,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-system-entity-model": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",

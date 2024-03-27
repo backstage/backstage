@@ -49,7 +49,6 @@ import {
 } from '@backstage/plugin-catalog-node';
 import {
   AnnotateLocationEntityProcessor,
-  BuiltinKindsEntityProcessor,
   CodeOwnersProcessor,
   FileReaderProcessor,
   PlaceholderProcessor,
@@ -115,6 +114,7 @@ import {
   HttpAuthService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
+import { SystemEntityModelProcessor } from '@backstage/plugin-catalog-backend-module-system-entity-model';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -684,17 +684,17 @@ export class CatalogBuilder {
       }),
     ];
 
-    const builtinKindsEntityProcessor = new BuiltinKindsEntityProcessor();
+    const systemEntityModelProcessor = new SystemEntityModelProcessor();
     // If the user adds a processor named 'BuiltinKindsEntityProcessor',
     //   skip inclusion of the catalog-backend version.
     if (
       !this.processors.some(
         processor =>
           processor.getProcessorName() ===
-          builtinKindsEntityProcessor.getProcessorName(),
+          systemEntityModelProcessor.getProcessorName(),
       )
     ) {
-      processors.push(builtinKindsEntityProcessor);
+      processors.push(systemEntityModelProcessor);
     }
 
     // These are only added unless the user replaced them all

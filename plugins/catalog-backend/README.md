@@ -27,12 +27,25 @@ restoring the plugin, if you previously removed it.
 
 ```bash
 # From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-catalog-backend
+yarn --cwd packages/backend add \
+  @backstage/plugin-catalog-backend \
+  @backstage/plugin-catalog-backend-module-system-entity-model
 ```
+
+This installs both the backend itself, and the module that implements the default [System Entity Model](https://backstage.io/docs/features/software-catalog/system-model).
 
 ### Adding the plugin to your `packages/backend`
 
-You'll need to add the plugin to the router in your `backend` package. You can
+If you have migrated to [the new backend system](https://backstage.io/docs/backend-system/), you add the following lines to your `packages/backend/src/index.ts` file:
+
+```ts
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-system-entity-model'),
+);
+```
+
+If you haven't migrated to the new backend system, you can instead
 do this by creating a file called `packages/backend/src/plugins/catalog.ts` with
 contents matching [catalog.ts in the create-app
 template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/packages/backend/src/plugins/catalog.ts).

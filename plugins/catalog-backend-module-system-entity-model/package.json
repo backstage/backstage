@@ -1,0 +1,43 @@
+{
+  "name": "@backstage/plugin-catalog-backend-module-system-entity-model",
+  "version": "0.0.0",
+  "description": "The system-entity-model backend module for the catalog plugin.",
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-system-entity-model"
+  },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^"
+  }
+}

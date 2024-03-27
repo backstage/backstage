@@ -1,29 +1,32 @@
 {
   "name": "example-backend",
   "version": "0.2.95",
-  "main": "dist/index.cjs.js",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
-  "private": true,
   "backstage": {
     "role": "backend"
   },
+  "private": true,
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/backend"
   },
-  "keywords": [
-    "backstage"
+  "license": "Apache-2.0",
+  "main": "dist/index.cjs.js",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
   ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
+    "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
     "clean": "backstage-cli package clean",
-    "build-image": "docker build ../.. -f Dockerfile --tag example-backend"
+    "lint": "backstage-cli package lint",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -41,6 +44,7 @@
     "@backstage/plugin-badges-backend": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",
+    "@backstage/plugin-catalog-backend-module-system-entity-model": "workspace:^",
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-code-coverage-backend": "workspace:^",
@@ -104,8 +108,5 @@
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
     "@types/luxon": "^3.0.0"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }
