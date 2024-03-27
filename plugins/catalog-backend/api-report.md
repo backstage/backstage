@@ -148,6 +148,7 @@ export class CatalogBuilder {
       CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
     >
   ): this;
+  addPermissions(...permissions: Array<Permission | Array<Permission>>): this;
   addProcessor(
     ...processors: Array<CatalogProcessor_2 | Array<CatalogProcessor_2>>
   ): CatalogBuilder;

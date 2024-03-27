@@ -1,5 +1,15 @@
 # @backstage/plugin-stackstorm
 
+## 0.1.13
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+
 ## 0.1.12
 
 ### Patch Changes

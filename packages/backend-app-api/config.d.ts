@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { HumanDuration } from '@backstage/types';
-
 export interface Config {
   backend?: {
     auth?: {
@@ -35,23 +33,6 @@ export interface Config {
        */
       dangerouslyDisableDefaultAuthPolicy?: boolean;
     };
-    /** @visibility frontend */
-    rateLimit?:
-      | false
-      | {
-          /**
-           * Limit each IP to max requests per window, defaults to 60 requests.
-           */
-          max?: number;
-          /**
-           * The duration for which the rate limit is enforced, defaults to 1 minute.
-           */
-          window?: HumanDuration;
-          /**
-           * Disable the rate limit verification.
-           */
-          disable?: true;
-        };
   };
 
   /** Discovery options. */

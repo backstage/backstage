@@ -20,7 +20,9 @@ import React, { useState } from 'react';
 
 import { InfoCard, Progress } from '@backstage/core-components';
 
-import { Box, IconButton, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
 import PrevIcon from '@material-ui/icons/NavigateBefore';
 import NextIcon from '@material-ui/icons/NavigateNext';
 

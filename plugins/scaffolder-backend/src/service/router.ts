@@ -88,6 +88,7 @@ import {
   IdentityApi,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
+import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 
 /**
  *
@@ -523,14 +524,16 @@ export async function createRouter(
         },
       };
 
+      const secrets: InternalTaskSecrets = {
+        ...req.body.secrets,
+        backstageToken: token,
+        __initiatorCredentials: JSON.stringify(credentials),
+      };
+
       const result = await taskBroker.dispatch({
         spec: taskSpec,
         createdBy: userEntityRef,
-        secrets: {
-          ...req.body.secrets,
-          backstageToken: token,
-          initiatorCredentials: JSON.stringify(credentials),
-        },
+        secrets,
       });
 
       res.status(201).json({ id: result.taskId });

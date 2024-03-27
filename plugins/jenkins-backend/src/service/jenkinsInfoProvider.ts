@@ -19,6 +19,7 @@ import {
   AuthService,
   BackstageCredentials,
   DiscoveryService,
+  HttpAuthService,
 } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -197,6 +198,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
     catalog: CatalogApi;
     discovery: DiscoveryService;
     auth?: AuthService;
+    httpAuth?: HttpAuthService;
   }): DefaultJenkinsInfoProvider {
     const { auth } = createLegacyAuthAdapters(options);
     return new DefaultJenkinsInfoProvider(

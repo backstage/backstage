@@ -24,7 +24,10 @@ import {
   PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import {
+  Permission,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 
 /**
@@ -104,6 +107,7 @@ export type CatalogPermissionRuleInput<
  * @alpha
  */
 export interface CatalogPermissionExtensionPoint {
+  addPermissions(...permissions: Array<Permission | Array<Permission>>): void;
   addPermissionRules(
     ...rules: Array<
       CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
