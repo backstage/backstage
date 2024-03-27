@@ -1,5 +1,22 @@
 # @backstage/plugin-jenkins-backend
 
+## 0.4.3
+
+### Patch Changes
+
+- 836247c: Fixed an issue where the `httpAuth` service turned out to be undefined
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/plugin-permission-node@0.7.27
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-jenkins-common@0.1.25
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.4.2
 
 ### Patch Changes

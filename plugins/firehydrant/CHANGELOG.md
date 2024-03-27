@@ -1,5 +1,17 @@
 # @backstage/plugin-firehydrant
 
+## 0.2.17
+
+### Patch Changes
+
+- 157c7ae: Added ESLint rule `no-top-level-material-ui-4-imports` in the `firehydrant` plugin to migrate the Material UI imports.
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+
 ## 0.2.16
 
 ### Patch Changes
