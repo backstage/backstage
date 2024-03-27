@@ -15,13 +15,13 @@
  */
 
 import {
-  RootConfigService,
   coreServices,
   createServiceFactory,
   LifecycleService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
-import express, { RequestHandler, Express } from 'express';
+import express, { Express, RequestHandler } from 'express';
 import {
   createHttpServer,
   MiddlewareFactory,
@@ -98,8 +98,9 @@ export const rootHttpRouterServiceFactory = createServiceFactory(
       );
 
       lifecycle.addShutdownHook(() => server.stop());
-
-      await server.start();
+      lifecycle.addStartupHook(async () => {
+        await server.start();
+      });
 
       return router;
     },
