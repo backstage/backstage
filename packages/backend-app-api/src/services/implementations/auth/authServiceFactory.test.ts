@@ -127,4 +127,8 @@ describe('authServiceFactory', () => {
       }),
     );
   });
+
+  it('should issue limited user tokens', async () => {
+    // TODO
+  });
 });

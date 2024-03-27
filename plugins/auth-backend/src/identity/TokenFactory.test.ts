@@ -13,12 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { getVoidLogger } from '@backstage/backend-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { createLocalJWKSet, decodeProtectedHeader, jwtVerify } from 'jose';
-
+import {
+  base64url,
+  createLocalJWKSet,
+  decodeProtectedHeader,
+  jwtVerify,
+} from 'jose';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
+import {
+  BackstageUserIdentityProofPayload,
+  BackstageTokenPayload,
+  TokenTypes,
+} from '@backstage/plugin-auth-node';
 
 const logger = getVoidLogger();
 
@@ -59,18 +69,57 @@ describe('TokenFactory', () => {
     const { keys } = await factory.listPublicKeys();
     const keyStore = createLocalJWKSet({ keys: keys });
 
-    const verifyResult = await jwtVerify(token, keyStore);
+    const verifyResult = await jwtVerify<BackstageTokenPayload>(
+      token,
+      keyStore,
+    );
     expect(verifyResult.payload).toEqual({
+      typ: TokenTypes.user.typClaim,
       iss: 'my-issuer',
-      aud: 'backstage',
+      aud: TokenTypes.user.audClaim,
       sub: entityRef,
       ent: [entityRef],
       'x-fancy-claim': 'my special claim',
       iat: expect.any(Number),
       exp: expect.any(Number),
+      uip: expect.any(String),
     });
     expect(verifyResult.payload.exp).toBe(
       verifyResult.payload.iat! + keyDurationSeconds,
+    );
+
+    // Emulate the reconstruction of a limited user token
+    const limitedUserToken = [
+      base64url.encode(
+        JSON.stringify({
+          alg: verifyResult.protectedHeader.alg,
+          kid: verifyResult.protectedHeader.kid!,
+        }),
+      ),
+      base64url.encode(
+        JSON.stringify({
+          typ: TokenTypes.limitedUser.typClaim,
+          sub: verifyResult.payload.sub,
+          iat: verifyResult.payload.iat,
+          exp: verifyResult.payload.exp,
+        }),
+      ),
+      verifyResult.payload.uip,
+    ].join('.');
+
+    const verifyProofResult =
+      await jwtVerify<BackstageUserIdentityProofPayload>(
+        limitedUserToken,
+        keyStore,
+      );
+    expect(verifyProofResult.payload).toEqual({
+      typ: TokenTypes.limitedUser.typClaim,
+      sub: entityRef,
+      iat: expect.any(Number),
+      exp: expect.any(Number),
+    });
+    expect(verifyProofResult.payload.exp).toBe(
+      verifyProofResult.payload.iat! + keyDurationSeconds,
     );
   });
 

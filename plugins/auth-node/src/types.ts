@@ -375,3 +375,100 @@ export type CookieConfigurer = (ctx: {
   secure: boolean;
   sameSite?: 'none' | 'lax' | 'strict';
 };
+
+/**
+ * Core properties of various token types.
+ *
+ * @public
+ */
+export const TokenTypes = Object.freeze({
+  user: Object.freeze({
+    typClaim: 'vnd.backstage.user',
+    audClaim: 'backstage',
+  }),
+  limitedUser: Object.freeze({
+    typClaim: 'vnd.backstage.limited-user',
+  }),
+  service: Object.freeze({
+    typClaim: 'vnd.backstage.service',
+  }),
+});
+
+/**
+ * The payload contents of a valid Backstage JWT token
+ *
+ * @public
+ */
+export interface BackstageTokenPayload {
+  /**
+   * The token type
+   */
+  typ: typeof TokenTypes.user.typClaim;
+
+  /**
+   * The issuer of the token, currently the discovery URL of the auth backend
+   */
+  iss: string;
+
+  /**
+   * The entity ref of the user
+   */
+  sub: string;
+
+  /**
+   * The entity refs that the user claims ownership througg
+   */
+  ent: string[];
+
+  /**
+   * A hard coded audience string
+   */
+  aud: typeof TokenTypes.user.audClaim;
+
+  /**
+   * Standard expiry in epoch seconds
+   */
+  exp: number;
+
+  /**
+   * Standard issue time in epoch seconds
+   */
+  iat: number;
+
+  /**
+   * A separate user identity proof that the auth service can convert to a limited user token
+   */
+  uip: string;
+
+  /**
+   * Any other custom claims that the adopter may have added
+   */
+  [claim: string]: JsonValue;
+}
+
+/**
+ * The payload contents of a valid Backstage user identity claim token
+ *
+ * @public
+ */
+export interface BackstageUserIdentityProofPayload {
+  /**
+   * The token type
+   */
+  typ: typeof TokenTypes.limitedUser.typClaim;
+
+  /**
+   * The entity ref of the user
+   */
+  sub: string;
+
+  /**
+   * Standard expiry in epoch seconds
+   */
+  exp: number;
+
+  /**
+   * Standard issue time in epoch seconds
+   */
+  iat: number;
+}

@@ -28,7 +28,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 import { IdentityApiGetIdentityRequest } from '@backstage/plugin-auth-node';
-import { decodeJwt } from 'jose';
+import { base64url, decodeJwt } from 'jose';
 
 /** @internal */
 export type InternalBackstageCredentials<TPrincipal = unknown> =
@@ -204,17 +204,41 @@ class DefaultAuthService implements AuthService {
   async getLimitedUserToken(
     credentials: BackstageCredentials<BackstageUserPrincipal>,
   ): Promise<{ token: string; expiresAt: Date }> {
-    const internalCredentials = toInternalBackstageCredentials(credentials);
-
-    const { token } = internalCredentials;
-
-    if (!token) {
+    const { token: backstageToken } =
+      toInternalBackstageCredentials(credentials);
+    if (!backstageToken) {
       throw new AuthenticationError(
         'User credentials is unexpectedly missing token',
       );
     }
 
-    return { token, expiresAt: this.#getJwtExpiration(token) };
+    const [headerRaw, payloadRaw] = backstageToken.split('.');
+    const header = JSON.parse(
+      new TextDecoder().decode(base64url.decode(headerRaw)),
+    );
+    const payload = JSON.parse(
+      new TextDecoder().decode(base64url.decode(payloadRaw)),
+    );
+
+    const limitedUserToken = [
+      base64url.encode(
+        JSON.stringify({
+          alg: header.alg,
+          kid: header.kid,
+        }),
+      ),
+      base64url.encode(
+        JSON.stringify({
+          typ: 'vnd.backstage.limited-user',
+          sub: payload.sub,
+          iat: payload.iat,
+          exp: payload.exp,
+        }),
+      ),
+      payload.uip,
+    ].join('.');
+
+    return { token: limitedUserToken, expiresAt: new Date(payload.exp * 1000) };
   }
 
   #getJwtExpiration(token: string) {
