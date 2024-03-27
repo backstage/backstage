@@ -34,6 +34,7 @@ Blackbox
 bool
 boolean
 Brex
+broadcasted
 bugfixes
 builtins
 callout
@@ -330,6 +331,7 @@ reusability
 Reusability
 roadmaps
 rollbar
+rollout
 Roboto
 Rollbar
 Rollup

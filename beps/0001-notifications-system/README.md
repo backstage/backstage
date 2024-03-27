@@ -155,7 +155,7 @@ The `notification-backend` shall provide necessary parameters for paging and fil
 
 The notification frontend plugin provides a UI for viewing notifications, which in the initial implementation can be as simple as needed. The only requirement is that a user is able to view recent notifications and distinguish between read and unread notifications. The frontend plugin also subscribes to the notifications signal channel and alerts the user when a new notification is received.
 
-Both the individual and broadcasted messages are rendered together in a single list. There will be a filter choosing of of those types or `all`.
+Both the individual and broadcasted messages are rendered together in a single list. There will be a filter choosing among those types or `all`.
 
 ### Architecture Overview
 
