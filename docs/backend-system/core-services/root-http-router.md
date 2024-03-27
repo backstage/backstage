@@ -27,11 +27,11 @@ createBackendPlugin({
       },
       async init({ rootHttpRouter }) {
         const router = Router();
-        router.get('/health', (request, response) => {
+        router.get('', (request, response) => {
           response.send('OK');
         });
 
-        rootHttpRouter.use(router);
+        rootHttpRouter.use('/health', router);
       },
     });
   },
