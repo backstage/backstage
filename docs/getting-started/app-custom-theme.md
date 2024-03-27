@@ -514,4 +514,4 @@ homepage of your app. Read the full guide on the [next page](homepage.md).
 
 ## Migrating to Material UI v5
 
-We now support Material UI v5 in Backstage. Check out our [migration guide](../tutorials/migrate-to-mui5.md) to get started.
+We now support Material UI v5 in Backstage. Check out our [migration guide](../upgrading/migrate-to-mui5.md) to get started.
