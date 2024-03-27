@@ -18,11 +18,11 @@
     "backstage"
   ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
@@ -66,7 +66,8 @@
     "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-sonarqube-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
-    "@backstage/plugin-todo-backend": "workspace:^"
+    "@backstage/plugin-todo-backend": "workspace:^",
+    "express-promise-router": "^4.1.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

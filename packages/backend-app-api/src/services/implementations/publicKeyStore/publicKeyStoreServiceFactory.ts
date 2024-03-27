@@ -25,7 +25,8 @@ import { Knex } from 'knex';
 import { JsonObject } from '@backstage/types';
 import { resolvePackagePath } from '@backstage/backend-common';
 
-const TABLE = 'signing_keys';
+const MIGRATIONS_TABLE = 'backstage_backend_public_keys__knex_migrations';
+const TABLE = 'backstage_backend_public_keys__keys';
 
 type Row = {
   id: string;
@@ -40,6 +41,8 @@ export class DatabaseKeyStore implements PublicKeyStoreService {
   static async create(options: { database: DatabaseService }) {
     const { database } = options;
 
+    console.log(`DEBUG: ###### CREATING STORE`);
+
     const client = await database.getClient();
     if (!database.migrations?.skip) {
       await applyDatabaseMigrations(client);
@@ -52,6 +55,7 @@ export class DatabaseKeyStore implements PublicKeyStoreService {
     key: JsonObject & { kid: string };
     expiresAt: Date;
   }) {
+    console.log(`DEBUG: STORING KEY`, options);
     await this.client<Row>(TABLE).insert({
       id: options.key.kid,
       key: JSON.stringify(options.key),
@@ -111,5 +115,6 @@ export function applyDatabaseMigrations(knex: Knex): Promise<void> {
 
   return knex.migrate.latest({
     directory: migrationsDir,
+    tableName: MIGRATIONS_TABLE,
   });
 }

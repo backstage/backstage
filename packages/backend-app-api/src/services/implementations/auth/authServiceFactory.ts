@@ -114,7 +114,14 @@ class DefaultAuthService implements AuthService {
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {
-    const { sub, aud } = decodeJwt(token);
+    const { sub, aud, iss } = decodeJwt(token);
+    console.log(`DEBUG: iss=`, iss);
+
+    if (iss === 'backstage-plugin') {
+      console.log('DO THE STUFF!');
+      const { subject } = await this.pluginTokenHandler.verifyToken(token);
+      return createCredentialsWithServicePrincipal(subject);
+    }
 
     // # identify new token
     // 1. generate and store public keys in database

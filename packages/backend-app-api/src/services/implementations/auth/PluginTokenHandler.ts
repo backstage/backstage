@@ -15,10 +15,11 @@
  */
 
 import {
+  BackstageCredentials,
   LoggerService,
   PublicKeyStoreService,
 } from '@backstage/backend-plugin-api';
-import { exportJWK, generateKeyPair, JWK } from 'jose';
+import { exportJWK, generateKeyPair, JWK, importJWK, SignJWT } from 'jose';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 
@@ -58,12 +59,35 @@ export class PluginTokenHandler {
     readonly algorithm: string,
   ) {}
 
+  async verifyToken(token: string): Promise<{ subject: string }> {
+    return { subject: 'is me' };
+  }
+
   async issueToken(options: {
     pluginId: string;
     targetPluginId: string;
   }): Promise<{ token: string }> {
-    await this.getKey();
-    return { token: undefined! };
+    const key = await this.getKey();
+
+    const iss = 'backstage-plugin';
+    const sub = options.pluginId;
+    const aud = options.targetPluginId;
+    const iat = Math.floor(Date.now() / 1000);
+    const exp = iat + this.keyDurationSeconds;
+
+    this.logger.info(`Issuing token for ${sub} with audentice ${aud}`);
+
+    const claims = { iss, sub, aud, iat, exp };
+    const token = await new SignJWT(claims)
+      .setProtectedHeader({ alg: this.algorithm, kid: key.kid })
+      .setIssuer(iss)
+      .setAudience(aud)
+      .setSubject(sub)
+      .setIssuedAt(iat)
+      .setExpirationTime(exp)
+      .sign(await importJWK(key));
+
+    return { token };
   }
 
   private async getKey(): Promise<JWK> {
@@ -102,6 +126,7 @@ export class PluginTokenHandler {
       //       the new one. This also needs to be implemented cross-service though, meaning new services
       //       that boot up need to be able to grab an existing key to use for signing.
       this.logger.info(`Created new signing key ${kid}`);
+      console.log(`DEBUG: publicKey=`, publicKey);
       await this.publicKeyStore.addKey({
         id: kid,
         key: publicKey,

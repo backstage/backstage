@@ -21,17 +21,20 @@
  * @returns { Promise<void> }
  */
 exports.up = async function up(knex) {
-  await knex.schema.createTable('signing_keys', table => {
-    table
-      .string('id')
-      .primary()
-      .notNullable()
-      .comment('The unique ID of a public key');
+  await knex.schema.createTable(
+    'backstage_backend_public_keys__keys',
+    table => {
+      table
+        .string('id')
+        .primary()
+        .notNullable()
+        .comment('The unique ID of a public key');
 
-    table.text('keys').notNullable().comment('JSON serialized public key');
+      table.text('key').notNullable().comment('JSON serialized public key');
 
-    table.timestamp('expires_at').notNullable();
-  });
+      table.timestamp('expires_at').notNullable();
+    },
+  );
 };
 
 /**
@@ -39,5 +42,5 @@ exports.up = async function up(knex) {
  * @returns { Promise<void> }
  */
 exports.down = async function down(knex) {
-  return knex.schema.dropTable('signing_keys');
+  return knex.schema.dropTable('backstage_backend_public_keys__keys');
 };
