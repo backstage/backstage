@@ -79,11 +79,13 @@ export class PluginTokenHandler {
       delete this.privateKeyPromise;
     }
 
-    this.keyExpiry = DateTime.utc()
+    const keyExpiry = DateTime.utc()
       .plus({
         seconds: this.keyDurationSeconds,
       })
       .toJSDate();
+    this.keyExpiry = keyExpiry;
+
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
       const kid = uuid();
@@ -100,10 +102,10 @@ export class PluginTokenHandler {
       //       the new one. This also needs to be implemented cross-service though, meaning new services
       //       that boot up need to be able to grab an existing key to use for signing.
       this.logger.info(`Created new signing key ${kid}`);
-      this.publicKeyStore.addKey({
+      await this.publicKeyStore.addKey({
         id: kid,
         key: publicKey,
-        expiry: /* TODO */ this.keyExpiry,
+        expiresAt: keyExpiry,
       });
 
       // At this point we are allowed to start using the new key
