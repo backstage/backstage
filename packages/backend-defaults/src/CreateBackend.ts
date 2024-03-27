@@ -35,6 +35,7 @@ import {
   authServiceFactory,
   httpAuthServiceFactory,
   userInfoServiceFactory,
+  publicKeyStoreServiceFactory,
 } from '@backstage/backend-app-api';
 
 export const defaultServiceFactories = [
@@ -49,6 +50,7 @@ export const defaultServiceFactories = [
   lifecycleServiceFactory(),
   loggerServiceFactory(),
   permissionsServiceFactory(),
+  publicKeyStoreServiceFactory(),
   rootHttpRouterServiceFactory(),
   rootLifecycleServiceFactory(),
   rootLoggerServiceFactory(),
