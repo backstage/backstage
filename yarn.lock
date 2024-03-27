@@ -6124,6 +6124,23 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-notifications-backend-module-email-notification-processor@workspace:plugins/notifications-backend-module-email-notification-processor":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-notifications-backend-module-email-notification-processor@workspace:plugins/notifications-backend-module-email-notification-processor"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-notifications-common": "workspace:^"
+    "@backstage/plugin-notifications-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/nodemailer": ^6.4.14
+    nodemailer: ^6.9.13
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-notifications-backend@workspace:^, @backstage/plugin-notifications-backend@workspace:plugins/notifications-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-notifications-backend@workspace:plugins/notifications-backend"
@@ -16221,6 +16238,15 @@ __metadata:
   dependencies:
     undici-types: ~5.26.4
   checksum: fa291495d6157a9d9393b4c3bdbf1ce12a8f661dc9da6a4fa19bcdb19af1c62bb8dbf7fb66ae135f29cd788b618e9845b83e9c47edcf39f0953a8561fdacd9a3
+  languageName: node
+  linkType: hard
+
+"@types/nodemailer@npm:^6.4.14":
+  version: 6.4.14
+  resolution: "@types/nodemailer@npm:6.4.14"
+  dependencies:
+    "@types/node": "*"
+  checksum: 5f61f01dd736b17f431d1e8b320322f86460604b45df947fc4bc8999d7c7719405e349f7abba86e4fb100a464a30b52615d00dac03d9cb37562ff04487ebd310
   languageName: node
   linkType: hard
 
@@ -32420,6 +32446,13 @@ __metadata:
     util: ^0.12.4
     vm-browserify: ^1.0.1
   checksum: fe491f0839319fd9bb95964c6f7da81fc7fde4c3ac9062aa367f19bc5a6060d0d9e423d3de4196cb51f8259d6aaf6cf380048c48a86eb3721c6223dd0dcc5bfd
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^6.9.13":
+  version: 6.9.13
+  resolution: "nodemailer@npm:6.9.13"
+  checksum: 1b591ef480be2ff69480127cbff819e6593b1ef263b6f920e1a4e83e40280582daf7a14a809ef92f9828e2a70bdb3ce22b11924e209f2afe4975f9ff37e08e9d
   languageName: node
   linkType: hard
 
