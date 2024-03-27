@@ -27,7 +27,7 @@ createBackendPlugin({
       },
       async init({ rootHttpRouter }) {
         const router = Router();
-        router.get('', (request, response) => {
+        router.get('/readiness', (request, response) => {
           response.send('OK');
         });
 
