@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.9
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- 1c1140e: Added ESLint rule `no-top-level-material-ui-4-imports` in the `kubernetes-cluster` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-kubernetes-react@0.3.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-kubernetes-common@0.7.5
+
 ## 0.0.8
 
 ### Patch Changes

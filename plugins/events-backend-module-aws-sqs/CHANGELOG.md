@@ -1,5 +1,18 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.3.2
+
+### Patch Changes
+
+- 81a995f: Updated dependency `aws-sdk-client-mock` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/plugin-events-node@0.3.2
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.3.1
 
 ### Patch Changes

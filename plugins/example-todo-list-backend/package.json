@@ -1,6 +1,6 @@
 {
   "name": "@internal/plugin-todo-list-backend",
-  "version": "1.0.24",
+  "version": "1.0.25",
   "backstage": {
     "role": "backend-plugin"
   },

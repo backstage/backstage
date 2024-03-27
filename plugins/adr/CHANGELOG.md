@@ -1,5 +1,21 @@
 # @backstage/plugin-adr
 
+## 0.6.16
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/plugin-search-react@1.7.9
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/integration-react@1.1.25
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-adr-common@0.2.21
+  - @backstage/plugin-search-common@1.2.11
+
 ## 0.6.15
 
 ### Patch Changes

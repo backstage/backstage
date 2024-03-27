@@ -1,5 +1,21 @@
 # @backstage/plugin-azure-devops
 
+## 0.4.2
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/core-compat-api@0.2.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-azure-devops-common@0.4.0
+  - @backstage/plugin-permission-react@0.4.21
+
 ## 0.4.1
 
 ### Patch Changes

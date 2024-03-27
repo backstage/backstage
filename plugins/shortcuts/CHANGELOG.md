@@ -1,5 +1,16 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.22
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/theme@0.5.2
+  - @backstage/types@1.1.1
+
 ## 0.3.21
 
 ### Patch Changes

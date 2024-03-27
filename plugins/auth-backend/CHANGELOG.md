@@ -1,5 +1,32 @@
 # @backstage/plugin-auth-backend
 
+## 0.22.3
+
+### Patch Changes
+
+- 038b2e6: Only consider entities of kind `User` when using `findCatalogUser` with a filter query, unless an explicit `kind` filter is provided.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-common@0.21.6
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.8
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.8
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.13
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.13
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.13
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.13
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.7
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.9
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.11
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.9
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.22.2
 
 ### Patch Changes

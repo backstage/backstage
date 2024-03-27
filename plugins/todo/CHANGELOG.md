@@ -1,5 +1,16 @@
 # @backstage/plugin-todo
 
+## 0.2.37
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+
 ## 0.2.36
 
 ### Patch Changes

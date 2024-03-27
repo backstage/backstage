@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.8.8
+
+### Patch Changes
+
+- 8caf2f7: Fix how the cli server mocks the new auth cookie endpoint.
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/plugin-techdocs-node@1.12.2
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+
 ## 1.8.7
 
 ### Patch Changes

@@ -1,5 +1,31 @@
 # @backstage/plugin-catalog-backend
 
+## 1.21.0
+
+### Minor Changes
+
+- f3e2e86: Added the ability to inject custom permissions from modules, on `CatalogBuilder` and `CatalogPermissionExtensionPoint`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/backend-common@0.21.6
+  - @backstage/plugin-search-backend-module-catalog@0.1.21
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/plugin-permission-node@0.7.27
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/plugin-events-node@0.3.2
+  - @backstage/backend-openapi-utils@0.1.9
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 1.20.0
 
 ### Minor Changes
