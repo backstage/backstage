@@ -15,6 +15,7 @@
  */
 
 import {
+  DatabaseService,
   PublicKeyStoreService,
   coreServices,
   createServiceFactory,
@@ -22,6 +23,7 @@ import {
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
 import { JsonObject } from '@backstage/types';
+import { resolvePackagePath } from '@backstage/backend-common';
 
 const TABLE = 'signing_keys';
 
@@ -33,7 +35,17 @@ type Row = {
 
 /** @internal */
 export class DatabaseKeyStore implements PublicKeyStoreService {
-  constructor(private readonly client: Knex) {}
+  private constructor(private readonly client: Knex) {}
+
+  static async create(options: { database: DatabaseService }) {
+    const { database } = options;
+
+    const client = await database.getClient();
+    if (!database.migrations?.skip) {
+      await applyDatabaseMigrations(client);
+    }
+    return new DatabaseKeyStore(client);
+  }
 
   async addKey(options: {
     id: string;
@@ -72,7 +84,7 @@ export const publicKeyStoreServiceFactory = createServiceFactory({
     database: coreServices.database,
   },
   async factory({ database }) {
-    return new DatabaseKeyStore(await database.getClient());
+    return DatabaseKeyStore.create({ database });
   },
 });
 
@@ -89,4 +101,15 @@ function parseDate(date: string | Date) {
   }
 
   return parsedDate.toJSDate();
+}
+
+export function applyDatabaseMigrations(knex: Knex): Promise<void> {
+  const migrationsDir = resolvePackagePath(
+    '@backstage/backend-app-api',
+    'migrations',
+  );
+
+  return knex.migrate.latest({
+    directory: migrationsDir,
+  });
 }
