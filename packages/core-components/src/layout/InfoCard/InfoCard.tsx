@@ -43,6 +43,10 @@ const useStyles = makeStyles(
         paddingBottom: 0,
       },
     },
+    contentAlignBottom: {
+      display: 'flex',
+      alignItems: 'self-end',
+    },
     header: {
       padding: theme.spacing(2, 2, 2, 2.5),
     },
@@ -138,6 +142,7 @@ export type Props = {
   slackChannel?: string;
   errorBoundaryProps?: ErrorBoundaryProps;
   variant?: InfoCardVariants;
+  alignContent?: 'normal' | 'bottom';
   children?: ReactNode;
   headerStyle?: object;
   headerProps?: CardHeaderProps;
@@ -167,6 +172,7 @@ export function InfoCard(props: Props): JSX.Element {
     slackChannel,
     errorBoundaryProps,
     variant,
+    alignContent = 'normal',
     children,
     headerStyle,
     headerProps,
@@ -228,7 +234,7 @@ export function InfoCard(props: Props): JSX.Element {
         {title && (
           <CardHeader
             classes={{
-              root: classes.header,
+              root: classNames(classes.header),
               title: classes.headerTitle,
               subheader: classes.headerSubheader,
               avatar: classes.headerAvatar,
@@ -250,6 +256,7 @@ export function InfoCard(props: Props): JSX.Element {
         <CardContent
           className={classNames(cardClassName, {
             [classes.noPadding]: noPadding,
+            [classes.contentAlignBottom]: alignContent === 'bottom',
           })}
           style={calculatedCardStyle}
         >
