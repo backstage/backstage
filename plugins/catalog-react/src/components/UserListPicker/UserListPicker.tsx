@@ -38,6 +38,11 @@ import { UserListFilterKind } from '../../types';
 import { useOwnedEntitiesCount } from './useOwnedEntitiesCount';
 import { useAllEntitiesCount } from './useAllEntitiesCount';
 import { useStarredEntitiesCount } from './useStarredEntitiesCount';
+import {
+  TranslationFunction,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
+import { catalogReactTranslationRef } from '../../translation';
 
 /** @public */
 export type CatalogReactUserListPickerClassKey =
@@ -85,29 +90,32 @@ export type ButtonGroup = {
   }[];
 };
 
-function getFilterGroups(orgName: string | undefined): ButtonGroup[] {
+function getFilterGroups(
+  orgName: string,
+  t: TranslationFunction<typeof catalogReactTranslationRef.T>,
+): ButtonGroup[] {
   return [
     {
-      name: 'Personal',
+      name: t('userListPicker.personalFilter.title'),
       items: [
         {
           id: 'owned',
-          label: 'Owned',
+          label: t('userListPicker.personalFilter.ownedLabel'),
           icon: SettingsIcon,
         },
         {
           id: 'starred',
-          label: 'Starred',
+          label: t('userListPicker.personalFilter.starredLabel'),
           icon: StarIcon,
         },
       ],
     },
     {
-      name: orgName ?? 'Company',
+      name: orgName,
       items: [
         {
           id: 'all',
-          label: 'All',
+          label: t('userListPicker.orgFilterAllLabel'),
         },
       ],
     },
@@ -125,7 +133,10 @@ export const UserListPicker = (props: UserListPickerProps) => {
   const { initialFilter, availableFilters } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
-  const orgName = configApi.getOptionalString('organization.name') ?? 'Company';
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+  const orgName =
+    configApi.getOptionalString('organization.name') ??
+    t('userListPicker.defaultOrgName');
   const {
     filters,
     updateFilters,
@@ -135,7 +146,7 @@ export const UserListPicker = (props: UserListPickerProps) => {
   // Remove group items that aren't in availableFilters and exclude
   // any now-empty groups.
   const userAndGroupFilterIds = ['starred', 'all'];
-  const filterGroups = getFilterGroups(orgName)
+  const filterGroups = getFilterGroups(orgName, t)
     .map(filterGroup => ({
       ...filterGroup,
       items: filterGroup.items.filter(({ id }) =>

@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { fireEvent, screen, waitFor } from '@testing-library/react';
 import React from 'react';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 import { EntityNamespaceFilter } from '../../filters';
 import { EntityNamespacePicker } from './EntityNamespacePicker';
-import { TestApiProvider } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
 import { CatalogApi } from '@backstage/catalog-client';
 
@@ -38,7 +38,7 @@ describe('<EntityNamespacePicker/>', () => {
   } as unknown as CatalogApi;
 
   it('renders all namespaces', async () => {
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityNamespacePicker />
@@ -56,7 +56,7 @@ describe('<EntityNamespacePicker/>', () => {
   });
 
   it('renders unique namespaces in alphabetical order', async () => {
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityNamespacePicker />
@@ -79,7 +79,7 @@ describe('<EntityNamespacePicker/>', () => {
   it('respects the query parameter filter value', async () => {
     const updateFilters = jest.fn();
     const queryParameters = { namespace: ['namespace-1'] };
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider
           value={{
@@ -101,7 +101,7 @@ describe('<EntityNamespacePicker/>', () => {
 
   it('adds namespaces to filters', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider
           value={{
@@ -125,7 +125,7 @@ describe('<EntityNamespacePicker/>', () => {
 
   it('removes namespaces from filters', async () => {
     const updateFilters = jest.fn();
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider
           value={{
@@ -154,7 +154,7 @@ describe('<EntityNamespacePicker/>', () => {
 
   it('responds to external queryParameters changes', async () => {
     const updateFilters = jest.fn();
-    const rendered = render(
+    const rendered = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider
           value={{
@@ -197,7 +197,7 @@ describe('<EntityNamespacePicker/>', () => {
       }),
     } as unknown as CatalogApi;
 
-    render(
+    await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRefNoNamespace]]}>
         <MockEntityListContextProvider
           value={{
@@ -227,7 +227,7 @@ describe('<EntityNamespacePicker/>', () => {
         },
       }),
     } as unknown as CatalogApi;
-    render(
+    await renderInTestApp(
       <TestApiProvider
         apis={[[catalogApiRef, mockCatalogApiRefDefaultNamespace]]}
       >
@@ -241,7 +241,7 @@ describe('<EntityNamespacePicker/>', () => {
     );
   });
   it('renders initially selected namespaces', async () => {
-    render(
+    renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityNamespacePicker

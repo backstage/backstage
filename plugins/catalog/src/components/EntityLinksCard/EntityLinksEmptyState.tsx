@@ -19,6 +19,8 @@ import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { CodeSnippet } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { catalogTranslationRef } from '../../translation';
 
 const ENTITY_YAML = `metadata:
   name: example
@@ -44,12 +46,12 @@ const useStyles = makeStyles(
 
 export function EntityLinksEmptyState() {
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogTranslationRef);
 
   return (
     <>
       <Typography variant="body1">
-        No links defined for this entity. You can add links to your entity YAML
-        as shown in the highlighted example below:
+        {t('entityLinksCard.emptyDescription')}
       </Typography>
       <div className={classes.code}>
         <CodeSnippet
@@ -66,7 +68,7 @@ export function EntityLinksEmptyState() {
         target="_blank"
         href="https://backstage.io/docs/features/software-catalog/descriptor-format#links-optional"
       >
-        Read more
+        {t('entityLinksCard.readMoreButtonTitle')}
       </Button>
     </>
   );

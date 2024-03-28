@@ -20,6 +20,8 @@ import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
 import React, { ComponentProps } from 'react';
 import { useStarredEntity } from '../../hooks/useStarredEntity';
+import { catalogReactTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /** @public */
 export type FavoriteEntityProps = ComponentProps<typeof IconButton> & {
@@ -41,6 +43,7 @@ export const FavoriteEntity = (props: FavoriteEntityProps) => {
   const { toggleStarredEntity, isStarredEntity } = useStarredEntity(
     props.entity,
   );
+  const { t } = useTranslationRef(catalogReactTranslationRef);
   return (
     <IconButton
       aria-label="favorite"
@@ -49,7 +52,11 @@ export const FavoriteEntity = (props: FavoriteEntityProps) => {
       onClick={() => toggleStarredEntity()}
     >
       <Tooltip
-        title={isStarredEntity ? 'Remove from favorites' : 'Add to favorites'}
+        title={
+          isStarredEntity
+            ? t('favoriteEntity.RemoveFromFavorites')
+            : t('favoriteEntity.addToFavorites')
+        }
       >
         {isStarredEntity ? <YellowStar /> : <StarBorder />}
       </Tooltip>
