@@ -15,32 +15,32 @@
  */
 
 import {
-  Entity,
   CompoundEntityRef,
+  Entity,
   parseEntityRef,
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import {
-  CATALOG_FILTER_EXISTS,
   AddLocationRequest,
   AddLocationResponse,
+  CATALOG_FILTER_EXISTS,
   CatalogApi,
-  GetEntitiesRequest,
-  GetEntitiesResponse,
   CatalogRequestOptions,
-  GetEntityAncestorsRequest,
-  GetEntityAncestorsResponse,
-  Location,
-  GetEntityFacetsRequest,
-  GetEntityFacetsResponse,
-  ValidateEntityResponse,
+  EntityFilterQuery,
   GetEntitiesByRefsRequest,
   GetEntitiesByRefsResponse,
+  GetEntitiesRequest,
+  GetEntitiesResponse,
+  GetEntityAncestorsRequest,
+  GetEntityAncestorsResponse,
+  GetEntityFacetsRequest,
+  GetEntityFacetsResponse,
+  Location,
   QueryEntitiesRequest,
-  EntityFilterQuery,
   QueryEntitiesResponse,
+  ValidateEntityResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest } from './utils';
 import { DefaultApiClient, TypedResponse } from './generated';
@@ -85,6 +85,21 @@ export class CatalogClient implements CatalogApi {
   ): Promise<Location | undefined> {
     return await this.requestOptional(
       await this.apiClient.getLocation({ path: { id } }, options),
+    );
+  }
+
+  /**
+   * {@inheritdoc CatalogApi.getLocationByEntity}
+   */
+  async getLocationByEntity(
+    entityRef: CompoundEntityRef | string,
+    options?: CatalogRequestOptions,
+  ): Promise<Location | undefined> {
+    return await this.requestOptional(
+      await this.apiClient.getLocationByEntity(
+        { path: parseEntityRef(entityRef) },
+        options,
+      ),
     );
   }
 
@@ -162,7 +177,13 @@ export class CatalogClient implements CatalogApi {
   ): Promise<GetEntitiesByRefsResponse> {
     const response = await this.apiClient.getEntitiesByRefs(
       {
-        body: request,
+        body: {
+          entityRefs: request.entityRefs,
+          fields: request.fields,
+        },
+        query: {
+          filter: this.getFilterValue(request.filter),
+        },
       },
       options,
     );

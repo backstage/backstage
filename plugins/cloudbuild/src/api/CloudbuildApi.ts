@@ -29,17 +29,22 @@ export const cloudbuildApiRef = createApiRef<CloudbuildApi>({
 export type CloudbuildApi = {
   listWorkflowRuns: (options: {
     projectId: string;
+    location: string;
+    cloudBuildFilter: string;
   }) => Promise<ActionsListWorkflowRunsForRepoResponseData>;
   getWorkflow: (options: {
     projectId: string;
+    location: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
   getWorkflowRun: (options: {
     projectId: string;
+    location: string;
     id: string;
   }) => Promise<ActionsGetWorkflowResponseData>;
   reRunWorkflow: (options: {
     projectId: string;
+    location: string;
     runId: string;
   }) => Promise<any>;
 };

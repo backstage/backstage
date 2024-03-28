@@ -157,6 +157,16 @@
                 }
               }
             },
+            "EXPERIMENTAL_recovery": {
+              "type": "object",
+              "description": "A task recovery section.",
+              "properties": {
+                "EXPERIMENTAL_strategy": {
+                  "type": "string",
+                  "description": "Recovery strategy for your task (none or startOver). By default none"
+                }
+              }
+            },
             "steps": {
               "type": "array",
               "description": "A list of steps to execute.",

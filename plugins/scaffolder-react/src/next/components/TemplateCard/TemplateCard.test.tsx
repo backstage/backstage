@@ -70,7 +70,7 @@ describe('TemplateCard', () => {
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    const { getByText, getByTestId } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -87,6 +87,7 @@ describe('TemplateCard', () => {
 
     const description = getByText('hello');
     expect(description.querySelector('strong')).toBeInTheDocument();
+    expect(getByTestId('template-card-separator')).toBeInTheDocument();
   });
 
   it('should render no description if none is provided through the template', async () => {
@@ -118,6 +119,41 @@ describe('TemplateCard', () => {
     expect(getByText('No description')).toBeInTheDocument();
   });
 
+  it('should not render extra separators when tags or links are not present', async () => {
+    const mockTemplate: TemplateEntityV1beta3 = {
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
+      kind: 'Template',
+      metadata: { name: 'bob' },
+      spec: {
+        steps: [],
+        type: 'service',
+      },
+    };
+
+    const { queryByTestId } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
+        <TemplateCard template={mockTemplate} />
+      </TestApiProvider>,
+    );
+
+    expect(queryByTestId('template-card-separator')).toBeInTheDocument();
+    expect(
+      queryByTestId('template-card-separator--tags'),
+    ).not.toBeInTheDocument();
+    expect(
+      queryByTestId('template-card-separator--links'),
+    ).not.toBeInTheDocument();
+  });
+
   it('should render the tags', async () => {
     const mockTemplate: TemplateEntityV1beta3 = {
       apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -129,7 +165,7 @@ describe('TemplateCard', () => {
       },
     };
 
-    const { getByText } = await renderInTestApp(
+    const { getByText, queryByTestId } = await renderInTestApp(
       <TestApiProvider
         apis={[
           [
@@ -147,6 +183,142 @@ describe('TemplateCard', () => {
     for (const tag of mockTemplate.metadata.tags!) {
       expect(getByText(tag)).toBeInTheDocument();
     }
+    expect(queryByTestId('template-card-separator')).not.toBeInTheDocument();
+    expect(queryByTestId('template-card-separator--tags')).toBeInTheDocument();
+  });
+
+  it('should not render links section when empty links are defined', async () => {
+    const mockTemplate: TemplateEntityV1beta3 = {
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
+      kind: 'Template',
+      metadata: { name: 'bob', tags: [], links: [] },
+      spec: {
+        steps: [],
+        type: 'service',
+      },
+      relations: [
+        {
+          targetRef: 'group:default/my-test-user',
+          type: RELATION_OWNED_BY,
+        },
+      ],
+    };
+
+    const { queryByTestId, queryByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
+        <TemplateCard template={mockTemplate} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:kind/:namespace/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(queryByTestId('template-card-separator')).toBeInTheDocument();
+    expect(
+      queryByTestId('template-card-separator--links'),
+    ).not.toBeInTheDocument();
+    expect(queryByText('0')).not.toBeInTheDocument();
+  });
+
+  it('should not render links section when empty additional links are defined', async () => {
+    const mockTemplate: TemplateEntityV1beta3 = {
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
+      kind: 'Template',
+      metadata: { name: 'bob', tags: [], links: [] },
+      spec: {
+        steps: [],
+        type: 'service',
+      },
+      relations: [
+        {
+          targetRef: 'group:default/my-test-user',
+          type: RELATION_OWNED_BY,
+        },
+      ],
+    };
+
+    const { queryByTestId, queryByText } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
+        <TemplateCard template={mockTemplate} additionalLinks={[]} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:kind/:namespace/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(queryByTestId('template-card-separator')).toBeInTheDocument();
+    expect(
+      queryByTestId('template-card-separator--links'),
+    ).not.toBeInTheDocument();
+    expect(queryByText('0')).not.toBeInTheDocument();
+  });
+
+  it('should render links section when links are defined', async () => {
+    const mockTemplate: TemplateEntityV1beta3 = {
+      apiVersion: 'scaffolder.backstage.io/v1beta3',
+      kind: 'Template',
+      metadata: {
+        name: 'bob',
+        tags: [],
+        links: [{ url: '/some/url', title: 'Learn More' }],
+      },
+      spec: {
+        steps: [],
+        type: 'service',
+      },
+      relations: [
+        {
+          targetRef: 'group:default/my-test-user',
+          type: RELATION_OWNED_BY,
+        },
+      ],
+    };
+
+    const { queryByTestId, getByRole } = await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            starredEntitiesApiRef,
+            new DefaultStarredEntitiesApi({
+              storageApi: MockStorageApi.create(),
+            }),
+          ],
+        ]}
+      >
+        <TemplateCard template={mockTemplate} additionalLinks={[]} />
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:kind/:namespace/:name': entityRouteRef,
+        },
+      },
+    );
+
+    expect(queryByTestId('template-card-separator')).not.toBeInTheDocument();
+    expect(queryByTestId('template-card-separator--links')).toBeInTheDocument();
+    expect(getByRole('link', { name: 'Learn More' })).toBeInTheDocument();
   });
 
   it('should render a link to the owner', async () => {
@@ -186,12 +358,11 @@ describe('TemplateCard', () => {
       },
     );
 
-    expect(
-      getByRole('link', { name: 'group:default/my-test-user' }),
-    ).toBeInTheDocument();
-    expect(
-      getByRole('link', { name: 'group:default/my-test-user' }),
-    ).toHaveAttribute('href', '/catalog/group/default/my-test-user');
+    expect(getByRole('link', { name: /.*my-test-user$/ })).toBeInTheDocument();
+    expect(getByRole('link', { name: /.*my-test-user$/ })).toHaveAttribute(
+      'href',
+      '/catalog/group/default/my-test-user',
+    );
   });
 
   it('should call the onSelected handler when clicking the choose button', async () => {

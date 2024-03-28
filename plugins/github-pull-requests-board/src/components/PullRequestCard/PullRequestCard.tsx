@@ -19,7 +19,7 @@ import {
   getChangeRequests,
   getCommentedReviews,
 } from '../../utils/functions';
-import { Reviews, Author, Label } from '../../utils/types';
+import { Reviews, Author, Label, Status } from '../../utils/types';
 import { Card } from '../Card';
 import { UserHeaderList } from '../UserHeaderList';
 
@@ -30,6 +30,7 @@ type Props = {
   author: Author;
   url: string;
   reviews: Reviews;
+  status?: Status;
   repositoryName: string;
   repositoryIsArchived: boolean;
   isDraft: boolean;
@@ -44,6 +45,7 @@ const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
     author,
     url,
     reviews,
+    status,
     repositoryName,
     repositoryIsArchived,
     isDraft,
@@ -66,6 +68,7 @@ const PullRequestCard: FunctionComponent<Props> = (props: Props) => {
       isDraft={isDraft}
       repositoryIsArchived={repositoryIsArchived}
       labels={labels}
+      status={status}
     >
       {!!approvedReviews.length && (
         <UserHeaderList

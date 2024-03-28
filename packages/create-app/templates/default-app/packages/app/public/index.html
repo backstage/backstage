@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#000000" />
     <meta
       name="description"
-      content="Backstage is an open platform for building developer portals"
+      content="Backstage is an open source framework for building developer portals"
     />
     <!--
       manifest.json provides metadata used when your web app is installed on a
@@ -41,7 +41,7 @@
       href="<%= publicPath %>/safari-pinned-tab.svg"
       color="#5bbad5"
     />
-    <title><%= config.getString('app.title') %></title>
+    <title><%= config.getOptionalString('app.title') ?? 'Backstage' %></title>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

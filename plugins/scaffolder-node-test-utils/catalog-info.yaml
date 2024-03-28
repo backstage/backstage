@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-scaffolder-node-test-utils
+  title: '@backstage/plugin-scaffolder-node-test-utils'
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

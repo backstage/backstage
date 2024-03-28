@@ -17,7 +17,7 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { linguistApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 import { Languages } from '@backstage/plugin-linguist-common';
 

@@ -45,6 +45,30 @@ export type TemplateInfo = {
 };
 
 /**
+ *
+ * none - not recover, let the task be marked as failed
+ * startOver - do recover, start the execution of the task from the first step.
+ *
+ * @public
+ */
+export type TaskRecoverStrategy = 'none' | 'startOver';
+
+/**
+ * When task didn't have a chance to complete due to system restart you can define the strategy what to do with such tasks,
+ * by defining a strategy.
+ *
+ * By default, it is none, what means to not recover but updating the status from 'processing' to 'failed'.
+ *
+ * @public
+ */
+export interface TaskRecovery {
+  /**
+   * Depends on how you designed your task you might tailor the behaviour for each of them.
+   */
+  EXPERIMENTAL_strategy?: TaskRecoverStrategy;
+}
+
+/**
  * An individual step of a scaffolder task, as stored in the database.
  *
  * @public
@@ -119,6 +143,10 @@ export interface TaskSpecV1beta3 {
      */
     ref?: string;
   };
+  /**
+   * How to recover the task after system restart or system crash.
+   */
+  EXPERIMENTAL_recovery?: TaskRecovery;
 }
 
 /**

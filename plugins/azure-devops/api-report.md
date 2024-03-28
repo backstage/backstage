@@ -12,8 +12,8 @@ import { BuildRunOptions } from '@backstage/plugin-azure-devops-common';
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { GitTag } from '@backstage/plugin-azure-devops-common';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
@@ -69,6 +69,7 @@ export interface AzureDevOpsApi {
   // (undocumented)
   getBuildRuns(
     projectName: string,
+    entityRef: string,
     repoName?: string,
     definitionName?: string,
     host?: string,
@@ -85,6 +86,7 @@ export interface AzureDevOpsApi {
   getGitTags(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
   ): Promise<{
@@ -94,6 +96,7 @@ export interface AzureDevOpsApi {
   getPullRequests(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
     options?: PullRequestOptions,
@@ -121,15 +124,13 @@ export const azureDevOpsApiRef: ApiRef<AzureDevOpsApi>;
 
 // @public (undocumented)
 export class AzureDevOpsClient implements AzureDevOpsApi {
-  constructor(options: {
-    discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
-  });
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi });
   // (undocumented)
   getAllTeams(): Promise<Team[]>;
   // (undocumented)
   getBuildRuns(
     projectName: string,
+    entityRef: string,
     repoName?: string,
     definitionName?: string,
     host?: string,
@@ -146,6 +147,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   getGitTags(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
   ): Promise<{
@@ -155,6 +157,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   getPullRequests(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
     options?: PullRequestOptions,

@@ -19,13 +19,13 @@ import Router from 'express-promise-router';
 import { Config } from '@backstage/config';
 import {
   FactChecker,
+  PersistenceContext,
   TechInsightCheck,
 } from '@backstage/plugin-tech-insights-node';
 
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { Logger } from 'winston';
 import { DateTime } from 'luxon';
-import { PersistenceContext } from './persistence/persistenceContext';
 import {
   CompoundEntityRef,
   parseEntityRef,

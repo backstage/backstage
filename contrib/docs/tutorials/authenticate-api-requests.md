@@ -88,7 +88,7 @@ Install cookie-parser:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend cookie-parser
+yarn --cwd packages/backend add cookie-parser
 ```
 
 Update routes in `packages/backend/src/index.ts`:
@@ -223,7 +223,7 @@ Install cookie-parser:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend cookie-parser @types/cookie-parser
+yarn --cwd packages/backend add cookie-parser @types/cookie-parser
 ```
 
 Create a custom configured `rootHttpRouterService` in `packages/backend/src/customRootHttpRouterService.ts`:

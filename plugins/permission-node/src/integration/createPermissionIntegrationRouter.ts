@@ -162,7 +162,6 @@ const applyConditions = <TResourceType extends string, TResource>(
 };
 
 /**
-
  * Takes some permission conditions and returns a definitive authorization result
  * on the resource to which they apply.
  *

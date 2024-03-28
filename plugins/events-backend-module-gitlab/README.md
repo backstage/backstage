@@ -1,9 +1,9 @@
 # events-backend-module-gitlab
 
-Welcome to the `events-backend-module-gitlab` backend plugin!
+Welcome to the `events-backend-module-gitlab` backend module!
 
-This plugin is a module for the `events-backend` backend plugin
-and extends it with an `GitlabEventRouter`.
+This package is a module for the `events-backend` backend plugin
+and extends the event system with an `GitlabEventRouter`.
 
 The event router will subscribe to the topic `gitlab`
 and route the events to more concrete topics based on the value
@@ -21,37 +21,49 @@ Please find all possible webhook event types at the
 
 ## Installation
 
-Install the [`events-backend` plugin](../events-backend/README.md).
-
-Install this module:
-
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-events-backend-module-gitlab
+yarn --cwd packages/backend add @backstage/plugin-events-backend-module-gitlab
 ```
 
-Add the event router to the `EventsBackend` instance in `packages/backend/src/plugins/events.ts`:
+### Event Router
 
-```diff
-+const gitlabEventRouter = new GitlabEventRouter();
+```ts
+// packages/backend/src/index.ts
+import { eventsModuleGitlabEventRouter } from '@backstage/plugin-events-backend-module-gitlab/alpha';
+// ...
+backend.add(eventsModuleGitlabEventRouter());
+```
 
-new EventsBackend(env.logger)
-+  .addPublishers(gitlabEventRouter)
-+  .addSubscribers(gitlabEventRouter);
-// [...]
+#### Legacy Backend System
+
+```ts
+// packages/backend/src/plugins/events.ts
+const eventRouter = new GitlabEventRouter({ events: env.events });
+await eventRouter.subscribe();
 ```
 
 ### Token Validator
 
+```ts
+// packages/backend/src/index.ts
+import { eventsModuleGitlabWebhook } from '@backstage/plugin-events-backend-module-gitlab/alpha';
+// ...
+backend.add(eventsModuleGitlabWebhook());
+```
+
+#### Legacy Backend System
+
 Add the token validator for the topic `gitlab`:
 
 ```diff
-// at packages/backend/src/plugins/events.ts
+// packages/backend/src/plugins/events.ts
 + import { createGitlabTokenValidator } from '@backstage/plugin-events-backend-module-gitlab';
-// [...]
-   const http = HttpPostIngressEventPublisher.fromConfig({
-     config: env.config,
-     ingresses: {
+  // [...]
+    const http = HttpPostIngressEventPublisher.fromConfig({
+      config: env.config,
+      events: env.events,
+      ingresses: {
 +       gitlab: {
 +         validator: createGitlabTokenValidator(env.config),
 +       },
@@ -60,7 +72,7 @@ Add the token validator for the topic `gitlab`:
   });
 ```
 
-Additionally, you need to add the configuration:
+## Configuration
 
 ```yaml
 events:

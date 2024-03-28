@@ -18,6 +18,22 @@ import { Entity } from '@backstage/catalog-model';
 import { getAnnotationValuesFromEntity } from './getAnnotationValuesFromEntity';
 
 describe('getAnnotationValuesFromEntity', () => {
+  describe('without any annotations', () => {
+    it('should throw annotations not found', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'project-repo',
+        },
+      };
+      expect(() => getAnnotationValuesFromEntity(entity)).toThrow(
+        'Expected "dev.azure.com" annotations were not found',
+      );
+    });
+  });
+
   describe('with valid project-repo annotation', () => {
     it('should return project and repo', () => {
       const entity: Entity = {
@@ -36,6 +52,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: 'repoName',
         definition: undefined,
+        readmePath: undefined,
         host: undefined,
         org: undefined,
       });
@@ -133,6 +150,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: undefined,
         definition: 'buildDefinitionName',
+        readmePath: undefined,
         host: undefined,
         org: undefined,
       });
@@ -140,7 +158,7 @@ describe('getAnnotationValuesFromEntity', () => {
   });
 
   describe('with only project annotation', () => {
-    it('should should throw annotation not found error', () => {
+    it('should throw annotation not found error', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -163,7 +181,7 @@ describe('getAnnotationValuesFromEntity', () => {
   });
 
   describe('with only build-definition annotation', () => {
-    it('should should throw annotation not found error', () => {
+    it('should throw annotation not found error', () => {
       const entity: Entity = {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Component',
@@ -204,6 +222,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: 'repoName',
         definition: undefined,
+        readmePath: undefined,
         host: 'hostName',
         org: 'organizationName',
       });
@@ -230,6 +249,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: undefined,
         definition: 'buildDefinitionName',
+        readmePath: undefined,
         host: 'hostName',
         org: 'organizationName',
       });
@@ -328,6 +348,7 @@ describe('getAnnotationValuesFromEntity', () => {
         project: 'projectName',
         repo: 'repoName',
         definition: undefined,
+        readmePath: undefined,
         host: 'company.com/tfs',
         org: 'organizationName',
       });
@@ -379,6 +400,139 @@ describe('getAnnotationValuesFromEntity', () => {
       expect(test).toThrow(
         'Invalid value for annotation "dev.azure.com/project-repo"; expected format is: <project-name>/<repo-name>, found: "project/another/repo/final"',
       );
+    });
+  });
+
+  describe('projectRepo and buildDefinition are provided', () => {
+    it('should return project, repo and buildDefinition', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'project-repo',
+          annotations: {
+            'dev.azure.com/build-definition': 'buildDefinitionName',
+            'dev.azure.com/project-repo': 'projectName/repoName',
+          },
+        },
+      };
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: 'repoName',
+        definition: 'buildDefinitionName',
+        readmePath: undefined,
+        host: undefined,
+        org: undefined,
+      });
+    });
+  });
+
+  describe('project, projectRepo and buildDefinition are provided', () => {
+    it('should prefer project over project-repo.project and return no repo', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'project-repo',
+          annotations: {
+            'dev.azure.com/project': 'projectName',
+            'dev.azure.com/build-definition': 'buildDefinitionName',
+            'dev.azure.com/project-repo': 'ignoredProject/repoName',
+          },
+        },
+      };
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: undefined,
+        definition: 'buildDefinitionName',
+        readmePath: undefined,
+        host: undefined,
+        org: undefined,
+      });
+    });
+  });
+
+  describe('definition, project and readme', () => {
+    it('returns with the readme path', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'project-repo',
+          annotations: {
+            'dev.azure.com/project': 'projectName',
+            'dev.azure.com/build-definition': 'buildDefinitionName',
+            'dev.azure.com/readme-path': 'readme/path.md',
+          },
+        },
+      };
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: undefined,
+        definition: 'buildDefinitionName',
+        readmePath: 'readme/path.md',
+        host: undefined,
+        org: undefined,
+      });
+    });
+  });
+
+  describe('definition, projectRepo and readme', () => {
+    it('returns with the readme path', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'project-repo',
+          annotations: {
+            'dev.azure.com/project-repo': 'projectName/repoName',
+            'dev.azure.com/build-definition': 'buildDefinitionName',
+            'dev.azure.com/readme-path': 'readme/path.md',
+          },
+        },
+      };
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: 'repoName',
+        definition: 'buildDefinitionName',
+        readmePath: 'readme/path.md',
+        host: undefined,
+        org: undefined,
+      });
+    });
+  });
+
+  describe('projectRepo and readme', () => {
+    it('returns with the readme path', () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          namespace: 'default',
+          name: 'project-repo',
+          annotations: {
+            'dev.azure.com/project-repo': 'projectName/repoName',
+            'dev.azure.com/readme-path': 'readme/path.md',
+          },
+        },
+      };
+      const values = getAnnotationValuesFromEntity(entity);
+      expect(values).toEqual({
+        project: 'projectName',
+        repo: 'repoName',
+        definition: undefined,
+        readmePath: 'readme/path.md',
+        host: undefined,
+        org: undefined,
+      });
     });
   });
 });

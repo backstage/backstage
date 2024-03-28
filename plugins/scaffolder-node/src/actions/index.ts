@@ -25,5 +25,12 @@ export {
 } from './executeShellCommand';
 export { fetchContents, fetchFile } from './fetch';
 export { type ActionContext, type TemplateAction } from './types';
-export { initRepoAndPush, commitAndPushRepo } from './gitHelpers';
+export {
+  initRepoAndPush,
+  commitAndPushRepo,
+  commitAndPushBranch,
+  addFiles,
+  createBranch,
+  cloneRepo,
+} from './gitHelpers';
 export { parseRepoUrl, getRepoSourceDirectory } from './util';

@@ -24,7 +24,7 @@ prismTheme.plain.backgroundColor = '#232323';
 /** @type {import('@docusaurus/types').Config} */
 module.exports = {
   title: 'Backstage Software Catalog and Developer Platform',
-  tagline: 'An open platform for building developer portals',
+  tagline: 'An open source framework for building developer portals',
   url: 'https://backstage.io',
   baseUrl: '/',
   organizationName: 'Spotify',
@@ -69,8 +69,8 @@ module.exports = {
     ],
   ],
   markdown: {
-    preprocessor({ filePath, fileContent }) {
-      // Replace all HTML comments with emtpy strings as these are not supported by MDXv2.
+    preprocessor({ fileContent }) {
+      // Replace all HTML comments with empty strings as these are not supported by MDXv2.
       return fileContent.replace(/<!--.*?-->/gs, '');
     },
     format: 'md',
@@ -144,6 +144,22 @@ module.exports = {
             from: '/docs/features/software-templates/testing-scaffolder-alpha',
             to: '/docs/features/software-templates/migrating-to-rjsf-v5',
           },
+          {
+            from: '/docs/auth/glossary',
+            to: '/docs/references/glossary',
+          },
+          {
+            from: '/docs/overview/glossary',
+            to: '/docs/references/glossary',
+          },
+          {
+            from: '/docs/getting-started/create-an-app',
+            to: '/docs/getting-started/',
+          },
+          {
+            from: '/docs/getting-started/configuration',
+            to: '/docs/getting-started/#next-steps',
+          },
         ],
       },
     ],
@@ -182,7 +198,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.22.0',
+            to: 'docs/releases/v1.25.0',
             label: 'Releases',
             position: 'left',
           },
@@ -277,14 +293,14 @@ module.exports = {
                 to: 'https://developer.spotify.com/',
               },
               {
-                label: 'Github',
+                label: 'GitHub',
                 to: 'https://github.com/backstage/',
               },
             ],
           },
         ],
         copyright:
-          '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2023 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
+          '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2024 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
       },
       algolia: {
         apiKey: '1f0ba86672ccfc3576faa94583e5b318',

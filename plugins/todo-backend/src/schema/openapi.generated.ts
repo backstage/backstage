@@ -22,7 +22,7 @@ import { createValidatedOpenApiRouter } from '@backstage/backend-openapi-utils';
 export const spec = {
   openapi: '3.0.3',
   info: {
-    title: '@backstage/plugin-todo-backend',
+    title: 'todo',
     version: '1',
     description:
       'The Backstage backend plugin that provides source code todo comment browsing.',

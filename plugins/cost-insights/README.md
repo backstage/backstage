@@ -17,7 +17,7 @@ Learn more with the Backstage blog post [New Cost Insights plugin: The engineer'
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-cost-insights
+yarn --cwd packages/app add @backstage/plugin-cost-insights
 ```
 
 ## Setup
@@ -224,8 +224,8 @@ costInsights:
 
 ### Engineer Threshold (Optional; default 0.5)
 
-This threshold determines whether to show 'Negligible', or a percentage with a fraction of 'engineers' for cost savings or cost excess on top of the charts.  
-A threshold of 0.5 means that `Negligible` is shown when the difference in costs is lower than that fraction of engineers in that time frame,  
+This threshold determines whether to show 'Negligible', or a percentage with a fraction of 'engineers' for cost savings or cost excess on top of the charts.
+A threshold of 0.5 means that `Negligible` is shown when the difference in costs is lower than that fraction of engineers in that time frame,
 and show `XX% or ~N engineers` when it's above the threshold.
 
 ```yaml

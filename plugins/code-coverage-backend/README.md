@@ -6,7 +6,7 @@ This is the backend part of the `code-coverage` plugin. It takes care of process
 
 ```sh
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-code-coverage-backend
+yarn --cwd packages/backend add @backstage/plugin-code-coverage-backend
 ```
 
 First create a `codecoverage.ts` file here: `packages/backend/src/plugins`. Now add the following as its content:
@@ -74,7 +74,7 @@ The code coverage backend plugin has support for the [new backend system](https:
 In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
-+ backend.add(import('@backstage/plugin-explore-backend'));
++ backend.add(import('@backstage/plugin-code-coverage-backend'));
 ```
 
 ## Configuring your entity

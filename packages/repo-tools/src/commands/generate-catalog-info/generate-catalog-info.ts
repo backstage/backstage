@@ -33,6 +33,7 @@ import {
   isFulfilled,
   readFile,
   writeFile,
+  safeEntityName,
 } from './utils';
 import { CodeOwnersEntry } from 'codeowners-utils';
 
@@ -164,9 +165,7 @@ async function fixCatalogInfoYaml(options: FixOptions) {
     codeowners,
     relativePath('.', yamlPath),
   );
-  const safeName = packageJson.name
-    .replace(/[^a-z0-9_\-\.]+/g, '-')
-    .replace(/^[^a-z0-9]|[^a-z0-9]$/g, '');
+  const safeName = safeEntityName(packageJson.name);
   let yamlJson: BackstagePackageEntity;
 
   try {
@@ -240,9 +239,7 @@ function createOrMergeEntity(
   owner: string,
   existingEntity: BackstagePackageEntity | Record<string, any> = {},
 ): BackstagePackageEntity {
-  const safeEntityName = packageJson.name
-    .replace(/[^a-z0-9_\-\.]+/g, '-')
-    .replace(/^[^a-z0-9]|[^a-z0-9]$/g, '');
+  const entityName = safeEntityName(packageJson.name);
 
   return {
     ...existingEntity,
@@ -251,7 +248,7 @@ function createOrMergeEntity(
     metadata: {
       ...existingEntity.metadata,
       // Provide default name/title/description values.
-      name: safeEntityName,
+      name: entityName,
       title: packageJson.name,
       ...(packageJson.description && !existingEntity.metadata?.description
         ? { description: packageJson.description }

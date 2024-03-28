@@ -615,8 +615,8 @@ describe('createAppNodeInstance', () => {
           ),
         ),
       }),
-    ).toThrow(
-      "Failed to instantiate extension 'app/test', input 'singleton' did not receive required extension data 'other' from extension 'app/test'",
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Failed to instantiate extension 'app/test', extension 'app/test' could not be attached because its output data ('test', 'other') does not match what the input 'singleton' requires ('other')"`,
     );
   });
 });

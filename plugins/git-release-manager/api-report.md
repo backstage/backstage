@@ -317,42 +317,42 @@ function LinearProgressWithLabel(props: {
 // Warning: (ae-missing-release-tag) "MOCK_RELEASE_BRANCH_NAME_CALVER" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const MOCK_RELEASE_BRANCH_NAME_CALVER = 'rc/2020.01.01_1';
+const MOCK_RELEASE_BRANCH_NAME_CALVER: string;
 
 // Warning: (ae-missing-release-tag) "MOCK_RELEASE_BRANCH_NAME_SEMVER" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const MOCK_RELEASE_BRANCH_NAME_SEMVER = 'rc/1.2.3';
+const MOCK_RELEASE_BRANCH_NAME_SEMVER: string;
 
 // Warning: (ae-missing-release-tag) "MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER = 'rc-2020.01.01_1';
+const MOCK_RELEASE_CANDIDATE_TAG_NAME_CALVER: string;
 
 // Warning: (ae-missing-release-tag) "MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER = 'rc-1.2.3';
+const MOCK_RELEASE_CANDIDATE_TAG_NAME_SEMVER: string;
 
 // Warning: (ae-missing-release-tag) "MOCK_RELEASE_NAME_CALVER" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const MOCK_RELEASE_NAME_CALVER = 'Version 2020.01.01_1';
+const MOCK_RELEASE_NAME_CALVER: string;
 
 // Warning: (ae-missing-release-tag) "MOCK_RELEASE_NAME_SEMVER" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const MOCK_RELEASE_NAME_SEMVER = 'Version 1.2.3';
+const MOCK_RELEASE_NAME_SEMVER: string;
 
 // Warning: (ae-missing-release-tag) "MOCK_RELEASE_VERSION_TAG_NAME_CALVER" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const MOCK_RELEASE_VERSION_TAG_NAME_CALVER = 'version-2020.01.01_1';
+const MOCK_RELEASE_VERSION_TAG_NAME_CALVER: string;
 
 // Warning: (ae-missing-release-tag) "MOCK_RELEASE_VERSION_TAG_NAME_SEMVER" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-const MOCK_RELEASE_VERSION_TAG_NAME_SEMVER = 'version-1.2.3';
+const MOCK_RELEASE_VERSION_TAG_NAME_SEMVER: string;
 
 // Warning: (ae-missing-release-tag) "mockBumpedTag" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //

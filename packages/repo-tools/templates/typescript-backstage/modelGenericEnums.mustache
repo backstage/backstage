@@ -1,0 +1,32 @@
+{{! Sourced from https://github.com/OpenAPITools/openapi-generator/blob/7347daec61b2cb8d3d28e1ed06fe8b5e682090f8/modules/openapi-generator/src/main/resources/typescript-angular/modelGenericEnums.mustache }}
+
+{{#hasEnums}}
+
+{{^stringEnums}}
+export namespace {{classname}} {
+{{/stringEnums}}
+{{#vars}}
+    {{#isEnum}}
+{{#stringEnums}}
+export enum {{classname}}{{enumName}} {
+{{#allowableValues}}
+{{#enumVars}}
+    {{name}} = {{{value}}}{{^-last}},{{/-last}}
+{{/enumVars}}
+{{/allowableValues}}
+};
+{{/stringEnums}}
+{{^stringEnums}}
+    export type {{enumName}} = {{#allowableValues}}{{#enumVars}}{{{value}}}{{^-last}} | {{/-last}}{{/enumVars}}{{/allowableValues}};
+    export const {{enumName}} = {
+    {{#allowableValues}}
+    {{#enumVars}}
+        {{name}}: {{{value}}} as {{enumName}}{{^-last}},{{/-last}}
+    {{/enumVars}}
+    {{/allowableValues}}
+    };
+{{/stringEnums}}
+    {{/isEnum}}
+{{/vars}}
+{{^stringEnums}}}{{/stringEnums}}
+{{/hasEnums}}

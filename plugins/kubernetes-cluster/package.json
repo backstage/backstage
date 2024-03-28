@@ -1,37 +1,40 @@
 {
   "name": "@backstage/plugin-kubernetes-cluster",
+  "version": "0.0.9",
   "description": "A Backstage plugin that shows details of Kubernetes clusters",
-  "version": "0.0.5",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "frontend-plugin"
-  },
+  "keywords": [
+    "backstage",
+    "kubernetes"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/kubernetes-cluster"
   },
-  "keywords": [
-    "backstage",
-    "kubernetes"
-  ],
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
-    "start": "backstage-cli package start",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -44,18 +47,13 @@
     "@kubernetes-models/base": "^4.0.1",
     "@material-ui/core": "^4.12.2",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "@types/react": "^16.13.1 || ^17.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "cronstrue": "^2.2.0",
     "js-yaml": "^4.0.0",
     "kubernetes-models": "^4.1.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "react-use": "^17.2.4"
-  },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -65,7 +63,9 @@
     "@testing-library/react": "^14.0.0",
     "@types/node": "^16.11.26"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  }
 }

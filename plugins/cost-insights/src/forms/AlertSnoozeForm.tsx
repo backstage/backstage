@@ -22,14 +22,12 @@ import React, {
   FormEventHandler,
 } from 'react';
 import { DateTime } from 'luxon';
-import {
-  Box,
-  FormControl,
-  FormControlLabel,
-  RadioGroup,
-  Radio,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import Radio from '@material-ui/core/Radio';
+import Typography from '@material-ui/core/Typography';
 import {
   Alert,
   AlertFormProps,

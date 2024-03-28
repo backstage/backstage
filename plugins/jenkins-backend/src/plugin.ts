@@ -38,12 +38,27 @@ export const jenkinsPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         config: coreServices.rootConfig,
         catalogClient: catalogServiceRef,
+        discovery: coreServices.discovery,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
-      async init({ logger, permissions, httpRouter, config, catalogClient }) {
+      async init({
+        logger,
+        permissions,
+        httpRouter,
+        config,
+        catalogClient,
+        discovery,
+        auth,
+        httpAuth,
+      }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const jenkinsInfoProvider = DefaultJenkinsInfoProvider.fromConfig({
+          auth,
+          httpAuth,
           config,
           catalog: catalogClient,
+          discovery,
         });
         httpRouter.use(
           await createRouter({
@@ -56,6 +71,9 @@ export const jenkinsPlugin = createBackendPlugin({
              * Info provider to be able to get all necessary information for the APIs
              */
             jenkinsInfoProvider,
+            discovery,
+            auth,
+            httpAuth,
           }),
         );
       },

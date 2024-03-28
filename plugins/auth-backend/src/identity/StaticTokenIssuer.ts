@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AnyJWK, TokenIssuer, TokenParams } from './types';
+
+import { AnyJWK, TokenIssuer } from './types';
 import { SignJWT, importJWK, JWK } from 'jose';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { AuthenticationError } from '@backstage/errors';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { StaticKeyStore } from './StaticKeyStore';
+import { TokenParams } from '@backstage/plugin-auth-node';
 
 const MS_IN_S = 1000;
 

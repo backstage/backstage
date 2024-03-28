@@ -25,7 +25,9 @@ const clustersWithErrorsToErrorMessage = (
   return clustersWithErrors.map((c, i) => {
     return (
       <div key={i}>
-        <Typography variant="body2">{`Cluster: ${c.cluster.name}`}</Typography>
+        <Typography variant="body2">{`Cluster: ${
+          c.cluster.title || c.cluster.name
+        }`}</Typography>
         {c.errors.map((e, j) => {
           return (
             <Typography variant="body2" key={j}>

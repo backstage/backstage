@@ -6,7 +6,7 @@ Signals plugin allows backend plugins to publish messages to frontend plugins.
 
 ## Getting started
 
-First install the `@backstage/plugin-signals-node` plugin to get the `SignalService` set up.
+First install the `@backstage/plugin-signals-node` plugin to get the `SignalsService` set up.
 
 Next, add Signals router to your backend in `packages/backend/src/plugins/signals.ts`:
 
@@ -22,6 +22,7 @@ export default async function createPlugin(
     logger: env.logger,
     eventBroker: env.eventBroker,
     identity: env.identity,
+    discovery: env.discovery,
   });
 }
 ```

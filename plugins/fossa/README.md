@@ -10,7 +10,7 @@ The FOSSA Plugin displays code statistics from [FOSSA](https://fossa.com/).
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-fossa
+yarn --cwd packages/app add @backstage/plugin-fossa
 ```
 
 2. Add the `EntityFossaCard` to the EntityPage:

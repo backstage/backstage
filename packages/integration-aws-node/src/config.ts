@@ -152,7 +152,7 @@ function readAwsIntegrationAccountConfig(
   const accountConfig = {
     accountId: config.getString('accountId'),
     accessKeyId: config.getOptionalString('accessKeyId'),
-    secretAccessKey: config.getOptionalString('secretAccessKey'),
+    secretAccessKey: config.getOptionalString('secretAccessKey')?.trim(),
     profile: config.getOptionalString('profile'),
     roleName: config.getOptionalString('roleName'),
     region: config.getOptionalString('region'),
@@ -216,7 +216,7 @@ function readMainAwsIntegrationAccountConfig(
 ): AwsIntegrationMainAccountConfig {
   const mainAccountConfig = {
     accessKeyId: config.getOptionalString('accessKeyId'),
-    secretAccessKey: config.getOptionalString('secretAccessKey'),
+    secretAccessKey: config.getOptionalString('secretAccessKey')?.trim(),
     profile: config.getOptionalString('profile'),
     region: config.getOptionalString('region'),
   };

@@ -16,6 +16,7 @@
 import 'xterm/css/xterm.css';
 
 import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
+import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { createStyles, makeStyles, Theme } from '@material-ui/core';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Terminal } from 'xterm';
@@ -29,7 +30,7 @@ import { PodExecTerminalAttachAddon } from './PodExecTerminalAttachAddon';
  * @public
  */
 export interface PodExecTerminalProps {
-  clusterName: string;
+  cluster: ClusterAttributes;
   containerName: string;
   podName: string;
   podNamespace: string;

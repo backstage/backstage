@@ -101,6 +101,9 @@ All loaded configuration files are merged together using the following rules:
   contents.
 - Objects are merged together deeply, meaning that if any of the included
   configs contain a value for a given path, it will be found.
+- A `null` value in a config file will be treated as an explicit absence of
+  configuration. This means that the reading will not fall back to a lower priority
+  config, but it will still be treated as if the configuration was not present.
 
 The priority of the configurations is determined by the following rules, in
 order:
@@ -220,6 +223,8 @@ clientSecret: someGithubAppClientSecret
 webhookSecret: someWebhookSecret
 privateKey: |
   -----BEGIN RSA PRIVATE KEY-----
-  SomeRsaPrivateKey
+  SomeRsaPrivateKeySecurelyStored
   -----END RSA PRIVATE KEY-----
 ```
+
+**Warning: Sensitive information, such as private keys, should not be hard coded**. We recommend that this entire file should be a secret and stored as such in a secure storage solution like Vault, to ensure they are neither exposed nor misused. This example key part only shows the format on how to use the yaml | syntax to make sure that the key is valid.

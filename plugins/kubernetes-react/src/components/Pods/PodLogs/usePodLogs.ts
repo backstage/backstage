@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 import { ContainerScope } from './types';
 import { useApi } from '@backstage/core-plugin-api';
@@ -41,7 +41,7 @@ export const usePodLogs = ({ containerScope, previous }: PodLogsOptions) => {
       podName: containerScope.podName,
       namespace: containerScope.podNamespace,
       containerName: containerScope.containerName,
-      clusterName: containerScope.clusterName,
+      clusterName: containerScope.cluster.name,
       previous,
     });
   }, [JSON.stringify(containerScope)]);

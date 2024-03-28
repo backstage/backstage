@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import {
   LinkButton,
   EmptyState,
@@ -23,11 +23,17 @@ import {
   Progress,
   ErrorPanel,
 } from '@backstage/core-components';
-import { catalogApiRef, CatalogApi } from '@backstage/plugin-catalog-react';
+import {
+  catalogApiRef,
+  CatalogApi,
+  EntityDisplayName,
+} from '@backstage/plugin-catalog-react';
 import { useApi } from '@backstage/core-plugin-api';
 import { EntityFilterQuery } from '@backstage/catalog-client';
 
-import { makeStyles, Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 /**
  * Props customizing the <FeaturedDocsCard/> component.
@@ -116,7 +122,7 @@ export const Content = (props: FeaturedDocsCardProps): JSX.Element => {
               }/`
             }
           >
-            {d.metadata.title}
+            <EntityDisplayName entityRef={stringifyEntityRef(d)} />
           </Link>
           {d.metadata.description && (
             <Typography className={styles.docDescription}>

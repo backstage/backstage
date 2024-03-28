@@ -59,7 +59,7 @@ describe('readGerritIntegrationConfig', () => {
         cloneUrl: 'https:a.com/clone',
         gitilesBaseUrl: 'https://a.com/git',
         username: 'u',
-        password: 'p',
+        password: '     p      ',
       }),
     );
     expect(output).toEqual({

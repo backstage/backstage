@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Collapse, List, Typography, makeStyles } from '@material-ui/core';
+import Collapse from '@material-ui/core/Collapse';
+import List from '@material-ui/core/List';
 import { Visit } from '../../api/VisitsApi';
 import { VisitListItem } from './VisitListItem';
 import { ItemDetailType } from './ItemDetail';
@@ -23,31 +24,23 @@ import { VisitListEmpty } from './VisitListEmpty';
 import { VisitListFew } from './VisitListFew';
 import { VisitListSkeleton } from './VisitListSkeleton';
 
-const useStyles = makeStyles(_theme => ({
-  title: {
-    marginBottom: '2rem',
-  },
-}));
-
 export const VisitList = ({
-  title,
   detailType,
   visits = [],
   numVisitsOpen = 3,
   numVisitsTotal = 8,
   collapsed = true,
   loading = false,
+  title = '',
 }: {
-  title: string;
   detailType: ItemDetailType;
   visits?: Visit[];
   numVisitsOpen?: number;
   numVisitsTotal?: number;
   collapsed?: boolean;
   loading?: boolean;
+  title?: string;
 }) => {
-  const classes = useStyles();
-
   let listBody: React.ReactElement = <></>;
   if (loading) {
     listBody = (
@@ -91,9 +84,7 @@ export const VisitList = ({
 
   return (
     <>
-      <Typography variant="h5" className={classes.title}>
-        {title}
-      </Typography>
+      {title && <h5>{title}</h5>}
       <List dense disablePadding>
         {listBody}
       </List>

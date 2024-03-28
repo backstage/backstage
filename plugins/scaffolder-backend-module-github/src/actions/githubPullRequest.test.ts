@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createRootLogger, getRootLogger } from '@backstage/backend-common';
+import { createRootLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
@@ -25,9 +25,9 @@ import {
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
-import { Writable } from 'stream';
 import { createPublishGithubPullRequestAction } from './githubPullRequest';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 // Make sure root logger is initialized ahead of FS mock
 createRootLogger();
@@ -131,14 +131,7 @@ describe('createPublishGithubPullRequestAction', () => {
         [workspacePath]: { 'file.txt': 'Hello there!' },
       });
 
-      ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      ctx = createMockActionContext({ input, workspacePath });
     });
 
     it('creates a pull request', async () => {
@@ -196,14 +189,7 @@ describe('createPublishGithubPullRequestAction', () => {
         [workspacePath]: { 'file.txt': 'Hello there!' },
       });
 
-      ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      ctx = createMockActionContext({ input, workspacePath });
     });
 
     it('creates a pull request', async () => {
@@ -263,14 +249,7 @@ describe('createPublishGithubPullRequestAction', () => {
         },
       });
 
-      ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      ctx = createMockActionContext({ input, workspacePath });
     });
 
     it('creates a pull request with only relevant files', async () => {
@@ -322,14 +301,7 @@ describe('createPublishGithubPullRequestAction', () => {
         [workspacePath]: { 'file.txt': 'Hello there!' },
       });
 
-      ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      ctx = createMockActionContext({ input, workspacePath });
     });
     it('creates a pull request', async () => {
       await instance.handler(ctx);
@@ -382,14 +354,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
       mockDir.setContent({ [workspacePath]: {} });
 
-      ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      ctx = createMockActionContext({ input, workspacePath });
     });
 
     it('creates a pull request and requests a review from the given reviewers', async () => {
@@ -434,14 +399,7 @@ describe('createPublishGithubPullRequestAction', () => {
 
       mockDir.setContent({ [workspacePath]: {} });
 
-      ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      ctx = createMockActionContext({ input, workspacePath });
     });
 
     it('does not call the API endpoint for requesting reviewers', async () => {
@@ -470,14 +428,7 @@ describe('createPublishGithubPullRequestAction', () => {
         },
       });
 
-      ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      ctx = createMockActionContext({ input, workspacePath });
     });
     it('creates a pull request', async () => {
       await instance.handler(ctx);
@@ -526,14 +477,7 @@ describe('createPublishGithubPullRequestAction', () => {
         },
       });
 
-      ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      ctx = createMockActionContext({ input, workspacePath });
     });
     it('creates a pull request', async () => {
       await instance.handler(ctx);
@@ -592,14 +536,7 @@ describe('createPublishGithubPullRequestAction', () => {
         },
       });
 
-      ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      ctx = createMockActionContext({ input, workspacePath });
     });
     it('creates a pull request', async () => {
       await instance.handler(ctx);
@@ -653,14 +590,7 @@ describe('createPublishGithubPullRequestAction', () => {
         [workspacePath]: { 'file.txt': 'Hello there!' },
       });
 
-      ctx = {
-        createTemporaryDirectory: jest.fn(),
-        output: jest.fn(),
-        logger: getRootLogger(),
-        logStream: new Writable(),
-        input,
-        workspacePath,
-      };
+      ctx = createMockActionContext({ input, workspacePath });
     });
 
     it('creates a pull request', async () => {
@@ -684,6 +614,52 @@ describe('createPublishGithubPullRequestAction', () => {
             },
           },
         ],
+      });
+    });
+  });
+
+  describe('with force fork', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        forceFork: true,
+      };
+
+      mockDir.setContent({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+
+      ctx = createMockActionContext({ input, workspacePath });
+    });
+
+    it('creates a pull request', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+          },
+        ],
+        forceFork: true,
       });
     });
   });

@@ -18,7 +18,7 @@ If you haven't setup Backstage already, start
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-search @backstage/plugin-search-react
+yarn --cwd packages/app add @backstage/plugin-search @backstage/plugin-search-react
 ```
 
 Create a new `packages/app/src/components/search/SearchPage.tsx` file in your
@@ -135,7 +135,7 @@ Add the following plugins into your backend app:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-search-backend @backstage/plugin-search-backend-node
+yarn --cwd packages/backend add @backstage/plugin-search-backend @backstage/plugin-search-backend-node
 ```
 
 Create a `packages/backend/src/plugins/search.ts` file containing the following

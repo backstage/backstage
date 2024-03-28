@@ -1,5 +1,157 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.28
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-search-react@1.7.9
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/plugin-home-react@0.1.11
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-common@1.2.11
+
+## 0.1.27
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-search-react@1.7.8
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/plugin-home-react@0.1.10
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-common@1.2.11
+
+## 0.1.26
+
+### Patch Changes
+
+- c6779ac: fix: fix decode issues in title and author fields in `StackOverflowSearchResultListItem`
+- 6429213: Added ESLint rule `no-top-level-material-ui-4-imports` in the `stack-overflow` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/plugin-home-react@0.1.9
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-search-react@1.7.7
+
+## 0.1.26-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/plugin-home-react@0.1.9-next.2
+  - @backstage/plugin-search-react@1.7.7-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/plugin-home-react@0.1.9-next.1
+  - @backstage/plugin-search-react@1.7.7-next.1
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- c6779ac: fix: fix decode issues in title and author fields in `StackOverflowSearchResultListItem`
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-search-common@1.2.11-next.0
+  - @backstage/plugin-home-react@0.1.9-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/plugin-search-react@1.7.7-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+
+## 0.1.25
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- c1bc331: Fixes a bug that made the API return questions not related to the tags provided
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/plugin-search-react@1.7.6
+  - @backstage/plugin-home-react@0.1.8
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.1.25-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-home-react@0.1.8-next.3
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.3
+  - @backstage/plugin-search-common@1.2.10
+  - @backstage/plugin-search-react@1.7.6-next.3
+
+## 0.1.25-next.2
+
+### Patch Changes
+
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-search-react@1.7.6-next.2
+  - @backstage/plugin-home-react@0.1.8-next.2
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.1.25-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-search-react@1.7.6-next.1
+  - @backstage/plugin-home-react@0.1.8-next.1
+  - @backstage/config@1.1.1
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.1.25-next.0
+
+### Patch Changes
+
+- c1bc331: Fixes a bug that made the API return questions not related to the tags provided
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/plugin-home-react@0.1.8-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/plugin-search-react@1.7.6-next.0
+  - @backstage/config@1.1.1
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.1.24
 
 ### Patch Changes

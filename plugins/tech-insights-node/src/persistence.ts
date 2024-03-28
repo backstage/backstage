@@ -23,6 +23,15 @@ import { DateTime } from 'luxon';
 import { FactSchema } from '@backstage/plugin-tech-insights-common';
 
 /**
+ * A Container for persistence related components in TechInsights
+ *
+ * @public
+ */
+export type PersistenceContext = {
+  techInsightsStore: TechInsightsStore;
+};
+
+/**
  * TechInsights Database
  *
  * @public

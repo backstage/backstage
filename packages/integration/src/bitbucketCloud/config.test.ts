@@ -55,7 +55,7 @@ describe('readBitbucketCloudIntegrationConfig', () => {
     const output = readBitbucketCloudIntegrationConfig(
       buildConfig({
         username: 'u',
-        appPassword: 'p',
+        appPassword: '\n\n\np',
       }),
     );
     expect(output).toEqual({

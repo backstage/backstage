@@ -19,7 +19,7 @@ import * as d3Shape from 'd3-shape';
 import isFinite from 'lodash/isFinite';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { DependencyGraphTypes as Types } from './types';
-import { EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
+import { ARROW_MARKER_ID, EDGE_TEST_ID, LABEL_TEST_ID } from './constants';
 import { DefaultLabel } from './DefaultLabel';
 import dagre from 'dagre';
 
@@ -43,7 +43,7 @@ export type DependencyGraphEdgeClassKey = 'path' | 'label';
 const useStyles = makeStyles(
   theme => ({
     path: {
-      strokeWidth: 1,
+      strokeWidth: 1.3,
       stroke: theme.palette.textSubtle,
       fill: 'none',
       transition: `${theme.transitions.duration.shortest}ms`,
@@ -67,6 +67,7 @@ export type EdgeComponentProps<T = unknown> = {
     edge: Types.DependencyEdge<T>,
   ) => dagre.graphlib.Graph<{}>;
   curve: 'curveStepBefore' | 'curveMonotoneX';
+  showArrowHeads?: boolean;
 };
 
 const renderDefault = (props: Types.RenderLabelProps<unknown>) => (
@@ -79,6 +80,7 @@ export function Edge<EdgeData>({
   id,
   edge,
   curve,
+  showArrowHeads,
 }: EdgeComponentProps<EdgeData>) {
   const { x = 0, y = 0, width, height, points } = edge;
   const labelProps: Types.DependencyEdge<EdgeData> = edge;
@@ -126,7 +128,12 @@ export function Edge<EdgeData>({
   return (
     <>
       {path && (
-        <path data-testid={EDGE_TEST_ID} className={classes.path} d={path} />
+        <path
+          data-testid={EDGE_TEST_ID}
+          className={classes.path}
+          markerEnd={showArrowHeads ? `url(#${ARROW_MARKER_ID})` : undefined}
+          d={path}
+        />
       )}
       {labelProps.label ? (
         <g

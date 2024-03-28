@@ -35,6 +35,7 @@ Backstage comes with many common authentication providers in the core library:
 - [Okta](okta/provider.md)
 - [OAuth 2 Custom Proxy](oauth2-proxy/provider.md)
 - [OneLogin](onelogin/provider.md)
+- [VMware Cloud](vmware-cloud/provider.md)
 
 These built-in providers handle the authentication flow for a particular service
 including required scopes, callbacks, etc. These providers are each added to a

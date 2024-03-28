@@ -28,6 +28,8 @@ import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 import { GridItem } from './styles';
 import { ForwardedError } from '@backstage/errors';
 import { UserIdentity } from './UserIdentity';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 const Component: ProviderComponent = ({
   config,
@@ -38,6 +40,7 @@ const Component: ProviderComponent = ({
   const { apiRef, title, message } = config as SignInProviderConfig;
   const authApi = useApi(apiRef);
   const errorApi = useApi(errorApiRef);
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const handleLogin = async () => {
     try {
@@ -63,7 +66,7 @@ const Component: ProviderComponent = ({
       );
     } catch (error) {
       onSignInFailure();
-      errorApi.post(new ForwardedError('Login failed', error));
+      errorApi.post(new ForwardedError(t('signIn.loginFailed'), error));
     }
   };
 
@@ -74,7 +77,7 @@ const Component: ProviderComponent = ({
         title={title}
         actions={
           <Button color="primary" variant="outlined" onClick={handleLogin}>
-            Sign In
+            {t('signIn.title')}
           </Button>
         }
       >

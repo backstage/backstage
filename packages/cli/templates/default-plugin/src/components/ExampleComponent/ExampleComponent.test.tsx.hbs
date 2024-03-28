@@ -6,7 +6,7 @@ import { screen } from '@testing-library/react';
 import {
   setupRequestMockHandlers,
   renderInTestApp,
-} from "@backstage/test-utils";
+} from '@backstage/test-utils';
 
 describe('ExampleComponent', () => {
   const server = setupServer();
@@ -22,6 +22,8 @@ describe('ExampleComponent', () => {
 
   it('should render', async () => {
     await renderInTestApp(<ExampleComponent />);
-    expect(screen.getByText('Welcome to {{ id }}!')).toBeInTheDocument();
+    expect(
+      screen.getByText('Welcome to {{ id }}!'),
+    ).toBeInTheDocument();
   });
 });

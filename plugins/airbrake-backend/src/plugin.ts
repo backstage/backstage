@@ -43,6 +43,10 @@ export const airbrakePlugin = createBackendPlugin({
             logger: loggerToWinstonLogger(logger),
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

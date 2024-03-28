@@ -8,7 +8,7 @@ Add both this package and your local frontend app package as dependencies to you
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-app-backend app
+yarn --cwd packages/backend add @backstage/plugin-app-backend app
 ```
 
 By adding the app package as a dependency we ensure that it is built as part of the backend, and that it can be resolved at runtime.

@@ -15,3 +15,4 @@
  */
 
 export { createSentryCreateProjectAction } from './actions/createProject';
+export { sentryModule as default } from './module';

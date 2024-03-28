@@ -58,6 +58,14 @@ export interface BackstagePackageJson {
     registry?: string;
   };
 
+  repository?:
+    | string
+    | {
+        type: string;
+        url: string;
+        directory: string;
+      };
+
   dependencies?: {
     [key: string]: string;
   };

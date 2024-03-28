@@ -6,7 +6,7 @@ This is the frontend part of the code-coverage plugin. It displays code coverage
 
 ```sh
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-code-coverage
+yarn --cwd packages/app add @backstage/plugin-code-coverage
 ```
 
 Finally you need to import and render the code coverage entity, in `packages/app/src/components/catalog/EntityPage.tsx` add the following:

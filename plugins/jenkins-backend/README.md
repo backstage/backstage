@@ -28,7 +28,7 @@ This plugin needs to be added to an existing backstage instance.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-jenkins-backend
+yarn --cwd packages/backend add @backstage/plugin-jenkins-backend
 ```
 
 Typically, this means creating a `src/plugins/jenkins.ts` file and adding a reference to it to `src/index.ts`

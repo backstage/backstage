@@ -27,7 +27,7 @@ to `@backstage/plugin-catalog-backend-module-github` to your backend package.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
 > Note: When configuring to use a Provider instead of a Processor you do not
@@ -103,6 +103,32 @@ export default async function createPlugin(
 
 ## Installation with Events Support
 
+_For the legacy backend system, please read the subsection below._
+
+The catalog module `github-org` comes with events support enabled for the `GithubMultiOrgEntityProvider`.
+This will make it subscribe to its relevant topics and expects these events to be published via the `EventsService`.
+
+Topics:
+
+- `github.installation`
+- `github.membership`
+- `github.organization`
+- `github.team`
+
+Additionally, you should install the
+[event router by `events-backend-module-github`](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md)
+which will route received events from the generic topic `github` to more specific ones
+based on the event type (e.g., `github.membership`).
+
+In order to receive Webhook events by GitHub, you have to decide how you want them
+to be ingested into Backstage and published to its `EventsService`.
+You can decide between the following options (extensible):
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+### Legacy Backend System
+
 Please follow the installation instructions at
 
 - <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
@@ -133,12 +159,12 @@ export default async function createPlugin(
     id: 'production',
     orgUrl: 'https://github.com/backstage',
     logger: env.logger,
+    events: env.events,
     schedule: env.scheduler.createScheduledTaskRunner({
       frequency: { minutes: 60 },
       timeout: { minutes: 15 },
     }),
   });
-  env.eventBroker.subscribe(githubOrgProvider);
   builder.addEntityProvider(githubOrgProvider);
   /* highlight-add-end */
   const { processingEngine, router } = await builder.build();
@@ -169,12 +195,11 @@ export default async function createPlugin(
       // also omit this option to ingest all orgs accessible by your GitHub integration
       orgs: ['org-a', 'org-b'],
       logger: env.logger,
+      events: env.events,
       schedule: env.scheduler.createScheduledTaskRunner({
         frequency: { minutes: 60 },
         timeout: { minutes: 15 },
       }),
-      // Pass in the eventBroker to allow this provider to subscribe to GitHub events
-      eventBroker: env.eventBroker,
     }),
   );
   /* highlight-add-end */
@@ -308,7 +333,7 @@ install and register it in the catalog plugin:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
 ```typescript title="packages/backend/src/plugins/catalog.ts"

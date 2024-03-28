@@ -10,7 +10,7 @@ The SonarQube Plugin displays code statistics from [SonarCloud](https://sonarclo
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-sonarqube
+yarn --cwd packages/app add @backstage/plugin-sonarqube
 ```
 
 2. Add the `EntitySonarQubeCard` to the EntityPage:

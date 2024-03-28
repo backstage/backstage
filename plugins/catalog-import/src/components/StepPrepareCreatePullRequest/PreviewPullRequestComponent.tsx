@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-import { Card, CardContent, CardHeader } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
 import React from 'react';
 import { MarkdownContent } from '@backstage/core-components';
 

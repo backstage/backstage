@@ -190,7 +190,7 @@ export function compileConfigSchemas(
   });
 
   return configs => {
-    const config = ConfigReader.fromConfigs(configs).get();
+    const config = ConfigReader.fromConfigs(configs).getOptional();
 
     visibilityByDataPath.clear();
     deepVisibilityByDataPath.clear();

@@ -21,13 +21,18 @@ import {
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import { DefaultSignalService } from '@backstage/plugin-signals-node';
+import { DefaultSignalsService } from '@backstage/plugin-signals-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import {
-  EventBroker,
   EventParams,
-  EventSubscriber,
+  EventsService,
+  EventsServiceSubscribeOptions,
 } from '@backstage/plugin-events-node';
+import {
+  BackstageCredentials,
+  BackstageUserInfo,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
@@ -48,26 +53,35 @@ export async function startStandaloneServer(
     issuer: await discovery.getExternalBaseUrl('auth'),
   });
 
-  const mockSubscribers: EventSubscriber[] = [];
-  const eventBroker: EventBroker = {
+  const mockSubscribers: EventsServiceSubscribeOptions[] = [];
+  const events: EventsService = {
     async publish(params: EventParams): Promise<void> {
       mockSubscribers.forEach(sub => sub.onEvent(params));
     },
-    subscribe(...subscribers: EventSubscriber[]) {
-      subscribers.flat().forEach(subscriber => {
-        mockSubscribers.push(subscriber);
-      });
+    async subscribe(subscription: EventsServiceSubscribeOptions) {
+      mockSubscribers.push(subscription);
     },
   };
 
-  const signals = DefaultSignalService.create({
-    eventBroker,
+  const signals = DefaultSignalsService.create({
+    events,
   });
+
+  const userInfo: UserInfoService = {
+    async getUserInfo(_: BackstageCredentials): Promise<BackstageUserInfo> {
+      return {
+        userEntityRef: 'user:default/guest',
+        ownershipEntityRefs: ['user:default/guest'],
+      };
+    },
+  };
 
   const router = await createRouter({
     logger,
     identity,
-    eventBroker,
+    events,
+    discovery,
+    userInfo,
   });
 
   let service = createServiceBuilder(module)
@@ -83,7 +97,7 @@ export async function startStandaloneServer(
 
     setInterval(() => {
       signals.publish({
-        recipients: null,
+        recipients: { type: 'broadcast' },
         channel: 'test',
         message: { hello: 'world' },
       });

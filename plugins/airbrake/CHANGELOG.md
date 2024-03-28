@@ -1,5 +1,145 @@
 # @backstage/plugin-airbrake
 
+## 0.3.33
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/dev-utils@1.0.30
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/test-utils@1.5.3
+  - @backstage/catalog-model@1.4.5
+
+## 0.3.32
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-catalog-react@1.11.1
+  - @backstage/dev-utils@1.0.29
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/test-utils@1.5.2
+  - @backstage/catalog-model@1.4.5
+
+## 0.3.31
+
+### Patch Changes
+
+- 31d58ae: Added an optional ESLint rule - no-top-level-material-ui-4-imports - which has an auto fix function to migrate the imports and using it migrated the imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/dev-utils@1.0.28
+  - @backstage/test-utils@1.5.1
+
+## 0.3.31-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/dev-utils@1.0.28-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/test-utils@1.5.1-next.1
+
+## 0.3.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/test-utils@1.5.1-next.1
+  - @backstage/dev-utils@1.0.28-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+
+## 0.3.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/dev-utils@1.0.28-next.0
+  - @backstage/test-utils@1.5.1-next.0
+
+## 0.3.30
+
+### Patch Changes
+
+- b64ce5a: Updated New Backend System instructions to use default import
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/test-utils@1.5.0
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/dev-utils@1.0.27
+
+## 0.3.30-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/dev-utils@1.0.27-next.3
+  - @backstage/test-utils@1.5.0-next.3
+
+## 0.3.30-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/dev-utils@1.0.27-next.2
+  - @backstage/test-utils@1.5.0-next.2
+  - @backstage/catalog-model@1.4.4-next.0
+
+## 0.3.30-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/test-utils@1.5.0-next.1
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/dev-utils@1.0.27-next.1
+
+## 0.3.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/test-utils@1.5.0-next.0
+  - @backstage/dev-utils@1.0.27-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+
 ## 0.3.29
 
 ### Patch Changes

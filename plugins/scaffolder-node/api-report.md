@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
@@ -30,11 +31,16 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
+  checkpoint<U extends JsonValue>(
+    key: string,
+    fn: () => Promise<U>,
+  ): Promise<U>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
   ): void;
   createTemporaryDirectory(): Promise<string>;
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
   templateInfo?: TemplateInfo;
   isDryRun?: boolean;
   user?: {
@@ -44,6 +50,63 @@ export type ActionContext<
   signal?: AbortSignal;
   each?: JsonObject;
 };
+
+// @public (undocumented)
+export function addFiles(options: {
+  dir: string;
+  filepath: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
+}): Promise<void>;
+
+// @public (undocumented)
+export function cloneRepo(options: {
+  url: string;
+  dir: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
+  ref?: string | undefined;
+  depth?: number | undefined;
+  noCheckout?: boolean | undefined;
+}): Promise<void>;
+
+// @public (undocumented)
+export function commitAndPushBranch(options: {
+  dir: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
+  commitMessage: string;
+  gitAuthorInfo?: {
+    name?: string;
+    email?: string;
+  };
+  branch?: string;
+  remoteRef?: string;
+  remote?: string;
+}): Promise<{
+  commitHash: string;
+}>;
 
 // @public (undocumented)
 export function commitAndPushRepo(input: {
@@ -67,6 +130,21 @@ export function commitAndPushRepo(input: {
 }): Promise<{
   commitHash: string;
 }>;
+
+// @public (undocumented)
+export function createBranch(options: {
+  dir: string;
+  ref: string;
+  auth:
+    | {
+        username: string;
+        password: string;
+      }
+    | {
+        token: string;
+      };
+  logger?: Logger | undefined;
+}): Promise<void>;
 
 // @public
 export const createTemplateAction: <
@@ -123,6 +201,7 @@ export function fetchContents(options: {
   baseUrl?: string;
   fetchUrl?: string;
   outputPath: string;
+  token?: string;
 }): Promise<void>;
 
 // @public
@@ -132,6 +211,7 @@ export function fetchFile(options: {
   baseUrl?: string;
   fetchUrl?: string;
   outputPath: string;
+  token?: string;
 }): Promise<void>;
 
 // @public (undocumented)
@@ -206,6 +286,7 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
+  state?: JsonObject;
 };
 
 // @public
@@ -238,6 +319,8 @@ export interface TaskBroker {
     tasks: SerializedTask[];
   }>;
   // (undocumented)
+  recoverTasks?(): Promise<void>;
+  // (undocumented)
   vacuumTasks(options: { timeoutS: number }): Promise<void>;
 }
 
@@ -269,6 +352,15 @@ export interface TaskContext {
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
   // (undocumented)
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
+  // (undocumented)
+  getTaskState?(): Promise<
+    | {
+        state?: JsonObject;
+      }
+    | undefined
+  >;
+  // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
   isDryRun?: boolean;
@@ -276,10 +368,24 @@ export interface TaskContext {
   secrets?: TaskSecrets;
   // (undocumented)
   spec: TaskSpec;
+  // (undocumented)
+  updateCheckpoint?(
+    options:
+      | {
+          key: string;
+          status: 'success';
+          value: JsonValue;
+        }
+      | {
+          key: string;
+          status: 'failed';
+          reason: string;
+        },
+  ): Promise<void>;
 }
 
 // @public
-export type TaskEventType = 'completion' | 'log' | 'cancelled';
+export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
 // @public
 export type TaskSecrets = Record<string, string> & {

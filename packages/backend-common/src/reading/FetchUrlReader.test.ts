@@ -223,6 +223,27 @@ describe('FetchUrlReader', () => {
       ).rejects.toThrow(NotModifiedError);
     });
 
+    it('should send Authorization header if token is provided', async () => {
+      expect.assertions(1);
+
+      worker.use(
+        rest.get(
+          'https://backstage.io/requires-authentication',
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe('Bearer mytoken');
+            return res(ctx.status(200));
+          },
+        ),
+      );
+
+      await fetchUrlReader.readUrl(
+        'https://backstage.io/requires-authentication',
+        {
+          token: 'mytoken',
+        },
+      );
+    });
+
     it('should return etag from the response', async () => {
       const response = await fetchUrlReader.readUrl(
         'https://backstage.io/some-resource',

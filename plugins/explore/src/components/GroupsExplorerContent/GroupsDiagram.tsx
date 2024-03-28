@@ -15,7 +15,6 @@
  */
 
 import {
-  GroupEntity,
   parseEntityRef,
   RELATION_CHILD_OF,
   stringifyEntityRef,
@@ -31,14 +30,15 @@ import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   entityRouteRef,
-  humanizeEntityRef,
   getEntityRelations,
+  EntityDisplayName,
 } from '@backstage/plugin-catalog-react';
-import { makeStyles, Typography, useTheme } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import classNames from 'classnames';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 const useStyles = makeStyles(
   theme => ({
@@ -140,7 +140,9 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
         rx={theme.shape.borderRadius}
         className={classes.groupNode}
       />
-      <title>{props.node.name}</title>
+      <title>
+        <EntityDisplayName entityRef={props.node.id} hideIcon disableTooltip />
+      </title>
 
       <Link
         to={catalogEntityRoute({
@@ -152,7 +154,7 @@ function RenderNode(props: DependencyGraphTypes.RenderNodeProps<any>) {
         <foreignObject width={nodeWidth} height={nodeHeight}>
           <div className={classes.centeredContent}>
             <div className={classNames(classes.textWrapper, classes.textGroup)}>
-              {props.node.name}
+              <EntityDisplayName entityRef={props.node.id} hideIcon />
             </div>
           </div>
         </foreignObject>
@@ -210,9 +212,7 @@ export function GroupsDiagram(props: {
     nodes.push({
       id: stringifyEntityRef(catalogItem),
       kind: catalogItem.kind,
-      name:
-        (catalogItem as GroupEntity).spec?.profile?.displayName ||
-        humanizeEntityRef(catalogItem, { defaultKind: 'Group' }),
+      name: '',
     });
 
     // Edge to parent

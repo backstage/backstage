@@ -22,13 +22,18 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
-import { Box, Theme, Typography, makeStyles } from '@material-ui/core';
+
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import { Theme, makeStyles } from '@material-ui/core/styles';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { UnprocessedEntity } from '../types';
 import { EntityDialog } from './EntityDialog';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
+import DeleteIcon from '@material-ui/icons/Delete';
 
 const useStyles = makeStyles((theme: Theme) => ({
   errorBox: {
@@ -92,6 +97,8 @@ export const FailedEntities = () => {
     value: data,
   } = useAsync(async () => await unprocessedApi.failed());
   const [, setSelectedSearchTerm] = useState<string>('');
+  const unprocessedEntityApi = useApi(catalogUnprocessedEntitiesApiRef);
+  const alertApi = useApi(alertApiRef);
 
   if (loading) {
     return <Progress />;
@@ -99,6 +106,27 @@ export const FailedEntities = () => {
   if (error) {
     return <ErrorPanel error={error} />;
   }
+
+  const handleDelete = async ({
+    entityId,
+    entityRef,
+  }: {
+    entityId: string;
+    entityRef: string;
+  }) => {
+    try {
+      await unprocessedEntityApi.delete(entityId);
+      alertApi.post({
+        message: `Entity ${entityRef} has been deleted`,
+        severity: 'success',
+      });
+    } catch (e) {
+      alertApi.post({
+        message: `Ran into an issue when deleting ${entityRef}. Please try again later.`,
+        severity: 'error',
+      });
+    }
+  };
 
   const columns: TableColumn[] = [
     {
@@ -134,43 +162,60 @@ export const FailedEntities = () => {
         <EntityDialog entity={rowData as UnprocessedEntity} />
       ),
     },
+    {
+      title: <Typography>Actions</Typography>,
+      render: (rowData: UnprocessedEntity | {}) => {
+        const { entity_id, entity_ref } = rowData as UnprocessedEntity;
+
+        return (
+          <IconButton
+            aria-label="delete"
+            onClick={async () =>
+              await handleDelete({
+                entityId: entity_id,
+                entityRef: entity_ref,
+              })
+            }
+          >
+            <DeleteIcon fontSize="small" data-testid="delete-icon" />
+          </IconButton>
+        );
+      },
+    },
   ];
+
   return (
-    <>
-      <Table
-        options={{ pageSize: 20, search: true }}
-        columns={columns}
-        data={data?.entities || []}
-        emptyContent={
-          <Typography className={classes.successMessage}>
-            No failed entities found
-          </Typography>
-        }
-        onSearchChange={(searchTerm: string) =>
-          setSelectedSearchTerm(searchTerm)
-        }
-        detailPanel={({ rowData }) => {
-          const errors = (rowData as UnprocessedEntity).errors;
-          return (
-            <>
-              {errors?.map(e => {
-                return (
-                  <Box className={classes.errorBox}>
-                    <Typography className={classes.errorTitle}>
-                      {e.name}
-                    </Typography>
-                    <MarkdownContent content={e.message} />
-                    <RenderErrorContext
-                      error={e}
-                      rowData={rowData as UnprocessedEntity}
-                    />
-                  </Box>
-                );
-              })}
-            </>
-          );
-        }}
-      />
-    </>
+    <Table
+      options={{ pageSize: 20, search: true }}
+      columns={columns}
+      data={data?.entities ?? []}
+      emptyContent={
+        <Typography className={classes.successMessage}>
+          No failed entities found
+        </Typography>
+      }
+      onSearchChange={(searchTerm: string) => setSelectedSearchTerm(searchTerm)}
+      detailPanel={({ rowData }) => {
+        const errors = (rowData as UnprocessedEntity).errors;
+        return (
+          <>
+            {errors?.map((e, idx) => {
+              return (
+                <Box key={idx} className={classes.errorBox}>
+                  <Typography className={classes.errorTitle}>
+                    {e.name}
+                  </Typography>
+                  <MarkdownContent content={e.message} />
+                  <RenderErrorContext
+                    error={e}
+                    rowData={rowData as UnprocessedEntity}
+                  />
+                </Box>
+              );
+            })}
+          </>
+        );
+      }}
+    />
   );
 };

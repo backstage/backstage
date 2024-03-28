@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-scaffolder-backend-module-bitbucket-cloud
+  title: '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud'
+  description: The Bitbucket Cloud module for @backstage/plugin-scaffolder-backend
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

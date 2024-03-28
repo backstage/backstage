@@ -16,7 +16,6 @@
 
 import fetch from 'node-fetch';
 import { z } from 'zod';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import {
   AuthorizeResult,
   ConditionalPolicyDecision,
@@ -25,6 +24,12 @@ import {
   ApplyConditionsRequestEntry,
   ApplyConditionsResponseEntry,
 } from '@backstage/plugin-permission-node';
+import {
+  AuthService,
+  BackstageCredentials,
+  DiscoveryService,
+} from '@backstage/backend-plugin-api';
+import { ResponseError } from '@backstage/errors';
 
 const responseSchema = z.object({
   items: z.array(
@@ -42,20 +47,30 @@ export type ResourcePolicyDecision = ConditionalPolicyDecision & {
 };
 
 export class PermissionIntegrationClient {
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly discovery: DiscoveryService;
+  private readonly auth: AuthService;
 
-  constructor(options: { discovery: PluginEndpointDiscovery }) {
+  constructor(options: { discovery: DiscoveryService; auth: AuthService }) {
     this.discovery = options.discovery;
+    this.auth = options.auth;
   }
 
   async applyConditions(
     pluginId: string,
+    credentials: BackstageCredentials,
     decisions: readonly ApplyConditionsRequestEntry[],
-    authHeader?: string,
   ): Promise<ApplyConditionsResponseEntry[]> {
-    const endpoint = `${await this.discovery.getBaseUrl(
-      pluginId,
-    )}/.well-known/backstage/permissions/apply-conditions`;
+    const baseUrl = await this.discovery.getBaseUrl(pluginId);
+    const endpoint = `${baseUrl}/.well-known/backstage/permissions/apply-conditions`;
+
+    const token = this.auth.isPrincipal(credentials, 'none')
+      ? undefined
+      : await this.auth
+          .getPluginRequestToken({
+            onBehalfOf: credentials,
+            targetPluginId: pluginId,
+          })
+          .then(t => t.token);
 
     const response = await fetch(endpoint, {
       method: 'POST',
@@ -70,15 +85,13 @@ export class PermissionIntegrationClient {
         ),
       }),
       headers: {
-        ...(authHeader ? { authorization: authHeader } : {}),
+        ...(token ? { authorization: `Bearer ${token}` } : {}),
         'content-type': 'application/json',
       },
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Unexpected response from plugin upstream when applying conditions. Expected 200 but got ${response.status} - ${response.statusText}`,
-      );
+      throw await ResponseError.fromResponse(response);
     }
 
     const result = responseSchema.parse(await response.json());

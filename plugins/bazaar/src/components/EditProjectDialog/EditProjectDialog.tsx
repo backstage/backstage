@@ -21,7 +21,8 @@ import { BazaarProject, FormValues } from '../../types';
 import { bazaarApiRef } from '../../api';
 import { UseFormGetValues } from 'react-hook-form';
 import { ConfirmationDialog } from '../ConfirmationDialog';
-import { Button, makeStyles } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 
 type Props = {
   bazaarProject: BazaarProject;

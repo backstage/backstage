@@ -67,6 +67,7 @@ describe('AwsEKSClusterProcessor', () => {
               'kubernetes.io/api-server-certificate-authority':
                 cluster.cluster?.certificateAuthority?.data,
               'kubernetes.io/auth-provider': 'aws',
+              'kubernetes.io/x-k8s-aws-id': 'backstage-test',
             },
             name: 'backstage-test',
             namespace: 'default',

@@ -43,7 +43,7 @@ import {
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
 import { JsonObject } from '@backstage/types';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import _ from 'lodash';
 import React from 'react';
 import {

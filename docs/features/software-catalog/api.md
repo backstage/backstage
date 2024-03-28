@@ -5,7 +5,8 @@ description: The Software Catalog API
 ---
 
 The software catalog backend has a JSON based REST API, which can be leveraged
-by external systems. This page describes its shape and features.
+by external systems. This page describes its shape and features. The OpenAPI spec
+for this API can be found [here](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/schema/openapi.yaml).
 
 ## Overview
 
@@ -472,6 +473,34 @@ Response type is JSON, on the form
     }
   }
 ]
+```
+
+### `GET /locations/{id}`
+
+Gets a location by it's location ID.
+
+Response type is JSON, on the form
+
+```json
+{
+  "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
+  "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
+  "type": "url"
+}
+```
+
+### `GET /locations/by-entity/{kind}/{namespace}/{name}`
+
+Gets a location referring to a given entity.
+
+Response type is JSON, on the form
+
+```json
+{
+  "id": "b9784c38-7118-472f-9e22-5638fc73bab0",
+  "target": "https://git.example.com/example-project/example-repository/blob/main/catalog-info.yaml",
+  "type": "url"
+}
 ```
 
 ### `POST /locations`

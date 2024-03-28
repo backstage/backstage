@@ -22,7 +22,7 @@ The permission framework was designed with a few key properties in mind:
 
 - **Integrators** can author or configure policies that define which users can take certain actions upon which resources.
 
-![](../assets/permissions/permission-framework-overview.drawio.svg)
+![backstage framework overview](../assets/permissions/permission-framework-overview.drawio.svg)
 
 1. The user triggers a request to perform some action. The request specifies the authorization details using the permission specified by the plugin (in this case, a resource read action).
 

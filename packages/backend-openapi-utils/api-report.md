@@ -7,7 +7,7 @@ import type { ContentObject } from 'openapi3-ts';
 import type core from 'express-serve-static-core';
 import { Express as Express_2 } from 'express';
 import { FromSchema } from 'json-schema-to-ts';
-import { JSONSchema7 } from 'json-schema-to-ts';
+import { JSONSchema } from 'json-schema-to-ts';
 import { middleware } from 'express-openapi-validator';
 import type { OpenAPIObject } from 'openapi3-ts';
 import type { ParameterObject } from 'openapi3-ts';
@@ -62,7 +62,7 @@ type ComponentTypes<Doc extends RequiredDoc> = Extract<
 
 // @public (undocumented)
 type ConvertAll<T extends ReadonlyArray<unknown>> = {
-  [Index in keyof T]: T[Index] extends JSONSchema7
+  [Index in keyof T]: T[Index] extends JSONSchema
     ? FromSchema<T[Index]>
     : T[Index];
 } & {
@@ -463,7 +463,7 @@ type ParameterSchema<
   Schema extends ImmutableParameterObject['schema'],
 > = SchemaRef<Doc, Schema> extends infer R
   ? R extends ImmutableSchemaObject
-    ? R extends JSONSchema7
+    ? R extends JSONSchema
       ? FromSchema<R>
       : never
     : never

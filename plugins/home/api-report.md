@@ -170,6 +170,9 @@ export const homePlugin: BackstagePlugin<
 >;
 
 // @public
+export const isOperator: (s: string) => s is Operators;
+
+// @public
 export type LayoutConfiguration = {
   component: ReactElement | string;
   x: number;
@@ -180,6 +183,9 @@ export type LayoutConfiguration = {
   deletable?: boolean;
   resizable?: boolean;
 };
+
+// @public
+export type Operators = '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
 
 // @public @deprecated (undocumented)
 export type RendererProps = RendererProps_2;
@@ -271,7 +277,7 @@ export type VisitsApiQueryParams = {
   }>;
   filterBy?: Array<{
     field: keyof Visit;
-    operator: '<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains';
+    operator: Operators;
     value: string | number;
   }>;
 };

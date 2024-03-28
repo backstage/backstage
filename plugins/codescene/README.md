@@ -12,7 +12,7 @@ The CodeScene Backstage Plugin provides a page component that displays a list of
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-codescene
+yarn --cwd packages/app add @backstage/plugin-codescene
 ```
 
 2. Add the routes and pages to your `App.tsx`:
@@ -59,4 +59,43 @@ proxy:
 ```yaml
 codescene:
   baseUrl: https://codescene.my-company.net # replace with your own URL
+```
+
+5. Adding the codescene plugin to Entity page:
+
+```yaml
+# Add `codescene` annotations to the `catalog-info.yaml` of an entity.
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage
+  annotations:
+    codescene.io/project-id: <codescene-project-id>
+```
+
+```tsx
+// In packages/app/src/components/catalog/EntityPage.tsx
+
+import {
+  CodeSceneEntityPage,
+  CodeSceneEntityFileSummary,
+  isCodeSceneAvailable,
+} from '@backstage/plugin-codescene';
+
+/* other EntityLayout.Route items... */
+
+<EntityLayout.Route
+  path="/codescene"
+  title="codescene"
+  if={isCodeSceneAvailable}
+>
+  <Grid container spacing={3} alignItems="stretch">
+    <Grid item md={6}>
+      <CodeSceneEntityKPICard />
+    </Grid>
+    <Grid item md={6}>
+      <CodeSceneEntityFileSummary />
+    </Grid>
+  </Grid>
+</EntityLayout.Route>;
 ```

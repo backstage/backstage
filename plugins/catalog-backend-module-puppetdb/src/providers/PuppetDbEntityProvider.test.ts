@@ -108,7 +108,7 @@ describe('PuppetEntityProvider', () => {
             annotations: {
               [ANNOTATION_PUPPET_CERTNAME]: 'node1',
             },
-            tags: ['windows'],
+            tags: ['windows', 'unchanged'],
             description: 'Description 1',
           },
           spec: {
@@ -127,7 +127,7 @@ describe('PuppetEntityProvider', () => {
             annotations: {
               [ANNOTATION_PUPPET_CERTNAME]: 'node2',
             },
-            tags: ['linux'],
+            tags: ['linux', 'unchanged'],
             description: 'Description 2',
           },
           spec: {
@@ -173,7 +173,7 @@ describe('PuppetEntityProvider', () => {
                     'catalog.providers.puppetdb.baseUrl',
                   )}/${ENDPOINT_NODES}/node1`,
                 },
-                tags: ['windows'],
+                tags: ['windows', 'unchanged'],
                 description: 'Description 1',
               },
               spec: {
@@ -201,7 +201,7 @@ describe('PuppetEntityProvider', () => {
                     'catalog.providers.puppetdb.baseUrl',
                   )}/${ENDPOINT_NODES}/node2`,
                 },
-                tags: ['linux'],
+                tags: ['linux', 'unchanged'],
                 description: 'Description 2',
               },
               spec: {

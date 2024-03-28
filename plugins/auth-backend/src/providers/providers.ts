@@ -30,9 +30,9 @@ import { oidc } from './oidc';
 import { okta } from './okta';
 import { onelogin } from './onelogin';
 import { saml } from './saml';
-import { AuthProviderFactory } from './types';
 import { bitbucketServer } from './bitbucketServer';
 import { easyAuth } from './azure-easyauth';
+import { AuthProviderFactory } from '@backstage/plugin-auth-node';
 
 /**
  * All built-in auth provider integrations.

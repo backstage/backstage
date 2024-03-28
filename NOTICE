@@ -2,4 +2,6 @@ Backstage
 Copyright 2020 The Backstage Authors
 
 Portions of this software were developed by third-party software vendors:
+
 - Tech Radar Plugin (https://opensource.zalando.com/tech-radar/), Copyright (c) 2017 Zalando SE
+- [OpenAPI Generator Templates](./packages/repo-tools/templates), Copyright 2018 OpenAPI-Generator Contributors (https://openapi-generator.tech) Copyright 2018 SmartBear Software

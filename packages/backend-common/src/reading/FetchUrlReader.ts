@@ -131,6 +131,7 @@ export class FetchUrlReader implements UrlReader {
           ...(options?.lastModifiedAfter && {
             'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
           }),
+          ...(options?.token && { Authorization: `Bearer ${options.token}` }),
         },
         // TODO(freben): The signal cast is there because pre-3.x versions of
         // node-fetch have a very slightly deviating AbortSignal type signature.

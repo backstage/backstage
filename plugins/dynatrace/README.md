@@ -28,7 +28,7 @@ The Dynatrace plugin will require the following information, to be used in the c
 
 ```
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-dynatrace
+yarn --cwd packages/app add @backstage/plugin-dynatrace
 ```
 
 2. We created in our catalog the interface for using the integration with Dynatrace.
@@ -62,10 +62,11 @@ This plugin requires a proxy endpoint for Dynatrace configured in `app-config.ya
 
 ```yaml
 proxy:
-  '/dynatrace':
-    target: 'https://example.dynatrace.com/api/v2'
-    headers:
-      Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
+  endpoints:
+    '/dynatrace':
+      target: 'https://example.dynatrace.com/api/v2'
+      headers:
+        Authorization: 'Api-Token ${DYNATRACE_ACCESS_TOKEN}'
 ```
 
 It also requires a `baseUrl` for rendering links to problems in the table like so:

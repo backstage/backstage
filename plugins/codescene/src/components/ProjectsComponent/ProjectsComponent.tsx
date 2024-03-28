@@ -22,21 +22,19 @@ import {
 } from '@backstage/core-components';
 import { useRouteRef, useApi } from '@backstage/core-plugin-api';
 import Alert from '@material-ui/lab/Alert';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Link as RouterLink } from 'react-router-dom';
 import { rootRouteRef } from '../../routes';
 import { codesceneApiRef } from '../../api/api';
 import { Project, Analysis } from '../../api/types';
-import {
-  Grid,
-  Card,
-  CardActionArea,
-  Input,
-  makeStyles,
-  CardContent,
-  Chip,
-  CardActions,
-} from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import Input from '@material-ui/core/Input';
+import CardContent from '@material-ui/core/CardContent';
+import Chip from '@material-ui/core/Chip';
+import CardActions from '@material-ui/core/CardActions';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(() => ({
   overflowXScroll: {

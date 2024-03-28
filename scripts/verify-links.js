@@ -78,6 +78,9 @@ async function verifyUrl(basePath, absUrl, docPages) {
   }
 
   if (basePath.startsWith('.changeset/')) {
+    if (absUrl.match(/^https?:\/\//)) {
+      return undefined;
+    }
     return { url, basePath, problem: 'out-of-changeset' };
   }
 

@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Downloads a skelaton directory that lives alongside the template file and fill it out with values.',
+      'Downloads a skeleton directory that lives alongside the template file and fill it out with values.',
     example: yaml.stringify({
       steps: [
         {

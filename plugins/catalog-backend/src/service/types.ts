@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { Entity } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { Location } from '@backstage/catalog-client';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**
  * Holds the information required to create a new location in the catalog location store.
@@ -35,19 +36,25 @@ export interface LocationService {
   createLocation(
     location: LocationInput,
     dryRun: boolean,
-    options?: {
-      authorizationToken?: string;
+    options: {
+      credentials: BackstageCredentials;
     },
   ): Promise<{ location: Location; entities: Entity[]; exists?: boolean }>;
-  listLocations(options?: { authorizationToken?: string }): Promise<Location[]>;
+  listLocations(options: {
+    credentials: BackstageCredentials;
+  }): Promise<Location[]>;
   getLocation(
     id: string,
-    options?: { authorizationToken?: string },
+    options: { credentials: BackstageCredentials },
   ): Promise<Location>;
   deleteLocation(
     id: string,
-    options?: { authorizationToken?: string },
+    options: { credentials: BackstageCredentials },
   ): Promise<void>;
+  getLocationByEntity(
+    entityRef: CompoundEntityRef | string,
+    options: { credentials: BackstageCredentials },
+  ): Promise<Location>;
 }
 
 /**
@@ -58,7 +65,7 @@ export interface LocationService {
 export type RefreshOptions = {
   /** The reference to a single entity that should be refreshed */
   entityRef: string;
-  authorizationToken?: string;
+  credentials: BackstageCredentials;
 };
 
 /**
@@ -82,4 +89,5 @@ export interface LocationStore {
   listLocations(): Promise<Location[]>;
   getLocation(id: string): Promise<Location>;
   deleteLocation(id: string): Promise<void>;
+  getLocationByEntity(entityRef: CompoundEntityRef | string): Promise<Location>;
 }

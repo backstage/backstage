@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { Button, Grid, makeStyles, Tab, Tabs } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import React, { useState } from 'react';
-import useLocalStorage from 'react-use/lib/useLocalStorage';
+import useLocalStorage from 'react-use/esm/useLocalStorage';
 import LighthouseSupportButton from '../SupportButton';
 import {
   ContentHeader,
@@ -52,7 +56,7 @@ When you have an instance running that Backstage can hook into, first install th
 
 \`\`\`sh
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-lighthouse
+yarn --cwd packages/app add @backstage/plugin-lighthouse
 \`\`\`
 
 Modify your app routes in \`App.tsx\` to include the \`LighthousePage\` component exported from the plugin, for example:

@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import { createServiceBuilder } from '@backstage/backend-common';
+import { HostDiscovery, createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { JenkinsInfo } from './jenkinsInfoProvider';
+import { Config } from '@backstage/config';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
   logger: Logger;
+  config: Config;
 }
 
 export async function startStandaloneServer(
@@ -41,6 +43,7 @@ export async function startStandaloneServer(
         return { baseUrl: 'https://example.com/', jobFullName: 'build-foo' };
       },
     },
+    discovery: HostDiscovery.fromConfig(options.config),
   });
 
   let service = createServiceBuilder(module)

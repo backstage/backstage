@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-auth-backend-module-oidc-provider
+  title: '@backstage/plugin-auth-backend-module-oidc-provider'
+  description: The oidc-provider backend module for the auth plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

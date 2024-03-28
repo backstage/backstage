@@ -31,9 +31,8 @@ import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('publish:bitbucket', () => {
   const config = new ConfigReader({
@@ -57,17 +56,12 @@ describe('publish:bitbucket', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createPublishBitbucketAction({ integrations, config });
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'bitbucket.org?workspace=workspace&project=project&repo=repo',
       repoVisibility: 'private' as const,
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
   const server = setupServer();
   setupRequestMockHandlers(server);
 

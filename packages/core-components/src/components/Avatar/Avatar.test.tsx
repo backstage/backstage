@@ -17,34 +17,11 @@
 import { render } from '@testing-library/react';
 import React from 'react';
 import { Avatar } from './Avatar';
-import { stringToColor } from './utils';
 
 describe('<Avatar />', () => {
   it('renders without exploding', async () => {
     const { getByText } = render(<Avatar displayName="John Doe" />);
 
     expect(getByText('JD')).toBeInTheDocument();
-  });
-
-  it('generates a background color', async () => {
-    const bgcolor = stringToColor('John Doe');
-    const { getByText } = render(<Avatar displayName="John Doe" />);
-    expect(getByText('JD').parentElement).toHaveStyle(
-      `background-color: ${bgcolor}`,
-    );
-  });
-
-  it('does not generate a background color when a picture is given', async () => {
-    const bgcolor = stringToColor('John Doe');
-    const { getByAltText } = render(
-      <Avatar
-        displayName="John Doe"
-        picture="https://backstage.io/test/john-doe.png"
-      />,
-    );
-
-    expect(getByAltText('John Doe')).not.toHaveStyle(
-      `background-color: ${bgcolor}`,
-    );
   });
 });

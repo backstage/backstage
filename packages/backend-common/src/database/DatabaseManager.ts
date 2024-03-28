@@ -30,6 +30,7 @@ import {
 import { PluginDatabaseManager } from './types';
 import path from 'path';
 import {
+  DatabaseService,
   LifecycleService,
   LoggerService,
   PluginMetadataService,
@@ -54,6 +55,14 @@ export type DatabaseManagerOptions = {
 };
 
 /**
+ * An interface that represents the legacy global DatabaseManager implementation.
+ * @public
+ */
+export type LegacyRootDatabaseService = {
+  forPlugin(pluginId: string): DatabaseService;
+};
+
+/**
  * Manages database connections for Backstage backend plugins.
  *
  * @public
@@ -65,7 +74,7 @@ export type DatabaseManagerOptions = {
  * set `prefix` which is used to prefix generated database names if config is
  * not provided.
  */
-export class DatabaseManager {
+export class DatabaseManager implements LegacyRootDatabaseService {
   /**
    * Creates a {@link DatabaseManager} from `backend.database` config.
    *

@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { getVoidLogger } from '@backstage/backend-common';
 import { Config, ConfigReader } from '@backstage/config';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
 import { getCombinedClusterSupplier } from './index';
 import { ClusterDetails } from '../types/types';
 import { AuthenticationStrategy, DispatchStrategy } from '../auth';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 describe('getCombinedClusterSupplier', () => {
   let catalogApi: CatalogApi;
@@ -56,12 +58,18 @@ describe('getCombinedClusterSupplier', () => {
       presentAuthMetadata: jest.fn(),
     };
 
+    const auth = mockServices.auth();
+    const credentials = mockCredentials.user();
+
     const clusterSupplier = getCombinedClusterSupplier(
       config,
       catalogApi,
       mockStrategy,
+      getVoidLogger(),
+      undefined,
+      auth,
     );
-    const result = await clusterSupplier.getClusters();
+    const result = await clusterSupplier.getClusters({ credentials });
 
     expect(result).toStrictEqual<ClusterDetails[]>([
       {
@@ -94,14 +102,79 @@ describe('getCombinedClusterSupplier', () => {
       'ctx',
     );
 
+    const auth = mockServices.auth();
+
     expect(() =>
       getCombinedClusterSupplier(
         config,
         catalogApi,
         new DispatchStrategy({ authStrategyMap: {} }),
+        getVoidLogger(),
+        undefined,
+        auth,
       ),
     ).toThrow(
       new Error('Unsupported kubernetes.clusterLocatorMethods: "magic"'),
     );
+  });
+
+  it('logs a warning when two clusters have the same name', async () => {
+    const logger = getVoidLogger();
+    const warn = jest.spyOn(logger, 'warn');
+    const config: Config = new ConfigReader(
+      {
+        kubernetes: {
+          clusterLocatorMethods: [
+            {
+              type: 'config',
+              clusters: [
+                { name: 'cluster', url: 'url', authProvider: 'authProvider' },
+              ],
+            },
+            { type: 'catalog' },
+          ],
+        },
+      },
+      'ctx',
+    );
+    const mockStrategy: jest.Mocked<AuthenticationStrategy> = {
+      getCredential: jest.fn(),
+      validateCluster: jest.fn().mockReturnValue([]),
+      presentAuthMetadata: jest.fn(),
+    };
+    catalogApi = {
+      getEntities: jest.fn().mockResolvedValue({
+        items: [{ metadata: { annotations: {}, name: 'cluster' } }],
+      }),
+      getEntitiesByRefs: jest.fn(),
+      queryEntities: jest.fn(),
+      getEntityAncestors: jest.fn(),
+      getEntityByRef: jest.fn(),
+      removeEntityByUid: jest.fn(),
+      refreshEntity: jest.fn(),
+      getEntityFacets: jest.fn(),
+      getLocationById: jest.fn(),
+      getLocationByRef: jest.fn(),
+      addLocation: jest.fn(),
+      removeLocationById: jest.fn(),
+      getLocationByEntity: jest.fn(),
+      validateEntity: jest.fn(),
+    };
+
+    const auth = mockServices.auth();
+    const credentials = mockCredentials.user();
+
+    const clusterSupplier = getCombinedClusterSupplier(
+      config,
+      catalogApi,
+      mockStrategy,
+      logger,
+      undefined,
+      auth,
+    );
+
+    await clusterSupplier.getClusters({ credentials });
+
+    expect(warn).toHaveBeenCalledWith(`Duplicate cluster name 'cluster'`);
   });
 });

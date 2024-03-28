@@ -30,6 +30,7 @@ import {
 } from '@backstage/integration';
 import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import packageinfo from '../../package.json';
 
 const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 
@@ -68,13 +69,16 @@ export class GoogleGcsUrlReader implements UrlReader {
       logger.info(
         'googleGcs credentials not found in config. Using default credentials provider.',
       );
-      storage = new Storage();
+      storage = new Storage({
+        userAgent: `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
+      });
     } else {
       storage = new Storage({
         credentials: {
           client_email: gcsConfig.clientEmail || undefined,
           private_key: gcsConfig.privateKey || undefined,
         },
+        userAgent: `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
       });
     }
     const reader = new GoogleGcsUrlReader(gcsConfig, storage);

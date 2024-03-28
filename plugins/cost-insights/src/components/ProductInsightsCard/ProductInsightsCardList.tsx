@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Box, CircularProgress, Collapse } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import Collapse from '@material-ui/core/Collapse';
 import { ProductInsightsCard } from './ProductInsightsCard';
 import { Duration } from '../../types';
 import { Entity, Product } from '@backstage/plugin-cost-insights-common';

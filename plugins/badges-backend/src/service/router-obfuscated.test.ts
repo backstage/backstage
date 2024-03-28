@@ -32,6 +32,7 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { BadgesStore } from '../database/badgesStore';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 describe('createRouter', () => {
   let app: express.Express;
@@ -148,6 +149,8 @@ describe('createRouter', () => {
       tokenManager,
       logger: getVoidLogger(),
       identity: { getIdentity },
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
     });
     app = express().use(router);
   });
@@ -167,6 +170,8 @@ describe('createRouter', () => {
       logger: getVoidLogger(),
       identity: { getIdentity },
       badgeStore: badgeStore,
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
     });
     expect(router).toBeDefined();
   });
@@ -212,25 +217,45 @@ describe('createRouter', () => {
   });
 
   describe('GET /entity/:namespace/:kind/:name/obfuscated', () => {
-    catalog.getEntityByRef.mockResolvedValueOnce(entity);
-    catalog.getEntities.mockResolvedValueOnce({ items: entities });
+    beforeEach(() => {
+      catalog.getEntityByRef = jest.fn().mockResolvedValueOnce(entity);
+      catalog.getEntities = jest
+        .fn()
+        .mockResolvedValueOnce({ items: entities });
+    });
 
-    it('returns obfuscated 401 if no auth', async () => {
+    it('returns obfuscated 404 if the user token does not return a catalog entity', async () => {
+      catalog.getEntityByRef = jest.fn().mockResolvedValue(undefined);
+
       const obfuscatedEntity = await request(app).get(
         '/entity/default/component/test/obfuscated',
       );
-      expect(obfuscatedEntity.status).toEqual(401);
+
+      expect(obfuscatedEntity.status).toEqual(404);
     });
 
     it('returns obfuscated entity and badges', async () => {
-      const obfuscatedEntity = await request(app)
-        .get('/entity/default/component/test/obfuscated')
-        .set('Authorization', 'Bearer fakeToken');
+      catalog.getEntityByRef = jest.fn().mockResolvedValue(entity);
+
+      const obfuscatedEntity = await request(app).get(
+        '/entity/default/component/test/obfuscated',
+      );
+
       expect(obfuscatedEntity.status).toEqual(200);
       expect(obfuscatedEntity.body.uuid).toMatch(
         new RegExp(
           '^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$',
         ),
+      );
+
+      expect(catalog.getEntityByRef).toHaveBeenCalledWith(
+        { namespace: 'default', kind: 'component', name: 'test' },
+        {
+          token: mockCredentials.service.token({
+            onBehalfOf: mockCredentials.user(),
+            targetPluginId: 'catalog',
+          }),
+        },
       );
 
       const uuid = obfuscatedEntity.body.uuid;

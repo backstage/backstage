@@ -291,9 +291,42 @@ describe('createApp', () => {
           <api:core.auth.bitbucket out=[core.api.factory] />
           <api:core.auth.bitbucket-server out=[core.api.factory] />
           <api:core.auth.atlassian out=[core.api.factory] />
+          <api:core.auth.vmware-cloud out=[core.api.factory] />
           <api:plugin.permission.api out=[core.api.factory] />
         ]
       </app>"
     `);
+  });
+
+  it('should use "Loading..." as the default suspense fallback', async () => {
+    const app = createApp({
+      configLoader: () => new Promise(() => {}),
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    await expect(screen.findByText('Loading...')).resolves.toBeInTheDocument();
+  });
+
+  it('should use no suspense fallback if the "loadingComponent" is null', async () => {
+    const app = createApp({
+      configLoader: () => new Promise(() => {}),
+      loadingComponent: null,
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    expect(screen.queryByText('Loading...')).toBeNull();
+  });
+
+  it('should use a custom "loadingComponent"', async () => {
+    const app = createApp({
+      configLoader: () => new Promise(() => {}),
+      loadingComponent: <span>"Custom loading message"</span>,
+    });
+
+    await renderWithEffects(app.createRoot());
+
+    expect(screen.queryByText('Custom loading message')).toBeNull();
   });
 });

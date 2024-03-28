@@ -10,10 +10,20 @@ To add this FactChecker into your Tech Insights you need to install the module i
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-tech-insights-backend-module-jsonfc
+yarn --cwd packages/backend add @backstage/plugin-tech-insights-backend-module-jsonfc
 ```
 
-and modify the `techInsights.ts` file to contain a reference to the FactCheckers implementation.
+### Add to the backend
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-tech-insights-backend-module-jsonfc'));
+```
+
+This setup requires checks to be provided using the config.
+
+### Add to the backend (old)
+
+Modify the `techInsights.ts` file to contain a reference to the FactCheckers implementation.
 
 ```diff
 +import { JsonRulesEngineFactCheckerFactory } from '@backstage/plugin-tech-insights-backend-module-jsonfc';
@@ -34,7 +44,7 @@ and modify the `techInsights.ts` file to contain a reference to the FactCheckers
  });
 ```
 
-By default this implementation comes with an in-memory storage to store checks. You can inject an additional data store by adding an implementation of `TechInsightCheckRegistry` into the constructor options when creating a `JsonRulesEngineFactCheckerFactory`. That can be done as follows
+By default, this implementation comes with an in-memory storage to store checks. You can inject an additional data store by adding an implementation of `TechInsightCheckRegistry` into the constructor options when creating a `JsonRulesEngineFactCheckerFactory`. That can be done as follows
 
 ```diff
  const myTechInsightCheckRegistry: TechInsightCheckRegistry<MyCheckType> = // snip
@@ -46,7 +56,7 @@ By default this implementation comes with an in-memory storage to store checks. 
 
 ```
 
-## Adding checks
+## Adding checks in code
 
 Checks for this FactChecker are constructed as [`json-rules-engine` compatible JSON rules](https://github.com/CacheControl/json-rules-engine/blob/master/docs/rules.md#conditions). A check could look like the following for example:
 
@@ -84,6 +94,28 @@ export const exampleCheck: TechInsightJsonRuleCheck = {
     link: 'https://sonar.mysonarqube.com/increasing-number-value',
   },
 };
+```
+
+## Adding checks in config
+
+Example:
+
+```yaml title="app-config.yaml"
+techInsights:
+  factChecker:
+    checks:
+      groupOwnerCheck:
+        type: json-rules-engine
+        name: Group Owner Check
+        description: Verifies that a group has been set as the spec.owner for this entity
+        factIds:
+          - entityOwnershipFactRetriever
+        rule:
+          conditions:
+            all:
+              - fact: hasGroupOwner
+                operator: equal
+                value: true
 ```
 
 ### More than one `factIds` for a check.

@@ -29,7 +29,7 @@ export interface ExploreApi {
   /**
    * Returns a list of explore tools.
    *
-   * @param request - The The request query options
+   * @param request - The request query options
    */
   getTools(request?: GetExploreToolsRequest): Promise<GetExploreToolsResponse>;
 }

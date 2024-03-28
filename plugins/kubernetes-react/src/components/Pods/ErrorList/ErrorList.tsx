@@ -82,7 +82,7 @@ export const ErrorList = ({ podAndErrors }: ErrorListProps) => {
                         <FixDialog
                           pod={onlyPodWithErrors.pod}
                           error={error}
-                          clusterName={onlyPodWithErrors.clusterName}
+                          clusterName={onlyPodWithErrors.cluster.name}
                         />
                       </Grid>
                     </Grid>

@@ -19,7 +19,7 @@ Some features are not yet available for all supported Git providers.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-catalog-import
+yarn --cwd packages/app add @backstage/plugin-catalog-import
 ```
 
 2. Add the `CatalogImportPage` extension to the app:

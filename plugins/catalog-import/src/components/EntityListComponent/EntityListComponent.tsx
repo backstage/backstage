@@ -20,19 +20,16 @@ import {
   EntityRefLink,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import {
-  Collapse,
-  IconButton,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  ListItemText,
-} from '@material-ui/core';
+import Collapse from '@material-ui/core/Collapse';
+import IconButton from '@material-ui/core/IconButton';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import WorkIcon from '@material-ui/icons/Work';
 import React, { useState } from 'react';
 
 const useStyles = makeStyles(theme => ({
@@ -127,10 +124,9 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
           >
             <List component="div" disablePadding dense>
               {sortEntities(r.entities).map(entity => {
-                const Icon =
-                  app.getSystemIcon(
-                    `kind:${entity.kind.toLocaleLowerCase('en-US')}`,
-                  ) ?? WorkIcon;
+                const Icon = app.getSystemIcon(
+                  `kind:${entity.kind.toLocaleLowerCase('en-US')}`,
+                );
                 return (
                   <ListItem
                     key={humanizeEntityRef(entity)}
@@ -143,9 +139,7 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
                         }
                       : {})}
                   >
-                    <ListItemIcon>
-                      <Icon />
-                    </ListItemIcon>
+                    <ListItemIcon>{Icon && <Icon />}</ListItemIcon>
                     <ListItemText primary={humanizeEntityRef(entity)} />
                   </ListItem>
                 );

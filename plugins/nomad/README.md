@@ -31,7 +31,7 @@ If your Nomad cluster has ACLs enabled, you will need a `token` with at least th
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-nomad
+yarn --cwd packages/app add @backstage/plugin-nomad
 ```
 
 ### Configuration

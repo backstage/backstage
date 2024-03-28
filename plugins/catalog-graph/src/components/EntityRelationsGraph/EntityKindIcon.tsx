@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { useApp } from '@backstage/core-plugin-api';
-import WorkIcon from '@material-ui/icons/Work';
 import React from 'react';
+import SvgIcon from '@material-ui/core/SvgIcon';
 
 export function EntityKindIcon({
   kind,
@@ -30,6 +30,6 @@ export function EntityKindIcon({
 }) {
   const app = useApp();
   const Icon =
-    app.getSystemIcon(`kind:${kind.toLocaleLowerCase('en-US')}`) ?? WorkIcon;
+    app.getSystemIcon(`kind:${kind.toLocaleLowerCase('en-US')}`) ?? SvgIcon;
   return <Icon {...props} />;
 }

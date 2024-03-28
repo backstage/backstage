@@ -140,4 +140,26 @@ process is used to release an emergency fix as version `6.5.1` in the patch rele
 
 ### When the release workflow is not triggered for some reason, such as a GitHub incident
 
-Ask one of the maintainers to force push master back to a previous commit and then push the release merge commit again.
+Ask one of the maintainers to trigger [the Deploy packages](https://github.com/backstage/backstage/actions/workflows/deploy_packages.yml) workflow with the "Unconditionally trigger the release job to run" checkbox set, on the `master` branch. Please validate first that nothing substantial has been pushed to master since the original failed release attempt! For this reason, it is wise to have the master branch locked until each release has gone through.
+
+### The release successfully published packages but failed when finalizing the release
+
+If it's an intermittent failure then it is safe to re-trigger the release workflow again.
+
+If re-triggering doesn't or won't help, the following steps can be taken to complete the release:
+
+- Manually create a git tag for the release if it doesn't already exist
+- Manually create a [new GitHub release](https://github.com/backstage/backstage/releases/new).
+- Trigger the repository dispatch workflow using the following request, replace `<VERSION>` with the release version **without** the `v` prefix:
+
+  ```shell
+  curl -L \
+    -X POST \
+    -H "Accept: application/vnd.github+json" \
+    -H "Authorization: Bearer $(gh auth token)" \
+    -H "X-GitHub-Api-Version: 2022-11-28" \
+    https://api.github.com/repos/backstage/backstage/dispatches \
+    -d '{"event_type":"release-published","client_payload":{"version":"<VERSION>"}}'
+  ```
+
+- Manually post a message on Discord in the #announcements channel

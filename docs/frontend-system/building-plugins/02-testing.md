@@ -70,7 +70,7 @@ describe('Entity details component', () => {
 
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
-        <EntityDetails entitRef={entityRef} />
+        <EntityDetails entityRef={entityRef} />
       </TestApiProvider>,
     );
 

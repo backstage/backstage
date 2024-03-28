@@ -15,4 +15,4 @@
  */
 
 export { awsAlb } from './provider';
-export type { AwsAlbResult } from './provider';
+export type { AwsAlbResult } from './types';

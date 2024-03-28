@@ -103,7 +103,7 @@ describe('useGitTags', () => {
       renderHook(() => useGitTags(entity), {
         wrapper: Wrapper,
       }),
-    ).toThrow('Value for annotation "dev.azure.com/project" was not found');
+    ).toThrow('Expected "dev.azure.com" annotations were not found');
   });
 
   it('should return throw when annotation invalid', async () => {

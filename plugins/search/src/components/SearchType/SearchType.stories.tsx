@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Grid, Paper } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import CatalogIcon from '@material-ui/icons/MenuBook';
 import DocsIcon from '@material-ui/icons/Description';
 import UsersGroupsIcon from '@material-ui/icons/Person';

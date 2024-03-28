@@ -20,21 +20,12 @@ import {
 } from '@backstage/backend-common';
 import { Logger } from 'winston';
 import { TechInsightsDatabase } from './TechInsightsDatabase';
-import { TechInsightsStore } from '@backstage/plugin-tech-insights-node';
+import { PersistenceContext } from '@backstage/plugin-tech-insights-node';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-tech-insights-backend',
   'migrations',
 );
-
-/**
- * A Container for persistence related components in TechInsights
- *
- * @public
- */
-export type PersistenceContext = {
-  techInsightsStore: TechInsightsStore;
-};
 
 /**
  * A Container for persistence context initialization options

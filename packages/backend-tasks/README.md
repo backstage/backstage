@@ -8,7 +8,7 @@ Add the library to your backend package:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/backend-tasks
+yarn --cwd packages/backend add @backstage/backend-tasks
 ```
 
 then make use of its facilities as necessary:

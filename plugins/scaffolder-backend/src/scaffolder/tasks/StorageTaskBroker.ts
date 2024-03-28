@@ -14,21 +14,40 @@
  * limitations under the License.
  */
 
+import { Config } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { TaskSecrets } from '@backstage/plugin-scaffolder-node';
-import { JsonObject, Observable } from '@backstage/types';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
 import { Logger } from 'winston';
 import ObservableImpl from 'zen-observable';
 import {
+  TaskSecrets,
   SerializedTask,
   SerializedTaskEvent,
   TaskBroker,
   TaskBrokerDispatchOptions,
   TaskCompletionState,
   TaskContext,
-  TaskStore,
-} from './types';
+} from '@backstage/plugin-scaffolder-node';
+import { InternalTaskSecrets, TaskStore } from './types';
+import { readDuration } from './helper';
+import {
+  AuthService,
+  BackstageCredentials,
+} from '@backstage/backend-plugin-api';
 
+type TaskState = {
+  checkpoints: {
+    [key: string]:
+      | {
+          status: 'failed';
+          reason: string;
+        }
+      | {
+          status: 'success';
+          value: JsonValue;
+        };
+  };
+};
 /**
  * TaskManager
  *
@@ -44,8 +63,9 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
+    auth?: AuthService,
   ) {
-    const agent = new TaskManager(task, storage, abortSignal, logger);
+    const agent = new TaskManager(task, storage, abortSignal, logger, auth);
     agent.startTimeout();
     return agent;
   }
@@ -56,6 +76,7 @@ export class TaskManager implements TaskContext {
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
+    private readonly auth?: AuthService,
   ) {}
 
   get spec() {
@@ -86,6 +107,40 @@ export class TaskManager implements TaskContext {
     await this.storage.emitLogEvent({
       taskId: this.task.taskId,
       body: { message, ...logMetadata },
+    });
+  }
+
+  async getTaskState?(): Promise<
+    | {
+        state?: JsonObject;
+      }
+    | undefined
+  > {
+    return this.storage.getTaskState?.({ taskId: this.task.taskId });
+  }
+
+  async updateCheckpoint?(
+    options:
+      | {
+          key: string;
+          status: 'success';
+          value: JsonValue;
+        }
+      | {
+          key: string;
+          status: 'failed';
+          reason: string;
+        },
+  ): Promise<void> {
+    const { key, ...value } = options;
+    if (this.task.state) {
+      (this.task.state as TaskState).checkpoints[key] = value;
+    } else {
+      this.task.state = { checkpoints: { [key]: value } };
+    }
+    await this.storage.saveTaskState?.({
+      taskId: this.task.taskId,
+      state: this.task.state,
     });
   }
 
@@ -122,6 +177,20 @@ export class TaskManager implements TaskContext {
       }
     }, 1000);
   }
+
+  async getInitiatorCredentials(): Promise<BackstageCredentials> {
+    const secrets = this.task.secrets as InternalTaskSecrets;
+
+    if (secrets && secrets.__initiatorCredentials) {
+      return JSON.parse(secrets.__initiatorCredentials);
+    }
+    if (!this.auth) {
+      throw new Error(
+        'Failed to create none credentials in scaffolder task. The TaskManager has not been initialized with an auth service implementation',
+      );
+    }
+    return this.auth.getNoneCredentials();
+  }
 }
 
 /**
@@ -143,6 +212,10 @@ export interface CurrentClaimedTask {
    */
   secrets?: TaskSecrets;
   /**
+   * The state of checkpoints of the task.
+   */
+  state?: JsonObject;
+  /**
    * The creator of the task.
    */
   createdBy?: string;
@@ -160,6 +233,8 @@ export class StorageTaskBroker implements TaskBroker {
   constructor(
     private readonly storage: TaskStore,
     private readonly logger: Logger,
+    private readonly config?: Config,
+    private readonly auth?: AuthService,
   ) {}
 
   async list(options?: {
@@ -202,6 +277,30 @@ export class StorageTaskBroker implements TaskBroker {
     });
   }
 
+  public async recoverTasks(): Promise<void> {
+    const enabled =
+      (this.config &&
+        this.config.getOptionalBoolean(
+          'scaffolder.EXPERIMENTAL_recoverTasks',
+        )) ??
+      false;
+
+    if (enabled) {
+      const defaultTimeout = { seconds: 30 };
+      const timeout = readDuration(
+        this.config,
+        'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
+        defaultTimeout,
+      );
+      const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
+        timeout,
+      })) ?? { ids: [] };
+      if (recoveredTaskIds.length > 0) {
+        this.signalDispatch();
+      }
+    }
+  }
+
   /**
    * {@inheritdoc TaskBroker.claim}
    */
@@ -217,10 +316,12 @@ export class StorageTaskBroker implements TaskBroker {
             spec: pendingTask.spec,
             secrets: pendingTask.secrets,
             createdBy: pendingTask.createdBy,
+            state: pendingTask.state,
           },
           this.storage,
           abortController.signal,
           this.logger,
+          this.auth,
         );
       }
 

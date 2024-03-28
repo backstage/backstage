@@ -15,6 +15,7 @@
  */
 import * as React from 'react';
 import {
+  ClusterAttributes,
   DetectedError,
   DetectedErrorsByCluster,
 } from '@backstage/plugin-kubernetes-common';
@@ -27,13 +28,14 @@ import { Table, TableColumn } from '@backstage/core-components';
  */
 export type ErrorReportingProps = {
   detectedErrors: DetectedErrorsByCluster;
+  clusters: ClusterAttributes[];
 };
 
 const columns: TableColumn<Row>[] = [
   {
     title: 'cluster',
     width: '10%',
-    render: (row: Row) => row.clusterName,
+    render: (row: Row) => row.cluster.title || row.cluster.name,
   },
   {
     title: 'namespace',
@@ -60,7 +62,7 @@ const columns: TableColumn<Row>[] = [
 ];
 
 interface Row {
-  clusterName: string;
+  cluster: ClusterAttributes;
   error: DetectedError;
 }
 
@@ -78,11 +80,14 @@ const sortBySeverity = (a: Row, b: Row) => {
  *
  * @public
  */
-export const ErrorReporting = ({ detectedErrors }: ErrorReportingProps) => {
+export const ErrorReporting = ({
+  detectedErrors,
+  clusters,
+}: ErrorReportingProps) => {
   const errors = Array.from(detectedErrors.entries())
     .flatMap(([clusterName, resourceErrors]) => {
       return resourceErrors.map(e => ({
-        clusterName,
+        cluster: clusters.find(c => c.name === clusterName)!,
         error: e,
       }));
     })

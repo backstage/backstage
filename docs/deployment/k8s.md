@@ -209,6 +209,7 @@ spec:
           volumeMounts:
             - mountPath: /var/lib/postgresql/data
               name: postgresdb
+              subPath: data
       volumes:
         - name: postgresdb
           persistentVolumeClaim:
@@ -384,7 +385,7 @@ $ yarn build-image --tag backstage:1.0.0
 There is no special wiring needed to access the PostgreSQL service. Since it's
 running on the same cluster, Kubernetes will inject `POSTGRES_SERVICE_HOST` and
 `POSTGRES_SERVICE_PORT` environment variables into our Backstage container.
-These can be used in the Backstage `app-config.yaml` along with the secrets:
+These can be used in the Backstage `app-config.yaml` along with the secrets. Apply this to `app-config.production.yaml` as well if you have one:
 
 ```yaml
 backend:

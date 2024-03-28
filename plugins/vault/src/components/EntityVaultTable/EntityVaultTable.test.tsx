@@ -161,7 +161,7 @@ describe('EntityVaultTable', () => {
 
     expect(
       rendered.getByText(
-        /Unexpected error while fetching secrets from path \'test\/error\'\: Request failed with 400 Error/,
+        /Unexpected error while fetching secrets from path \'test\/error\'\: Request failed with 400 Bad Request/,
       ),
     ).toBeInTheDocument();
   });

@@ -10,7 +10,7 @@ If you have a standalone app (you didn't clone this repo), then do
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-home
+yarn --cwd packages/app add @backstage/plugin-home
 ```
 
 ### Setting up the Home Page
@@ -324,6 +324,38 @@ export default app.createRoot(
   </>,
 );
 ```
+
+You can filter the items that are shown in the component.
+this can be done by using the config file.
+Filtering is done by using 3 parameters:
+
+- `field` - define which field to filter. can be one of the following
+  - `id`: string
+  - `name`: string
+  - `pathname`: string
+  - `hits`: number
+  - `timestamp`: number
+  - `entityRef`: string
+- `operator` - can be one of the following `'<' | '<=' | '==' | '!=' | '>' | '>=' | 'contains'`
+- `value` - the value of the filter
+
+```yaml
+home:
+  recentVisits:
+    filterBy:
+      - field:
+        operator:
+        value:
+  topVisits:
+    filterBy:
+      - field:
+        operator:
+        value:
+```
+
+`filterBy` configs that are not defined in the above format will be ignored.
+
+In order to validate the config you can use `backstage/cli config:check`
 
 ## Contributing
 

@@ -17,6 +17,8 @@ import * as github from '@backstage/plugin-scaffolder-backend-module-github';
 import * as gitlab from '@backstage/plugin-scaffolder-backend-module-gitlab';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
 import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
+import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
+import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import * as gerrit from '@backstage/plugin-scaffolder-backend-module-gerrit';
 
 /**
@@ -75,28 +77,28 @@ export const createPublishGithubPullRequestAction =
   github.createPublishGithubPullRequestAction;
 
 /**
- * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket instead
+ * @public @deprecated use "createPublishBitbucketCloudAction" from \@backstage/plugin-scaffolder-backend-module-bitbucket-cloud or "createPublishBitbucketServerAction" from \@backstage/plugin-scaffolder-backend-module-bitbucket-server instead
  */
 export const createPublishBitbucketAction =
   bitbucket.createPublishBitbucketAction;
 
 /**
- * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket instead
+ * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket-cloud instead
  */
 export const createPublishBitbucketCloudAction =
-  bitbucket.createPublishBitbucketCloudAction;
+  bitbucketCloud.createPublishBitbucketCloudAction;
 
 /**
- * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket instead
+ * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket-server instead
  */
 export const createPublishBitbucketServerAction =
-  bitbucket.createPublishBitbucketServerAction;
+  bitbucketServer.createPublishBitbucketServerAction;
 
 /**
- * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket instead
+ * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-bitbucket-server instead
  */
 export const createPublishBitbucketServerPullRequestAction =
-  bitbucket.createPublishBitbucketServerPullRequestAction;
+  bitbucketServer.createPublishBitbucketServerPullRequestAction;
 
 /**
  * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-azure instead

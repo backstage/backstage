@@ -22,6 +22,7 @@ import {
 } from '@backstage/backend-common';
 import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { Logger } from 'winston';
+import { AuthService } from '@backstage/backend-plugin-api';
 
 /**
  * A container for facts. The shape of the fact records needs to correspond to the FactSchema with same `ref` value.
@@ -92,6 +93,7 @@ export type FactRetrieverContext = {
   discovery: PluginEndpointDiscovery;
   logger: Logger;
   tokenManager: TokenManager;
+  auth: AuthService;
   entityFilter?:
     | Record<string, string | symbol | (string | symbol)[]>[]
     | Record<string, string | symbol | (string | symbol)[]>;
@@ -230,3 +232,14 @@ export type FactRetrieverRegistration = {
    */
   initialDelay?: Duration | HumanDuration;
 };
+
+/**
+ * @public
+ */
+export interface FactRetrieverRegistry {
+  register(registration: FactRetrieverRegistration): Promise<void>;
+  get(retrieverReference: string): Promise<FactRetrieverRegistration>;
+  listRetrievers(): Promise<FactRetriever[]>;
+  listRegistrations(): Promise<FactRetrieverRegistration[]>;
+  getSchemas(): Promise<FactSchema[]>;
+}

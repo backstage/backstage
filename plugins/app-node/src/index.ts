@@ -23,4 +23,8 @@
 export {
   staticFallbackHandlerExtensionPoint,
   type StaticFallbackHandlerExtensionPoint,
+  configSchemaExtensionPoint,
+  type ConfigSchemaExtensionPoint,
 } from './extensions';
+
+export { loadCompiledConfigSchema } from './schema';

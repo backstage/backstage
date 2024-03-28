@@ -15,16 +15,14 @@
  */
 
 import React from 'react';
-import {
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  Tooltip,
-  ListItemText,
-  makeStyles,
-  IconButton,
-  Typography,
-} from '@material-ui/core';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Tooltip from '@material-ui/core/Tooltip';
+import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import Avatar from '@material-ui/core/Avatar';
 import EmailIcon from '@material-ui/icons/Email';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';

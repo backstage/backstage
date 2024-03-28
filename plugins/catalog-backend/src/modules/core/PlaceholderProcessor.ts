@@ -23,44 +23,10 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
   CatalogProcessorEmit,
+  PlaceholderResolver,
+  PlaceholderResolverParams,
   processingResult,
 } from '@backstage/plugin-catalog-node';
-
-/**
- * @public
- * @deprecated Use the exported value from `@backstage/plugin-catalog-node` instead.
- */
-export type PlaceholderResolverRead = (url: string) => Promise<Buffer>;
-
-/**
- * @public
- * @deprecated Use the exported value from `@backstage/plugin-catalog-node` instead.
- */
-export type PlaceholderResolverResolveUrl = (
-  url: string,
-  base: string,
-) => string;
-
-/**
- * @public
- * @deprecated Use the exported value from `@backstage/plugin-catalog-node` instead.
- */
-export type PlaceholderResolverParams = {
-  key: string;
-  value: JsonValue;
-  baseUrl: string;
-  read: PlaceholderResolverRead;
-  resolveUrl: PlaceholderResolverResolveUrl;
-  emit: CatalogProcessorEmit;
-};
-
-/**
- * @public
- * @deprecated Use the exported value from `@backstage/plugin-catalog-node` instead.
- */
-export type PlaceholderResolver = (
-  params: PlaceholderResolverParams,
-) => Promise<JsonValue>;
 
 /** @public */
 export type PlaceholderProcessorOptions = {

@@ -1,5 +1,70 @@
 # @backstage/plugin-adr-common
 
+## 0.2.21
+
+### Patch Changes
+
+- 5335634: Fixed Azure DevOps ADR file path reading
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/catalog-model@1.4.5
+
+## 0.2.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 0.2.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 0.2.21-next.0
+
+### Patch Changes
+
+- 5335634: Fixed Azure DevOps ADR file path reading
+- Updated dependencies
+  - @backstage/plugin-search-common@1.2.11-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/integration@1.9.1-next.0
+
+## 0.2.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration@1.9.0
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.2.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.0-next.1
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/plugin-search-common@1.2.10
+
+## 0.2.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/integration@1.9.0-next.0
+  - @backstage/plugin-search-common@1.2.10
+
 ## 0.2.19
 
 ### Patch Changes

@@ -25,5 +25,6 @@ export default async function createPlugin(
     logger: env.logger,
     config: env.config,
     reader: env.reader,
+    permissions: env.permissions,
   });
 }

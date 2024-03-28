@@ -93,7 +93,11 @@ export type CatalogReactComponentsNameToClassKey = {
   CatalogReactEntityTagPicker: CatalogReactEntityTagPickerClassKey;
   CatalogReactEntityOwnerPicker: CatalogReactEntityOwnerPickerClassKey;
   CatalogReactEntityProcessingStatusPicker: CatalogReactEntityProcessingStatusPickerClassKey;
+  CatalogReactEntityAutocompletePickerClassKey: CatalogReactEntityAutocompletePickerClassKey;
 };
+
+// @public (undocumented)
+export type CatalogReactEntityAutocompletePickerClassKey = 'root' | 'label';
 
 // @public
 export type CatalogReactEntityDisplayNameClassKey = 'root' | 'icon';
@@ -169,6 +173,19 @@ export function defaultEntityPresentation(
 ): EntityRefPresentationSnapshot;
 
 // @public (undocumented)
+export const DefaultFilters: (
+  props: DefaultFiltersProps,
+) => React_2.JSX.Element;
+
+// @public
+export type DefaultFiltersProps = {
+  initialKind?: string;
+  initiallySelectedFilter?: UserListFilterKind;
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  initiallySelectedNamespaces?: string[];
+};
+
+// @public (undocumented)
 export function EntityAutocompletePicker<
   T extends DefaultEntityFilters = DefaultEntityFilters,
   Name extends AllowedEntityFilters<T> = AllowedEntityFilters<T>,
@@ -188,6 +205,7 @@ export type EntityAutocompletePickerProps<
   };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
+  filtersForAvailableValues?: Array<keyof T>;
 };
 
 // @public
@@ -288,6 +306,7 @@ export type EntityListContextProps<
     next?: () => void;
     prev?: () => void;
   };
+  totalItems?: number;
 };
 
 // @public
@@ -326,7 +345,15 @@ export class EntityNamespaceFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityNamespacePicker: () => React_2.JSX.Element;
+export const EntityNamespacePicker: (
+  props: EntityNamespacePickerProps,
+) => React_2.JSX.Element;
+
+// @public
+export interface EntityNamespacePickerProps {
+  // (undocumented)
+  initiallySelectedNamespaces?: string[];
+}
 
 // @public
 export class EntityOrphanFilter implements EntityFilter {
@@ -540,6 +567,13 @@ export class EntityTextFilter implements EntityFilter {
   constructor(value: string);
   // (undocumented)
   filterEntity(entity: Entity): boolean;
+  // (undocumented)
+  getFullTextFilters(): {
+    term: string;
+    fields: string[];
+  };
+  // (undocumented)
+  toQueryValue(): string;
   // (undocumented)
   readonly value: string;
 }

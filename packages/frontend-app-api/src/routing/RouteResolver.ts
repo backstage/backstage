@@ -21,6 +21,8 @@ import {
   SubRouteRef,
   AnyRouteRefParams,
   RouteFunc,
+  RouteResolutionApiResolveOptions,
+  RouteResolutionApi,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 import { AnyRouteRef, BackstageRouteObject } from './types';
@@ -177,7 +179,7 @@ function resolveBasePath(
   return `${joinPaths(parentPath, ...diffPaths)}/`;
 }
 
-export class RouteResolver {
+export class RouteResolver implements RouteResolutionApi {
   constructor(
     private readonly routePaths: Map<RouteRef, string>,
     private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
@@ -189,13 +191,13 @@ export class RouteResolver {
     private readonly appBasePath: string, // base path without a trailing slash
   ) {}
 
-  resolve<Params extends AnyRouteRefParams>(
+  resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
-      | RouteRef<Params>
-      | SubRouteRef<Params>
-      | ExternalRouteRef<Params, any>,
-    sourceLocation: Parameters<typeof matchRoutes>[1],
-  ): RouteFunc<Params> | undefined {
+      | RouteRef<TParams>
+      | SubRouteRef<TParams>
+      | ExternalRouteRef<TParams, any>,
+    options?: RouteResolutionApiResolveOptions,
+  ): RouteFunc<TParams> | undefined {
     // First figure out what our target absolute ref is, as well as our target path.
     const [targetRef, targetPath] = resolveTargetRef(
       anyRouteRef,
@@ -208,17 +210,7 @@ export class RouteResolver {
 
     // The location that we get passed in uses the full path, so start by trimming off
     // the app base path prefix in case we're running the app on a sub-path.
-    let relativeSourceLocation: Parameters<typeof matchRoutes>[1];
-    if (typeof sourceLocation === 'string') {
-      relativeSourceLocation = this.trimPath(sourceLocation);
-    } else if (sourceLocation.pathname) {
-      relativeSourceLocation = {
-        ...sourceLocation,
-        pathname: this.trimPath(sourceLocation.pathname),
-      };
-    } else {
-      relativeSourceLocation = sourceLocation;
-    }
+    const relativeSourceLocation = this.trimPath(options?.sourcePath ?? '');
 
     // Next we figure out the base path, which is the combination of the common parent path
     // between our current location and our target location, as well as the additional path
@@ -233,7 +225,7 @@ export class RouteResolver {
         this.routeObjects,
       );
 
-    const routeFunc: RouteFunc<Params> = (...[params]) => {
+    const routeFunc: RouteFunc<TParams> = (...[params]) => {
       // We selectively encode some some known-dangerous characters in the
       // params. The reason that we don't perform a blanket `encodeURIComponent`
       // here is that this encoding was added defensively long after the initial

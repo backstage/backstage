@@ -67,6 +67,15 @@ export type AlertDisplayProps = {
 };
 
 // @public
+export function AppIcon(props: AppIconProps): React_2.JSX.Element;
+
+// @public
+export type AppIconProps = IconComponentProps & {
+  id: string;
+  Fallback?: IconComponent;
+};
+
+// @public
 export const AutoLogout: (props: AutoLogoutProps) => JSX.Element | null;
 
 // @public (undocumented)
@@ -86,6 +95,10 @@ export type AvatarClassKey = 'avatar';
 
 // @public
 export interface AvatarProps {
+  classes?: {
+    [key in 'avatar' | 'avatarText']?: string;
+  };
+  // @deprecated
   customStyles?: CSSProperties;
   displayName?: string;
   picture?: string;
@@ -128,10 +141,11 @@ export function Breadcrumbs(props: Props_18): React_2.JSX.Element;
 export type BreadcrumbsClickableTextClassKey = 'root';
 
 // @public (undocumented)
+export type BreadcrumbsCurrentPageClassKey = 'root';
+
+// @public (undocumented)
 export type BreadcrumbsStyledBoxClassKey = 'root';
 
-// Warning: (ae-forgotten-export) The symbol "IconComponentProps" needs to be exported by the entry point index.d.ts
-//
 // @public
 export function BrokenImageIcon(props: IconComponentProps): React_2.JSX.Element;
 
@@ -265,6 +279,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   rankMargin?: number;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EdgeData>;
   renderNode?: DependencyGraphTypes.RenderNodeFunction<NodeData>;
+  showArrowHeads?: boolean;
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
 }
 
@@ -540,6 +555,9 @@ export type HorizontalScrollGridClassKey =
   | 'buttonLeft'
   | 'buttonRight';
 
+// @public
+export type IconComponentProps = ComponentProps<IconComponent>;
+
 // @public (undocumented)
 export function IconLinkVertical({
   color,
@@ -592,11 +610,6 @@ export type InfoCardClassKey =
 
 // @public (undocumented)
 export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
-
-// Warning: (ae-forgotten-export) The symbol "IntroCardProps" needs to be exported by the entry point index.d.ts
-//
-// @public
-export function IntroCard(props: IntroCardProps): React_2.JSX.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ItemCardProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "ItemCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -952,19 +965,6 @@ export interface SidebarGroupProps extends BottomNavigationActionProps {
   priority?: number;
   to?: string;
 }
-
-// Warning: (ae-missing-release-tag) "SidebarIntro" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
-// @public (undocumented)
-export function SidebarIntro(_props: {}): React_2.JSX.Element | null;
-
-// @public (undocumented)
-export type SidebarIntroClassKey =
-  | 'introCard'
-  | 'introDismiss'
-  | 'introDismissLink'
-  | 'introDismissText'
-  | 'introDismissIcon';
 
 // Warning: (ae-forgotten-export) The symbol "SidebarItemProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "SidebarItem" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)

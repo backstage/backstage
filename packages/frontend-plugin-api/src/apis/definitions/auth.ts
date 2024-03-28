@@ -36,4 +36,5 @@ export {
   oktaAuthApiRef,
   microsoftAuthApiRef,
   oneloginAuthApiRef,
+  vmwareCloudAuthApiRef,
 } from '@backstage/core-plugin-api';

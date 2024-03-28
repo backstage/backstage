@@ -8,7 +8,7 @@ description: Creating new utility APIs in your plugins and app
 
 > **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
-This section describes how to make a Utility API from scratch, or to add configurability and inputs to an existing one. If you are instead interested in migrating an existing Utility API from the old frontend system, check out [the migrating section](./05-migrating.md).
+This section describes how to make a Utility API from scratch, or to add configurability and inputs to an existing one. If you are instead interested in migrating an existing Utility API from the old frontend system, check out the [Migrating APIs section](../building-plugins/05-migrating.md#migrating-apis).
 
 ## Creating the Utility API contract
 

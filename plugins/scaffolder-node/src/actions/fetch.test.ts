@@ -124,6 +124,20 @@ describe('fetchContents helper', () => {
       expect(fs.ensureDir).toHaveBeenCalledWith('foo');
       expect(dirFunction).toHaveBeenCalledWith({ targetDir: 'foo' });
     });
+
+    it('should pass through the token provided through to the URL reader', async () => {
+      await fetchContents({
+        ...options,
+        outputPath: 'mydir/foo',
+        fetchUrl: 'https://github.com/backstage/foo',
+        token: 'mockToken',
+      });
+
+      expect(readTree).toHaveBeenCalledWith(
+        'https://github.com/backstage/foo',
+        expect.objectContaining({ token: 'mockToken' }),
+      );
+    });
   });
 
   describe('fetch file', () => {
@@ -196,7 +210,26 @@ describe('fetchContents helper', () => {
         fetchUrl: 'https://github.com/backstage/foo',
       });
       expect(fs.ensureDir).toHaveBeenCalledWith('.');
-      expect(fs.outputFile).toHaveBeenCalledWith('foo', 'test');
+      expect(fs.outputFile).toHaveBeenCalledWith(
+        'foo',
+        Buffer.from([116, 101, 115, 116]),
+      );
+    });
+
+    it('should fetch binary content from url', async () => {
+      readUrl.mockResolvedValue({
+        buffer: () => Buffer.from([0, 1, 2, 3, 255, 254, 253, 252]),
+      });
+      await fetchFile({
+        ...options,
+        outputPath: 'foo',
+        fetchUrl: 'https://github.com/backstage/foo',
+      });
+      expect(fs.ensureDir).toHaveBeenCalledWith('.');
+      expect(fs.outputFile).toHaveBeenCalledWith(
+        'foo',
+        Buffer.from([0, 1, 2, 3, 255, 254, 253, 252]),
+      );
     });
 
     it('should fetch content from url into directory', async () => {
@@ -209,7 +242,24 @@ describe('fetchContents helper', () => {
         fetchUrl: 'https://github.com/backstage/foo',
       });
       expect(fs.ensureDir).toHaveBeenCalledWith('mydir');
-      expect(fs.outputFile).toHaveBeenCalledWith('mydir/foo', 'test');
+      expect(fs.outputFile).toHaveBeenCalledWith(
+        'mydir/foo',
+        Buffer.from([116, 101, 115, 116]),
+      );
+    });
+
+    it('should pass through the token provided through to the URL reader', async () => {
+      await fetchFile({
+        ...options,
+        outputPath: 'mydir/foo',
+        fetchUrl: 'https://github.com/backstage/foo',
+        token: 'mockToken',
+      });
+
+      expect(readUrl).toHaveBeenCalledWith(
+        'https://github.com/backstage/foo',
+        expect.objectContaining({ token: 'mockToken' }),
+      );
     });
   });
 });

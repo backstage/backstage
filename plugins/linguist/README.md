@@ -55,7 +55,7 @@ To setup the Linguist Card frontend you'll need to do the following steps:
 
    ```sh
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-linguist
+   yarn --cwd packages/app add @backstage/plugin-linguist
    ```
 
 2. Second we need to add the `EntityLinguistCard` extension to the entity page in your app:

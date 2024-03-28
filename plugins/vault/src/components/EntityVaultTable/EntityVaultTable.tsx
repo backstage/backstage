@@ -17,11 +17,12 @@ import React from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { Link, Table, TableColumn } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import { Box, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import Edit from '@material-ui/icons/Edit';
 import Visibility from '@material-ui/icons/Visibility';
 import Alert from '@material-ui/lab/Alert';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { VaultSecret, vaultApiRef } from '../../api';
 import {
   VAULT_SECRET_ENGINE_ANNOTATION,

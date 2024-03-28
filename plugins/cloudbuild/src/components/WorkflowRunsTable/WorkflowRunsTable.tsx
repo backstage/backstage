@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Typography, Box, IconButton, Tooltip } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import RetryIcon from '@material-ui/icons/Replay';
 import GoogleIcon from '@material-ui/icons/CloudCircle';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
@@ -26,6 +29,8 @@ import { buildRouteRef } from '../../routes';
 import { DateTime } from 'luxon';
 import { Table, TableColumn, Link } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
+import { getLocation } from '../useLocation';
+import { getCloudbuildFilter } from '../useCloudBuildFilter';
 
 const generatedColumns: TableColumn[] = [
   {
@@ -46,6 +51,14 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
         {row.id?.substring(0, 8)}
+      </Typography>
+    ),
+  },
+  {
+    title: 'Trigger Name',
+    render: (row: Partial<WorkflowRun>) => (
+      <Typography variant="body2" noWrap>
+        {row.substitutions?.TRIGGER_NAME}
       </Typography>
     ),
   },
@@ -71,7 +84,7 @@ const generatedColumns: TableColumn[] = [
     title: 'Ref',
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
-        {row.substitutions?.BRANCH_NAME}
+        {row.substitutions?.REF_NAME}
       </Typography>
     ),
   },
@@ -162,9 +175,12 @@ export const WorkflowRunsTableView = ({
 export const WorkflowRunsTable = (props: { entity: Entity }) => {
   const { value: projectName, loading } = useProjectName(props.entity);
   const [projectId] = (projectName ?? '/').split('/');
-
+  const location = getLocation(props.entity);
+  const cloudBuildFilter = getCloudbuildFilter(props.entity);
   const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
     projectId,
+    location,
+    cloudBuildFilter,
   });
 
   return (

@@ -33,9 +33,8 @@ import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('publish:gerrit', () => {
   const config = new ConfigReader({
@@ -53,18 +52,13 @@ describe('publish:gerrit', () => {
   const description = 'for the lols';
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createPublishGerritAction({ integrations, config });
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl:
         'gerrithost.org?owner=owner&workspace=parent&project=project&repo=repo',
       description,
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
   const server = setupServer();
   setupRequestMockHandlers(server);
 
@@ -101,6 +95,7 @@ describe('publish:gerrit', () => {
           'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
         );
         expect(req.body).toEqual({
+          branches: ['master'],
           create_empty_commit: false,
           owners: ['owner'],
           description,
@@ -150,6 +145,7 @@ describe('publish:gerrit', () => {
           'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
         );
         expect(req.body).toEqual({
+          branches: ['master'],
           create_empty_commit: false,
           owners: ['owner'],
           description,
@@ -200,6 +196,7 @@ describe('publish:gerrit', () => {
           'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
         );
         expect(req.body).toEqual({
+          branches: ['master'],
           create_empty_commit: false,
           owners: [],
           description,
@@ -241,6 +238,58 @@ describe('publish:gerrit', () => {
       'https://gerrithost.org/repo/+/refs/heads/master',
     );
   });
+
+  it('can correctly create a new project with main as default branch', async () => {
+    expect.assertions(5);
+    server.use(
+      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
+        expect(req.headers.get('Authorization')).toBe(
+          'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
+        );
+        expect(req.body).toEqual({
+          branches: ['main'],
+          create_empty_commit: false,
+          owners: [],
+          description,
+          parent: 'workspace',
+        });
+        return res(
+          ctx.status(201),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.json({}),
+        );
+      }),
+    );
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        repoUrl: 'gerrithost.org?workspace=workspace&repo=repo',
+        defaultBranch: 'main',
+      },
+    });
+
+    expect(initRepoAndPush).toHaveBeenCalledWith({
+      dir: mockContext.workspacePath,
+      remoteUrl: 'https://gerrithost.org/a/repo',
+      defaultBranch: 'main',
+      auth: { username: 'gerrituser', password: 'usertoken' },
+      logger: mockContext.logger,
+      commitMessage: expect.stringContaining('initial commit\n\nChange-Id:'),
+      gitAuthorInfo: {},
+    });
+
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'https://gerrithost.org/a/repo',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'repoContentsUrl',
+      'https://gerrithost.org/repo/+/refs/heads/main',
+    );
+  });
+
   it('should not create new projects on dryRun', async () => {
     await action.handler({
       ...mockContext,

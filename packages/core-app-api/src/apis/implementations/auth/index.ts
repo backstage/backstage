@@ -25,4 +25,5 @@ export * from './onelogin';
 export * from './bitbucket';
 export * from './bitbucketServer';
 export * from './atlassian';
+export * from './vmwareCloud';
 export type { OAuthApiCreateOptions, AuthApiCreateOptions } from './types';

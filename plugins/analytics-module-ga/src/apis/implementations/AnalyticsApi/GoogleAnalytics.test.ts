@@ -508,4 +508,133 @@ describe('GoogleAnalytics', () => {
       expect(lastData.queueTime).toBeUndefined();
     });
   });
+
+  describe('api backward compatibility', () => {
+    it('continue working with legacy App category', () => {
+      const api = GoogleAnalytics.fromConfig(basicValidConfig);
+
+      expect(api.captureEvent).toBeDefined();
+
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context,
+      });
+
+      let [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/',
+      });
+
+      api.captureEvent({
+        action: 'click',
+        subject: 'on something',
+        value: 42,
+        context,
+      });
+
+      [command, data] = ReactGA.testModeAPI.calls[2];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'event',
+        // expect to use the legacy default category
+        eventCategory: 'App',
+        eventAction: 'click',
+        eventLabel: 'on something',
+        eventValue: 42,
+      });
+    });
+
+    it('use lowercase app as the new default category', () => {
+      const api = GoogleAnalytics.fromConfig(basicValidConfig);
+
+      expect(api.captureEvent).toBeDefined();
+
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context: {
+          ...context,
+          extensionId: '',
+          extension: '',
+        },
+      });
+
+      let [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/',
+      });
+
+      api.captureEvent({
+        action: 'click',
+        subject: 'on something',
+        value: 42,
+        context: {
+          ...context,
+          extensionId: '',
+          extension: '',
+        },
+      });
+
+      [command, data] = ReactGA.testModeAPI.calls[2];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'event',
+        // expect to use the new default category
+        eventCategory: 'App',
+        eventAction: 'click',
+        eventLabel: 'on something',
+        eventValue: 42,
+      });
+    });
+
+    it('prioritize new context extension id over old extension property', () => {
+      const api = GoogleAnalytics.fromConfig(basicValidConfig);
+
+      expect(api.captureEvent).toBeDefined();
+
+      api.captureEvent({
+        action: 'navigate',
+        subject: '/',
+        context: {
+          ...context,
+          extensionId: 'app',
+          extension: '',
+        },
+      });
+
+      let [command, data] = ReactGA.testModeAPI.calls[1];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'pageview',
+        page: '/',
+      });
+
+      api.captureEvent({
+        action: 'click',
+        subject: 'on something',
+        value: 42,
+        context: {
+          ...context,
+          extensionId: 'page:index',
+          extension: '',
+        },
+      });
+
+      [command, data] = ReactGA.testModeAPI.calls[2];
+      expect(command).toBe('send');
+      expect(data).toMatchObject({
+        hitType: 'event',
+        // expect use the new context extension id
+        eventCategory: 'page:index',
+        eventAction: 'click',
+        eventLabel: 'on something',
+        eventValue: 42,
+      });
+    });
+  });
 });

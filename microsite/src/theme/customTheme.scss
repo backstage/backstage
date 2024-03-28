@@ -7,7 +7,7 @@
   --ifm-color-primary-darker: #2e9e8a;
   --ifm-color-primary-darkest: #268271;
 }
-
+// for docs and releases
 #__docusaurus {
   .theme-doc-markdown {
     a {
@@ -15,7 +15,36 @@
     }
   }
 }
-
+// for blog
+#__docusaurus {
+  .row {
+    .col {
+      &--7 {
+        a {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+// for community page
+#__docusaurus {
+  div[class^='communityPage'],
+  div[class*='communityPage'] {
+    a:not([class]) {
+      text-decoration: underline;
+    }
+  }
+}
+// for plugin page
+#__docusaurus {
+  div[class^='pluginsPage'],
+  div[class*='pluginsPage'] {
+    a:not([class]) {
+      text-decoration: underline;
+    }
+  }
+}
 .footerLogo {
   background-image: url(/img/logo.svg);
   background-repeat: no-repeat;

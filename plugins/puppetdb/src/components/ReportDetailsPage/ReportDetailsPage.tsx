@@ -20,14 +20,12 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { puppetDbRouteRef } from '../../routes';
 import React, { useState } from 'react';
-import {
-  Card,
-  CardContent,
-  Tab,
-  Box,
-  Typography,
-  Tabs,
-} from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Tab from '@material-ui/core/Tab';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import Tabs from '@material-ui/core/Tabs';
 import { ReportDetailsEventsTable } from './ReportDetailsEventsTable';
 import { ReportDetailsLogsTable } from './ReportDetailsLogsTable';
 

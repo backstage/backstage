@@ -83,7 +83,7 @@ following command:
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/backend-defaults @backstage/backend-plugin-api
+yarn --cwd packages/backend add @backstage/backend-defaults @backstage/backend-plugin-api
 ```
 
 You should now be able to start this up with the familiar `yarn workspace
@@ -616,7 +616,7 @@ if you didn't already have one.
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/plugin-catalog-node
+yarn --cwd packages/backend add @backstage/plugin-catalog-node
 ```
 
 Here we've placed the module directly in the backend index file just to get
@@ -632,7 +632,7 @@ A basic installation of the events plugin looks as follows.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(import('@backstage/plugin-events-backend'));
+backend.add(import('@backstage/plugin-events-backend/alpha'));
 ```
 
 If you have other customizations made to `plugins/events.ts`, such as adding
@@ -646,6 +646,7 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
@@ -663,7 +664,28 @@ const eventsModuleCustomExtensions = createBackendModule({
       async init({ events /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
-        events.addSubscribers(new MySubscriber()); // just an example
+        events.addHttpPostIngress({
+          // ...
+        });
+      },
+    });
+  },
+});
+/* highlight-add-end */
+
+/* highlight-add-start */
+const otherPluginModuleCustomExtensions = createBackendModule({
+  pluginId: 'other-plugin', // name of the plugin that the module is targeting
+  moduleId: 'custom-extensions',
+  register(env) {
+    env.registerInit({
+      deps: {
+        events: eventsServiceRef,
+        // ... and other dependencies as needed
+      },
+      async init({ events /* ..., other dependencies */ }) {
+        // Here you have the opportunity to interact with the extension
+        // point before the plugin itself gets instantiated
       },
     });
   },
@@ -671,17 +693,11 @@ const eventsModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-events-backend'));
+backend.add(import('@backstage/plugin-events-backend/alpha'));
 /* highlight-add-next-line */
 backend.add(eventsModuleCustomExtensions());
-```
-
-This also requires that you have a dependency on the corresponding node package,
-if you didn't already have one.
-
-```bash
-# from the repository root
-yarn add --cwd packages/backend @backstage/plugin-events-node
+/* highlight-add-next-line */
+backend.add(otherPluginModuleCustomExtensions());
 ```
 
 Here we've placed the module directly in the backend index file just to get
@@ -699,6 +715,26 @@ const backend = createBackend();
 /* highlight-add-next-line */
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 ```
+
+With the new Backend System version of the Scaffolder plugin, any provider specific actions will need to be installed separately.
+For example - GitHub actions are now collected under the `@backstage/plugin-scaffolder-backend-module-github` package.
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+
+/* highlight-add-next-line */
+backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
+```
+
+And of course you'll need to install those separately as well.
+
+```bash
+# from the repository root
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-github
+```
+
+You can find a list of the available modules under the [plugins directory](https://github.com/backstage/backstage/tree/master/plugins) in the monorepo.
 
 If you have other customizations made to `plugins/scaffolder.ts`, such as adding
 custom actions, read on. Otherwise, you should be able to just delete that file
@@ -746,7 +782,7 @@ if you didn't already have one.
 
 ```bash
 # from the repository root
-yarn add --cwd packages/backend @backstage/plugin-scaffolder-node
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-node
 ```
 
 Here we've placed the module directly in the backend index file just to get

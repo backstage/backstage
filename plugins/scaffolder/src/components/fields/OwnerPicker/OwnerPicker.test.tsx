@@ -94,11 +94,14 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: {
-          kind: ['Group', 'User'],
-        },
-      });
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: {
+            kind: ['Group', 'User'],
+          },
+          fields: ['metadata.name', 'metadata.namespace', 'kind'],
+        }),
+      );
     });
   });
 
@@ -124,11 +127,14 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: {
-          kind: ['User'],
-        },
-      });
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: {
+            kind: ['User'],
+          },
+          fields: ['metadata.name', 'metadata.namespace', 'kind'],
+        }),
+      );
     });
   });
 
@@ -163,14 +169,16 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: [
-          {
-            kind: ['Group'],
-            'spec.type': 'team',
-          },
-        ],
-      });
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['Group'],
+              'spec.type': 'team',
+            },
+          ],
+        }),
+      );
     });
   });
 
@@ -208,16 +216,18 @@ describe('<OwnerPicker />', () => {
         </Wrapper>,
       );
 
-      expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        filter: [
-          {
-            kind: ['Group', 'User'],
-          },
-          {
-            'spec.type': ['team', 'business-unit'],
-          },
-        ],
-      });
+      expect(catalogApi.getEntities).toHaveBeenCalledWith(
+        expect.objectContaining({
+          filter: [
+            {
+              kind: ['Group', 'User'],
+            },
+            {
+              'spec.type': ['team', 'business-unit'],
+            },
+          ],
+        }),
+      );
     });
   });
 });

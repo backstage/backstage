@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { useEffect, useState } from 'react';
 
 import {

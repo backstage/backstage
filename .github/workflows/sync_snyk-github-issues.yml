@@ -12,24 +12,24 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
 
       - name: use node.js 18.x
-        uses: actions/setup-node@v4.0.1
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
         with:
           node-version: 18.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
       - name: yarn install
-        uses: backstage/actions/yarn-install@v0.6.5
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
         with:
           cache-prefix: ${{ runner.os }}-v18.x
 
       - name: Create Snyk report
-        uses: snyk/actions/node@1d672a455ab3339ef0a0021e1ec809165ee12fad # master
+        uses: snyk/actions/node@8349f9043a8b7f0f3ee8885bf28f0b388d2446e8 # master
         continue-on-error: true # Snyk CLI exits with error when vulnerabilities are found
         with:
           args: >
@@ -43,6 +43,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           NODE_OPTIONS: --max-old-space-size=7168
       - name: Update Github issues
-        run: yarn ts-node scripts/snyk-github-issue-sync.ts
+        run: ./scripts/snyk-github-issue-sync.ts
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

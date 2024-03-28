@@ -23,7 +23,11 @@ import { EventBroker } from './EventBroker';
  * or from event brokers, queues, etc.
  *
  * @public
+ * @deprecated use the `EventsService` via the constructor, setter, or other means instead
  */
 export interface EventPublisher {
+  /**
+   * @deprecated use the `EventsService` via the constructor, setter, or other means instead
+   */
   setEventBroker(eventBroker: EventBroker): Promise<void>;
 }

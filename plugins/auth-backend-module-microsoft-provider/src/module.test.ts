@@ -38,6 +38,7 @@ describe('authModuleMicrosoftProvider', () => {
                     clientId: 'my-client-id',
                     clientSecret: 'my-client-secret',
                     tenantId: 'my-tenant-id',
+                    additionalScopes: ['User.Read.All'],
                   },
                 },
               },
@@ -66,7 +67,7 @@ describe('authModuleMicrosoftProvider', () => {
     expect(startUrl.pathname).toBe('/my-tenant-id/oauth2/v2.0/authorize');
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
       response_type: 'code',
-      scope: 'user.read',
+      scope: 'user.read User.Read.All',
       client_id: 'my-client-id',
       redirect_uri: `http://localhost:${server.port()}/api/auth/microsoft/handler/frame`,
       state: expect.any(String),

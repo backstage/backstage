@@ -15,5 +15,6 @@
  */
 
 export * from './checks';
+export * from './extensionPoints';
 export * from './facts';
 export * from './persistence';

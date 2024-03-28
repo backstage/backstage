@@ -1,6 +1,6 @@
 openapi: 3.0.3
 info:
-  title: '@backstage/plugin-search-backend'
+  title: search
   version: '1'
   description: The Backstage backend plugin that provides search functionality.
   license:

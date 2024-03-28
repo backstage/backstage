@@ -36,7 +36,11 @@ export function createFetchPlainAction(options: {
 }) {
   const { reader, integrations } = options;
 
-  return createTemplateAction<{ url: string; targetPath?: string }>({
+  return createTemplateAction<{
+    url: string;
+    targetPath?: string;
+    token?: string;
+  }>({
     id: ACTION_ID,
     examples,
     description:
@@ -58,6 +62,12 @@ export function createFetchPlainAction(options: {
               'Target path within the working directory to download the contents to.',
             type: 'string',
           },
+          token: {
+            title: 'Token',
+            description:
+              'An optional token to use for authentication when reading the resources.',
+            type: 'string',
+          },
         },
       },
     },
@@ -75,6 +85,7 @@ export function createFetchPlainAction(options: {
         baseUrl: ctx.templateInfo?.baseUrl,
         fetchUrl: ctx.input.url,
         outputPath,
+        token: ctx.input.token,
       });
     },
   });

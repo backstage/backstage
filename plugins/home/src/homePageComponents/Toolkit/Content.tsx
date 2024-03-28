@@ -15,12 +15,10 @@
  */
 
 import { Link } from '@backstage/core-components';
-import {
-  makeStyles,
-  List,
-  ListItemIcon,
-  ListItemText,
-} from '@material-ui/core';
+import List from '@material-ui/core/List';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useToolkit, Tool } from './Context';
 

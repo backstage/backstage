@@ -45,7 +45,7 @@ You should create a new folder, `src/schema` in your backend plugin to store you
 
 ## Generating a typed express router from a spec
 
-Run `yarn backstage-repo-tools schema openapi generate <plugin-directory>`. This will create an `openapi.generated.ts` file in the `src/schema` directory that contains the OpenAPI schema as well as a generated express router with types.
+Run `yarn backstage-repo-tools package schema openapi generate --server` from the directory with your plugin. This will create an `openapi.generated.ts` file in the `src/schema` directory that contains the OpenAPI schema as well as a generated express router with types. You should add this command to your `package.json` for future use and you can combine both the server generation and the client generation below like so, `yarn backstage-repo-tools package schema openapi generate --server --client-package <clientPackageDirectory>`
 
 Use it like so, update your `router.ts` or `createRouter.ts` file with the following content,
 
@@ -63,7 +63,7 @@ export async function createRouter(
 
 ## Generating a typed client from a spec
 
-Run `yarn backstage-repo-tools schema openapi generate-client --input-spec <plugin-directory>/src/schema/openapi.yaml --output-directory <plugin-client-directory>`. `<plugin-directory>` should match the same backend plugin we've been using so far. `<plugin-client-directory>` is a new directory and npm package that you should create. The general pattern is `plugins/<plugin-name>-client`.
+From your current backend plugin directory, run `yarn backstage-repo-tools package schema openapi generate --client-package <plugin-client-directory>`. `<plugin-client-directory>` is a new directory and npm package that you should create. The general pattern is `plugins/<plugin-name>-client` or if you want to co-locate this with your other shared types, use `plugins/<plugin-name>-common`. You should add this command to your `package.json` for future use.
 
 The generated client will have a directory `src/generated` that exports a `DefaultApiClient` class and all generated types. You can use the client like so,
 
@@ -108,7 +108,7 @@ describe('createRouter', () => {
 + app = wrapInOpenApiTestServer(express().use(router));
 ```
 
-This adds a wrapper around the express server that allows it to reroute traffic for `supertest`. Run `yarn backstage-repo-tools schema openapi init` to create some required config files. Now, when you run `yarn backstage-repo-tools schema openapi test` your schema will now be tested against your test data. Any errors will be reported.
+This adds a wrapper around the express server that allows it to reroute traffic for `supertest`. Run `yarn backstage-repo-tools package schema openapi init` to create some required files. Now, when you run `yarn backstage-repo-tools repo schema openapi test` your schema will now be tested against your test data. Any errors will be reported.
 
 Our command is a small wrapper over [`Optic`](https://github.com/opticdev/optic) which does all of the heavy lifting.
 

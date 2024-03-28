@@ -11,7 +11,7 @@ A `pending` entity has not been processed yet.
 ## Installation
 
 ```shell
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-unprocessed
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-unprocessed
 ```
 
 ### backend

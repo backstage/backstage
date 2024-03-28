@@ -33,14 +33,16 @@ Configuration Details:
 
 Here's how to get the backend plugin up and running:
 
+#### Legacy Backend System
+
 1. First we need to add the `@backstage/plugin-azure-sites-backend` package to your backend:
 
    ```sh
-   # From your Backstage root directory
-   yarn add --cwd packages/backend @backstage/plugin-azure-sites-backend
+   # From the Backstage root directory
+   yarn --cwd packages/backend add @backstage/plugin-azure-sites-backend
    ```
 
-2. Then we will create a new file named `packages/backend/src/plugins/azure.ts`, and add the following to it:
+2. Then we will create a new file named `packages/backend/src/plugins/azure-sites.ts`, and add the following to it:
 
    ```ts
    import {
@@ -49,13 +51,17 @@ Here's how to get the backend plugin up and running:
    } from '@backstage/plugin-azure-sites-backend';
    import { Router } from 'express';
    import { PluginEnvironment } from '../types';
+   import { CatalogClient } from '@backstage/catalog-client';
 
    export default async function createPlugin(
      env: PluginEnvironment,
    ): Promise<Router> {
+     const catalogApi = new CatalogClient({ discoveryApi: env.discovery });
      return await createRouter({
        logger: env.logger,
        azureSitesApi: AzureSitesApi.fromConfig(env.config),
+       permissions: env.permissions,
+       catalogApi,
      });
    }
    ```
@@ -63,7 +69,7 @@ Here's how to get the backend plugin up and running:
 3. Next we wire this into the overall backend router, edit `packages/backend/src/index.ts`:
 
    ```ts
-   import azure from './plugins/azure';
+   import azureSites from './plugins/azure-sites';
 
    // Removed for clarity...
 
@@ -76,10 +82,56 @@ Here's how to get the backend plugin up and running:
 
      // ...
      // Insert this line under the other lines that add their routers to apiRouter in the same way
-     apiRouter.use('/azure-sites', await azure(azureSitesEnv));
+     apiRouter.use('/azure-sites', await azureSites(azureSitesEnv));
    }
    ```
 
-4. Now run `yarn start-backend` from the repo root.
+4. Enable permissions and that the below is just an example policy that forbids anyone but the owner of the catalog entity to trigger actions towards a site tied to an entity, edit your `packages/backend/src/plugins/permission.ts`
 
-5. Finally, open `http://localhost:7007/api/azure-sites/health` in a browser, it should return `{"status":"ok"}`.
+   ```diff
+      // packages/backend/src/plugins/permission.ts
+   +  import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
+      ...
+      class TestPermissionPolicy implements PermissionPolicy {
+   -  async handle(): Promise<PolicyDecision> {
+   +  async handle(request: PolicyQuery, user?: BackstageIdentityResponse): Promise<PolicyDecision> {
+        if (isPermission(request.permission, azureSitesActionPermission)) {
+          return createCatalogConditionalDecision(
+            request.permission,
+            catalogConditions.isEntityOwner({
+              claims: user?.identity.ownershipEntityRefs ??  [],
+            }),
+          );
+        }
+        ...
+        return {
+          result: AuthorizeResult.ALLOW,
+        };
+      }
+   ```
+
+#### New Backend System
+
+The Azure Sites backend plugin has support for the [new backend system](https://backstage.io/docs/backend-system/), here's how you can set that up:
+
+In your `packages/backend/src/index.ts` make the following changes:
+
+```diff
+  import { createBackend } from '@backstage/backend-defaults';
+
+  const backend = createBackend();
+
+  // ... other feature additions
+
++ backend.add(import('@backstage/plugin-azure-sites-backend'));
+
+  // ...
+
+  backend.start();
+```
+
+#### Start Backed & Test
+
+1. Now run `yarn start-backend` from the repo root.
+
+2. Finally, open `http://localhost:7007/api/azure/health` in a browser, it should return `{"status":"ok"}`.

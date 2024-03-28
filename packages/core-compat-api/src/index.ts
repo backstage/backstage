@@ -15,6 +15,8 @@
  */
 export * from './compatWrapper';
 
+export * from './apis';
+
 export { convertLegacyApp } from './convertLegacyApp';
 export {
   convertLegacyRouteRef,

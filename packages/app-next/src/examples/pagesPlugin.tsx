@@ -27,7 +27,9 @@ import { Route, Routes } from 'react-router-dom';
 
 const indexRouteRef = createRouteRef();
 const page1RouteRef = createRouteRef();
-export const externalPageXRouteRef = createExternalRouteRef();
+export const externalPageXRouteRef = createExternalRouteRef({
+  defaultTarget: 'pages.pageX',
+});
 export const pageXRouteRef = createRouteRef();
 // const page2RouteRef = createSubRouteRef({
 //   id: 'page2',

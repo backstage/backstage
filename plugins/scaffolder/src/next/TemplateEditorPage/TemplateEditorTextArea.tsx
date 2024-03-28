@@ -17,7 +17,10 @@
 import { StreamLanguage } from '@codemirror/language';
 import { yaml as yamlSupport } from '@codemirror/legacy-modes/mode/yaml';
 import { showPanel } from '@codemirror/view';
-import { IconButton, makeStyles, Paper, Tooltip } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import Tooltip from '@material-ui/core/Tooltip';
+import { makeStyles } from '@material-ui/core/styles';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SaveIcon from '@material-ui/icons/Save';
 import { useKeyboardEvent } from '@react-hookz/web';

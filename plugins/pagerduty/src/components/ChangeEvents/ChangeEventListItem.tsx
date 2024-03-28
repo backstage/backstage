@@ -16,15 +16,13 @@
 
 import React from 'react';
 import { Link } from '@backstage/core-components';
-import {
-  ListItem,
-  ListItemSecondaryAction,
-  Tooltip,
-  ListItemText,
-  makeStyles,
-  IconButton,
-  Typography,
-} from '@material-ui/core';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Tooltip from '@material-ui/core/Tooltip';
+import ListItemText from '@material-ui/core/ListItemText';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { DateTime, Duration } from 'luxon';
 import { PagerDutyChangeEvent } from '../types';
 import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';

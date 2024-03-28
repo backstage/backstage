@@ -450,3 +450,22 @@ export const atlassianAuthApiRef: ApiRef<
 > = createApiRef({
   id: 'core.auth.atlassian',
 });
+
+/**
+ * Provides authentication towards VMware Cloud APIs and identities.
+ *
+ * @public
+ * @remarks
+ *
+ * For more info about VMware Cloud identity and access management:
+ * - {@link https://docs.vmware.com/en/VMware-Cloud-services/services/Using-VMware-Cloud-Services/GUID-53D39337-D93A-4B84-BD18-DDF43C21479A.html}
+ */
+export const vmwareCloudAuthApiRef: ApiRef<
+  OAuthApi &
+    OpenIdConnectApi &
+    ProfileInfoApi &
+    BackstageIdentityApi &
+    SessionApi
+> = createApiRef({
+  id: 'core.auth.vmware-cloud',
+});

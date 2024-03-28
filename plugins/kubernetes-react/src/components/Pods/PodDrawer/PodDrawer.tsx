@@ -79,7 +79,7 @@ export interface PodDrawerProps {
  */
 export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
   const classes = useDrawerContentStyles();
-  const podMetrics = usePodMetrics(podAndErrors.clusterName, podAndErrors.pod);
+  const podMetrics = usePodMetrics(podAndErrors.cluster.name, podAndErrors.pod);
 
   return (
     <KubernetesDrawer
@@ -161,7 +161,7 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
                           podName: podAndErrors.pod.metadata?.name ?? 'unknown',
                           podNamespace:
                             podAndErrors.pod.metadata?.namespace ?? 'unknown',
-                          clusterName: podAndErrors.clusterName,
+                          cluster: podAndErrors.cluster,
                         }}
                         containerSpec={containerSpec}
                         containerStatus={containerStatus}

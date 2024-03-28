@@ -36,7 +36,6 @@ import {
   ListItemText,
   ListSubheader,
 } from './common';
-import { EntityKindIcon } from './EntityKindIcon';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { CopyTextButton } from '@backstage/core-components';
 
@@ -155,9 +154,6 @@ export function OverviewPage(props: { entity: AlphaEntity }) {
                   <List dense subheader={<ListSubheader>{type}</ListSubheader>}>
                     {groupRelations.map(group => (
                       <ListItem key={group.targetRef}>
-                        <ListItemIcon>
-                          <EntityKindIcon entityRef={group.targetRef} />
-                        </ListItemIcon>
                         <ListItemText
                           primary={
                             <EntityRefLink entityRef={group.targetRef} />

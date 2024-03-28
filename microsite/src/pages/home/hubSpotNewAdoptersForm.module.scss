@@ -37,4 +37,10 @@ $page-header-height: 44px;
 
     padding-right: 2rem;
   }
+  select[class*='hs-input'] {
+    color: black;
+  }
+  input[class*='hs-button'] {
+    color: black;
+  }
 }

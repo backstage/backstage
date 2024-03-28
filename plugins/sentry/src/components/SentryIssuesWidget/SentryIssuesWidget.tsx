@@ -16,7 +16,7 @@
 
 import { Entity } from '@backstage/catalog-model';
 import React, { useEffect } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { sentryApiRef } from '../../api';
 import SentryIssuesTable from '../SentryIssuesTable/SentryIssuesTable';
 import { SENTRY_PROJECT_SLUG_ANNOTATION, useProjectSlug } from '../hooks';

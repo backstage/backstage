@@ -18,6 +18,7 @@ import React from 'react';
 
 import { Table, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
+import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 type PaginatedCatalogTableProps = {
   prev?(): void;
@@ -28,13 +29,16 @@ type PaginatedCatalogTableProps = {
  * @internal
  */
 export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
-  const { columns, data, next, prev } = props;
+  const { columns, data, next, prev, title, isLoading, options } = props;
 
   return (
     <Table
+      title={isLoading ? '' : title}
       columns={columns}
       data={data}
       options={{
+        ...options,
+        // These settings are configured to force server side pagination
         paginationPosition: 'both',
         pageSizeOptions: [],
         showFirstLastPageButtons: false,
@@ -47,6 +51,9 @@ export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
         } else {
           prev?.();
         }
+      }}
+      components={{
+        Toolbar: CatalogTableToolbar,
       }}
       /* this will enable the prev button accordingly */
       page={prev ? 1 : 0}

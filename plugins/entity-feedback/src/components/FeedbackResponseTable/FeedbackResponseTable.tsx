@@ -18,10 +18,11 @@ import { ErrorPanel, Table } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { FeedbackResponse } from '@backstage/plugin-entity-feedback-common';
-import { Chip, makeStyles } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
+import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 import { entityFeedbackApiRef } from '../../api';
 
@@ -80,9 +81,13 @@ export const FeedbackResponseTable = (props: FeedbackResponseTableProps) => {
       width: '35%',
       render: (response: ResponseRow) => (
         <>
-          {response.response?.split(',').map(res => (
-            <Chip key={res} size="small" label={res} />
-          ))}
+          {(response.response || '')
+            .split(',')
+            .map(v => v.trim()) // removes whitespace
+            .filter(Boolean) // removes accidental empty entries
+            .map(res => (
+              <Chip key={res} size="small" label={res} />
+            ))}
         </>
       ),
     },

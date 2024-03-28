@@ -15,7 +15,7 @@
  */
 
 import { useApi } from '@backstage/core-plugin-api';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import {
   Repository,
   githubIssuesApiRef,

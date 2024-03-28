@@ -22,7 +22,8 @@ export default async function createPlugin(
 ): Promise<Router> {
   return await createRouter({
     logger: env.logger,
-    eventBroker: env.eventBroker,
+    events: env.events,
     identity: env.identity,
+    discovery: env.discovery,
   });
 }

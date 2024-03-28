@@ -66,8 +66,7 @@ describe('<FeaturedDocsCard />', () => {
       },
     );
     const docsCardContent = getByTestId('docs-card-content');
-    const docsEntity = getByText('Getting Started Docs');
-
+    const docsEntity = getByText('getting-started-with-idp');
     expect(docsCardContent).toContainElement(docsEntity);
   });
 });

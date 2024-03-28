@@ -19,14 +19,13 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
   return { ...actual, fetchFile: jest.fn() };
 });
 
-import os from 'os';
 import { resolve as resolvePath } from 'path';
-import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { fetchFile } from '@backstage/plugin-scaffolder-node';
 import { createFetchPlainFileAction } from './plainFile';
-import { PassThrough } from 'stream';
 
 describe('fetch:plain:file', () => {
   const integrations = ScmIntegrations.fromConfig(
@@ -47,13 +46,7 @@ describe('fetch:plain:file', () => {
   });
 
   const action = createFetchPlainFileAction({ integrations, reader });
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
 
   it('should disallow a target path outside working directory', async () => {
     await expect(
@@ -66,6 +59,21 @@ describe('fetch:plain:file', () => {
       }),
     ).rejects.toThrow(
       /Relative path is not allowed to refer to a directory outside its parent/,
+    );
+  });
+
+  it('passed through the token to fetchFile', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        url: 'https://github.com/backstage/community/tree/main/backstage-community-sessions/assets/Backstage%20Community%20Sessions.png',
+        token: 'mockToken',
+        targetPath: 'lol',
+      },
+    });
+
+    expect(fetchFile).toHaveBeenCalledWith(
+      expect.objectContaining({ token: 'mockToken' }),
     );
   });
 

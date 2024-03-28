@@ -20,4 +20,5 @@
  * @packageDocumentation
  */
 
-export * from './actions';
+export * from './deprecated';
+export { bitbucketModule as default } from './module';

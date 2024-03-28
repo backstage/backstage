@@ -1,0 +1,23 @@
+{{! Sourced from https://github.com/OpenAPITools/openapi-generator/blob/7347daec61b2cb8d3d28e1ed06fe8b5e682090f8/modules/openapi-generator/src/main/resources/typescript-angular/modelTaggedUnion.mustache }}
+
+{{#discriminator}}
+export type {{classname}} = {{#children}}{{^-first}} | {{/-first}}{{classname}}{{/children}};
+{{/discriminator}}
+{{^discriminator}}
+{{#parent}}
+export interface {{classname}} { {{>modelGenericAdditionalProperties}}
+{{#allVars}}
+    {{#description}}
+    /**
+    * {{{.}}}
+    */
+    {{/description}}
+    {{name}}{{^required}}?{{/required}}: {{#discriminatorValue}}'{{.}}'{{/discriminatorValue}}{{^discriminatorValue}}{{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{/discriminatorValue}}{{#isNullable}} | null{{/isNullable}};
+{{/allVars}}
+}
+{{>modelGenericEnums}}
+{{/parent}}
+{{^parent}}
+{{>modelGeneric}}
+{{/parent}}
+{{/discriminator}}

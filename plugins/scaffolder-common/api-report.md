@@ -17,11 +17,20 @@ export const isTemplateEntityV1beta3: (
 ) => entity is TemplateEntityV1beta3;
 
 // @public
+export type TaskRecoverStrategy = 'none' | 'startOver';
+
+// @public
+export interface TaskRecovery {
+  EXPERIMENTAL_strategy?: TaskRecoverStrategy;
+}
+
+// @public
 export type TaskSpec = TaskSpecV1beta3;
 
 // @public
 export interface TaskSpecV1beta3 {
   apiVersion: 'scaffolder.backstage.io/v1beta3';
+  EXPERIMENTAL_recovery?: TaskRecovery;
   output: {
     [name: string]: JsonValue;
   };
@@ -67,6 +76,7 @@ export interface TemplateEntityV1beta3 extends Entity {
   spec: {
     type: string;
     presentation?: TemplatePresentationV1beta3;
+    EXPERIMENTAL_recovery?: TemplateRecoveryV1beta3;
     parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
     steps: Array<TemplateEntityStepV1beta3>;
     output?: {
@@ -107,5 +117,10 @@ export interface TemplatePresentationV1beta3 extends JsonObject {
     createButtonText?: string;
     reviewButtonText?: string;
   };
+}
+
+// @public
+export interface TemplateRecoveryV1beta3 extends JsonObject {
+  EXPERIMENTAL_strategy?: 'none' | 'startOver';
 }
 ```

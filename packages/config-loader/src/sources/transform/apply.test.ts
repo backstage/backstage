@@ -17,7 +17,7 @@
 import { applyConfigTransforms } from './apply';
 
 describe('applyConfigTransforms', () => {
-  it('should apply not transforms to input', async () => {
+  it('should apply no transforms to input', async () => {
     const data = applyConfigTransforms(
       {
         app: {
@@ -35,7 +35,8 @@ describe('applyConfigTransforms', () => {
       app: {
         title: 'Test',
         x: 1,
-        y: [true],
+        y: [null, true],
+        z: null,
       },
     });
   });
@@ -77,7 +78,8 @@ describe('applyConfigTransforms', () => {
       app: {
         title: ['T', 'e', 's', 't'],
         x: 2,
-        y: [true],
+        y: [null, true],
+        z: null,
       },
     });
   });

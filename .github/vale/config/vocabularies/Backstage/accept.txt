@@ -34,6 +34,7 @@ Blackbox
 bool
 boolean
 Brex
+broadcasted
 bugfixes
 builtins
 callout
@@ -84,6 +85,7 @@ debuggability
 declaratively
 deduplicated
 deliverables
+denormalized
 dependabot
 deps
 destructured
@@ -92,6 +94,7 @@ Deutsche
 dev
 devops
 devs
+dialogs
 discoverability
 Discoverability
 dls
@@ -158,6 +161,7 @@ hotspots
 http
 https
 Iain
+idempotency
 Iglesias
 iLert
 img
@@ -185,6 +189,7 @@ Kaswell
 keepalive
 Keyv
 Knex
+knip
 Koyeb
 KPIs
 Kuang
@@ -321,15 +326,18 @@ repos
 rerender
 rerenders
 resourcequotas
+retryable
 reusability
 Reusability
 roadmaps
 rollbar
+rollout
 Roboto
 Rollbar
 Rollup
 routable
 Routable
+Rspack
 rst
 rsync
 ruleset

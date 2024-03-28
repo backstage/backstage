@@ -14,31 +14,26 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { Writable } from 'stream';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createDebugLogAction } from './log';
 import { join } from 'path';
 import yaml from 'yaml';
 import { examples } from './log.examples';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import { Logger } from 'winston';
 
 describe('debug:log examples', () => {
-  const logStream = {
-    write: jest.fn(),
-  } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
+  const logger = {
+    info: jest.fn(),
+  } as unknown as jest.Mocked<Logger>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
 
-  const mockContext = {
-    input: {},
-    baseUrl: 'somebase',
+  const mockContext = createMockActionContext({
+    logger,
     workspacePath,
-    logger: getVoidLogger(),
-    logStream,
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   const action = createDebugLogAction();
 
@@ -51,32 +46,26 @@ describe('debug:log examples', () => {
   });
 
   it('should log message', async () => {
-    const context = {
+    await action.handler({
       ...mockContext,
       input: yaml.parse(examples[0].example).steps[0].input,
-    };
+    });
 
-    await action.handler(context);
-
-    expect(logStream.write).toHaveBeenCalledTimes(1);
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('Hello Backstage!'),
     );
   });
 
   it('should log the workspace content, if active', async () => {
-    const context = {
+    await action.handler({
       ...mockContext,
       input: yaml.parse(examples[1].example).steps[0].input,
-    };
+    });
 
-    await action.handler(context);
-
-    expect(logStream.write).toHaveBeenCalledTimes(1);
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('README.md'),
     );
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining(join('a-directory', 'index.md')),
     );
   });

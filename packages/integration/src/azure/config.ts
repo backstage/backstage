@@ -205,18 +205,18 @@ export function readAzureIntegrationConfig(
     ?.map(credential => {
       const result: Partial<AzureDevOpsCredentialLike> = {
         organizations: credential.getOptionalStringArray('organizations'),
-        personalAccessToken: credential.getOptionalString(
-          'personalAccessToken',
-        ),
+        personalAccessToken: credential
+          .getOptionalString('personalAccessToken')
+          ?.trim(),
         tenantId: credential.getOptionalString('tenantId'),
         clientId: credential.getOptionalString('clientId'),
-        clientSecret: credential.getOptionalString('clientSecret'),
+        clientSecret: credential.getOptionalString('clientSecret')?.trim(),
       };
 
       return result;
     });
 
-  const token = config.getOptionalString('token');
+  const token = config.getOptionalString('token')?.trim();
 
   if (
     config.getOptional('credential') !== undefined &&
@@ -247,10 +247,12 @@ export function readAzureIntegrationConfig(
         organizations: config.getOptionalStringArray(
           'credential.organizations',
         ),
-        token: config.getOptionalString('credential.token'),
+        token: config.getOptionalString('credential.token')?.trim(),
         tenantId: config.getOptionalString('credential.tenantId'),
         clientId: config.getOptionalString('credential.clientId'),
-        clientSecret: config.getOptionalString('credential.clientSecret'),
+        clientSecret: config
+          .getOptionalString('credential.clientSecret')
+          ?.trim(),
       },
     ];
     credentialConfigs = credentialConfigs?.concat(mapped) ?? mapped;

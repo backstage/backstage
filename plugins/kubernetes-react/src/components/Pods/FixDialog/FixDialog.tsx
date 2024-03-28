@@ -119,7 +119,7 @@ export const FixDialog: React.FC<FixDialogProps> = ({
                 containerScope={{
                   podName: pod.metadata?.name ?? 'unknown',
                   podNamespace: pod.metadata?.namespace ?? 'unknown',
-                  clusterName: clusterName,
+                  cluster: { name: clusterName },
                   containerName: pf.container,
                 }}
               />

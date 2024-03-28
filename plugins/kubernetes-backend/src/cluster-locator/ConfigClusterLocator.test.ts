@@ -21,8 +21,8 @@ import {
   ANNOTATION_KUBERNETES_AWS_ASSUME_ROLE,
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
 } from '@backstage/plugin-kubernetes-common';
+import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
-import { ClusterDetails } from '../types/types';
 import { AuthenticationStrategy } from '../auth';
 
 describe('ConfigClusterLocator', () => {
@@ -75,6 +75,28 @@ describe('ConfigClusterLocator', () => {
         caData: undefined,
         caFile: undefined,
       },
+    ]);
+  });
+
+  it('reads `title` property', async () => {
+    const sut = ConfigClusterLocator.fromConfig(
+      new ConfigReader({
+        clusters: [
+          {
+            name: 'cluster-name',
+            title: 'cluster-title',
+            url: 'url',
+            authMetadata: { 'kubernetes.io/auth-provider': 'serviceAccount' },
+          },
+        ],
+      }),
+      authStrategy,
+    );
+
+    const result = await sut.getClusters();
+
+    expect(result).toEqual([
+      expect.objectContaining({ title: 'cluster-title' }),
     ]);
   });
 
@@ -403,6 +425,27 @@ describe('ConfigClusterLocator', () => {
 
     expect(() => ConfigClusterLocator.fromConfig(config, authStrategy)).toThrow(
       `Invalid cluster 'cluster1': mock error`,
+    );
+  });
+
+  it('fails on duplicate cluster names', () => {
+    const config: Config = new ConfigReader({
+      clusters: [
+        {
+          name: 'cluster',
+          url: 'url',
+          authProvider: 'authProvider',
+        },
+        {
+          name: 'cluster',
+          url: 'url',
+          authProvider: 'authProvider',
+        },
+      ],
+    });
+
+    expect(() => ConfigClusterLocator.fromConfig(config, authStrategy)).toThrow(
+      `Duplicate cluster name 'cluster'`,
     );
   });
 });

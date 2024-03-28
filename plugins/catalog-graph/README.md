@@ -1,5 +1,8 @@
 # catalog-graph
 
+> Disclaimer:
+> If you are looking for documentation on the experimental new frontend system support, please go [here](./README-alpha.md).
+
 Welcome to the catalog graph plugin! The catalog graph visualizes the relations
 between entities, like ownership, grouping or API relationships.
 
@@ -27,7 +30,7 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
 1. Add a dependency to your `packages/app/package.json`:
    ```sh
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-catalog-graph
+   yarn --cwd packages/app add @backstage/plugin-catalog-graph
    ```
 2. Add the `CatalogGraphPage` to your `packages/app/src/App.tsx`:
 

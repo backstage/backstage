@@ -19,7 +19,7 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 
 <!-- Before merging the initial BEP PR, create a feature issue and update the below link. You can wait with this step until the BEP is ready to be merged. -->
 
-[**Discussion Issue**](https://github.com/backstage/backstage/issues/NNNNN)
+[**Discussion Issue**](https://github.com/backstage/backstage/issues/22423)
 
 - [Summary](#summary)
 - [Motivation](#motivation)
@@ -37,11 +37,11 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 The summary of the BEP is a few paragraphs long and give a high-level overview of the features to be implemented. It should be possible to read *only* the summary and understand what the BEP is proposing to accomplish and what impact it has for users.
 -->
 
-The dynamic frontend plugins feature is a way of loading additional frontend plugins at runtime, without the requirement of rebuilding and restarting a running backstage instance.
+The dynamic frontend plugins feature is a way of loading additional frontend plugins at runtime, without the requirement of rebuilding and restarting a running Backstage instance. It also provides a method for packaging and distributing plugins as standalone artifacts, which can be installed directly into Backstage.
 
-This system should significantly improve frontend plugin management for backstage instances.
+This system should significantly improve frontend plugin management for Backstage instances, and makes it possible to deploy changes to the app without rebuilding the app itself.
 
-The dynamic plugins leverage the declarative UI system to define what a plugin is and how it should be represented in the browser.
+The dynamic plugins leverage the declarative nature of the new frontend system to define what a plugin is and how it is integrated into the rest of the app.
 
 ## Motivation
 
@@ -50,6 +50,10 @@ This section is for explicitly listing the motivation, goals, and non-goals of
 this BEP. Describe why the change is important and the benefits to users.
 -->
 
+Being able to dynamically install plugins unlocks new ways of deploying and managing Backstage, and has the potential to hugely improve adoption by lowering the barrier of entry. A Backstage installation currently requires quite a lot of care to maintain, meaning it may not be worth the investment for smaller organizations. By making it possible to set up and maintain a Backstage instance without the need to manage a codebase, we can make Backstage more accessible to a wider audience.
+
+The ability to dynamically install plugins also allows for more isolated development and deployment of plugins. This can benefit organizations with large Backstage projects, where splitting the codebase into multiple smaller projects can improve development experience and autonomy.
+
 ### Goals
 
 <!--
@@ -57,12 +61,19 @@ List the specific goals of the BEP. What is it trying to achieve? How will we
 know that this has succeeded?
 -->
 
-- discover and choose tooling to enable dynamic frontend plugins
-- easy way of converting existing frontend plugins to be dynamic
-- turning on and off UI plugins at runtime without the requirement of rebuilding or restarting backstage
-- manage dynamic plugins declaratively
+The overarching goal of this proposal is to outline the full path of how frontend plugin code in a repository makes it way into an existing Backstage app. As part of this, we define the following:
 
-An additional goal might be exploring the scope of a "on demand" rending and loading. Currently all plugins, or at least some portion of them must be loaded at UI bootstrap. This approach is not fully dynamic and might be considered a waste of resources. Fully optimizing dynamic plugins loading would require additional changes to the new UI system.
+- **Bundling**: How plugin code is packaged into a portable artifact.
+- **Distribution**: How these artifacts are deployed or published and made available for apps to load.
+- **Loading**: How an app is able to load these artifacts from remote or local sources at runtime.
+
+Each of these may have multiple possible solutions, in particular the loading and distribution steps. This proposal should aim to provide the minimum solutions that avoids the need for each adopter to have to re-bundle open source plugins, while still making it simple to use dynamic installation for their own internal plugins.
+
+There are a couple of sub-goals that are important for this to work:
+
+- Discover and choose the underlying tooling to enable dynamic frontend plugins.
+- An easy way to package existing frontend plugins for dynamic installation.
+- Reconfiguring the installed plugins at runtime without rebuilding the app, either declaratively or through code.
 
 ### Non-Goals
 
@@ -70,6 +81,12 @@ An additional goal might be exploring the scope of a "on demand" rending and loa
 What is out of scope for this BEP? Listing non-goals helps to focus discussion
 and make progress.
 -->
+
+The **integration** of installed plugins and features is not in scope for this proposal, that is the responsibility of the new frontend system.
+
+This proposal does not contain any form of visual interface for managing dynamically installed plugins. The scope of this proposal only includes configuration of dynamic plugins through static configuration and TypeScript interfaces.
+
+This proposal does not aim to make it possible to add or remove plugins into an already running frontend app instance as created by `createApp` from the Backstage core APIs. The page must be reloaded for any updates to take effect.
 
 ## Proposal
 
@@ -143,9 +160,62 @@ Plugin discovery is a pre-requisite for Plugin registry. This should be responsi
 
 ### Module federation implementation experiments
 
-> NOTE Share outcome of testing mixing multiple tools for module federation.
-
 Test should consist of trying to run permutations of webpack/Rspack/vite based shell apps/plugins and discover if we can freely choose any tool, or if we should restrict the tooling to just a subset of the available options.
+
+The outcome of initial testing is positive and it is possible to mix and match different build tools and consume different remote modules in a single shell application.
+
+The experimental code can be found in [this repository](https://github.com/scalprum/mf-mixing-experiments).
+
+So far a lot of custom code needs to be written to bridge Webpack, Rspack, @module-federation/enhanced with Vite. The first three are compatible out of the box, but Vite requires extra bridge to be able to consume/provide modules with/to other builds.
+
+#### React context and singleton sharing
+
+We can share React context and its values. Meaning a shell application (or a plugin parent) can have a context provider and a plugin will consume the context value.
+
+An example is this [package](https://github.com/scalprum/mf-mixing-experiments/tree/master/shared-package) in the experiment repo.
+
+The shell apps supply the provider and remote modules consume it. There are no issues with any combination of tooling.
+
+#### Optimized module sharing
+
+Module sharing optimizations are also working nicely. ([Optimization description](https://medium.com/@marvusm.mmi/webpack-module-federation-think-twice-before-sharing-a-dependency-18b3b0e352cb))
+
+Mixing shared scope is working between various modules using various build tools.
+
+Sample configuration:
+https://github.com/scalprum/mf-mixing-experiments/blob/master/mixed-remote-modules-collection/webpack.config.js#L27-L41
+
+```js
+const plugin = new ModuleFederationPlugin({
+  ...
+  shared: {
+    '@mui/material/Button': {
+      requiredVersion: '>=5.0.0',
+      version: '5.15.6',
+    },
+    '@mui/material/TextField': {
+      requiredVersion: '>=5.0.0',
+      version: '5.15.6',
+    },
+    '@mui/material/Typography': {
+      requiredVersion: '>=5.0.0',
+      version: '5.15.6',
+    },
+    '@mui/material/Divider': {
+      requiredVersion: '>=5.0.0',
+      version: '5.15.6',
+    },
+    ...
+  },
+});
+
+```
+
+This config ensures that only those modules (from @mui/material) that are used in the code will be shared. If a relative imports and the entire dependency name is used, the entire dependency will be shared, regardless of which modules are consumed. Tree shaking does not work when an entire dependency is shared! Explanation of why is described [here](https://medium.com/@marvusm.mmi/webpack-module-federation-think-twice-before-sharing-a-dependency-18b3b0e352cb).
+
+This can be checked by debugging network traffic and shared scopes:
+
+![notifications system architecture diagram](./scope-sharing.png)
 
 ### Plugin manifest
 

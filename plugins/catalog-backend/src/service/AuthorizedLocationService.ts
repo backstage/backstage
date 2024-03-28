@@ -15,30 +15,31 @@
  */
 
 import { Location } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
+import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import {
   catalogLocationCreatePermission,
   catalogLocationDeletePermission,
   catalogLocationReadPermission,
 } from '@backstage/plugin-catalog-common/alpha';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { LocationInput, LocationService } from './types';
+import {
+  BackstageCredentials,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 
 export class AuthorizedLocationService implements LocationService {
   constructor(
     private readonly locationService: LocationService,
-    private readonly permissionApi: PermissionEvaluator,
+    private readonly permissionApi: PermissionsService,
   ) {}
 
   async createLocation(
     spec: LocationInput,
     dryRun: boolean,
-    options?: {
-      authorizationToken?: string;
+    options: {
+      credentials: BackstageCredentials;
     },
   ): Promise<{
     location: Location;
@@ -48,7 +49,7 @@ export class AuthorizedLocationService implements LocationService {
     const authorizationResponse = (
       await this.permissionApi.authorize(
         [{ permission: catalogLocationCreatePermission }],
-        { token: options?.authorizationToken },
+        { credentials: options.credentials },
       )
     )[0];
 
@@ -56,16 +57,16 @@ export class AuthorizedLocationService implements LocationService {
       throw new NotAllowedError();
     }
 
-    return this.locationService.createLocation(spec, dryRun);
+    return this.locationService.createLocation(spec, dryRun, options);
   }
 
-  async listLocations(options?: {
-    authorizationToken?: string;
+  async listLocations(options: {
+    credentials: BackstageCredentials;
   }): Promise<Location[]> {
     const authorizationResponse = (
       await this.permissionApi.authorize(
         [{ permission: catalogLocationReadPermission }],
-        { token: options?.authorizationToken },
+        { credentials: options.credentials },
       )
     )[0];
 
@@ -73,17 +74,17 @@ export class AuthorizedLocationService implements LocationService {
       return [];
     }
 
-    return this.locationService.listLocations();
+    return this.locationService.listLocations(options);
   }
 
   async getLocation(
     id: string,
-    options?: { authorizationToken?: string },
+    options: { credentials: BackstageCredentials },
   ): Promise<Location> {
     const authorizationResponse = (
       await this.permissionApi.authorize(
         [{ permission: catalogLocationReadPermission }],
-        { token: options?.authorizationToken },
+        { credentials: options.credentials },
       )
     )[0];
 
@@ -91,17 +92,17 @@ export class AuthorizedLocationService implements LocationService {
       throw new NotFoundError(`Found no location with ID ${id}`);
     }
 
-    return this.locationService.getLocation(id);
+    return this.locationService.getLocation(id, options);
   }
 
   async deleteLocation(
     id: string,
-    options?: { authorizationToken?: string },
+    options: { credentials: BackstageCredentials },
   ): Promise<void> {
     const authorizationResponse = (
       await this.permissionApi.authorize(
         [{ permission: catalogLocationDeletePermission }],
-        { token: options?.authorizationToken },
+        { credentials: options.credentials },
       )
     )[0];
 
@@ -109,6 +110,23 @@ export class AuthorizedLocationService implements LocationService {
       throw new NotAllowedError();
     }
 
-    return this.locationService.deleteLocation(id);
+    return this.locationService.deleteLocation(id, options);
+  }
+
+  async getLocationByEntity(
+    entityRef: CompoundEntityRef | string,
+    options: { credentials: BackstageCredentials },
+  ): Promise<Location> {
+    const authorizationResponse = (
+      await this.permissionApi.authorize(
+        [{ permission: catalogLocationReadPermission }],
+        { credentials: options.credentials },
+      )
+    )[0];
+
+    if (authorizationResponse.result === AuthorizeResult.DENY) {
+      throw new NotFoundError();
+    }
+    return this.locationService.getLocationByEntity(entityRef, options);
   }
 }

@@ -21,13 +21,14 @@ import {
   TableColumn,
   Table,
 } from '@backstage/core-components';
-import { Theme, Typography, makeStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 
 import { UnprocessedEntity } from '../types';
 
 import { EntityDialog } from './EntityDialog';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogUnprocessedEntitiesApiRef } from '../api';
 
 const useStyles = makeStyles((theme: Theme) => ({

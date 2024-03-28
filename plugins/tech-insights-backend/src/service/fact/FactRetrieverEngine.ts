@@ -18,10 +18,10 @@ import {
   FactRetriever,
   FactRetrieverContext,
   FactRetrieverRegistration,
+  FactRetrieverRegistry,
   TechInsightFact,
   TechInsightsStore,
 } from '@backstage/plugin-tech-insights-node';
-import { FactRetrieverRegistry } from './FactRetrieverRegistry';
 import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Duration } from 'luxon';

@@ -33,6 +33,7 @@ describe('defaultResourceTransformer', () => {
       producer_timestamp: 'producer_time1',
       producer: 'producer1',
       environment: 'environment1',
+      latest_report_status: 'unchanged',
       facts: {
         href: 'facts1',
         data: [
@@ -71,7 +72,7 @@ describe('defaultResourceTransformer', () => {
           [ANNOTATION_PUPPET_CERTNAME]: 'node1',
         },
         description: 'ipaddress1',
-        tags: ['linux'],
+        tags: ['linux', 'unchanged'],
       },
       spec: {
         type: 'virtual-machine',

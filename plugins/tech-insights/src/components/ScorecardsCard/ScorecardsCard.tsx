@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import React, { useMemo } from 'react';
+import useAsync from 'react-use/esm/useAsync';
 import { ErrorPanel, Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { ScorecardInfo } from '../ScorecardsInfo';
@@ -27,8 +27,9 @@ export const ScorecardsCard = (props: {
   title: string;
   description?: string;
   checksId?: string[];
+  onlyFailed?: boolean;
 }) => {
-  const { title, description, checksId } = props;
+  const { title, description, checksId, onlyFailed } = props;
   const api = useApi(techInsightsApiRef);
   const { entity } = useEntity();
   const { value, loading, error } = useAsync(
@@ -36,17 +37,34 @@ export const ScorecardsCard = (props: {
     [api, entity, JSON.stringify(checksId)],
   );
 
+  const checkResultRenderers = useMemo(() => {
+    if (!onlyFailed || !value) return {};
+
+    const types = [...new Set(value.map(({ check }) => check.type))];
+    const renderers = api.getCheckResultRenderers(types);
+    return Object.fromEntries(
+      renderers.map(renderer => [renderer.type, renderer]),
+    );
+  }, [api, value, onlyFailed]);
+
   if (loading) {
     return <Progress />;
   } else if (error) {
     return <ErrorPanel error={error} />;
   }
 
+  const filteredValue = !onlyFailed
+    ? value || []
+    : (value || []).filter(val =>
+        checkResultRenderers[val.check.type]?.isFailed?.(val),
+      );
+
   return (
     <ScorecardInfo
       title={title}
       description={description}
-      checkResults={value || []}
+      checkResults={filteredValue}
+      noWarning={onlyFailed}
     />
   );
 };

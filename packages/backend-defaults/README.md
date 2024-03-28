@@ -8,7 +8,7 @@ Add the library to your backend app package:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/backend-defaults
+yarn --cwd packages/backend add @backstage/backend-defaults
 ```
 
 ## Documentation

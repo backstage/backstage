@@ -22,6 +22,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
 import { JsonValue } from '@backstage/types';
+import { getMajorNodeVersion, isNoNodeSnapshotOptionProvided } from './helpers';
 
 // language=JavaScript
 const mkScript = (nunjucksSource: string) => `
@@ -34,6 +35,7 @@ const { render, renderCompat } = (() => {
 
   const env = module.exports.configure({
     autoescape: false,
+    ...JSON.parse(nunjucksConfigs),
     tags: {
       variableStart: '\${{',
       variableEnd: '}}',
@@ -42,6 +44,7 @@ const { render, renderCompat } = (() => {
 
   const compatEnv = module.exports.configure({
     autoescape: false,
+    ...JSON.parse(nunjucksConfigs),
     tags: {
       variableStart: '{{',
       variableEnd: '}}',
@@ -102,13 +105,14 @@ export type TemplateFilter = _TemplateFilter;
  */
 export type TemplateGlobal = _TemplateGlobal;
 
-export interface SecureTemplaterOptions {
+interface SecureTemplaterOptions {
   /* Enables jinja compatibility and the "jsonify" filter */
   cookiecutterCompat?: boolean;
   /* Extra user-provided nunjucks filters */
   templateFilters?: Record<string, TemplateFilter>;
   /* Extra user-provided nunjucks globals */
   templateGlobals?: Record<string, TemplateGlobal>;
+  nunjucksConfigs?: { trimBlocks?: boolean; lstripBlocks?: boolean };
 }
 
 export type SecureTemplateRenderer = (
@@ -122,7 +126,16 @@ export class SecureTemplater {
       cookiecutterCompat,
       templateFilters = {},
       templateGlobals = {},
+      nunjucksConfigs = {},
     } = options;
+
+    const nodeVersion = getMajorNodeVersion();
+    if (nodeVersion >= 20 && !isNoNodeSnapshotOptionProvided()) {
+      throw new Error(
+        `When using Node.js version 20 or newer, the scaffolder backend plugin requires that it be started with the --no-node-snapshot option. 
+        Please make sure that you have NODE_OPTIONS=--no-node-snapshot in your environment.`,
+      );
+    }
 
     const isolate = new Isolate({ memoryLimit: 128 });
     const context = await isolate.createContext();
@@ -139,6 +152,8 @@ export class SecureTemplater {
     const nunjucksScript = await isolate.compileScript(
       mkScript(nunjucksSource),
     );
+
+    await contextGlobal.set('nunjucksConfigs', JSON.stringify(nunjucksConfigs));
 
     const availableFilters = Object.keys(templateFilters);
 

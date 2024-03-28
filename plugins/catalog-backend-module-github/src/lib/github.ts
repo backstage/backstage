@@ -193,7 +193,7 @@ export async function getOrganizationTeams(
   const query = `
     query teams($org: String!, $cursor: String) {
       organization(login: $org) {
-        teams(first: 100, after: $cursor) {
+        teams(first: 50, after: $cursor) {
           pageInfo { hasNextPage, endCursor }
           nodes {
             slug

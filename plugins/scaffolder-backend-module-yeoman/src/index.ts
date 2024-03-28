@@ -21,3 +21,4 @@
  * @packageDocumentation
  */
 export * from './actions';
+export { yeomanModule as default } from './module';

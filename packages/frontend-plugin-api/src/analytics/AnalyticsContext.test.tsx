@@ -35,8 +35,8 @@ describe('AnalyticsContext', () => {
     it('returns default values', () => {
       const { result } = renderHook(() => useAnalyticsContext());
       expect(result.current).toEqual({
-        extensionId: 'App',
-        pluginId: 'root',
+        extensionId: 'app',
+        pluginId: 'app',
       });
     });
   });
@@ -49,8 +49,8 @@ describe('AnalyticsContext', () => {
         </AnalyticsContext>,
       );
 
-      expect(result.getByTestId('extension-id')).toHaveTextContent('App');
-      expect(result.getByTestId('plugin-id')).toHaveTextContent('root');
+      expect(result.getByTestId('extension-id')).toHaveTextContent('app');
+      expect(result.getByTestId('plugin-id')).toHaveTextContent('app');
     });
 
     it('uses provided analytics context', () => {
@@ -60,7 +60,7 @@ describe('AnalyticsContext', () => {
         </AnalyticsContext>,
       );
 
-      expect(result.getByTestId('extension-id')).toHaveTextContent('App');
+      expect(result.getByTestId('extension-id')).toHaveTextContent('app');
       expect(result.getByTestId('plugin-id')).toHaveTextContent('custom');
     });
 

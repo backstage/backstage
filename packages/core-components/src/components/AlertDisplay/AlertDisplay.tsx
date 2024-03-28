@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 import { alertApiRef, AlertMessage, useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import IconButton from '@material-ui/core/IconButton';
 import Snackbar from '@material-ui/core/Snackbar';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
-import { Alert } from '@material-ui/lab';
-import pluralize from 'pluralize';
+import Alert from '@material-ui/lab/Alert';
 import React, { useEffect, useState } from 'react';
+import { coreComponentsTranslationRef } from '../../translation';
 
 /**
  * Properties for {@link AlertDisplay}
@@ -63,6 +64,7 @@ export type AlertDisplayProps = {
 export function AlertDisplay(props: AlertDisplayProps) {
   const [messages, setMessages] = useState<Array<AlertMessage>>([]);
   const alertApi = useApi(alertApiRef);
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const {
     anchorOrigin = { vertical: 'top', horizontal: 'center' },
@@ -121,10 +123,11 @@ export function AlertDisplay(props: AlertDisplayProps) {
         <Typography component="span">
           {String(firstMessage.message)}
           {messages.length > 1 && (
-            <em>{` (${messages.length - 1} older ${pluralize(
-              'message',
-              messages.length - 1,
-            )})`}</em>
+            <em>
+              {t('alertDisplay.message', {
+                count: messages.length - 1,
+              })}
+            </em>
           )}
         </Typography>
       </Alert>

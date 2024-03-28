@@ -51,6 +51,8 @@ const useStyles = makeStyles(
     policies: {
       flex: 1,
     },
+    avatar: { width: '2.5rem', height: '2.5rem' },
+    avatarText: { fontSize: '1rem' },
   }),
   { name: 'PullRequestCard' },
 );
@@ -64,6 +66,8 @@ export const PullRequestCard = ({
   pullRequest,
   simplified,
 }: PullRequestCardProps) => {
+  const classes = useStyles();
+
   const title = (
     <Link to={pullRequest.link ?? ''} title={pullRequest.description}>
       {pullRequest.title}
@@ -90,11 +94,9 @@ export const PullRequestCard = ({
     <Avatar
       displayName={pullRequest.createdBy?.displayName}
       picture={pullRequest.createdBy?.imageUrl}
-      customStyles={{ width: '2.5rem', height: '2.5rem', fontSize: '1rem' }}
+      classes={{ avatar: classes.avatar, avatarText: classes.avatarText }}
     />
   );
-
-  const classes = useStyles();
 
   return (
     <Card

@@ -41,7 +41,7 @@ The Incremental Entity Provider backend is designed for data sources that provid
 
 ## Installation
 
-1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-incremental-ingestion` from the Backstage root directory.
+1. Install `@backstage/plugin-catalog-backend-module-incremental-ingestion` with `yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-incremental-ingestion` from the Backstage root directory.
 2. In your catalog.ts, import `IncrementalCatalogBuilder` from `@backstage/plugin-catalog-backend-module-incremental-ingestion` and instantiate it with `await IncrementalCatalogBuilder.create(env, builder)`. You have to pass `builder` into `IncrementalCatalogBuilder.create` function because `IncrementalCatalogBuilder` will convert an `IncrementalEntityProvider` into an `EntityProvider` and call `builder.addEntityProvider`.
 
 ```ts

@@ -15,7 +15,7 @@ As this provider is not one of the default providers, you will first need to ins
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-gitlab
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gitlab
 ```
 
 Then add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.ts`:

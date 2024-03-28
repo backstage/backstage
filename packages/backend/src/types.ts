@@ -26,8 +26,8 @@ import {
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { EventBroker } from '@backstage/plugin-events-node';
-import { DefaultSignalService } from '@backstage/plugin-signals-node';
+import { EventBroker, EventsService } from '@backstage/plugin-events-node';
+import { SignalsService } from '@backstage/plugin-signals-node';
 
 export type PluginEnvironment = {
   logger: Logger;
@@ -40,6 +40,10 @@ export type PluginEnvironment = {
   permissions: PermissionEvaluator;
   scheduler: PluginTaskScheduler;
   identity: IdentityApi;
+  /**
+   * @deprecated use `events` instead
+   */
   eventBroker: EventBroker;
-  signalService: DefaultSignalService;
+  events: EventsService;
+  signals: SignalsService;
 };

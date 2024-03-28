@@ -21,7 +21,7 @@ package.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-bitbucket-server
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbucket-server
 ```
 
 And then add the entity provider to your catalog builder:

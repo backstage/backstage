@@ -21,3 +21,4 @@
  */
 
 export * from './actions';
+export { railsModule as default } from './module';

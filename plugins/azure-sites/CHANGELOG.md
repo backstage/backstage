@@ -1,5 +1,220 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.22
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/theme@0.5.2
+  - @backstage/plugin-azure-sites-common@0.1.3
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.21
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-catalog-react@1.11.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/theme@0.5.2
+  - @backstage/plugin-azure-sites-common@0.1.3
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.20
+
+### Patch Changes
+
+- 8679bda: Modified azure table to only show loading UI on initial load. Sorted tags in table is their order from the api is indeterminate, and they would randomly shuffle on each load
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/theme@0.5.2
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/plugin-azure-sites-common@0.1.3
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.20-next.2
+
+### Patch Changes
+
+- 8679bda: Modified azure table to only show loading UI on initial load. Sorted tags in table is their order from the api is indeterminate, and they would randomly shuffle on each load
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/plugin-azure-sites-common@0.1.3-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+
+## 0.1.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/plugin-azure-sites-common@0.1.3-next.1
+
+## 0.1.20-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-catalog-react@1.10.1-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/plugin-azure-sites-common@0.1.3-next.0
+  - @backstage/plugin-permission-react@0.4.21-next.0
+
+## 0.1.19
+
+### Patch Changes
+
+- 09a9c95: Updated README
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- 5a409bb: Azure Sites `start` and `stop` action is now protected with the Permissions framework.
+
+  The below example describes an action that forbids anyone but the owner of the catalog entity to trigger actions towards a site tied to an entity.
+
+  ```typescript
+     // packages/backend/src/plugins/permission.ts
+    import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
+     ...
+     class TestPermissionPolicy implements PermissionPolicy {
+    async handle(request: PolicyQuery, user?: BackstageIdentityResponse): Promise<PolicyDecision> {
+       if (isPermission(request.permission, azureSitesActionPermission)) {
+         return createCatalogConditionalDecision(
+           request.permission,
+           catalogConditions.isEntityOwner({
+             claims: user?.identity.ownershipEntityRefs ??  [],
+           }),
+         );
+       }
+       ...
+       return {
+         result: AuthorizeResult.ALLOW,
+       };
+     }
+     ...
+     }
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.10.0
+  - @backstage/core-components@0.14.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/theme@0.5.1
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/plugin-permission-react@0.4.20
+  - @backstage/plugin-azure-sites-common@0.1.2
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.1.19-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.1-next.1
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/plugin-catalog-react@1.10.0-next.3
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-azure-sites-common@0.1.2-next.0
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-react@0.4.20-next.1
+
+## 0.1.19-next.2
+
+### Patch Changes
+
+- 09a9c95: Updated README
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/plugin-catalog-react@1.10.0-next.2
+  - @backstage/plugin-permission-react@0.4.20-next.1
+  - @backstage/theme@0.5.1-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/plugin-azure-sites-common@0.1.2-next.0
+  - @backstage/plugin-permission-common@0.7.12
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- 5a409bb: Azure Sites `start` and `stop` action is now protected with the Permissions framework.
+
+  The below example describes an action that forbids anyone but the owner of the catalog entity to trigger actions towards a site tied to an entity.
+
+  ```typescript
+     // packages/backend/src/plugins/permission.ts
+    import { azureSitesActionPermission } from '@backstage/plugin-azure-sites-common';
+     ...
+     class TestPermissionPolicy implements PermissionPolicy {
+    async handle(request: PolicyQuery, user?: BackstageIdentityResponse): Promise<PolicyDecision> {
+       if (isPermission(request.permission, azureSitesActionPermission)) {
+         return createCatalogConditionalDecision(
+           request.permission,
+           catalogConditions.isEntityOwner({
+             claims: user?.identity.ownershipEntityRefs ??  [],
+           }),
+         );
+       }
+       ...
+       return {
+         result: AuthorizeResult.ALLOW,
+       };
+     }
+     ...
+     }
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/catalog-model@1.4.4-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/plugin-azure-sites-common@0.1.2-next.0
+  - @backstage/plugin-catalog-react@1.9.4-next.1
+  - @backstage/theme@0.5.0
+  - @backstage/plugin-permission-common@0.7.12
+  - @backstage/plugin-permission-react@0.4.20-next.0
+
+## 0.1.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.9.4-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/catalog-model@1.4.3
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/plugin-azure-sites-common@0.1.1
+
 ## 0.1.18
 
 ### Patch Changes

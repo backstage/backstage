@@ -17,6 +17,7 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
+import { Entity, Validators } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
   CatalogAnalysisExtensionPoint,
@@ -25,14 +26,19 @@ import {
   catalogProcessingExtensionPoint,
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
+  CatalogModelExtensionPoint,
+  catalogModelExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
+  CatalogProcessorParser,
   EntityProvider,
+  PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { PlaceholderResolver } from '../modules';
+import { merge } from 'lodash';
+import { Permission } from '@backstage/plugin-permission-common';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -40,6 +46,10 @@ class CatalogProcessingExtensionPointImpl
   #processors = new Array<CatalogProcessor>();
   #entityProviders = new Array<EntityProvider>();
   #placeholderResolvers: Record<string, PlaceholderResolver> = {};
+  #onProcessingErrorHandler?: (event: {
+    unprocessedEntity: Entity;
+    errors: Error[];
+  }) => Promise<void> | void;
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -61,6 +71,15 @@ class CatalogProcessingExtensionPointImpl
     this.#placeholderResolvers[key] = resolver;
   }
 
+  setOnProcessingErrorHandler(
+    handler: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void,
+  ) {
+    this.#onProcessingErrorHandler = handler;
+  }
+
   get processors() {
     return this.#processors;
   }
@@ -71,6 +90,10 @@ class CatalogProcessingExtensionPointImpl
 
   get placeholderResolvers() {
     return this.#placeholderResolvers;
+  }
+
+  get onProcessingErrorHandler() {
+    return this.#onProcessingErrorHandler;
   }
 }
 
@@ -91,7 +114,12 @@ class CatalogAnalysisExtensionPointImpl
 class CatalogPermissionExtensionPointImpl
   implements CatalogPermissionExtensionPoint
 {
+  #permissions = new Array<Permission>();
   #permissionRules = new Array<CatalogPermissionRuleInput>();
+
+  addPermissions(...permission: Array<Permission | Array<Permission>>): void {
+    this.#permissions.push(...permission.flat());
+  }
 
   addPermissionRules(
     ...rules: Array<
@@ -101,8 +129,39 @@ class CatalogPermissionExtensionPointImpl
     this.#permissionRules.push(...rules.flat());
   }
 
+  get permissions() {
+    return this.#permissions;
+  }
+
   get permissionRules() {
     return this.#permissionRules;
+  }
+}
+
+class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
+  #fieldValidators: Partial<Validators> = {};
+
+  setFieldValidators(validators: Partial<Validators>): void {
+    merge(this.#fieldValidators, validators);
+  }
+
+  get fieldValidators() {
+    return this.#fieldValidators;
+  }
+
+  #entityDataParser?: CatalogProcessorParser;
+
+  setEntityDataParser(parser: CatalogProcessorParser): void {
+    if (this.#entityDataParser) {
+      throw new Error(
+        'Attempted to install second EntityDataParser. Only one can be set.',
+      );
+    }
+    this.#entityDataParser = parser;
+  }
+
+  get entityDataParser() {
+    return this.#entityDataParser;
   }
 }
 
@@ -132,6 +191,9 @@ export const catalogPlugin = createBackendPlugin({
       permissionExtensions,
     );
 
+    const modelExtensions = new CatalogModelExtensionPointImpl();
+    env.registerExtensionPoint(catalogModelExtensionPoint, modelExtensions);
+
     env.registerInit({
       deps: {
         logger: coreServices.logger,
@@ -142,6 +204,9 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         lifecycle: coreServices.lifecycle,
         scheduler: coreServices.scheduler,
+        discovery: coreServices.discovery,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
       async init({
         logger,
@@ -152,6 +217,9 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter,
         lifecycle,
         scheduler,
+        discovery,
+        auth,
+        httpAuth,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
@@ -161,14 +229,29 @@ export const catalogPlugin = createBackendPlugin({
           database,
           scheduler,
           logger: winstonLogger,
+          discovery,
+          auth,
+          httpAuth,
         });
+        if (processingExtensions.onProcessingErrorHandler) {
+          builder.subscribe({
+            onProcessingError: processingExtensions.onProcessingErrorHandler,
+          });
+        }
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
+
+        if (modelExtensions.entityDataParser) {
+          builder.setEntityDataParser(modelExtensions.entityDataParser);
+        }
+
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
         builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
+        builder.addPermissions(...permissionExtensions.permissions);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
+        builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 
         const { processingEngine, router } = await builder.build();
 

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import { EmptyState, InfoCard } from '@backstage/core-components';
-import { Button, Grid, makeStyles, Typography } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { PropsWithChildren } from 'react';
 import { Analysis } from '../../api/types';
 import { Gauge } from '../Gauge/Gauge';

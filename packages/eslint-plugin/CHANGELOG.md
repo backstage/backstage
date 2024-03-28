@@ -1,5 +1,29 @@
 # @backstage/eslint-plugin
 
+## 0.1.6
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+
+## 0.1.5
+
+### Patch Changes
+
+- 995d280: Added new `@backstage/no-top-level-material-ui-4-imports` rule that forbids top level imports from Material UI v4 packages
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- 995d280: Added new `@backstage/no-top-level-material-ui-4-imports` rule that forbids top level imports from Material UI v4 packages
+
 ## 0.1.4
 
 ### Patch Changes

@@ -16,11 +16,11 @@
 
 import express from 'express';
 import passport from 'passport';
-import jwtDecoder from 'jwt-decode';
+import { decodeJwt } from 'jose';
 import { InternalOAuthError } from 'passport-oauth2';
-
+import { ProfileInfo } from '@backstage/plugin-auth-node';
 import { PassportProfile } from './types';
-import { ProfileInfo, OAuthStartResponse } from '../../providers/types';
+import { OAuthStartResponse } from '../../providers/types';
 
 export type PassportDoneCallback<Res, Private = never> = (
   err?: Error,
@@ -51,7 +51,11 @@ export const makeProfileInfo = (
 
   if ((!email || !picture || !displayName) && idToken) {
     try {
-      const decoded: Record<string, string> = jwtDecoder(idToken);
+      const decoded = decodeJwt(idToken) as {
+        email?: string;
+        name?: string;
+        picture?: string;
+      };
       if (!email && decoded.email) {
         email = decoded.email;
       }

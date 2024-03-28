@@ -92,6 +92,18 @@ export type ReadUrlOptions = {
    * Not all reader implementations may take this field into account.
    */
   signal?: AbortSignal;
+
+  /**
+   * An optional token to use for authentication when reading the resources.
+   *
+   * @remarks
+   *
+   * By default all URL Readers will use the integrations config which is supplied
+   * when creating the Readers. Sometimes it might be desireable to use the already
+   * created URLReaders but with a different token, maybe that's supplied by the user
+   * at runtime.
+   */
+  token?: string;
 };
 
 /**
@@ -179,6 +191,18 @@ export type ReadTreeOptions = {
    * Not all reader implementations may take this field into account.
    */
   signal?: AbortSignal;
+
+  /**
+   * An optional token to use for authentication when reading the resources.
+   *
+   * @remarks
+   *
+   * By default all URL Readers will use the integrations config which is supplied
+   * when creating the Readers. Sometimes it might be desireable to use the already
+   * created URLReaders but with a different token, maybe that's supplied by the user
+   * at runtime.
+   */
+  token?: string;
 };
 
 /**
@@ -281,6 +305,18 @@ export type SearchOptions = {
    * Not all reader implementations may take this field into account.
    */
   signal?: AbortSignal;
+
+  /**
+   * An optional token to use for authentication when reading the resources.
+   *
+   * @remarks
+   *
+   * By default all URL Readers will use the integrations config which is supplied
+   * when creating the Readers. Sometimes it might be desireable to use the already
+   * created URLReaders but with a different token, maybe that's supplied by the user
+   * at runtime.
+   */
+  token?: string;
 };
 
 /**

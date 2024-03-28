@@ -23,8 +23,8 @@ import React, {
   ReactNode,
   useEffect,
 } from 'react';
-import useAsync, { AsyncState } from 'react-use/lib/useAsync';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useAsync, { AsyncState } from 'react-use/esm/useAsync';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 
 import {
   CompoundEntityRef,

@@ -72,6 +72,7 @@ export class Generators implements GeneratorBuilder {
     options: {
       logger: Logger;
       containerRunner: ContainerRunner;
+      customGenerator?: TechdocsGenerator;
     },
   ): Promise<GeneratorBuilder>;
   get(entity: Entity): GeneratorBase;
@@ -271,6 +272,15 @@ export class TechdocsGenerator implements GeneratorBase {
   ): TechdocsGenerator;
   run(options: GeneratorRunOptions): Promise<void>;
 }
+
+// @public
+export interface TechdocsGeneratorExtensionPoint {
+  // (undocumented)
+  setTechdocsGenerator(generator: TechdocsGenerator): void;
+}
+
+// @public
+export const techdocsGeneratorExtensionPoint: ExtensionPoint<TechdocsGeneratorExtensionPoint>;
 
 // @public
 export type TechDocsMetadata = {

@@ -4,10 +4,10 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { DatabaseManager } from '@backstage/backend-common';
 import { Duration } from 'luxon';
 import { HumanDuration as HumanDuration_2 } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
+import { LegacyRootDatabaseService } from '@backstage/backend-common';
 import { Logger } from 'winston';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
@@ -83,7 +83,7 @@ export interface TaskScheduleDefinitionConfig {
 
 // @public
 export class TaskScheduler {
-  constructor(databaseManager: DatabaseManager, logger: Logger);
+  constructor(databaseManager: LegacyRootDatabaseService, logger: Logger);
   forPlugin(pluginId: string): PluginTaskScheduler;
   // (undocumented)
   static forPlugin(opts: {
@@ -95,7 +95,7 @@ export class TaskScheduler {
   static fromConfig(
     config: Config,
     options?: {
-      databaseManager?: DatabaseManager;
+      databaseManager?: LegacyRootDatabaseService;
       logger?: Logger;
     },
   ): TaskScheduler;

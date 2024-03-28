@@ -13,7 +13,7 @@ To get started, first install the plugin with the following command:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-graphql-voyager
+yarn --cwd packages/app add @backstage/plugin-graphql-voyager
 ```
 
 ### Adding the page

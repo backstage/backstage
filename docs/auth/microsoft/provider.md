@@ -28,6 +28,7 @@ On the **API permissions** tab, click on `Add Permission`, then add the followin
 - `openid`
 - `profile`
 - `User.Read`
+- Optional custom scopes of the `Microsoft Graph` API defined in the app-config.yaml file.
 
 Your company may require you to grant [admin consent](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/user-admin-consent-overview) for these permissions.
 Even if your company doesn't require admin consent, you may wish to do so as it means users don't need to individually consent the first time they access backstage.
@@ -54,6 +55,8 @@ auth:
         clientSecret: ${AZURE_CLIENT_SECRET}
         tenantId: ${AZURE_TENANT_ID}
         domainHint: ${AZURE_TENANT_ID}
+        additionalScopes:
+          - Mail.Send
 ```
 
 The Microsoft provider is a structure with three mandatory configuration keys:
@@ -65,6 +68,7 @@ The Microsoft provider is a structure with three mandatory configuration keys:
   Leave blank if your app registration is multi tenant.
   When specified, this reduces login friction for users with accounts in multiple tenants by automatically filtering away accounts from other tenants.
   For more details, see [Home Realm Discovery](https://learn.microsoft.com/en-us/azure/active-directory/manage-apps/home-realm-discovery-policy)
+- `additionalScopes` (optional): List of scopes for the App Registration. The default and mandatory value is ['user.read'].
 
 ## Adding the provider to the Backstage frontend
 

@@ -111,7 +111,14 @@ describe('buildEntitySearch', () => {
     });
 
     it('skips very large keys', () => {
-      const input = [{ key: 'a'.repeat(10000), value: 'foo' }];
+      const input = [
+        { key: 'a'.repeat(10000), value: true },
+        { key: 'b'.repeat(10000), value: false },
+        { key: 'c'.repeat(10000), value: 7 },
+        { key: 'd'.repeat(10000), value: 'foo' },
+        { key: 'e'.repeat(10000), value: null },
+        { key: 'f'.repeat(10000), value: undefined },
+      ];
       const output = mapToRows(input, 'eid');
       expect(output).toEqual([]);
     });

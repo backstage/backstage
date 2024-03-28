@@ -16,22 +16,20 @@
 import React, { useState } from 'react';
 import { ValidateEntityResponse } from '@backstage/catalog-client';
 import { useApp } from '@backstage/core-plugin-api';
-import {
-  Collapse,
-  IconButton,
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  ListItemText,
-  makeStyles,
-  Paper,
-} from '@material-ui/core';
+import Collapse from '@material-ui/core/Collapse';
+import IconButton from '@material-ui/core/IconButton';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
-import WorkIcon from '@material-ui/icons/Work';
 import ExpandLessIcon from '@material-ui/icons/ExpandLess';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { MarkdownContent } from '@backstage/core-components';
 import { ValidationOutputOk } from '../../types';
+import SvgIcon from '@material-ui/core/SvgIcon';
 
 const useStyles = makeStyles(theme => ({
   validationOk: {
@@ -60,9 +58,9 @@ export const EntityResult = ({
   const app = useApp();
   const [expanded, setExpanded] = useState(isFirstError);
 
-  const Icon =
-    app.getSystemIcon(`kind:${item.entity.kind.toLocaleLowerCase('en-US')}`) ??
-    WorkIcon;
+  const Icon = app.getSystemIcon(
+    `kind:${item.entity.kind.toLocaleLowerCase('en-US')}`,
+  ) as typeof SvgIcon;
 
   const fetchErrorMessages = (response: ValidateEntityResponse) => {
     if (!response.valid) {
@@ -75,13 +73,15 @@ export const EntityResult = ({
     <>
       <ListItem key={humanizeEntityRef(item.entity)}>
         <ListItemIcon>
-          <Icon
-            className={
-              item.response.valid
-                ? classes.validationOk
-                : classes.validationNotOk
-            }
-          />
+          {Icon && (
+            <Icon
+              className={
+                item.response.valid
+                  ? classes.validationOk
+                  : classes.validationNotOk
+              }
+            />
+          )}
         </ListItemIcon>
         <ListItemText
           primary={humanizeEntityRef(item.entity)}

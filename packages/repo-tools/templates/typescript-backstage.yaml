@@ -8,6 +8,20 @@ files:
   model.mustache:
     templateType: Model
     destinationFilename: .model.ts
+  modelGeneric.mustache:
+    templateType: SupportingFiles
+  modelOneOf.mustache:
+    templateType: SupportingFiles
+  modelGenericAdditionalProperties.mustache:
+    templateType: SupportingFiles
+  modelGenericEnums.mustache:
+    templateType: SupportingFiles
+  modelAlias.mustache:
+    templateType: SupportingFiles
+  modelEnum.mustache:
+    templateType: SupportingFiles
+  modelTaggedUnion.mustache:
+    templateType: SupportingFiles
   models/models_all.mustache:
     templateType: SupportingFiles
     destinationFilename: models/index.ts

@@ -49,7 +49,7 @@ import {
 } from '../processing/DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
-import { CatalogProcessingEngine } from '../processing/types';
+import { CatalogProcessingEngine } from '../processing';
 import { DefaultEntitiesCatalog } from '../service/DefaultEntitiesCatalog';
 import { DefaultRefreshService } from '../service/DefaultRefreshService';
 import { RefreshOptions, RefreshService } from '../service/types';

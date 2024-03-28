@@ -373,7 +373,19 @@ export namespace Models {
      * The concatenation of the repository owner's username and the slugified name, e.g. "evzijst/interruptingcow". This is the same string used in Bitbucket URLs.
      */
     full_name?: string;
+    /**
+     *
+     * The issue tracker for this repository is enabled. Issue Tracker
+     * features are not supported for repositories in workspaces
+     * administered through admin.atlassian.com.
+     */
     has_issues?: boolean;
+    /**
+     *
+     * The wiki for this repository is enabled. Wiki
+     * features are not supported for repositories in workspaces
+     * administered through admin.atlassian.com.
+     */
     has_wiki?: boolean;
     is_private?: boolean;
     language?: string;

@@ -23,9 +23,10 @@ export type BundlingOptions = {
   isDev: boolean;
   frontendConfig: Config;
   getFrontendAppConfigs(): AppConfig[];
-  baseUrl: URL;
   parallelism?: number;
   additionalEntryPoints?: string[];
+  // Path to append to the detected public path, e.g. '/public'
+  publicSubPath?: string;
 };
 
 export type ServeOptions = BundlingPathsOptions & {

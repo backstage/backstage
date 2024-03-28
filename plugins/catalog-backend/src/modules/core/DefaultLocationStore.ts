@@ -18,7 +18,11 @@ import { Location } from '@backstage/catalog-client';
 import { ConflictError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
-import { DbLocationsRow } from '../../database/tables';
+import {
+  DbLocationsRow,
+  DbRefreshStateRow,
+  DbSearchRow,
+} from '../../database/tables';
 import { getEntityLocationRef } from '../../processing/util';
 import {
   EntityProvider,
@@ -26,6 +30,12 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { locationSpecToLocationEntity } from '../../util/conversion';
 import { LocationInput, LocationStore } from '../../service/types';
+import {
+  ANNOTATION_ORIGIN_LOCATION,
+  CompoundEntityRef,
+  parseLocationRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
@@ -109,6 +119,46 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
       added: [],
       removed: [{ entity, locationKey: getEntityLocationRef(entity) }],
     });
+  }
+
+  async getLocationByEntity(entityRef: CompoundEntityRef): Promise<Location> {
+    const entityRefString = stringifyEntityRef(entityRef);
+
+    const [entity] = await this.db<DbRefreshStateRow>('refresh_state')
+      .where({ entity_ref: entityRefString })
+      .select('entity_id')
+      .limit(1);
+    if (!entity) {
+      throw new NotFoundError(`found no entity for ref ${entityRefString}`);
+    }
+
+    const [locationKeyValue] = await this.db<DbSearchRow>('search')
+      .where({
+        entity_id: entity.entity_id,
+        key: `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
+      })
+      .select('value')
+      .limit(1);
+    if (!locationKeyValue) {
+      throw new NotFoundError(
+        `found no origin annotation for ref ${entityRefString}`,
+      );
+    }
+
+    const { type, target } = parseLocationRef(entityRefString);
+    // const kind, target = split[0], split[1];
+    const [location] = await this.db<DbLocationsRow>('locations')
+      .where({ type, target })
+      .select()
+      .limit(1);
+
+    // select * from locations where type = 'split(prev)[0]'
+    if (!location) {
+      throw new NotFoundError(
+        `Found no location with type ${type} and target ${target}`,
+      );
+    }
+    return location;
   }
 
   private get connection(): EntityProviderConnection {

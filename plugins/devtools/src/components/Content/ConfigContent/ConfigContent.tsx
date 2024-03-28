@@ -87,7 +87,7 @@ export const ConfigContent = () => {
           src={configInfo.config as object}
           name="config"
           enableClipboard={false}
-          theme={theme.palette.type === 'dark' ? 'monokai' : 'rjv-default'}
+          theme={theme.palette.type === 'dark' ? 'chalk' : 'rjv-default'}
         />
       </Paper>
     </Box>

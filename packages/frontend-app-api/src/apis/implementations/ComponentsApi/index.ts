@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { DefaultComponentsApi } from './ComponentsApi';
+export { DefaultComponentsApi } from './DefaultComponentsApi';

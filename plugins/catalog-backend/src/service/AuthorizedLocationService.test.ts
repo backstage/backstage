@@ -17,6 +17,7 @@
 import { NotAllowedError, NotFoundError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { AuthorizedLocationService } from './AuthorizedLocationService';
+import { mockCredentials } from '@backstage/backend-test-utils';
 
 describe('AuthorizedLocationService', () => {
   const fakeLocationService = {
@@ -24,6 +25,7 @@ describe('AuthorizedLocationService', () => {
     listLocations: jest.fn(),
     getLocation: jest.fn(),
     deleteLocation: jest.fn(),
+    getLocationByEntity: jest.fn(),
   };
   const fakePermissionApi = {
     authorize: jest.fn(),
@@ -44,6 +46,10 @@ describe('AuthorizedLocationService', () => {
   const createService = () =>
     new AuthorizedLocationService(fakeLocationService, fakePermissionApi);
 
+  const mockOptions = {
+    credentials: mockCredentials.none(),
+  };
+
   afterEach(() => {
     jest.resetAllMocks();
   });
@@ -54,13 +60,12 @@ describe('AuthorizedLocationService', () => {
       const service = createService();
 
       const spec = { type: 'type', target: 'target' };
-      await service.createLocation(spec, false, {
-        authorizationToken: 'Bearer authtoken',
-      });
+      await service.createLocation(spec, false, mockOptions);
 
       expect(fakeLocationService.createLocation).toHaveBeenCalledWith(
         spec,
         false,
+        mockOptions,
       );
     });
 
@@ -70,9 +75,7 @@ describe('AuthorizedLocationService', () => {
 
       const spec = { type: 'type', target: 'target' };
       await expect(() =>
-        service.createLocation(spec, false, {
-          authorizationToken: 'Bearer authtoken',
-        }),
+        service.createLocation(spec, false, mockOptions),
       ).rejects.toThrow(NotAllowedError);
     });
   });
@@ -82,7 +85,7 @@ describe('AuthorizedLocationService', () => {
       mockAllow();
       const service = createService();
 
-      await service.listLocations({ authorizationToken: 'Bearer authtoken' });
+      await service.listLocations(mockOptions);
 
       expect(fakeLocationService.listLocations).toHaveBeenCalled();
     });
@@ -91,9 +94,7 @@ describe('AuthorizedLocationService', () => {
       mockDeny();
       const service = createService();
 
-      const locations = await service.listLocations({
-        authorizationToken: 'Bearer authtoken',
-      });
+      const locations = await service.listLocations(mockOptions);
 
       expect(locations).toEqual([]);
     });
@@ -104,11 +105,12 @@ describe('AuthorizedLocationService', () => {
       mockAllow();
       const service = createService();
 
-      await service.getLocation('id', {
-        authorizationToken: 'Bearer authtoken',
-      });
+      await service.getLocation('id', mockOptions);
 
-      expect(fakeLocationService.getLocation).toHaveBeenCalledWith('id');
+      expect(fakeLocationService.getLocation).toHaveBeenCalledWith(
+        'id',
+        mockOptions,
+      );
     });
 
     it('throws error on DENY', async () => {
@@ -116,7 +118,7 @@ describe('AuthorizedLocationService', () => {
       const service = createService();
 
       await expect(() =>
-        service.getLocation('id', { authorizationToken: 'Bearer authtoken' }),
+        service.getLocation('id', mockOptions),
       ).rejects.toThrow(NotFoundError);
     });
   });
@@ -126,11 +128,12 @@ describe('AuthorizedLocationService', () => {
       mockAllow();
       const service = createService();
 
-      await service.deleteLocation('id', {
-        authorizationToken: 'Bearer authtoken',
-      });
+      await service.deleteLocation('id', mockOptions);
 
-      expect(fakeLocationService.deleteLocation).toHaveBeenCalledWith('id');
+      expect(fakeLocationService.deleteLocation).toHaveBeenCalledWith(
+        'id',
+        mockOptions,
+      );
     });
 
     it('throws error on DENY', async () => {
@@ -138,10 +141,41 @@ describe('AuthorizedLocationService', () => {
       const service = createService();
 
       await expect(() =>
-        service.deleteLocation('id', {
-          authorizationToken: 'Bearer authtoken',
-        }),
+        service.deleteLocation('id', mockOptions),
       ).rejects.toThrow(NotAllowedError);
+    });
+  });
+
+  describe('getLocationByEntity', () => {
+    it('calls underlying service to get location on ALLOW', async () => {
+      mockAllow();
+      const service = createService();
+
+      await service.getLocationByEntity(
+        { kind: 'c', namespace: 'ns', name: 'n' },
+        mockOptions,
+      );
+
+      expect(fakeLocationService.getLocationByEntity).toHaveBeenCalledWith(
+        {
+          kind: 'c',
+          namespace: 'ns',
+          name: 'n',
+        },
+        mockOptions,
+      );
+    });
+
+    it('throws error on DENY', async () => {
+      mockDeny();
+      const service = createService();
+
+      await expect(() =>
+        service.getLocationByEntity(
+          { kind: 'c', namespace: 'ns', name: 'n' },
+          mockOptions,
+        ),
+      ).rejects.toThrow(NotFoundError);
     });
   });
 });

@@ -15,4 +15,11 @@
  */
 
 export { oidc } from './provider';
-export type { OidcAuthResult } from './provider';
+
+import { OidcAuthResult as OidcAuthResult_ } from '@backstage/plugin-auth-backend-module-oidc-provider';
+
+/**
+ * @public
+ * @deprecated Use OidcAuthResult from `@backstage/plugin-auth-backend-module-oidc-provider` instead
+ */
+export type OidcAuthResult = OidcAuthResult_;

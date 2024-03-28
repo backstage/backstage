@@ -1,5 +1,164 @@
 # @backstage/plugin-devtools
 
+## 0.1.12
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/core-compat-api@0.2.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.9
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.11
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/core-compat-api@0.2.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.9
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.10
+
+### Patch Changes
+
+- a0e3393: Updated to use `fetchApi` as per [ADR013](https://backstage.io/docs/architecture-decisions/adrs-adr013)
+- 8b0026d: Removed unused `devDependencies` identified in Knip Report
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-devtools-common@0.1.9
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- 8b0026d: Removed unused `devDependencies` identified in Knip Report
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/core-compat-api@0.2.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-devtools-common@0.1.9-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/core-compat-api@0.2.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-devtools-common@0.1.9-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- a0e3393: Updated to use `fetchApi` as per [ADR013](https://backstage.io/docs/architecture-decisions/adrs-adr013)
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+  - @backstage/core-compat-api@0.2.1-next.0
+  - @backstage/plugin-devtools-common@0.1.9-next.0
+  - @backstage/plugin-permission-react@0.4.21-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- c12a86c: Refactored code to improve accessibility by moving elements outside the `ul` tag and placing them appropriately. Also adjusted theme to offer better contrast.
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- b89d8be: Added alpha support for the New Frontend System (Declarative Integration)
+- 995d280: Updated imports from named to default imports to help with the Material UI v4 to v5 migration
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/core-compat-api@0.2.0
+  - @backstage/core-components@0.14.0
+  - @backstage/core-plugin-api@1.9.0
+  - @backstage/plugin-permission-react@0.4.20
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-devtools-common@0.1.8
+
+## 0.1.9-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.2
+  - @backstage/core-compat-api@0.2.0-next.3
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/errors@1.2.3
+  - @backstage/frontend-plugin-api@0.6.0-next.3
+  - @backstage/plugin-devtools-common@0.1.8
+  - @backstage/plugin-permission-react@0.4.20-next.1
+
+## 0.1.9-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 8fe56a8: Widen `@types/react` dependency range to include version 18.
+- Updated dependencies
+  - @backstage/core-components@0.14.0-next.1
+  - @backstage/core-plugin-api@1.9.0-next.1
+  - @backstage/frontend-plugin-api@0.6.0-next.2
+  - @backstage/plugin-permission-react@0.4.20-next.1
+  - @backstage/core-compat-api@0.2.0-next.2
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-devtools-common@0.1.8
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0-next.1
+  - @backstage/core-compat-api@0.2.0-next.1
+  - @backstage/core-components@0.14.0-next.0
+  - @backstage/core-plugin-api@1.8.3-next.0
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-devtools-common@0.1.8
+  - @backstage/plugin-permission-react@0.4.20-next.0
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- c12a86c: Refactored code to improve accessibility by moving elements outside the `ul` tag and placing them appropriately. Also adjusted theme to offer better contrast.
+- b89d8be: Added alpha support for the New Frontend System (Declarative Integration)
+- 995d280: Updated imports from named to default imports to help with the Material UI v4 to v5 migration
+- Updated dependencies
+  - @backstage/core-compat-api@0.1.2-next.0
+  - @backstage/frontend-plugin-api@0.5.1-next.0
+  - @backstage/core-components@0.13.10
+  - @backstage/core-plugin-api@1.8.2
+  - @backstage/errors@1.2.3
+  - @backstage/plugin-devtools-common@0.1.8
+  - @backstage/plugin-permission-react@0.4.19
+
 ## 0.1.8
 
 ### Patch Changes

@@ -61,6 +61,31 @@ spec:
   # ...
 ```
 
+#### Mono repos
+
+If you have multiple entities within a single repo, you will need to specify which pipelines belong to each entity, like this:
+
+```yaml
+dev.azure.com/project-repo: <my-project>/<my-repo>
+dev.azure.com/build-definition: <build-definition-name>
+```
+
+Then to display the `README` file that belongs to each entity you would do this:
+
+```yaml
+dev.azure.com/readme-path: /<path-to>/<my-readme-file>.md
+```
+
+#### Pipeline in different project to repo
+
+If your pipeline is in a different project to the source code, you will need to specify this in the project annotation.
+
+```yaml
+dev.azure.com/project-repo: <project-with-source-code>/<my-repo>
+dev.azure.com/build-definition: <build-definition-name>
+dev.azure.com/project: <project-with-build-code>
+```
+
 #### Azure Pipelines Only
 
 If you are only using Azure Pipelines along with a different SCM tool then you can use the following two annotations to see Builds:
@@ -127,7 +152,7 @@ To get the Azure Pipelines component working you'll need to do the following two
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzurePipelinesContent` extension to the entity page in your app. How to do this will depend on which annotation you are using in your entities:
@@ -185,7 +210,7 @@ To get the Azure Repos component working you'll need to do the following two ste
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzurePullRequestsContent` extension to the entity page in your app:
@@ -222,7 +247,7 @@ To get the Git Tags component working you'll need to do the following two steps:
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzureGitTagsContent` extension to the entity page in your app:
@@ -258,7 +283,7 @@ To get the README component working you'll need to do the following two steps:
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/app @backstage/plugin-azure-devops
+   yarn --cwd packages/app add @backstage/plugin-azure-devops
    ```
 
 2. Second we need to add the `EntityAzureReadmeCard` extension to the entity page in your app:
@@ -294,3 +319,81 @@ To get the README component working you'll need to do the following two steps:
 - You'll need to add the `EntitySwitch.Case` above from step 2 to all the entity sections you want to see Readme in. For example if you wanted to see Readme when looking at Website entities then you would need to add this to the `websiteEntityPage` section.
 - The `if` prop is optional on the `EntitySwitch.Case`, you can remove it if you always want to see the tab even if the entity being viewed does not have the needed annotation
 - The `maxHeight` property on the `EntityAzureReadmeCard` will set the maximum screen size you would like to see, if not set it will default to 100%
+
+## Permission Framework
+
+Azure DevOps plugin supports the permission framework for PRs, GitTags, Pipelines and Readme features.
+
+```bash
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-azure-devops-common
+```
+
+New Backend you can skip the below and proceed with [permission configuration](#configure-permission)
+
+To enable permissions for the legacy backend system in `packages/backend/src/plugins/azure-devops.ts` add the following.
+
+```diff
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return createRouter({
+    logger: env.logger,
+    config: env.config,
+    reader: env.reader,
++   permissions: env.permissions,
+  });
+}
+```
+
+### Configure Permission
+
+To apply the permission rules add the following in `packages/backend/src/plugins/permissions.ts`.
+
+> Note: the following is just an example of how you might want to setup permissions, as an Adopter you can configure this to fit your needs. Also all the permissions are Resource Permissions as they work with an Entity with the exception of `azureDevOpsPullRequestDashboardReadPermission`.
+
+```diff
+
++ import {
++  azureDevOpsPullRequestReadPermission,
++  azureDevOpsPipelineReadPermission,
++  azureDevOpsGitTagReadPermission,
++  azureDevOpsReadmeReadPermission,
++  azureDevOpsPullRequestDashboardReadPermission } from '@backstage/plugin-azure-devops-common';
++ import {
++  AuthorizeResult,
++  PolicyDecision,
++  isPermission,
++ } from '@backstage/plugin-permission-common';
++ import {
++   catalogConditions,
++   createCatalogConditionalDecision,
++ } from '@backstage/plugin-catalog-backend/alpha';
+...
+async handle(
+  request: PolicyQuery,
+  user?: BackstageIdentityResponse,
+): Promise<PolicyDecision> {
++ if ( isPermission(request.permission, azureDevOpsPullRequestReadPermission) ||
++      isPermission(request.permission, azureDevOpsPipelineReadPermission) ||
++      isPermission(request.permission, azureDevOpsGitTagReadPermission) ||
++      isPermission(request.permission, azureDevOpsReadmeReadPermission)) {
++    return createCatalogConditionalDecision(
++      request.permission,
++      catalogConditions.isEntityOwner({
++          claims: user?.identity.ownershipEntityRefs ?? [],
++       }),
++    );
++  }
+
++ if ( isPermission(request.permission, azureDevOpsPullRequestDashboardReadPermission) {
++ return {
++   result: AuthorizeResult.ALLOW,
++  };
++ }
+
+  return {
+    result: AuthorizeResult.ALLOW,
+  };
+}
+```

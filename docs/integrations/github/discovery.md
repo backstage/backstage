@@ -23,7 +23,7 @@ package.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-github
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
 And then add the entity provider to your catalog builder:
@@ -50,6 +50,26 @@ export default async function createPlugin(
 ```
 
 ## Installation with Events Support
+
+_For the legacy backend system, please read the sub-section below._
+
+The catalog module for GitHub comes with events support enabled.
+This will make it subscribe to its relevant topics (`github.push`)
+and expects these events to be published via the `EventsService`.
+
+Additionally, you should install the
+[event router by `events-backend-module-github`](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md)
+which will route received events from the generic topic `github` to more specific ones
+based on the event type (e.g., `github.push`).
+
+In order to receive Webhook events by GitHub, you have to decide how you want them
+to be ingested into Backstage and published to its `EventsService`.
+You can decide between the following options (extensible):
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+### Legacy Backend System
 
 Please follow the installation instructions at
 
@@ -78,10 +98,10 @@ export default async function createPlugin(
   builder.addProcessor(new ScaffolderEntitiesProcessor());
   /* highlight-add-start */
   const githubProvider = GithubEntityProvider.fromConfig(env.config, {
+    events: env.events,
     logger: env.logger,
     scheduler: env.scheduler,
   });
-  env.eventBroker.subscribe(githubProvider);
   builder.addEntityProvider(githubProvider);
   /* highlight-add-end */
   const { processingEngine, router } = await builder.build();
@@ -95,7 +115,7 @@ You can check the official docs to [configure your webhook](https://docs.github.
 ## Configuration
 
 To use the discovery provider, you'll need a GitHub integration
-[set up](locations.md) with either a [Personal Access Token](../../getting-started/configuration.md#setting-up-a-github-integration) or [GitHub Apps](./github-apps.md).
+[set up](locations.md) with either a [Personal Access Token](../../getting-started/config/authentication.md) or [GitHub Apps](./github-apps.md).
 
 Then you can add a `github` config to the catalog providers configuration:
 
@@ -250,7 +270,7 @@ package, plus `@backstage/integration` for the basic credentials management:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/integration @backstage/plugin-catalog-backend-module-github
+yarn --cwd packages/backend add @backstage/integration @backstage/plugin-catalog-backend-module-github
 ```
 
 And then add the processors to your catalog builder:
@@ -294,7 +314,7 @@ export default async function createPlugin(
 ## Configuration
 
 To use the discovery processor, you'll need a GitHub integration
-[set up](locations.md) with either a [Personal Access Token](../../getting-started/configuration.md#setting-up-a-github-integration) or [GitHub Apps](./github-apps.md).
+[set up](locations.md) with either a [Personal Access Token](../../getting-started/config/authentication.md) or [GitHub Apps](./github-apps.md).
 
 Then you can add a location target to the catalog configuration:
 

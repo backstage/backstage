@@ -1,4 +1,5 @@
-# plugin-events-backend-test-utils
+# `@backstage/plugin-events-backend-test-utils`
 
-Houses implementations of plugin-events-node interfaces
-which can be useful for test for events-backend and its modules.
+This is a package that can be used as `devDependency`
+and provides a test implementation for the `EventsService`
+by [`events-node` package](../events-node/README.md): `TestEventsService`.

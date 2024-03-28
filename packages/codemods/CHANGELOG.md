@@ -1,5 +1,21 @@
 # @backstage/codemods
 
+## 0.1.48
+
+### Patch Changes
+
+- 1bd4596: Removed the `ts-node` dev dependency.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.1.47
+
+### Patch Changes
+
+- 6ba64c4: Updated dependency `commander` to `^12.0.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.1.46
 
 ### Patch Changes

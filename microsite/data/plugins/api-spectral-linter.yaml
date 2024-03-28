@@ -4,7 +4,7 @@ author: dweber019
 authorUrl: https://github.com/dweber019
 category: Linting
 description: API Spectral Linter is a quality assurance tool that checks the compliance of API's specifications Spectral rule sets.
-documentation: https://github.com/dweber019/backstage-plugin-api-docs-spectral-linter
-iconUrl: https://raw.githubusercontent.com/dweber019/backstage-plugin-api-docs-spectral-linter/main/plugins/api-docs-spectral-linter/docs/pluginIcon.png
+documentation: https://github.com/dweber019/backstage-plugins/tree/main/plugins/api-docs-spectral-linter
+iconUrl: https://raw.githubusercontent.com/dweber019/backstage-plugins/main/plugins/api-docs-spectral-linter/docs/pluginIcon.png
 npmPackageName: '@dweber019/backstage-plugin-api-docs-spectral-linter'
 addedDate: '2023-03-27'

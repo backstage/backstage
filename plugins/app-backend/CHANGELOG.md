@@ -1,5 +1,149 @@
 # @backstage/plugin-app-backend
 
+## 0.3.64
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.16
+
+## 0.3.63
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.15
+
+## 0.3.62
+
+### Patch Changes
+
+- 52e43f2: Disable default auth policy, allowing unauthenticated access to app bundle.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/config-loader@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.14
+
+## 0.3.62-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.14-next.2
+
+## 0.3.62-next.1
+
+### Patch Changes
+
+- 52e43f2: Disable default auth policy, allowing unauthenticated access to app bundle.
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-app-node@0.1.14-next.1
+  - @backstage/types@1.1.1
+
+## 0.3.61-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/config-loader@1.6.3-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/plugin-app-node@0.1.13-next.0
+  - @backstage/types@1.1.1
+
+## 0.3.58
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 998ccf6: Support injecting config multiple times in a single bundle
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- 54ad8e1: Allow the `app-backend` plugin to use a global configuration schema provided externally through an extension.
+- 9dfd57d: Do not force caching of the Javascript asset that contains the injected config.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/config-loader@1.6.2
+  - @backstage/plugin-app-node@0.1.10
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.3.58-next.3
+
+### Patch Changes
+
+- 54ad8e1: Allow the `app-backend` plugin to use a global configuration schema provided externally through an extension.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.3
+  - @backstage/config-loader@1.6.2-next.0
+  - @backstage/plugin-app-node@0.1.10-next.3
+  - @backstage/backend-plugin-api@0.6.10-next.3
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+
+## 0.3.58-next.2
+
+### Patch Changes
+
+- 9aac2b0: Use `--cwd` as the first `yarn` argument
+- 998ccf6: Support injecting config multiple times in a single bundle
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.2
+  - @backstage/backend-plugin-api@0.6.10-next.2
+  - @backstage/plugin-app-node@0.1.10-next.2
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.1
+  - @backstage/types@1.1.1
+
+## 0.3.58-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10-next.1
+  - @backstage/backend-common@0.21.0-next.1
+  - @backstage/config@1.1.1
+  - @backstage/config-loader@1.6.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.10-next.1
+
+## 0.3.58-next.0
+
+### Patch Changes
+
+- 9dfd57d: Do not force caching of the Javascript asset that contains the injected config.
+- Updated dependencies
+  - @backstage/backend-common@0.21.0-next.0
+  - @backstage/config-loader@1.6.1
+  - @backstage/backend-plugin-api@0.6.10-next.0
+  - @backstage/config@1.1.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.10-next.0
+
 ## 0.3.57
 
 ### Patch Changes

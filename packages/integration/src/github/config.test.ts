@@ -57,7 +57,7 @@ describe('readGithubIntegrationConfig', () => {
         host: 'a.com',
         apiBaseUrl: 'https://a.com/api',
         rawBaseUrl: 'https://a.com/raw',
-        token: 't',
+        token: '\nt\t',
       }),
     );
     expect(output).toEqual({

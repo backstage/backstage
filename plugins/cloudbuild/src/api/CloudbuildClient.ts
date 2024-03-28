@@ -20,6 +20,7 @@ import {
   ActionsGetWorkflowResponseData,
 } from '../api/types';
 import { OAuthApi } from '@backstage/core-plugin-api';
+import packageinfo from '../../package.json';
 
 /** @public */
 export class CloudbuildClient implements CloudbuildApi {
@@ -27,35 +28,30 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async reRunWorkflow(options: {
     projectId: string;
+    location: string;
     runId: string;
   }): Promise<void> {
-    await fetch(
+    await this.request(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
+      )}/locations/${encodeURIComponent(
+        options.location,
       )}/builds/${encodeURIComponent(options.runId)}:retry`,
-      {
-        method: 'POST',
-        headers: new Headers({
-          Accept: '*/*',
-          Authorization: `Bearer ${await this.getToken()}`,
-        }),
-      },
+      'POST',
     );
   }
 
   async listWorkflowRuns(options: {
     projectId: string;
+    location: string;
+    cloudBuildFilter: string;
   }): Promise<ActionsListWorkflowRunsForRepoResponseData> {
-    const workflowRuns = await fetch(
+    const workflowRuns = await this.request(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
-      )}/builds`,
-      {
-        headers: new Headers({
-          Accept: '*/*',
-          Authorization: `Bearer ${await this.getToken()}`,
-        }),
-      },
+      )}/locations/${encodeURIComponent(
+        options.location,
+      )}/builds?filter=${encodeURIComponent(options.cloudBuildFilter)}`,
     );
 
     const builds: ActionsListWorkflowRunsForRepoResponseData =
@@ -66,18 +62,15 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async getWorkflow(options: {
     projectId: string;
+    location: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData> {
-    const workflow = await fetch(
+    const workflow = await this.request(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
+      )}/locations/${encodeURIComponent(
+        options.location,
       )}/builds/${encodeURIComponent(options.id)}`,
-      {
-        headers: new Headers({
-          Accept: '*/*',
-          Authorization: `Bearer ${await this.getToken()}`,
-        }),
-      },
     );
 
     const build: ActionsGetWorkflowResponseData = await workflow.json();
@@ -87,18 +80,15 @@ export class CloudbuildClient implements CloudbuildApi {
 
   async getWorkflowRun(options: {
     projectId: string;
+    location: string;
     id: string;
   }): Promise<ActionsGetWorkflowResponseData> {
-    const workflow = await fetch(
+    const workflow = await this.request(
       `https://cloudbuild.googleapis.com/v1/projects/${encodeURIComponent(
         options.projectId,
+      )}/locations/${encodeURIComponent(
+        options.location,
       )}/builds/${encodeURIComponent(options.id)}`,
-      {
-        headers: new Headers({
-          Accept: '*/*',
-          Authorization: `Bearer ${await this.getToken()}`,
-        }),
-      },
     );
     const build: ActionsGetWorkflowResponseData = await workflow.json();
 
@@ -113,5 +103,24 @@ export class CloudbuildClient implements CloudbuildApi {
     return this.googleAuthApi.getAccessToken(
       'https://www.googleapis.com/auth/cloud-platform',
     );
+  }
+
+  private async request(
+    url: string,
+    method: string = 'GET',
+  ): Promise<Response> {
+    const requestHeaders = {
+      Accept: '*/*',
+      Authorization: `Bearer ${await this.getToken()}`,
+      ...(process.env.NODE_ENV === 'production'
+        ? {
+            'X-Goog-Api-Client': `backstage/cloudbuild/${packageinfo.version}`,
+          }
+        : {}),
+    };
+    return fetch(url, {
+      method,
+      headers: requestHeaders,
+    });
   }
 }

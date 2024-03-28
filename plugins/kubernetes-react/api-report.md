@@ -4,7 +4,7 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncState } from 'react-use/lib/useAsyncFn';
+import { AsyncState } from 'react-use/esm/useAsyncFn';
 import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
@@ -176,11 +176,13 @@ export type ErrorPanelProps = {
 // @public (undocumented)
 export const ErrorReporting: ({
   detectedErrors,
+  clusters,
 }: ErrorReportingProps) => React_3.JSX.Element;
 
 // @public (undocumented)
 export type ErrorReportingProps = {
   detectedErrors: DetectedErrorsByCluster;
+  clusters: ClusterAttributes[];
 };
 
 // @public
@@ -653,7 +655,7 @@ export interface PendingPodContentProps {
 // @public
 export interface PodAndErrors {
   // (undocumented)
-  clusterName: string;
+  cluster: ClusterAttributes;
   // (undocumented)
   errors: DetectedError[];
   // (undocumented)
@@ -685,12 +687,12 @@ export const PodExecTerminal: (
 // @public
 export const PodExecTerminalDialog: (
   props: PodExecTerminalProps,
-) => React_2.JSX.Element;
+) => false | React_2.JSX.Element | undefined;
 
 // @public
 export interface PodExecTerminalProps {
   // (undocumented)
-  clusterName: string;
+  cluster: ClusterAttributes;
   // (undocumented)
   containerName: string;
   // (undocumented)
@@ -748,7 +750,7 @@ export const PodNamesWithMetricsContext: React_2.Context<
 // @public
 export interface PodScope {
   // (undocumented)
-  clusterName: string;
+  cluster: ClusterAttributes;
   // (undocumented)
   podName: string;
   // (undocumented)

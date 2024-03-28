@@ -29,17 +29,19 @@ interface BuildBackendOptions {
   targetDir: string;
   skipBuildDependencies: boolean;
   configPaths?: string[];
+  minify?: boolean;
 }
 
 export async function buildBackend(options: BuildBackendOptions) {
-  const { targetDir, skipBuildDependencies, configPaths } = options;
+  const { targetDir, skipBuildDependencies, configPaths, minify } = options;
   const pkg = await fs.readJson(resolvePath(targetDir, 'package.json'));
 
   // We build the target package without generating type declarations.
   await buildPackage({
-    targetDir: options.targetDir,
+    targetDir,
     packageJson: pkg,
     outputs: new Set([Output.cjs]),
+    minify,
   });
 
   const tmpDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-bundle'));
@@ -51,6 +53,7 @@ export async function buildBackend(options: BuildBackendOptions) {
       buildExcludes: [pkg.name],
       parallelism: getEnvironmentParallelism(),
       skeleton: SKELETON_FILE,
+      minify,
     });
 
     // We built the target backend package using the regular build process, but the result of

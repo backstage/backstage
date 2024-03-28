@@ -101,7 +101,7 @@ export function readAwsS3IntegrationConfig(
   }
 
   const accessKeyId = config.getOptionalString('accessKeyId');
-  const secretAccessKey = config.getOptionalString('secretAccessKey');
+  const secretAccessKey = config.getOptionalString('secretAccessKey')?.trim();
   const roleArn = config.getOptionalString('roleArn');
   const externalId = config.getOptionalString('externalId');
 

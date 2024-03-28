@@ -1,0 +1,15 @@
+---
+title: GitHub Codespaces
+author: Aditya Singhal - Lab45
+authorUrl: https://github.com/adityasinghal26
+category: Development
+description: Integrates GitHub Codespaces for a Backstage component with the Authenticated User.
+documentation: https://github.com/adityasinghal26/backstage-plugins/tree/main/plugins/github-codespaces
+iconUrl: https://github.com/adityasinghal26/backstage-plugins/blob/00c9c00ba9acc3135014d6454ccf04f573195eef/plugins/github-codespaces/images/GitHubLogo.png
+npmPackageName: '@adityasinghal26/plugin-github-codespaces'
+tags:
+  - github
+  - codespaces
+  - development
+  - devcontainers
+addedDate: '2023-12-30'

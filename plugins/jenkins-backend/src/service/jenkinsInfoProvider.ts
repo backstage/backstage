@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
+import {
+  AuthService,
+  BackstageCredentials,
+  DiscoveryService,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   Entity,
@@ -34,7 +41,7 @@ export interface JenkinsInfoProvider {
      */
     jobFullName?: string;
 
-    backstageToken?: string;
+    credentials?: BackstageCredentials;
   }): Promise<JenkinsInfo>;
 }
 
@@ -183,27 +190,38 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
   private constructor(
     private readonly config: JenkinsConfig,
     private readonly catalog: CatalogApi,
+    private readonly auth: AuthService,
   ) {}
 
   static fromConfig(options: {
     config: Config;
     catalog: CatalogApi;
+    discovery: DiscoveryService;
+    auth?: AuthService;
+    httpAuth?: HttpAuthService;
   }): DefaultJenkinsInfoProvider {
+    const { auth } = createLegacyAuthAdapters(options);
     return new DefaultJenkinsInfoProvider(
       JenkinsConfig.fromConfig(options.config),
       options.catalog,
+      auth,
     );
   }
 
   async getInstance(opt: {
     entityRef: CompoundEntityRef;
     jobFullName?: string;
-    backstageToken?: string;
+    credentials?: BackstageCredentials;
   }): Promise<JenkinsInfo> {
     // load entity
-    const entity = await this.catalog.getEntityByRef(opt.entityRef, {
-      token: opt.backstageToken,
-    });
+    const entity = await this.catalog.getEntityByRef(
+      opt.entityRef,
+      opt.credentials &&
+        (await this.auth.getPluginRequestToken({
+          onBehalfOf: opt.credentials,
+          targetPluginId: 'catalog',
+        })),
+    );
     if (!entity) {
       throw new Error(
         `Couldn't find entity with name: ${stringifyEntityRef(opt.entityRef)}`,

@@ -17,7 +17,9 @@
 import React, { useState } from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 import { EntityTextArea } from '../EntityTextArea';
-import { Button, Grid, TextField } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import TextField from '@material-ui/core/TextField';
 import { CatalogProcessorResult } from '../../types';
 import { parseEntityYaml } from '../../utils';
 import { EntityValidationOutput } from '../EntityValidationOutput';

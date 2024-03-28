@@ -4,7 +4,7 @@ author: dweber019
 authorUrl: https://github.com/dweber019
 category: Discovery
 description: The tips plugin will show the end user some helpful information for entities.
-documentation: https://github.com/dweber019/backstage-plugin-tips
-iconUrl: https://raw.githubusercontent.com/dweber019/backstage-plugin-tips/main/plugins/tips/docs/pluginIcon.png
+documentation: https://github.com/dweber019/backstage-plugins/tree/main/plugins/tips
+iconUrl: https://raw.githubusercontent.com/dweber019/backstage-plugins/main/plugins/tips/docs/pluginIcon.png
 npmPackageName: '@dweber019/backstage-plugin-tips'
 addedDate: '2023-10-08'

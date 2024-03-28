@@ -15,12 +15,14 @@
  */
 
 import { humanizeEntityRef, useEntity } from '@backstage/plugin-catalog-react';
-import { Box, Modal, makeStyles } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Modal from '@material-ui/core/Modal';
+import { makeStyles } from '@material-ui/core/styles';
 import FolderIcon from '@material-ui/icons/Folder';
 import FileOutlinedIcon from '@material-ui/icons/InsertDriveFileOutlined';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import React, { Fragment, useEffect, useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { codeCoverageApiRef } from '../../api';
 import { FileEntry } from '../../types';
 import { FileContent } from './FileContent';

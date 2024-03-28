@@ -14,7 +14,7 @@ Here's how to get the backend up and running:
 
    ```sh
    # From the Backstage root directory
-   yarn add --cwd packages/backend @backstage/plugin-linguist-backend
+   yarn --cwd packages/backend add @backstage/plugin-linguist-backend
    ```
 
 2. Then we will create a new file named `packages/backend/src/plugins/linguist.ts`, and add the
@@ -64,13 +64,12 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
   import { createBackend } from '@backstage/backend-defaults';
-+ import { linguistPlugin } from '@backstage/plugin-linguist-backend';
 
   const backend = createBackend();
 
   // ... other feature additions
 
-+ backend.add(linguistPlugin());
++ backend.add(import('@backstage/plugin-linguist-backend'));
 
   backend.start();
 ```

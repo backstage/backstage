@@ -34,7 +34,6 @@ import {
   DEFAULT_BATCH_DELAY,
   DEFAULT_CACHE_TTL,
   DEFAULT_ICONS,
-  UNKNOWN_KIND_ICON,
   createDefaultRenderer,
 } from './defaults';
 
@@ -395,8 +394,6 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       return false;
     }
 
-    return (
-      this.#kindIcons[kind.toLocaleLowerCase('en-US')] ?? UNKNOWN_KIND_ICON
-    );
+    return this.#kindIcons[kind.toLocaleLowerCase('en-US')];
   }
 }

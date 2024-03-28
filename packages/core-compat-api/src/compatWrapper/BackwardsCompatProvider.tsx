@@ -18,6 +18,8 @@ import React, { useMemo } from 'react';
 import { ReactNode } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppContextProvider } from '../../../core-app-api/src/app/AppContext';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { RouteResolver } from '../../../core-plugin-api/src/routing/useRouteRef';
 import {
   createPlugin as createNewPlugin,
   BackstagePlugin as NewBackstagePlugin,
@@ -26,13 +28,21 @@ import {
   coreComponentRefs,
   iconsApiRef,
   useApi,
+  routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
   AppComponents,
   IconComponent,
   BackstagePlugin as LegacyBackstagePlugin,
+  RouteRef,
 } from '@backstage/core-plugin-api';
-import { getOrCreateGlobalSingleton } from '@backstage/version-bridge';
+import {
+  VersionedValue,
+  createVersionedContext,
+  createVersionedValueMap,
+  getOrCreateGlobalSingleton,
+} from '@backstage/version-bridge';
+import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
 
 // Make sure that we only convert each new plugin instance to its legacy equivalent once
 const legacyPluginStore = getOrCreateGlobalSingleton(
@@ -156,6 +166,42 @@ function LegacyAppContextProvider(props: { children: ReactNode }) {
   );
 }
 
+const RoutingContext = createVersionedContext<{ 1: RouteResolver }>(
+  'routing-context',
+);
+
+function LegacyRoutingProvider(props: { children: ReactNode }) {
+  const routeResolutionApi = useApi(routeResolutionApiRef);
+
+  const value = useMemo<VersionedValue<{ 1: RouteResolver }>>(() => {
+    return createVersionedValueMap({
+      1: {
+        resolve(anyRouteRef, location) {
+          const sourcePath =
+            typeof location === 'string' ? location : location.pathname ?? '';
+
+          return routeResolutionApi.resolve(
+            // This removes the requirement to use convertLegacyRouteRef inside plugins, but
+            // they still need to converted when passed to the plugin instance
+            convertLegacyRouteRef(anyRouteRef as RouteRef),
+            { sourcePath },
+          );
+        },
+      },
+    });
+  }, [routeResolutionApi]);
+
+  return (
+    <RoutingContext.Provider value={value}>
+      {props.children}
+    </RoutingContext.Provider>
+  );
+}
+
 export function BackwardsCompatProvider(props: { children: ReactNode }) {
-  return <LegacyAppContextProvider>{props.children}</LegacyAppContextProvider>;
+  return (
+    <LegacyRoutingProvider>
+      <LegacyAppContextProvider>{props.children}</LegacyAppContextProvider>
+    </LegacyRoutingProvider>
+  );
 }

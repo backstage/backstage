@@ -22,7 +22,7 @@ In your `packages/backend/src/index.ts` make the following changes:
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-nomad-backend
+yarn --cwd packages/backend add @backstage/plugin-nomad-backend
 ```
 
 2. Create a `nomad.ts` file inside `packages/backend/src/plugins/`:

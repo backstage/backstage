@@ -26,7 +26,7 @@ to `@backstage/plugin-catalog-backend-module-ldap` to your backend package.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-catalog-backend-module-ldap
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-ldap
 ```
 
 > Note: When configuring to use a Provider instead of a Processor you do not
@@ -109,6 +109,18 @@ These config blocks have a lot of options in them, so we will describe each
 This is the URL of the targeted server, typically on the form
 `ldaps://ds.example.net` for SSL enabled servers or `ldap://ds.example.net`
 without SSL.
+
+#### target.tls.keys
+
+`keys` in TLS options specifies location of a file, that contains private keys
+to establish connection with your LDAP server, in PEM format. See an example
+for Google Secure LDAP Service below.
+
+#### target.tls.certs
+
+`certs` in TLS options specifies location of a file, that contains certificate
+chains to establish connection with your LDAP server, in PEM format. See an
+example for Google Secure LDAP Service below.
 
 ### bind
 
@@ -373,4 +385,29 @@ catalog:
       target: ldaps://ds.example.net
       rules:
         - allow: [User, Group]
+```
+
+### Example configurations
+
+#### Google Secure LDAP Service
+
+To sync Google Workspace/Cloud Identity organization data to users and groups in backstage,
+you must [configure Secure LDAP Service](https://support.google.com/a/answer/9048516) first.
+
+Once Secure LDAP Service is configured, you can enable TLS options in LDAP configuration,
+as mentioned below. `keys` and `certs` specify the location of files that are generated
+while configuring Secure LDAP Service above.
+
+```yaml
+ldap:
+  providers:
+    - target: ldaps://ldap.google.com:636
+      tls:
+        rejectUnauthorized: false
+        keys: '/var/secrets/tls/gldap.key'
+        certs: '/var/secrets/tls/gldap.crt'
+      users:
+        # users configuration comes here
+      groups:
+        # groups configuration comes here
 ```

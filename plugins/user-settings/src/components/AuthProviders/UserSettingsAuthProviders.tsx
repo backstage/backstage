@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { List } from '@material-ui/core';
+import List from '@material-ui/core/List';
 import { EmptyProviders } from './EmptyProviders';
 import { DefaultProviderSettings } from './DefaultProviderSettings';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';

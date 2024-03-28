@@ -26,9 +26,9 @@ import React, {
   useState,
 } from 'react';
 import { useLocation } from 'react-router-dom';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
-import useDebounce from 'react-use/lib/useDebounce';
-import useMountedState from 'react-use/lib/useMountedState';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
+import useDebounce from 'react-use/esm/useDebounce';
+import useMountedState from 'react-use/esm/useMountedState';
 import { catalogApiRef } from '../api';
 import {
   EntityErrorFilter,
@@ -108,6 +108,8 @@ export type EntityListContextProps<
     next?: () => void;
     prev?: () => void;
   };
+
+  totalItems?: number;
 };
 
 /**
@@ -124,6 +126,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
   entities: Entity[];
   backendEntities: Entity[];
   pageInfo?: QueryEntitiesResponse['pageInfo'];
+  totalItems?: number;
 };
 
 /**
@@ -223,6 +226,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
+              totalItems: response.totalItems,
             });
           }
         } else {
@@ -234,7 +238,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
 
           if (!isEqual(previousBackendFilter, backendFilter)) {
             const response = await catalogApi.queryEntities({
-              filter: backendFilter,
+              ...backendFilter,
               limit,
               orderFields: [{ field: 'metadata.name', order: 'asc' }],
             });
@@ -243,6 +247,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
               backendEntities: response.items,
               entities: response.items.filter(entityFilter),
               pageInfo: response.pageInfo,
+              totalItems: response.totalItems,
             });
           }
         }
@@ -262,16 +267,20 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
           const response = await catalogApi.getEntities({
             filter: backendFilter,
           });
+          const entities = response.items.filter(entityFilter);
           setOutputState({
             appliedFilters: requestedFilters,
             backendEntities: response.items,
-            entities: response.items.filter(entityFilter),
+            entities,
+            totalItems: entities.length,
           });
         } else {
+          const entities = outputState.backendEntities.filter(entityFilter);
           setOutputState({
             appliedFilters: requestedFilters,
             backendEntities: outputState.backendEntities,
-            entities: outputState.backendEntities.filter(entityFilter),
+            entities,
+            totalItems: entities.length,
           });
         }
       }
@@ -317,7 +326,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       // changing filters will affect pagination, so we need to reset
       // the cursor and start from the first page.
       // TODO(vinzscam): this is currently causing issues at page reload
-      // where the state is not kept. Unfortunately we need to rething
+      // where the state is not kept. Unfortunately we need to rethink
       // the way filters work in order to fix this.
       setCursor(undefined);
       setRequestedFilters(prevFilters => {
@@ -352,6 +361,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       loading,
       error,
       pageInfo,
+      totalItems: outputState.totalItems,
     }),
     [outputState, updateFilters, queryParameters, loading, error, pageInfo],
   );

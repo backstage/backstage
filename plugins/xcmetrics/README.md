@@ -1,6 +1,6 @@
 # XCMetrics
 
-[XCMetrics](https://xcmetrics.io) is a tool for collecting build metrics from XCode.  
+[XCMetrics](https://xcmetrics.io) is a tool for collecting build metrics from XCode.
 With this plugin, you can view data from XCMetrics directly in Backstage.
 
 ![XCMetrics-overview](./docs/XCMetrics-overview.png)
@@ -9,7 +9,7 @@ With this plugin, you can view data from XCMetrics directly in Backstage.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-xcmetrics
+yarn --cwd packages/app add @backstage/plugin-xcmetrics
 ```
 
 In `packages/app/src/App.tsx`, add the following:

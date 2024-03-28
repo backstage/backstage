@@ -17,8 +17,21 @@
 import { Entity } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import Grid from '@material-ui/core/Grid';
-import React, { useMemo } from 'react';
-import { parseFilterExpression } from './filter/parseFilterExpression';
+import React from 'react';
+import { FilterWrapper } from './filter/FilterWrapper';
+import { EntitySwitch } from '../components/EntitySwitch';
+import {
+  EntityOrphanWarning,
+  isOrphan,
+} from '../components/EntityOrphanWarning';
+import {
+  EntityRelationWarning,
+  hasRelationWarnings,
+} from '../components/EntityRelationWarning';
+import {
+  EntityProcessingErrorsPanel,
+  hasCatalogProcessingErrors,
+} from '../components/EntityProcessingErrorsPanel';
 
 interface EntityOverviewPageProps {
   cards: Array<{
@@ -28,80 +41,41 @@ interface EntityOverviewPageProps {
   }>;
 }
 
-// Keeps track of what filter expression strings that we've seen duplicates of
-// with functions, or which emitted parsing errors for so far
-const seenParseErrorExpressionStrings = new Set<string>();
-const seenDuplicateExpressionStrings = new Set<string>();
+const entityWarningContent = (
+  <>
+    <EntitySwitch>
+      <EntitySwitch.Case if={isOrphan}>
+        <Grid item xs={12}>
+          <EntityOrphanWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
 
-// Given an optional filter function and an optional filter expression, make
-// sure that at most one of them was given, and return a filter function that
-// does the right thing.
-function buildFilterFn(
-  filterFunction?: (entity: Entity) => boolean,
-  filterExpression?: string,
-): (entity: Entity) => boolean {
-  if (
-    filterFunction &&
-    filterExpression &&
-    !seenDuplicateExpressionStrings.has(filterExpression)
-  ) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `Duplicate entity filter methods found, both '${filterExpression}' as well as a callback function, which is not permitted - using the callback`,
-    );
-    seenDuplicateExpressionStrings.add(filterExpression);
-  }
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasRelationWarnings}>
+        <Grid item xs={12}>
+          <EntityRelationWarning />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
 
-  const filter = filterFunction || filterExpression;
-  if (!filter) {
-    return () => true;
-  } else if (typeof filter === 'function') {
-    return subject => filter(subject);
-  }
-
-  const result = parseFilterExpression(filter);
-  if (
-    result.expressionParseErrors.length &&
-    !seenParseErrorExpressionStrings.has(filter)
-  ) {
-    // eslint-disable-next-line no-console
-    console.warn(
-      `Error(s) in entity filter expression '${filter}'`,
-      result.expressionParseErrors,
-    );
-    seenParseErrorExpressionStrings.add(filter);
-  }
-
-  return result.filterFn;
-}
-
-// Handles the memoized parsing of filter expressions for each card
-function CardWrapper(props: {
-  entity: Entity;
-  element: React.JSX.Element;
-  filterFunction?: (entity: Entity) => boolean;
-  filterExpression?: string;
-}) {
-  const { entity, element, filterFunction, filterExpression } = props;
-
-  const filterFn = useMemo(
-    () => buildFilterFn(filterFunction, filterExpression),
-    [filterFunction, filterExpression],
-  );
-
-  return filterFn(entity) ? (
-    <Grid item md={6} xs={12}>
-      {element}
-    </Grid>
-  ) : null;
-}
+    <EntitySwitch>
+      <EntitySwitch.Case if={hasCatalogProcessingErrors}>
+        <Grid item xs={12}>
+          <EntityProcessingErrorsPanel />
+        </Grid>
+      </EntitySwitch.Case>
+    </EntitySwitch>
+  </>
+);
 
 export function EntityOverviewPage(props: EntityOverviewPageProps) {
   const { entity } = useEntity();
   return (
     <Grid container spacing={3} alignItems="stretch">
+      {entityWarningContent}
       {props.cards.map((card, index) => (
-        <CardWrapper key={index} entity={entity} {...card} />
+        <FilterWrapper key={index} entity={entity} {...card} />
       ))}
     </Grid>
   );

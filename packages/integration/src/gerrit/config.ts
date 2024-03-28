@@ -78,7 +78,7 @@ export function readGerritIntegrationConfig(
   let cloneUrl = config.getOptionalString('cloneUrl');
   let gitilesBaseUrl = config.getOptionalString('gitilesBaseUrl');
   const username = config.getOptionalString('username');
-  const password = config.getOptionalString('password');
+  const password = config.getOptionalString('password')?.trim();
 
   if (!isValidHost(host)) {
     throw new Error(

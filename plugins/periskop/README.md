@@ -19,7 +19,7 @@ Each of the entries in the table will direct you to the error details in your de
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/app @backstage/plugin-periskop
+yarn --cwd packages/app add @backstage/plugin-periskop
 ```
 
 3. Add to the app `EntityPage` component:
@@ -53,7 +53,7 @@ annotations:
 
 ### Instances
 
-The periskop plugin can be configured to fetch aggregated errors from multiple deployment instances.  
+The periskop plugin can be configured to fetch aggregated errors from multiple deployment instances.
 This is especially useful if you have a multi-zone deployment, or a federated setup and would like to drill deeper into a single instance of the federation. Each of the configured instances will be included in the plugin's UI via a dropdown on the errors table.
 
 The plugin requires to configure _at least one_ Periskop API location in the [app-config.yaml](https://github.com/backstage/backstage/blob/master/app-config.yaml):

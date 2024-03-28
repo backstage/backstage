@@ -13,23 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
 import yaml from 'yaml';
 import { createGitlabProjectAccessTokenAction } from './createGitlabProjectAccessTokenAction'; // Adjust the import based on your project structure
-import { ScmIntegrations } from '@backstage/integration';
-import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
 import { examples } from './createGitlabProjectAccessTokenAction.examples';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+
+import { DateTime } from 'luxon';
 
 jest.mock('node-fetch');
 
 const mockGitlabClient = {
-  ProjectDeployTokens: {
+  ProjectAccessTokens: {
     create: jest.fn(),
   },
 };
 
-jest.mock('@gitbeaker/node', () => ({
+jest.mock('@gitbeaker/rest', () => ({
   Gitlab: class {
     constructor() {
       return mockGitlabClient;
@@ -57,247 +58,138 @@ describe('gitlab:projectAccessToken:create examples', () => {
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createGitlabProjectAccessTokenAction({ integrations });
 
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();
   });
 
   it('Create a GitLab project access token with minimal options.', async () => {
-    const fetchMock = jest.spyOn(global, 'fetch');
-    const mockResponse = {
-      token: 'mock-access-token',
-    };
-
-    fetchMock.mockResolvedValue({
-      json: async () => mockResponse,
-    } as Response);
-
-    jest.mock('../util', () => ({
-      getToken: jest.fn().mockReturnValue({
-        token: 'mock-api-token',
-        integrationConfig: { config: { baseUrl: 'https://api.gitlab.com' } },
-      }),
-    }));
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'TOKEN',
+      username: 'User',
+    });
 
     const input = yaml.parse(examples[0].example).steps[0].input;
-
     await action.handler({
       ...mockContext,
       input,
     });
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://gitlab.com/api/v4/projects/456/access_tokens',
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '456',
+      'tokenname',
+      ['read_repository'],
       {
-        method: 'POST',
-        headers: {
-          'PRIVATE-TOKEN': 'tokenlols',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: undefined,
-          scopes: undefined,
-          access_level: undefined,
-        }),
+        accessLevel: 40,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'mock-access-token',
-    );
+
+    expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
   });
 
   it('Create a GitLab project access token with custom scopes.', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'TOKEN',
+      username: 'User',
+    });
+
     const input = yaml.parse(examples[1].example).steps[0].input;
-
-    const mockResponse = {
-      token: 'mock-access-token',
-    };
-
-    const fetchMock = jest.spyOn(global, 'fetch');
-    fetchMock.mockResolvedValue({
-      json: async () => mockResponse,
-    } as Response);
-
-    jest.mock('../util', () => ({
-      getToken: jest.fn().mockReturnValue({
-        token: 'mock-api-token',
-        integrationConfig: { config: { baseUrl: 'https://api.gitlab.com' } },
-      }),
-    }));
-
     await action.handler({
       ...mockContext,
       input,
     });
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://gitlab.com/api/v4/projects/789/access_tokens',
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '789',
+      'tokenname',
+      ['read_registry', 'write_repository'],
       {
-        method: 'POST',
-        headers: {
-          'PRIVATE-TOKEN': 'tokenlols',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: undefined,
-          scopes: ['read_registry', 'write_repository'],
-          access_level: undefined,
-        }),
+        accessLevel: 40,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'mock-access-token',
-    );
+    expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
   });
 
   it('Create a GitLab project access token with a specified name.', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'TOKEN',
+      username: 'User',
+    });
+
     const input = yaml.parse(examples[2].example).steps[0].input;
-
-    const mockResponse = {
-      token: 'mock-access-token',
-    };
-
-    const fetchMock = jest.spyOn(global, 'fetch');
-    fetchMock.mockResolvedValue({
-      json: async () => mockResponse,
-    } as Response);
-
-    jest.mock('../util', () => ({
-      getToken: jest.fn().mockReturnValue({
-        token: 'mock-api-token',
-        integrationConfig: { config: { baseUrl: 'https://api.gitlab.com' } },
-      }),
-    }));
-
     await action.handler({
       ...mockContext,
       input,
     });
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://gitlab.com/api/v4/projects/101112/access_tokens',
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '101112',
+      'my-custom-token',
+      ['read_repository'],
       {
-        method: 'POST',
-        headers: {
-          'PRIVATE-TOKEN': 'tokenlols',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: 'my-custom-token',
-          scopes: undefined,
-          access_level: undefined,
-        }),
+        accessLevel: 40,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'mock-access-token',
-    );
+    expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
   });
 
   it('Create a GitLab project access token with a numeric project ID.', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'TOKEN',
+      username: 'User',
+    });
+
     const input = yaml.parse(examples[3].example).steps[0].input;
-
-    const mockResponse = {
-      token: 'mock-access-token',
-    };
-
-    const fetchMock = jest.spyOn(global, 'fetch');
-    fetchMock.mockResolvedValue({
-      json: async () => mockResponse,
-    } as Response);
-
-    jest.mock('../util', () => ({
-      getToken: jest.fn().mockReturnValue({
-        token: 'mock-api-token',
-        integrationConfig: { config: { baseUrl: 'https://api.gitlab.com' } },
-      }),
-    }));
-
     await action.handler({
       ...mockContext,
       input,
     });
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://gitlab.com/api/v4/projects/42/access_tokens',
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      42,
+      'tokenname',
+      ['read_repository'],
       {
-        method: 'POST',
-        headers: {
-          'PRIVATE-TOKEN': 'tokenlols',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: undefined,
-          scopes: undefined,
-          access_level: undefined,
-        }),
+        accessLevel: 40,
+        expiresAt: DateTime.now().plus({ days: 365 }).toISODate()!,
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'mock-access-token',
-    );
+    expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
   });
 
-  it('Create a GitLab project access token using specific GitLab integrations.', async () => {
+  it('Create a GitLab project access token with a specified expired Date.', async () => {
+    mockGitlabClient.ProjectAccessTokens.create.mockResolvedValue({
+      token: 'TOKEN',
+      username: 'User',
+    });
+
     const input = yaml.parse(examples[4].example).steps[0].input;
-
-    const mockResponse = {
-      token: 'mock-access-token',
-    };
-
-    const fetchMock = jest.spyOn(global, 'fetch');
-    fetchMock.mockResolvedValue({
-      json: async () => mockResponse,
-    } as Response);
-
-    jest.mock('../util', () => ({
-      getToken: jest.fn().mockReturnValue({
-        token: 'mock-api-token',
-        integrationConfig: { config: { baseUrl: 'https://api.gitlab.com' } },
-      }),
-    }));
-
     await action.handler({
       ...mockContext,
       input,
     });
 
-    expect(fetchMock).toHaveBeenCalledWith(
-      'https://gitlab.com/api/v4/projects/123/access_tokens',
+    expect(mockGitlabClient.ProjectAccessTokens.create).toHaveBeenCalledWith(
+      '123',
+      'tokenname',
+      ['read_repository'],
       {
-        method: 'POST',
-        headers: {
-          'PRIVATE-TOKEN': 'tokenlols',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          name: undefined,
-          scopes: undefined,
-          access_level: undefined,
-        }),
+        accessLevel: 40,
+        expiresAt: '2024-06-25',
       },
     );
 
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'access_token',
-      'mock-access-token',
-    );
+    expect(mockContext.output).toHaveBeenCalledWith('access_token', 'TOKEN');
   });
 });

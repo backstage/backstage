@@ -15,13 +15,12 @@
  */
 
 import React, { ReactNode } from 'react';
-import {
-  Box,
-  Chip,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { Link } from '@backstage/core-components';
 import {
   IndexableDocument,
@@ -56,6 +55,7 @@ export interface CatalogSearchResultListItemProps {
   result?: IndexableDocument;
   highlight?: ResultHighlight;
   rank?: number;
+  lineClamp?: number;
 }
 
 /** @public */
@@ -94,15 +94,27 @@ export function CatalogSearchResultListItem(
             </Link>
           }
           secondary={
-            highlight?.fields.text ? (
-              <HighlightedSearchResultText
-                text={highlight.fields.text}
-                preTag={highlight.preTag}
-                postTag={highlight.postTag}
-              />
-            ) : (
-              result.text
-            )
+            <Typography
+              component="span"
+              style={{
+                display: '-webkit-box',
+                WebkitBoxOrient: 'vertical',
+                WebkitLineClamp: props.lineClamp,
+                overflow: 'hidden',
+              }}
+              color="textSecondary"
+              variant="body2"
+            >
+              {highlight?.fields.text ? (
+                <HighlightedSearchResultText
+                  text={highlight.fields.text}
+                  preTag={highlight.preTag}
+                  postTag={highlight.postTag}
+                />
+              ) : (
+                result.text
+              )}
+            </Typography>
           }
         />
         <Box>

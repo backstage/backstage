@@ -63,7 +63,7 @@ function isNotFoundError(error: any): boolean {
 }
 
 const ReadmeCardError = ({ error }: ErrorProps) => {
-  if (isNotFoundError(error))
+  if (isNotFoundError(error)) {
     return (
       <EmptyState
         title="No README available for this entity"
@@ -80,13 +80,13 @@ const ReadmeCardError = ({ error }: ErrorProps) => {
         }
       />
     );
+  }
   return <ErrorPanel title={error.message} error={error} />;
 };
 
 export const ReadmeCard = (props: Props) => {
   const classes = useStyles();
   const { entity } = useEntity();
-
   const { loading, error, item: value } = useReadme(entity);
 
   if (loading) {

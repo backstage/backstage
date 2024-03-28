@@ -19,7 +19,7 @@ import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { compact, isEqual } from 'lodash';
 import { useMemo, useRef } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityUserFilter } from '../../filters';
 import { useEntityList, useStarredEntities } from '../../hooks';
@@ -34,13 +34,14 @@ export function useStarredEntitiesCount() {
   const request = useMemo(() => {
     const { user, ...allFilters } = filters;
     const compacted = compact(Object.values(allFilters));
-    const filter = reduceCatalogFilters(compacted);
+    const catalogFilters = reduceCatalogFilters(compacted);
 
     const facet = 'metadata.name';
 
     const newRequest: QueryEntitiesInitialRequest = {
+      ...catalogFilters,
       filter: {
-        ...filter,
+        ...catalogFilters.filter,
         /**
          * here we are filtering entities by `name`. Given this filter,
          * the response might contain more entities than expected, in case multiple entities

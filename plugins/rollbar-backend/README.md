@@ -8,7 +8,7 @@ Simple plugin that proxies requests to the [Rollbar](https://rollbar.com) API.
 
 ```bash
 # From your Backstage root directory
-yarn add --cwd packages/backend @backstage/plugin-rollbar-backend
+yarn --cwd packages/backend add @backstage/plugin-rollbar-backend
 ```
 
 2. Create a `rollbar.ts` file inside `packages/backend/src/plugins/`:

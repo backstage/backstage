@@ -31,6 +31,7 @@ import {
 import { catalogExtensionData } from '@backstage/plugin-catalog-react/alpha';
 import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
+import { buildFilterFn } from './filter/FilterWrapper';
 
 export const catalogPage = createPageExtension({
   defaultPath: '/catalog',
@@ -57,6 +58,8 @@ export const catalogEntityPage = createPageExtension({
       path: coreExtensionData.routePath,
       routeRef: coreExtensionData.routeRef.optional(),
       title: catalogExtensionData.entityContentTitle,
+      filterFunction: catalogExtensionData.entityFilterFunction.optional(),
+      filterExpression: catalogExtensionData.entityFilterExpression.optional(),
     }),
   },
   loader: async ({ inputs }) => {
@@ -65,13 +68,17 @@ export const catalogEntityPage = createPageExtension({
       return (
         <AsyncEntityProvider {...useEntityFromUrl()}>
           <EntityLayout>
-            {inputs.contents.map(content => (
+            {inputs.contents.map(({ output }) => (
               <EntityLayout.Route
-                key={content.output.path}
-                path={content.output.path}
-                title={content.output.title}
+                key={output.path}
+                path={output.path}
+                title={output.title}
+                if={buildFilterFn(
+                  output.filterFunction,
+                  output.filterExpression,
+                )}
               >
-                {content.output.element}
+                {output.element}
               </EntityLayout.Route>
             ))}
           </EntityLayout>

@@ -48,7 +48,7 @@ The permissions framework uses a new `permission-backend` plugin to accept autho
 
    ```bash
    # From your Backstage root directory
-   yarn add --cwd packages/backend @backstage/plugin-permission-backend
+   yarn --cwd packages/backend add @backstage/plugin-permission-backend
    ```
 
 2. Add the following to a new file, `packages/backend/src/plugins/permission.ts`. This adds the permission-backend router, and configures it with a policy which allows everything.

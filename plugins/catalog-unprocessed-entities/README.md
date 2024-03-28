@@ -29,7 +29,7 @@ Requires the `@backstage/plugin-catalog-backend-module-unprocessed` module to be
 ## Installation
 
 ```shell
-yarn add --cwd packages/app @backstage/plugin-catalog-unprocessed-entities
+yarn --cwd packages/app add @backstage/plugin-catalog-unprocessed-entities
 ```
 
 Import into your `App.tsx` and include into the `<FlatRoutes>` component:

@@ -77,7 +77,7 @@ export function readBitbucketServerIntegrationConfig(
 ): BitbucketServerIntegrationConfig {
   const host = config.getString('host');
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
-  const token = config.getOptionalString('token');
+  const token = config.getOptionalString('token')?.trim();
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password');
 

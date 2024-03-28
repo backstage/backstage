@@ -23,8 +23,11 @@ import { Tracker } from './Tracker';
 function useAnalyticsApi(): AnalyticsApi {
   try {
     return useApi(analyticsApiRef);
-  } catch {
-    return { captureEvent: () => {} };
+  } catch (error) {
+    if (error.name === 'NotImplementedError') {
+      return { captureEvent: () => {} };
+    }
+    throw error;
   }
 }
 

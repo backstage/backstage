@@ -15,16 +15,14 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import {
-  Button,
-  Grid,
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  ListItemText,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import {
   ApiRef,
   SessionApi,
@@ -101,16 +99,20 @@ export const ProviderSettingsItem = (props: {
               <Grid item xs={12} sm container>
                 <Grid item xs container direction="column" spacing={2}>
                   <Grid item xs>
-                    <Typography
-                      variant="subtitle1"
-                      color="textPrimary"
-                      gutterBottom
-                    >
-                      {profile.displayName}
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      {profile.email}
-                    </Typography>
+                    {profile.displayName && (
+                      <Typography
+                        variant="subtitle1"
+                        color="textPrimary"
+                        gutterBottom
+                      >
+                        {profile.displayName}
+                      </Typography>
+                    )}
+                    {profile.email && (
+                      <Typography variant="body2" color="textSecondary">
+                        {profile.email}
+                      </Typography>
+                    )}
                     <Typography variant="body2" color="textSecondary">
                       {description}
                     </Typography>

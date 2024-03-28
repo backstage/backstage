@@ -48,7 +48,7 @@ APIs.
 2.  Add a dependency to your `packages/app/package.json`:
     ```sh
     # From your Backstage root directory
-    yarn add --cwd packages/app @backstage/plugin-newrelic
+    yarn --cwd packages/app add @backstage/plugin-newrelic
     ```
 3.  Add the `NewRelicPage` to your `packages/app/src/App.tsx`:
 

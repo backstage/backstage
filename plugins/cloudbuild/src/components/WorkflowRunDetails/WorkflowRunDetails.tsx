@@ -15,18 +15,16 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import {
-  Box,
-  LinearProgress,
-  makeStyles,
-  Paper,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableRow,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Paper from '@material-ui/core/Paper';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import qs from 'qs';
 import React from 'react';
@@ -34,6 +32,7 @@ import { useProjectName } from '../useProjectName';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import { useWorkflowRunsDetails } from './useWorkflowRunsDetails';
 import { Breadcrumbs, Link, WarningPanel } from '@backstage/core-components';
+import { getLocation } from '../useLocation';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -63,8 +62,9 @@ const useStyles = makeStyles(theme => ({
 export const WorkflowRunDetails = (props: { entity: Entity }) => {
   const { value: projectName, loading, error } = useProjectName(props.entity);
   const [projectId] = (projectName ?? '/').split('/');
+  const location = getLocation(props.entity);
 
-  const details = useWorkflowRunsDetails(projectId);
+  const details = useWorkflowRunsDetails(projectId, location);
 
   const classes = useStyles();
   if (error) {
@@ -96,9 +96,9 @@ export const WorkflowRunDetails = (props: { entity: Entity }) => {
           <TableBody>
             <TableRow>
               <TableCell>
-                <Typography noWrap>Branch</Typography>
+                <Typography noWrap>Ref</Typography>
               </TableCell>
-              <TableCell>{details.value?.substitutions.BRANCH_NAME}</TableCell>
+              <TableCell>{details.value?.substitutions.REF_NAME}</TableCell>
             </TableRow>
             <TableRow>
               <TableCell>

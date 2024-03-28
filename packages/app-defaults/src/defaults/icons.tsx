@@ -34,7 +34,7 @@ import MuiMenuBookIcon from '@material-ui/icons/MenuBook';
 import MuiPeopleIcon from '@material-ui/icons/People';
 import MuiPersonIcon from '@material-ui/icons/Person';
 import MuiWarningIcon from '@material-ui/icons/Warning';
-import MuiWorkIcon from '@material-ui/icons/Work';
+import MuiStorageIcon from '@material-ui/icons/Storage';
 import MuiFeaturedPlayListIcon from '@material-ui/icons/FeaturedPlayList';
 
 export const icons = {
@@ -58,7 +58,7 @@ export const icons = {
   'kind:location': MuiLocationOnIcon as IconComponent,
   'kind:system': MuiCategoryIcon as IconComponent,
   'kind:user': MuiPersonIcon as IconComponent,
-  'kind:resource': MuiWorkIcon as IconComponent,
+  'kind:resource': MuiStorageIcon as IconComponent,
   'kind:template': MuiFeaturedPlayListIcon as IconComponent,
   user: MuiPersonIcon as IconComponent,
   warning: MuiWarningIcon as IconComponent,

@@ -24,6 +24,7 @@
  * call it directly with e.g. the output of `req.header('authorization')`
  * without first checking that it exists.
  *
+ * @deprecated Use the `credentials` method of `HttpAuthService` from `@backstage/backend-plugin-api` instead
  * @public
  */
 export function getBearerTokenFromAuthorizationHeader(

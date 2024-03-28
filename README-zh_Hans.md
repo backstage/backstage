@@ -66,7 +66,7 @@ Backstage 的文档包括：
 
 ## 许可
 
-版权所有 2020-2023 © Backstage 作者。版权所有。Linux 基金会已注册商标并使用商标。有关 Linux 基金会的商标列表，请参阅我们的商标使用页面：https://www.linuxfoundation.org/trademark-usage
+版权所有 2020-2024 © Backstage 作者。版权所有。Linux 基金会已注册商标并使用商标。有关 Linux 基金会的商标列表，请参阅我们的商标使用页面：https://www.linuxfoundation.org/trademark-usage
 
 采用 Apache v2.0 许可：http://www.apache.org/licenses/LICENSE-2.0
 

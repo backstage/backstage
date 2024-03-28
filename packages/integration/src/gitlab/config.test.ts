@@ -55,7 +55,7 @@ describe('readGitLabIntegrationConfig', () => {
     const output = readGitLabIntegrationConfig(
       buildConfig({
         host: 'a.com',
-        token: 't',
+        token: ' t\n',
         apiBaseUrl: 'https://a.com',
         baseUrl: 'https://baseurl.for.me/gitlab',
       }),

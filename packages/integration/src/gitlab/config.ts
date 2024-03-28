@@ -67,7 +67,7 @@ export function readGitLabIntegrationConfig(
 ): GitLabIntegrationConfig {
   const host = config.getString('host');
   let apiBaseUrl = config.getOptionalString('apiBaseUrl');
-  const token = config.getOptionalString('token');
+  const token = config.getOptionalString('token')?.trim();
   let baseUrl = config.getOptionalString('baseUrl');
   if (apiBaseUrl) {
     apiBaseUrl = trimEnd(apiBaseUrl, '/');

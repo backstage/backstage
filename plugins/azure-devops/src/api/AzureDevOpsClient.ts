@@ -27,21 +27,21 @@ import {
   RepoBuildOptions,
   Team,
 } from '@backstage/plugin-azure-devops-common';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { AzureDevOpsApi } from './AzureDevOpsApi';
 
 /** @public */
 export class AzureDevOpsClient implements AzureDevOpsApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
 
   public constructor(options: {
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
   }) {
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
   }
 
   public async getRepoBuilds(
@@ -72,6 +72,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   public async getGitTags(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
   ): Promise<{ items: GitTag[] }> {
@@ -82,6 +83,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (org) {
       queryString.append('org', org);
     }
+    queryString.append('entityRef', entityRef);
     const urlSegment = `git-tags/${encodeURIComponent(
       projectName,
     )}/${encodeURIComponent(repoName)}?${queryString}`;
@@ -93,6 +95,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
   public async getPullRequests(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
     options?: PullRequestOptions,
@@ -110,6 +113,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (org) {
       queryString.append('org', org);
     }
+    queryString.append('entityRef', entityRef);
     const urlSegment = `pull-requests/${encodeURIComponent(
       projectName,
     )}/${encodeURIComponent(repoName)}?${queryString}`;
@@ -136,6 +140,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 
   public async getBuildRuns(
     projectName: string,
+    entityRef: string,
     repoName?: string,
     definitionName?: string,
     host?: string,
@@ -174,6 +179,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (options?.top) {
       queryString.append('top', options.top.toString());
     }
+    queryString.append('entityRef', entityRef);
     const urlSegment = `builds/${encodeURIComponent(
       projectName,
     )}?${queryString}`;
@@ -189,6 +195,10 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (opts.org) {
       queryString.append('org', opts.org);
     }
+    if (opts.path) {
+      queryString.append('path', opts.path);
+    }
+    queryString.append('entityRef', opts.entityRef);
     return await this.get(
       `readme/${encodeURIComponent(opts.project)}/${encodeURIComponent(
         opts.repo,
@@ -200,10 +210,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('azure-devops')}/`;
     const url = new URL(path, baseUrl);
 
-    const { token: idToken } = await this.identityApi.getCredentials();
-    const response = await fetch(url.toString(), {
-      headers: idToken ? { Authorization: `Bearer ${idToken}` } : {},
-    });
+    const response = await this.fetchApi.fetch(url.toString());
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);

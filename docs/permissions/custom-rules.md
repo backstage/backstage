@@ -4,7 +4,7 @@ title: Defining custom permission rules
 description: How to define custom permission rules for existing resources
 ---
 
-For some use cases, you may want to define custom [rules](./concepts.md#resources-and-rules) in addition to the ones provided by a plugin. In the [previous section](./writing-a-policy.md) we used the `isEntityOwner` rule to control access for catalog entities. Let's extend this policy with a custom rule that checks what [system](https://backstage.io/docs/features/software-catalog/system-model#system) an entity is part of.
+For some use cases, you may want to define custom [rules](../references/glossary.md#rule-permission-plugin) in addition to the ones provided by a plugin. In the [previous section](./writing-a-policy.md) we used the `isEntityOwner` rule to control access for catalog entities. Let's extend this policy with a custom rule that checks what [system](https://backstage.io/docs/features/software-catalog/system-model#system) an entity is part of.
 
 ## Define a custom rule
 

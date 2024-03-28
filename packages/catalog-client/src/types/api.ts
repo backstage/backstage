@@ -203,6 +203,10 @@ export interface GetEntitiesByRefsRequest {
    * declarations.
    */
   fields?: EntityFieldsQuery | undefined;
+  /**
+   * If given, return only entities that match the given filter.
+   */
+  filter?: EntityFilterQuery;
 }
 
 /**
@@ -494,8 +498,8 @@ export interface CatalogApi {
    *   limit: 20,
    *   fullTextFilter: {
    *     term: 'A',
-   *   }
-   *   orderFields: { field: 'metadata.name' order: 'asc' },
+   *   },
+   *   orderFields: { field: 'metadata.name', order: 'asc' },
    * });
    * ```
    *
@@ -628,6 +632,17 @@ export interface CatalogApi {
     id: string,
     options?: CatalogRequestOptions,
   ): Promise<void>;
+
+  /**
+   * Gets a location associated with an entity.
+   *
+   * @param entityRef - A complete entity ref, either on string or compound form
+   * @param options - Additional options
+   */
+  getLocationByEntity(
+    entityRef: string | CompoundEntityRef,
+    options?: CatalogRequestOptions,
+  ): Promise<Location | undefined>;
 
   /**
    * Validate entity and its location.

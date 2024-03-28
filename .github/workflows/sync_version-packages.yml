@@ -14,11 +14,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@eb238b55efaa70779f274895e782ed17c84f2895 # v2.6.1
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v4.1.1
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
         with:
           fetch-depth: 20000
           fetch-tags: true
@@ -26,7 +26,7 @@ jobs:
       - name: Install Dependencies
         run: yarn --immutable
       - name: Create Release Pull Request
-        uses: backstage/changesets-action@v2.1.0
+        uses: backstage/changesets-action@99063c276a7f12e024cb310e7a05a3a5b89449f8 # v2.1.0
         with:
           # Calls out to `changeset version`, but also runs prettier
           version: yarn release

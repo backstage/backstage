@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import { EmptyState } from '@backstage/core-components';
 
 export const ServiceNotFoundError = () => (

@@ -18,6 +18,7 @@ import { BackstagePackageJson } from '@backstage/cli-node';
 import { Config, ConfigReader } from '@backstage/config';
 import chokidar from 'chokidar';
 import fs from 'fs-extra';
+import PQueue from 'p-queue';
 import { join as joinPath, resolve as resolvePath } from 'path';
 import { paths as cliPaths } from '../paths';
 
@@ -104,6 +105,9 @@ async function detectPackages(
   });
 }
 
+// Make sure we're not issuing multiple writes at the same time, which can cause partial overwrites
+const writeQueue = new PQueue({ concurrency: 1 });
+
 async function writeDetectedPackagesModule(
   pkgs: { name: string; export?: string; import: string }[],
 ) {
@@ -116,13 +120,15 @@ async function writeDetectedPackagesModule(
     )
     .join(',');
 
-  await fs.writeFile(
-    joinPath(
-      cliPaths.targetRoot,
-      'node_modules',
-      `${DETECTED_MODULES_MODULE_NAME}.js`,
+  await writeQueue.add(() =>
+    fs.writeFile(
+      joinPath(
+        cliPaths.targetRoot,
+        'node_modules',
+        `${DETECTED_MODULES_MODULE_NAME}.js`,
+      ),
+      `window['__@backstage/discovered__'] = { modules: [${requirePackageScript}] };`,
     ),
-    `window['__@backstage/discovered__'] = { modules: [${requirePackageScript}] };`,
   );
 }
 

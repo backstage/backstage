@@ -1,0 +1,31 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: Microsite Accessibility
+on:
+  pull_request:
+    branches: [master]
+    paths-ignore:
+      - '.github/workflows/verify_microsite_accessibility.yml'
+      - 'microsite/scripts/**'
+      - 'microsite/src/**'
+      - 'microsite/data/**'
+      - 'microsite/blog/**'
+      - 'microsite/static/**'
+      - 'beps/**'
+      - 'mkdocs.yml'
+      - 'docs/**'
+permissions:
+  contents: read
+
+jobs:
+  noop:
+    name: Microsite Accessibility
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - run: echo NOOP
