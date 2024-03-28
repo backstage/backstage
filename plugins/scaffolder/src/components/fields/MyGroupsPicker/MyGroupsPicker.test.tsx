@@ -274,4 +274,51 @@ describe('<MyGroupsPicker />', () => {
       expect(onChange).toHaveBeenCalledWith('group:default/group1');
     });
   });
+
+  it('should use the pre-existed formdata value if set with the form', async () => {
+    const userGroups = [
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: { name: 'group1', title: 'My First Group' },
+        spec: { members: ['Bob'] },
+      },
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: { name: 'group2', title: 'My Second Group' },
+        spec: { members: ['Bob'] },
+      },
+    ];
+
+    catalogApi.getEntities.mockResolvedValue({ items: userGroups });
+
+    const props = {
+      onChange,
+      schema,
+      required,
+      formData: 'group:default/group1',
+    } as unknown as FieldProps<string>;
+
+    const { getByRole } = render(
+      <TestApiProvider
+        apis={[
+          [identityApiRef, mockIdentityApi],
+          [catalogApiRef, catalogApi],
+          [errorApiRef, mockErrorApi],
+        ]}
+      >
+        <MyGroupsPicker {...props} />
+      </TestApiProvider>,
+    );
+
+    await waitFor(() =>
+      expect(catalogApi.getEntities).toHaveBeenCalledTimes(1),
+    );
+
+    const inputField = getByRole('combobox');
+    const inputFieldValue = inputField?.querySelector('input')?.value;
+
+    expect(inputFieldValue).toEqual(userGroups[0].metadata.title);
+  });
 });
