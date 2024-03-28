@@ -1,0 +1,56 @@
+name: API Breaking Changes (Trigger)
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    paths:
+      - '**/openapi.yaml'
+
+jobs:
+  get-backstage-changes:
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+    name: Build PR image
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        with:
+          # Fetch the commit that's merged into the base rather than the target ref
+          # This will let us diff only the contents of the PR, without fetching more history
+          ref: 'refs/pull/${{ github.event.pull_request.number }}/merge'
+      - name: fetch base
+        run: git fetch --depth 1 origin ${{ github.base_ref }}
+
+      - name: setup-node
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: 18.x
+          registry-url: https://registry.npmjs.org/
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
+        with:
+          cache-prefix: linux-v18
+
+      - name: breaking changes check
+        run: |
+          yarn backstage-repo-tools repo schema openapi check --since origin/${{ github.base_ref }} > comment.md
+
+      - name: Upload Rendered Comment as Artifact
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3
+        with:
+          name: preview-spec
+          path: comment.md
+          retention-days: 2
+
+      - name: Upload PR Event as Artifact
+        uses: actions/upload-artifact@a8a3f3ad30e3422c9c7b888a15615d19a852ae32 # v3.1.3
+        with:
+          name: preview-spec
+          path: ${{ github.event_path }}
+          retention-days: 2

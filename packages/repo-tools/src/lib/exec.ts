@@ -23,11 +23,9 @@ export const exec = (
   options: string[] = [],
   execOptions?: ExecOptions,
 ) => {
-  return execPromise(
-    [
-      command,
-      ...options.filter(e => e).map(e => (e.startsWith('-') ? e : `"${e}"`)),
-    ].join(' '),
-    execOptions,
-  );
+  const fileSafeCommand = [
+    command,
+    ...options.filter(e => e).map(e => (e.startsWith('-') ? e : `"${e}"`)),
+  ].join(' ');
+  return execPromise(fileSafeCommand, execOptions);
 };
