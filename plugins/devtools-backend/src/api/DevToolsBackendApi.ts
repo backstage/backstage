@@ -26,7 +26,6 @@ import {
 } from '@backstage/plugin-devtools-common';
 
 import { JsonObject } from '@backstage/types';
-import { Logger } from 'winston';
 import fetch from 'node-fetch';
 import { findPaths } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
@@ -36,11 +35,12 @@ import fs from 'fs-extra';
 import { Lockfile } from '../util/Lockfile';
 import { memoize } from 'lodash';
 import { assertError } from '@backstage/errors';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export class DevToolsBackendApi {
   public constructor(
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly config: Config,
   ) {}
 

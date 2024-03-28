@@ -26,5 +26,6 @@ export default async function createPlugin(
     config: env.config,
     permissions: env.permissions,
     discovery: env.discovery,
+    signalService: env.signalService,
   });
 }
