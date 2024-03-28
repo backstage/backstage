@@ -13191,14 +13191,14 @@ __metadata:
   linkType: hard
 
 "@newrelic/browser-agent@npm:^1.236.0":
-  version: 1.252.1
-  resolution: "@newrelic/browser-agent@npm:1.252.1"
+  version: 1.254.1
+  resolution: "@newrelic/browser-agent@npm:1.254.1"
   dependencies:
     core-js: ^3.26.0
     fflate: ^0.7.4
     rrweb: 2.0.0-alpha.11
     web-vitals: ^3.1.0
-  checksum: 19570311115a926fd99dd24036f71fc304834c6cc379ebcbef874288d6d9a0e3abd77c81df99110bbc395a2d68c4ceb926940913aac7ae4c6bfa9d5e7dfec875
+  checksum: ba0e173554d0358cda880ed46eada063bbe34383a21b39d224f0d5572a33079fdd6f6e811de1032ef74a6a68a0756d52a3d2c7f8f935c8e6e7816a7d2e99ef43
   languageName: node
   linkType: hard
 
