@@ -372,26 +372,39 @@ export function createVersionFinder(options: {
     releaseManifest?.packages.map(p => [p.name, p.version]),
   );
   return async function findTargetVersion(name: string) {
-    const existing = found.get(name);
+    let _name = name;
+    const existing = found.get(_name);
     if (existing) {
       return existing;
     }
 
-    console.log(`Checking for updates of ${name}`);
-    const manifestVersion = releasePackages.get(name);
+    console.log(`Checking for updates of ${_name}`);
+
+    const manifestVersion = releasePackages.get(_name);
     if (manifestVersion) {
       return manifestVersion;
     }
 
-    const info = await packageInfoFetcher(name);
+    // TODO: Properly fix inacurate typing here...
+    const info = (await packageInfoFetcher(_name)) as YarnInfoInspectData & {
+      backstage?: { moved?: string };
+    };
+
+    if (
+      info.backstage?.moved &&
+      info.backstage.moved.startsWith('@backstage-community/')
+    ) {
+      _name = info.backstage.moved;
+    }
+
     const latestVersion = info['dist-tags'].latest;
     if (!latestVersion) {
-      throw new Error(`No target 'latest' version found for ${name}`);
+      throw new Error(`No target 'latest' version found for ${_name}`);
     }
 
     const taggedVersion = info['dist-tags'][distTag];
     if (distTag === 'latest' || !taggedVersion) {
-      found.set(name, latestVersion);
+      found.set(_name, latestVersion);
       return latestVersion;
     }
 
@@ -399,12 +412,12 @@ export function createVersionFinder(options: {
     const taggedVersionDateStr = info.time[taggedVersion];
     if (!latestVersionDateStr) {
       throw new Error(
-        `No time available for version '${latestVersion}' of ${name}`,
+        `No time available for version '${latestVersion}' of ${_name}`,
       );
     }
     if (!taggedVersionDateStr) {
       throw new Error(
-        `No time available for version '${taggedVersion}' of ${name}`,
+        `No time available for version '${taggedVersion}' of ${_name}`,
       );
     }
 
@@ -412,11 +425,11 @@ export function createVersionFinder(options: {
     const taggedVersionRelease = new Date(taggedVersionDateStr).getTime();
     if (latestVersionRelease > taggedVersionRelease) {
       // Prefer latest version if it's newer.
-      found.set(name, latestVersion);
+      found.set(_name, latestVersion);
       return latestVersion;
     }
 
-    found.set(name, taggedVersion);
+    found.set(_name, taggedVersion);
     return taggedVersion;
   };
 }
