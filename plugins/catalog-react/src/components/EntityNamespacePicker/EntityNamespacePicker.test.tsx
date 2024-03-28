@@ -241,7 +241,7 @@ describe('<EntityNamespacePicker/>', () => {
     );
   });
   it('renders initially selected namespaces', async () => {
-    render(
+    renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
         <MockEntityListContextProvider value={{}}>
           <EntityNamespacePicker
