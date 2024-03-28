@@ -10,6 +10,7 @@ import { ComponentType } from 'react';
 import { Config } from '@backstage/config';
 import { IconComponent as IconComponent_2 } from '@backstage/core-plugin-api';
 import { IdentityApi as IdentityApi_2 } from '@backstage/core-plugin-api';
+import { IErrorPageProps as IErrorPageProps_2 } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
@@ -141,7 +142,7 @@ export type ApiRefConfig = {
 
 // @public
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
+  NotFoundErrorPage: ComponentType<PropsWithChildren<IErrorPageProps_2>>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<PropsWithChildren<{}>>;
   Router: ComponentType<
@@ -525,6 +526,20 @@ export type IdentityApi = {
 
 // @public
 export const identityApiRef: ApiRef<IdentityApi>;
+
+// @public
+export interface IErrorPageProps {
+  // (undocumented)
+  additionalInfo?: React.ReactNode;
+  // (undocumented)
+  stack?: string;
+  // (undocumented)
+  status?: string;
+  // (undocumented)
+  statusMessage?: string;
+  // (undocumented)
+  supportUrl?: string;
+}
 
 // @public @deprecated
 export type MakeSubRouteRef<

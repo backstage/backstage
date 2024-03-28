@@ -41,6 +41,7 @@ import { gitlabAuthApiRef } from '@backstage/core-plugin-api';
 import { googleAuthApiRef } from '@backstage/core-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { IErrorPageProps } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { OAuthApi } from '@backstage/core-plugin-api';
@@ -147,7 +148,7 @@ export class ApiResolver implements ApiHolder {
 
 // @public
 export type AppComponents = {
-  NotFoundErrorPage: ComponentType<PropsWithChildren<{}>>;
+  NotFoundErrorPage: ComponentType<PropsWithChildren<IErrorPageProps>>;
   BootErrorPage: ComponentType<BootErrorPageProps>;
   Progress: ComponentType<PropsWithChildren<{}>>;
   Router: ComponentType<

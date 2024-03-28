@@ -23,7 +23,8 @@ import {
   renderInTestApp,
   wrapInTestApp,
 } from '@backstage/test-utils';
-import { analyticsApiRef } from '@backstage/core-plugin-api';
+import { analyticsApiRef, IErrorPageProps } from '@backstage/core-plugin-api';
+import { ErrorPage } from '@backstage/core-components';
 
 jest.mock('@backstage/plugin-techdocs-react', () => {
   const actualModule = jest.requireActual('@backstage/plugin-techdocs-react');
@@ -50,7 +51,11 @@ jest.mock('react-router-dom', () => {
 
 describe('<TechDocsNotFound />', () => {
   it('should render with status code, status message and go back link', async () => {
-    await renderInTestApp(<TechDocsNotFound />);
+    await renderInTestApp(<TechDocsNotFound />, {
+      components: {
+        NotFoundErrorPage: (props: IErrorPageProps) => <ErrorPage {...props} />,
+      },
+    });
     screen.getByText(/Documentation not found/i);
     screen.getByText(/404/i);
     screen.getByText(/Looks like someone dropped the mic!/i);
@@ -65,6 +70,13 @@ describe('<TechDocsNotFound />', () => {
         <TestApiProvider apis={[[analyticsApiRef, mockAnalyticsApi]]}>
           <TechDocsNotFound />
         </TestApiProvider>,
+        {
+          components: {
+            NotFoundErrorPage: (props: IErrorPageProps) => (
+              <ErrorPage {...props} />
+            ),
+          },
+        },
       ),
     );
 
@@ -86,6 +98,13 @@ describe('<TechDocsNotFound errorMessage="This is a custom error message" />', (
   it('should render with a 404 code, custom error message and go back link', async () => {
     await renderInTestApp(
       <TechDocsNotFound errorMessage="This is a custom error message" />,
+      {
+        components: {
+          NotFoundErrorPage: (props: IErrorPageProps) => (
+            <ErrorPage {...props} />
+          ),
+        },
+      },
     );
     screen.getByText(/This is a custom error message/i);
     screen.getByText(/404/i);

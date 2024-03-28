@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,16 +15,15 @@
  */
 
 /**
- * Core API used by Backstage plugins
+ * Error page Props
  *
- * @packageDocumentation
- */
-
-export * from './analytics';
-export * from './apis';
-export * from './app';
-export * from './extensions';
-export * from './icons';
-export * from './plugin';
-export * from './routing';
-export * from './errorPage';
+ *  @public
+ *
+ * */
+export interface IErrorPageProps {
+  status?: string;
+  statusMessage?: string;
+  additionalInfo?: React.ReactNode;
+  supportUrl?: string;
+  stack?: string;
+}

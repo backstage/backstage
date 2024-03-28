@@ -19,20 +19,13 @@ import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Link } from '../../components/Link';
+import { Link } from '../../components';
 import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';
 import { StackDetails } from './StackDetails';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
-
-interface IErrorPageProps {
-  status?: string;
-  statusMessage: string;
-  additionalInfo?: React.ReactNode;
-  supportUrl?: string;
-  stack?: string;
-}
+import { IErrorPageProps } from '@backstage/core-plugin-api';
 
 /** @public */
 export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
@@ -68,7 +61,7 @@ const useStyles = makeStyles(
 export function ErrorPage(props: IErrorPageProps) {
   const {
     status = '',
-    statusMessage,
+    statusMessage = '',
     additionalInfo,
     supportUrl,
     stack,

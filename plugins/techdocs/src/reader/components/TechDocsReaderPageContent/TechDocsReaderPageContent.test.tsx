@@ -39,6 +39,8 @@ jest.mock('@backstage/plugin-techdocs-react', () => ({
 }));
 
 import { TechDocsReaderPageContent } from './TechDocsReaderPageContent';
+import { IErrorPageProps } from '@backstage/core-plugin-api';
+import { ErrorPage } from '@backstage/core-components';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -102,6 +104,13 @@ describe('<TechDocsReaderPageContent />', () => {
       <Wrapper>
         <TechDocsReaderPageContent withSearch={false} />
       </Wrapper>,
+      {
+        components: {
+          NotFoundErrorPage: (props: IErrorPageProps) => (
+            <ErrorPage {...props} />
+          ),
+        },
+      },
     );
 
     await waitFor(() => {
@@ -120,6 +129,13 @@ describe('<TechDocsReaderPageContent />', () => {
       <Wrapper>
         <TechDocsReaderPageContent withSearch={false} />
       </Wrapper>,
+      {
+        components: {
+          NotFoundErrorPage: (props: IErrorPageProps) => (
+            <ErrorPage {...props} />
+          ),
+        },
+      },
     );
 
     await waitFor(() => {
@@ -142,6 +158,13 @@ describe('<TechDocsReaderPageContent />', () => {
       <Wrapper>
         <TechDocsReaderPageContent withSearch={false} />
       </Wrapper>,
+      {
+        components: {
+          NotFoundErrorPage: (props: IErrorPageProps) => (
+            <ErrorPage {...props} />
+          ),
+        },
+      },
     );
 
     await waitFor(() => {
@@ -176,6 +199,13 @@ describe('<TechDocsReaderPageContent />', () => {
       <Wrapper>
         <TechDocsReaderPageContent withSearch={false} />
       </Wrapper>,
+      {
+        components: {
+          NotFoundErrorPage: (props: IErrorPageProps) => (
+            <ErrorPage {...props} />
+          ),
+        },
+      },
     );
 
     await waitFor(() => {
@@ -201,6 +231,13 @@ describe('<TechDocsReaderPageContent />', () => {
       <Wrapper>
         <TechDocsReaderPageContent withSearch={false} />
       </Wrapper>,
+      {
+        components: {
+          NotFoundErrorPage: (props: IErrorPageProps) => (
+            <ErrorPage {...props} />
+          ),
+        },
+      },
     );
 
     await waitFor(() => {
