@@ -21,7 +21,9 @@ import { SubstitutionFunc } from '../types';
 /**
  * A environment variable substitution transform that transforms e.g. 'token ${MY_TOKEN}'
  * to 'token abc' if MY_TOKEN is 'abc'. If any of the substituted variables are undefined,
- * the entire expression ends up undefined.
+ * the entire expression ends up undefined. Additionally, supports parameter substitution
+ * syntax to provide a default or fallback value for a given environment variable if it is
+ * unset; e.g. 'token ${MY_TOKEN:-xyz}' transforms to 'token xyz' if MY_TOKEN is unset.
  */
 export function createSubstitutionTransform(
   env: SubstitutionFunc,
@@ -37,7 +39,20 @@ export function createSubstitutionTransform(
       if (part.startsWith('$$')) {
         parts[i] = part.slice(1);
       } else {
-        parts[i] = await env(part.slice(2, -1).trim());
+        const indexOfFallbackSeparator = part.indexOf(':-');
+
+        if (indexOfFallbackSeparator > -1) {
+          const envVarValue = await env(
+            part.slice(2, indexOfFallbackSeparator).trim(),
+          );
+          const fallbackValue = part
+            .slice(indexOfFallbackSeparator + ':-'.length, -1)
+            .trim();
+
+          parts[i] = envVarValue || fallbackValue || undefined;
+        } else {
+          parts[i] = await env(part.slice(2, -1).trim());
+        }
       }
     }
 
