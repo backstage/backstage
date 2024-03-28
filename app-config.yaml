@@ -332,8 +332,8 @@ auth:
         clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
     github:
       development:
-        clientId: 66697c49158239373b26
-        clientSecret: 67e38219a58de5ed3e960956ed4b68060a097a26
+         clientId: ${AUTH_GOOGLE_CLIENT_ID}
+        clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
         enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
     gitlab:
       development:
