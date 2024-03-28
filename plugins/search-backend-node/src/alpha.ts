@@ -17,22 +17,20 @@
 import { Logger } from 'winston';
 
 import {
-  createServiceRef,
-  createServiceFactory,
   coreServices,
+  createExtensionPoint,
+  createServiceFactory,
+  createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
-import { createExtensionPoint } from '@backstage/backend-plugin-api';
 
 import {
+  IndexBuilder,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
-} from '@backstage/plugin-search-backend-node';
-
-import {
+  Scheduler,
   SearchEngine,
-  IndexBuilder,
 } from '@backstage/plugin-search-backend-node';
 
 /**
@@ -54,6 +52,11 @@ export interface SearchIndexService {
    * Starts indexing process
    */
   start(options: SearchIndexServiceStartOptions): Promise<void>;
+
+  /**
+   * Stops indexing process
+   */
+  stop(): void;
   /**
    * Returns an index types list.
    */
@@ -86,8 +89,9 @@ type DefaultSearchIndexServiceOptions = {
  * Reponsible for register the indexing task and start the schedule.
  */
 class DefaultSearchIndexService implements SearchIndexService {
-  private logger: Logger;
+  private readonly logger: Logger;
   private indexBuilder: IndexBuilder | null = null;
+  private scheduler: Scheduler | null = null;
 
   private constructor(options: DefaultSearchIndexServiceOptions) {
     this.logger = options.logger;
@@ -112,7 +116,15 @@ class DefaultSearchIndexService implements SearchIndexService {
     );
 
     const { scheduler } = await this.indexBuilder?.build();
-    scheduler.start();
+    this.scheduler = scheduler;
+    this.scheduler!.start();
+  }
+
+  stop(): void {
+    if (this.scheduler) {
+      this.scheduler.stop();
+      this.scheduler = null;
+    }
   }
 
   getDocumentTypes(): Record<string, DocumentTypeInfo> {

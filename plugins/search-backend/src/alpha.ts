@@ -20,17 +20,17 @@ import {
 } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
+  LunrSearchEngine,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
   SearchEngine,
-  LunrSearchEngine,
 } from '@backstage/plugin-search-backend-node';
 import {
-  searchIndexServiceRef,
-  searchIndexRegistryExtensionPoint,
-  SearchIndexRegistryExtensionPoint,
   SearchEngineRegistryExtensionPoint,
   searchEngineRegistryExtensionPoint,
+  searchIndexRegistryExtensionPoint,
+  SearchIndexRegistryExtensionPoint,
+  searchIndexServiceRef,
 } from '@backstage/plugin-search-backend-node/alpha';
 
 import { createRouter } from './service/router';
@@ -99,6 +99,7 @@ export default createBackendPlugin({
         auth: coreServices.auth,
         http: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
+        lifecycle: coreServices.rootLifecycle,
         searchIndexService: searchIndexServiceRef,
       },
       async init({
@@ -109,6 +110,7 @@ export default createBackendPlugin({
         auth,
         http,
         httpAuth,
+        lifecycle,
         searchIndexService,
       }) {
         let searchEngine = searchEngineRegistry.getSearchEngine();
@@ -121,10 +123,16 @@ export default createBackendPlugin({
         const collators = searchIndexRegistry.getCollators();
         const decorators = searchIndexRegistry.getDecorators();
 
-        await searchIndexService.start({
-          searchEngine,
-          collators,
-          decorators,
+        lifecycle.addShutdownHook(() => {
+          searchIndexService.stop();
+        });
+
+        lifecycle.addStartupHook(async () => {
+          await searchIndexService.start({
+            searchEngine: searchEngine!,
+            collators,
+            decorators,
+          });
         });
 
         const router = await createRouter({
