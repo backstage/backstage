@@ -12,7 +12,6 @@ const backend = createBackend();
 
 backend.add(import('@backstage/plugin-app-backend/alpha'));
 backend.add(import('@backstage/plugin-proxy-backend/alpha'));
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
 
 // auth plugin
@@ -32,6 +31,12 @@ backend.add(import('@backstage/plugin-permission-backend/alpha'));
 backend.add(
   import('@backstage/plugin-permission-backend-module-allow-all-policy'),
 );
+
+// scaffolder plugin
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+// See: https://backstage.io/docs/features/software-templates/builtin-actions#action-modules
+// If you don't use GitHub, feel free to remove this
+backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 
 // search plugin
 backend.add(import('@backstage/plugin-search-backend/alpha'));
