@@ -39,10 +39,13 @@ export async function createConfigSecretEnumerator(options: {
 }): Promise<(config: Config) => Iterable<string>> {
   const { logger, dir = process.cwd() } = options;
   const { packages } = await getPackages(dir);
+
   const schema =
     options.schema ??
     (await loadConfigSchema({
-      dependencies: packages.map(p => p.packageJson.name),
+      dependencies: packages
+        .filter(p => p.dir === dir)
+        .map(e => e.packageJson.name),
     }));
 
   return (config: Config) => {
