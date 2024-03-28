@@ -82,6 +82,7 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
     allowedKinds?: string[] | undefined;
     defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
+    optionLabelSchema?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
       | Record<
@@ -111,6 +112,7 @@ export const EntityPickerFieldSchema: FieldSchema<
     allowedKinds?: string[] | undefined;
     defaultKind?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
+    optionLabelSchema?: string | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
       | Record<
@@ -330,6 +332,7 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
     allowedKinds?: string[] | undefined;
+    optionLabelSchema?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
@@ -358,6 +361,7 @@ export const OwnerPickerFieldSchema: FieldSchema<
   string,
   {
     allowedKinds?: string[] | undefined;
+    optionLabelSchema?: string | undefined;
     allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
     catalogFilter?:
