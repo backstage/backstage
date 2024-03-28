@@ -96,6 +96,7 @@ export async function makeRollupConfigs(
         interop: 'compat',
         sourcemap: true,
         exports: 'named',
+        dynamicImportInCjs: true,
       });
     }
     if (options.outputs.has(Output.esm)) {

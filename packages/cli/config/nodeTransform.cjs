@@ -27,6 +27,7 @@ addHook(
         target: 'es2022',
         parser: {
           syntax: 'typescript',
+          dynamicImport: true,
         },
       },
     });
