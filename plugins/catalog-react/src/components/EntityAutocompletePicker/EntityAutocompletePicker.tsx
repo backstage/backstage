@@ -144,8 +144,8 @@ export function EntityAutocompletePicker<
     return null;
   }
 
-  // Hide if there are 1 or fewer options; nothing to pick from
-  if (availableOptions.length <= 1) return null;
+  // Hide if there are no options; nothing to pick from
+  if (availableOptions.length === 0) return null;
 
   return (
     <Box className={classes.root} pb={1} pt={1}>
