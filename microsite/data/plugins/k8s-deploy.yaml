@@ -1,0 +1,10 @@
+---
+title: Deploy Kubernetes Manifests
+author: Josephine Pfeiffer
+authorUrl: https://josie.lol
+category: CI
+description: Scaffolder action plugin to deploy manifests to Kubernetes clusters.
+documentation: https://github.com/pfeifferj/backstage-plugin-scaffolder-kubernetes-deploy/blob/main/README.md
+iconUrl: /img/k8sapplylogo.png
+npmPackageName: '@pfeifferj/plugin-scaffolder-backend-module-kubernetes-deploy'
+addedDate: '2024-03-05'
