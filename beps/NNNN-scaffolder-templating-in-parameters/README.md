@@ -1,5 +1,5 @@
 ---
-title: Supporting templating syntax in `parameters`
+title: Supporting templating syntax in `parameters` schema
 status: provisional
 authors:
   - '@benjdlambert'
@@ -17,11 +17,11 @@ creation-date: 2024-03-26
 When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions focused. If you disagree with what is already in a document, open a new PR with suggested changes.
 -->
 
-# BEP: <!-- Your short, descriptive title -->
+# BEP: Supporting templating syntax in `parameters` schema
 
 <!-- Before merging the initial BEP PR, create a feature issue and update the below link. You can wait with this step until the BEP is ready to be merged. -->
 
-[**Discussion Issue**](https://github.com/backstage/backstage/issues/NNNNN)
+[**Discussion Issue**](https://github.com/backstage/backstage/issues/16275)
 
 - [Summary](#summary)
 - [Motivation](#motivation)
@@ -39,6 +39,30 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 The summary of the BEP is a few paragraphs long and give a high-level overview of the features to be implemented. It should be possible to read *only* the summary and understand what the BEP is proposing to accomplish and what impact it has for users.
 -->
 
+This BEP proposes to add support for templating syntax in the `parameters` schema of a scaffolder template.
+This will allow users to define properties in the JSON Schema which are templated from current values that have been collected from the user already.
+This can be useful when you want to use a value that has already been collected as a default value in another field.
+
+For example:
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: my-template
+spec:
+  parameters:
+    - title: Some input
+      description: Get some info from the user
+      properties:
+        name:
+          type: string
+          default: Test
+        description:
+          type: string
+          default: ${{ parameters.name or "unknown" }}-description
+```
+
 ## Motivation
 
 <!--
@@ -46,12 +70,28 @@ This section is for explicitly listing the motivation, goals, and non-goals of
 this BEP. Describe why the change is important and the benefits to users.
 -->
 
+Inclusive of the initial RFC there's been a swarm of issues that are requesting this feature, and we want to align on the implementation and design of this feature.
+
+See the following:
+
+- https://github.com/backstage/backstage/issues/16275
+- https://github.com/backstage/backstage/pull/23283
+- https://github.com/backstage/backstage/issues/19597
+- https://github.com/backstage/backstage/issues/20533
+- https://github.com/backstage/backstage/pull/17746
+
+There's some ideas for introducing a templating syntax for both templating into the `parameters` schema, and also being able to pass through some templating strings to underlying field extensions that can use those templating strings.
+We want to align here so that we're not going to have those conflict or compete, and create a standard for how to achieve templating in both circumstances.
+
 ### Goals
 
 <!--
 List the specific goals of the BEP. What is it trying to achieve? How will we
 know that this has succeeded?
 -->
+
+- This BEP will settle the implementation for the templating of fields into the JSON Schema in the `parameters` section in the scaffolder templates.
+- This BEP will settle how to pass through templating strings to underlying field extensions in a non-conflicting way.
 
 ### Non-Goals
 
