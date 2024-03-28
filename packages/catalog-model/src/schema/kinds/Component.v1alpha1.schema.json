@@ -92,6 +92,32 @@
                 "type": "string",
                 "minLength": 1
               }
+            },
+            "deploysToEnvironments": {
+              "type": "array",
+              "description": "An array of references to environments that this component is deployed to.",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "environmentOverrides": {
+              "type": "object",
+              "additionalProperties": {
+                "type": "object",
+                "properties": {
+                  "annotations": {
+                    "type": "object",
+                    "description": "Key/value pairs of non-identifying auxiliary information attached to the entity.",
+                    "additionalProperties": true,
+                    "patternProperties": {
+                      "^.+$": {
+                        "type": "string"
+                      }
+                    }
+                  }
+                }
+              }
             }
           }
         }

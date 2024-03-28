@@ -39,6 +39,21 @@ export interface ComponentEntityV1alpha1 extends Entity {
     consumesApis?: string[];
     dependsOn?: string[];
     system?: string;
+    /**
+     * A list of entity refs with kind=Environment, that this component is deployed to.
+     */
+    deploysToEnvironments?: string[];
+
+    /**
+     * A map of Environment entity ref to entity metadata to override in that environment. By default,
+     *  a Component's metadata reflects their production deployment.
+     */
+    environmentOverrides?: Record<
+      string,
+      {
+        annotations: Record<string, string>;
+      }
+    >;
   };
 }
 

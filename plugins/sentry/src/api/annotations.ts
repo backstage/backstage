@@ -25,6 +25,14 @@ const parseAnnotation = (entity: Entity) => {
     .reverse();
 };
 
+export const getSentryAnnotationParts = (annotation: string) => {
+  const [projectSlug, organization] = annotation.split('/').reverse();
+  return {
+    projectSlug,
+    organization,
+  };
+};
+
 export const getProjectSlug = (entity: Entity) => {
   const [projectSlug, _] = parseAnnotation(entity);
   return projectSlug ?? '';

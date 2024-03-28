@@ -46,6 +46,7 @@ catalog:
         - System
         - Domain
         - Location
+        - Environment
   locations:
     - type: url
       target: https://github.com/backstage/backstage/blob/${REF_NAME}/packages/catalog-model/examples/all.yaml

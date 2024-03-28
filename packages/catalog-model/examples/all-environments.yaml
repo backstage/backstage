@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Location
+metadata:
+  name: example-environments
+  description: A collection of all Backstage example environments
+spec:
+  targets:
+    - ./environments/prod.yaml
+    - ./environments/dev.yaml

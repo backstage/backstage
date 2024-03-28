@@ -18,8 +18,10 @@ import {
   getProjectSlug,
   getOrganization,
   SENTRY_PROJECT_SLUG_ANNOTATION,
+  getSentryAnnotationParts,
 } from '../api/annotations';
 
 export const useProjectSlug = getProjectSlug;
 export const useOrganization = getOrganization;
+export const useSentryAnnotation = getSentryAnnotationParts;
 export { SENTRY_PROJECT_SLUG_ANNOTATION };

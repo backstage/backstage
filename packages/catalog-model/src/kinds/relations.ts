@@ -72,6 +72,22 @@ export const RELATION_PROVIDES_API = 'providesApi';
 export const RELATION_API_PROVIDED_BY = 'apiProvidedBy';
 
 /**
+ * A relation from an API provider entity (typically a component) to the API. Reversed direction of
+ * {@link RELATION_API_PROVIDED_BY}.
+ *
+ * @public
+ */
+export const RELATION_DEPLOYS_TO_ENVIRONMENT = 'deploysToEnvironment';
+
+/**
+ * A relation from an API to its provider entity (typically a component). Reversed direction of
+ * {@link RELATION_PROVIDES_API}.
+ *
+ * @public
+ */
+export const RELATION_ENVIRONMENT_HAS_DEPLOYMENT = 'environmentHasDeployment';
+
+/**
  * A relation denoting a dependency on another entity. Reversed direction of
  * {@link RELATION_DEPENDENCY_OF}.
  *

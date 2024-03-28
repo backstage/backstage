@@ -88,6 +88,13 @@ interface ComponentEntityV1alpha1 extends Entity {
     consumesApis?: string[];
     dependsOn?: string[];
     system?: string;
+    deploysToEnvironments?: string[];
+    environmentOverrides?: Record<
+      string,
+      {
+        annotations: Record<string, string>;
+      }
+    >;
   };
 }
 export { ComponentEntityV1alpha1 as ComponentEntity };
@@ -202,6 +209,23 @@ export type EntityRelation = {
 export function entitySchemaValidator<T extends Entity = Entity>(
   schema?: unknown,
 ): (data: unknown) => T;
+
+// @public
+interface EnvironmentEntityV1alpha1 extends Entity {
+  // (undocumented)
+  apiVersion: 'backstage.io/v1alpha1';
+  // (undocumented)
+  kind: 'Environment';
+  // (undocumented)
+  spec: {
+    lifecycle: string;
+  };
+}
+export { EnvironmentEntityV1alpha1 as EnvironmentEntity };
+export { EnvironmentEntityV1alpha1 };
+
+// @public
+export const environmentEntityV1alpha1Validator: KindValidator;
 
 // @public
 export class FieldFormatEntityPolicy implements EntityPolicy {
@@ -374,6 +398,12 @@ export const RELATION_DEPENDENCY_OF = 'dependencyOf';
 
 // @public
 export const RELATION_DEPENDS_ON = 'dependsOn';
+
+// @public
+export const RELATION_DEPLOYS_TO_ENVIRONMENT = 'deploysToEnvironment';
+
+// @public
+export const RELATION_ENVIRONMENT_HAS_DEPLOYMENT = 'environmentHasDeployment';
 
 // @public
 export const RELATION_HAS_MEMBER = 'hasMember';
