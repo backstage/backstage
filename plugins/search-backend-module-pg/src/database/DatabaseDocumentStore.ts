@@ -149,7 +149,6 @@ export class DatabaseDocumentStore implements DatabaseStore {
     searchQuery: PgSearchQuery,
   ): Promise<DocumentResultRow[]> {
     const { types, pgTerm, fields, offset, limit, options } = searchQuery;
-    // TODO(awanlin): We should make the language a parameter so that we can support more then just english
     // Builds a query like:
     // SELECT ts_rank_cd(body, query) AS rank, type, document,
     // ts_headline('english', document, query) AS highlight
@@ -158,10 +157,11 @@ export class DatabaseDocumentStore implements DatabaseStore {
     // ORDER BY rank DESC
     // LIMIT 10;
     const query = tx<DocumentResultRow>('documents');
+    const pgAnalyzer = tx.client.config.connection?.pgAnalyzer || 'english';
 
     if (pgTerm) {
       query
-        .from(tx.raw("documents, to_tsquery('english', ?) query", pgTerm))
+        .from(tx.raw(`documents, to_tsquery('${pgAnalyzer}', ?) query`, pgTerm))
         .whereRaw('query @@ body');
     } else {
       query.from('documents');
@@ -197,7 +197,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
         .select(tx.raw('ts_rank_cd(body, query) AS "rank"'))
         .select(
           tx.raw(
-            `ts_headline(\'english\', document, query, '${headlineOptions}') as "highlight"`,
+            `ts_headline(\'${pgAnalyzer}\', document, query, '${headlineOptions}') as "highlight"`,
           ),
         )
         .orderBy('rank', 'desc');
