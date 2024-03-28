@@ -94,4 +94,34 @@ describe('catalog:write', () => {
       yaml.stringify(entity),
     );
   });
+
+  it('should add backstage.io/source-template if provided', async () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'n',
+        namespace: 'ns',
+        annotations: {},
+      },
+      spec: {},
+    };
+
+    await action.handler({
+      ...mockContext,
+      templateInfo: { entityRef: 'template:default/test-skeleton' },
+      input: { entity },
+    });
+
+    const expectedEntity = JSON.parse(JSON.stringify(entity));
+    expectedEntity.metadata.annotations = {
+      'backstage.io/source-template': 'template:default/test-skeleton',
+    };
+
+    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.writeFile).toHaveBeenCalledWith(
+      resolvePath(mockContext.workspacePath, 'catalog-info.yaml'),
+      yaml.stringify(expectedEntity),
+    );
+  });
 });

@@ -29,8 +29,9 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { TemplateWizardPage } from './TemplateWizardPage';
 import { rootRouteRef } from '../../routes';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
 import { ANNOTATION_EDIT_URL } from '@backstage/catalog-model';
+import { CatalogApi } from '@backstage/catalog-client';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
 
 jest.mock('react-router-dom', () => {
   return {
@@ -59,6 +60,7 @@ const catalogApiMock: jest.Mocked<CatalogApi> = {
 const analyticsMock = new MockAnalyticsApi();
 const apis = TestApiRegistry.from(
   [scaffolderApiRef, scaffolderApiMock],
+  [catalogApiRef, catalogApiMock],
   [analyticsApiRef, analyticsMock],
   [catalogApiRef, catalogApiMock],
 );
@@ -70,6 +72,7 @@ const entityRefResponse = {
     name: 'test',
     annotations: {
       [ANNOTATION_EDIT_URL]: 'http://localhost:3000',
+      'backstage.io/time-saved': 'PT2H',
     },
   },
   spec: {
@@ -138,6 +141,7 @@ describe('TemplateWizardPage', () => {
       action: 'create',
       subject: 'expected-name',
       context: { entityRef: 'template:default/test' },
+      value: 120,
     });
   });
   describe('scaffolder page context menu', () => {

@@ -29,6 +29,7 @@ import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
 import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
+import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
 
 const useStyles = makeStyles({
   markdown: {
@@ -84,6 +85,8 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
   const sortedManifest = useFilteredSchemaProperties(manifest);
 
+  const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
+
   useEffect(() => {
     if (error) {
       errorApi.post(new Error(`Failed to load template, ${error}`));
@@ -114,6 +117,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
           <Stepper
             manifest={sortedManifest}
             templateName={templateName}
+            minutesSaved={minutesSaved}
             {...props}
           />
         </InfoCard>

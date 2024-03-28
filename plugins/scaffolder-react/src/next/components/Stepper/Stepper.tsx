@@ -76,6 +76,7 @@ export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: FieldExtensionOptions<any, any>[];
   templateName?: string;
+  minutesSaved?: number;
   formProps?: FormProps;
   initialState?: Record<string, JsonValue>;
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;
@@ -149,7 +150,9 @@ export const Stepper = (stepperProps: StepperProps) => {
     props.onCreate(formState);
     const name =
       typeof formState.name === 'string' ? formState.name : undefined;
-    analytics.captureEvent('create', name ?? props.templateName ?? 'unknown');
+    analytics.captureEvent('create', name ?? props.templateName ?? 'unknown', {
+      value: props.minutesSaved,
+    });
   }, [props, formState, analytics]);
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });

@@ -54,12 +54,14 @@ import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
 import CachedIcon from '@material-ui/icons/Cached';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+import CopyIcon from '@material-ui/icons/FileCopy';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
+import { useSourceTemplateCompoundEntityRef } from './hooks';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
@@ -108,6 +110,7 @@ export function AboutCard(props: AboutCardProps) {
   const errorApi = useApi(errorApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(createFromTemplateRouteRef);
+  const sourceTemplateRef = useSourceTemplateCompoundEntityRef(entity);
   const { allowed: canRefresh } = useEntityPermission(
     catalogEntityRefreshPermission,
   );
@@ -236,6 +239,18 @@ export function AboutCard(props: AboutCardProps) {
             >
               <EditIcon />
             </IconButton>
+            {sourceTemplateRef && templateRoute && (
+              <IconButton
+                component={Link}
+                title="Create something similar"
+                to={templateRoute({
+                  namespace: sourceTemplateRef.namespace,
+                  templateName: sourceTemplateRef.name,
+                })}
+              >
+                <CopyIcon />
+              </IconButton>
+            )}
           </>
         }
         subheader={<HeaderIconLinkRow links={subHeaderLinks} />}
