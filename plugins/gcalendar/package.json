@@ -41,7 +41,7 @@
     "dompurify": "^3.0.0",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
-    "material-ui-popup-state": "^1.9.3",
+    "material-ui-popup-state": "^5.0.0",
     "react-use": "^17.2.4"
   },
   "peerDependencies": {
