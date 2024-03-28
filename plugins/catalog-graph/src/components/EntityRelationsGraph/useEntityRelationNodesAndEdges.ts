@@ -146,11 +146,60 @@ export function useEntityRelationNodesAndEdges({
               nodeQueue.push(rel.targetRef);
               visitedNodes.add(rel.targetRef);
             }
+
+            // if unidirectional add missing relations as entities are only visited once
+            if (unidirectional) {
+              const findIndex = edges.findIndex(
+                edge =>
+                  entityRef === edge.from &&
+                  rel.targetRef === edge.to &&
+                  !edge.relations.includes(rel.type),
+              );
+              if (findIndex >= 0) {
+                if (mergeRelations) {
+                  const pair = relationPairs.find(
+                    ([l, r]) => l === rel.type || r === rel.type,
+                  ) ?? [rel.type];
+                  edges[findIndex].relations = [
+                    ...edges[findIndex].relations,
+                    ...pair,
+                  ];
+                } else {
+                  edges[findIndex].relations = [
+                    ...edges[findIndex].relations,
+                    rel.type,
+                  ];
+                }
+              }
+            }
           });
         }
       }
 
-      setNodesAndEdges({ nodes, edges });
+      // Reduce edges as the dependency graph anyway ignores duplicated edges regarding from / to
+      // Additionally, this will improve rendering speed for the dependency graph
+      const finalEdges = edges.reduce((previousEdges, currentEdge) => {
+        const indexFound = previousEdges.findIndex(
+          previousEdge =>
+            previousEdge.from === currentEdge.from &&
+            previousEdge.to === currentEdge.to,
+        );
+        if (indexFound >= 0) {
+          previousEdges[indexFound] = {
+            ...previousEdges[indexFound],
+            relations: Array.from(
+              new Set([
+                ...previousEdges[indexFound].relations,
+                ...currentEdge.relations,
+              ]),
+            ),
+          };
+          return previousEdges;
+        }
+        return [...previousEdges, currentEdge];
+      }, [] as EntityEdge[]);
+
+      setNodesAndEdges({ nodes, edges: finalEdges });
     },
     100,
     [
