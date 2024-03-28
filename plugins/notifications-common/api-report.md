@@ -39,6 +39,9 @@ export type NotificationReadSignal = {
   notification_ids: string[];
 };
 
+// @public
+export const notificationSeverities: NotificationSeverity[];
+
 // @public (undocumented)
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
