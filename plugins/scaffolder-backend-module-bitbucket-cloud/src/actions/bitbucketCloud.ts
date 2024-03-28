@@ -26,6 +26,7 @@ import fetch, { Response, RequestInit } from 'node-fetch';
 
 import { Config } from '@backstage/config';
 import { getAuthorizationHeader } from './helpers';
+import { examples } from './bitbucketCloud.examples';
 
 const createRepository = async (opts: {
   workspace: string;
@@ -114,6 +115,7 @@ export function createPublishBitbucketCloudAction(options: {
     token?: string;
   }>({
     id: 'publish:bitbucketCloud',
+    examples,
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to Bitbucket Cloud.',
     schema: {
