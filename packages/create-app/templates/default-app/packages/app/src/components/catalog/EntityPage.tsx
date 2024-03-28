@@ -18,16 +18,18 @@ import {
   EntityHasSystemsCard,
   EntityLayout,
   EntityLinksCard,
-  EntitySwitch,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
-  isComponentType,
-  isKind,
   hasCatalogProcessingErrors,
   isOrphan,
   hasRelationWarnings,
   EntityRelationWarning,
 } from '@backstage/plugin-catalog';
+import {
+  EntitySwitch,
+  isComponentType,
+  isKind,
+} from '@backstage/plugin-catalog-react';
 import {
   isGithubActionsAvailable,
   EntityGithubActionsContent,

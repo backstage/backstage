@@ -43,6 +43,7 @@
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-puppetdb": "workspace:^",
     "@backstage/plugin-stackstorm": "workspace:^",
     "@oriflame/backstage-plugin-score-card": "^0.8.0",

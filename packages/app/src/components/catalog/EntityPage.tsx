@@ -61,15 +61,17 @@ import {
   EntityLabelsCard,
   EntityOrphanWarning,
   EntityProcessingErrorsPanel,
-  EntitySwitch,
   hasCatalogProcessingErrors,
-  isComponentType,
-  isKind,
   isOrphan,
   hasLabels,
   hasRelationWarnings,
   EntityRelationWarning,
 } from '@backstage/plugin-catalog';
+import {
+  EntitySwitch,
+  isComponentType,
+  isKind,
+} from '@backstage/plugin-catalog-react';
 import {
   Direction,
   EntityCatalogGraphCard,
