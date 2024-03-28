@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { Chip, withStyles } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
+import { withStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { PRIVATE, PUBLIC, StatusPage } from '../../types';
 

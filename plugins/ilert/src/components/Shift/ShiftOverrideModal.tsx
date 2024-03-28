@@ -23,11 +23,12 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { ilertApiRef } from '../../api';
 import { useShiftOverride } from '../../hooks/useShiftOverride';
 import { Shift } from '../../types';
-import { DateTimePicker, MuiPickersUtilsProvider } from '@material-ui/pickers';
+import DateTimePicker from '@material-ui/pickers/DateTimePicker';
+import MuiPickersUtilsProvider from '@material-ui/pickers/MuiPickersUtilsProvider';
 import LuxonUtils from '@date-io/luxon';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
