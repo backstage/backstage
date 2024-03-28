@@ -19,11 +19,9 @@ import {
   ThemeOptions as ThemeOptionsV4,
   createTheme,
 } from '@material-ui/core/styles';
-import type { PaletteOptions as PaletteOptionsV4 } from '@material-ui/core/styles/createPalette';
 import {
   DeprecatedThemeOptions,
   Theme as Mui5Theme,
-  PaletteOptions as PaletteOptionsV5,
   ThemeOptions as ThemeOptionsV5,
   adaptV4Theme,
   createTheme as createV5Theme,
@@ -52,13 +50,14 @@ export class UnifiedThemeHolder implements UnifiedTheme {
   }
 }
 
+type BaseThemeOptions = ThemeOptionsV4 & ThemeOptionsV5;
+
 /**
  * Options for creating a new {@link UnifiedTheme}.
  *
  * @public
  */
-export interface UnifiedThemeOptions {
-  palette: PaletteOptionsV4 & PaletteOptionsV5;
+export interface UnifiedThemeOptions extends BaseThemeOptions {
   defaultPageTheme?: string;
   pageTheme?: Record<string, PageTheme>;
   fontFamily?: string;
