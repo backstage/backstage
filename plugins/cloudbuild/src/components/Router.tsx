@@ -22,8 +22,8 @@ import {
 import { Routes, Route } from 'react-router-dom';
 import { buildRouteRef } from '../routes';
 import { WorkflowRunDetails } from './WorkflowRunDetails';
-import { WorkflowRunsTable } from './WorkflowRunsTable';
 import { CLOUDBUILD_ANNOTATION } from './useProjectName';
+import { WorkflowRunsTable } from './WorkflowRunsTable';
 
 /** @public */
 export const isCloudbuildAvailable = (entity: Entity) =>
@@ -40,10 +40,7 @@ export const Router = () => {
   return (
     <Routes>
       <Route path="/" element={<WorkflowRunsTable entity={entity} />} />
-      <Route
-        path={`${buildRouteRef.path}`}
-        element={<WorkflowRunDetails entity={entity} />}
-      />
+      <Route path={`${buildRouteRef.path}`} element={<WorkflowRunDetails />} />
     </Routes>
   );
 };

@@ -13,24 +13,32 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import RetryIcon from '@material-ui/icons/Replay';
-import GoogleIcon from '@material-ui/icons/CloudCircle';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
 import { WorkflowRunStatus } from '../WorkflowRunStatus';
 import SyncIcon from '@material-ui/icons/Sync';
-import { useProjectName } from '../useProjectName';
-import { Entity } from '@backstage/catalog-model';
 import { buildRouteRef } from '../../routes';
 import { DateTime } from 'luxon';
-import { Table, TableColumn, Link } from '@backstage/core-components';
+import {
+  Table,
+  TableColumn,
+  Link,
+  SelectItem,
+  SelectedItems,
+  Select,
+} from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import { getLocation } from '../useLocation';
 import { getCloudbuildFilter } from '../useCloudBuildFilter';
+import { getLocation } from '../useLocation';
+import { useProjectName } from '../useProjectName';
+import GoogleIcon from '@material-ui/icons/CloudCircle';
+import { Entity } from '@backstage/catalog-model';
+import Grid from '@material-ui/core/Grid';
 
 const generatedColumns: TableColumn[] = [
   {
@@ -71,7 +79,14 @@ const generatedColumns: TableColumn[] = [
       const LinkWrapper = () => {
         const routeLink = useRouteRef(buildRouteRef);
         return (
-          <Link data-testid="cell-source" to={routeLink({ id: row.id! })}>
+          <Link
+            data-testid="cell-source"
+            to={routeLink({
+              projectId: row.projectId!,
+              location: row.location!,
+              id: row.id!,
+            })}
+          >
             {row.message}
           </Link>
         );
@@ -119,11 +134,13 @@ const generatedColumns: TableColumn[] = [
   },
 ];
 
-type Props = {
+type WorkflowRunsTableViewProps = {
   loading: boolean;
   retry: () => void;
   runs?: WorkflowRun[];
-  projectName: string;
+  projects: SelectItem[];
+  setProject: (selection: SelectedItems) => void;
+  project?: SelectedItems;
   page: number;
   onChangePage: (page: number) => void;
   total: number;
@@ -132,7 +149,9 @@ type Props = {
 };
 
 export const WorkflowRunsTableView = ({
-  projectName,
+  projects,
+  project,
+  setProject,
   loading,
   pageSize,
   page,
@@ -141,44 +160,84 @@ export const WorkflowRunsTableView = ({
   onChangePage,
   onChangePageSize,
   total,
-}: Props) => {
+}: WorkflowRunsTableViewProps) => {
   return (
-    <Table
-      isLoading={loading}
-      options={{ paging: true, pageSize, padding: 'dense' }}
-      totalCount={total}
-      page={page}
-      actions={[
-        {
-          icon: () => <SyncIcon />,
-          tooltip: 'Reload workflow runs',
-          isFreeAction: true,
-          onClick: () => retry(),
-        },
-      ]}
-      data={runs ?? []}
-      onPageChange={onChangePage}
-      onRowsPerPageChange={onChangePageSize}
-      style={{ width: '100%' }}
-      title={
-        <Box display="flex" alignItems="center">
-          <GoogleIcon />
-          <Box mr={1} />
-          <Typography variant="h6">{projectName}</Typography>
-        </Box>
-      }
-      columns={generatedColumns}
-    />
+    <Grid container direction="column">
+      <Grid item>
+        <Grid item container alignItems="center" direction="row">
+          <Grid item>
+            <GoogleIcon />
+          </Grid>
+          <Grid item>
+            <Typography variant="h5">GCP Cloudbuild</Typography>
+          </Grid>
+        </Grid>
+        <Grid item>
+          <Select
+            label="Project"
+            selected={project}
+            items={projects}
+            onChange={selection => {
+              setProject(selection);
+            }}
+          />
+        </Grid>
+      </Grid>
+      <Grid item>
+        <Table
+          isLoading={loading}
+          options={{ paging: true, pageSize, padding: 'dense' }}
+          totalCount={total}
+          page={page}
+          actions={[
+            {
+              icon: () => <SyncIcon />,
+              tooltip: 'Reload workflow runs',
+              isFreeAction: true,
+              onClick: () => retry(),
+            },
+          ]}
+          title="Builds"
+          data={runs ?? []}
+          onPageChange={onChangePage}
+          onRowsPerPageChange={onChangePageSize}
+          style={{ width: '100%' }}
+          columns={generatedColumns}
+        />
+      </Grid>
+    </Grid>
   );
 };
 
-export const WorkflowRunsTable = (props: { entity: Entity }) => {
-  const { value: projectName, loading } = useProjectName(props.entity);
-  const [projectId] = (projectName ?? '/').split('/');
-  const location = getLocation(props.entity);
-  const cloudBuildFilter = getCloudbuildFilter(props.entity);
+type WorkflowRunsTableProps = {
+  entity: Entity;
+};
+
+export const WorkflowRunsTable = ({ entity }: WorkflowRunsTableProps) => {
+  const { value: projectAnnotationValue } = useProjectName(entity);
+  const [projects, setProjects] = useState<SelectItem[]>([]);
+  const [project, setProject] = useState<SelectedItems>();
+
+  useEffect(() => {
+    const _projects =
+      projectAnnotationValue?.split(',')?.map(projectName => ({
+        label: projectName.trim(),
+        value: projectName.trim(),
+      })) || [];
+    setProjects(_projects);
+    if (_projects.length > 0) {
+      setProject(_projects[0].value);
+    }
+  }, [projectAnnotationValue]);
+
+  let projectIndex = projects.findIndex(_project => project === _project.value);
+  projectIndex = projectIndex > -1 ? projectIndex : 0;
+
+  const location = getLocation(entity, projectIndex);
+  const cloudBuildFilter = getCloudbuildFilter(entity, projectIndex);
+
   const [tableProps, { retry, setPage, setPageSize }] = useWorkflowRuns({
-    projectId,
+    projectId: projects?.[projectIndex]?.label,
     location,
     cloudBuildFilter,
   });
@@ -186,7 +245,12 @@ export const WorkflowRunsTable = (props: { entity: Entity }) => {
   return (
     <WorkflowRunsTableView
       {...tableProps}
-      loading={loading || tableProps.loading}
+      project={project}
+      projects={projects}
+      setProject={selection => {
+        setProject(selection);
+      }}
+      loading={tableProps.loading}
       retry={retry}
       onChangePageSize={setPageSize}
       onChangePage={setPage}

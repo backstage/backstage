@@ -21,6 +21,6 @@ export const rootRouteRef = createRouteRef({
 
 export const buildRouteRef = createSubRouteRef({
   id: 'cloudbuild/run',
-  path: '/:id',
+  path: '/:projectId/:location/:id',
   parent: rootRouteRef,
 });
