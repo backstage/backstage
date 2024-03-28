@@ -17,7 +17,11 @@
 import { FieldValidation } from '@rjsf/utils';
 import type { JsonObject, JsonValue } from '@backstage/types';
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { Draft07 as JSONSchema } from 'json-schema-library';
+import {
+  Draft07 as JSONSchema,
+  JsonError,
+  JsonSchema,
+} from 'json-schema-library';
 import { createFieldValidation, extractSchemaFromStep } from '../../lib';
 import {
   CustomFieldValidator,
@@ -29,6 +33,11 @@ import { isObject } from './utils';
 export type FormValidation = {
   [name: string]: FieldValidation | FormValidation;
 };
+
+const isJsonError = (
+  value: JsonError | JsonSchema,
+): value is { type: 'error'; message: string } =>
+  'type' in value && value.type === 'error';
 
 /** @alpha */
 export const createAsyncValidators = (
@@ -74,9 +83,23 @@ export const createAsyncValidators = (
     };
 
     for (const [key, value] of Object.entries(current)) {
-      const path = `${pathPrefix}/${key}`;
-      const definitionInSchema = parsedSchema.getSchema(path, formData);
-      const { schema, uiSchema } = extractSchemaFromStep(definitionInSchema);
+      const pointer = `${pathPrefix}/${key}`;
+      const definitionInSchema = parsedSchema.getSchema({
+        pointer,
+        data: formData,
+      });
+
+      if (!definitionInSchema) {
+        continue;
+      }
+
+      if (isJsonError(definitionInSchema)) {
+        throw new Error(definitionInSchema.message);
+      }
+
+      const { schema, uiSchema } = extractSchemaFromStep(
+        definitionInSchema as JsonObject,
+      );
 
       const hasItems = definitionInSchema && definitionInSchema.items;
 
@@ -102,7 +125,7 @@ export const createAsyncValidators = (
         }
       };
 
-      if (definitionInSchema && 'ui:field' in definitionInSchema) {
+      if ('ui:field' in definitionInSchema) {
         await doValidateItem(definitionInSchema, schema, uiSchema);
       } else if (hasItems && 'ui:field' in definitionInSchema.items) {
         await doValidate(definitionInSchema.items);
@@ -113,7 +136,7 @@ export const createAsyncValidators = (
           await doValidate(propValue);
         }
       } else if (isObject(value)) {
-        formValidation[key] = await validate(formData, path, value);
+        formValidation[key] = await validate(formData, pointer, value);
       }
     }
 

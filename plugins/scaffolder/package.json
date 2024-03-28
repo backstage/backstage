@@ -79,7 +79,7 @@
     "git-url-parse": "^14.0.0",
     "humanize-duration": "^3.25.1",
     "json-schema": "^0.4.0",
-    "json-schema-library": "^7.3.9",
+    "json-schema-library": "^9.0.0",
     "jszip": "^3.10.1",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",

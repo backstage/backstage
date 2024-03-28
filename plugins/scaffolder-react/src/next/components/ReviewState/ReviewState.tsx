@@ -38,10 +38,11 @@ export const ReviewState = (props: ReviewStateProps) => {
       .map(([key, value]) => {
         for (const step of props.schemas) {
           const parsedSchema = new JSONSchema(step.mergedSchema);
-          const definitionInSchema = parsedSchema.getSchema(
-            `#/${key}`,
-            props.formState,
-          );
+          const definitionInSchema = parsedSchema.getSchema({
+            pointer: `#/${key}`,
+            data: props.formState,
+          });
+
           if (definitionInSchema) {
             const backstageReviewOptions =
               definitionInSchema['ui:backstage']?.review;
