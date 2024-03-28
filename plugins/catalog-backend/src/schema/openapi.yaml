@@ -1135,7 +1135,7 @@ paths:
         '400':
           description: Validation errors.
           content:
-            application/json; charset=utf-8:
+            application/json:
               schema:
                 type: object
                 properties:

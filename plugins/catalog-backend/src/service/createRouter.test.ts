@@ -42,6 +42,7 @@ import { decodeCursor, encodeCursor } from './util';
 import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { LocationAnalyzer } from '../ingestion';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;
@@ -49,6 +50,7 @@ describe('createRouter readonly disabled', () => {
   let orchestrator: jest.Mocked<CatalogProcessingOrchestrator>;
   let app: express.Express | Server;
   let refreshService: RefreshService;
+  let locationAnalyzer: jest.Mocked<LocationAnalyzer>;
 
   beforeAll(async () => {
     entitiesCatalog = {
@@ -66,6 +68,10 @@ describe('createRouter readonly disabled', () => {
       deleteLocation: jest.fn(),
       getLocationByEntity: jest.fn(),
     };
+
+    locationAnalyzer = {
+      analyzeLocation: jest.fn(),
+    };
     refreshService = { refresh: jest.fn() };
     orchestrator = { process: jest.fn() };
     const router = await createRouter({
@@ -78,6 +84,7 @@ describe('createRouter readonly disabled', () => {
       permissionIntegrationRouter: express.Router(),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth(),
+      locationAnalyzer,
     });
     app = wrapInOpenApiTestServer(express().use(router));
   });
@@ -819,6 +826,21 @@ describe('createRouter readonly disabled', () => {
           '<root> must be object - type: object',
         );
       });
+    });
+  });
+
+  describe('POST /analyze-location', () => {
+    it('handles invalid URLs', async () => {
+      const parseUrlError = new Error();
+      (parseUrlError as any).subject_url = 'not a url';
+      locationAnalyzer.analyzeLocation.mockRejectedValue(parseUrlError);
+      const response = await request(app)
+        .post('/analyze-location')
+        .send({ location: { type: 'url', target: 'not a url' } });
+      expect(response.status).toEqual(400);
+      expect(response.body.error.message).toMatch(
+        /The given location.target is not a URL/,
+      );
     });
   });
 });

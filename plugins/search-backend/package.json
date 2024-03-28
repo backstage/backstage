@@ -40,7 +40,8 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "clean": "backstage-cli package clean",
-    "generate": "backstage-repo-tools package schema openapi generate --server"
+    "generate": "backstage-repo-tools package schema openapi generate --server",
+    "fuzz": "backstage-repo-tools package schema openapi fuzz"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -52,6 +53,7 @@
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
+    "@backstage/repo-tools": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/express": "^4.17.6",
     "dataloader": "^2.0.0",

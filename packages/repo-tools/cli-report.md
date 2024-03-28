@@ -97,7 +97,21 @@ Options:
 Commands:
   init
   generate [options]
+  fuzz [options]
   help [command]
+```
+
+### `backstage-repo-tools package schema openapi fuzz`
+
+```
+Usage: backstage-repo-tools package schema openapi fuzz [options]
+
+Options:
+  --limit <limit>
+  --workers <workers>
+  --debug
+  --exclude-checks <excludeChecks>
+  -h, --help
 ```
 
 ### `backstage-repo-tools package schema openapi generate`
@@ -157,7 +171,18 @@ Commands:
   verify [paths...]
   lint [options] [paths...]
   test [options] [paths...]
+  fuzz [options]
   help [command]
+```
+
+### `backstage-repo-tools repo schema openapi fuzz`
+
+```
+Usage: backstage-repo-tools repo schema openapi fuzz [options]
+
+Options:
+  --since <ref>
+  -h, --help
 ```
 
 ### `backstage-repo-tools repo schema openapi lint`
