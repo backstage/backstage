@@ -23,7 +23,7 @@ Add a list of plugins to your config like,
 ```yaml title="app-config.yaml"
 catalog:
   providers:
-    openapi:
+    backstageOpenapi:
       plugins:
         - catalog
         - todo
