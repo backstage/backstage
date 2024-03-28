@@ -455,7 +455,9 @@ export interface ScaffolderUseTemplateSecrets {
 
 // @public
 export const SecretsContextProvider: (
-  props: PropsWithChildren<{}>,
+  props: PropsWithChildren<{
+    initialSecrets?: Record<string, string>;
+  }>,
 ) => React_2.JSX.Element;
 
 // @public

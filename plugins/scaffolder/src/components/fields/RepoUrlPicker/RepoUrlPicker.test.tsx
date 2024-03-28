@@ -58,9 +58,13 @@ describe('RepoUrlPicker', () => {
     byHost: () => ({ type: 'github' }),
   };
 
-  const mockScmAuthApi: Partial<ScmAuthApi> = {
-    getCredentials: jest.fn().mockResolvedValue({ token: 'abc123' }),
-  };
+  let mockScmAuthApi: Partial<ScmAuthApi>;
+
+  beforeEach(() => {
+    mockScmAuthApi = {
+      getCredentials: jest.fn().mockResolvedValue({ token: 'abc123' }),
+    };
+  });
 
   describe('happy path rendering', () => {
     it('should render the repo url picker with minimal props', async () => {
@@ -341,6 +345,65 @@ describe('RepoUrlPicker', () => {
           repoWrite: true,
         },
       });
+
+      const currentSecrets = JSON.parse(
+        getByTestId('current-secrets').textContent!,
+      );
+
+      expect(currentSecrets).toEqual({
+        secrets: { testKey: 'abc123' },
+      });
+    });
+
+    it('should not call the scmAuthApi if secret is available in the state', async () => {
+      const SecretsComponent = () => {
+        const { secrets } = useTemplateSecrets();
+        return (
+          <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
+        );
+      };
+      const { getAllByRole, getByTestId } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmAuthApiRef, mockScmAuthApi],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider initialSecrets={{ testKey: 'abc123' }}>
+            <Form
+              validator={validator}
+              schema={{ type: 'string' }}
+              uiSchema={{
+                'ui:field': 'RepoUrlPicker',
+                'ui:options': {
+                  requestUserCredentials: {
+                    secretsKey: 'testKey',
+                    additionalScopes: { github: ['workflow'] },
+                  },
+                },
+              }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
+            />
+            <SecretsComponent />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      const [ownerInput, repoInput] = getAllByRole('textbox');
+
+      await act(async () => {
+        fireEvent.change(ownerInput, { target: { value: 'backstage' } });
+        fireEvent.change(repoInput, { target: { value: 'repo123' } });
+
+        // need to wait for the debounce to finish
+        await new Promise(resolve => setTimeout(resolve, 600));
+      });
+
+      // as we already have a secret in the state, getCredentials should not be called again.
+      expect(mockScmAuthApi.getCredentials).toHaveBeenCalledTimes(0);
 
       const currentSecrets = JSON.parse(
         getByTestId('current-secrets').textContent!,

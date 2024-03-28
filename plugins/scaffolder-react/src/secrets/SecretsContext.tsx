@@ -43,8 +43,13 @@ const SecretsContext = createVersionedContext<{
  * The Context Provider that holds the state for the secrets.
  * @public
  */
-export const SecretsContextProvider = (props: PropsWithChildren<{}>) => {
-  const [secrets, setSecrets] = useState<Record<string, string>>({});
+export const SecretsContextProvider = (
+  props: PropsWithChildren<{ initialSecrets?: Record<string, string> }>,
+) => {
+  const { initialSecrets = {} } = props;
+  const [secrets, setSecrets] = useState<Record<string, string>>({
+    ...initialSecrets,
+  });
 
   return (
     <SecretsContext.Provider
