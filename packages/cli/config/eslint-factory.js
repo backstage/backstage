@@ -66,7 +66,7 @@ function createConfig(dir, extraConfig = {}) {
       ...(extraExtends ?? []),
     ],
     parser: '@typescript-eslint/parser',
-    plugins: ['import', 'unused-imports', ...(plugins ?? [])],
+    plugins: ['import', 'unused-imports', 'deprecation', ...(plugins ?? [])],
     env: {
       jest: true,
       ...env,
@@ -84,6 +84,7 @@ function createConfig(dir, extraConfig = {}) {
       ...(ignorePatterns ?? []),
     ],
     rules: {
+      'deprecation/deprecation': 'off',
       'no-shadow': 'off',
       'no-redeclare': 'off',
       '@typescript-eslint/no-shadow': 'error',
