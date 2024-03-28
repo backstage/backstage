@@ -95,6 +95,8 @@ nav:
       - AWS S3:
           - Locations: 'integrations/aws-s3/locations.md'
           - Discovery: 'integrations/aws-s3/discovery.md'
+      - AWS CodeCommit:
+          - Locations: 'integrations/aws-codecommit/locations.md'
       - Azure:
           - Locations: 'integrations/azure/locations.md'
           - Discovery: 'integrations/azure/discovery.md'
