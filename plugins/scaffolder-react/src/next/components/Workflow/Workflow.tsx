@@ -114,6 +114,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
           <Stepper
             manifest={sortedManifest}
             templateName={templateName}
+            templateRef={templateRef}
             {...props}
           />
         </InfoCard>

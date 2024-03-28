@@ -26,7 +26,8 @@ import {
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { stringifyEntityRef } from '@backstage/catalog-model';
+import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
 import {
@@ -66,6 +67,7 @@ export const OngoingTask = (props: {
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
+  const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
   const taskStream = useTaskEventStream(taskId!);
   const classes = useStyles();
@@ -103,6 +105,15 @@ export const OngoingTask = (props: {
     return 0;
   }, [steps]);
 
+  const template = taskStream.task?.spec.templateInfo?.entity!;
+  const templateName = template.metadata.name;
+
+  const templateRef = stringifyEntityRef({
+    kind: 'Template',
+    namespace: template.metadata.namespace,
+    name: templateName,
+  });
+
   const startOver = useCallback(() => {
     const { namespace, name } =
       taskStream.task?.spec.templateInfo?.entity?.metadata ?? {};
@@ -113,6 +124,11 @@ export const OngoingTask = (props: {
       return;
     }
 
+    analytics.captureEvent(
+      'click',
+      `[${templateRef}]: Task has been started over`,
+    );
+
     navigate({
       pathname: templateRouteRef({
         namespace,
@@ -121,24 +137,24 @@ export const OngoingTask = (props: {
       search: `?${qs.stringify({ formData: JSON.stringify(formData) })}`,
     });
   }, [
+    analytics,
     navigate,
     taskStream.task?.spec.parameters,
     taskStream.task?.spec.templateInfo?.entity?.metadata,
+    templateRef,
     templateRouteRef,
   ]);
 
   const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
     async () => {
       if (taskId) {
+        analytics.captureEvent('cancelled', templateRef);
         await scaffolderApi.cancelTask(taskId);
       }
     },
   );
 
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
-
-  const templateName =
-    taskStream.task?.spec.templateInfo?.entity?.metadata.name;
 
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
 
@@ -161,6 +177,7 @@ export const OngoingTask = (props: {
           onToggleLogs={setLogVisibleState}
           onToggleButtonBar={setButtonBarVisibleState}
           taskId={taskId}
+          templateRef={templateRef}
         />
       </Header>
       <Content className={classes.contentWrapper}>
