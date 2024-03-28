@@ -63,7 +63,7 @@
   "devDependencies": {
     "@backstage/backend-common": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@elastic/elasticsearch-mock": "^1.0.0",
+    "@elastic/elasticsearch-mock": "^2.0.0",
     "@short.io/opensearch-mock": "^0.3.1"
   },
   "configSchema": "config.d.ts"
