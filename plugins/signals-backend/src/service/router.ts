@@ -16,20 +16,22 @@
 import {
   createLegacyAuthAdapters,
   errorHandler,
-  PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
 import {
   AuthService,
+  BackstageCredentials,
   BackstageUserInfo,
+  DiscoveryService,
+  IdentityService,
   LoggerService,
+  PermissionsService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 import * as https from 'https';
 import http, { IncomingMessage } from 'http';
 import { SignalManager } from './SignalManager';
-import { IdentityApi } from '@backstage/plugin-auth-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { WebSocket, WebSocketServer } from 'ws';
 import { Duplex } from 'stream';
@@ -38,10 +40,11 @@ import { Duplex } from 'stream';
 export interface RouterOptions {
   logger: LoggerService;
   events: EventsService;
-  identity: IdentityApi;
-  discovery: PluginEndpointDiscovery;
+  identity: IdentityService;
+  discovery: DiscoveryService;
   auth?: AuthService;
   userInfo?: UserInfoService;
+  permissions?: PermissionsService;
 }
 
 /** @public */
@@ -82,13 +85,14 @@ export async function createRouter(
     }
 
     let userIdentity: BackstageUserInfo | undefined = undefined;
+    let credentials: BackstageCredentials | undefined = undefined;
 
     // Authentication token is passed in Sec-WebSocket-Protocol header as there
     // is no other way to pass the token with plain websockets
     try {
       const token = request.headers['sec-websocket-protocol'];
       if (token) {
-        const credentials = await auth.authenticate(token);
+        credentials = await auth.authenticate(token);
         if (auth.isPrincipal(credentials, 'user')) {
           userIdentity = await userInfo.getUserInfo(credentials);
         }
@@ -111,7 +115,7 @@ export async function createRouter(
         socket,
         head,
         (ws: WebSocket, __: IncomingMessage) => {
-          manager.addConnection(ws, userIdentity);
+          manager.addConnection(ws, userIdentity, credentials);
         },
       );
     } catch (e) {

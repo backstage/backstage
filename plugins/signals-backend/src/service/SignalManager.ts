@@ -19,9 +19,12 @@ import { RawData, WebSocket } from 'ws';
 import { v4 as uuid } from 'uuid';
 import { JsonObject } from '@backstage/types';
 import {
+  BackstageCredentials,
   BackstageUserInfo,
   LoggerService,
+  PermissionsService,
 } from '@backstage/backend-plugin-api';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 /**
  * @internal
@@ -29,6 +32,7 @@ import {
 export type SignalConnection = {
   id: string;
   user: string;
+  credentials?: BackstageCredentials;
   ws: WebSocket;
   ownershipEntityRefs: string[];
   subscriptions: Set<string>;
@@ -40,6 +44,7 @@ export type SignalConnection = {
 export type SignalManagerOptions = {
   events: EventsService;
   logger: LoggerService;
+  permissions?: PermissionsService;
 };
 
 /** @internal */
@@ -50,13 +55,18 @@ export class SignalManager {
   >();
   private events: EventsService;
   private logger: LoggerService;
+  private permissions?: PermissionsService;
 
   static create(options: SignalManagerOptions) {
     return new SignalManager(options);
   }
 
   private constructor(options: SignalManagerOptions) {
-    ({ events: this.events, logger: this.logger } = options);
+    ({
+      events: this.events,
+      logger: this.logger,
+      permissions: this.permissions,
+    } = options);
 
     this.events.subscribe({
       id: 'signals',
@@ -66,12 +76,16 @@ export class SignalManager {
     });
   }
 
-  addConnection(ws: WebSocket, identity?: BackstageUserInfo) {
+  addConnection(
+    ws: WebSocket,
+    identity?: BackstageUserInfo,
+    credentials?: BackstageCredentials,
+  ) {
     const id = uuid();
-
     const conn = {
       id,
       user: identity?.userEntityRef ?? 'user:default/guest',
+      credentials,
       ws,
       ownershipEntityRefs: identity?.ownershipEntityRefs ?? [
         'user:default/guest',
@@ -131,7 +145,7 @@ export class SignalManager {
       return;
     }
 
-    const { channel, recipients, message } = eventPayload;
+    const { channel, recipients, message, permissions } = eventPayload;
     const jsonMessage = JSON.stringify({ channel, message });
     let users: string[] = [];
     if (recipients.type === 'user') {
@@ -141,21 +155,38 @@ export class SignalManager {
     }
 
     // Actual websocket message sending
-    this.connections.forEach(conn => {
-      if (!conn.subscriptions.has(channel)) {
-        return;
+    for (const conn of this.connections.values()) {
+      if (conn.ws.readyState !== WebSocket.OPEN) {
+        continue;
       }
 
-      // Sending to all users can be done with broadcast
+      if (!conn.subscriptions.has(channel)) {
+        continue;
+      }
+
       if (
         recipients.type !== 'broadcast' &&
         !conn.ownershipEntityRefs.some((ref: string) => users.includes(ref))
       ) {
-        return;
+        continue;
       }
 
-      if (conn.ws.readyState !== WebSocket.OPEN) {
-        return;
+      if (permissions) {
+        // In case the message requires permissions but we can't authorize, skip sending
+        if (!this.permissions || !conn.credentials) {
+          continue;
+        }
+
+        // TODO: Check for credentials expiresAt and request new token from the client
+        const decisions = await this.permissions.authorize(permissions, {
+          credentials: conn.credentials,
+        });
+        const denied = decisions.some(
+          decision => decision.result === AuthorizeResult.DENY,
+        );
+        if (denied) {
+          continue;
+        }
       }
 
       conn.ws.send(jsonMessage, err => {
@@ -163,6 +194,6 @@ export class SignalManager {
           this.logger.error(`Failed to send message to ${conn.id}: ${err}`);
         }
       });
-    });
+    }
   }
 }

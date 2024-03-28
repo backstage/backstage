@@ -15,6 +15,7 @@
  */
 import { EventsService } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
+import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 
 /**
  * @public
@@ -30,4 +31,5 @@ export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
     | { type: 'broadcast' };
   channel: string;
   message: TMessage;
+  permissions?: AuthorizePermissionRequest[];
 };

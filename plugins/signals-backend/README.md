@@ -23,6 +23,7 @@ export default async function createPlugin(
     eventBroker: env.eventBroker,
     identity: env.identity,
     discovery: env.discovery,
+    permissions: env.permissions,
   });
 }
 ```
