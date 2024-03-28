@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.1.11
+
+### Patch Changes
+
+- 58763e8: Use direct access of openapi.json files and not external route
+
 ## 0.1.10
 
 ### Patch Changes

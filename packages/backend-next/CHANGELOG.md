@@ -1,5 +1,12 @@
 # example-backend-next
 
+## 0.0.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.1.11
+
 ## 0.0.24
 
 ### Patch Changes

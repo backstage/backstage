@@ -1,5 +1,12 @@
 # example-app
 
+## 0.2.96
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-gocd@0.1.40
+
 ## 0.2.95
 
 ### Patch Changes

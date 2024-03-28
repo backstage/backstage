@@ -1,5 +1,12 @@
 # example-app-next
 
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-gocd@0.1.40
+
 ## 0.0.9
 
 ### Patch Changes

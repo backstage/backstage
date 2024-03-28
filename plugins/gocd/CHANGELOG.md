@@ -1,5 +1,11 @@
 # @backstage/plugin-gocd
 
+## 0.1.40
+
+### Patch Changes
+
+- b9d7c57: Updated README
+
 ## 0.1.39
 
 ### Patch Changes
