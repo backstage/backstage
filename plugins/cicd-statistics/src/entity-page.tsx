@@ -15,8 +15,9 @@
  */
 
 import React, { useCallback, useState, useMemo, useEffect } from 'react';
-import { Grid, makeStyles } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useApi, errorApiRef } from '@backstage/core-plugin-api';
 import { DateTime } from 'luxon';

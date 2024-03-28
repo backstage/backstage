@@ -15,7 +15,8 @@
  */
 
 import React, { useCallback, PropsWithChildren } from 'react';
-import { FormControlLabel, Switch } from '@material-ui/core';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Switch from '@material-ui/core/Switch';
 
 export interface ToggleProps {
   checked: boolean;

@@ -15,7 +15,10 @@
  */
 
 import React, { useCallback, MouseEvent } from 'react';
-import { ButtonGroup, Button, Tooltip, Zoom } from '@material-ui/core';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Button from '@material-ui/core/Button';
+import Tooltip from '@material-ui/core/Tooltip';
+import Zoom from '@material-ui/core/Zoom';
 
 export interface SwitchValueDetails<T extends string> {
   value: T;

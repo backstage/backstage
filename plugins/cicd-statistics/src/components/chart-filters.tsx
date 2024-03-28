@@ -15,26 +15,22 @@
  */
 
 import React, { useCallback, useState, useEffect, useMemo } from 'react';
-import {
-  Button,
-  Card,
-  CardHeader,
-  CardContent,
-  FormControl,
-  FormGroup,
-  FormControlLabel,
-  Grid,
-  Switch,
-  Tooltip,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardHeader from '@material-ui/core/CardHeader';
+import CardContent from '@material-ui/core/CardContent';
+import FormControl from '@material-ui/core/FormControl';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
+import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import BarChartIcon from '@material-ui/icons/BarChart';
-import {
-  MuiPickersUtilsProvider,
-  KeyboardDatePicker,
-} from '@material-ui/pickers';
+import MuiPickersUtilsProvider from '@material-ui/pickers/MuiPickersUtilsProvider';
+import KeyboardDatePicker from '@material-ui/pickers/KeyboardDatePicker';
 import { DateTime } from 'luxon';
 import LuxonUtils from '@date-io/luxon';
 
