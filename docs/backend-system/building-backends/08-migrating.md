@@ -1042,3 +1042,44 @@ backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(authModuleGoogleProvider);
 /* highlight-add-end */
 ```
+
+#### Using Legacy Providers
+
+Not all authentication providers have been refactored to support the new backend system.
+
+> You can track the progress of the module migration efforts [here](https://github.com/backstage/backstage/issues/19476).
+> If your authentication provider module is not available yet, you will need to import your backend auth plugin using the legacy helper.
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+/* highlight-add-next-line */
+import { makeLegacyPlugin } from '@backstage/backend-common';
+import { coreServices } from '@backstage/backend-plugin-api';
+
+/* highlight-add-start */
+const legacyPlugin = makeLegacyPlugin({
+  logger: coreServices.logger,
+  config: coreServices.config,
+  database: coreServices.database,
+  discovery: coreServices.discovery,
+  tokenManager: coreServices.tokenManager,
+  providerFactories: {
+    // copy/paste your provider factory configuration from 'packages/backend/src/plugins/auth.ts'
+  },
+});
+/* highlight-add-end */
+
+const backend = createBackend();
+/* highlight-remove-next-line */
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-next-line */
+backend.add(legacyPlugin('auth'), import('./plugins/auth'));
+
+backend.start();
+```
+
+The `@backstage/backend-plugin-api` package was created for the new backend system so you most likely will need to install it to your backend:
+
+```bash
+yarn add --cwd packages/backend @backstage/backend-plugin-api
+```
