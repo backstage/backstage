@@ -96,9 +96,7 @@ jest.mock('../../hooks/usePullRequestsByTeam', () => {
           isArchived: false,
           status: {
             commit: {
-              statusCheckRollup: {
-                state: 'FAILURE',
-              },
+              statusCheckRollup: null,
             },
           },
         }),
