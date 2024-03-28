@@ -1,4 +1,4 @@
-templateDir: templates/typescript-backstage
+templateDir: templates/typescript-backstage-client
 
 files:
   api.mustache:
@@ -25,11 +25,16 @@ files:
   models/models_all.mustache:
     templateType: SupportingFiles
     destinationFilename: models/index.ts
-  types/fetch.ts: {}
-  types/discovery.ts: {}
+  types/fetch.ts:
+    destinationFilename: types/fetch.ts
+  types/discovery.ts:
+    destinationFilename: types/discovery.ts
   apis/index.mustache:
     templateType: SupportingFiles
     destinationFilename: apis/index.ts
   pluginId.mustache:
     templateType: SupportingFiles
     destinationFilename: pluginId.ts
+  index.mustache:
+    templateType: SupportingFiles
+    destinationFilename: index.ts

@@ -54,6 +54,7 @@ function registerPackageCommand(program: Command) {
     .description(
       'Command to generate a client and/or a server stub from an OpenAPI spec.',
     )
+    .option('--server-client-import [import]', 'Import path for the client')
     .action(
       lazy(() =>
         import('./package/schema/openapi/generate').then(m => m.command),

@@ -9,7 +9,7 @@
 */
 {{/description}}
 {{^isEnum}}
-export interface {{classname}} {
+export {{#isNullable}}type{{/isNullable}}{{^isNullable}}interface{{/isNullable}} {{classname}} {{#isNullable}}={{/isNullable}} {
 {{>modelGenericAdditionalProperties}}
 {{#vars}}
 {{#description}}
@@ -19,7 +19,7 @@ export interface {{classname}} {
 {{/description}}
     '{{name}}'{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isNullable}} | null{{/isNullable}};
 {{/vars}}
-}
+}{{#isNullable}} | null{{/isNullable}}
 
 {{#hasEnums}}
 
