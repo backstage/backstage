@@ -21,7 +21,7 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
-import { useApi } from '@backstage/core-plugin-api';
+import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { getAdrLocationUrl } from '@backstage/plugin-adr-common';
 import { useEntity } from '@backstage/plugin-catalog-react';
@@ -46,12 +46,18 @@ export const AdrReader = (props: {
   const adrApi = useApi(adrApiRef);
   const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations);
   const adrFileLocationUrl = getAdrLocationUrl(entity, scmIntegrations, adr);
+  const discoveryApi = useApi(discoveryApiRef);
 
   const { value, loading, error } = useAsync(
     async () => adrApi.readAdr(adrFileLocationUrl),
     [adrFileLocationUrl],
   );
 
+  const {
+    value: backendUrl,
+    loading: backendUrlLoading,
+    error: backendUrlError,
+  } = useAsync(async () => discoveryApi.getBaseUrl('adr'), []);
   const adrContent = useMemo(() => {
     if (!value?.data) {
       return '';
@@ -77,9 +83,26 @@ export const AdrReader = (props: {
         <WarningPanel title="Failed to fetch ADR" message={error?.message} />
       )}
 
-      {!loading && !error && value?.data && (
-        <MarkdownContent content={adrContent} linkTarget="_blank" />
+      {!backendUrlLoading && backendUrlError && (
+        <WarningPanel
+          title="Failed to fetch ADR images"
+          message={backendUrlError?.message}
+        />
       )}
+
+      {!loading &&
+        !backendUrlLoading &&
+        !error &&
+        !backendUrlError &&
+        value?.data && (
+          <MarkdownContent
+            content={adrContent}
+            linkTarget="_blank"
+            transformImageUri={href => {
+              return `${backendUrl}/image?url=${href}`;
+            }}
+          />
+        )}
     </InfoCard>
   );
 };
