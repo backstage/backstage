@@ -64,3 +64,4 @@ export type {
   SidebarPinStateContextType,
   SidebarPinState,
 } from './SidebarPinStateContext';
+export { SidebarLogOutButton } from './SidebarLogOutButton';

@@ -16,20 +16,33 @@
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { signalsPlugin } from '../src/plugin';
-import { Content, Header, Page } from '@backstage/core-components';
+import { CodeSnippet, Content, Header, Page } from '@backstage/core-components';
 import Typography from '@material-ui/core/Typography';
+import { useSignal } from '@backstage/plugin-signals-react';
+
+const SignalsDebugPage = () => {
+  const { lastSignal } = useSignal('debug');
+  return (
+    <Page themeId="home">
+      <Header title="Signals" />
+      <Content>
+        <Typography>Last signal:</Typography>
+        <Typography>
+          {lastSignal ? (
+            <CodeSnippet text={JSON.stringify(lastSignal)} language="json" />
+          ) : (
+            'Not received'
+          )}
+        </Typography>
+      </Content>
+    </Page>
+  );
+};
 
 createDevApp()
   .registerPlugin(signalsPlugin)
   .addPage({
     title: 'Debug',
-    element: (
-      <Page themeId="home">
-        <Header title="Signals" />
-        <Content>
-          <Typography>TODO</Typography>
-        </Content>
-      </Page>
-    ),
+    element: <SignalsDebugPage />,
   })
   .render();

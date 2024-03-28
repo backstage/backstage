@@ -14,6 +14,7 @@ import { GridProps } from '@material-ui/core';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
+import { SignInProviderConfig } from '@backstage/core-components';
 
 // @public
 export function createDevApp(): DevAppBuilder;
@@ -22,6 +23,7 @@ export function createDevApp(): DevAppBuilder;
 export class DevAppBuilder {
   addPage(opts: DevAppPageOptions): DevAppBuilder;
   addRootChild(node: ReactNode): DevAppBuilder;
+  addSignInProvider(provider: SignInProviderConfig): this;
   addThemes(themes: AppTheme[]): this;
   build(): ComponentType<PropsWithChildren<{}>>;
   registerApi<
@@ -42,6 +44,7 @@ export type DevAppPageOptions = {
   children?: JSX.Element;
   title?: string;
   icon?: IconComponent;
+  sidebarItem?: JSX.Element;
 };
 
 // @public (undocumented)

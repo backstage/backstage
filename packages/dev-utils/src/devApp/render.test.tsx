@@ -17,7 +17,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
 import { createDevApp } from './render';
-import { useApi, configApiRef } from '@backstage/core-plugin-api';
+import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 const anyEnv = (process.env = { ...process.env }) as any;
 
@@ -28,6 +28,7 @@ describe('DevAppBuilder', () => {
         context: 'test',
         data: {
           app: { title: 'Test App' },
+          backend: { baseUrl: 'http://localhost' },
         },
       },
     ];
