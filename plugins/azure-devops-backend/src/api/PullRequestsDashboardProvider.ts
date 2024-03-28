@@ -25,6 +25,8 @@ import { AzureDevOpsApi } from './AzureDevOpsApi';
 import { Logger } from 'winston';
 import limiterFactory from 'p-limit';
 
+export const DEFAULT_TEAMS_LIMIT = 100;
+
 export class PullRequestsDashboardProvider {
   private teams = new Map<string, Team>();
 
@@ -43,10 +45,10 @@ export class PullRequestsDashboardProvider {
     return provider;
   }
 
-  public async readTeams(): Promise<void> {
+  public async readTeams(teamsLimit?: number): Promise<void> {
     this.logger.info('Reading teams.');
 
-    let teams = await this.azureDevOpsApi.getAllTeams();
+    let teams = await this.azureDevOpsApi.getAllTeams(teamsLimit);
 
     // This is used to filter out the default Azure Devops project teams.
     teams = teams.filter(team =>
@@ -106,11 +108,12 @@ export class PullRequestsDashboardProvider {
   public async getDashboardPullRequests(
     projectName: string,
     options: PullRequestOptions,
+    teamsLimit?: number,
   ): Promise<DashboardPullRequest[]> {
     const dashboardPullRequests =
       await this.azureDevOpsApi.getDashboardPullRequests(projectName, options);
 
-    await this.getAllTeams(); // Make sure team members are loaded
+    await this.getAllTeams(teamsLimit); // Make sure team members are loaded
 
     return dashboardPullRequests.map(pr => {
       if (pr.createdBy?.id) {
@@ -134,9 +137,10 @@ export class PullRequestsDashboardProvider {
     );
   }
 
-  public async getAllTeams(): Promise<Team[]> {
+  public async getAllTeams(teamsLimit?: number): Promise<Team[]> {
     if (!this.teams.size) {
-      await this.readTeams();
+      const maxTeams = teamsLimit ?? DEFAULT_TEAMS_LIMIT;
+      await this.readTeams(maxTeams);
     }
 
     return Array.from(this.teams.values());

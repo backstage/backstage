@@ -124,14 +124,27 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 
   public getDashboardPullRequests(
     projectName: string,
+    teamsLimit?: number,
   ): Promise<DashboardPullRequest[]> {
-    return this.get<DashboardPullRequest[]>(
-      `dashboard-pull-requests/${projectName}?top=100`,
-    );
+    const queryString = new URLSearchParams();
+    queryString.append('top', '100');
+    if (teamsLimit) {
+      queryString.append('teamsLimit', teamsLimit.toString());
+    }
+    const urlSegment = `dashboard-pull-requests/${projectName}?${queryString}`;
+    return this.get<DashboardPullRequest[]>(urlSegment);
   }
 
-  public getAllTeams(): Promise<Team[]> {
-    return this.get<Team[]>('all-teams');
+  public getAllTeams(teamsLimit?: number): Promise<Team[]> {
+    const queryString = new URLSearchParams();
+    if (teamsLimit) {
+      queryString.append('teamsLimit', teamsLimit.toString());
+    }
+    let urlSegment = 'all-teams';
+    if (queryString.toString()) {
+      urlSegment += `?${queryString}`;
+    }
+    return this.get<Team[]>(urlSegment);
   }
 
   public getUserTeamIds(userId: string): Promise<string[]> {
