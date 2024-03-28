@@ -19,6 +19,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 import { PgSearchEngine } from './PgSearchEngine';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 /**
  * @alpha
@@ -33,13 +34,21 @@ export default createBackendModule({
         searchEngineRegistry: searchEngineRegistryExtensionPoint,
         database: coreServices.database,
         config: coreServices.rootConfig,
+        logger: coreServices.logger,
       },
-      async init({ searchEngineRegistry, database, config }) {
-        searchEngineRegistry.setSearchEngine(
-          await PgSearchEngine.fromConfig(config, {
-            database: database,
-          }),
-        );
+      async init({ searchEngineRegistry, database, config, logger }) {
+        if (await PgSearchEngine.supported(database)) {
+          searchEngineRegistry.setSearchEngine(
+            await PgSearchEngine.fromConfig(config, {
+              database,
+              logger: loggerToWinstonLogger(logger),
+            }),
+          );
+        } else {
+          logger.warn(
+            'Postgres search engine is not supported, skipping registration of search-backend-module-pg',
+          );
+        }
       },
     });
   },
