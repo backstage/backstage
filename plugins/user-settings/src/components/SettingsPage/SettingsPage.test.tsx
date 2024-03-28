@@ -36,7 +36,7 @@ describe('<SettingsPage />', () => {
   it('should render the default settings page with 3 tabs', async () => {
     const { container } = await renderInTestApp(<SettingsPage />);
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
+    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
     expect(tabs).toHaveLength(3);
   });
 
@@ -49,7 +49,7 @@ describe('<SettingsPage />', () => {
     (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
     const { container } = await renderInTestApp(<SettingsPage />);
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
+    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
   });
@@ -63,7 +63,7 @@ describe('<SettingsPage />', () => {
     (useOutlet as jest.Mock).mockReturnValue(advancedTabRoute);
     const { container } = await renderInTestApp(<SettingsPage />);
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
+    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
     const user = userEvent.setup();
@@ -86,7 +86,7 @@ describe('<SettingsPage />', () => {
     (useOutlet as jest.Mock).mockReturnValue(customLayout);
     const { container } = await renderInTestApp(<SettingsPage />);
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
+    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
     expect(tabs).toHaveLength(2);
     expect(tabs[0].textContent).toEqual('General');
     expect(tabs[1].textContent).toEqual('Advanced');

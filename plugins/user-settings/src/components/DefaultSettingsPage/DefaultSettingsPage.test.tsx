@@ -34,7 +34,7 @@ describe('<DefaultSettingsPage />', () => {
   it('should render the settings page with 3 tabs', async () => {
     const { container } = await renderInTestApp(<DefaultSettingsPage />);
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
+    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
     expect(tabs).toHaveLength(3);
   });
 
@@ -48,7 +48,7 @@ describe('<DefaultSettingsPage />', () => {
       <DefaultSettingsPage tabs={[advancedTabRoute]} />,
     );
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
+    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
   });
@@ -63,7 +63,7 @@ describe('<DefaultSettingsPage />', () => {
       <DefaultSettingsPage tabs={[advancedTabRoute]} />,
     );
 
-    const tabs = container.querySelectorAll('[class*=MuiTabs-root] button');
+    const tabs = container.querySelectorAll('[class*=MuiTabs-root] a');
     expect(tabs).toHaveLength(4);
     expect(tabs[3].textContent).toEqual('Advanced');
   });
