@@ -39,7 +39,7 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/styles": "^4.11.0",
-    "highlight.js": "^10.6.0",
+    "highlight.js": "^11.0.0",
     "luxon": "^3.0.0",
     "react-use": "^17.2.4",
     "recharts": "^2.5.0"
