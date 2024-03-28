@@ -21,6 +21,6 @@
  */
 
 export { awsAlbAuthenticator } from './authenticator';
-export { authModuleAwsAlbProvider } from './module';
+export { authModuleAwsAlbProvider as default } from './module';
 export { awsAlbSignInResolvers } from './resolvers';
 export { type AwsAlbResult } from './types';
