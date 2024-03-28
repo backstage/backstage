@@ -122,7 +122,7 @@ const loadSpecs = async ({
 }) => {
   const specs: OpenAPIObject[] = [];
   for (const pluginId of plugins) {
-    const url = await discovery.getExternalBaseUrl(pluginId);
+    const url = await discovery.getBaseUrl(pluginId);
     const openApiUrl = getOpenApiSpecRoute(url);
     const { token } = await auth.getPluginRequestToken({
       onBehalfOf: await auth.getOwnServiceCredentials(),
