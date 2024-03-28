@@ -74,11 +74,11 @@ Inclusive of the initial RFC there's been a swarm of issues that are requesting 
 
 See the following:
 
-- [ ] https://github.com/backstage/backstage/issues/16275
-- [ ] https://github.com/backstage/backstage/pull/23283
-- [ ] https://github.com/backstage/backstage/issues/19597
-- [ ] https://github.com/backstage/backstage/issues/20533
-- [ ] https://github.com/backstage/backstage/pull/17746
+- https://github.com/backstage/backstage/issues/16275
+- https://github.com/backstage/backstage/pull/23283
+- https://github.com/backstage/backstage/issues/19597
+- https://github.com/backstage/backstage/issues/20533
+- https://github.com/backstage/backstage/pull/17746
 
 There's some ideas for introducing a templating syntax for both templating into the `parameters` schema, and also being able to pass through some templating strings to underlying field extensions that can use those templating strings.
 We want to align here so that we're not going to have those conflict or compete, and create a standard for how to achieve templating in both circumstances.
