@@ -34,6 +34,7 @@ export default async function createPlugin(
   });
   await demoProvider.subscribe();
   builder.addEntityProvider(demoProvider);
+  builder.setEventBroker(env.eventBroker);
 
   const { processingEngine, router } = await builder.build();
 
