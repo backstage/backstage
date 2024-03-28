@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Box, Divider as MaterialDivider } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import MaterialDivider from '@material-ui/core/MaterialDivider';
 
 import { TEST_IDS } from '../test-helpers/test-ids';
 

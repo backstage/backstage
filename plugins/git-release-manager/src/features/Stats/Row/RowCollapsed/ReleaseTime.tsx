@@ -17,8 +17,9 @@
 import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { DateTime } from 'luxon';
-import { Box, Typography } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
 
 import { getDecimalNumber } from '../../helpers/getDecimalNumber';
 import { getTagDates } from '../../helpers/getTagDates';

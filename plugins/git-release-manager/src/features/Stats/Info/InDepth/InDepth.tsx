@@ -15,12 +15,10 @@
  */
 
 import React from 'react';
-import {
-  Box,
-  Button,
-  Tooltip as MaterialTooltip,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import MaterialTooltip from '@material-ui/core/MaterialTooltip';
+import Typography from '@material-ui/core/Typography';
 import { useTheme } from '@material-ui/core/styles';
 import { BarChart, Bar, XAxis, YAxis, Legend, Tooltip } from 'recharts';
 

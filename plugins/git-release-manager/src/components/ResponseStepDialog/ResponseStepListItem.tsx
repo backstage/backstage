@@ -15,14 +15,12 @@
  */
 
 import React from 'react';
-import {
-  colors,
-  IconButton,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-} from '@material-ui/core';
+import colors from '@material-ui/core/colors';
+import IconButton from '@material-ui/core/IconButton';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
 import CheckCircleOutline from '@material-ui/icons/CheckCircleOutline';
 import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import FiberManualRecordIcon from '@material-ui/icons/FiberManualRecord';

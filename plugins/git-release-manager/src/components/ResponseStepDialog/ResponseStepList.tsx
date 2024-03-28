@@ -15,7 +15,8 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { DialogContent, List } from '@material-ui/core';
+import DialogContent from '@material-ui/core/DialogContent';
+import List from '@material-ui/core/List';
 import { ResponseStep } from '../../types/types';
 
 import { ResponseStepListItem } from './ResponseStepListItem';

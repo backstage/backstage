@@ -16,13 +16,11 @@
 
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import {
-  FormControl,
-  FormControlLabel,
-  FormLabel,
-  Radio,
-  RadioGroup,
-} from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 
 import { TEST_IDS } from '../../test-helpers/test-ids';
 import { useProjectContext } from '../../contexts/ProjectContext';

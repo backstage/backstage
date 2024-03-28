@@ -15,12 +15,10 @@
  */
 
 import React from 'react';
-import {
-  Button,
-  Dialog as MaterialDialog,
-  DialogActions,
-  DialogTitle,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import MaterialDialog from '@material-ui/core/MaterialDialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
 
 import { LinearProgressWithLabel } from './LinearProgressWithLabel';
 import { ResponseStep } from '../../types/types';

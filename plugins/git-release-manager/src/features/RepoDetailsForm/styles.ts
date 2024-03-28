@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createStyles, makeStyles, Theme } from '@material-ui/core';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 export const useFormClasses = makeStyles((theme: Theme) =>
   createStyles({
