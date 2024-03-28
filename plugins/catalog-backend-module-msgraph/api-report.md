@@ -39,10 +39,10 @@ export function defaultUserTransformer(
 // @public
 export type GroupMember =
   | (MicrosoftGraph.Group & {
-      '@odata.type': '#microsoft.graph.user';
+      '@odata.type': '#microsoft.graph.group';
     })
   | (MicrosoftGraph.User & {
-      '@odata.type': '#microsoft.graph.group';
+      '@odata.type': '#microsoft.graph.user';
     });
 
 // @public
@@ -209,6 +209,7 @@ export type MicrosoftGraphProviderConfig = {
   groupFilter?: string;
   groupSearch?: string;
   groupSelect?: string[];
+  groupIngestMemberGroups?: boolean;
   queryMode?: 'basic' | 'advanced';
   schedule?: TaskScheduleDefinition;
 };
@@ -250,6 +251,7 @@ export function readMicrosoftGraphOrg(
     groupSearch?: string;
     groupFilter?: string;
     groupSelect?: string[];
+    groupIngestMemberGroups?: boolean;
     queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;

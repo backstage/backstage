@@ -174,6 +174,7 @@ export async function readMicrosoftGraphGroups(
     groupFilter?: string;
     groupSearch?: string;
     groupSelect?: string[];
+    groupIngestMemberGroups?: boolean;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
   },
@@ -240,6 +241,15 @@ export async function readMicrosoftGraphGroups(
 
           if (member['@odata.type'] === '#microsoft.graph.group') {
             ensureItem(groupMember, group.id!, member.id);
+
+            if (options?.groupIngestMemberGroups) {
+              const groupMemberEntity = await transformer(
+                member /* , groupPhoto*/,
+              );
+              if (groupMemberEntity) {
+                groups.push(groupMemberEntity);
+              }
+            }
           }
         }
 
@@ -372,6 +382,7 @@ export async function readMicrosoftGraphOrg(
     groupSearch?: string;
     groupFilter?: string;
     groupSelect?: string[];
+    groupIngestMemberGroups?: boolean;
     queryMode?: 'basic' | 'advanced';
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
@@ -414,6 +425,7 @@ export async function readMicrosoftGraphOrg(
       groupFilter: options.groupFilter,
       groupSearch: options.groupSearch,
       groupSelect: options.groupSelect,
+      groupIngestMemberGroups: options.groupIngestMemberGroups,
       groupTransformer: options.groupTransformer,
       organizationTransformer: options.organizationTransformer,
     });

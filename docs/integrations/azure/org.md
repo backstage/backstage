@@ -120,6 +120,17 @@ microsoftGraphOrg:
       search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
 ```
 
+If you don't want to only ingest groups matching the `search` and/or `filter` query, but also the groups which are members of the matched groups, you can use the `ingestMemberGroups` configuration:
+
+```yaml
+microsoftGraphOrg:
+  providerId:
+    group:
+      filter: securityEnabled eq false and mailEnabled eq true and groupTypes/any(c:c+eq+'Unified')
+      search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+      ingestMemberGroups: true
+```
+
 In addition to these groups, one additional group will be created for your organization.
 All imported groups will be a child of this group.
 
