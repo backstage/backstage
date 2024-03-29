@@ -29,6 +29,9 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
+    const scope =
+      config.getOptionalString('scope') ||
+      'offline_access read:jira-work read:jira-user';
     const baseUrl = 'https://auth.atlassian.com';
 
     return PassportOAuthAuthenticatorHelper.from(
@@ -41,6 +44,7 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
           authorizationURL: `${baseUrl}/authorize`,
           tokenURL: `${baseUrl}/oauth/token`,
           profileURL: `${baseUrl}/api/v4/user`,
+          scope,
         },
         (
           accessToken: string,
