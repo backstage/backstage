@@ -28,7 +28,7 @@ import { MemoryRouter } from 'react-router-dom';
 import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
 import { render, screen } from '@testing-library/react';
 import { AppRouter } from './AppRouter';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { AppContextProvider } from './AppContext';
 import { TestApiProvider } from '@backstage/test-utils';
 import { ConfigReader } from '@backstage/config';

@@ -49,14 +49,26 @@ export class NotificationsClient implements NotificationsApi {
     if (options?.offset !== undefined) {
       queryString.append('offset', options.offset.toString(10));
     }
+    if (options?.sort !== undefined) {
+      queryString.append(
+        'orderField',
+        `${options.sort},${options?.sortOrder ?? 'desc'}`,
+      );
+    }
     if (options?.search) {
       queryString.append('search', options.search);
     }
     if (options?.read !== undefined) {
       queryString.append('read', options.read ? 'true' : 'false');
     }
+    if (options?.saved !== undefined) {
+      queryString.append('saved', options.saved ? 'true' : 'false');
+    }
     if (options?.createdAfter !== undefined) {
-      queryString.append('created_after', options.createdAfter.toISOString());
+      queryString.append('createdAfter', options.createdAfter.toISOString());
+    }
+    if (options?.minimumSeverity !== undefined) {
+      queryString.append('minimal_severity', options.minimumSeverity);
     }
     const urlSegment = `?${queryString}`;
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
 
@@ -58,6 +59,7 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
+  state?: JsonObject;
 };
 
 /**
@@ -140,6 +142,8 @@ export interface TaskContext {
   ): Promise<void>;
 
   getWorkspaceName(): Promise<string>;
+
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
 }
 
 /**

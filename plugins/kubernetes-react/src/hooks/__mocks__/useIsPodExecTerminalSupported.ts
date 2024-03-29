@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AsyncState } from 'react-use/lib/useAsync';
+import { AsyncState } from 'react-use/esm/useAsync';
 
 export const useIsPodExecTerminalSupported: () => AsyncState<boolean> = jest.fn(
   () => ({ loading: false, value: false } as AsyncState<boolean>),

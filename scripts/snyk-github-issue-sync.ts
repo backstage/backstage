@@ -1,4 +1,4 @@
-#!/usr/bin/env yarn ts-node --transpile-only
+#!/usr/bin/env node --require @backstage/cli/config/nodeTransform.cjs
 /*
  * Copyright 2021 The Backstage Authors
  *

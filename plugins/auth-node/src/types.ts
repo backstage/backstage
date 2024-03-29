@@ -86,7 +86,7 @@ export type BackstageUserIdentity = {
  * If `annotations` are used, all annotations must be present and
  * match the provided value exactly. Only entities of kind `'User'` will be considered.
  *
- * If `filter` are used they are passed on as they are to the `CatalogApi`.
+ * If `filter` are used, only entities of kind `'User'` will be considered unless it is explicitly specified differently in the filter.
  *
  * Regardless of the query method, the query must match exactly one entity
  * in the catalog, or an error will be thrown.

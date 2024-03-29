@@ -22,18 +22,15 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { useRouteRef } from '@backstage/core-plugin-api';
-import {
-  Box,
-  createStyles,
-  Grid,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import pluralize from 'pluralize';
 import { catalogIndexRouteRef } from '../../../routes';
 import { useGetEntities } from './useGetEntities';
-import { EntityRelationAggregation } from './types';
+import { EntityRelationAggregation } from '../types';
 
 const useStyles = makeStyles(theme =>
   createStyles({
@@ -107,11 +104,13 @@ const EntityCountTile = ({
 };
 
 export const ComponentsGrid = ({
+  className,
   entity,
   relationsType,
   entityFilterKind,
   entityLimit = 6,
 }: {
+  className?: string;
   entity: Entity;
   relationsType: EntityRelationAggregation;
   entityFilterKind?: string[];
@@ -132,7 +131,7 @@ export const ComponentsGrid = ({
   }
 
   return (
-    <Grid container>
+    <Grid container className={className}>
       {componentsWithCounters?.map(c => (
         <Grid item xs={6} md={6} lg={4} key={c.type ?? c.kind}>
           <EntityCountTile

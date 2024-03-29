@@ -23,7 +23,7 @@ import RefreshIcon from '@material-ui/icons/Refresh';
 import Typography from '@material-ui/core/Typography';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { find, get, sortBy, toArray } from 'lodash';
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import AllocationReport from '../AllocationReport';
 import AllocationService from '../../services/allocation';
 import Controls from '../Controls';

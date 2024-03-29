@@ -224,6 +224,9 @@ export async function createConfig(
           }
         : {}),
     },
+    experiments: {
+      lazyCompilation: yn(process.env.EXPERIMENTAL_LAZY_COMPILATION),
+    },
     plugins,
     ...(withCache
       ? {

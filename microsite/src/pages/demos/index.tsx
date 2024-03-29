@@ -62,7 +62,7 @@ const Demos = () => {
     {
       title: 'Introduction to Backstage',
       content:
-        'Backstage is an open source platform for building developer portals. We’ve been using our homegrown version at Spotify for years — so it’s already packed with features. (We have over 120 internal plugins, built by 60 different teams.) In this live demo recording, Stefan Ålund, product manager for Backstage, tells the origin story of Backstage and gives you a tour of how we use it here at Spotify.',
+        'Backstage is an open source framework for building developer portals. We’ve been using our homegrown version at Spotify for years — so it’s already packed with features. (We have over 120 internal plugins, built by 60 different teams.) In this live demo recording, Stefan Ålund, product manager for Backstage, tells the origin story of Backstage and gives you a tour of how we use it here at Spotify.',
       actionItemLink: 'https://www.youtube.com/watch?v=1XtJ5FAOjPk',
       media: {
         type: 'video',

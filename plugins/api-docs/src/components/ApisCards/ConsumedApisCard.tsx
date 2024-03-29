@@ -15,7 +15,7 @@
  */
 
 import { ApiEntity, RELATION_CONSUMES_API } from '@backstage/catalog-model';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import {
   EntityTable,
   useEntity,

@@ -1,6 +1,6 @@
 # Knip report
 
-## Unused dependencies (6)
+## Unused dependencies (5)
 
 | Name                                | Location     | Severity |
 | :---------------------------------- | :----------- | :------- |
@@ -8,7 +8,6 @@
 | @stoplight/spectral-functions       | package.json | error    |
 | @stoplight/spectral-runtime         | package.json | error    |
 | is-glob                             | package.json | error    |
-| ts-node                             | package.json | error    |
 | glob                                | package.json | error    |
 
 ## Unused devDependencies (1)

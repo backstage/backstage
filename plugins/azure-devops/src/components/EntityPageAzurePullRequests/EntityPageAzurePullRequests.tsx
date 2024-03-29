@@ -14,11 +14,24 @@
  * limitations under the License.
  */
 
+import { azureDevOpsPullRequestReadPermission } from '@backstage/plugin-azure-devops-common';
 import { PullRequestTable } from '../PullRequestTable/PullRequestTable';
 import React from 'react';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 export const EntityPageAzurePullRequests = (props: {
   defaultLimit?: number;
 }) => {
-  return <PullRequestTable defaultLimit={props.defaultLimit} />;
+  const { entity } = useEntity();
+  return (
+    <RequirePermission
+      permission={azureDevOpsPullRequestReadPermission}
+      resourceRef={stringifyEntityRef(entity)}
+      errorPage={null}
+    >
+      <PullRequestTable defaultLimit={props.defaultLimit} />
+    </RequirePermission>
+  );
 };

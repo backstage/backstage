@@ -38,6 +38,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { merge } from 'lodash';
+import { Permission } from '@backstage/plugin-permission-common';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -113,7 +114,12 @@ class CatalogAnalysisExtensionPointImpl
 class CatalogPermissionExtensionPointImpl
   implements CatalogPermissionExtensionPoint
 {
+  #permissions = new Array<Permission>();
   #permissionRules = new Array<CatalogPermissionRuleInput>();
+
+  addPermissions(...permission: Array<Permission | Array<Permission>>): void {
+    this.#permissions.push(...permission.flat());
+  }
 
   addPermissionRules(
     ...rules: Array<
@@ -121,6 +127,10 @@ class CatalogPermissionExtensionPointImpl
     >
   ): void {
     this.#permissionRules.push(...rules.flat());
+  }
+
+  get permissions() {
+    return this.#permissions;
   }
 
   get permissionRules() {
@@ -239,6 +249,7 @@ export const catalogPlugin = createBackendPlugin({
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
         builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
+        builder.addPermissions(...permissionExtensions.permissions);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 

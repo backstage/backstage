@@ -19,8 +19,10 @@ import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import { List, makeStyles, Typography } from '@material-ui/core';
-import useAsync from 'react-use/lib/useAsync';
+import List from '@material-ui/core/List';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import useAsync from 'react-use/esm/useAsync';
 import { InfoCard, Progress } from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import {

@@ -20,7 +20,7 @@ import { microsoftCalendarApiRef } from '../src';
 import responseMock from './mock.json';
 import { microsoftAuthApiRef } from '@backstage/core-plugin-api';
 import { Content, Page } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
 createDevApp()
   .registerPlugin(microsoftCalendarPlugin)

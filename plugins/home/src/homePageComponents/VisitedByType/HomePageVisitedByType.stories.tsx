@@ -17,7 +17,7 @@
 import React from 'react';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { ComponentType, PropsWithChildren } from 'react';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import { homePlugin } from '../../plugin';
 import { Visit, visitsApiRef } from '../../api/VisitsApi';
 import { createCardExtension } from '@backstage/plugin-home-react';

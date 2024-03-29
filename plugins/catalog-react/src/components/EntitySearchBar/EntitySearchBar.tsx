@@ -24,7 +24,7 @@ import {
 } from '@material-ui/core';
 import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
-import React, { useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
@@ -52,8 +52,17 @@ const useStyles = makeStyles(
 export const EntitySearchBar = () => {
   const classes = useStyles();
 
-  const { filters, updateFilters } = useEntityList();
-  const [search, setSearch] = useState(filters.text?.value ?? '');
+  const {
+    updateFilters,
+    queryParameters: { text: textParameter },
+  } = useEntityList();
+
+  const queryParamTextFilter = useMemo(
+    () => [textParameter].flat()[0],
+    [textParameter],
+  );
+
+  const [search, setSearch] = useState(queryParamTextFilter ?? '');
 
   useDebounce(
     () => {
@@ -64,6 +73,12 @@ export const EntitySearchBar = () => {
     250,
     [search, updateFilters],
   );
+
+  useEffect(() => {
+    if (queryParamTextFilter) {
+      setSearch(queryParamTextFilter);
+    }
+  }, [queryParamTextFilter]);
 
   return (
     <Toolbar className={classes.searchToolbar}>

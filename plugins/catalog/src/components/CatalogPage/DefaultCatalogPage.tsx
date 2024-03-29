@@ -97,6 +97,7 @@ export interface DefaultCatalogPageProps {
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   pagination?: boolean | { limit?: number };
   filters?: ReactNode;
+  initiallySelectedNamespaces?: string[];
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -110,6 +111,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     pagination,
     ownerPickerMode,
     filters,
+    initiallySelectedNamespaces,
   } = props;
 
   return (
@@ -120,6 +122,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
             initialKind={initialKind}
             initiallySelectedFilter={initiallySelectedFilter}
             ownerPickerMode={ownerPickerMode}
+            initiallySelectedNamespaces={initiallySelectedNamespaces}
           />
         )
       }

@@ -4,12 +4,15 @@
 
 ```ts
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
+import { AuthService } from '@backstage/backend-plugin-api';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
 import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud';
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
 import { ExecuteShellCommandOptions } from '@backstage/plugin-scaffolder-node';
@@ -18,6 +21,7 @@ import { fetchContents as fetchContents_2 } from '@backstage/plugin-scaffolder-n
 import * as gerrit from '@backstage/plugin-scaffolder-backend-module-gerrit';
 import * as github from '@backstage/plugin-scaffolder-backend-module-github';
 import * as gitlab from '@backstage/plugin-scaffolder-backend-module-gitlab';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { JsonObject } from '@backstage/types';
@@ -28,6 +32,7 @@ import { Logger } from 'winston';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
@@ -82,6 +87,7 @@ export interface CreateBuiltInActionsOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   // (undocumented)
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+  auth?: AuthService;
   catalogClient: CatalogApi;
   config: Config;
   integrations: ScmIntegrations;
@@ -92,6 +98,7 @@ export interface CreateBuiltInActionsOptions {
 export function createCatalogRegisterAction(options: {
   catalogClient: CatalogApi;
   integrations: ScmIntegrations;
+  auth?: AuthService;
 }): TemplateAction_2<
   | {
       catalogInfoUrl: string;
@@ -126,6 +133,7 @@ export function createDebugLogAction(): TemplateAction_2<
 // @public
 export function createFetchCatalogEntityAction(options: {
   catalogClient: CatalogApi;
+  auth?: AuthService;
 }): TemplateAction_2<
   {
     entityRef?: string | undefined;
@@ -452,12 +460,18 @@ export interface RouterOptions {
   // (undocumented)
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
+  auth?: AuthService;
+  // (undocumented)
   catalogClient: CatalogApi;
   concurrentTasksLimit?: number;
   // (undocumented)
   config: Config;
   // (undocumented)
   database: PluginDatabaseManager;
+  // (undocumented)
+  discovery?: DiscoveryService;
+  // (undocumented)
+  httpAuth?: HttpAuthService;
   // (undocumented)
   identity?: IdentityApi;
   // (undocumented)
@@ -469,7 +483,7 @@ export interface RouterOptions {
     TemplatePermissionRuleInput | ActionPermissionRuleInput
   >;
   // (undocumented)
-  permissions?: PermissionEvaluator;
+  permissions?: PermissionsService;
   // (undocumented)
   reader: UrlReader;
   // (undocumented)
@@ -522,6 +536,7 @@ export class TaskManager implements TaskContext_2 {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
+    auth?: AuthService,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;
@@ -529,6 +544,8 @@ export class TaskManager implements TaskContext_2 {
   get done(): boolean;
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
+  // (undocumented)
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
   // (undocumented)
   getTaskState?(): Promise<
     | {

@@ -21,7 +21,7 @@ import {
 import { Server } from 'http';
 import { Logger } from 'winston';
 import { createRouter } from './router';
-import { DefaultSignalService } from '@backstage/plugin-signals-node';
+import { DefaultSignalsService } from '@backstage/plugin-signals-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import {
   EventParams,
@@ -63,7 +63,7 @@ export async function startStandaloneServer(
     },
   };
 
-  const signals = DefaultSignalService.create({
+  const signals = DefaultSignalsService.create({
     events,
   });
 
@@ -97,7 +97,7 @@ export async function startStandaloneServer(
 
     setInterval(() => {
       signals.publish({
-        recipients: null,
+        recipients: { type: 'broadcast' },
         channel: 'test',
         message: { hello: 'world' },
       });

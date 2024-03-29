@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { MenuItem, Select, SelectProps } from '@material-ui/core';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select, { SelectProps } from '@material-ui/core/Select';
 import { Duration } from '../../types';
 import { formatLastTwoLookaheadQuarters } from '../../utils/formatters';
 import { findAlways } from '../../utils/assert';

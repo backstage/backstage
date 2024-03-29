@@ -60,12 +60,12 @@ export function createDebugLogAction() {
       ctx.logger.info(JSON.stringify(ctx.input, null, 2));
 
       if (ctx.input?.message) {
-        ctx.logStream.write(ctx.input.message);
+        ctx.logger.info(ctx.input.message);
       }
 
       if (ctx.input?.listWorkspace) {
         const files = await recursiveReadDir(ctx.workspacePath);
-        ctx.logStream.write(
+        ctx.logger.info(
           `Workspace:\n${files
             .map(f => `  - ${relative(ctx.workspacePath, f)}`)
             .join('\n')}`,

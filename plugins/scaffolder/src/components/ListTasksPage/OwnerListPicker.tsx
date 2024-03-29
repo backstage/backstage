@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 import { IconComponent } from '@backstage/core-plugin-api';
-import {
-  Card,
-  List,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  MenuItem,
-  Typography,
-} from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import List from '@material-ui/core/List';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import SettingsIcon from '@material-ui/icons/Settings';
 import React, { Fragment } from 'react';
 

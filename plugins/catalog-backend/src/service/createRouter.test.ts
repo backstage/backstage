@@ -527,7 +527,7 @@ describe('createRouter readonly disabled', () => {
       const entityRef = stringifyEntityRef(entity);
       entitiesCatalog.entitiesBatch.mockResolvedValue({ items: [entity] });
       const response = await request(app)
-        .post('/entities/by-refs')
+        .post('/entities/by-refs?filter=kind=Component')
         .set('Content-Type', 'application/json')
         .send(
           JSON.stringify({
@@ -540,6 +540,13 @@ describe('createRouter readonly disabled', () => {
         entityRefs: [entityRef],
         fields: expect.any(Function),
         credentials: mockCredentials.user(),
+        filter: {
+          anyOf: [
+            {
+              allOf: [{ key: 'kind', values: ['Component'] }],
+            },
+          ],
+        },
       });
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ items: [entity] });

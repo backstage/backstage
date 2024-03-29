@@ -15,7 +15,9 @@
  */
 
 import React, { PropsWithChildren } from 'react';
-import { Box, Typography, Tooltip } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
 import LensIcon from '@material-ui/icons/Lens';
 import HelpOutlineOutlinedIcon from '@material-ui/icons/HelpOutlineOutlined';
 import { useCostGrowthLegendStyles } from '../../utils/styles';

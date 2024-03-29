@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Grid, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import LocationOnIcon from '@material-ui/icons/LocationOn';
 import React from 'react';
 import { BackButton, ViewComponentButton } from '../Buttons';
@@ -81,7 +82,6 @@ export const StepFinishImportLocation = ({ prepareResult, onReset }: Props) => {
         <Grid container spacing={0}>
           <BackButton onClick={onReset}>Register another</BackButton>
         </Grid>
-        ;
       </>
     );
   }

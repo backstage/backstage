@@ -48,6 +48,7 @@ export const createGitlabIssueAction: (options: {
   {
     issueUrl: string;
     issueId: number;
+    issueIid: number;
   }
 >;
 

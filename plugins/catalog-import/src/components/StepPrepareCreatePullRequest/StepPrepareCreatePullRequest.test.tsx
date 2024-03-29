@@ -17,7 +17,7 @@
 import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { TestApiProvider, MockConfigApi } from '@backstage/test-utils';
-import { TextField } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { SvgIcon, SvgIconProps } from '@material-ui/core';
+import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
 
 import React from 'react';
 

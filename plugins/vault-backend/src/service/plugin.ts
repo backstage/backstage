@@ -68,6 +68,10 @@ export const vaultPlugin = createBackendPlugin({
 
         const { router } = builder.build();
         httpRouter.use(router);
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

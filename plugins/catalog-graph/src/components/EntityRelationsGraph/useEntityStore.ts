@@ -17,7 +17,7 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { Dispatch, useCallback, useRef, useState } from 'react';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 
 // TODO: This is a good use case for a graphql API, once it is available in the
 // future.

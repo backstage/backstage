@@ -22,7 +22,7 @@ import {
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
 import { TestApiRegistry, wrapInTestApp } from '@backstage/test-utils';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import { catalogIndexRouteRef } from '../../../routes';
 import { OwnershipCard } from './OwnershipCard';
@@ -98,7 +98,12 @@ export const Default = () =>
     <ApiProvider apis={apis}>
       <EntityProvider entity={defaultEntity}>
         <Grid container spacing={4}>
-          <Grid item xs={12} md={6}>
+          <Grid
+            item
+            xs={12}
+            md={6}
+            style={{ maxHeight: 320, overflow: 'hidden' }}
+          >
             <OwnershipCard />
           </Grid>
         </Grid>

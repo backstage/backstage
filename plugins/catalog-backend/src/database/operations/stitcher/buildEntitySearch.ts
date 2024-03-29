@@ -133,6 +133,9 @@ export function mapToRows(input: Kv[], entityId: string): DbSearchRow[] {
 
   for (const { key: rawKey, value: rawValue } of input) {
     const key = rawKey.toLocaleLowerCase('en-US');
+    if (key.length > MAX_KEY_LENGTH) {
+      continue;
+    }
     if (rawValue === undefined || rawValue === null) {
       result.push({
         entity_id: entityId,
@@ -142,22 +145,20 @@ export function mapToRows(input: Kv[], entityId: string): DbSearchRow[] {
       });
     } else {
       const value = String(rawValue).toLocaleLowerCase('en-US');
-      if (key.length <= MAX_KEY_LENGTH) {
-        if (value.length <= MAX_VALUE_LENGTH) {
-          result.push({
-            entity_id: entityId,
-            key,
-            original_value: String(rawValue),
-            value: value,
-          });
-        } else {
-          result.push({
-            entity_id: entityId,
-            key,
-            original_value: null,
-            value: null,
-          });
-        }
+      if (value.length <= MAX_VALUE_LENGTH) {
+        result.push({
+          entity_id: entityId,
+          key,
+          original_value: String(rawValue),
+          value: value,
+        });
+      } else {
+        result.push({
+          entity_id: entityId,
+          key,
+          original_value: null,
+          value: null,
+        });
       }
     }
   }

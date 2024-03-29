@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { catalogModuleGithubEntityProvider as default } from './catalogModuleGithubEntityProvider';
+export { githubCatalogModule as default } from './githubCatalogModule';

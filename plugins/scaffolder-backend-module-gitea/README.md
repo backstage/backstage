@@ -7,8 +7,7 @@ Welcome to the `publish:gitea` action of the `scaffolder-gitea-backend`.
 To use this action, you will have to add the package using the following command to be executed at the root of your backstage project:
 
 ```bash
-yarn add --cwd packages/backend
-@backstage/plugin-scaffolder-backend-module-gitea
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-gitea
 ```
 
 Configure the action (if not yet done):

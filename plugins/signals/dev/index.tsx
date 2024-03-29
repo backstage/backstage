@@ -17,7 +17,7 @@ import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
 import { signalsPlugin } from '../src/plugin';
 import { Content, Header, Page } from '@backstage/core-components';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 
 createDevApp()
   .registerPlugin(signalsPlugin)

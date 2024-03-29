@@ -28,6 +28,8 @@ import { FilterType } from './lib/filters';
 import { PullRequestGrid } from './lib/PullRequestGrid';
 import { useDashboardPullRequests } from '../../hooks';
 import { useFilterProcessor } from './lib/hooks';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { azureDevOpsPullRequestDashboardReadPermission } from '@backstage/plugin-azure-devops-common';
 
 type PullRequestsPageContentProps = {
   pullRequestGroups: PullRequestGroup[] | undefined;
@@ -98,11 +100,15 @@ export const PullRequestsPage = (props: PullRequestsPageProps) => {
     <Page themeId="tool">
       <Header title="Azure Pull Requests" />
       <Content>
-        <PullRequestsPageContent
-          pullRequestGroups={pullRequestGroups}
-          loading={loading}
-          error={error}
-        />
+        <RequirePermission
+          permission={azureDevOpsPullRequestDashboardReadPermission}
+        >
+          <PullRequestsPageContent
+            pullRequestGroups={pullRequestGroups}
+            loading={loading}
+            error={error}
+          />
+        </RequirePermission>
       </Content>
     </Page>
   );

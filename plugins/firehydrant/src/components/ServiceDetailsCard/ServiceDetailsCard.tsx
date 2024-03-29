@@ -16,12 +16,10 @@
 import React, { useEffect, useState } from 'react';
 import { DateTime } from 'luxon';
 import { ServiceAnalytics } from '../ServiceAnalytics/ServiceAnalytics';
-import {
-  Box,
-  Button as MaterialButton,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import NotesIcon from '@material-ui/icons/Notes';
 import WhatshotIcon from '@material-ui/icons/Whatshot';
@@ -210,7 +208,7 @@ export const ServiceDetailsCard = () => {
             <h2>{headerText}</h2>
           </Box>
           <Box>
-            <MaterialButton
+            <Button
               className={classes.buttonLink}
               color="default"
               href={serviceIncidentsLink}
@@ -219,7 +217,7 @@ export const ServiceDetailsCard = () => {
               variant="outlined"
             >
               View service incidents
-            </MaterialButton>
+            </Button>
           </Box>
         </Box>
       )}
@@ -243,7 +241,7 @@ export const ServiceDetailsCard = () => {
       <Box paddingLeft="16px" marginTop="10px">
         <Typography variant="subtitle1">View in FireHydrant </Typography>
         <Box className={classes.buttonContainer} marginTop="10px">
-          <MaterialButton
+          <Button
             component={Link}
             target="_blank"
             rel="noopener"
@@ -258,8 +256,8 @@ export const ServiceDetailsCard = () => {
                 <Typography component="span">Declare an incident</Typography>
               </Box>
             </Box>
-          </MaterialButton>
-          <MaterialButton
+          </Button>
+          <Button
             component={Link}
             target="_blank"
             rel="noopener"
@@ -274,9 +272,9 @@ export const ServiceDetailsCard = () => {
                 <Typography component="span">View all incidents</Typography>
               </Box>
             </Box>
-          </MaterialButton>
+          </Button>
           {showServiceDetails && (
-            <MaterialButton
+            <Button
               component={Link}
               target="_blank"
               rel="noopener"
@@ -291,7 +289,7 @@ export const ServiceDetailsCard = () => {
                   <Typography component="span">View Service Details</Typography>
                 </Box>
               </Box>
-            </MaterialButton>
+            </Button>
           )}
         </Box>
       </Box>

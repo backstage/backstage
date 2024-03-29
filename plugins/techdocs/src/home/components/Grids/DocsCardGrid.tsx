@@ -23,7 +23,10 @@ import {
   ItemCardGrid,
   ItemCardHeader,
 } from '@backstage/core-components';
-import { Card, CardActions, CardContent, CardMedia } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
 import React from 'react';
 
 /**

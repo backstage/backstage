@@ -16,7 +16,7 @@
 
 import { InfoCard } from '@backstage/core-components';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import React, { ComponentType, PropsWithChildren } from 'react';
 import { ComponentAccordion } from '../../componentRenderers';
 import { HomePageToolkit } from '../../plugin';

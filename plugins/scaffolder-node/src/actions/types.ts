@@ -21,6 +21,7 @@ import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Schema } from 'jsonschema';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**
  * ActionContext is passed into scaffolder actions.
@@ -30,7 +31,9 @@ export type ActionContext<
   TActionInput extends JsonObject,
   TActionOutput extends JsonObject = JsonObject,
 > = {
+  // TODO(blam): move this to LoggerService
   logger: Logger;
+  /** @deprecated - use `ctx.logger` instead */
   logStream: Writable;
   secrets?: TaskSecrets;
   workspacePath: string;
@@ -48,6 +51,11 @@ export type ActionContext<
    * Creates a temporary directory for use by the action, which is then cleaned up automatically.
    */
   createTemporaryDirectory(): Promise<string>;
+
+  /**
+   * Get the credentials for the current request
+   */
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
 
   templateInfo?: TemplateInfo;
 

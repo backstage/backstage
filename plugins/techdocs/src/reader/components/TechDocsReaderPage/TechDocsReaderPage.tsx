@@ -36,6 +36,8 @@ import {
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
 
+import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
+
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
 Please refer to this page on the microsite for the latest recommended approach:
@@ -177,29 +179,33 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
 
     // As explained above, "page" is configuration 4 and <TechDocsReaderLayout> is 1
     return (
-      <TechDocsReaderPageProvider entityRef={entityRef}>
-        {(page as JSX.Element) || <TechDocsReaderLayout />}
-      </TechDocsReaderPageProvider>
+      <CookieAuthRefreshProvider pluginId="techdocs">
+        <TechDocsReaderPageProvider entityRef={entityRef}>
+          {(page as JSX.Element) || <TechDocsReaderLayout />}
+        </TechDocsReaderPageProvider>
+      </CookieAuthRefreshProvider>
     );
   }
 
   // As explained above, a render function is configuration 3 and React element is 2
   return (
-    <TechDocsReaderPageProvider entityRef={entityRef}>
-      {({ metadata, entityMetadata, onReady }) => (
-        <div className="techdocs-reader-page">
-          <Page themeId="documentation">
-            {children instanceof Function
-              ? children({
-                  entityRef,
-                  techdocsMetadataValue: metadata.value,
-                  entityMetadataValue: entityMetadata.value,
-                  onReady,
-                })
-              : children}
-          </Page>
-        </div>
-      )}
-    </TechDocsReaderPageProvider>
+    <CookieAuthRefreshProvider pluginId="techdocs">
+      <TechDocsReaderPageProvider entityRef={entityRef}>
+        {({ metadata, entityMetadata, onReady }) => (
+          <div className="techdocs-reader-page">
+            <Page themeId="documentation">
+              {children instanceof Function
+                ? children({
+                    entityRef,
+                    techdocsMetadataValue: metadata.value,
+                    entityMetadataValue: entityMetadata.value,
+                    onReady,
+                  })
+                : children}
+            </Page>
+          </div>
+        )}
+      </TechDocsReaderPageProvider>
+    </CookieAuthRefreshProvider>
   );
 };

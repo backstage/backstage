@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { capitalize } from 'lodash';
 import {
   CodeSnippet,

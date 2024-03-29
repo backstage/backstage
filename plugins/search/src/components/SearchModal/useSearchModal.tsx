@@ -20,7 +20,7 @@ import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import useUpdateEffect from 'react-use/lib/useUpdateEffect';
+import useUpdateEffect from 'react-use/esm/useUpdateEffect';
 
 /**
  * The state of the search modal, as well as functions for changing the modal's

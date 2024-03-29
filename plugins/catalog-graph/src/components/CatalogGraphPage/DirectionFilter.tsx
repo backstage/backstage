@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Select, SelectedItems } from '@backstage/core-components';
-import { Box } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import React, { useCallback } from 'react';
 import { Direction } from '../EntityRelationsGraph';
 

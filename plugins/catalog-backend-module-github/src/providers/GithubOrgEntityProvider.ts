@@ -28,7 +28,11 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import {
+  EventParams,
+  EventsService,
+  EventSubscriber,
+} from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
 import {
   MembershipEvent,
@@ -62,6 +66,12 @@ import { parseGithubOrgUrl } from '../lib/util';
 import { withLocations } from '../lib/withLocations';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
 
+const EVENT_TOPICS = [
+  'github.membership',
+  'github.organization',
+  'github.team',
+];
+
 /**
  * Options for {@link GithubOrgEntityProvider}.
  *
@@ -81,6 +91,11 @@ export interface GithubOrgEntityProviderOptions {
    * @example "https://github.com/backstage"
    */
   orgUrl: string;
+
+  /**
+   * Passing the optional EventsService enables event-based delta updates.
+   */
+  events?: EventsService;
 
   /**
    * The refresh schedule to use.
@@ -163,6 +178,7 @@ export class GithubOrgEntityProvider
 
   constructor(
     private options: {
+      events?: EventsService;
       id: string;
       orgUrl: string;
       gitHubConfig: GithubIntegrationConfig;
@@ -185,6 +201,11 @@ export class GithubOrgEntityProvider
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
+    await this.options.events?.subscribe({
+      id: this.getProviderName(),
+      topics: EVENT_TOPICS,
+      onEvent: params => this.onEvent(params),
+    });
     await this.scheduleFn?.();
   }
 
@@ -315,7 +336,7 @@ export class GithubOrgEntityProvider
 
   /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.supportsEventTopics} */
   supportsEventTopics(): string[] {
-    return ['github.organization', 'github.team', 'github.membership'];
+    return EVENT_TOPICS;
   }
 
   private async onTeamEditedInOrganization(

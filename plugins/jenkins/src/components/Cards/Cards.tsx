@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { LinearProgress, makeStyles } from '@material-ui/core';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { makeStyles } from '@material-ui/core/styles';
 import ExternalLinkIcon from '@material-ui/icons/Launch';
 import { DateTime, Duration } from 'luxon';
 import React from 'react';

@@ -182,6 +182,7 @@ export type DefaultFiltersProps = {
   initialKind?: string;
   initiallySelectedFilter?: UserListFilterKind;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
+  initiallySelectedNamespaces?: string[];
 };
 
 // @public (undocumented)
@@ -204,6 +205,7 @@ export type EntityAutocompletePickerProps<
   };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
+  filtersForAvailableValues?: Array<keyof T>;
 };
 
 // @public
@@ -304,6 +306,7 @@ export type EntityListContextProps<
     next?: () => void;
     prev?: () => void;
   };
+  totalItems?: number;
 };
 
 // @public
@@ -342,7 +345,15 @@ export class EntityNamespaceFilter implements EntityFilter {
 }
 
 // @public (undocumented)
-export const EntityNamespacePicker: () => React_2.JSX.Element;
+export const EntityNamespacePicker: (
+  props: EntityNamespacePickerProps,
+) => React_2.JSX.Element;
+
+// @public
+export interface EntityNamespacePickerProps {
+  // (undocumented)
+  initiallySelectedNamespaces?: string[];
+}
 
 // @public
 export class EntityOrphanFilter implements EntityFilter {
@@ -561,6 +572,8 @@ export class EntityTextFilter implements EntityFilter {
     term: string;
     fields: string[];
   };
+  // (undocumented)
+  toQueryValue(): string;
   // (undocumented)
   readonly value: string;
 }

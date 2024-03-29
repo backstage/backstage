@@ -1,6 +1,8 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.25.0",
+      "releases/v1.24.0",
       "releases/v1.23.0",
       "releases/v1.22.0",
       "releases/v1.21.0",
@@ -42,22 +44,28 @@
     ],
     "Getting Started": [
       "getting-started/index",
-      "getting-started/configuration",
-      "getting-started/create-an-app",
       {
         "type": "category",
-        "label": "App configuration",
+        "label": "Configuring Backstage",
         "items": [
+          "getting-started/config/database",
+          "getting-started/config/authentication",
           "getting-started/configure-app-with-plugins",
           "getting-started/app-custom-theme",
           "getting-started/homepage"
         ]
       },
+      {
+        "type": "category",
+        "label": "Using Backstage",
+        "items": [
+          "getting-started/logging-in",
+          "getting-started/register-a-component",
+          "getting-started/create-a-component"
+        ]
+      },
       "getting-started/keeping-backstage-updated",
-      "getting-started/concepts",
-      "getting-started/contributors",
-      "getting-started/getting-involved",
-      "getting-started/project-structure"
+      "getting-started/concepts"
     ],
     "Local Development": [
       {
@@ -101,6 +109,7 @@
           "features/kubernetes/installation",
           "features/kubernetes/configuration",
           "features/kubernetes/authentication",
+          "features/kubernetes/authentication-strategies",
           "features/kubernetes/troubleshooting",
           "features/kubernetes/proxy"
         ]
@@ -515,6 +524,11 @@
     ],
     "FAQ": ["faq/index", "faq/product", "faq/technical"],
     "Accessibility": ["accessibility/index"],
+    "Contribute": [
+      "contribute/index",
+      "contribute/getting-involved",
+      "contribute/project-structure"
+    ],
     "References": ["references/glossary"]
   }
 }

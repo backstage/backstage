@@ -21,14 +21,12 @@ import {
   toBuildResultStatus,
   GoCdBuildResultStatus,
 } from '../../api/gocdApi.model';
-import {
-  Box,
-  Grid,
-  Card,
-  CardContent,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import { DateTime, Duration } from 'luxon';
 
 export type GoCdBuildsInsightsProps = {

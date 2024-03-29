@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { ImageList, ImageListItem } from '@material-ui/core';
+import ImageList from '@material-ui/core/ImageList';
+import ImageListItem from '@material-ui/core/ImageListItem';
 import React from 'react';
 import { IconLink } from './IconLink';
 import { ColumnBreakpoints } from './types';

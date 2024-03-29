@@ -22,7 +22,7 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { PageFilters, ProductFilters } from '../types';
 import { Maybe } from '@backstage/plugin-cost-insights-common';
 import { useLocation, useNavigate } from 'react-router-dom';

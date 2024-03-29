@@ -57,6 +57,10 @@ export const signalsPlugin = createBackendPlugin({
             events,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

@@ -18,9 +18,10 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import { Tooltip, Typography } from '@material-ui/core';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import React, { useEffect, useMemo } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { getTimeBasedGreeting } from './timeUtil';
 
 /** @public */

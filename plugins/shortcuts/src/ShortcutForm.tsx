@@ -15,15 +15,13 @@
  */
 
 import React, { useEffect, useRef } from 'react';
-import useObservable from 'react-use/lib/useObservable';
+import useObservable from 'react-use/esm/useObservable';
 import { useForm, SubmitHandler, Controller } from 'react-hook-form';
-import {
-  Button,
-  CardActions,
-  CardContent,
-  makeStyles,
-  TextField,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import { FormValues } from './types';
 import { shortcutsApiRef } from './api';
 import { useApi } from '@backstage/core-plugin-api';

@@ -15,7 +15,8 @@
  */
 
 import React, { useState } from 'react';
-import { Dialog, IconButton } from '@material-ui/core';
+import Dialog from '@material-ui/core/Dialog';
+import IconButton from '@material-ui/core/IconButton';
 import { default as CloseButton } from '@material-ui/icons/Close';
 import { useEntityDialogStyles as useStyles } from '../../utils/styles';
 import { Entity } from '@backstage/plugin-cost-insights-common';
