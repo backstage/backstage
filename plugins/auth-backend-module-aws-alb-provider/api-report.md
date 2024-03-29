@@ -14,6 +14,7 @@ import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
 const authModuleAwsAlbProvider: () => BackendFeature;
+export { authModuleAwsAlbProvider };
 export default authModuleAwsAlbProvider;
 
 // @public (undocumented)
