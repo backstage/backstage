@@ -40,9 +40,10 @@ browse the catalog at `http://localhost:3000`.
 
 ## Adding components to the catalog
 
-The source of truth for the components in your software catalog are
-[metadata YAML files](descriptor-format.md) stored in source control (GitHub,
-GitHub Enterprise, GitLab, ...).
+The source of truth for the components in your software catalog are [metadata
+YAML files](descriptor-format.md) stored in source control (GitHub, GitHub
+Enterprise, GitLab, ...). Repositories can include multiple metadata files, and
+there's no requirement for metadata files to be placed in the repository root.
 
 There are 3 ways to add components to the catalog:
 
