@@ -30,7 +30,8 @@ export const atlassianAuthenticator = createOAuthAuthenticator({
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
     const scope =
-      config.getOptionalString('scope') ||
+      config.getOptionalString('scope') ??
+      config.getOptionalString('scopes') ??
       'offline_access read:jira-work read:jira-user';
     const baseUrl = 'https://auth.atlassian.com';
 
