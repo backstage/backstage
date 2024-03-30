@@ -144,6 +144,13 @@ export class TaskManager implements TaskContext {
     });
   }
 
+  async serializeWorkspace?(options: { path: string }): Promise<void> {
+    await this.storage.serializeWorkspace?.({
+      path: options.path,
+      taskId: this.task.taskId,
+    });
+  }
+
   async complete(
     result: TaskCompletionState,
     metadata?: JsonObject,

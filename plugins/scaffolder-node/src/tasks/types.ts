@@ -141,6 +141,8 @@ export interface TaskContext {
         },
   ): Promise<void>;
 
+  serializeWorkspace?(options: { path: string }): Promise<void>;
+
   getWorkspaceName(): Promise<string>;
 
   getInitiatorCredentials(): Promise<BackstageCredentials>;

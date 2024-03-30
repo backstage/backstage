@@ -413,6 +413,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                 reason: stringifyError(err),
               });
               throw err;
+            } finally {
+              await task.serializeWorkspace?.({ path: workspacePath });
             }
           },
           createTemporaryDirectory: async () => {
@@ -450,6 +452,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
 
       await stepTrack.markSuccessful();
+      await task.serializeWorkspace?.({ path: workspacePath });
     } catch (err) {
       await taskTrack.markFailed(step, err);
       await stepTrack.markFailed();
