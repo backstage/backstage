@@ -229,7 +229,7 @@ const myTheme = createUnifiedTheme({
 ```
 
 ## Custom Fonts
-To add custom fonts, you first need to declare the font style following the @font-face syntax from [Mui Typography](https://mui.com/material-ui/customization/typography/). After that you can then utilize the styleOverrides of MuiCssBaseline under components to set the default font. 
+To add custom fonts, you first need to declare the font style following the `@font-face` syntax from [Mui Typography](https://mui.com/material-ui/customization/typography/). After that you can then utilize the `styleOverrides` of `MuiCssBaseline` under components to set the default font. 
 ```ts title="packages/app/src/theme/myTheme.ts"
 import MyCustomFont from '../assets/fonts/My-Custom-Font.woff2';
 
@@ -255,7 +255,7 @@ export const myTheme = createUnifiedTheme({
   },
 };
 ```
-If you want to utilize different fonts, then you can set the top level fontFamily to what you want for your body, and then override fontFamily in typography to control fonts for various headings. 
+If you want to utilize different fonts, then you can set the top level `fontFamily` to what you want for your body, and then override `fontFamily` in `typography` to control fonts for various headings. 
 ```ts title="packages/app/src/theme/myTheme.ts"
 import MyCustomFont from '../assets/fonts/My-Custom-Font.woff2';
 import myAwesomeFont from '../assets/fonts/My-Awesome-Font.woff2';
