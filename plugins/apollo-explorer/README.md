@@ -83,7 +83,7 @@ import { ApiHolder } from '@backstage/core-plugin-api';
 
 
 async function apolloPluginEndpointsCallback(options: { apiHolder: ApiHolder }): Promise<EndpointProps[]> {
-  const sso = options.apiHolder.get<any>(ssoAuthApiRef)
+  const sso = options.apiHolder.get(ssoAuthApiRef)
   return [{
     title: 'Github',
     graphRef: 'my-github-graph-ref@current',
