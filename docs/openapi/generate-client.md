@@ -20,7 +20,7 @@ info:
 
 ### Generating your client
 
-1. Run `yarn backstage-repo-tools package schema openapi generate --client-package <directory>`. This will create a new folder in `<directory>/src/generated` to house the generated content. We recommend that the client package be your plugin's common package. You should then add a new entry point into the package so that the generated content can be accessed like so, `<plugin>-common/client`. To do that, adjust your `package.json` like so,
+1. Run `yarn backstage-repo-tools package schema openapi generate --client-package <directory>`. This will create a new folder in `<directory>/src/schema/openapi/generated` to house the generated content. We recommend that the client package be your plugin's common package. You should then add a new entry point into the package so that the generated content can be accessed like so, `<plugin>-common/client`. To do that, adjust your `package.json` like so,
 
 ```json
   // ... other scripts
@@ -52,6 +52,12 @@ info:
   // ... other stuff
 ```
 
-2. You should not need to import anything from subfolders of the `src/generated` parent folder, everything you should require will be accessible from the `src/generated/index.ts` file. Of note,
+and then create a new `src/client.ts` with the following content,
+
+```ts name="src/client.ts"
+export * from './schema/openapi/generated';
+```
+
+2. You should not need to import anything from subfolders of the `src/schema/openapi/generated` parent folder, everything you should require will be accessible from the `src/schema/openapi/generated/index.ts` file. Of note,
 1. `DefaultApiClient` - this is the client that you can use to access your specific spec.
 1. Any request or response types - these will be available from the index and should match the names in your spec.

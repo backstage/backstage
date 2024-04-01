@@ -46,7 +46,7 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
-import { createOpenApiRouter } from '../generated';
+import { createOpenApiRouter } from '../schema/openapi';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
