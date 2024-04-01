@@ -70,6 +70,8 @@ const searchEngine = (await PgSearchEngine.supported(env.database))
 
 ## Optional Configuration
 
+### highlightOptions
+
 The following is an example of the optional configuration that can be applied when using Postgres as the search backend. Currently this is mostly for just the highlight feature:
 
 ```yaml
@@ -92,6 +94,32 @@ search:
   pg:
     highlightOptions:
       useHighlight: false
+```
+
+### Customize pg analyzer
+
+The default analyzer for Postgres is `english`, now we can customize analyzer using `zhparser` by those steps
+
+1. install pg extension `CREATE EXTENSION zhparser;`
+2. create search config
+
+```
+CREATE TEXT SEARCH CONFIGURATION testzhcfg (PARSER = zhparser);
+
+ALTER TEXT SEARCH CONFIGURATION testzhcfg ADD MAPPING FOR n,v,a,i,e,l WITH simple;
+
+```
+
+3. config analyzer in `app-config.yaml`
+
+```diff
+backend:
+  database:
+    client: pg
+    ...
+    connection:
+      ...
++     pgAnalyzer: zhparser
 ```
 
 The Postgres documentation on [Highlighting Results](https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-HEADLINE) has more details.
