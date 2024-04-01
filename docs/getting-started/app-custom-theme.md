@@ -228,6 +228,95 @@ const myTheme = createUnifiedTheme({
 });
 ```
 
+## Custom Fonts
+
+To add custom fonts, you first need to store the font so that it can be imported. We suggest creating the `assets/fonts` directory in your front-end application `src` folder.
+
+You can then declare the font style following the `@font-face` syntax from [Material UI Typography](https://mui.com/material-ui/customization/typography/).
+
+After that you can then utilize the `styleOverrides` of `MuiCssBaseline` under components to add a font to the `@font-face` array.
+
+```ts title="packages/app/src/theme/myTheme.ts"
+import MyCustomFont from '../assets/fonts/My-Custom-Font.woff2';
+
+const myCustomFont = {
+  fontFamily: 'My-Custom-Font',
+  fontStyle: 'normal',
+  fontDisplay: 'swap',
+  fontWeight: 300,
+  src: `
+    local('My-Custom-Font'),
+    url(${MyCustomFont}) format('woff2'),
+  `,
+},
+
+export const myTheme = createUnifiedTheme({
+  fontFamily: 'My-Custom-Font',
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        '@font-face': [myCustomFont],
+      },
+    },
+  },
+};
+```
+
+If you want to utilize different or multiple fonts, then you can set the top level `fontFamily` to what you want for your body, and then override `fontFamily` in `typography` to control fonts for various headings.
+
+```ts title="packages/app/src/theme/myTheme.ts"
+import MyCustomFont from '../assets/fonts/My-Custom-Font.woff2';
+import myAwesomeFont from '../assets/fonts/My-Awesome-Font.woff2';
+
+const myCustomFont = {
+  fontFamily: 'My-Custom-Font',
+  fontStyle: 'normal',
+  fontDisplay: 'swap',
+  fontWeight: 300,
+  src: `
+    local('My-Custom-Font'),
+    url(${MyCustomFont}) format('woff2'),
+  `,
+},
+
+const myAwesomeFont = {
+  fontFamily: 'My-Awesome-Font',
+  fontStyle: 'normal',
+  fontDisplay: 'swap',
+  fontWeight: 300,
+  src: `
+    local('My-Awesome-Font'),
+    url(${myAwesomeFont}) format('woff2'),
+  `,
+},
+
+export const myTheme = createUnifiedTheme({
+  fontFamily: 'My-Custom-Font',
+  components: {
+    MuiCssBaseline: {
+      styleOverrides: {
+        '@font-face': [myCustomFont, myAwesomeFont],
+      },
+    },
+  },
+  ...createBaseThemeOptions({
+    palette: palettes.light,
+    typography: {
+      ...defaultTypography,
+      htmlFontSize: 16,
+      fontFamily: 'My-Custom-Font',
+      h1: {
+        fontSize: 72,
+        fontWeight: 700,
+        marginBottom: 10,
+        fontFamily: 'My-Awesome-Font',
+      },
+    },
+    defaultPageTheme: 'home',
+  }),
+};
+```
+
 ## Overriding Backstage and Material UI components styles
 
 When creating a custom theme you would be applying different values to component's CSS rules that use the theme object. For example, a Backstage component's styles might look like this:
