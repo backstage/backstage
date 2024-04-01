@@ -35,9 +35,9 @@ There are two required npm packages before we start,
 1. `@backstage/repo-tools`, this package contains all OpenAPI-related commands for your plugins. We will be using this throughout the tutorial.
 2. `@useoptic/optic`, this package is a dependency of `@backstage/repo-tools` but is only required for OpenAPI-related commands.
 
-Further, for generating the client a `java` binary has to be available on your PATH.
-
 You should install both of the above packages in the _root_ of your workspace.
+
+Further, a `java` binary has to be available on your PATH.
 
 ## Storing your OpenAPI specification
 
@@ -47,12 +47,12 @@ You should create a new folder, `src/schema` in your backend plugin to store you
 
 ## Generating a typed express router from a spec
 
-Run `yarn backstage-repo-tools package schema openapi generate --server` from the directory with your plugin. This will create an `openapi.generated.ts` file in the `src/schema` directory that contains the OpenAPI schema as well as a generated express router with types. You should add this command to your `package.json` for future use, and you can combine both the server generation and the client generation below, like so, `yarn backstage-repo-tools package schema openapi generate --server --client-package <clientPackageDirectory>`
+Run `yarn backstage-repo-tools package schema openapi generate --server` from the directory with your plugin. This will create a `router.ts` file in the `src/generated` directory that contains the OpenAPI schema as well as a generated express router with types. You should add this command to your `package.json` for future use and you can combine both the server generation and the client generation below like so, `yarn backstage-repo-tools package schema openapi generate --server --client-package <clientPackageDirectory>`
 
 Use it like so, update your `router.ts` or `createRouter.ts` file with the following content,
 
 ```diff
-+ import { createOpenApiRouter } from '../schema/openapi.generated';
++ import { createOpenApiRouter } from '../generated';
 - import Router from 'express-promise-router';
 
 ...
@@ -65,7 +65,7 @@ export async function createRouter(
 
 ## Generating a typed client from a spec
 
-From your current backend plugin directory, run `yarn backstage-repo-tools package schema openapi generate --client-package <plugin-client-directory>`. `<plugin-client-directory>` is a new directory and npm package that you should create. The general pattern is `plugins/<plugin-name>-client` or if you want to co-locate this with your other shared types, use `plugins/<plugin-name>-common`. You should add this command to your `package.json` for future use.
+From your current backend plugin directory, run `yarn backstage-repo-tools package schema openapi generate --client-package <plugin-client-directory>`. `<plugin-client-directory>` is a new directory and npm package that you should create. The general pattern is to add a new entry point to your plugin's common package, `plugins/<plugin-name>-common/client`. You should add this command to your `package.json` for future use.
 
 The generated client will have a directory `src/generated` that exports a `DefaultApiClient` class and all generated types. You can use the client like so,
 
