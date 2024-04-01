@@ -197,6 +197,7 @@ export type ValidateEntity = {
 
 /**
  * no description
+ * @public
  */
 export class DefaultApiClient {
   private readonly discoveryApi: DiscoveryApi;
@@ -212,7 +213,7 @@ export class DefaultApiClient {
 
   /**
    * Validate a given location.
-   * @param analyzeLocationRequest
+   * @param analyzeLocationRequest -
    */
   public async analyzeLocation(
     // @ts-ignore
@@ -237,8 +238,8 @@ export class DefaultApiClient {
 
   /**
    * Create a location for a given target.
-   * @param createLocationRequest
-   * @param dryRun
+   * @param createLocationRequest -
+   * @param dryRun -
    */
   public async createLocation(
     // @ts-ignore
@@ -265,7 +266,7 @@ export class DefaultApiClient {
 
   /**
    * Delete a single entity by UID.
-   * @param uid
+   * @param uid -
    */
   public async deleteEntityByUid(
     // @ts-ignore
@@ -291,7 +292,7 @@ export class DefaultApiClient {
 
   /**
    * Delete a location by id.
-   * @param id
+   * @param id -
    */
   public async deleteLocation(
     // @ts-ignore
@@ -317,12 +318,12 @@ export class DefaultApiClient {
 
   /**
    * Get all entities matching a given filter.
-   * @param fields Restrict to just these fields in the response.
-   * @param limit Number of records to return in the response.
-   * @param filter Filter for just the entities defined by this filter.
-   * @param offset Number of records to skip in the query page.
-   * @param after Pointer to the previous page of results.
-   * @param order
+   * @param fields - Restrict to just these fields in the response.
+   * @param limit - Number of records to return in the response.
+   * @param filter - Filter for just the entities defined by this filter.
+   * @param offset - Number of records to skip in the query page.
+   * @param after - Pointer to the previous page of results.
+   * @param order -
    */
   public async getEntities(
     // @ts-ignore
@@ -348,13 +349,13 @@ export class DefaultApiClient {
 
   /**
    * Search for entities by a given query.
-   * @param fields Restrict to just these fields in the response.
-   * @param limit Number of records to return in the response.
-   * @param orderField The fields to sort returned results by.
-   * @param cursor Cursor to a set page of results.
-   * @param filter Filter for just the entities defined by this filter.
-   * @param fullTextFilterTerm Text search term.
-   * @param fullTextFilterFields A comma separated list of fields to sort returned results by.
+   * @param fields - Restrict to just these fields in the response.
+   * @param limit - Number of records to return in the response.
+   * @param orderField - The fields to sort returned results by.
+   * @param cursor - Cursor to a set page of results.
+   * @param filter - Filter for just the entities defined by this filter.
+   * @param fullTextFilterTerm - Text search term.
+   * @param fullTextFilterFields - A comma separated list of fields to sort returned results by.
    */
   public async getEntitiesByQuery(
     // @ts-ignore
@@ -380,8 +381,8 @@ export class DefaultApiClient {
 
   /**
    * Get a batch set of entities given an array of entityRefs.
-   * @param filter Filter for just the entities defined by this filter.
-   * @param getEntitiesByRefsRequest
+   * @param filter - Filter for just the entities defined by this filter.
+   * @param getEntitiesByRefsRequest -
    */
   public async getEntitiesByRefs(
     // @ts-ignore
@@ -408,9 +409,9 @@ export class DefaultApiClient {
 
   /**
    * Get an entity's ancestry by entity ref.
-   * @param kind
-   * @param namespace
-   * @param name
+   * @param kind -
+   * @param namespace -
+   * @param name -
    */
   public async getEntityAncestryByName(
     // @ts-ignore
@@ -438,9 +439,9 @@ export class DefaultApiClient {
 
   /**
    * Get an entity by an entity ref.
-   * @param kind
-   * @param namespace
-   * @param name
+   * @param kind -
+   * @param namespace -
+   * @param name -
    */
   public async getEntityByName(
     // @ts-ignore
@@ -468,7 +469,7 @@ export class DefaultApiClient {
 
   /**
    * Get a single entity by the UID.
-   * @param uid
+   * @param uid -
    */
   public async getEntityByUid(
     // @ts-ignore
@@ -494,8 +495,8 @@ export class DefaultApiClient {
 
   /**
    * Get all entity facets that match the given filters.
-   * @param facet
-   * @param filter Filter for just the entities defined by this filter.
+   * @param facet -
+   * @param filter - Filter for just the entities defined by this filter.
    */
   public async getEntityFacets(
     // @ts-ignore
@@ -521,7 +522,7 @@ export class DefaultApiClient {
 
   /**
    * Get a location by id.
-   * @param id
+   * @param id -
    */
   public async getLocation(
     // @ts-ignore
@@ -547,9 +548,9 @@ export class DefaultApiClient {
 
   /**
    * Get a location for entity.
-   * @param kind
-   * @param namespace
-   * @param name
+   * @param kind -
+   * @param namespace -
+   * @param name -
    */
   public async getLocationByEntity(
     // @ts-ignore
@@ -600,7 +601,7 @@ export class DefaultApiClient {
 
   /**
    * Refresh the entity related to entityRef.
-   * @param refreshEntityRequest
+   * @param refreshEntityRequest -
    */
   public async refreshEntity(
     // @ts-ignore
@@ -625,7 +626,7 @@ export class DefaultApiClient {
 
   /**
    * Validate that a passed in entity has no errors in schema.
-   * @param validateEntityRequest
+   * @param validateEntityRequest -
    */
   public async validateEntity(
     // @ts-ignore

@@ -100,29 +100,3 @@ export interface DocRequestMatcher<
     >
   ): T;
 }
-
-export type RequestMatcherByModelAndPath<
-  PathParams,
-  QueryParams,
-  RequestBody,
-  ResponseBody,
-> = core.RequestHandler<
-  PathParams,
-  ResponseBody,
-  RequestBody,
-  QueryParams,
-  Record<string, string>
->;
-
-export type RequestMatcherByModelAndPathParams<
-  PathParams,
-  QueryParams,
-  RequestBody,
-  ResponseBody,
-> = core.RequestHandlerParams<
-  PathParams,
-  ResponseBody,
-  RequestBody,
-  QueryParams,
-  Record<string, string>
->;

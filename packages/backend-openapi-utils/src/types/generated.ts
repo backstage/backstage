@@ -17,15 +17,24 @@ import { Router } from 'express';
 import type core from 'express-serve-static-core';
 import { PathTemplate, ValueOf } from './common';
 
+/**
+ * @public
+ */
 export type EndpointMap = Record<
   string,
   { query?: object; body?: object; response?: object; path?: object }
 >;
 
 // OpenAPI generator doesn't emit regular lowercase 'delete'.
-type HttpMethods = 'all' | 'put' | 'get' | 'post' | '_delete';
+/**
+ * @public
+ */
+export type HttpMethods = 'all' | 'put' | 'get' | 'post' | '_delete';
 
-type PathSchema<
+/**
+ * @public
+ */
+export type StaticPathParamsSchema<
   Doc extends EndpointMap,
   Endpoint extends DocEndpoint<Doc>,
   Method extends DocEndpointMethod<Doc, Endpoint>,
@@ -34,7 +43,10 @@ type PathSchema<
     ? Doc[`#${Method}|${Endpoint}`]['path']
     : never
   : never;
-type RequestBody<
+/**
+ * @public
+ */
+export type StaticRequestBodySchema<
   Doc extends EndpointMap,
   Endpoint extends DocEndpoint<Doc>,
   Method extends DocEndpointMethod<Doc, Endpoint>,
@@ -43,7 +55,10 @@ type RequestBody<
     ? Doc[`#${Method}|${Endpoint}`]['body']
     : unknown
   : unknown;
-type ResponseBody<
+/**
+ * @public
+ */
+export type StaticResponseSchema<
   Doc extends EndpointMap,
   Endpoint extends DocEndpoint<Doc>,
   Method extends DocEndpointMethod<Doc, Endpoint>,
@@ -52,7 +67,10 @@ type ResponseBody<
     ? Doc[`#${Method}|${Endpoint}`]['response']
     : unknown
   : unknown;
-type QuerySchema<
+/**
+ * @public
+ */
+export type StaticQueryParamsSchema<
   Doc extends EndpointMap,
   Endpoint extends DocEndpoint<Doc>,
   Method extends DocEndpointMethod<Doc, Endpoint>,
@@ -71,10 +89,10 @@ export type EndpointMapRequestHandler<
   Path extends DocEndpoint<Doc>,
   Method extends DocEndpointMethod<Doc, Path>,
 > = core.RequestHandler<
-  PathSchema<Doc, Path, Method>,
-  ResponseBody<Doc, Path, Method>,
-  RequestBody<Doc, Path, Method>,
-  QuerySchema<Doc, Path, Method>,
+  StaticPathParamsSchema<Doc, Path, Method>,
+  StaticResponseSchema<Doc, Path, Method>,
+  StaticRequestBodySchema<Doc, Path, Method>,
+  StaticQueryParamsSchema<Doc, Path, Method>,
   Record<string, string>
 >;
 
@@ -87,20 +105,26 @@ export type EndpointMapRequestHandlerParams<
   Path extends DocEndpoint<Doc>,
   Method extends DocEndpointMethod<Doc, Path>,
 > = core.RequestHandlerParams<
-  PathSchema<Doc, Path, Method>,
-  ResponseBody<Doc, Path, Method>,
-  RequestBody<Doc, Path, Method>,
-  QuerySchema<Doc, Path, Method>,
+  StaticPathParamsSchema<Doc, Path, Method>,
+  StaticResponseSchema<Doc, Path, Method>,
+  StaticRequestBodySchema<Doc, Path, Method>,
+  StaticQueryParamsSchema<Doc, Path, Method>,
   Record<string, string>
 >;
 
-type DocEndpoint<Doc extends EndpointMap> = ValueOf<{
+/**
+ * @public
+ */
+export type DocEndpoint<Doc extends EndpointMap> = ValueOf<{
   [Template in keyof Doc]: Template extends `#${string}|${infer Endpoint}`
     ? Endpoint
     : never;
 }>;
 
-type DocEndpointMethod<
+/**
+ * @public
+ */
+export type DocEndpointMethod<
   Doc extends EndpointMap,
   Endpoint extends DocEndpoint<Doc>,
 > = ValueOf<{
@@ -109,7 +133,10 @@ type DocEndpointMethod<
     : never;
 }>;
 
-type MethodAwareDocEndpoints<
+/**
+ * @public
+ */
+export type MethodAwareDocEndpoints<
   Doc extends EndpointMap,
   Endpoint extends DocEndpoint<Doc>,
   Method extends DocEndpointMethod<Doc, Endpoint>,
@@ -121,10 +148,16 @@ type MethodAwareDocEndpoints<
     : never;
 }>;
 
-type DocEndpointTemplate<Doc extends EndpointMap> = PathTemplate<
+/**
+ * @public
+ */
+export type DocEndpointTemplate<Doc extends EndpointMap> = PathTemplate<
   DocEndpoint<Doc>
 >;
 
+/**
+ * @public
+ */
 export type TemplateToDocEndpoint<
   Doc extends EndpointMap,
   Path extends DocEndpointTemplate<Doc>,
@@ -177,6 +210,9 @@ export interface EndpointMapRequestMatcher<
   ): T;
 }
 
+/**
+ * @public
+ */
 export interface TypedRouter<GeneratedEndpointMap extends EndpointMap>
   extends Router {
   get: EndpointMapRequestMatcher<GeneratedEndpointMap, this, 'get'>;

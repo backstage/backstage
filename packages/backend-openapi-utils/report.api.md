@@ -102,10 +102,43 @@ export function createValidatedOpenApiRouter<T extends RequiredDoc>(
   },
 ): ApiRouter<T>;
 
+// @public
+export function createValidatedOpenApiRouterFromGeneratedEndpointMap<
+  T extends EndpointMap,
+>(
+  spec: RequiredDoc,
+  options?: {
+    validatorOptions?: Partial<Parameters<typeof middleware>['0']>;
+    middleware?: RequestHandler[];
+  },
+): TypedRouter<T>;
+
 // @public (undocumented)
 type DiscriminateUnion<T, K extends keyof T, V extends T[K]> = Extract<
   T,
   Record<K, V>
+>;
+
+// @public (undocumented)
+type DocEndpoint<Doc extends EndpointMap> = ValueOf<{
+  [Template in keyof Doc]: Template extends `#${string}|${infer Endpoint}`
+    ? Endpoint
+    : never;
+}>;
+
+// @public (undocumented)
+type DocEndpointMethod<
+  Doc extends EndpointMap,
+  Endpoint extends DocEndpoint<Doc>,
+> = ValueOf<{
+  [Template in keyof Doc]: Template extends `#${infer Method}|${Endpoint}`
+    ? Method
+    : never;
+}>;
+
+// @public (undocumented)
+type DocEndpointTemplate<Doc extends EndpointMap> = PathTemplate<
+  DocEndpoint<Doc>
 >;
 
 // @public (undocumented)
@@ -240,6 +273,85 @@ interface DocRequestMatcher<
 }
 
 // @public (undocumented)
+type EndpointMap = Record<
+  string,
+  {
+    query?: object;
+    body?: object;
+    response?: object;
+    path?: object;
+  }
+>;
+
+// @public
+type EndpointMapRequestHandler<
+  Doc extends EndpointMap,
+  Path extends DocEndpoint<Doc>,
+  Method extends DocEndpointMethod<Doc, Path>,
+> = core.RequestHandler<
+  StaticPathParamsSchema<Doc, Path, Method>,
+  StaticResponseSchema<Doc, Path, Method>,
+  StaticRequestBodySchema<Doc, Path, Method>,
+  StaticQueryParamsSchema<Doc, Path, Method>,
+  Record<string, string>
+>;
+
+// @public
+type EndpointMapRequestHandlerParams<
+  Doc extends EndpointMap,
+  Path extends DocEndpoint<Doc>,
+  Method extends DocEndpointMethod<Doc, Path>,
+> = core.RequestHandlerParams<
+  StaticPathParamsSchema<Doc, Path, Method>,
+  StaticResponseSchema<Doc, Path, Method>,
+  StaticRequestBodySchema<Doc, Path, Method>,
+  StaticQueryParamsSchema<Doc, Path, Method>,
+  Record<string, string>
+>;
+
+// @public
+interface EndpointMapRequestMatcher<
+  Doc extends EndpointMap,
+  T,
+  Method extends HttpMethods,
+> {
+  // (undocumented)
+  <
+    TPath extends MethodAwareDocEndpoints<
+      Doc,
+      DocEndpoint<Doc>,
+      Method & DocEndpointMethod<Doc, DocEndpoint<Doc>>
+    >,
+    TMethod extends Method &
+      DocEndpointMethod<Doc, TemplateToDocEndpoint<Doc, TPath>>,
+  >(
+    path: TPath,
+    ...handlers: Array<
+      EndpointMapRequestHandler<Doc, TemplateToDocEndpoint<Doc, TPath>, TMethod>
+    >
+  ): T;
+  // (undocumented)
+  <
+    TPath extends MethodAwareDocEndpoints<
+      Doc,
+      DocEndpoint<Doc>,
+      Method & DocEndpointMethod<Doc, DocEndpoint<Doc>>
+    >,
+    TMethod extends Method &
+      DocEndpointMethod<Doc, TemplateToDocEndpoint<Doc, TPath>>,
+  >(
+    path: TPath,
+    ...handlers: Array<
+      EndpointMapRequestHandlerParams<
+        Doc,
+        TemplateToDocEndpoint<Doc, TPath>,
+        TMethod
+      >
+    >
+  ): T;
+}
+
+// @public (undocumented)
 type Filter<T, U> = T extends U ? T : never;
 
 // @public
@@ -277,6 +389,9 @@ type HeaderSchema<
   Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
 > = ParametersSchema<Doc, Path, Method, ImmutableHeaderObject>;
+
+// @public (undocumented)
+type HttpMethods = 'all' | 'put' | 'get' | 'post' | '_delete';
 
 // @public
 type Immutable<T> = T extends
@@ -401,6 +516,21 @@ declare namespace internal {
     Response_3 as Response,
     ResponseSchemas,
     ResponseBodyToJsonSchema,
+    EndpointMap,
+    HttpMethods,
+    StaticPathParamsSchema,
+    StaticRequestBodySchema,
+    StaticResponseSchema,
+    StaticQueryParamsSchema,
+    EndpointMapRequestHandler,
+    EndpointMapRequestHandlerParams,
+    DocEndpoint,
+    DocEndpointMethod,
+    MethodAwareDocEndpoints,
+    DocEndpointTemplate,
+    TemplateToDocEndpoint,
+    EndpointMapRequestMatcher,
+    TypedRouter,
   };
 }
 export { internal };
@@ -426,6 +556,19 @@ type MapToSchema<
     ? ParameterSchema<Doc, NonNullable<T[V]>['schema']>
     : never;
 };
+
+// @public (undocumented)
+type MethodAwareDocEndpoints<
+  Doc extends EndpointMap,
+  Endpoint extends DocEndpoint<Doc>,
+  Method extends DocEndpointMethod<Doc, Endpoint>,
+> = ValueOf<{
+  [Template in keyof Doc]: Template extends `#${Method}|${infer E}`
+    ? E extends DocEndpoint<Doc>
+      ? PathTemplate<E>
+      : never
+    : never;
+}>;
 
 // @public (undocumented)
 type MethodAwareDocPath<
@@ -513,7 +656,7 @@ type PathSchema<
 > = ParametersSchema<Doc, Path, Method, ImmutablePathObject>;
 
 // @public
-type PathTemplate<Path extends string> =
+export type PathTemplate<Path extends string> =
   Path extends `${infer Prefix}{${infer PathName}}${infer Suffix}`
     ? `${Prefix}:${PathName}${PathTemplate<Suffix>}`
     : Path;
@@ -684,6 +827,60 @@ type SchemaRef<Doc extends RequiredDoc, Schema> = Schema extends {
       [Key in keyof Schema]: SchemaRef<Doc, Schema[Key]>;
     };
 
+// @public (undocumented)
+type StaticPathParamsSchema<
+  Doc extends EndpointMap,
+  Endpoint extends DocEndpoint<Doc>,
+  Method extends DocEndpointMethod<Doc, Endpoint>,
+> = `#${Method}|${Endpoint}` extends keyof Doc
+  ? 'path' extends keyof Doc[`#${Method}|${Endpoint}`]
+    ? Doc[`#${Method}|${Endpoint}`]['path']
+    : never
+  : never;
+
+// @public (undocumented)
+type StaticQueryParamsSchema<
+  Doc extends EndpointMap,
+  Endpoint extends DocEndpoint<Doc>,
+  Method extends DocEndpointMethod<Doc, Endpoint>,
+> = `#${Method}|${Endpoint}` extends keyof Doc
+  ? 'query' extends keyof Doc[`#${Method}|${Endpoint}`]
+    ? Doc[`#${Method}|${Endpoint}`]['query']
+    : never
+  : never;
+
+// @public (undocumented)
+type StaticRequestBodySchema<
+  Doc extends EndpointMap,
+  Endpoint extends DocEndpoint<Doc>,
+  Method extends DocEndpointMethod<Doc, Endpoint>,
+> = `#${Method}|${Endpoint}` extends keyof Doc
+  ? 'body' extends keyof Doc[`#${Method}|${Endpoint}`]
+    ? Doc[`#${Method}|${Endpoint}`]['body']
+    : unknown
+  : unknown;
+
+// @public (undocumented)
+type StaticResponseSchema<
+  Doc extends EndpointMap,
+  Endpoint extends DocEndpoint<Doc>,
+  Method extends DocEndpointMethod<Doc, Endpoint>,
+> = `#${Method}|${Endpoint}` extends keyof Doc
+  ? 'response' extends keyof Doc[`#${Method}|${Endpoint}`]
+    ? Doc[`#${Method}|${Endpoint}`]['response']
+    : unknown
+  : unknown;
+
+// @public (undocumented)
+type TemplateToDocEndpoint<
+  Doc extends EndpointMap,
+  Path extends DocEndpointTemplate<Doc>,
+> = ValueOf<{
+  [Template in DocEndpoint<Doc>]: Path extends PathTemplate<Template>
+    ? Template
+    : never;
+}>;
+
 // @public
 type TemplateToDocPath<
   Doc extends PathDoc,
@@ -703,6 +900,18 @@ type TuplifyUnion<
   L = LastOf<T>,
   N = [T] extends [never] ? true : false,
 > = true extends N ? [] : Push<TuplifyUnion<Exclude<T, L>>, L>;
+
+// @public (undocumented)
+interface TypedRouter<GeneratedEndpointMap extends EndpointMap> extends Router {
+  // (undocumented)
+  delete: EndpointMapRequestMatcher<GeneratedEndpointMap, this, '_delete'>;
+  // (undocumented)
+  get: EndpointMapRequestMatcher<GeneratedEndpointMap, this, 'get'>;
+  // (undocumented)
+  post: EndpointMapRequestMatcher<GeneratedEndpointMap, this, 'post'>;
+  // (undocumented)
+  put: EndpointMapRequestMatcher<GeneratedEndpointMap, this, 'put'>;
+}
 
 // @public
 type UnionToIntersection<U> = (U extends any ? (k: U) => void : never) extends (
