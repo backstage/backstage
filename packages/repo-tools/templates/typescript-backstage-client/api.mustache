@@ -29,6 +29,37 @@ export interface RequestOptions {
   token?: string;
 }
 
+{{#operation}}
+export type {{nickname}}Request = {
+    {{#hasPathParams}}
+    path: {
+        {{#pathParams}}
+            {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/pathParams}}
+    },
+    {{/hasPathParams}}
+    {{#hasBodyParam}}
+        {{#bodyParam}}
+        body: {{{dataType}}},
+        {{/bodyParam}}
+    {{/hasBodyParam}}
+    {{#hasQueryParams}}
+    query: {
+        {{#queryParams}}
+        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/queryParams}}
+    },
+    {{/hasQueryParams}}
+    {{#hasHeaderParams}}
+    header: {
+        {{#headerParams}}
+        {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
+        {{/headerParams}}
+    },
+    {{/hasHeaderParams}}
+}
+{{/operation}}
+
 /**
  * {{{description}}}{{^description}}no description{{/description}}
  */
@@ -58,34 +89,7 @@ export class {{classname}}Client {
      */
     public async {{nickname}}(
         // @ts-ignore
-        request: {
-            {{#hasPathParams}}
-            path: {
-                {{#pathParams}}
-                    {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-                {{/pathParams}}
-            },
-            {{/hasPathParams}}
-            {{#hasBodyParam}}
-                {{#bodyParam}}
-                body: {{{dataType}}},
-                {{/bodyParam}}
-            {{/hasBodyParam}}
-            {{#hasQueryParams}}
-            query: {
-                {{#queryParams}}
-                {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-                {{/queryParams}}
-            },
-            {{/hasQueryParams}}
-            {{#hasHeaderParams}}
-            header: {
-                {{#headerParams}}
-                {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-                {{/headerParams}}
-            },
-            {{/hasHeaderParams}}
-        },
+        request: {{nickname}}Request,
         options?: RequestOptions
     ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
         const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);

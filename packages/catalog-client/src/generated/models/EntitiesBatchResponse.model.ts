@@ -19,6 +19,9 @@
 // ******************************************************************
 import { NullableEntity } from '../models/NullableEntity.model';
 
+/**
+ * @public
+ */
 export interface EntitiesBatchResponse {
   /**
    * The list of entities, in the same order as the refs in the request. Entries that are null signify that no entity existed with that ref.

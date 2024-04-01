@@ -20,6 +20,7 @@
 
 /**
  * A relation of a specific type to another entity in the catalog.
+ * @public
  */
 export interface RecursivePartialEntityRelation {
   /**

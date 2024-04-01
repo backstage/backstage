@@ -19,6 +19,9 @@
 // ******************************************************************
 import { Entity } from '../models/Entity.model';
 
+/**
+ * @public
+ */
 export interface EntityAncestryResponseItemsInner {
   parentEntityRefs: Array<string>;
   entity: Entity;
