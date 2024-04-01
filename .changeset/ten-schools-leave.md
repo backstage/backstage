@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-common': minor
+'@backstage/backend-common': patch
 '@backstage/integration': minor
 ---
 
