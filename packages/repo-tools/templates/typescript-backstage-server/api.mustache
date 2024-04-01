@@ -1,8 +1,10 @@
 {{>licenseInfo}}
 import type {
-{{#imports}}
-  {{classname}},
-{{/imports}}
+    {{#operations}}
+    {{#operation}}
+    {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
+    {{/operation}}
+    {{/operations}}
 } from '{{clientImport}}';
 
 
@@ -15,24 +17,7 @@ import type {
 export type EndpointMap = {
     {{#operation}}
     
-    '#{{#lambda.lowercase}}{{httpMethod}}{{/lambda.lowercase}}|{{path}}': {
-        path: {
-            {{#pathParams}}
-                {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-            {{/pathParams}}
-        },
-        query: {
-            {{#queryParams}}
-                {{paramName}}{{^required}}?{{/required}}: {{{dataType}}},
-            {{/queryParams}}
-        },
-        {{#bodyParam}}
-            body: {{{dataType}}},
-        {{/bodyParam}}
-        {{#returnType}}
-            response: {{{returnType}}},
-        {{/returnType}}
-    },
+    '#{{#lambda.lowercase}}{{httpMethod}}{{/lambda.lowercase}}|{{path}}': {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
     
     {{/operation}}
 }

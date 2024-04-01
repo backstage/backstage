@@ -30,7 +30,10 @@ export interface RequestOptions {
 }
 
 {{#operation}}
-export type {{nickname}}Request = {
+/**
+  * @public
+  */
+export type {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}} = {
     {{#hasPathParams}}
     path: {
         {{#pathParams}}
@@ -89,7 +92,7 @@ export class {{classname}}Client {
      */
     public async {{nickname}}(
         // @ts-ignore
-        request: {{nickname}}Request,
+        request: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}},
         options?: RequestOptions
     ): Promise<TypedResponse<{{{returnType}}} {{^returnType}}void{{/returnType}}>> {
         const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);

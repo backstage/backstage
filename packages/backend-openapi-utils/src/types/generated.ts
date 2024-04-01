@@ -19,10 +19,8 @@ import { PathTemplate, ValueOf } from './common';
 
 export type EndpointMap = Record<
   string,
-  { query?: object; body?: object; response: object | void; path?: object }
+  { query?: object; body?: object; response?: object; path?: object }
 >;
-
-type UnknownIfVoid<T> = T extends void ? unknown : T;
 
 // OpenAPI generator doesn't emit regular lowercase 'delete'.
 type HttpMethods = 'all' | 'put' | 'get' | 'post' | '_delete';
@@ -51,7 +49,7 @@ type ResponseBody<
   Method extends DocEndpointMethod<Doc, Endpoint>,
 > = `#${Method}|${Endpoint}` extends keyof Doc
   ? 'response' extends keyof Doc[`#${Method}|${Endpoint}`]
-    ? UnknownIfVoid<Doc[`#${Method}|${Endpoint}`]['response']>
+    ? Doc[`#${Method}|${Endpoint}`]['response']
     : unknown
   : unknown;
 type QuerySchema<
