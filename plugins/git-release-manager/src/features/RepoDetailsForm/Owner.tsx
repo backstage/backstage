@@ -17,14 +17,12 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import useAsync from 'react-use/esm/useAsync';
-import {
-  FormControl,
-  FormHelperText,
-  InputLabel,
-  MenuItem,
-  Select,
-  Box,
-} from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import Box from '@material-ui/core/Box';
 
 import { gitReleaseManagerApiRef } from '../../api/serviceApiRef';
 import { TEST_IDS } from '../../test-helpers/test-ids';

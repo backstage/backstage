@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Paper } from '@material-ui/core';
+import Paper from '@material-ui/core/Paper';
 
 import { InDepth } from './InDepth/InDepth';
 import { Summary } from './Summary';

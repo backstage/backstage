@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Box, LinearProgress, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Typography from '@material-ui/core/Typography';
 
 import { ResponseStep } from '../../types/types';
 import { TEST_IDS } from '../../test-helpers/test-ids';
