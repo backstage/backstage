@@ -159,7 +159,6 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
-      - name: enable corepack
       - run: corepack enable
 
       - name: yarn install
