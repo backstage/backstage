@@ -40,25 +40,7 @@ And this to `.dockerignore`:
 
 `Corepack` is a tool that comes pre-installed with `Node.js` versions 16 and above. It automatically selects the right package manager version to run, depending on the project you're working on.
 
-To use `Corepack` with `Yarn4`, you need to make sure you're using `Node.js` version 18 or above. If you're not sure what version you're using, you can check by running the following command in your terminal:
-
-```bash
-node -v
-```
-
-If you're not using Node.js version 18 or above, you'll need to upgrade. You can do this using a tool like `nvm`
-
-```bash
-nvm install 18
-```
-
-and then
-
-```bash
-nvm use 18
-```
-
-Once you've confirmed you're using `Node.js` version 18 or above, you can activate `Corepack` by running the following command:
+You can activate Corepack by running the following command:
 
 ```bash
 corepack enable
