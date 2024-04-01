@@ -22,6 +22,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
+    "./client": "./src/client.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -30,6 +31,9 @@
     "*": {
       "alpha": [
         "src/alpha.ts"
+      ],
+      "client": [
+        "src/client.ts"
       ],
       "package.json": [
         "package.json"
@@ -50,7 +54,9 @@
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
-    "@backstage/plugin-search-common": "workspace:^"
+    "@backstage/plugin-search-common": "workspace:^",
+    "cross-fetch": "^4.0.0",
+    "uri-template": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

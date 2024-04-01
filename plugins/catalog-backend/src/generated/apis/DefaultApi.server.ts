@@ -34,7 +34,7 @@ import type {
   GetLocations,
   RefreshEntity,
   ValidateEntity,
-} from '@backstage/catalog-client/alpha';
+} from '@backstage/plugin-catalog-common/client';
 
 /**
  * no description
