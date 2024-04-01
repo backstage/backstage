@@ -8,9 +8,10 @@ import {
 } from './';
 
 {{/hasImports}}
-{{#description}}
     /**
+{{#description}}
     * {{{.}}}
-    */
 {{/description}}
+    * @public
+    */
 export type {{classname}} = {{#oneOf}}{{{.}}}{{^-last}} | {{/-last}}{{/oneOf}};

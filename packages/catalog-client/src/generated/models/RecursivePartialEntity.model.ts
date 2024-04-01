@@ -22,6 +22,7 @@ import { RecursivePartialEntityRelation } from '../models/RecursivePartialEntity
 
 /**
  * Makes all keys of an entire hierarchy optional.
+ * @public
  */
 export interface RecursivePartialEntity {
   /**

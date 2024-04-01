@@ -20,6 +20,9 @@
 import { AnalyzeLocationExistingEntity } from '../models/AnalyzeLocationExistingEntity.model';
 import { AnalyzeLocationGenerateEntity } from '../models/AnalyzeLocationGenerateEntity.model';
 
+/**
+ * @public
+ */
 export interface AnalyzeLocationResponse {
   generateEntities: Array<AnalyzeLocationGenerateEntity>;
   existingEntityFiles: Array<AnalyzeLocationExistingEntity>;

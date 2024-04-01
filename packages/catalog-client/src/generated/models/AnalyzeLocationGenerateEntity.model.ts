@@ -22,6 +22,7 @@ import { RecursivePartialEntity } from '../models/RecursivePartialEntity.model';
 
 /**
  * This is some form of representation of what the analyzer could deduce. We should probably have a chat about how this can best be conveyed to the frontend. It'll probably contain a (possibly incomplete) entity, plus enough info for the frontend to know what form data to show to the user for overriding/completing the info.
+ * @public
  */
 export interface AnalyzeLocationGenerateEntity {
   fields: Array<AnalyzeLocationEntityField>;

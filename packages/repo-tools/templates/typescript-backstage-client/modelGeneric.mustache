@@ -3,11 +3,12 @@
 {{#models}}
 {{#model}}
 
-{{#description}}
 /**
+{{#description}}
 * {{{.}}}
-*/
 {{/description}}
+* @public
+*/
 {{^isEnum}}
 export {{#isNullable}}type{{/isNullable}}{{^isNullable}}interface{{/isNullable}} {{classname}} {{#isNullable}}={{/isNullable}} {
 {{>modelGenericAdditionalProperties}}
@@ -25,6 +26,9 @@ export {{#isNullable}}type{{/isNullable}}{{^isNullable}}interface{{/isNullable}}
 
 {{#vars}}
 {{#isEnum}}
+/**
+  * @public
+  */
 export type {{classname}}{{enumName}} ={{#allowableValues}}{{#values}} "{{.}}" {{^-last}}|{{/-last}}{{/values}}{{/allowableValues}};
 {{/isEnum}}
 {{/vars}}
@@ -32,6 +36,9 @@ export type {{classname}}{{enumName}} ={{#allowableValues}}{{#values}} "{{.}}" {
 {{/hasEnums}}
 {{/isEnum}}
 {{#isEnum}}
+/**
+  * @public
+  */
 export type {{classname}} ={{#allowableValues}}{{#values}} "{{.}}" {{^-last}}|{{/-last}}{{/values}}{{/allowableValues}};
 {{/isEnum}}
 {{/model}}

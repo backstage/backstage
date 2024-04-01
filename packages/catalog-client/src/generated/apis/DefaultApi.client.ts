@@ -56,6 +56,97 @@ export interface RequestOptions {
   token?: string;
 }
 
+export type analyzeLocationRequest = {
+  body: AnalyzeLocationRequest;
+};
+export type createLocationRequest = {
+  body: CreateLocationRequest;
+  query: {
+    dryRun?: string;
+  };
+};
+export type deleteEntityByUidRequest = {
+  path: {
+    uid: string;
+  };
+};
+export type deleteLocationRequest = {
+  path: {
+    id: string;
+  };
+};
+export type getEntitiesRequest = {
+  query: {
+    fields?: Array<string>;
+    limit?: number;
+    filter?: Array<string>;
+    offset?: number;
+    after?: string;
+    order?: Array<string>;
+  };
+};
+export type getEntitiesByQueryRequest = {
+  query: {
+    fields?: Array<string>;
+    limit?: number;
+    orderField?: Array<string>;
+    cursor?: string;
+    filter?: Array<string>;
+    fullTextFilterTerm?: string;
+    fullTextFilterFields?: Array<string>;
+  };
+};
+export type getEntitiesByRefsRequest = {
+  body: GetEntitiesByRefsRequest;
+  query: {
+    filter?: Array<string>;
+  };
+};
+export type getEntityAncestryByNameRequest = {
+  path: {
+    kind: string;
+    namespace: string;
+    name: string;
+  };
+};
+export type getEntityByNameRequest = {
+  path: {
+    kind: string;
+    namespace: string;
+    name: string;
+  };
+};
+export type getEntityByUidRequest = {
+  path: {
+    uid: string;
+  };
+};
+export type getEntityFacetsRequest = {
+  query: {
+    facet: Array<string>;
+    filter?: Array<string>;
+  };
+};
+export type getLocationRequest = {
+  path: {
+    id: string;
+  };
+};
+export type getLocationByEntityRequest = {
+  path: {
+    kind: string;
+    namespace: string;
+    name: string;
+  };
+};
+export type getLocationsRequest = {};
+export type refreshEntityRequest = {
+  body: RefreshEntityRequest;
+};
+export type validateEntityRequest = {
+  body: ValidateEntityRequest;
+};
+
 /**
  * no description
  */
@@ -77,9 +168,7 @@ export class DefaultApiClient {
    */
   public async analyzeLocation(
     // @ts-ignore
-    request: {
-      body: AnalyzeLocationRequest;
-    },
+    request: analyzeLocationRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<AnalyzeLocationResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -105,12 +194,7 @@ export class DefaultApiClient {
    */
   public async createLocation(
     // @ts-ignore
-    request: {
-      body: CreateLocationRequest;
-      query: {
-        dryRun?: string;
-      };
-    },
+    request: createLocationRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<CreateLocation201Response>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -137,11 +221,7 @@ export class DefaultApiClient {
    */
   public async deleteEntityByUid(
     // @ts-ignore
-    request: {
-      path: {
-        uid: string;
-      };
-    },
+    request: deleteEntityByUidRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -167,11 +247,7 @@ export class DefaultApiClient {
    */
   public async deleteLocation(
     // @ts-ignore
-    request: {
-      path: {
-        id: string;
-      };
-    },
+    request: deleteLocationRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -202,16 +278,7 @@ export class DefaultApiClient {
    */
   public async getEntities(
     // @ts-ignore
-    request: {
-      query: {
-        fields?: Array<string>;
-        limit?: number;
-        filter?: Array<string>;
-        offset?: number;
-        after?: string;
-        order?: Array<string>;
-      };
-    },
+    request: getEntitiesRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<Entity>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -243,18 +310,7 @@ export class DefaultApiClient {
    */
   public async getEntitiesByQuery(
     // @ts-ignore
-    request: {
-      query: {
-        fields?: Array<string>;
-        limit?: number;
-        offset?: number;
-        orderField?: Array<string>;
-        cursor?: string;
-        filter?: Array<string>;
-        fullTextFilterTerm?: string;
-        fullTextFilterFields?: Array<string>;
-      };
-    },
+    request: getEntitiesByQueryRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesQueryResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -281,12 +337,7 @@ export class DefaultApiClient {
    */
   public async getEntitiesByRefs(
     // @ts-ignore
-    request: {
-      body: GetEntitiesByRefsRequest;
-      query: {
-        filter?: Array<string>;
-      };
-    },
+    request: getEntitiesByRefsRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -315,13 +366,7 @@ export class DefaultApiClient {
    */
   public async getEntityAncestryByName(
     // @ts-ignore
-    request: {
-      path: {
-        kind: string;
-        namespace: string;
-        name: string;
-      };
-    },
+    request: getEntityAncestryByNameRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityAncestryResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -351,13 +396,7 @@ export class DefaultApiClient {
    */
   public async getEntityByName(
     // @ts-ignore
-    request: {
-      path: {
-        kind: string;
-        namespace: string;
-        name: string;
-      };
-    },
+    request: getEntityByNameRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<Entity>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -385,11 +424,7 @@ export class DefaultApiClient {
    */
   public async getEntityByUid(
     // @ts-ignore
-    request: {
-      path: {
-        uid: string;
-      };
-    },
+    request: getEntityByUidRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<Entity>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -416,12 +451,7 @@ export class DefaultApiClient {
    */
   public async getEntityFacets(
     // @ts-ignore
-    request: {
-      query: {
-        facet: Array<string>;
-        filter?: Array<string>;
-      };
-    },
+    request: getEntityFacetsRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<EntityFacetsResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -447,11 +477,7 @@ export class DefaultApiClient {
    */
   public async getLocation(
     // @ts-ignore
-    request: {
-      path: {
-        id: string;
-      };
-    },
+    request: getLocationRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -479,13 +505,7 @@ export class DefaultApiClient {
    */
   public async getLocationByEntity(
     // @ts-ignore
-    request: {
-      path: {
-        kind: string;
-        namespace: string;
-        name: string;
-      };
-    },
+    request: getLocationByEntityRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<Location>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -512,7 +532,7 @@ export class DefaultApiClient {
    */
   public async getLocations(
     // @ts-ignore
-    request: {},
+    request: getLocationsRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<Array<GetLocations200ResponseInner>>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -536,9 +556,7 @@ export class DefaultApiClient {
    */
   public async refreshEntity(
     // @ts-ignore
-    request: {
-      body: RefreshEntityRequest;
-    },
+    request: refreshEntityRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
@@ -563,9 +581,7 @@ export class DefaultApiClient {
    */
   public async validateEntity(
     // @ts-ignore
-    request: {
-      body: ValidateEntityRequest;
-    },
+    request: validateEntityRequest,
     options?: RequestOptions,
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
