@@ -6039,7 +6039,6 @@ __metadata:
     better-sqlite3: ^11.0.0
     codeowners-utils: ^1.0.2
     core-js: ^3.6.5
-    cross-fetch: ^4.0.0
     express: ^4.17.1
     fast-json-stable-stringify: ^2.1.0
     fs-extra: ^11.2.0
