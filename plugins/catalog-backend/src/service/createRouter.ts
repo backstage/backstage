@@ -46,7 +46,7 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
-import { createOpenApiRouter } from '../generated';
+import { createOpenApiRouter } from '../schema/openapi';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
 import {
   AuthService,

@@ -36,6 +36,7 @@ import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.mod
 import { GetLocations200ResponseInner } from '../models/GetLocations200ResponseInner.model';
 import { Location } from '../models/Location.model';
 import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
+import { ValidateEntity400Response } from '../models/ValidateEntity400Response.model';
 import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
 
 /**

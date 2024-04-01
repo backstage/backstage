@@ -15,7 +15,7 @@
  */
 
 import chalk from 'chalk';
-import { resolve, dirname } from 'path';
+import { resolve, dirname, join } from 'path';
 import YAML from 'js-yaml';
 import {
   OLD_SCHEMA_PATH,
@@ -38,7 +38,8 @@ async function generateSpecFile() {
 
   const tsPath = cliPaths.resolveTarget(TS_SCHEMA_PATH);
 
-  await fs.mkdirp(dirname(tsPath));
+  const schemaDir = dirname(tsPath);
+  await fs.mkdirp(schemaDir);
 
   const oldTsPath = cliPaths.resolveTarget(OLD_SCHEMA_PATH);
   if (oldTsPath) {
@@ -66,9 +67,16 @@ export const createOpenApiRouter = async (
 `,
   );
 
-  await exec(`yarn backstage-cli package lint --fix ${tsPath}`);
+  const indexFile = join(schemaDir, '..', 'index.ts');
+  await fs.writeFile(
+    indexFile,
+    `// 
+    export * from './generated';`,
+  );
+
+  await exec(`yarn backstage-cli package lint`, ['--fix', tsPath, indexFile]);
   if (await cliPaths.resolveTargetRoot('node_modules/.bin/prettier')) {
-    await exec(`yarn prettier`, ['--write', tsPath], {
+    await exec(`yarn prettier`, ['--write', tsPath, indexFile], {
       cwd: cliPaths.targetRoot,
     });
   }
