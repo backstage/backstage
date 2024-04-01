@@ -235,14 +235,24 @@ class DefaultHttpAuthService implements HttpAuthService {
       return undefined;
     }
 
-    const existingCredentials = await this.#auth.authenticate(existingCookie, {
-      allowLimitedAccess: true,
-    });
-    if (!this.#auth.isPrincipal(existingCredentials, 'user')) {
-      return undefined;
-    }
+    try {
+      const existingCredentials = await this.#auth.authenticate(
+        existingCookie,
+        {
+          allowLimitedAccess: true,
+        },
+      );
+      if (!this.#auth.isPrincipal(existingCredentials, 'user')) {
+        return undefined;
+      }
 
-    return existingCredentials.expiresAt;
+      return existingCredentials.expiresAt;
+    } catch (error) {
+      if (error.name === 'AuthenticationError') {
+        return undefined;
+      }
+      throw error;
+    }
   }
 }
 
