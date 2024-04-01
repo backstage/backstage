@@ -53,7 +53,7 @@
     "clean": "backstage-cli package clean",
     "diff": "backstage-repo-tools package schema openapi diff",
     "fuzz": "backstage-repo-tools package schema openapi fuzz --exclude-checks response_schema_conformance",
-    "generate": "backstage-repo-tools package schema openapi generate --server --client-package packages/catalog-client --server-client-import \"@backstage/catalog-client/alpha\"",
+    "generate": "backstage-repo-tools package schema openapi generate --server --client-package plugins/catalog-common --server-client-import \"@backstage/plugin-catalog-common/client\"",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
