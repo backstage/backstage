@@ -230,9 +230,9 @@ const myTheme = createUnifiedTheme({
 
 ## Custom Fonts
 
-To add custom fonts, you first need to store the font so that it can be imported. We suggest creating the `assets/fonts` directory in your front-end application `src` folder. 
+To add custom fonts, you first need to store the font so that it can be imported. We suggest creating the `assets/fonts` directory in your front-end application `src` folder.
 
-You can then declare the font style following the `@font-face` syntax from [Material UI Typography](https://mui.com/material-ui/customization/typography/). 
+You can then declare the font style following the `@font-face` syntax from [Material UI Typography](https://mui.com/material-ui/customization/typography/).
 
 After that you can then utilize the `styleOverrides` of `MuiCssBaseline` under components to add a font to the `@font-face` array.
 
@@ -245,8 +245,8 @@ const myCustomFont = {
   fontDisplay: 'swap',
   fontWeight: 300,
   src: `
-    local('My-Custom-Font'), 
-    url(${MyCustomFont}) format('woff2'), 
+    local('My-Custom-Font'),
+    url(${MyCustomFont}) format('woff2'),
   `,
 },
 
@@ -262,7 +262,8 @@ export const myTheme = createUnifiedTheme({
 };
 ```
 
-If you want to utilize different or multiple fonts, then you can set the top level `fontFamily` to what you want for your body, and then override `fontFamily` in `typography` to control fonts for various headings. 
+If you want to utilize different or multiple fonts, then you can set the top level `fontFamily` to what you want for your body, and then override `fontFamily` in `typography` to control fonts for various headings.
+
 ```ts title="packages/app/src/theme/myTheme.ts"
 import MyCustomFont from '../assets/fonts/My-Custom-Font.woff2';
 import myAwesomeFont from '../assets/fonts/My-Awesome-Font.woff2';
@@ -273,8 +274,8 @@ const myCustomFont = {
   fontDisplay: 'swap',
   fontWeight: 300,
   src: `
-    local('My-Custom-Font'), 
-    url(${MyCustomFont}) format('woff2'), 
+    local('My-Custom-Font'),
+    url(${MyCustomFont}) format('woff2'),
   `,
 },
 
@@ -284,8 +285,8 @@ const myAwesomeFont = {
   fontDisplay: 'swap',
   fontWeight: 300,
   src: `
-    local('My-Awesome-Font'), 
-    url(${myAwesomeFont}) format('woff2'), 
+    local('My-Awesome-Font'),
+    url(${myAwesomeFont}) format('woff2'),
   `,
 },
 
