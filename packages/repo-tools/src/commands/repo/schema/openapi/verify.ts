@@ -30,14 +30,14 @@ import {
 } from '../../../../lib/openapi/constants';
 import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
 
-const verifySpecAndGeneratedSpecMatch = async (
-  openapiPath: string,
-  directoryPath: string,
-) => {
-  const openapiTempDirectory = resolvePath(cliPaths.targetDir, '.openapi');
-  await fs.mkdirp(openapiTempDirectory);
-  console.log(openapiTempDirectory);
-
+async function verify(directoryPath: string) {
+  let openapiPath = '';
+  try {
+    openapiPath = await getPathToOpenApiSpec(directoryPath);
+  } catch {
+    // Unable to find spec at path.
+    return;
+  }
   const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
   await Parser.validate(cloneDeep(yaml) as any);
 
@@ -57,18 +57,6 @@ const verifySpecAndGeneratedSpecMatch = async (
       `\`${YAML_SCHEMA_PATH}\` and \`${TS_SCHEMA_PATH}\` do not match. Please run \`yarn backstage-repo-tools package schema openapi generate\` from '${path}' to regenerate \`${TS_SCHEMA_PATH}\`.`,
     );
   }
-};
-
-async function verify(directoryPath: string) {
-  let openapiPath = '';
-  try {
-    openapiPath = await getPathToOpenApiSpec(directoryPath);
-  } catch {
-    // Unable to find spec at path.
-    return;
-  }
-
-  await verifySpecAndGeneratedSpecMatch(openapiPath, directoryPath);
 }
 
 export async function bulkCommand(paths: string[] = []): Promise<void> {
