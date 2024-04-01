@@ -8,6 +8,36 @@ import { ConsumedResponse } from '@backstage/errors';
 import { RestEndpointMethodTypes } from '@octokit/rest';
 
 // @public
+export class AwsCodeCommitIntegration implements ScmIntegration {
+  constructor(integrationConfig: AwsCodeCommitIntegrationConfig);
+  // (undocumented)
+  get config(): AwsCodeCommitIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<AwsCodeCommitIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number | undefined;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
+export type AwsCodeCommitIntegrationConfig = {
+  host: string;
+  accessKeyId?: string;
+  secretAccessKey?: string;
+  roleArn?: string;
+  externalId?: string;
+};
+
+// @public
 export class AwsS3Integration implements ScmIntegration {
   constructor(integrationConfig: AwsS3IntegrationConfig);
   // (undocumented)
@@ -647,6 +677,8 @@ export type GoogleGcsIntegrationConfig = {
 // @public
 export interface IntegrationsByType {
   // (undocumented)
+  awsCodeCommit: ScmIntegrationsGroup<AwsCodeCommitIntegration>;
+  // (undocumented)
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
@@ -702,6 +734,16 @@ export interface RateLimitInfo {
   // (undocumented)
   isRateLimited: boolean;
 }
+
+// @public
+export function readAwsCodeCommitIntegrationConfig(
+  config: Config,
+): AwsCodeCommitIntegrationConfig;
+
+// @public
+export function readAwsCodeCommitIntegrationConfigs(
+  configs: Config[],
+): AwsCodeCommitIntegrationConfig[];
 
 // @public
 export function readAwsS3IntegrationConfig(
@@ -828,6 +870,8 @@ export interface ScmIntegration {
 export interface ScmIntegrationRegistry
   extends ScmIntegrationsGroup<ScmIntegration> {
   // (undocumented)
+  awsCodeCommit: ScmIntegrationsGroup<AwsCodeCommitIntegration>;
+  // (undocumented)
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
   // (undocumented)
   azure: ScmIntegrationsGroup<AzureIntegration>;
@@ -856,6 +900,8 @@ export interface ScmIntegrationRegistry
 // @public
 export class ScmIntegrations implements ScmIntegrationRegistry {
   constructor(integrationsByType: IntegrationsByType);
+  // (undocumented)
+  get awsCodeCommit(): ScmIntegrationsGroup<AwsCodeCommitIntegration>;
   // (undocumented)
   get awsS3(): ScmIntegrationsGroup<AwsS3Integration>;
   // (undocumented)
