@@ -40,8 +40,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
-      - name: enable corepack
-        run: corepack enable
+      - run: corepack enable
 
       - name: yarn install
         uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
@@ -79,8 +78,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
-      - name: enable corepack
-        run: corepack enable
+      - run: corepack enable
 
       - name: yarn install
         uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
@@ -213,8 +211,7 @@ jobs:
           node-version: ${{ matrix.node-version }}
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
-      - name: enable corepack
-        run: corepack enable
+      - run: corepack enable
 
       - name: yarn install
         uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
