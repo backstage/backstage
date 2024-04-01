@@ -15,8 +15,8 @@
  */
 
 import { useState, useEffect } from 'react';
-import useAsync from 'react-use/lib/useAsync';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsync from 'react-use/esm/useAsync';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import {
   CardHook,
   ComponentConfig,

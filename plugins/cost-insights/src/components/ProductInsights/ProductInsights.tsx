@@ -15,7 +15,8 @@
  */
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Box, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import { default as Alert } from '@material-ui/lab/Alert';
 import { costInsightsApiRef } from '../../api';
 import { ProductInsightsCardList } from '../ProductInsightsCard/ProductInsightsCardList';

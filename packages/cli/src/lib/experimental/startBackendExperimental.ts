@@ -22,22 +22,16 @@ import { ctrlc } from 'ctrlc-windows';
 import { IpcServer } from './IpcServer';
 import { ServerDataStore } from './ServerDataStore';
 import debounce from 'lodash/debounce';
-import { fileURLToPath, pathToFileURL } from 'url';
+import { fileURLToPath } from 'url';
 import { isAbsolute as isAbsolutePath } from 'path';
 import { paths } from '../paths';
 import spawn from 'cross-spawn';
 
-const [nodeMajor, nodeMinor] = process.versions.node.split('.').map(Number);
-const supportsModuleLoaderRegister =
-  nodeMajor > 20 ||
-  (nodeMajor === 20 && nodeMinor >= 6) ||
-  (nodeMajor === 18 && nodeMinor >= 19);
-
 const loaderArgs = [
+  '--enable-source-maps',
   '--require',
-  require.resolve('tsx/preflight'),
-  supportsModuleLoaderRegister ? '--import' : '--loader',
-  pathToFileURL(require.resolve('tsx')).toString(), // Windows prefers a URL here
+  require.resolve('@backstage/cli/config/nodeTransform.cjs'),
+  // TODO: Support modules, although there's currently no way to load them since import() is transpiled tp require()
 ];
 
 export async function startBackendExperimental(options: BackendServeOptions) {
@@ -51,11 +45,21 @@ export async function startBackendExperimental(options: BackendServeOptions) {
   ServerDataStore.bind(server);
 
   let exiting = false;
+  let firstStart = true;
   let child: ChildProcess | undefined;
   let watcher: FSWatcher | undefined = undefined;
   let shutdownPromise: Promise<void> | undefined = undefined;
 
+  const watchedPaths = new Set<string>();
+
   const restart = debounce(async () => {
+    if (firstStart) {
+      firstStart = false;
+    } else {
+      console.log();
+      console.log('Change detected, restarting the development server...');
+      console.log();
+    }
     // If a re-trigger happens during an existing shutdown, we just ignore it
     if (shutdownPromise) {
       return;
@@ -115,14 +119,18 @@ export async function startBackendExperimental(options: BackendServeOptions) {
 
     // This captures messages sent by @esbuild-kit/cjs-loader
     child.on('message', (data: { type?: string } | null) => {
-      if (typeof data === 'object' && data?.type === 'dependency') {
+      if (!watcher) {
+        return;
+      }
+      if (typeof data === 'object' && data?.type === 'watch') {
         let path = (data as { path: string }).path;
         if (path.startsWith('file:')) {
           path = fileURLToPath(path);
         }
 
-        if (isAbsolutePath(path)) {
-          watcher?.add(path);
+        if (isAbsolutePath(path) && !watchedPaths.has(path)) {
+          watchedPaths.add(path);
+          watcher.add(path);
         }
       }
     });
@@ -130,7 +138,7 @@ export async function startBackendExperimental(options: BackendServeOptions) {
 
   restart();
 
-  watcher = watch([], {
+  watcher = watch(['./package.json'], {
     cwd: process.cwd(),
     ignoreInitial: true,
     ignorePermissionErrors: true,

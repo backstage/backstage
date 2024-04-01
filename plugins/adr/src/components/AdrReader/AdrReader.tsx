@@ -29,7 +29,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { adrDecoratorFactories } from './decorators';
 import { AdrContentDecorator } from './types';
 import { adrApiRef } from '../../api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 /**
  * Component to fetch and render an ADR.
@@ -45,11 +45,11 @@ export const AdrReader = (props: {
   const scmIntegrations = useApi(scmIntegrationsApiRef);
   const adrApi = useApi(adrApiRef);
   const adrLocationUrl = getAdrLocationUrl(entity, scmIntegrations);
+  const adrFileLocationUrl = getAdrLocationUrl(entity, scmIntegrations, adr);
 
-  const url = `${adrLocationUrl.replace(/\/$/, '')}/${adr}`;
   const { value, loading, error } = useAsync(
-    async () => adrApi.readAdr(url),
-    [url],
+    async () => adrApi.readAdr(adrFileLocationUrl),
+    [adrFileLocationUrl],
   );
 
   const adrContent = useMemo(() => {

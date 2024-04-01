@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync, { AsyncState } from 'react-use/lib/useAsync';
+import useAsync, { AsyncState } from 'react-use/esm/useAsync';
 
 import { kubernetesApiRef } from '../api/types';
 

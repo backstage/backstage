@@ -30,7 +30,7 @@ import { RefAttributes } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SetStateAction } from 'react';
 import { TooltipProps } from 'recharts';
-import { TypographyProps } from '@material-ui/core';
+import { TypographyProps } from '@material-ui/core/Typography';
 
 // @public
 export type Alert = {

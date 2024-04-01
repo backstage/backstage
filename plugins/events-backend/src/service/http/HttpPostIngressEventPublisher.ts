@@ -15,16 +15,15 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
-  EventBroker,
-  EventPublisher,
+  EventsService,
   HttpPostIngressOptions,
   RequestValidator,
 } from '@backstage/plugin-events-node';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { RequestValidationContextImpl } from './validation';
 
 /**
@@ -34,13 +33,12 @@ import { RequestValidationContextImpl } from './validation';
  * @public
  */
 // TODO(pjungermann): add prom metrics? (see plugins/catalog-backend/src/util/metrics.ts, etc.)
-export class HttpPostIngressEventPublisher implements EventPublisher {
-  private eventBroker?: EventBroker;
-
+export class HttpPostIngressEventPublisher {
   static fromConfig(env: {
     config: Config;
+    events: EventsService;
     ingresses?: { [topic: string]: Omit<HttpPostIngressOptions, 'topic'> };
-    logger: Logger;
+    logger: LoggerService;
   }): HttpPostIngressEventPublisher {
     const topics =
       env.config.getOptionalStringArray('events.http.topics') ?? [];
@@ -54,11 +52,12 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
       }
     });
 
-    return new HttpPostIngressEventPublisher(env.logger, ingresses);
+    return new HttpPostIngressEventPublisher(env.events, env.logger, ingresses);
   }
 
   private constructor(
-    private readonly logger: Logger,
+    private readonly events: EventsService,
+    private readonly logger: LoggerService,
     private readonly ingresses: {
       [topic: string]: Omit<HttpPostIngressOptions, 'topic'>;
     },
@@ -66,10 +65,6 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
 
   bind(router: express.Router): void {
     router.use('/http', this.createRouter(this.ingresses));
-  }
-
-  async setEventBroker(eventBroker: EventBroker): Promise<void> {
-    this.eventBroker = eventBroker;
   }
 
   private createRouter(ingresses: {
@@ -108,7 +103,7 @@ export class HttpPostIngressEventPublisher implements EventPublisher {
       }
 
       const eventPayload = request.body;
-      await this.eventBroker!.publish({
+      await this.events.publish({
         topic,
         eventPayload,
         metadata: request.headers,

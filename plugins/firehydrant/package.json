@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-firehydrant",
-  "version": "0.2.14",
+  "version": "0.2.17",
   "description": "A Backstage plugin that integrates towards FireHydrant",
   "backstage": {
     "role": "frontend-plugin"

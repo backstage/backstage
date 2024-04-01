@@ -16,6 +16,7 @@
 export {
   octopusDeployPlugin,
   EntityOctopusDeployContent,
+  OctopusDeployDropdownFieldExtension,
   isOctopusDeployAvailable,
 } from './plugin';
 

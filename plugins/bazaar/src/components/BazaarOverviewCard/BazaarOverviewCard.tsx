@@ -16,7 +16,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { ProjectPreview } from '../ProjectPreview/ProjectPreview';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
@@ -26,7 +26,7 @@ import { fetchCatalogItems } from '../../util/fetchMethods';
 import { parseBazaarProject } from '../../util/parseMethods';
 import { ErrorPanel, InfoCard, Link } from '@backstage/core-components';
 import { bazaarPlugin } from '../../plugin';
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import StorefrontIcon from '@material-ui/icons/Storefront';
 
 /** @public */

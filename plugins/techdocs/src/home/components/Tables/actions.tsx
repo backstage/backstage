@@ -17,7 +17,7 @@
 import React from 'react';
 import ShareIcon from '@material-ui/icons/Share';
 import { DocsTableRow } from './types';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
 

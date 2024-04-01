@@ -76,7 +76,7 @@ jobs:
 
       - name: Cache Manifests File
         if: ${{ steps.event.outputs.ACTION != 'closed' }}
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4.0.0
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4.0.2
         with:
           path: manifests.rendered.yml
           key: ${{ steps.hash.outputs.MANIFESTS_FILE_HASH }}
@@ -140,7 +140,7 @@ jobs:
 
       - name: Fetch cached Manifests File
         id: cache
-        uses: actions/cache@13aacd865c20de90d75de3b17ebe84f7a17d57d2 # v4
+        uses: actions/cache@0c45773b623bea8c8e75f6c82b208c3cf94ea4f9 # v4
         with:
           path: manifests.rendered.yml
           key: ${{ needs.cache-manifests-file.outputs.manifests-cache-key }}

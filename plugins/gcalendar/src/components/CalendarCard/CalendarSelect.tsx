@@ -16,16 +16,14 @@
 import { sortBy } from 'lodash';
 import React from 'react';
 
-import {
-  Checkbox,
-  FormControl,
-  Input,
-  ListItemText,
-  MenuItem,
-  Select,
-  Typography,
-  makeStyles,
-} from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControl from '@material-ui/core/FormControl';
+import Input from '@material-ui/core/Input';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
 import { GCalendar } from '../../api';
 

@@ -1107,6 +1107,11 @@ export const spec = {
             },
           },
         },
+        parameters: [
+          {
+            $ref: '#/components/parameters/filter',
+          },
+        ],
       },
     },
     '/entities/by-query': {

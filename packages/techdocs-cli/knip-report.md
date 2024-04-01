@@ -6,11 +6,10 @@
 | :----------- | :----------- | :------- |
 | global-agent | package.json | error    |
 
-## Unused devDependencies (3)
+## Unused devDependencies (2)
 
 | Name               | Location     | Severity |
 | :----------------- | :----------- | :------- |
 | @types/webpack-env | package.json | error    |
 | nodemon            | package.json | error    |
-| ts-node            | package.json | error    |
 

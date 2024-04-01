@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  Accordion as MuiAccordion,
-  AccordionSummary as MuiAccordionSummary,
-  Typography,
-  AccordionDetails,
-  makeStyles,
-  createStyles,
-} from '@material-ui/core';
+import MuiAccordion from '@material-ui/core/Accordion';
+import MuiAccordionSummary from '@material-ui/core/AccordionSummary';
+import Typography from '@material-ui/core/Typography';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import { makeStyles, createStyles } from '@material-ui/core/styles';
 import React, { PropsWithChildren } from 'react';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 

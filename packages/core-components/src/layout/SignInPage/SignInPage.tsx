@@ -35,6 +35,8 @@ import { Page } from '../Page';
 import { getSignInProviders, useSignInProviders } from './providers';
 import { GridItem, useStyles } from './styles';
 import { IdentityProviders, SignInProviderConfig } from './types';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 type MultiSignInPageProps = SignInPageProps & {
   providers: IdentityProviders;
@@ -95,6 +97,7 @@ export const SingleSignInPage = ({
   const classes = useStyles();
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const [error, setError] = useState<Error>();
 
@@ -174,7 +177,7 @@ export const SingleSignInPage = ({
                     login({ showPopup: true });
                   }}
                 >
-                  Sign In
+                  {t('signIn.title')}
                 </Button>
               }
             >

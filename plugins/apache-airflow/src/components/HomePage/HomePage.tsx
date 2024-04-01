@@ -22,7 +22,7 @@ import {
   Page,
   SupportButton,
 } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import { DagTableComponent } from '../DagTableComponent';
 import { StatusComponent } from '../StatusComponent';

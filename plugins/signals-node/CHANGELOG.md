@@ -1,5 +1,98 @@
 # @backstage/plugin-signals-node
 
+## 0.1.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/plugin-events-node@0.3.2
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/plugin-auth-node@0.4.10
+  - @backstage/plugin-events-node@0.3.1
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.1.0
+
+### Minor Changes
+
+- 6c1547a: **BREAKING** Type definition added to signal recipients
+
+  Update to use `{type: 'broadcast'}` instead `null` and `{type: 'user', entityRef: ''}`
+  instead string entity references
+
+- daf85dc: BREAKING CHANGE: Migrates signals to use the `EventsService` and makes it mandatory
+
+### Patch Changes
+
+- 6d84ee6: Renamed `SignalService` to `SignalsService` and `signalService` to `signalServiceRef`
+  to follow the naming scheme of services and their references
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/types@1.1.1
+
+## 0.1.0-next.2
+
+### Patch Changes
+
+- 6d84ee6: Renamed `SignalService` to `SignalsService` and `signalService` to `signalServiceRef`
+  to follow the naming scheme of services and their references
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.0-next.2
+
+## 0.1.0-next.1
+
+### Minor Changes
+
+- daf85dc: BREAKING CHANGE: Migrates signals to use the `EventsService` and makes it mandatory
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.0-next.1
+
+## 0.0.4-next.0
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0-next.0
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/types@1.1.1
+
 ## 0.0.1
 
 ### Patch Changes

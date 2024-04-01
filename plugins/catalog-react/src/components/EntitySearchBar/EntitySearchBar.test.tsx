@@ -17,7 +17,6 @@
 import React from 'react';
 import { fireEvent, render, waitFor, screen } from '@testing-library/react';
 import { EntitySearchBar } from './EntitySearchBar';
-import { DefaultEntityFilters } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
 import { MockEntityListContextProvider } from '../../testUtils/providers';
 
@@ -25,12 +24,15 @@ describe('EntitySearchBar', () => {
   it('should display search value and execute set callback', async () => {
     const updateFilters = jest.fn();
 
-    const filters: DefaultEntityFilters = {
-      text: new EntityTextFilter('hello'),
-    };
-
     render(
-      <MockEntityListContextProvider value={{ updateFilters, filters }}>
+      <MockEntityListContextProvider
+        value={{
+          updateFilters,
+          queryParameters: {
+            text: 'hello',
+          },
+        }}
+      >
         <EntitySearchBar />
       </MockEntityListContextProvider>,
     );

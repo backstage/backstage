@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Chip } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
 import React from 'react';
 import { TableColumn } from '@backstage/core-components';
 import { Build } from '../api';

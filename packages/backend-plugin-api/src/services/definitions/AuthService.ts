@@ -46,6 +46,8 @@ export type BackstageServicePrincipal = {
 export type BackstageCredentials<TPrincipal = unknown> = {
   $$type: '@backstage/BackstageCredentials';
 
+  expiresAt?: Date;
+
   principal: TPrincipal;
 };
 
@@ -63,12 +65,19 @@ export type BackstagePrincipalTypes = {
  * @public
  */
 export interface AuthService {
-  authenticate(token: string): Promise<BackstageCredentials>;
+  authenticate(
+    token: string,
+    options?: {
+      allowLimitedAccess?: boolean;
+    },
+  ): Promise<BackstageCredentials>;
 
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
     credentials: BackstageCredentials,
     type: TType,
   ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
+
+  getNoneCredentials(): Promise<BackstageCredentials<BackstageNonePrincipal>>;
 
   getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
@@ -78,4 +87,8 @@ export interface AuthService {
     onBehalfOf: BackstageCredentials;
     targetPluginId: string;
   }): Promise<{ token: string }>;
+
+  getLimitedUserToken(
+    credentials: BackstageCredentials<BackstageUserPrincipal>,
+  ): Promise<{ token: string; expiresAt: Date }>;
 }

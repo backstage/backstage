@@ -15,11 +15,14 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { makeStyles, IconButton, Grid, Button } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import Grid from '@material-ui/core/Grid';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 import FilterList from '@material-ui/icons/FilterList';
 import { InfoCard, Select } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { BuildFilters, BuildStatus, xcmetricsApiRef } from '../../api';
 import { DatePicker } from '../DatePicker';
 

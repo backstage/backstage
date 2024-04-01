@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ServerTokenManager, TokenManager } from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import {
   AuthService,
   BackstageCredentials,
@@ -27,10 +27,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
-import {
-  DefaultIdentityClient,
-  IdentityApiGetIdentityRequest,
-} from '@backstage/plugin-auth-node';
+import { IdentityApiGetIdentityRequest } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
 
 /** @internal */
@@ -38,37 +35,37 @@ export type InternalBackstageCredentials<TPrincipal = unknown> =
   BackstageCredentials<TPrincipal> & {
     version: string;
     token?: string;
-    authMethod: 'token' | 'cookie' | 'none';
   };
 
 export function createCredentialsWithServicePrincipal(
   sub: string,
+  token?: string,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
   return {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
+    token,
     principal: {
       type: 'service',
       subject: sub,
     },
-    authMethod: 'token',
   };
 }
 
 export function createCredentialsWithUserPrincipal(
   sub: string,
   token: string,
-  authMethod: 'token' | 'cookie' = 'token',
+  expiresAt?: Date,
 ): InternalBackstageCredentials<BackstageUserPrincipal> {
   return {
     $$type: '@backstage/BackstageCredentials',
     version: 'v1',
     token,
+    expiresAt,
     principal: {
       type: 'user',
       userEntityRef: sub,
     },
-    authMethod,
   };
 }
 
@@ -79,7 +76,6 @@ export function createCredentialsWithNonePrincipal(): InternalBackstageCredentia
     principal: {
       type: 'none',
     },
-    authMethod: 'none',
   };
 }
 
@@ -114,6 +110,7 @@ class DefaultAuthService implements AuthService {
     private readonly disableDefaultAuthPolicy: boolean,
   ) {}
 
+  // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {
     const { sub, aud } = decodeJwt(token);
 
@@ -137,6 +134,7 @@ class DefaultAuthService implements AuthService {
     return createCredentialsWithUserPrincipal(
       identity.identity.userEntityRef,
       token,
+      this.#getJwtExpiration(token),
     );
   }
 
@@ -157,6 +155,12 @@ class DefaultAuthService implements AuthService {
     }
 
     return true;
+  }
+
+  async getNoneCredentials(): Promise<
+    BackstageCredentials<BackstageNonePrincipal>
+  > {
+    return createCredentialsWithNonePrincipal();
   }
 
   async getOwnServiceCredentials(): Promise<
@@ -196,6 +200,30 @@ class DefaultAuthService implements AuthService {
         );
     }
   }
+
+  async getLimitedUserToken(
+    credentials: BackstageCredentials<BackstageUserPrincipal>,
+  ): Promise<{ token: string; expiresAt: Date }> {
+    const internalCredentials = toInternalBackstageCredentials(credentials);
+
+    const { token } = internalCredentials;
+
+    if (!token) {
+      throw new AuthenticationError(
+        'User credentials is unexpectedly missing token',
+      );
+    }
+
+    return { token, expiresAt: this.#getJwtExpiration(token) };
+  }
+
+  #getJwtExpiration(token: string) {
+    const { exp } = decodeJwt(token);
+    if (!exp) {
+      throw new AuthenticationError('User token is missing expiration');
+    }
+    return new Date(exp * 1000);
+  }
 }
 
 /** @public */
@@ -204,14 +232,15 @@ export const authServiceFactory = createServiceFactory({
   deps: {
     config: coreServices.rootConfig,
     logger: coreServices.rootLogger,
-    discovery: coreServices.discovery,
     plugin: coreServices.pluginMetadata,
+    identity: coreServices.identity,
+    // Re-using the token manager makes sure that we use the same generated keys for
+    // development as plugins that have not yet been migrated. It's important that this
+    // keeps working as long as there are plugins that have not been migrated to the
+    // new auth services in the new backend system.
+    tokenManager: coreServices.tokenManager,
   },
-  createRootContext({ config, logger }) {
-    return ServerTokenManager.fromConfig(config, { logger });
-  },
-  async factory({ discovery, config, plugin }, tokenManager) {
-    const identity = DefaultIdentityClient.create({ discovery });
+  async factory({ config, plugin, identity, tokenManager }) {
     const disableDefaultAuthPolicy = Boolean(
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',

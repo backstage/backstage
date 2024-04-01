@@ -16,14 +16,12 @@
 
 import React, { useState } from 'react';
 import { ItemCardHeader } from '@backstage/core-components';
-import {
-  Card,
-  CardActionArea,
-  CardContent,
-  Dialog,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import CardContent from '@material-ui/core/CardContent';
+import Dialog from '@material-ui/core/Dialog';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { StatusTag } from '../StatusTag/StatusTag';
 import { BazaarProject } from '../../types';
 import { DateTime } from 'luxon';

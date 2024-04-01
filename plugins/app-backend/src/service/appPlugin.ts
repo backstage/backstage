@@ -81,6 +81,10 @@ export const appPlugin = createBackendPlugin({
           schema,
         });
         httpRouter.use(router);
+        httpRouter.addAuthPolicy({
+          allow: 'unauthenticated',
+          path: '/',
+        });
       },
     });
   },

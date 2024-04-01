@@ -24,7 +24,7 @@ import {
   Progress,
   WarningPanel,
 } from '@backstage/core-components';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import { resolvePath, useNavigate } from 'react-router-dom';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { useRouteRef } from '@backstage/core-plugin-api';

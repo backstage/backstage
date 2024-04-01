@@ -171,16 +171,16 @@ The TS example can be found [here](src/sample.ts).
             "quadrant": "1",
             "timeline": [
                 {
-                    "moved": 0,
-                    "ringId": "trial",
-                    "date": "2022-02-06",
-                    "description": "Long description for trial"
-                },
-                {
                     "moved": 1,
                     "ringId": "adopt",
                     "date": "2022-02-08",
                     "description": "Long description for adopt"
+                },
+                {
+                    "moved": 0,
+                    "ringId": "trial",
+                    "date": "2022-02-06",
+                    "description": "Long description for trial"
                 }
             ]
         },

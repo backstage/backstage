@@ -27,10 +27,14 @@ export interface NotificationProcessor {
 }
 
 // @public (undocumented)
-export type NotificationRecipients = {
-  type: 'entity';
-  entityRef: string | string[];
-};
+export type NotificationRecipients =
+  | {
+      type: 'entity';
+      entityRef: string | string[];
+    }
+  | {
+      type: 'broadcast';
+    };
 
 // @public (undocumented)
 export type NotificationSendOptions = {
@@ -51,7 +55,6 @@ export const notificationService: ServiceRef<NotificationService, 'plugin'>;
 export type NotificationServiceOptions = {
   auth: AuthService;
   discovery: DiscoveryService;
-  pluginId: string;
 };
 
 // @public (undocumented)

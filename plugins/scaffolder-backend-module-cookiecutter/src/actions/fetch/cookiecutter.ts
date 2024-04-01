@@ -25,7 +25,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import commandExists from 'command-exists';
 import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'path';
-import { Writable } from 'stream';
+import { PassThrough, Writable } from 'stream';
 import {
   createTemplateAction,
   fetchContents,
@@ -245,10 +245,15 @@ export function createFetchCookiecutterAction(options: {
         _extensions: ctx.input.extensions,
       };
 
+      const logStream = new PassThrough();
+      logStream.on('data', chunk => {
+        ctx.logger.info(chunk.toString());
+      });
+
       // Will execute the template in ./template and put the result in ./result
       await cookiecutter.run({
         workspacePath: workDir,
-        logStream: ctx.logStream,
+        logStream,
         values: values,
         imageName: ctx.input.imageName,
         templateDir: templateDir,

@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventBroker } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
 
 /**
  * @public
  */
-export type SignalServiceOptions = {
-  eventBroker?: EventBroker;
+export type SignalsServiceOptions = {
+  events: EventsService;
 };
 
 /** @public */
 export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
-  recipients: string[] | string | null;
+  recipients:
+    | { type: 'user'; entityRef: string | string[] }
+    | { type: 'broadcast' };
   channel: string;
   message: TMessage;
 };

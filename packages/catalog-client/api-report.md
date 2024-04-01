@@ -192,6 +192,7 @@ export type EntityOrderQuery =
 export interface GetEntitiesByRefsRequest {
   entityRefs: string[];
   fields?: EntityFieldsQuery | undefined;
+  filter?: EntityFilterQuery;
 }
 
 // @public

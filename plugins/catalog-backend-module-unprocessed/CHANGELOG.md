@@ -1,5 +1,110 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.4.3
+
+### Patch Changes
+
+- f3e2e86: Internal update that injects custom permissions into the catalog using its extension point
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.1
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.4.2
+
+### Patch Changes
+
+- f3e2e86: Internal update that injects custom permissions into the catalog using its extension point
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.10.0
+  - @backstage/backend-common@0.21.5
+  - @backstage/plugin-auth-node@0.4.10
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.1
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.4.1
+
+### Patch Changes
+
+- 9c7fb30: Internal update that injects custom permissions into the catalog using its extension point
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 924c1ac: **BREAKING**- the `@backstage/plugin-catalog-backend-module-unprocessed` constructor is now private, and have been moved to using the static `.create` method instead which now requires a `PermissionService` and `DiscoveryService`.
+
+  If you're using this module in the old backend system you'll need to migrate to using the `.create` method and pass in the new required parameters in `packages/backend/src/plugins/catalog.ts`.
+
+  No changes should be required if you're using the new backend system.
+
+  ```diff
+  -  const unprocessed = new UnprocessedEntitiesModule(
+  -    await env.database.getClient(),
+  -    router,
+  -  );
+  + const unprocessed = UnprocessedEntitiesModule.create({
+  +    database: await env.database.getClient(),
+  +    router,
+  +    permissions: env.permissions,
+  +    discovery: env.discovery,
+  +  });
+
+    unprocessed.registerRoutes();
+  ```
+
+  Adds the ability to delete an unprocessed entity from the `refresh_state` table. This change requires enabling permissions for your Backstage instance.
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.1
+  - @backstage/catalog-model@1.4.5
+
+## 0.3.11-next.2
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+
+## 0.3.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+
+## 0.3.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+
 ## 0.3.7
 
 ### Patch Changes

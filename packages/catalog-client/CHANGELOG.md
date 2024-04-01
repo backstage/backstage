@@ -1,5 +1,49 @@
 # @backstage/catalog-client
 
+## 1.6.3
+
+### Patch Changes
+
+- 7e8a7c8: Added missing commas to the example of `queryEntities`
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+
+## 1.6.2
+
+### Patch Changes
+
+- 7e8a7c8: Added missing commas to the example of `queryEntities`
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+
+## 1.6.1
+
+### Patch Changes
+
+- 6f830bb: Allow passing optional filter to `getEntitiesByRefs`
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/catalog-model@1.4.5
+
+## 1.6.1-next.1
+
+### Patch Changes
+
+- 6f830bb: Allow passing optional filter to `getEntitiesByRefs`
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+
+## 1.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+
 ## 1.6.0
 
 ### Minor Changes

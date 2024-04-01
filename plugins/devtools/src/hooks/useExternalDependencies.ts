@@ -16,7 +16,7 @@
 
 import { devToolsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
 
 export function useExternalDependencies(): {

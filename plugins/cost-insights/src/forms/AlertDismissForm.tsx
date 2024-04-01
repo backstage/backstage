@@ -21,16 +21,14 @@ import React, {
   forwardRef,
   FormEventHandler,
 } from 'react';
-import {
-  Box,
-  Collapse,
-  FormControl,
-  FormControlLabel,
-  TextField,
-  Typography,
-  Radio,
-  RadioGroup,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Collapse from '@material-ui/core/Collapse';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
 import {
   Alert,
   AlertFormProps,

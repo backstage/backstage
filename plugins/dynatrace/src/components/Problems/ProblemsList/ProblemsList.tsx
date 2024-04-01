@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import {
   Progress,
   ResponseErrorPanel,

@@ -15,13 +15,10 @@
  */
 
 import React from 'react';
-import {
-  InputLabel,
-  FormControl,
-  MenuItem,
-  Select,
-  SelectProps,
-} from '@material-ui/core';
+import InputLabel from '@material-ui/core/InputLabel';
+import Select, { SelectProps } from '@material-ui/core/Select';
+import FormControl from '@material-ui/core/FormControl';
+import MenuItem from '@material-ui/core/MenuItem';
 import Typography from '@material-ui/core/Typography';
 import { Currency, CurrencyType } from '../../types';
 import { findAlways } from '../../utils/assert';

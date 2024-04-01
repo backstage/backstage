@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { puppetDbApiRef, PuppetDbReport } from '../../api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import React from 'react';
 import {
   Link,

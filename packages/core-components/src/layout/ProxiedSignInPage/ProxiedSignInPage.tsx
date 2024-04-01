@@ -24,6 +24,8 @@ import { useAsync, useMountEffect } from '@react-hookz/web';
 import { ErrorPanel } from '../../components/ErrorPanel';
 import { Progress } from '../../components/Progress';
 import { ProxiedSignInIdentity } from './ProxiedSignInIdentity';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 /**
  * Props for {@link ProxiedSignInPage}.
@@ -61,6 +63,7 @@ export type ProxiedSignInPageProps = SignInPageProps & {
  */
 export const ProxiedSignInPage = (props: ProxiedSignInPageProps) => {
   const discoveryApi = useApi(discoveryApiRef);
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const [{ status, error }, { execute }] = useAsync(async () => {
     const identity = new ProxiedSignInIdentity({
@@ -79,12 +82,7 @@ export const ProxiedSignInPage = (props: ProxiedSignInPageProps) => {
   if (status === 'loading') {
     return <Progress />;
   } else if (error) {
-    return (
-      <ErrorPanel
-        title="You do not appear to be signed in. Please try reloading the browser page."
-        error={error}
-      />
-    );
+    return <ErrorPanel title={t('proxiedSignInPage.title')} error={error} />;
   }
 
   return null;

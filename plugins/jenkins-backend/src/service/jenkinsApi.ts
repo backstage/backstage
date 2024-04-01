@@ -23,12 +23,13 @@ import type {
   JenkinsProject,
   ScmDetails,
 } from '../types';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { jenkinsExecutePermission } from '@backstage/plugin-jenkins-common';
 import fetch, { HeaderInit } from 'node-fetch';
+import {
+  BackstageCredentials,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 
 export class JenkinsApiImpl {
   private static readonly lastBuildTreeSpec = `lastBuild[
@@ -75,7 +76,7 @@ export class JenkinsApiImpl {
                    inQueue,
                    builds[*]`;
 
-  constructor(private readonly permissionApi?: PermissionEvaluator) {}
+  constructor(private readonly permissionApi?: PermissionsService) {}
 
   /**
    * Get a list of projects for the given JenkinsInfo.
@@ -160,12 +161,12 @@ export class JenkinsApiImpl {
     jobFullName: string,
     buildNumber: number,
     resourceRef: string,
-    options?: { token?: string },
+    options: { credentials: BackstageCredentials },
   ): Promise<number> {
     if (this.permissionApi) {
       const response = await this.permissionApi.authorize(
         [{ permission: jenkinsExecutePermission, resourceRef }],
-        { token: options?.token },
+        { credentials: options.credentials },
       );
       // permission api returns always at least one item, we need to check only one result since we do not expect any additional results
       const { result } = response[0];

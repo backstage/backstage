@@ -116,6 +116,10 @@ export class EntityTextFilter implements EntityFilter {
     };
   }
 
+  toQueryValue() {
+    return this.value;
+  }
+
   private toUpperArray(
     value: Array<string | string[] | undefined>,
   ): Array<string> {

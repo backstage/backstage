@@ -19,7 +19,7 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
-import { signalService } from '@backstage/plugin-signals-node';
+import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import {
   NotificationProcessor,
   notificationsProcessingExtensionPoint,
@@ -61,22 +61,20 @@ export const notificationsPlugin = createBackendPlugin({
       deps: {
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
+        userInfo: coreServices.userInfo,
         httpRouter: coreServices.httpRouter,
         logger: coreServices.logger,
-        identity: coreServices.identity,
         database: coreServices.database,
-        tokenManager: coreServices.tokenManager,
         discovery: coreServices.discovery,
-        signals: signalService,
+        signals: signalsServiceRef,
       },
       async init({
         auth,
         httpAuth,
+        userInfo,
         httpRouter,
         logger,
-        identity,
         database,
-        tokenManager,
         discovery,
         signals,
       }) {
@@ -84,15 +82,18 @@ export const notificationsPlugin = createBackendPlugin({
           await createRouter({
             auth,
             httpAuth,
+            userInfo,
             logger,
-            identity,
             database,
-            tokenManager,
             discovery,
-            signalService: signals,
+            signals,
             processors: processingExtensions.processors,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

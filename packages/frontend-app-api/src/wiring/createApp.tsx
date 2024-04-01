@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { JSX } from 'react';
+import React, { JSX, ReactNode } from 'react';
 import { ConfigReader } from '@backstage/config';
 import {
   AppTree,
@@ -170,9 +170,21 @@ export function createApp(options?: {
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{ config: ConfigApi }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+  /**
+   * The component to render while loading the app (waiting for config, features, etc)
+   *
+   * Is the text "Loading..." by default.
+   * If set to "null" then no loading fallback component is rendered.   *
+   */
+  loadingComponent?: ReactNode;
 }): {
   createRoot(): JSX.Element;
 } {
+  let suspenseFallback = options?.loadingComponent;
+  if (suspenseFallback === undefined) {
+    suspenseFallback = 'Loading...';
+  }
+
   async function appLoader() {
     const config =
       (await options?.configLoader?.().then(c => c.config)) ??
@@ -214,7 +226,7 @@ export function createApp(options?: {
     createRoot() {
       const LazyApp = React.lazy(appLoader);
       return (
-        <React.Suspense fallback="Loading...">
+        <React.Suspense fallback={suspenseFallback}>
           <LazyApp />
         </React.Suspense>
       );

@@ -17,7 +17,9 @@
 import React from 'react';
 import { CodeClimateData } from '../../api';
 import { Link } from '@backstage/core-components';
-import { Box, makeStyles, Theme, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 
 const letterStyle = (theme: Theme) => ({
   color: theme.palette.common.white,

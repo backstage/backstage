@@ -13,18 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  Checkbox,
-  Chip,
-  FormControl,
-  InputLabel,
-  ListItemText,
-  makeStyles,
-  MenuItem,
-  Select,
-} from '@material-ui/core';
+import Checkbox from '@material-ui/core/Checkbox';
+import Chip from '@material-ui/core/Chip';
+import FormControl from '@material-ui/core/FormControl';
+import InputLabel from '@material-ui/core/InputLabel';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { ChangeEvent } from 'react';
-import useEffectOnce from 'react-use/lib/useEffectOnce';
+import useEffectOnce from 'react-use/esm/useEffectOnce';
 import {
   SearchTypeAccordion,
   SearchTypeAccordionProps,

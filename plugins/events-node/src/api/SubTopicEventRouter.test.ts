@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import { EventBroker } from './EventBroker';
 import { EventParams } from './EventParams';
+import { EventsService } from './EventsService';
 import { SubTopicEventRouter } from './SubTopicEventRouter';
 
 class TestSubTopicEventRouter extends SubTopicEventRouter {
-  constructor() {
-    super('my-topic');
+  constructor(events: EventsService) {
+    super({ events, topic: 'my-topic' });
+  }
+
+  protected getSubscriberId(): string {
+    return 'TestSubTopicEventRouter';
   }
 
   protected determineSubTopic(params: EventParams): string | undefined {
@@ -29,34 +33,25 @@ class TestSubTopicEventRouter extends SubTopicEventRouter {
 }
 
 describe('SubTopicEventRouter', () => {
-  const eventRouter = new TestSubTopicEventRouter();
+  const published: EventParams[] = [];
+  const events: EventsService = {
+    publish: async event => {
+      published.push(event);
+    },
+    subscribe: async _subscription => {},
+  };
+  const eventRouter = new TestSubTopicEventRouter(events);
   const topic = 'my-topic';
   const eventPayload = { test: 'payload' };
   const metadata = { 'x-my-event': 'test.type' };
 
   it('no x-my-event', async () => {
-    const published: EventParams[] = [];
-    const eventBroker = {
-      publish: (params: EventParams) => {
-        published.push(params);
-      },
-    } as EventBroker;
-    await eventRouter.setEventBroker(eventBroker);
-
     await eventRouter.onEvent({ topic, eventPayload });
 
     expect(published).toEqual([]);
   });
 
   it('with x-my-event', async () => {
-    const published: EventParams[] = [];
-    const eventBroker = {
-      publish: (params: EventParams) => {
-        published.push(params);
-      },
-    } as EventBroker;
-    await eventRouter.setEventBroker(eventBroker);
-
     await eventRouter.onEvent({ topic, eventPayload, metadata });
 
     expect(published.length).toBe(1);

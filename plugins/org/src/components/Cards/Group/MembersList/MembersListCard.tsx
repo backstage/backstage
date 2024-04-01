@@ -21,18 +21,14 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { catalogApiRef, useEntity } from '@backstage/plugin-catalog-react';
-import {
-  Box,
-  createStyles,
-  Grid,
-  makeStyles,
-  Switch,
-  Theme,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Switch from '@material-ui/core/Switch';
+import Typography from '@material-ui/core/Typography';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Pagination from '@material-ui/lab/Pagination';
 import React, { useState } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 import {
   Avatar,
@@ -48,20 +44,27 @@ import {
   removeDuplicateEntitiesFrom,
 } from '../../../../helpers/helpers';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
+import { EntityRelationAggregation } from '../../types';
 
-const useStyles = makeStyles((theme: Theme) =>
-  createStyles({
-    card: {
-      border: `1px solid ${theme.palette.divider}`,
-      boxShadow: theme.shadows[2],
-      borderRadius: '4px',
-      overflow: 'visible',
-      position: 'relative',
-      margin: theme.spacing(4, 1, 1),
-      flex: '1',
-      minWidth: '0px',
-    },
-  }),
+const useStyles = makeStyles(
+  (theme: Theme) =>
+    createStyles({
+      card: {
+        border: `1px solid ${theme.palette.divider}`,
+        boxShadow: theme.shadows[2],
+        borderRadius: '4px',
+        overflow: 'visible',
+        position: 'relative',
+        margin: theme.spacing(4, 1, 1),
+        flex: '1',
+        minWidth: '0px',
+      },
+      avatar: {
+        position: 'absolute',
+        top: '-2rem',
+      },
+    }),
+  { name: 'MembersListCardComponent' },
 );
 
 const MemberComponent = (props: { member: UserEntity }) => {
@@ -84,10 +87,7 @@ const MemberComponent = (props: { member: UserEntity }) => {
         <Avatar
           displayName={displayName}
           picture={profile?.picture}
-          customStyles={{
-            position: 'absolute',
-            top: '-2rem',
-          }}
+          classes={classes}
         />
         <Box
           pt={2}
@@ -138,11 +138,13 @@ export const MembersListCard = (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
   showAggregateMembersToggle?: boolean;
+  relationsType?: EntityRelationAggregation;
 }) => {
   const {
     memberDisplayTitle = 'Members',
     pageSize = 50,
     showAggregateMembersToggle,
+    relationsType = 'direct',
   } = props;
   const classes = useListStyles();
 
@@ -162,11 +164,13 @@ export const MembersListCard = (props: {
     setPage(pageIndex);
   };
 
-  const [showAggregateMembers, setShowAggregateMembers] = useState(false);
+  const [showAggregateMembers, setShowAggregateMembers] = useState(
+    relationsType === 'aggregated',
+  );
 
   const { loading: loadingDescendantMembers, value: descendantMembers } =
     useAsync(async () => {
-      if (!showAggregateMembersToggle) {
+      if (!showAggregateMembers) {
         return [] as UserEntity[];
       }
 
@@ -174,7 +178,7 @@ export const MembersListCard = (props: {
         groupEntity,
         catalogApi,
       );
-    }, [catalogApi, groupEntity, showAggregateMembersToggle]);
+    }, [catalogApi, groupEntity, showAggregateMembers]);
   const {
     loading,
     error,
@@ -229,7 +233,7 @@ export const MembersListCard = (props: {
     memberList = (
       <Box className={classes.memberList}>
         {members.slice(pageSize * (page - 1), pageSize * page).map(member => (
-          <MemberComponent member={member} key={member.metadata.uid} />
+          <MemberComponent member={member} key={stringifyEntityRef(member)} />
         ))}
       </Box>
     );

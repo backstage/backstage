@@ -102,6 +102,7 @@ const issueInputProperties = z.object({
 const issueOutputProperties = z.object({
   issueUrl: z.string({ description: 'Issue Url' }),
   issueId: z.number({ description: 'Issue Id' }),
+  issueIid: z.number({ description: 'Issue Iid' }),
 });
 
 /**
@@ -194,6 +195,7 @@ export const createGitlabIssueAction = (options: {
 
         ctx.output('issueId', response.id);
         ctx.output('issueUrl', response.web_url);
+        ctx.output('issueIid', response.iid);
       } catch (error: any) {
         if (error instanceof z.ZodError) {
           // Handling Zod validation errors

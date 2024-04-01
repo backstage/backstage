@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { PassThrough } from 'stream';
 import { createBitbucketPipelinesRunAction } from './bitbucketCloudPipelinesRun';
 import yaml from 'yaml';
 import { examples } from './bitbucketCloudPipelinesRun.examples';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('bitbucket:pipelines:run', () => {
   const config = new ConfigReader({
@@ -39,14 +38,7 @@ describe('bitbucket:pipelines:run', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createBitbucketPipelinesRunAction({ integrations });
-  const mockContext = {
-    input: {},
-    workspacePath: 'wsp',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  const mockContext = createMockActionContext();
   const responseJson = {
     repository: {
       links: {

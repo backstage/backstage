@@ -18,7 +18,7 @@ import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
 import { ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
 import React, { cloneElement, useCallback, useState } from 'react';
-import useObservable from 'react-use/lib/useObservable';
+import useObservable from 'react-use/esm/useObservable';
 
 type ThemeIconProps = {
   active?: boolean;

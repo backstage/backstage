@@ -31,13 +31,11 @@ export const notificationService = createServiceRef<NotificationService>({
       deps: {
         auth: coreServices.auth,
         discovery: coreServices.discovery,
-        pluginMetadata: coreServices.pluginMetadata,
       },
-      factory({ auth, discovery, pluginMetadata }) {
+      factory({ auth, discovery }) {
         return DefaultNotificationService.create({
           auth,
           discovery,
-          pluginId: pluginMetadata.getId(),
         });
       },
     }),

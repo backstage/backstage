@@ -1,5 +1,85 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.1.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/plugin-search-backend-node@1.2.20
+  - @backstage/config@1.2.0
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.11
+
+## 0.1.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/backend-tasks@0.5.20
+  - @backstage/plugin-search-backend-node@1.2.19
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/config@1.2.0
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.11
+
+## 0.1.18
+
+### Patch Changes
+
+- bb368a5: Migrated to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/plugin-search-backend-node@1.2.18
+  - @backstage/plugin-explore-common@0.0.2
+
+## 0.1.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-backend-node@1.2.18-next.2
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 0.1.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/backend-tasks@0.5.19-next.1
+  - @backstage/plugin-search-backend-node@1.2.18-next.1
+  - @backstage/plugin-explore-common@0.0.2
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 0.1.17-next.0
+
+### Patch Changes
+
+- bb368a5: Migrated to support new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-search-common@1.2.11-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/plugin-search-backend-node@1.2.17-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/plugin-explore-common@0.0.2
+
 ## 0.1.14
 
 ### Patch Changes

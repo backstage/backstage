@@ -203,6 +203,10 @@ export interface GetEntitiesByRefsRequest {
    * declarations.
    */
   fields?: EntityFieldsQuery | undefined;
+  /**
+   * If given, return only entities that match the given filter.
+   */
+  filter?: EntityFilterQuery;
 }
 
 /**
@@ -494,8 +498,8 @@ export interface CatalogApi {
    *   limit: 20,
    *   fullTextFilter: {
    *     term: 'A',
-   *   }
-   *   orderFields: { field: 'metadata.name' order: 'asc' },
+   *   },
+   *   orderFields: { field: 'metadata.name', order: 'asc' },
    * });
    * ```
    *

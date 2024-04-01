@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  createLegacyAuthAdapters,
   createServiceBuilder,
   HostDiscovery,
   loadBackendConfig,
@@ -31,12 +32,17 @@ import {
   CatalogRequestOptions,
   GetEntitiesByRefsRequest,
 } from '@backstage/catalog-client';
-import { DefaultSignalService } from '@backstage/plugin-signals-node';
+import { DefaultSignalsService } from '@backstage/plugin-signals-node';
 import {
-  EventBroker,
   EventParams,
-  EventSubscriber,
+  EventsService,
+  EventsServiceSubscribeOptions,
 } from '@backstage/plugin-events-node';
+import {
+  AuthService,
+  HttpAuthService,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
@@ -96,28 +102,36 @@ export async function startStandaloneServer(
     },
   };
 
-  const mockSubscribers: EventSubscriber[] = [];
-  const eventBroker: EventBroker = {
+  const mockSubscribers: EventsServiceSubscribeOptions[] = [];
+  const events: EventsService = {
     async publish(params: EventParams): Promise<void> {
       mockSubscribers.forEach(sub => sub.onEvent(params));
     },
-    subscribe(...subscribers: EventSubscriber[]) {
-      subscribers.flat().forEach(subscriber => {
-        mockSubscribers.push(subscriber);
-      });
+    async subscribe(subscription: EventsServiceSubscribeOptions) {
+      mockSubscribers.push(subscription);
     },
   };
 
-  const signalService = DefaultSignalService.create({ eventBroker });
+  const signalService = DefaultSignalsService.create({ events });
+  // TODO: Move to use services instead this hack
+  const { auth, httpAuth, userInfo } = createLegacyAuthAdapters<
+    any,
+    { auth: AuthService; httpAuth: HttpAuthService; userInfo: UserInfoService }
+  >({
+    identity: identityMock,
+    tokenManager,
+    discovery,
+  });
 
   const router = await createRouter({
     logger,
-    identity: identityMock,
     database: dbMock,
     catalog: catalogApi,
     discovery,
-    tokenManager,
-    signalService,
+    signals: signalService,
+    auth,
+    httpAuth,
+    userInfo,
   });
 
   let service = createServiceBuilder(module)

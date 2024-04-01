@@ -23,6 +23,8 @@ import { Link } from '../../components/Link';
 import { useSupportConfig } from '../../hooks';
 import { MicDrop } from './MicDrop';
 import { StackDetails } from './StackDetails';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 interface IErrorPageProps {
   status?: string;
@@ -64,10 +66,17 @@ const useStyles = makeStyles(
  *
  */
 export function ErrorPage(props: IErrorPageProps) {
-  const { status, statusMessage, additionalInfo, supportUrl, stack } = props;
+  const {
+    status = '',
+    statusMessage,
+    additionalInfo,
+    supportUrl,
+    stack,
+  } = props;
   const classes = useStyles();
   const navigate = useNavigate();
   const support = useSupportConfig();
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   return (
     <Grid container className={classes.container}>
@@ -77,17 +86,17 @@ export function ErrorPage(props: IErrorPageProps) {
           variant="body1"
           className={classes.subtitle}
         >
-          ERROR {status}: {statusMessage}
+          {t('errorPage.subtitle', { status, statusMessage })}
         </Typography>
         <Typography variant="body1" className={classes.subtitle}>
           {additionalInfo}
         </Typography>
         <Typography variant="h2" className={classes.title}>
-          Looks like someone dropped the mic!
+          {t('errorPage.title')}
         </Typography>
         <Typography variant="h6" className={classes.title}>
           <Link to="#" data-testid="go-back-link" onClick={() => navigate(-1)}>
-            Go back
+            {t('errorPage.goBack')}
           </Link>
           ... or please{' '}
           <Link to={supportUrl || support.url}>contact support</Link> if you

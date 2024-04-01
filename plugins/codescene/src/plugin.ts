@@ -18,6 +18,7 @@ import {
   createRoutableExtension,
   createApiFactory,
   discoveryApiRef,
+  createComponentExtension,
 } from '@backstage/core-plugin-api';
 import { codesceneApiRef, CodeSceneClient } from './api/api';
 import { rootRouteRef, projectDetailsRouteRef } from './routes';
@@ -65,5 +66,35 @@ export const CodeSceneProjectDetailsPage = codescenePlugin.provide(
         m => m.CodeSceneProjectDetailsPage,
       ),
     mountPoint: projectDetailsRouteRef,
+  }),
+);
+
+/**
+ * @public
+ */
+export const CodeSceneEntityKPICard = codescenePlugin.provide(
+  createComponentExtension({
+    name: 'CodeSceneEntityKPICard',
+    component: {
+      lazy: () =>
+        import('./components/CodeSceneEntityKPICard').then(
+          m => m.CodeSceneEntityKPICard,
+        ),
+    },
+  }),
+);
+
+/**
+ * @public
+ */
+export const CodeSceneEntityFileSummary = codescenePlugin.provide(
+  createComponentExtension({
+    name: 'CodeSceneEntityFileSummary',
+    component: {
+      lazy: () =>
+        import('./components/CodeSceneEntityFileSummary').then(
+          m => m.CodeSceneEntityFileSummary,
+        ),
+    },
   }),
 );

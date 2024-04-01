@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-nomad",
-  "version": "0.1.11",
+  "version": "0.1.14",
   "backstage": {
     "role": "frontend-plugin"
   },

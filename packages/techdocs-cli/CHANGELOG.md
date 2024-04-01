@@ -1,5 +1,73 @@
 # @techdocs/cli
 
+## 1.8.8
+
+### Patch Changes
+
+- 8caf2f7: Fix how the cli server mocks the new auth cookie endpoint.
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/plugin-techdocs-node@1.12.2
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+
+## 1.8.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/plugin-techdocs-node@1.12.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+
+## 1.8.6
+
+### Patch Changes
+
+- 1bd4596: Removed the `ts-node` dev dependency.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/plugin-techdocs-node@1.12.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+
+## 1.8.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.12.0-next.2
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0-next.1
+
+## 1.8.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/plugin-techdocs-node@1.11.6-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/cli-common@0.1.13
+
+## 1.8.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-techdocs-node@1.11.5-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/cli-common@0.1.13
+
 ## 1.8.2
 
 ### Patch Changes

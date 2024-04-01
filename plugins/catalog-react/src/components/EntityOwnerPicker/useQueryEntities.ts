@@ -15,7 +15,7 @@
  */
 import { useApi } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '../../api';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { Entity } from '@backstage/catalog-model';
 
 type QueryEntitiesResponse = {

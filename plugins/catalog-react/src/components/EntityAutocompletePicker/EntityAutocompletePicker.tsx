@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { Box, TextFieldProps, Typography } from '@material-ui/core';
+import { Box, TextFieldProps, Typography, makeStyles } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityAutocompletePickerOption } from './EntityAutocompletePickerOption';
 import { EntityAutocompletePickerInput } from './EntityAutocompletePickerInput';
@@ -28,6 +28,7 @@ import {
   useEntityList,
 } from '../../hooks/useEntityListProvider';
 import { EntityFilter } from '../../types';
+import { reduceBackendCatalogFilters } from '../../utils';
 
 /** @public */
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
@@ -50,7 +51,19 @@ export type EntityAutocompletePickerProps<
   Filter: { new (values: string[]): NonNullable<T[Name]> };
   InputProps?: TextFieldProps;
   initialSelectedOptions?: string[];
+  filtersForAvailableValues?: Array<keyof T>;
 };
+
+/** @public */
+export type CatalogReactEntityAutocompletePickerClassKey = 'root' | 'label';
+
+const useStyles = makeStyles(
+  {
+    root: {},
+    label: {},
+  },
+  { name: 'CatalogReactEntityAutocompletePicker' },
+);
 
 /** @public */
 export function EntityAutocompletePicker<
@@ -65,7 +78,10 @@ export function EntityAutocompletePicker<
     Filter,
     InputProps,
     initialSelectedOptions = [],
+    filtersForAvailableValues = ['kind'],
   } = props;
+
+  const classes = useStyles();
 
   const {
     updateFilters,
@@ -74,17 +90,22 @@ export function EntityAutocompletePicker<
   } = useEntityList<T>();
 
   const catalogApi = useApi(catalogApiRef);
+  const availableValuesFilters = filtersForAvailableValues.map(
+    f => filters[f] as EntityFilter | undefined,
+  );
   const { value: availableValues } = useAsync(async () => {
     const facet = path;
     const { facets } = await catalogApi.getEntityFacets({
       facets: [facet],
-      filter: filters.kind?.getCatalogFilters(),
+      filter: reduceBackendCatalogFilters(
+        availableValuesFilters.filter(Boolean) as EntityFilter[],
+      ),
     });
 
     return Object.fromEntries(
       facets[facet].map(({ value, count }) => [value, count]),
     );
-  }, [filters.kind]);
+  }, [...availableValuesFilters]);
 
   const queryParameters = useMemo(
     () => [queryParameter].flat().filter(Boolean) as string[],
@@ -127,8 +148,8 @@ export function EntityAutocompletePicker<
   if (availableOptions.length <= 1) return null;
 
   return (
-    <Box pb={1} pt={1}>
-      <Typography variant="button" component="label">
+    <Box className={classes.root} pb={1} pt={1}>
+      <Typography className={classes.label} variant="button" component="label">
         {label}
         <Autocomplete<string, true>
           multiple

@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React from 'react';
-import { makeStyles, TextField } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import { Context } from '../ContextProvider';
 
 const useStyles = makeStyles(theme => ({

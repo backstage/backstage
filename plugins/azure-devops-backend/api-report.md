@@ -16,6 +16,7 @@ import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { GitTag } from '@backstage/plugin-azure-devops-common';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { Logger } from 'winston';
+import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { Project } from '@backstage/plugin-azure-devops-common';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
 import { PullRequestOptions } from '@backstage/plugin-azure-devops-common';
@@ -159,6 +160,8 @@ export interface RouterOptions {
   config: Config;
   // (undocumented)
   logger: Logger;
+  // (undocumented)
+  permissions: PermissionEvaluator;
   // (undocumented)
   reader: UrlReader;
 }

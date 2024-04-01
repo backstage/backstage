@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-cost-insights",
-  "version": "0.12.19",
+  "version": "0.12.22",
   "description": "A Backstage plugin that helps you keep track of your cloud spend",
   "backstage": {
     "role": "frontend-plugin"
@@ -58,7 +58,7 @@
     "react-use": "^17.2.4",
     "recharts": "^2.5.0",
     "regression": "^2.0.1",
-    "yup": "^0.32.9"
+    "yup": "^1.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

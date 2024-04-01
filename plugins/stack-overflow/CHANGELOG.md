@@ -1,5 +1,88 @@
 # @backstage/plugin-stack-overflow
 
+## 0.1.28
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-search-react@1.7.9
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/plugin-home-react@0.1.11
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-common@1.2.11
+
+## 0.1.27
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-search-react@1.7.8
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/plugin-home-react@0.1.10
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-common@1.2.11
+
+## 0.1.26
+
+### Patch Changes
+
+- c6779ac: fix: fix decode issues in title and author fields in `StackOverflowSearchResultListItem`
+- 6429213: Added ESLint rule `no-top-level-material-ui-4-imports` in the `stack-overflow` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/plugin-home-react@0.1.9
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-search-react@1.7.7
+
+## 0.1.26-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/plugin-home-react@0.1.9-next.2
+  - @backstage/plugin-search-react@1.7.7-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/plugin-home-react@0.1.9-next.1
+  - @backstage/plugin-search-react@1.7.7-next.1
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 0.1.26-next.0
+
+### Patch Changes
+
+- c6779ac: fix: fix decode issues in title and author fields in `StackOverflowSearchResultListItem`
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.0
+  - @backstage/plugin-search-common@1.2.11-next.0
+  - @backstage/plugin-home-react@0.1.9-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/core-plugin-api@1.9.1-next.0
+  - @backstage/plugin-search-react@1.7.7-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+
 ## 0.1.25
 
 ### Patch Changes

@@ -15,13 +15,11 @@
  */
 import React, { useState } from 'react';
 import { DateTime } from 'luxon';
-import {
-  Box,
-  Divider,
-  emphasize,
-  Typography,
-  useTheme,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import { emphasize } from '@material-ui/core/styles/colorManipulator';
+import Typography from '@material-ui/core/Typography';
+import { useTheme } from '@material-ui/core/styles';
 import { default as FullScreenIcon } from '@material-ui/icons/Fullscreen';
 import {
   Area,

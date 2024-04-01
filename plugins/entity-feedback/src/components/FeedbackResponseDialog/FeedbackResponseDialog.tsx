@@ -17,25 +17,23 @@
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Progress } from '@backstage/core-components';
 import { ErrorApiError, errorApiRef, useApi } from '@backstage/core-plugin-api';
-import {
-  Button,
-  Checkbox,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogTitle,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Grid,
-  makeStyles,
-  Switch,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Checkbox from '@material-ui/core/Checkbox';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import FormGroup from '@material-ui/core/FormGroup';
+import FormLabel from '@material-ui/core/FormLabel';
+import Grid from '@material-ui/core/Grid';
+import Switch from '@material-ui/core/Switch';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { ReactNode, useState } from 'react';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 
 import { entityFeedbackApiRef } from '../../api';
 
@@ -108,7 +106,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
       <DialogTitle>{feedbackDialogTitle}</DialogTitle>
       <DialogContent>
         <FormControl component="fieldset">
-          <FormLabel component="legend">Choose all that applies</FormLabel>
+          <FormLabel component="legend">Choose all that apply</FormLabel>
           <FormGroup>
             {feedbackDialogResponses.map(response => (
               <FormControlLabel
