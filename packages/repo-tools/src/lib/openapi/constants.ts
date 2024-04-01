@@ -16,7 +16,9 @@
 
 export const YAML_SCHEMA_PATH = 'src/schema/openapi.yaml';
 
-export const TS_MODULE = 'src/schema/openapi.generated';
+export const TS_MODULE = 'src/generated/router';
+
+export const OLD_SCHEMA_PATH = `src/schema/openapi.generated.ts`;
 
 export const TS_SCHEMA_PATH = `${TS_MODULE}.ts`;
 
