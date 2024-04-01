@@ -72,7 +72,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a Bitbucket repository with a default Branch, if not set defaults to master',
+      'Initializes a Bitbucket repository with a default branch, if not set defaults to master',
     example: yaml.stringify({
       steps: [
         {
