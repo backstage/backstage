@@ -104,4 +104,32 @@ Apart from STMP, the email processor also supports the following transmissions:
 - sendmail
 - stream (only for debugging purposes)
 
-See more information at https://github.com/backstage/backstage/blob/master/plugins/notifications-backend-module-email/README.md
+See more information at <https://github.com/backstage/backstage/blob/master/plugins/notifications-backend-module-email/README.md>
+
+### Slack Processor
+
+Slack processor is used to send notifications to users and channels in Slack. To install the Slack processor, add the `@backstage/plugin-notifications-backend-module-slack` package to your backend.
+
+```bash
+yarn workspace backend add @backstage/plugin-notifications-backend-module-slack
+```
+
+Add the Slack processor to your backend:
+
+```ts
+import { createBackend } from '@backstage/plugin-notifications-backend';
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-notifications-backend-module-slack'));
+```
+
+To configure the Slack processor, you need to add the following configuration to your `app-config.yaml`:
+
+```yaml
+notifications:
+  processors:
+    slack:
+      - token: xoxb-XXXXXXXXX
+```
+
+See more information including how to configure your Slack App at <https://github.com/backstage/backstage/blob/master/plugins/notifications-backend-module-slack/README.md>
