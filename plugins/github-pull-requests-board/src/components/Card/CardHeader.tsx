@@ -92,7 +92,7 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
         <Box display="flex" alignItems="center" flexWrap="wrap" paddingTop={1}>
           <Typography variant="body2" component="p">
             Commit Status:{' '}
-            <strong>{status.commit.statusCheckRollup.state}</strong>
+            <strong>{status.commit.statusCheckRollup?.state || 'N/A'}</strong>
           </Typography>
         </Box>
       )}

@@ -280,5 +280,24 @@
     "@backstage/plugin-vault-node": "0.1.9",
     "@backstage/plugin-xcmetrics": "0.2.51"
   },
-  "changesets": []
+  "changesets": [
+    "chatty-flies-worry",
+    "create-app-1712066999",
+    "famous-experts-warn",
+    "fuzzy-beans-occur",
+    "giant-olives-protect",
+    "happy-experts-invite",
+    "hot-years-sell",
+    "hungry-suns-hope",
+    "little-bats-admire",
+    "ninety-toys-bake",
+    "polite-toys-camp",
+    "renovate-e620b13",
+    "ten-schools-leave",
+    "tricky-clouds-wait",
+    "twelve-comics-double",
+    "violet-lobsters-unite",
+    "wicked-bugs-joke",
+    "witty-kings-smoke"
+  ]
 }

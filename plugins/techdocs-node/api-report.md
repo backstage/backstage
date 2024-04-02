@@ -292,6 +292,15 @@ export type TechDocsMetadata = {
 };
 
 // @public
+export interface TechdocsPreparerExtensionPoint {
+  // (undocumented)
+  registerPreparer(protocol: RemoteProtocol, preparer: PreparerBase): void;
+}
+
+// @public
+export const techdocsPreparerExtensionPoint: ExtensionPoint<TechdocsPreparerExtensionPoint>;
+
+// @public
 export const transformDirLocation: (
   entity: Entity,
   dirAnnotation: ParsedLocationAnnotation,

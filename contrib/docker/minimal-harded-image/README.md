@@ -6,7 +6,7 @@ The `Dockerfile` in this directory uses a [`wolfi-base`](https://github.com/wolf
 
 ## Considerations
 
-- Wolfi only releases the `latest` tag for public consumption however digests can be pinned.
-- Wolfi OS uses packages from the [os repository](https://github.com/wolfi-dev/os) on GitHub. Some packages may be named differently.
-- While Wolfi uses `apk`, the OS is designed to support `glibc`.
+- `Wolfi` only releases the `latest` tag for public consumption however digests can be pinned.
+- `Wolfi` OS uses packages from the [os repository](https://github.com/wolfi-dev/os) on GitHub. Some packages may be named differently.
+- While `Wolfi` uses `apk`, the OS is designed to support `glibc`.
 - Due to the stripped down nature of the base image, additional packages might be needed compared to a distribution like Debian or Ubuntu.
