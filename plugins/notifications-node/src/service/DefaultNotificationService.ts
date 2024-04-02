@@ -59,7 +59,7 @@ export class DefaultNotificationService implements NotificationService {
         targetPluginId: 'notifications',
       });
 
-      const response = await fetch(`${baseUrl}/`, {
+      const response = await fetch(`${baseUrl}/notification`, {
         method: 'POST',
         body: JSON.stringify(notification),
         headers: {

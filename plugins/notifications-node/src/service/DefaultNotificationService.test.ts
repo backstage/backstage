@@ -54,7 +54,7 @@ describe('DefaultNotificationService', () => {
 
       server.use(
         rest.post(
-          `${await discovery.getBaseUrl('notifications')}/`,
+          `${await discovery.getBaseUrl('notifications')}/notification`,
           async (req, res, ctx) => {
             const json = await req.json();
             expect(json).toEqual(body);
@@ -79,7 +79,7 @@ describe('DefaultNotificationService', () => {
 
       server.use(
         rest.post(
-          `${await discovery.getBaseUrl('notifications')}/`,
+          `${await discovery.getBaseUrl('notifications')}/notification`,
           async (req, res, ctx) => {
             const json = await req.json();
             expect(json).toEqual(body);

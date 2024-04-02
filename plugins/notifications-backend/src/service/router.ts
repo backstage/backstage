@@ -177,7 +177,7 @@ export async function createRouter(
     response.json({ status: 'ok' });
   });
 
-  router.get('/', async (req, res) => {
+  router.get('/notifications', async (req, res) => {
     const user = await getUser(req);
     const opts: NotificationGetOptions = {
       user: user,
@@ -229,19 +229,27 @@ export async function createRouter(
     });
   });
 
-  router.get('/:id', async (req, res) => {
-    const user = await getUser(req);
+  const getNotification = async (user: string, id: string) => {
     const opts: NotificationGetOptions = {
       user: user,
       limit: 1,
-      ids: [req.params.id],
+      ids: [id],
     };
     const notifications = await store.getNotifications(opts);
     if (notifications.length !== 1) {
+      return null;
+    }
+    return notifications[0];
+  };
+
+  router.get('/notifications/:id', async (req, res) => {
+    const user = await getUser(req);
+    const notification = await getNotification(user, req.params.id);
+    if (notification === null) {
       res.status(404).send({ error: 'Not found' });
       return;
     }
-    res.send(notifications[0]);
+    res.send(notification);
   });
 
   router.get('/status', async (req, res) => {
@@ -250,39 +258,47 @@ export async function createRouter(
     res.send(status);
   });
 
-  router.post('/update', async (req, res) => {
-    const user = await getUser(req);
-    const { ids, read, saved } = req.body;
-    if (!ids || !Array.isArray(ids)) {
-      throw new InputError();
-    }
-
+  const updateNotifications = async (
+    user: string,
+    ids: string[],
+    read?: boolean,
+    saved?: boolean,
+  ) => {
     if (read === true) {
       await store.markRead({ user, ids });
-
-      if (signals) {
-        await signals.publish<NotificationReadSignal>({
-          recipients: { type: 'user', entityRef: [user] },
-          message: { action: 'notification_read', notification_ids: ids },
-          channel: 'notifications',
-        });
-      }
     } else if (read === false) {
-      await store.markUnread({ user: user, ids });
-
-      if (signals) {
-        await signals.publish<NotificationReadSignal>({
-          recipients: { type: 'user', entityRef: [user] },
-          message: { action: 'notification_unread', notification_ids: ids },
-          channel: 'notifications',
-        });
-      }
+      await store.markUnread({ user, ids });
     }
 
     if (saved === true) {
       await store.markSaved({ user: user, ids });
     } else if (saved === false) {
       await store.markUnsaved({ user: user, ids });
+    }
+  };
+
+  router.post('/notifications/update', async (req, res) => {
+    const user = await getUser(req);
+    const { ids, read, saved } = req.body;
+    if (!ids || !Array.isArray(ids)) {
+      throw new InputError();
+    }
+
+    await updateNotifications(user, ids, read, saved);
+    if (signals) {
+      if (read === true) {
+        await signals.publish<NotificationReadSignal>({
+          recipients: { type: 'user', entityRef: [user] },
+          message: { action: 'notification_read', notification_ids: ids },
+          channel: 'notifications',
+        });
+      } else if (read === false) {
+        await signals.publish<NotificationReadSignal>({
+          recipients: { type: 'user', entityRef: [user] },
+          message: { action: 'notification_unread', notification_ids: ids },
+          channel: 'notifications',
+        });
+      }
     }
 
     const notifications = await store.getNotifications({ ids, user: user });
@@ -389,7 +405,7 @@ export async function createRouter(
   };
 
   // Add new notification
-  router.post('/', async (req, res) => {
+  router.post('/notifications', async (req, res) => {
     const { recipients, payload } = req.body;
     const notifications = [];
     let users = [];

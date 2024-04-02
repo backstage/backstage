@@ -25,6 +25,7 @@ import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import { mockServices } from '@backstage/backend-test-utils';
+import { Knex } from 'knex';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -39,6 +40,20 @@ function createDatabase(): PluginDatabaseManager {
   ).forPlugin('notifications');
 }
 
+const now = Date.now();
+const id1 = '01e0871e-e60a-4f68-8110-5ae3513f992e';
+const testNotification1 = {
+  id: id1,
+  user: 'user:default/mock',
+  created: new Date(now - 1 * 60 * 60 * 1000 /* an hour ago */),
+  origin: 'abcd-origin',
+  title: 'Notification 1 - please find me',
+  description: 'a description of the notification',
+  topic: 'efgh-topic',
+  link: '/catalog',
+  severity: 'critical',
+};
+
 describe('createRouter', () => {
   let app: express.Express;
 
@@ -50,22 +65,27 @@ describe('createRouter', () => {
   const userInfo = mockServices.userInfo();
   const httpAuth = mockServices.httpAuth();
   const auth = mockServices.auth();
+  const database = createDatabase();
+  let knex: Knex;
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      database: createDatabase(),
+      database,
       discovery,
       signals: signalService,
       userInfo,
       httpAuth,
       auth,
     });
+    knex = await database.getClient();
     app = express().use(router);
   });
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.resetAllMocks();
+    await knex('notification').del();
+    await knex('broadcast').del();
   });
 
   describe('GET /health', () => {
@@ -74,6 +94,16 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+  });
+
+  describe('GET /status', () => {
+    it('returns ok', async () => {
+      await knex('notification').insert(testNotification1);
+      const response = await request(app).get('/status');
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({ read: 0, unread: 1 });
     });
   });
 });

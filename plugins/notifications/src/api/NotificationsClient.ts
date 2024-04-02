@@ -70,13 +70,13 @@ export class NotificationsClient implements NotificationsApi {
     if (options?.minimumSeverity !== undefined) {
       queryString.append('minimal_severity', options.minimumSeverity);
     }
-    const urlSegment = `?${queryString}`;
+    const urlSegment = `notifications?${queryString}`;
 
     return await this.request<GetNotificationsResponse>(urlSegment);
   }
 
   async getNotification(id: string): Promise<Notification> {
-    return await this.request<Notification>(`${id}`);
+    return await this.request<Notification>(`notifications/${id}`);
   }
 
   async getStatus(): Promise<NotificationStatus> {
@@ -86,13 +86,12 @@ export class NotificationsClient implements NotificationsApi {
   async updateNotifications(
     options: UpdateNotificationsOptions,
   ): Promise<Notification[]> {
-    return await this.request<Notification[]>('update', {
+    return await this.request<Notification[]>('notifications/update', {
       method: 'POST',
       body: JSON.stringify(options),
       headers: { 'Content-Type': 'application/json' },
     });
   }
-
   private async request<T>(path: string, init?: any): Promise<T> {
     const baseUrl = `${await this.discoveryApi.getBaseUrl('notifications')}/`;
     const url = new URL(path, baseUrl);
