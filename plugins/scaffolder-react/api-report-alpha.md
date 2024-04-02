@@ -157,7 +157,6 @@ export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: FieldExtensionOptions<any, any>[];
   templateName?: string;
-  minutesSaved?: number;
   formProps?: FormProps;
   initialState?: Record<string, JsonValue>;
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;

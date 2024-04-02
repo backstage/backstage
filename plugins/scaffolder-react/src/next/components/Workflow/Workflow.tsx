@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import {
   Content,
   InfoCard,
@@ -23,13 +23,14 @@ import {
 } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { makeStyles } from '@material-ui/core';
-import { errorApiRef, useApi } from '@backstage/core-plugin-api';
+import { errorApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
 import { useFilteredSchemaProperties } from '../../hooks/useFilteredSchemaProperties';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { useTemplateTimeSavedMinutes } from '../../hooks/useTemplateTimeSaved';
+import { JsonValue } from '@backstage/types';
 
 const useStyles = makeStyles({
   markdown: {
@@ -69,9 +70,10 @@ export type WorkflowProps = {
  * @alpha
  */
 export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
-  const { title, description, namespace, templateName, ...props } =
+  const { title, description, namespace, templateName, onCreate, ...props } =
     workflowProps;
 
+  const analytics = useAnalytics();
   const styles = useStyles();
   const templateRef = stringifyEntityRef({
     kind: 'Template',
@@ -86,6 +88,19 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   const sortedManifest = useFilteredSchemaProperties(manifest);
 
   const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
+
+  const workflowOnCreate = useCallback(
+    async (formState: Record<string, JsonValue>) => {
+      onCreate(formState);
+
+      const name =
+        typeof formState.name === 'string' ? formState.name : undefined;
+      analytics.captureEvent('create', name ?? templateName ?? 'unknown', {
+        value: minutesSaved,
+      });
+    },
+    [onCreate, analytics, templateName, minutesSaved],
+  );
 
   useEffect(() => {
     if (error) {
@@ -116,8 +131,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
         >
           <Stepper
             manifest={sortedManifest}
-            templateName={templateName}
-            minutesSaved={minutesSaved}
+            onCreate={workflowOnCreate}
             {...props}
           />
         </InfoCard>
