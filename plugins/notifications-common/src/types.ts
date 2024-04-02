@@ -33,7 +33,7 @@ export type NotificationPayload = {
 /** @public */
 export type Notification = {
   id: string;
-  user: string;
+  user?: string;
   created: Date;
   saved?: Date;
   read?: Date;

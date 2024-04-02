@@ -16,6 +16,11 @@ For users to be able to see notifications in real-time, you have to install also
 the signals plugin (`@backstage/plugin-signals-node`, `@backstage/plugin-signals-backend`, and
 `@backstage/plugin-signals`).
 
+## Enabling default web notifications
+
+To be able to see notifications in the Backstage UI, you must install `@backstage/plugin-notifications-backend-module-web`.
+This is not necessary, but it is recommended to have a way to show notifications to users.
+
 ## Extending Notifications
 
 The notifications can be extended with `NotificationProcessor`. These processors allow to decorate notifications

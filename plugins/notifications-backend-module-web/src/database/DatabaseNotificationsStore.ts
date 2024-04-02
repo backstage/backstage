@@ -29,7 +29,7 @@ import {
 import { Knex } from 'knex';
 
 const migrationsDir = resolvePackagePath(
-  '@backstage/plugin-notifications-backend',
+  '@backstage/plugin-notifications-backend-module-web',
   'migrations',
 );
 
@@ -341,7 +341,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
     const notificationQuery = this.db('notification')
       .where('id', id)
-      .where('user', notification.user);
+      .where('user', notification.user ?? '');
     const broadcastQuery = this.db('broadcast').where('id', id);
 
     await Promise.all([

@@ -12,7 +12,7 @@ export type NewNotificationSignal = {
 // @public (undocumented)
 type Notification_2 = {
   id: string;
-  user: string;
+  user?: string;
   created: Date;
   saved?: Date;
   read?: Date;

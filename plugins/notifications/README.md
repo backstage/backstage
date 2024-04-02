@@ -6,7 +6,9 @@ _This plugin was created through the Backstage CLI_
 
 ## Getting started
 
-First, install the `@backstage/plugin-notifications-backend` and `@backstage/plugin-notifications-node` packages.
+First, install the `@backstage/plugin-notifications-backend`, `@backstage/plugin-notifications-node`,
+and `@backstage/plugin-notifications-backend-module-web` packages.
+
 See the documentation for installation instructions.
 
 To add the notifications main menu, add the following to your `packages/app/src/components/Root/Root.tsx`:

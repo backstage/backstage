@@ -58,5 +58,6 @@ backend.add(import('@backstage/plugin-todo-backend'));
 backend.add(import('@backstage/plugin-sonarqube-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
+backend.add(import('@backstage/plugin-notifications-backend-module-web'));
 
 backend.start();

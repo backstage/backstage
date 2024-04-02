@@ -19,7 +19,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
-import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import {
   NotificationProcessor,
   notificationsProcessingExtensionPoint,
@@ -61,32 +60,17 @@ export const notificationsPlugin = createBackendPlugin({
       deps: {
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
-        userInfo: coreServices.userInfo,
         httpRouter: coreServices.httpRouter,
         logger: coreServices.logger,
-        database: coreServices.database,
         discovery: coreServices.discovery,
-        signals: signalsServiceRef,
       },
-      async init({
-        auth,
-        httpAuth,
-        userInfo,
-        httpRouter,
-        logger,
-        database,
-        discovery,
-        signals,
-      }) {
+      async init({ auth, httpAuth, httpRouter, logger, discovery }) {
         httpRouter.use(
           await createRouter({
             auth,
             httpAuth,
-            userInfo,
             logger,
-            database,
             discovery,
-            signals,
             processors: processingExtensions.processors,
           }),
         );

@@ -22,8 +22,12 @@ export class DefaultNotificationService implements NotificationService {
 
 // @public (undocumented)
 export interface NotificationProcessor {
-  decorate?(notification: Notification_2): Promise<Notification_2>;
-  send?(notification: Notification_2): Promise<void>;
+  decorate?(
+    notification: Notification_2,
+    type: NotificationType,
+  ): Promise<Notification_2>;
+  getName(): string;
+  send?(notification: Notification_2, type: NotificationType): Promise<void>;
 }
 
 // @public (undocumented)
@@ -67,4 +71,7 @@ export interface NotificationsProcessingExtensionPoint {
 
 // @public (undocumented)
 export const notificationsProcessingExtensionPoint: ExtensionPoint<NotificationsProcessingExtensionPoint>;
+
+// @public (undocumented)
+export type NotificationType = 'broadcast' | 'user';
 ```

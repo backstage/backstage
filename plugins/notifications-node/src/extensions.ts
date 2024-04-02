@@ -19,21 +19,33 @@ import { Notification } from '@backstage/plugin-notifications-common';
 /**
  * @public
  */
+export type NotificationType = 'broadcast' | 'user';
+
+/**
+ * @public
+ */
 export interface NotificationProcessor {
+  /**
+   * Human-readable name of this processor like Email, Slack, etc.
+   */
+  getName(): string;
   /**
    * Decorate notification before sending it
    *
    * @param notification - The notification to decorate
    * @returns The same notification or a modified version of it
    */
-  decorate?(notification: Notification): Promise<Notification>;
+  decorate?(
+    notification: Notification,
+    type: NotificationType,
+  ): Promise<Notification>;
 
   /**
    * Send notification using this processor.
    *
    * @param notification - The notification to send
    */
-  send?(notification: Notification): Promise<void>;
+  send?(notification: Notification, type: NotificationType): Promise<void>;
 }
 
 /**

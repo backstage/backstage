@@ -50,6 +50,7 @@
     "@backstage/plugin-linguist-backend": "workspace:^",
     "@backstage/plugin-nomad-backend": "workspace:^",
     "@backstage/plugin-notifications-backend": "workspace:^",
+    "@backstage/plugin-notifications-backend-module-web": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",

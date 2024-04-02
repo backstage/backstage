@@ -13,51 +13,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  DatabaseManager,
-  getVoidLogger,
-  PluginDatabaseManager,
-} from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-import { ConfigReader } from '@backstage/config';
-import { SignalsService } from '@backstage/plugin-signals-node';
 import { mockServices } from '@backstage/backend-test-utils';
-
-function createDatabase(): PluginDatabaseManager {
-  return DatabaseManager.fromConfig(
-    new ConfigReader({
-      backend: {
-        database: {
-          client: 'better-sqlite3',
-          connection: ':memory:',
-        },
-      },
-    }),
-  ).forPlugin('notifications');
-}
 
 describe('createRouter', () => {
   let app: express.Express;
 
-  const signalService: jest.Mocked<SignalsService> = {
-    publish: jest.fn(),
-  };
-
   const discovery = mockServices.discovery();
-  const userInfo = mockServices.userInfo();
   const httpAuth = mockServices.httpAuth();
   const auth = mockServices.auth();
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      database: createDatabase(),
       discovery,
-      signals: signalService,
-      userInfo,
       httpAuth,
       auth,
     });
