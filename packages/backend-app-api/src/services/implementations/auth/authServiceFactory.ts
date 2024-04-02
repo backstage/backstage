@@ -252,6 +252,7 @@ class DefaultAuthService implements AuthService {
         JSON.stringify({
           typ: 'vnd.backstage.limited-user',
           sub: payload.sub,
+          ent: payload.ent,
           iat: payload.iat,
           exp: payload.exp,
         }),

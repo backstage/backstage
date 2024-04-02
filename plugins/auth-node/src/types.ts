@@ -463,6 +463,11 @@ export interface BackstageUserIdentityProofPayload {
   sub: string;
 
   /**
+   * The ownership entity refs of the user
+   */
+  ent?: string[];
+
+  /**
    * Standard expiry in epoch seconds
    */
   exp: number;

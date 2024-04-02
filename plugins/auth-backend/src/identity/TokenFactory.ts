@@ -116,7 +116,7 @@ export class TokenFactory implements TokenIssuer {
 
     const uip = await this.createUserIdentityClaim({
       header: { alg: key.alg, kid: key.kid },
-      payload: { typ: TokenTypes.limitedUser.typClaim, sub, iat, exp },
+      payload: { typ: TokenTypes.limitedUser.typClaim, sub, ent, iat, exp },
       key: signingKey,
     });
 
@@ -264,6 +264,7 @@ export class TokenFactory implements TokenIssuer {
     const payload = {
       typ: options.payload.typ,
       sub: options.payload.sub,
+      ent: options.payload.ent,
       iat: options.payload.iat,
       exp: options.payload.exp,
     };
