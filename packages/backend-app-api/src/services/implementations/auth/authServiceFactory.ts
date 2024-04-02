@@ -105,7 +105,7 @@ export function toInternalBackstageCredentials(
 class DefaultAuthService implements AuthService {
   constructor(
     private readonly tokenManager: TokenManager,
-    private readonly identity: IdentityService,
+    private readonly userTokenHandler: UserTokenHandler,
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
   ) {}
@@ -117,13 +117,24 @@ class DefaultAuthService implements AuthService {
 
     if (typ) {
       switch (typ) {
-        case TokenTypes.user.typClaim:
-          return this.#authenticateFullUser(token);
-        case TokenTypes.limitedUser.typClaim:
-          throw new AuthenticationError(
-            'Limited user tokens are not supported',
+        case TokenTypes.user.typParam: {
+          const { userEntityRef } =
+            await this.userTokenHandler.verifyFullUserToken(token);
+          return createCredentialsWithUserPrincipal(
+            userEntityRef,
+            token,
+            this.#getJwtExpiration(token),
           );
-
+        }
+        case TokenTypes.limitedUser.typParam: {
+          const { userEntityRef } =
+            await this.userTokenHandler.verifyLimitedUserToken(token);
+          return createCredentialsWithUserPrincipal(
+            userEntityRef,
+            token,
+            this.#getJwtExpiration(token),
+          );
+        }
         default:
           throw new AuthenticationError("Invalid token 'typ' claim");
       }
@@ -136,22 +147,11 @@ class DefaultAuthService implements AuthService {
     }
 
     // User Backstage token
-    return this.#authenticateFullUser(token);
-  }
-
-  async #authenticateFullUser(token: string) {
-    const identity = await this.identity.getIdentity({
-      request: {
-        headers: { authorization: `Bearer ${token}` },
-      },
-    } as IdentityApiGetIdentityRequest);
-
-    if (!identity) {
-      throw new AuthenticationError('Invalid user token');
-    }
-
+    const { userEntityRef } = await this.userTokenHandler.verifyFullUserToken(
+      token,
+    );
     return createCredentialsWithUserPrincipal(
-      identity.identity.userEntityRef,
+      userEntityRef,
       token,
       this.#getJwtExpiration(token),
     );
@@ -276,15 +276,15 @@ export const authServiceFactory = createServiceFactory({
   deps: {
     config: coreServices.rootConfig,
     logger: coreServices.rootLogger,
+    discovery: coreServices.discovery,
     plugin: coreServices.pluginMetadata,
-    identity: coreServices.identity,
     // Re-using the token manager makes sure that we use the same generated keys for
     // development as plugins that have not yet been migrated. It's important that this
     // keeps working as long as there are plugins that have not been migrated to the
     // new auth services in the new backend system.
     tokenManager: coreServices.tokenManager,
   },
-  async factory({ config, plugin, identity, tokenManager }) {
+  async factory({ config, discovery, plugin, tokenManager }) {
     const disableDefaultAuthPolicy = Boolean(
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',
@@ -292,7 +292,7 @@ export const authServiceFactory = createServiceFactory({
     );
     return new DefaultAuthService(
       tokenManager,
-      identity,
+      new UserTokenHandler({ discovery }),
       plugin.getId(),
       disableDefaultAuthPolicy,
     );
