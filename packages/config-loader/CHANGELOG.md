@@ -1,5 +1,19 @@
 # @backstage/config-loader
 
+## 1.8.0-next.0
+
+### Minor Changes
+
+- 99bab65: Support parameter substitution for environment variables
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.7.0
 
 ### Minor Changes

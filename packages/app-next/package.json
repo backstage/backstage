@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.9",
+  "version": "0.0.10-next.0",
   "private": true,
   "repository": {
     "type": "git",
