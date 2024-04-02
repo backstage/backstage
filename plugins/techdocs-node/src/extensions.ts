@@ -15,7 +15,7 @@
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { DocsBuildStrategy } from './techdocsTypes';
-import { TechdocsGenerator } from './stages';
+import { PreparerBase, RemoteProtocol, TechdocsGenerator } from './stages';
 
 /**
  * Extension point type for configuring Techdocs builds.
@@ -53,4 +53,23 @@ export interface TechdocsGeneratorExtensionPoint {
 export const techdocsGeneratorExtensionPoint =
   createExtensionPoint<TechdocsGeneratorExtensionPoint>({
     id: 'techdocs.generator',
+  });
+
+/**
+ * Extension point type for configuring a custom Techdocs preparer
+ *
+ * @public
+ */
+export interface TechdocsPreparerExtensionPoint {
+  registerPreparer(protocol: RemoteProtocol, preparer: PreparerBase): void;
+}
+
+/**
+ * Extension point for configuring a custom Techdocs preparer
+ *
+ * @public
+ */
+export const techdocsPreparerExtensionPoint =
+  createExtensionPoint<TechdocsPreparerExtensionPoint>({
+    id: 'techdocs.preparer',
   });
