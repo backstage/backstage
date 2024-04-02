@@ -19,6 +19,7 @@ import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 import { TokenTypes } from '@backstage/plugin-auth-node';
 import {
+  base64url,
   createRemoteJWKSet,
   decodeJwt,
   decodeProtectedHeader,
@@ -100,6 +101,37 @@ export class UserTokenHandler {
     }
 
     return { userEntityRef };
+  }
+
+  createLimitedUserToken(backstageToken: string) {
+    const [headerRaw, payloadRaw] = backstageToken.split('.');
+    const header = JSON.parse(
+      new TextDecoder().decode(base64url.decode(headerRaw)),
+    );
+    const payload = JSON.parse(
+      new TextDecoder().decode(base64url.decode(payloadRaw)),
+    );
+
+    const limitedUserToken = [
+      base64url.encode(
+        JSON.stringify({
+          typ: 'vnd.backstage.limited-user',
+          alg: header.alg,
+          kid: header.kid,
+        }),
+      ),
+      base64url.encode(
+        JSON.stringify({
+          sub: payload.sub,
+          ent: payload.ent,
+          iat: payload.iat,
+          exp: payload.exp,
+        }),
+      ),
+      payload.uip,
+    ].join('.');
+
+    return { token: limitedUserToken, expiresAt: new Date(payload.exp * 1000) };
   }
 
   /**
