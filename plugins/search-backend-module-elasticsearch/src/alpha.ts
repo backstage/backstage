@@ -68,6 +68,12 @@ export default createBackendModule({
         config: coreServices.rootConfig,
       },
       async init({ searchEngineRegistry, logger, config }) {
+        const baseKey = 'search.elasticsearch';
+        const baseConfig = config.getOptional(baseKey);
+        if (!baseConfig) {
+          return;
+        }
+
         searchEngineRegistry.setSearchEngine(
           await ElasticSearchSearchEngine.fromConfig({
             logger,
