@@ -26,6 +26,7 @@ import {
   FlattenedJWSInput,
   JWSHeaderParameters,
   jwtVerify,
+  JWTVerifyOptions,
 } from 'jose';
 import { GetKeyFunction } from 'jose/dist/types/types';
 
@@ -49,21 +50,23 @@ export class UserTokenHandler {
     this.#algorithms = ['ES256']; // TODO: configurable?
   }
 
-  async verifyFullUserToken(token: string): Promise<{ userEntityRef: string }> {
-    // Check if the keystore needs to be updated
+  async verifyToken(token: string) {
+    const verifyOpts = this.#getTokenVerificationOptions(token);
+    if (!verifyOpts) {
+      return undefined;
+    }
+
     await this.refreshKeyStore(token);
     if (!this.#keyStore) {
       throw new AuthenticationError('No keystore exists');
     }
 
-    // Verify token claims and signature
-    // Note: Claims must match those set by TokenFactory when issuing tokens
-    // Note: verify throws if verification fails
-    const { payload } = await jwtVerify(token, this.#keyStore, {
-      algorithms: this.#algorithms,
-      audience: 'backstage',
-    }).catch(e => {
-      console.log(`DEBUG: e=`, e);
+    // Verify a limited token, ensuring the necessarily claims are present and token type is correct
+    const { payload } = await jwtVerify(
+      token,
+      this.#keyStore,
+      verifyOpts,
+    ).catch(e => {
       throw new AuthenticationError('invalid token', e);
     });
 
@@ -76,31 +79,28 @@ export class UserTokenHandler {
     return { userEntityRef };
   }
 
-  async verifyLimitedUserToken(
-    token: string,
-  ): Promise<{ userEntityRef: string }> {
-    await this.refreshKeyStore(token);
-    if (!this.#keyStore) {
-      throw new AuthenticationError('No keystore exists');
+  #getTokenVerificationOptions(token: string): JWTVerifyOptions | undefined {
+    const { typ } = decodeProtectedHeader(token);
+
+    if (typ === TokenTypes.user.typParam) {
+      return {
+        algorithms: this.#algorithms,
+        typ: TokenTypes.user.typParam,
+      };
     }
 
-    // Verify a limited token, ensuring the necessarily claims are present and token type is correct
-    const { payload } = await jwtVerify(token, this.#keyStore, {
+    if (typ === TokenTypes.limitedUser.typParam) {
+      return {
+        algorithms: this.#algorithms,
+        requiredClaims: ['iat', 'exp', 'sub'],
+        typ: TokenTypes.limitedUser.typParam,
+      };
+    }
+
+    return {
       algorithms: this.#algorithms,
-      requiredClaims: ['iat', 'exp', 'sub'],
-      typ: TokenTypes.limitedUser.typParam,
-    }).catch(e => {
-      console.log(`DEBUG: e=`, e);
-      throw new AuthenticationError('invalid token', e);
-    });
-
-    const userEntityRef = payload.sub;
-
-    if (!userEntityRef) {
-      throw new AuthenticationError('No user sub found in token');
-    }
-
-    return { userEntityRef };
+      audience: 'backstage',
+    };
   }
 
   createLimitedUserToken(backstageToken: string) {

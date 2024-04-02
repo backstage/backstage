@@ -26,8 +26,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
-import { TokenTypes } from '@backstage/plugin-auth-node';
-import { decodeJwt, decodeProtectedHeader } from 'jose';
+import { decodeJwt } from 'jose';
 import { UserTokenHandler } from './UserTokenHandler';
 
 /** @internal */
@@ -112,33 +111,7 @@ class DefaultAuthService implements AuthService {
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {
-    const { typ } = decodeProtectedHeader(token);
     const { sub, aud } = decodeJwt(token);
-
-    if (typ) {
-      switch (typ) {
-        case TokenTypes.user.typParam: {
-          const { userEntityRef } =
-            await this.userTokenHandler.verifyFullUserToken(token);
-          return createCredentialsWithUserPrincipal(
-            userEntityRef,
-            token,
-            this.#getJwtExpiration(token),
-          );
-        }
-        case TokenTypes.limitedUser.typParam: {
-          const { userEntityRef } =
-            await this.userTokenHandler.verifyLimitedUserToken(token);
-          return createCredentialsWithUserPrincipal(
-            userEntityRef,
-            token,
-            this.#getJwtExpiration(token),
-          );
-        }
-        default:
-          throw new AuthenticationError("Invalid token 'typ' claim");
-      }
-    }
 
     // Legacy service-to-service token
     if (sub === 'backstage-server' && !aud) {
@@ -146,15 +119,16 @@ class DefaultAuthService implements AuthService {
       return createCredentialsWithServicePrincipal('external:backstage-plugin');
     }
 
-    // User Backstage token
-    const { userEntityRef } = await this.userTokenHandler.verifyFullUserToken(
-      token,
-    );
-    return createCredentialsWithUserPrincipal(
-      userEntityRef,
-      token,
-      this.#getJwtExpiration(token),
-    );
+    const userResult = await this.userTokenHandler.verifyToken(token);
+    if (userResult) {
+      return createCredentialsWithUserPrincipal(
+        userResult.userEntityRef,
+        token,
+        this.#getJwtExpiration(token),
+      );
+    }
+
+    throw new AuthenticationError('Unknown token');
   }
 
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
