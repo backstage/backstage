@@ -58,7 +58,7 @@ export const signalsPlugin = createBackendPlugin({
           }),
         );
         httpRouter.addAuthPolicy({
-          path: '*',
+          path: '/',
           allow: 'unauthenticated',
         });
       },
