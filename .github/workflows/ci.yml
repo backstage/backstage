@@ -212,6 +212,10 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 
+      # This check is done here since it needs git history
+      - name: verify release
+        run: node scripts/verify-release.js
+
       - name: lint changed packages
         run: yarn backstage-cli repo lint --since origin/master
 
