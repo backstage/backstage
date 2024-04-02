@@ -37,7 +37,7 @@ export interface RouterOptions {
   store: NotificationsStore;
   httpAuth: HttpAuthService;
   userInfo: UserInfoService;
-  signals: SignalsService;
+  signals?: SignalsService;
 }
 
 /** @internal */
@@ -143,18 +143,22 @@ export async function createRouter(
 
     if (read === true) {
       await store.markRead({ user, ids });
-      await signals.publish<NotificationReadSignal>({
-        recipients: { type: 'user', entityRef: [user] },
-        message: { action: 'notification_read', notification_ids: ids },
-        channel: 'notifications',
-      });
+      if (signals) {
+        await signals.publish<NotificationReadSignal>({
+          recipients: { type: 'user', entityRef: [user] },
+          message: { action: 'notification_read', notification_ids: ids },
+          channel: 'notifications',
+        });
+      }
     } else if (read === false) {
       await store.markUnread({ user: user, ids });
-      await signals.publish<NotificationReadSignal>({
-        recipients: { type: 'user', entityRef: [user] },
-        message: { action: 'notification_unread', notification_ids: ids },
-        channel: 'notifications',
-      });
+      if (signals) {
+        await signals.publish<NotificationReadSignal>({
+          recipients: { type: 'user', entityRef: [user] },
+          message: { action: 'notification_unread', notification_ids: ids },
+          channel: 'notifications',
+        });
+      }
     }
 
     if (saved === true) {

@@ -28,7 +28,7 @@ import { SignalsService } from '@backstage/plugin-signals-node';
 export class WebNotificationProcessor implements NotificationProcessor {
   constructor(
     private readonly store: NotificationsStore,
-    private readonly signals: SignalsService,
+    private readonly signals?: SignalsService,
   ) {}
 
   getName(): string {
@@ -62,14 +62,16 @@ export class WebNotificationProcessor implements NotificationProcessor {
       await this.store.saveNotification(notification);
     }
 
-    await this.signals.publish<NewNotificationSignal>({
-      recipients: { type: 'user', entityRef: [user] },
-      message: {
-        action: 'new_notification',
-        notification_id: ret.id,
-      },
-      channel: 'notifications',
-    });
+    if (this.signals) {
+      await this.signals.publish<NewNotificationSignal>({
+        recipients: { type: 'user', entityRef: [user] },
+        message: {
+          action: 'new_notification',
+          notification_id: ret.id,
+        },
+        channel: 'notifications',
+      });
+    }
   }
 
   private async sendBroadcastNotification(notification: Notification) {
@@ -94,14 +96,16 @@ export class WebNotificationProcessor implements NotificationProcessor {
       await this.store.saveBroadcast(notification);
     }
 
-    await this.signals.publish<NewNotificationSignal>({
-      recipients: { type: 'broadcast' },
-      message: {
-        action: 'new_notification',
-        notification_id: ret.id,
-      },
-      channel: 'notifications',
-    });
+    if (this.signals) {
+      await this.signals.publish<NewNotificationSignal>({
+        recipients: { type: 'broadcast' },
+        message: {
+          action: 'new_notification',
+          notification_id: ret.id,
+        },
+        channel: 'notifications',
+      });
+    }
   }
 
   async send(
