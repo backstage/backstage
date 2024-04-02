@@ -6234,6 +6234,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-notifications-backend-module-slack@workspace:plugins/notifications-backend-module-slack":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-notifications-backend-module-slack@workspace:plugins/notifications-backend-module-slack"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-notifications-common": "workspace:^"
+    "@backstage/plugin-notifications-node": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@faker-js/faker": ^8.4.1
+    dataloader: ^2.2.2
+    msw: ^2.2.14
+    p-throttle: ^4.1.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-notifications-backend@workspace:^, @backstage/plugin-notifications-backend@workspace:plugins/notifications-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-notifications-backend@workspace:plugins/notifications-backend"
@@ -8855,6 +8877,13 @@ __metadata:
   version: 5.5.3
   resolution: "@faker-js/faker@npm:5.5.3"
   checksum: d248a042e47ac00613d2d7cc29d4504cc5e5d843162454eede8c35f31c74b19a8fd7cecc0d5ea9e3fbbfc812abc51143c3699e51049fd64300e23e6588e76d39
+  languageName: node
+  linkType: hard
+
+"@faker-js/faker@npm:^8.4.1":
+  version: 8.4.1
+  resolution: "@faker-js/faker@npm:8.4.1"
+  checksum: d802d531f8929562715adc279cfec763c9a4bc596ec67b0ce43fd0ae61b285d2b0eec6f1f4aa852452a63721a842fe7e81926dce7bd92acca94b01e2a1f55f5a
   languageName: node
   linkType: hard
 
@@ -33502,7 +33531,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^2.0.0, msw@npm:^2.0.8":
+"msw@npm:^2.0.0, msw@npm:^2.0.8, msw@npm:^2.2.14":
   version: 2.2.14
   resolution: "msw@npm:2.2.14"
   dependencies:
