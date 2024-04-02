@@ -169,7 +169,9 @@ export type AuthResolverContext = {
  * @public
  */
 export interface AuthOwnershipResolver {
-  getOwnershipEntityRefs(entity: Entity): Promise<string[]>;
+  resolveOwnershipEntityRefs(
+    entity: Entity,
+  ): Promise<{ ownershipEntityRefs: string[] }>;
 }
 
 /**

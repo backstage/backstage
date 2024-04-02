@@ -3,4 +3,4 @@
 '@backstage/plugin-auth-node': patch
 ---
 
-Allow overriding default ownership resolving
+Allow overriding default ownership resolving with the new `AuthOwnershipResolutionExtensionPoint`

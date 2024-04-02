@@ -20,6 +20,7 @@ import {
   DEFAULT_NAMESPACE,
   Entity,
   parseEntityRef,
+  RELATION_MEMBER_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
@@ -39,6 +40,25 @@ import {
 import { CatalogIdentityClient } from '../catalog';
 
 /**
+ * Uses the default ownership resolution logic to return an array
+ * of entity refs that the provided entity claims ownership through.
+ *
+ * A reference to the entity itself will also be included in the returned array.
+ *
+ * @public
+ */
+export function getDefaultOwnershipEntityRefs(entity: Entity) {
+  const membershipRefs =
+    entity.relations
+      ?.filter(
+        r => r.type === RELATION_MEMBER_OF && r.targetRef.startsWith('group:'),
+      )
+      .map(r => r.targetRef) ?? [];
+
+  return Array.from(new Set([stringifyEntityRef(entity), ...membershipRefs]));
+}
+
+/**
  * @internal
  */
 export class CatalogAuthResolverContext implements AuthResolverContext {
@@ -50,7 +70,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     discovery: DiscoveryService;
     auth: AuthService;
     httpAuth: HttpAuthService;
-    ownershipResolver: AuthOwnershipResolver;
+    ownershipResolver?: AuthOwnershipResolver;
   }): CatalogAuthResolverContext {
     const catalogIdentityClient = new CatalogIdentityClient({
       catalogApi: options.catalogApi,
@@ -76,7 +96,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     public readonly catalogIdentityClient: CatalogIdentityClient,
     private readonly catalogApi: CatalogApi,
     private readonly auth: AuthService,
-    private readonly ownershipResolver: AuthOwnershipResolver,
+    private readonly ownershipResolver?: AuthOwnershipResolver,
   ) {}
 
   async issueToken(params: TokenParams) {
@@ -144,14 +164,19 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
 
   async signInWithCatalogUser(query: AuthResolverCatalogUserQuery) {
     const { entity } = await this.findCatalogUser(query);
-    const ownershipRefs = await this.ownershipResolver.getOwnershipEntityRefs(
-      entity,
-    );
+    let ent: string[];
+    if (this.ownershipResolver) {
+      const { ownershipEntityRefs } =
+        await this.ownershipResolver.resolveOwnershipEntityRefs(entity);
+      ent = ownershipEntityRefs;
+    } else {
+      ent = getDefaultOwnershipEntityRefs(entity);
+    }
 
     const token = await this.tokenIssuer.issueToken({
       claims: {
         sub: stringifyEntityRef(entity),
-        ent: ownershipRefs,
+        ent,
       },
     });
     return { token };

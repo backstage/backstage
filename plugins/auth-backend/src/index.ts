@@ -34,4 +34,4 @@ export * from './lib/oauth';
 
 export * from './lib/catalog';
 
-export { DefaultAuthOwnershipResolver } from './lib/resolvers';
+export { getDefaultOwnershipEntityRefs } from './lib/resolvers';

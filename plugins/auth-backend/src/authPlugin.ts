@@ -19,38 +19,13 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import {
+  authOwnershipResolutionExtensionPoint,
   AuthOwnershipResolver,
   AuthProviderFactory,
-  AuthProviderRegistrationOptions,
-  AuthProvidersExtensionPoint,
   authProvidersExtensionPoint,
 } from '@backstage/plugin-auth-node';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { createRouter } from './service/router';
-
-class AuthProvidersExtensionPointImpl implements AuthProvidersExtensionPoint {
-  #providers = new Map<string, AuthProviderFactory>();
-  #ownershipResolver?: AuthOwnershipResolver;
-  registerProvider(options: AuthProviderRegistrationOptions): void {
-    const { providerId, factory } = options;
-    if (this.#providers.has(providerId)) {
-      throw new Error(`Auth provider '${providerId}' was already registered`);
-    }
-    this.#providers.set(providerId, factory);
-  }
-
-  setAuthOwnershipResolver(ownershipResolver: AuthOwnershipResolver): void {
-    this.#ownershipResolver = ownershipResolver;
-  }
-
-  get providers() {
-    return this.#providers;
-  }
-
-  get ownershipResolver() {
-    return this.#ownershipResolver;
-  }
-}
 
 /**
  * Auth plugin
@@ -60,8 +35,28 @@ class AuthProvidersExtensionPointImpl implements AuthProvidersExtensionPoint {
 export const authPlugin = createBackendPlugin({
   pluginId: 'auth',
   register(reg) {
-    const extensionPoint = new AuthProvidersExtensionPointImpl();
-    reg.registerExtensionPoint(authProvidersExtensionPoint, extensionPoint);
+    const providers = new Map<string, AuthProviderFactory>();
+    let ownershipResolver: AuthOwnershipResolver | undefined = undefined;
+
+    reg.registerExtensionPoint(authProvidersExtensionPoint, {
+      registerProvider({ providerId, factory }) {
+        if (providers.has(providerId)) {
+          throw new Error(
+            `Auth provider '${providerId}' was already registered`,
+          );
+        }
+        providers.set(providerId, factory);
+      },
+    });
+
+    reg.registerExtensionPoint(authOwnershipResolutionExtensionPoint, {
+      setAuthOwnershipResolver(resolver) {
+        if (ownershipResolver) {
+          throw new Error('Auth ownership resolver is already set');
+        }
+        ownershipResolver = resolver;
+      },
+    });
 
     reg.registerInit({
       deps: {
@@ -95,9 +90,9 @@ export const authPlugin = createBackendPlugin({
           auth,
           httpAuth,
           catalogApi,
-          providerFactories: Object.fromEntries(extensionPoint.providers),
+          providerFactories: Object.fromEntries(providers),
           disableDefaultProviderFactories: true,
-          ownershipResolver: extensionPoint.ownershipResolver,
+          ownershipResolver,
         });
         httpRouter.addAuthPolicy({
           path: '/',

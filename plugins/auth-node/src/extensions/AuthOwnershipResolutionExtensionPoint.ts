@@ -13,23 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { AuthOwnershipResolver } from '../types';
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { AuthProviderFactory } from '../types';
 
 /** @public */
-export interface AuthProviderRegistrationOptions {
-  providerId: string;
-  factory: AuthProviderFactory;
+export interface AuthOwnershipResolutionExtensionPoint {
+  setAuthOwnershipResolver(ownershipResolver: AuthOwnershipResolver): void;
 }
 
 /** @public */
-export interface AuthProvidersExtensionPoint {
-  registerProvider(options: AuthProviderRegistrationOptions): void;
-}
-
-/** @public */
-export const authProvidersExtensionPoint =
-  createExtensionPoint<AuthProvidersExtensionPoint>({
-    id: 'auth.providers',
+export const authOwnershipResolutionExtensionPoint =
+  createExtensionPoint<AuthOwnershipResolutionExtensionPoint>({
+    id: 'auth.ownershipResolution',
   });

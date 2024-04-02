@@ -21,10 +21,21 @@ import { Strategy } from 'passport';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
 
+// @public (undocumented)
+export interface AuthOwnershipResolutionExtensionPoint {
+  // (undocumented)
+  setAuthOwnershipResolver(ownershipResolver: AuthOwnershipResolver): void;
+}
+
+// @public (undocumented)
+export const authOwnershipResolutionExtensionPoint: ExtensionPoint<AuthOwnershipResolutionExtensionPoint>;
+
 // @public
 export interface AuthOwnershipResolver {
   // (undocumented)
-  getOwnershipEntityRefs(entity: Entity): Promise<string[]>;
+  resolveOwnershipEntityRefs(entity: Entity): Promise<{
+    ownershipEntityRefs: string[];
+  }>;
 }
 
 // @public @deprecated (undocumented)
@@ -68,8 +79,6 @@ export interface AuthProviderRouteHandlers {
 export interface AuthProvidersExtensionPoint {
   // (undocumented)
   registerProvider(options: AuthProviderRegistrationOptions): void;
-  // (undocumented)
-  setAuthOwnershipResolver(ownershipResolver: AuthOwnershipResolver): void;
 }
 
 // @public (undocumented)

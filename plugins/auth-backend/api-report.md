@@ -195,12 +195,6 @@ export function createOriginFilter(config: Config): (origin: string) => boolean;
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public
-export class DefaultAuthOwnershipResolver implements AuthOwnershipResolver {
-  // (undocumented)
-  getOwnershipEntityRefs(entity: Entity): Promise<string[]>;
-}
-
-// @public
 export const defaultAuthProviderFactories: {
   [providerId: string]: AuthProviderFactory_2;
 };
@@ -222,6 +216,9 @@ export type GcpIapResult = GcpIapResult_2;
 
 // @public @deprecated
 export type GcpIapTokenInfo = GcpIapTokenInfo_2;
+
+// @public
+export function getDefaultOwnershipEntityRefs(entity: Entity): string[];
 
 // @public (undocumented)
 export type GithubOAuthResult = {
