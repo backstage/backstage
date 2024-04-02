@@ -18,6 +18,7 @@ import { InputError } from '@backstage/errors';
 import { isChildPath } from '@backstage/backend-common';
 import { join as joinPath, normalize as normalizePath } from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { JsonSpec } from './types';
 
 /**
  * @public
@@ -107,6 +108,30 @@ export const parseRepoUrl = (
   }
 
   return { host, owner, repo, organization, workspace, project };
+};
+
+/**
+ * @public
+ */
+export const parseJSON = (objectString: string): JsonSpec => {
+  let parsed;
+  try {
+    parsed = JSON.parse(objectString);
+  } catch (error) {
+    throw new InputError(`Invalid object passed to publisher, ${error}`);
+  }
+
+  const results: JsonSpec = {};
+
+  if (parsed) {
+    for (const key in parsed) {
+      if (parsed.hasOwnProperty(key)) {
+        results[key] = parsed[key];
+      }
+    }
+  }
+
+  return { ...results };
 };
 
 function checkRequiredParams(repoUrl: URL, ...params: string[]) {

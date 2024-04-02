@@ -105,3 +105,9 @@ export type TemplateAction<
   };
   handler: (ctx: ActionContext<TActionInput, TActionOutput>) => Promise<void>;
 };
+
+export type JsonType = {
+  [key: string]: string;
+};
+
+export type JsonSpec = JsonType;
