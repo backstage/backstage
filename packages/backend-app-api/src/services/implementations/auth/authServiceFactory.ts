@@ -22,16 +22,13 @@ import {
   BackstageServicePrincipal,
   BackstageNonePrincipal,
   BackstageUserPrincipal,
-  IdentityService,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
-import {
-  IdentityApiGetIdentityRequest,
-  TokenTypes,
-} from '@backstage/plugin-auth-node';
-import { base64url, decodeJwt } from 'jose';
+import { TokenTypes } from '@backstage/plugin-auth-node';
+import { base64url, decodeJwt, decodeProtectedHeader } from 'jose';
+import { UserTokenHandler } from './UserTokenHandler';
 
 /** @internal */
 export type InternalBackstageCredentials<TPrincipal = unknown> =
@@ -115,7 +112,8 @@ class DefaultAuthService implements AuthService {
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {
-    const { typ, sub, aud } = decodeJwt(token);
+    const { typ } = decodeProtectedHeader(token);
+    const { sub, aud } = decodeJwt(token);
 
     if (typ) {
       switch (typ) {
@@ -244,13 +242,13 @@ class DefaultAuthService implements AuthService {
     const limitedUserToken = [
       base64url.encode(
         JSON.stringify({
+          typ: 'vnd.backstage.limited-user',
           alg: header.alg,
           kid: header.kid,
         }),
       ),
       base64url.encode(
         JSON.stringify({
-          typ: 'vnd.backstage.limited-user',
           sub: payload.sub,
           ent: payload.ent,
           iat: payload.iat,

@@ -383,14 +383,14 @@ export type CookieConfigurer = (ctx: {
  */
 export const TokenTypes = Object.freeze({
   user: Object.freeze({
-    typClaim: 'vnd.backstage.user',
+    typParam: 'vnd.backstage.user',
     audClaim: 'backstage',
   }),
   limitedUser: Object.freeze({
-    typClaim: 'vnd.backstage.limited-user',
+    typParam: 'vnd.backstage.limited-user',
   }),
   service: Object.freeze({
-    typClaim: 'vnd.backstage.service',
+    typParam: 'vnd.backstage.service',
   }),
 });
 
@@ -400,11 +400,6 @@ export const TokenTypes = Object.freeze({
  * @public
  */
 export interface BackstageTokenPayload {
-  /**
-   * The token type
-   */
-  typ: typeof TokenTypes.user.typClaim;
-
   /**
    * The issuer of the token, currently the discovery URL of the auth backend
    */
@@ -452,11 +447,6 @@ export interface BackstageTokenPayload {
  * @public
  */
 export interface BackstageUserIdentityProofPayload {
-  /**
-   * The token type
-   */
-  typ: typeof TokenTypes.limitedUser.typClaim;
-
   /**
    * The entity ref of the user
    */

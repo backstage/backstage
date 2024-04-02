@@ -115,14 +115,17 @@ export class TokenFactory implements TokenIssuer {
     const signingKey = await importJWK(key);
 
     const uip = await this.createUserIdentityClaim({
-      header: { alg: key.alg, kid: key.kid },
-      payload: { typ: TokenTypes.limitedUser.typClaim, sub, ent, iat, exp },
+      header: {
+        typ: TokenTypes.limitedUser.typParam,
+        alg: key.alg,
+        kid: key.kid,
+      },
+      payload: { sub, ent, iat, exp },
       key: signingKey,
     });
 
     const claims: BackstageTokenPayload = {
       ...additionalClaims,
-      typ: TokenTypes.user.typClaim,
       iss,
       sub,
       ent,
@@ -133,7 +136,11 @@ export class TokenFactory implements TokenIssuer {
     };
 
     const token = await new SignJWT(claims)
-      .setProtectedHeader({ alg: key.alg, kid: key.kid })
+      .setProtectedHeader({
+        typ: TokenTypes.user.typParam,
+        alg: key.alg,
+        kid: key.kid,
+      })
       .sign(signingKey);
 
     if (token.length > MAX_TOKEN_LENGTH) {
@@ -243,6 +250,7 @@ export class TokenFactory implements TokenIssuer {
   // JWS.
   private async createUserIdentityClaim(options: {
     header: {
+      typ: string;
       alg: string;
       kid?: string;
     };
@@ -257,12 +265,12 @@ export class TokenFactory implements TokenIssuer {
     // then append the signature.
 
     const header = {
+      typ: options.header.typ,
       alg: options.header.alg,
       ...(options.header.kid ? { kid: options.header.kid } : {}),
     };
 
     const payload = {
-      typ: options.payload.typ,
       sub: options.payload.sub,
       ent: options.payload.ent,
       iat: options.payload.iat,
