@@ -27,7 +27,10 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
-import { IdentityApiGetIdentityRequest } from '@backstage/plugin-auth-node';
+import {
+  IdentityApiGetIdentityRequest,
+  TokenTypes,
+} from '@backstage/plugin-auth-node';
 import { base64url, decodeJwt } from 'jose';
 
 /** @internal */
@@ -112,7 +115,21 @@ class DefaultAuthService implements AuthService {
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {
-    const { sub, aud } = decodeJwt(token);
+    const { typ, sub, aud } = decodeJwt(token);
+
+    if (typ) {
+      switch (typ) {
+        case TokenTypes.user.typClaim:
+          return this.#authenticateFullUser(token);
+        case TokenTypes.limitedUser.typClaim:
+          throw new AuthenticationError(
+            'Limited user tokens are not supported',
+          );
+
+        default:
+          throw new AuthenticationError("Invalid token 'typ' claim");
+      }
+    }
 
     // Legacy service-to-service token
     if (sub === 'backstage-server' && !aud) {
@@ -121,6 +138,10 @@ class DefaultAuthService implements AuthService {
     }
 
     // User Backstage token
+    return this.#authenticateFullUser(token);
+  }
+
+  async #authenticateFullUser(token: string) {
     const identity = await this.identity.getIdentity({
       request: {
         headers: { authorization: `Bearer ${token}` },
