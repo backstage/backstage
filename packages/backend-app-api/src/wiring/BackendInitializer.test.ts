@@ -60,6 +60,16 @@ const baseFactories = [
   loggerServiceFactory(),
 ];
 
+const testPlugin = createBackendPlugin({
+  pluginId: 'test',
+  register(reg) {
+    reg.registerInit({
+      deps: {},
+      async init() {},
+    });
+  },
+})();
+
 describe('BackendInitializer', () => {
   it('should initialize root scoped services', async () => {
     const rootFactory = jest.fn();
@@ -99,6 +109,7 @@ describe('BackendInitializer', () => {
     });
     const init = new BackendInitializer(baseFactories);
 
+    init.add(testPlugin);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -172,6 +183,7 @@ describe('BackendInitializer', () => {
 
   it('should forward errors when modules fail to start', async () => {
     const init = new BackendInitializer([]);
+    init.add(testPlugin);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -222,6 +234,7 @@ describe('BackendInitializer', () => {
 
   it('should reject duplicate modules', async () => {
     const init = new BackendInitializer([]);
+    init.add(testPlugin);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -262,6 +275,7 @@ describe('BackendInitializer', () => {
         factory: () => new MockLogger(),
       })(),
     ]);
+    init.add(testPlugin);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -308,9 +322,10 @@ describe('BackendInitializer', () => {
         },
       })(),
     );
+    init.add(testPlugin);
     init.add(
       createBackendModule({
-        pluginId: 'test-b',
+        pluginId: 'test',
         moduleId: 'mod',
         register(reg) {
           reg.registerInit({
@@ -321,7 +336,7 @@ describe('BackendInitializer', () => {
       })(),
     );
     await expect(init.start()).rejects.toThrow(
-      "Illegal dependency: Module 'mod' for plugin 'test-b' attempted to depend on extension point 'a' for plugin 'test-a'. Extension points can only be used within their plugin's scope.",
+      "Illegal dependency: Module 'mod' for plugin 'test' attempted to depend on extension point 'a' for plugin 'test-a'. Extension points can only be used within their plugin's scope.",
     );
   });
 });
