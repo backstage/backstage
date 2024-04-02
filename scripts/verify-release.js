@@ -16,13 +16,7 @@
  * limitations under the License.
  */
 
-// This script is used to determine whether a particular commit has changes
-// that should lead to a release. It is run as part of the main master build
-// to determine whether the release flow should be run as well.
-//
-// It has the following output which can be used later in GitHub actions:
-//
-// needs_release = 'true' | 'false'
+// This script is used to verify that the branch that we're patching is correct, and that we're not patching branches like master
 
 const { execFile: execFileCb } = require('child_process');
 const { resolve: resolvePath } = require('path');
