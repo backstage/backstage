@@ -33,7 +33,6 @@ export default async function createPlugin(
     eventBroker: env.eventBroker,
   });
   builder.addEntityProvider(demoProvider);
-  builder.setEventBroker(env.eventBroker);
 
   const { processingEngine, router } = await builder.build();
 
