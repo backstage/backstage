@@ -741,7 +741,8 @@ potentially search and group templates by these tags.
 ### `metadata.annotations.[backstage.io/time-saved]` [optional]
 
 An ISO 8601 duration representing the approximate amount of time saved when
-someone uses this template.
+someone uses this template (e.g. `PT8H` to mean "8 hours saved" or `PT15M` to
+mean "15 minutes saved").
 
 Can be used in combination with the `backstage.io/source-template` annotation,
 or analytics data, to calculate how much time has been saved through the use

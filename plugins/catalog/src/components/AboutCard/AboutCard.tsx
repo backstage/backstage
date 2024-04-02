@@ -27,6 +27,7 @@ import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import {
+  AppIcon,
   HeaderIconLinkRow,
   IconLinkVerticalProps,
   InfoCardVariants,
@@ -54,7 +55,6 @@ import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 import { AboutContent } from './AboutContent';
 import CachedIcon from '@material-ui/icons/Cached';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import CopyIcon from '@material-ui/icons/FileCopy';
 import DocsIcon from '@material-ui/icons/Description';
 import EditIcon from '@material-ui/icons/Edit';
 import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -248,7 +248,7 @@ export function AboutCard(props: AboutCardProps) {
                   templateName: sourceTemplateRef.name,
                 })}
               >
-                <CopyIcon />
+                <AppIcon id="scaffolder" />
               </IconButton>
             )}
           </>

@@ -326,10 +326,10 @@ describe('<AboutCard />', () => {
     );
 
     await waitFor(() => {
-      const editLink = screen
+      const createSimilarLink = screen
         .getByTitle('Create something similar')
         .closest('a');
-      expect(editLink).toHaveAttribute(
+      expect(createSimilarLink).toHaveAttribute(
         'href',
         '/create/templates/default/foo-template',
       );
