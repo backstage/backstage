@@ -57,7 +57,7 @@ Should your plugin complement the Software Catalog rather than exist as a standa
   - Case Studies
   - Community-Sourced Best Practices
 - **Resource Compendium**
-  - Glossary of Key Terms
+  - Glossary of Key Terms: Expand your understanding of Backstage-related terminology by referring to the [official Backstage Glossary](https://backstage.io/docs/references/glossary).
   - Recommended Reading and Tools
 - **Certification and Learning Pathways**
 
