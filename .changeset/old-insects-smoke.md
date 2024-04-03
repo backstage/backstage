@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend-module-aws-alb-provider': minor
+'@backstage/plugin-auth-backend-module-aws-alb-provider': patch
 ---
 
 Added `authModuleAwsAlbProvider` as a default export.
