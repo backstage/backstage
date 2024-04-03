@@ -110,32 +110,11 @@ export interface BackstageSignInResult {
 }
 
 // @public
-export interface BackstageTokenPayload {
-  [claim: string]: JsonValue;
-  aud: typeof TokenTypes.user.audClaim;
-  ent: string[];
-  exp: number;
-  iat: number;
-  iss: string;
-  sub: string;
-  typ: typeof TokenTypes.user.typClaim;
-  uip: string;
-}
-
-// @public
 export type BackstageUserIdentity = {
   type: 'user';
   userEntityRef: string;
   ownershipEntityRefs: string[];
 };
-
-// @public
-export interface BackstageUserIdentityProofPayload {
-  exp: number;
-  iat: number;
-  sub: string;
-  typ: typeof TokenTypes.limitedUser.typClaim;
-}
 
 // @public (undocumented)
 export type ClientAuthResponse<TProviderInfo> = {
@@ -661,16 +640,16 @@ export type TokenParams = {
 };
 
 // @public
-export const TokenTypes: Readonly<{
+export const tokenTypes: Readonly<{
   user: Readonly<{
-    typClaim: 'vnd.backstage.user';
+    typParam: 'vnd.backstage.user';
     audClaim: 'backstage';
   }>;
   limitedUser: Readonly<{
-    typClaim: 'vnd.backstage.limited-user';
+    typParam: 'vnd.backstage.limited-user';
   }>;
   service: Readonly<{
-    typClaim: 'vnd.backstage.service';
+    typParam: 'vnd.backstage.service';
   }>;
 }>;
 

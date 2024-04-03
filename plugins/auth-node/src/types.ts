@@ -381,7 +381,7 @@ export type CookieConfigurer = (ctx: {
  *
  * @public
  */
-export const TokenTypes = Object.freeze({
+export const tokenTypes = Object.freeze({
   user: Object.freeze({
     typParam: 'vnd.backstage.user',
     audClaim: 'backstage',
@@ -393,77 +393,3 @@ export const TokenTypes = Object.freeze({
     typParam: 'vnd.backstage.service',
   }),
 });
-
-/**
- * The payload contents of a valid Backstage JWT token
- *
- * @public
- */
-export interface BackstageTokenPayload {
-  /**
-   * The issuer of the token, currently the discovery URL of the auth backend
-   */
-  iss: string;
-
-  /**
-   * The entity ref of the user
-   */
-  sub: string;
-
-  /**
-   * The entity refs that the user claims ownership througg
-   */
-  ent: string[];
-
-  /**
-   * A hard coded audience string
-   */
-  aud: typeof TokenTypes.user.audClaim;
-
-  /**
-   * Standard expiry in epoch seconds
-   */
-  exp: number;
-
-  /**
-   * Standard issue time in epoch seconds
-   */
-  iat: number;
-
-  /**
-   * A separate user identity proof that the auth service can convert to a limited user token
-   */
-  uip: string;
-
-  /**
-   * Any other custom claims that the adopter may have added
-   */
-  [claim: string]: JsonValue;
-}
-
-/**
- * The payload contents of a valid Backstage user identity claim token
- *
- * @public
- */
-export interface BackstageUserIdentityProofPayload {
-  /**
-   * The entity ref of the user
-   */
-  sub: string;
-
-  /**
-   * The ownership entity refs of the user
-   */
-  ent?: string[];
-
-  /**
-   * Standard expiry in epoch seconds
-   */
-  exp: number;
-
-  /**
-   * Standard issue time in epoch seconds
-   */
-  iat: number;
-}

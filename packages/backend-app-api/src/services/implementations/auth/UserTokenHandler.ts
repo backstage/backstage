@@ -17,7 +17,7 @@
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
-import { TokenTypes } from '@backstage/plugin-auth-node';
+import { tokenTypes } from '@backstage/plugin-auth-node';
 import {
   base64url,
   createRemoteJWKSet,
@@ -82,18 +82,19 @@ export class UserTokenHandler {
   #getTokenVerificationOptions(token: string): JWTVerifyOptions | undefined {
     const { typ } = decodeProtectedHeader(token);
 
-    if (typ === TokenTypes.user.typParam) {
-      return {
-        algorithms: this.#algorithms,
-        typ: TokenTypes.user.typParam,
-      };
-    }
-
-    if (typ === TokenTypes.limitedUser.typParam) {
+    if (typ === tokenTypes.user.typParam) {
       return {
         algorithms: this.#algorithms,
         requiredClaims: ['iat', 'exp', 'sub'],
-        typ: TokenTypes.limitedUser.typParam,
+        typ: tokenTypes.user.typParam,
+      };
+    }
+
+    if (typ === tokenTypes.limitedUser.typParam) {
+      return {
+        algorithms: this.#algorithms,
+        requiredClaims: ['iat', 'exp', 'sub'],
+        typ: tokenTypes.limitedUser.typParam,
       };
     }
 
@@ -112,6 +113,8 @@ export class UserTokenHandler {
       new TextDecoder().decode(base64url.decode(payloadRaw)),
     );
 
+    // NOTE: The order and properties in both the header and payload must match
+    //       the usage in plugins/auth-backend/src/identity/TokenFactory.ts
     const limitedUserToken = [
       base64url.encode(
         JSON.stringify({

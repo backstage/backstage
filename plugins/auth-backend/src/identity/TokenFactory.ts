@@ -28,16 +28,86 @@ import {
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import {
-  BackstageTokenPayload,
-  BackstageUserIdentityProofPayload,
-  TokenParams,
-  TokenTypes,
-} from '@backstage/plugin-auth-node';
+import { TokenParams, tokenTypes } from '@backstage/plugin-auth-node';
 import { AnyJWK, KeyStore, TokenIssuer } from './types';
+import { JsonValue } from '@backstage/types';
 
 const MS_IN_S = 1000;
 const MAX_TOKEN_LENGTH = 32768; // At 64 bytes per entity ref this still leaves room for about 500 entities
+
+/**
+ * The payload contents of a valid Backstage JWT token
+ *
+ * @internal
+ */
+interface BackstageTokenPayload {
+  /**
+   * The issuer of the token, currently the discovery URL of the auth backend
+   */
+  iss: string;
+
+  /**
+   * The entity ref of the user
+   */
+  sub: string;
+
+  /**
+   * The entity refs that the user claims ownership througg
+   */
+  ent: string[];
+
+  /**
+   * A hard coded audience string
+   */
+  aud: typeof tokenTypes.user.audClaim;
+
+  /**
+   * Standard expiry in epoch seconds
+   */
+  exp: number;
+
+  /**
+   * Standard issue time in epoch seconds
+   */
+  iat: number;
+
+  /**
+   * A separate user identity proof that the auth service can convert to a limited user token
+   */
+  uip: string;
+
+  /**
+   * Any other custom claims that the adopter may have added
+   */
+  [claim: string]: JsonValue;
+}
+
+/**
+ * The payload contents of a valid Backstage user identity claim token
+ *
+ * @internal
+ */
+interface BackstageUserIdentityProofPayload {
+  /**
+   * The entity ref of the user
+   */
+  sub: string;
+
+  /**
+   * The ownership entity refs of the user
+   */
+  ent?: string[];
+
+  /**
+   * Standard expiry in epoch seconds
+   */
+  exp: number;
+
+  /**
+   * Standard issue time in epoch seconds
+   */
+  iat: number;
+}
 
 type Options = {
   logger: LoggerService;
@@ -93,7 +163,7 @@ export class TokenFactory implements TokenIssuer {
 
     const iss = this.issuer;
     const { sub, ent = [sub], ...additionalClaims } = params.claims;
-    const aud = TokenTypes.user.audClaim;
+    const aud = tokenTypes.user.audClaim;
     const iat = Math.floor(Date.now() / MS_IN_S);
     const exp = iat + this.keyDurationSeconds;
 
@@ -116,7 +186,7 @@ export class TokenFactory implements TokenIssuer {
 
     const uip = await this.createUserIdentityClaim({
       header: {
-        typ: TokenTypes.limitedUser.typParam,
+        typ: tokenTypes.limitedUser.typParam,
         alg: key.alg,
         kid: key.kid,
       },
@@ -137,7 +207,7 @@ export class TokenFactory implements TokenIssuer {
 
     const token = await new SignJWT(claims)
       .setProtectedHeader({
-        typ: TokenTypes.user.typParam,
+        typ: tokenTypes.user.typParam,
         alg: key.alg,
         kid: key.kid,
       })

@@ -35,9 +35,7 @@ export type {
   AuthResolverContext,
   BackstageIdentityResponse,
   BackstageSignInResult,
-  BackstageTokenPayload,
   BackstageUserIdentity,
-  BackstageUserIdentityProofPayload,
   ClientAuthResponse,
   CookieConfigurer,
   ProfileInfo,
@@ -46,4 +44,4 @@ export type {
   SignInResolver,
   TokenParams,
 } from './types';
-export { TokenTypes } from './types';
+export { tokenTypes } from './types';

@@ -24,11 +24,7 @@ import {
 } from 'jose';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
-import {
-  BackstageUserIdentityProofPayload,
-  BackstageTokenPayload,
-  TokenTypes,
-} from '@backstage/plugin-auth-node';
+import { tokenTypes } from '@backstage/plugin-auth-node';
 
 const logger = getVoidLogger();
 
@@ -69,14 +65,11 @@ describe('TokenFactory', () => {
     const { keys } = await factory.listPublicKeys();
     const keyStore = createLocalJWKSet({ keys: keys });
 
-    const verifyResult = await jwtVerify<BackstageTokenPayload>(
-      token,
-      keyStore,
-    );
+    const verifyResult = await jwtVerify(token, keyStore);
+    expect(verifyResult.protectedHeader.typ).toBe(tokenTypes.user.typParam);
     expect(verifyResult.payload).toEqual({
-      typ: TokenTypes.user.typClaim,
       iss: 'my-issuer',
-      aud: TokenTypes.user.audClaim,
+      aud: tokenTypes.user.audClaim,
       sub: entityRef,
       ent: [entityRef],
       'x-fancy-claim': 'my special claim',
@@ -92,14 +85,15 @@ describe('TokenFactory', () => {
     const limitedUserToken = [
       base64url.encode(
         JSON.stringify({
+          typ: tokenTypes.limitedUser.typParam,
           alg: verifyResult.protectedHeader.alg,
           kid: verifyResult.protectedHeader.kid!,
         }),
       ),
       base64url.encode(
         JSON.stringify({
-          typ: TokenTypes.limitedUser.typClaim,
           sub: verifyResult.payload.sub,
+          ent: verifyResult.payload.ent,
           iat: verifyResult.payload.iat,
           exp: verifyResult.payload.exp,
         }),
@@ -107,14 +101,13 @@ describe('TokenFactory', () => {
       verifyResult.payload.uip,
     ].join('.');
 
-    const verifyProofResult =
-      await jwtVerify<BackstageUserIdentityProofPayload>(
-        limitedUserToken,
-        keyStore,
-      );
+    const verifyProofResult = await jwtVerify(limitedUserToken, keyStore);
+    expect(verifyProofResult.protectedHeader.typ).toBe(
+      tokenTypes.limitedUser.typParam,
+    );
     expect(verifyProofResult.payload).toEqual({
-      typ: TokenTypes.limitedUser.typClaim,
       sub: entityRef,
+      ent: [entityRef],
       iat: expect.any(Number),
       exp: expect.any(Number),
     });
