@@ -2,7 +2,7 @@
 
 ## Summary
 
-This module installs an entity provider that exports a single entity, your Backstage instance documentation, which merges as many backend plugins as you have defined in the config value `catalog.providers.openapi.plugins`.
+This module installs an entity provider that exports a single entity, your Backstage instance documentation, which merges as many backend plugins as you have defined in the config value `catalog.providers.backstageOpenapi.plugins`.
 
 ## Notes
 
@@ -10,7 +10,7 @@ This module installs an entity provider that exports a single entity, your Backs
 
 ## Installation
 
-To your new backend file, add
+To your new backend file, add:
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(
@@ -18,12 +18,14 @@ backend.add(
 );
 ```
 
-Add a list of plugins to your config like,
+Add a list of plugins (and optionally, a custom name/title) to your config like:
 
 ```yaml title="app-config.yaml"
 catalog:
   providers:
-    openapi:
+    backstageOpenapi:
+      name: 'internal_backstage_api' # Optional
+      title: 'Backstage API' # Optional
       plugins:
         - catalog
         - todo
