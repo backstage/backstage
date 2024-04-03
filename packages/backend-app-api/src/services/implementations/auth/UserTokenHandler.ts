@@ -67,7 +67,7 @@ export class UserTokenHandler {
       this.#keyStore,
       verifyOpts,
     ).catch(e => {
-      throw new AuthenticationError('invalid token', e);
+      throw new AuthenticationError('Invalid token', e);
     });
 
     const userEntityRef = payload.sub;
@@ -98,10 +98,15 @@ export class UserTokenHandler {
       };
     }
 
-    return {
-      algorithms: this.#algorithms,
-      audience: 'backstage',
-    };
+    const { aud } = decodeJwt(token);
+    if (aud === 'backstage') {
+      return {
+        algorithms: this.#algorithms,
+        audience: 'backstage',
+      };
+    }
+
+    return undefined;
   }
 
   createLimitedUserToken(backstageToken: string) {
@@ -113,12 +118,27 @@ export class UserTokenHandler {
       new TextDecoder().decode(base64url.decode(payloadRaw)),
     );
 
+    const tokenType = header.typ;
+
+    // Only new user tokens can be used to create a limited user token. If we
+    // can't create a limited token, or the token is already a limited one, we
+    // return the original token
+    if (!tokenType || tokenType === tokenTypes.limitedUser.typParam) {
+      return { token: backstageToken, expiresAt: new Date(payload.exp * 1000) };
+    }
+
+    if (tokenType !== tokenTypes.user.typParam) {
+      throw new AuthenticationError(
+        'Failed to create limited user token, invalid token type',
+      );
+    }
+
     // NOTE: The order and properties in both the header and payload must match
     //       the usage in plugins/auth-backend/src/identity/TokenFactory.ts
     const limitedUserToken = [
       base64url.encode(
         JSON.stringify({
-          typ: 'vnd.backstage.limited-user',
+          typ: tokenTypes.limitedUser.typParam,
           alg: header.alg,
           kid: header.kid,
         }),
