@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import {
-  BackstageCredentials,
-  LoggerService,
-  PublicKeyStoreService,
-} from '@backstage/backend-plugin-api';
-import { exportJWK, generateKeyPair, JWK, importJWK, SignJWT } from 'jose';
+  decodeJwt,
+  exportJWK,
+  generateKeyPair,
+  JWK,
+  importJWK,
+  SignJWT,
+} from 'jose';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
+import { InternalKey, KeyStore } from './types';
+import { DefaultPublicKeysClient, PublicKeysClient } from './PublicKeysClient';
 
 type Options = {
-  publicKeyStore: PublicKeyStoreService;
+  publicKeyStore: KeyStore;
+  discovery: DiscoveryService;
   logger: LoggerService;
   /** Value of the issuer claim in issued tokens */
   issuer: string;
@@ -42,6 +48,7 @@ type Options = {
 export class PluginTokenHandler {
   private privateKeyPromise?: Promise<JWK>;
   private keyExpiry?: Date;
+  private publicKeysClient: PublicKeysClient;
 
   static create(options: Options) {
     return new PluginTokenHandler(
@@ -49,17 +56,21 @@ export class PluginTokenHandler {
       options.publicKeyStore,
       options.keyDurationSeconds,
       options.algorithm ?? 'ES256',
+      options.discovery,
     );
   }
 
   private constructor(
     readonly logger: LoggerService,
-    readonly publicKeyStore: PublicKeyStoreService,
+    readonly publicKeyStore: KeyStore,
     readonly keyDurationSeconds: number,
     readonly algorithm: string,
-  ) {}
+    discovery: DiscoveryService,
+  ) {
+    this.publicKeysClient = new DefaultPublicKeysClient(discovery);
+  }
 
-  async verifyToken(token: string): Promise<{ subject: string }> {
+  async verifyToken(_token: string): Promise<{ subject: string }> {
     return { subject: 'is me' };
   }
 
@@ -129,7 +140,7 @@ export class PluginTokenHandler {
       console.log(`DEBUG: publicKey=`, publicKey);
       await this.publicKeyStore.addKey({
         id: kid,
-        key: publicKey,
+        key: publicKey as InternalKey,
         expiresAt: keyExpiry,
       });
 

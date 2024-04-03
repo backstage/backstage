@@ -68,4 +68,3 @@ export type {
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
 export type { IdentityService } from './IdentityService';
-export type { PublicKeyStoreService } from './PublicKeyStoreService';

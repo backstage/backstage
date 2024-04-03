@@ -30,6 +30,7 @@ import { decodeJwt } from 'jose';
 import { UserTokenHandler } from './UserTokenHandler';
 import { PluginTokenHandler } from './PluginTokenHandler';
 import { JsonObject } from '@backstage/types';
+import { DatabaseKeyStore } from './DatabaseKeyStore';
 
 /** @internal */
 export type InternalBackstageCredentials<TPrincipal = unknown> =
@@ -248,26 +249,21 @@ export const authServiceFactory = createServiceFactory({
     logger: coreServices.rootLogger,
     discovery: coreServices.discovery,
     plugin: coreServices.pluginMetadata,
+    database: coreServices.database,
     // Re-using the token manager makes sure that we use the same generated keys for
     // development as plugins that have not yet been migrated. It's important that this
     // keeps working as long as there are plugins that have not been migrated to the
     // new auth services in the new backend system.
     tokenManager: coreServices.tokenManager,
-    publicKeyStore: coreServices.publicKeyStore,
   },
-  async factory({
-    config,
-    discovery,
-    plugin,
-    tokenManager,
-    logger,
-    publicKeyStore,
-  }) {
+  async factory({ config, discovery, plugin, tokenManager, logger, database }) {
     const disableDefaultAuthPolicy = Boolean(
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',
       ),
     );
+
+    const publicKeyStore = await DatabaseKeyStore.create({ database });
     return new DefaultAuthService(
       tokenManager,
       new UserTokenHandler({ discovery }),

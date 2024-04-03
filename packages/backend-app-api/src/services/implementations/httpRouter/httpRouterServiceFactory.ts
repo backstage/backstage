@@ -23,13 +23,7 @@ import { Handler } from 'express';
 import PromiseRouter from 'express-promise-router';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
-import { JsonObject } from '@backstage/types';
 import { createAuthIntegrationRouter } from '../auth';
-
-export interface PublicKeyStoreService {
-  listKeys(): Promise<JsonObject[]>;
-  addKey(options: { key: JsonObject; expiresAt: Date }): Promise<void>;
-}
 
 /**
  * @public
@@ -53,7 +47,6 @@ export const httpRouterServiceFactory = createServiceFactory(
       rootHttpRouter: coreServices.rootHttpRouter,
       auth: coreServices.auth,
       httpAuth: coreServices.httpAuth,
-      publicKeyStore: coreServices.publicKeyStore,
     },
     async factory({
       auth,

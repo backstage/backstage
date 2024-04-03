@@ -25,7 +25,6 @@ export * from './identity';
 export * from './lifecycle';
 export * from './logger';
 export * from './permissions';
-export * from './publicKeyStore';
 export * from './rootHttpRouter';
 export * from './rootLifecycle';
 export * from './rootLogger';

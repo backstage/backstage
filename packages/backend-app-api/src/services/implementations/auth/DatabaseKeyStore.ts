@@ -14,16 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  DatabaseService,
-  PublicKeyStoreService,
-  coreServices,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
 import { JsonObject } from '@backstage/types';
 import { resolvePackagePath } from '@backstage/backend-common';
+import { KeyStore } from './types';
 
 const MIGRATIONS_TABLE = 'backstage_backend_public_keys__knex_migrations';
 const TABLE = 'backstage_backend_public_keys__keys';
@@ -35,7 +31,7 @@ type Row = {
 };
 
 /** @internal */
-export class DatabaseKeyStore implements PublicKeyStoreService {
+export class DatabaseKeyStore implements KeyStore {
   private constructor(private readonly client: Knex) {}
 
   static async create(options: { database: DatabaseService }) {
@@ -71,6 +67,7 @@ export class DatabaseKeyStore implements PublicKeyStoreService {
 
     return {
       keys: rows.map(row => ({
+        id: row.id,
         key: JSON.parse(row.key),
         expiresAt: parseDate(row.expires_at),
       })),
@@ -81,16 +78,6 @@ export class DatabaseKeyStore implements PublicKeyStoreService {
   //   await this.client(TABLE).delete().whereIn('kid', kids);
   // }
 }
-
-export const publicKeyStoreServiceFactory = createServiceFactory({
-  service: coreServices.publicKeyStore,
-  deps: {
-    database: coreServices.database,
-  },
-  async factory({ database }) {
-    return DatabaseKeyStore.create({ database });
-  },
-});
 
 function parseDate(date: string | Date) {
   const parsedDate =

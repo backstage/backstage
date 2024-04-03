@@ -14,4 +14,17 @@
  * limitations under the License.
  */
 
-export { publicKeyStoreServiceFactory } from './publicKeyStoreServiceFactory';
+import { JsonObject } from '@backstage/types';
+
+export type KeyStore = {
+  addKey(key: KeyPayload): Promise<any>;
+  listKeys(): Promise<{ keys: KeyPayload[] }>;
+};
+
+export type KeyPayload = {
+  id: string;
+  key: InternalKey;
+  expiresAt: Date;
+};
+
+export type InternalKey = JsonObject & { kid: string };
