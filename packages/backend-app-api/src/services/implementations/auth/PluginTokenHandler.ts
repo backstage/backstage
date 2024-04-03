@@ -26,7 +26,8 @@ import {
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { InternalKey, KeyStore } from './types';
-import { DefaultPublicKeysClient, PublicKeysClient } from './PublicKeysClient';
+import { AuthenticationError } from '@backstage/errors';
+import { createRemoteJWKSet, jwtVerify } from 'jose';
 
 type Options = {
   publicKeyStore: KeyStore;
@@ -48,7 +49,7 @@ type Options = {
 export class PluginTokenHandler {
   private privateKeyPromise?: Promise<JWK>;
   private keyExpiry?: Date;
-  private publicKeysClient: PublicKeysClient;
+  private jwksMap: Record<string, ReturnType<typeof createRemoteJWKSet>> = {};
 
   static create(options: Options) {
     return new PluginTokenHandler(
@@ -65,13 +66,30 @@ export class PluginTokenHandler {
     readonly publicKeyStore: KeyStore,
     readonly keyDurationSeconds: number,
     readonly algorithm: string,
-    discovery: DiscoveryService,
-  ) {
-    this.publicKeysClient = new DefaultPublicKeysClient(discovery);
-  }
+    readonly discovery: DiscoveryService,
+  ) {}
 
-  async verifyToken(_token: string): Promise<{ subject: string }> {
-    return { subject: 'is me' };
+  async verifyToken(token: string): Promise<{ subject: string }> {
+    const claims = decodeJwt(token);
+    const pluginId = claims.sub;
+    if (!pluginId) {
+      throw new AuthenticationError('Invalid subject');
+    }
+
+    const JWKS = await this.getJWKS(pluginId);
+    try {
+      const { payload, protectedHeader } = await jwtVerify(token, JWKS, {
+        issuer: 'backstage-plugin',
+        // TODO(vinzscam): add audience verification
+      });
+
+      console.log('payload', payload);
+      console.log('protected header', protectedHeader);
+      return { subject: 'is me' };
+    } catch (e) {
+      // TODO(vinzscam): here we need to handle errors properly
+      throw e;
+    }
   }
 
   async issueToken(options: {
@@ -101,6 +119,16 @@ export class PluginTokenHandler {
     return { token };
   }
 
+  private async getJWKS(pluginId: string) {
+    if (!this.jwksMap[pluginId]) {
+      const url = `${await this.discovery.getBaseUrl(
+        pluginId,
+      )}/.backstage/auth/v1/jwks.json`;
+      console.log('fetching from', url);
+      this.jwksMap[pluginId] = createRemoteJWKSet(new URL(url));
+    }
+    return this.jwksMap[pluginId];
+  }
   private async getKey(): Promise<JWK> {
     // Make sure that we only generate one key at a time
     if (this.privateKeyPromise) {

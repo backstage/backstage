@@ -31,6 +31,7 @@ import { UserTokenHandler } from './UserTokenHandler';
 import { PluginTokenHandler } from './PluginTokenHandler';
 import { JsonObject } from '@backstage/types';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
+import { KeyStore } from './types';
 
 /** @internal */
 export type InternalBackstageCredentials<TPrincipal = unknown> =
@@ -110,10 +111,13 @@ class DefaultAuthService implements AuthService {
     private readonly userTokenHandler: UserTokenHandler,
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
+    private readonly publicKeyStore: KeyStore,
     private readonly pluginTokenHandler: PluginTokenHandler,
   ) {}
-  listPublicServiceKeys(): Promise<{ keys: JsonObject[] }> {
-    throw new Error('Method not implemented.');
+
+  async listPublicServiceKeys(): Promise<{ keys: JsonObject[] }> {
+    const { keys } = await this.publicKeyStore.listKeys();
+    return { keys: keys.map(({ key }) => key) };
   }
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
@@ -256,6 +260,7 @@ export const authServiceFactory = createServiceFactory({
     // new auth services in the new backend system.
     tokenManager: coreServices.tokenManager,
   },
+
   async factory({ config, discovery, plugin, tokenManager, logger, database }) {
     const disableDefaultAuthPolicy = Boolean(
       config.getOptionalBoolean(
@@ -264,16 +269,19 @@ export const authServiceFactory = createServiceFactory({
     );
 
     const publicKeyStore = await DatabaseKeyStore.create({ database });
+
     return new DefaultAuthService(
       tokenManager,
       new UserTokenHandler({ discovery }),
       plugin.getId(),
       disableDefaultAuthPolicy,
+      publicKeyStore,
       PluginTokenHandler.create({
         keyDurationSeconds: 60 * 60,
         issuer: `plugin:${plugin.getId()}`,
         logger,
         publicKeyStore,
+        discovery,
       }),
     );
   },
