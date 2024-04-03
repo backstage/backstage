@@ -80,30 +80,34 @@ export class UserTokenHandler {
   }
 
   #getTokenVerificationOptions(token: string): JWTVerifyOptions | undefined {
-    const { typ } = decodeProtectedHeader(token);
+    try {
+      const { typ } = decodeProtectedHeader(token);
 
-    if (typ === tokenTypes.user.typParam) {
-      return {
-        algorithms: this.#algorithms,
-        requiredClaims: ['iat', 'exp', 'sub'],
-        typ: tokenTypes.user.typParam,
-      };
-    }
+      if (typ === tokenTypes.user.typParam) {
+        return {
+          algorithms: this.#algorithms,
+          requiredClaims: ['iat', 'exp', 'sub'],
+          typ: tokenTypes.user.typParam,
+        };
+      }
 
-    if (typ === tokenTypes.limitedUser.typParam) {
-      return {
-        algorithms: this.#algorithms,
-        requiredClaims: ['iat', 'exp', 'sub'],
-        typ: tokenTypes.limitedUser.typParam,
-      };
-    }
+      if (typ === tokenTypes.limitedUser.typParam) {
+        return {
+          algorithms: this.#algorithms,
+          requiredClaims: ['iat', 'exp', 'sub'],
+          typ: tokenTypes.limitedUser.typParam,
+        };
+      }
 
-    const { aud } = decodeJwt(token);
-    if (aud === 'backstage') {
-      return {
-        algorithms: this.#algorithms,
-        audience: 'backstage',
-      };
+      const { aud } = decodeJwt(token);
+      if (aud === tokenTypes.user.audClaim) {
+        return {
+          algorithms: this.#algorithms,
+          audience: tokenTypes.user.audClaim,
+        };
+      }
+    } catch {
+      /* ignore */
     }
 
     return undefined;
