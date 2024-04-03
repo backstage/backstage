@@ -18,15 +18,16 @@ import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
+import { InputError, assertError } from '@backstage/errors';
 import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { emitterEventNames } from '@octokit/webhooks';
-import { assertError, InputError } from '@backstage/errors';
+
 import { Octokit } from 'octokit';
-import { getOctokitOptions } from './helpers';
+import { emitterEventNames } from '@octokit/webhooks';
 import { examples } from './githubWebhook.examples';
+import { getOctokitOptions } from './helpers';
 
 /**
  * Creates new action that creates a webhook for a repository on GitHub.
@@ -147,6 +148,19 @@ export function createGithubWebhookAction(options: {
           token: providedToken,
         }),
       );
+
+      if (ctx.isDryRun) {
+        ctx.logger.info(
+          `Dry run arguments: ${{
+            repoUrl,
+            webhookUrl,
+            webhookSecret,
+            events,
+            ...ctx.input,
+          }}`,
+        );
+        return;
+      }
 
       try {
         const insecure_ssl = insecureSsl ? '1' : '0';
