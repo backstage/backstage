@@ -24,7 +24,9 @@ const { promises: fs } = require('fs');
 const { promisify } = require('util');
 const semver = require('semver');
 
-const baseRef = process.env.GITHUB_BASE_REF || 'master';
+const baseRef = process.env.GITHUB_BASE_REF;
+console.log(`DEBUG: baseRef=`, baseRef);
+console.log(`DEBUG: process.env=`, process.env);
 
 const execFile = promisify(execFileCb);
 
@@ -48,6 +50,10 @@ async function runPlain(cmd, ...args) {
 async function main() {
   process.cwd(resolvePath(__dirname, '..'));
 
+  if (!baseRef) {
+    throw new Error('Missing GITHUB_BASE_REF');
+  }
+
   const oldContent = await runPlain(
     'git',
     'show',
@@ -55,15 +61,18 @@ async function main() {
   );
 
   const { version: oldVersion } = JSON.parse(oldContent);
+  console.log(`DEBUG: oldVersion=`, oldVersion);
   const { version: newVersion } = JSON.parse(
     await fs.readFile('package.json', 'utf8'),
   );
+  console.log(`DEBUG: newVersion=`, newVersion);
 
   if (oldVersion === newVersion) {
     return;
   }
 
   const versionDiff = semver.diff(oldVersion, newVersion);
+  console.log(`DEBUG: versionDiff=`, versionDiff);
   if (baseRef === 'master' && versionDiff === 'patch') {
     throw new Error('Refusing to release a patch bump on the master branch');
   }
