@@ -228,9 +228,7 @@ export class BackendInitializer {
       }
     }
 
-    const allPluginIds = [
-      ...new Set([...pluginInits.keys(), ...moduleInits.keys()]),
-    ];
+    const allPluginIds = [...pluginInits.keys()];
 
     // All plugins are initialized in parallel
     await Promise.all(
