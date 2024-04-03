@@ -333,7 +333,7 @@ export const createPublishGithubPullRequestAction = (
         );
         ctx.output('targetBranchName', branchName);
         ctx.output('remoteUrl', repoUrl);
-        ctx.output('pullRequestNumber', 42);
+        ctx.output('pullRequestNumber', 43);
         return;
       }
 
