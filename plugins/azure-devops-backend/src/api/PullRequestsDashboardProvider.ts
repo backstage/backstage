@@ -45,10 +45,10 @@ export class PullRequestsDashboardProvider {
     return provider;
   }
 
-  public async readTeams(teamsLimit?: number): Promise<void> {
+  public async readTeams(limit?: number): Promise<void> {
     this.logger.info('Reading teams.');
 
-    let teams = await this.azureDevOpsApi.getAllTeams(teamsLimit);
+    let teams = await this.azureDevOpsApi.getAllTeams(limit);
 
     // This is used to filter out the default Azure Devops project teams.
     teams = teams.filter(team =>
@@ -137,9 +137,9 @@ export class PullRequestsDashboardProvider {
     );
   }
 
-  public async getAllTeams(teamsLimit?: number): Promise<Team[]> {
+  public async getAllTeams(limit?: number): Promise<Team[]> {
     if (!this.teams.size) {
-      const maxTeams = teamsLimit ?? DEFAULT_TEAMS_LIMIT;
+      const maxTeams = limit ?? DEFAULT_TEAMS_LIMIT;
       await this.readTeams(maxTeams);
     }
 

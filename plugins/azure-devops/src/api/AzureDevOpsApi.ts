@@ -67,7 +67,7 @@ export interface AzureDevOpsApi {
     teamsLimit?: number,
   ): Promise<DashboardPullRequest[]>;
 
-  getAllTeams(teamsLimit?: number): Promise<Team[]>;
+  getAllTeams(limit?: number): Promise<Team[]>;
 
   getUserTeamIds(userId: string): Promise<string[]>;
 

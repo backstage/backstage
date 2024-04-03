@@ -274,12 +274,8 @@ export async function createRouter(
   });
 
   router.get('/all-teams', async (req, res) => {
-    const teamsLimit = req.query.teamsLimit
-      ? Number(req.query.teamsLimit)
-      : undefined;
-    const allTeams = await pullRequestsDashboardProvider.getAllTeams(
-      teamsLimit,
-    );
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const allTeams = await pullRequestsDashboardProvider.getAllTeams(limit);
     res.status(200).json(allTeams);
   });
 

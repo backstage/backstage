@@ -56,7 +56,7 @@ export class AzureDevOpsApi {
     },
   ): AzureDevOpsApi;
   // (undocumented)
-  getAllTeams(teamsLimit?: number): Promise<Team[]>;
+  getAllTeams(limit?: number): Promise<Team[]>;
   // (undocumented)
   getBuildDefinitions(
     projectName: string,

@@ -135,10 +135,10 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     return this.get<DashboardPullRequest[]>(urlSegment);
   }
 
-  public getAllTeams(teamsLimit?: number): Promise<Team[]> {
+  public getAllTeams(limit?: number): Promise<Team[]> {
     const queryString = new URLSearchParams();
-    if (teamsLimit) {
-      queryString.append('teamsLimit', teamsLimit.toString());
+    if (limit) {
+      queryString.append('limit', limit.toString());
     }
     let urlSegment = 'all-teams';
     if (queryString.toString()) {

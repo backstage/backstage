@@ -65,7 +65,7 @@ export type AssignedToUserFilter = BaseFilter &
 // @public (undocumented)
 export interface AzureDevOpsApi {
   // (undocumented)
-  getAllTeams(teamsLimit?: number): Promise<Team[]>;
+  getAllTeams(limit?: number): Promise<Team[]>;
   // (undocumented)
   getBuildRuns(
     projectName: string,
@@ -127,7 +127,7 @@ export const azureDevOpsApiRef: ApiRef<AzureDevOpsApi>;
 export class AzureDevOpsClient implements AzureDevOpsApi {
   constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi });
   // (undocumented)
-  getAllTeams(teamsLimit?: number): Promise<Team[]>;
+  getAllTeams(limit?: number): Promise<Team[]>;
   // (undocumented)
   getBuildRuns(
     projectName: string,
