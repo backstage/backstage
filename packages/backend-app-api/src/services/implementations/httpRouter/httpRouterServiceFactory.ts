@@ -45,21 +45,23 @@ export interface HttpRouterFactoryOptions {
 export const httpRouterServiceFactory = createServiceFactory(
   (options?: HttpRouterFactoryOptions) => ({
     service: coreServices.httpRouter,
+    initialization: 'always',
     deps: {
       plugin: coreServices.pluginMetadata,
       config: coreServices.rootConfig,
       lifecycle: coreServices.lifecycle,
       rootHttpRouter: coreServices.rootHttpRouter,
+      auth: coreServices.auth,
       httpAuth: coreServices.httpAuth,
       publicKeyStore: coreServices.publicKeyStore,
     },
     async factory({
+      auth,
       httpAuth,
       config,
       plugin,
       rootHttpRouter,
       lifecycle,
-      publicKeyStore,
     }) {
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
@@ -73,7 +75,7 @@ export const httpRouterServiceFactory = createServiceFactory(
       });
 
       router.use(createLifecycleMiddleware({ lifecycle }));
-      router.use(createAuthIntegrationRouter({ publicKeyStore }));
+      router.use(createAuthIntegrationRouter({ auth }));
       router.use(credentialsBarrier.middleware);
 
       return {

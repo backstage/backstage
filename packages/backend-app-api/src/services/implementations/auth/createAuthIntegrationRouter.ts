@@ -13,17 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PublicKeyStoreService } from '@backstage/backend-plugin-api';
+import { AuthService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import Router from 'express-promise-router';
 
 export function createAuthIntegrationRouter(options: {
-  publicKeyStore: PublicKeyStoreService;
+  auth: AuthService;
 }): express.Router {
   const router = Router();
 
   router.get('/.backstage/auth/v1/jwks.json', async (_req, res) => {
-    res.json({ keys: await options.publicKeyStore.listKeys() });
+    const { keys } = await options.auth.listPublicServiceKeys();
+    res.json({ keys });
   });
 
   return router;

@@ -24,12 +24,12 @@ import {
   BackstageUserPrincipal,
   coreServices,
   createServiceFactory,
-  DatabaseService,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 import { decodeJwt } from 'jose';
 import { UserTokenHandler } from './UserTokenHandler';
 import { PluginTokenHandler } from './PluginTokenHandler';
+import { JsonObject } from '@backstage/types';
 
 /** @internal */
 export type InternalBackstageCredentials<TPrincipal = unknown> =
@@ -111,6 +111,9 @@ class DefaultAuthService implements AuthService {
     private readonly disableDefaultAuthPolicy: boolean,
     private readonly pluginTokenHandler: PluginTokenHandler,
   ) {}
+  listPublicServiceKeys(): Promise<{ keys: JsonObject[] }> {
+    throw new Error('Method not implemented.');
+  }
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {

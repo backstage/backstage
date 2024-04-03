@@ -55,7 +55,7 @@ backend.add(
           rootLifecycle: coreServices.rootLifecycle,
           auth: coreServices.auth,
           discovery: coreServices.discovery,
-          httpRouter: coreServices.httpRouter,
+          // httpRouter: coreServices.httpRouter,
         },
         async init({ rootLifecycle, auth, discovery }) {
           rootLifecycle.addStartupHook(async () => {
