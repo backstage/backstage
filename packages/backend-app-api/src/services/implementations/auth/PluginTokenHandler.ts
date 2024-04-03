@@ -83,9 +83,12 @@ export class PluginTokenHandler {
         // TODO(vinzscam): add audience verification
       });
 
+      if (!payload.sub) {
+        throw new AuthenticationError('Missing subject');
+      }
       console.log('payload', payload);
       console.log('protected header', protectedHeader);
-      return { subject: 'is me' };
+      return { subject: payload.sub };
     } catch (e) {
       // TODO(vinzscam): here we need to handle errors properly
       throw e;
@@ -124,7 +127,6 @@ export class PluginTokenHandler {
       const url = `${await this.discovery.getBaseUrl(
         pluginId,
       )}/.backstage/auth/v1/jwks.json`;
-      console.log('fetching from', url);
       this.jwksMap[pluginId] = createRemoteJWKSet(new URL(url));
     }
     return this.jwksMap[pluginId];
