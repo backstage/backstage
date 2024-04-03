@@ -1,5 +1,12 @@
 # example-backend-next
 
+## 0.0.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-backend@0.16.4
+
 ## 0.0.24
 
 ### Patch Changes
