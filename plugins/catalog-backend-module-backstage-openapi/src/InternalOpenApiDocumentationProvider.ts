@@ -229,13 +229,19 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     const pluginsToMerge = this.config.getStringArray(
       'catalog.providers.backstageOpenapi.plugins',
     );
+    const name = this.config.getOptionalString(
+      'catalog.providers.backstageOpenapi.name',
+    );
+    const title = this.config.getOptionalString(
+      'catalog.providers.backstageOpenapi.title',
+    );
     logger.info(`Loading specs from from ${pluginsToMerge}.`);
     const documentationEntity: ApiEntity = {
       apiVersion: 'backstage.io/v1beta1',
       kind: 'API',
       metadata: {
-        name: 'INTERNAL_instance_openapi_doc',
-        title: 'Your Backstage Instance documentation',
+        name: name ?? 'INTERNAL_instance_openapi_doc',
+        title: title ?? 'Your Backstage Instance documentation',
         annotations: {
           [ANNOTATION_LOCATION]:
             'internal-package:@backstage/plugin-catalog-backend-module-backstage-openapi',
