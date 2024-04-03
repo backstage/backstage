@@ -146,6 +146,25 @@ repository itself. If the URL points to a folder, it is important that it is
 suffixed with a `'/'` in order for relative path resolution to work
 consistently.
 
+### backstage.io/source-template
+
+```yaml
+# Example:
+metadata:
+  annotations:
+    backstage.io/source-template: template:default/create-react-app-template
+```
+
+Represents the entity ref of the Scaffolder template that was originally used
+to create the given entity. Useful to power "create something similar"
+experiences, as well as to track adherence to software standards across the
+Catalog.
+
+Note that this value is only automatically added to an entity when the
+`catalog:write` action is used to create the `catalog-info.yaml` file. It is
+otherwise the template author's responsibility to ensure that any entity
+definition included as part of the template contains this annotation.
+
 ### jenkins.io/job-full-name
 
 ```yaml
