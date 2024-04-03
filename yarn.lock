@@ -27585,6 +27585,7 @@ __metadata:
     "@backstage/plugin-sonarqube-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
     "@backstage/plugin-todo-backend": "workspace:^"
+    express-promise-router: ^4.1.0
   languageName: unknown
   linkType: soft
 
