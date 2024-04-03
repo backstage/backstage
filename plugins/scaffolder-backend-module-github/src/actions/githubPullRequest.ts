@@ -321,6 +321,22 @@ export const createPublishGithubPullRequestAction = (
         ]),
       );
 
+      if (ctx.isDryRun) {
+        ctx.logger.info(
+          `Dry run arguments: ${{
+            repoUrl,
+            branchName,
+            title,
+            description,
+            ...ctx.input,
+          }}`,
+        );
+        ctx.output('targetBranchName', branchName);
+        ctx.output('remoteUrl', repoUrl);
+        ctx.output('pullRequestNumber', 42);
+        return;
+      }
+
       try {
         const createOptions: createPullRequest.Options = {
           owner,
