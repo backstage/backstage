@@ -192,13 +192,17 @@ The following backend service interfaces are added as part of this proposal.
 ```ts
 // TODO - We may want to add an additional wrapping here with interfaces for Notification and NotificationParameters
 
-export type NotificationRecipients =
+export type NotificationRecipients[] =
   | {
       type: 'entity';
       entityRef: string | string[]; // typically a user or group entity, otherwise `spec.owner` of the entity/entities
     }
   | {
       type: 'broadcast'; // all users
+    }
+  | {
+      type: 'external'; // a value recognized by a NotificationProcessor for an external destination such as a Slack channel
+      externalRef: string;
     };
 
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
@@ -227,7 +231,7 @@ export type Notification = {
 };
 
 interface SendNotificationRequest {
-  recipients: NotificationRecipients;
+  recipients: NotificationRecipients[];
   payload: NotificationPayload;
 }
 
