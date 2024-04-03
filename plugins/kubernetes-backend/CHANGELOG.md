@@ -1,5 +1,13 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.16.4
+
+### Patch Changes
+
+- ba366f2: Fixed a crash reading `credentials` from `undefined`.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.1.10
+
 ## 0.16.3
 
 ### Patch Changes
