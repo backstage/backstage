@@ -40,6 +40,7 @@ techdocs:
     mkdocs:
       # (Optional)  techdocs.generator.omitTechdocsCoreMkdocsPlugin can be used to disable automatic addition of techdocs-core plugin to the mkdocs.yaml files.
       # Defaults to false, which means that the techdocs-core plugin is always added to the mkdocs file.
+      # NOTE: If this is set to false, you need to install the `mkdocs-techdocs-core` package to your environment.
       omitTechdocsCorePlugin: false
 
       # (Optional and not recommended) Configures the techdocs generator to
