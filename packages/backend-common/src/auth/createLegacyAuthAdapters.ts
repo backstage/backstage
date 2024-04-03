@@ -259,10 +259,6 @@ class HttpAuthCompat implements HttpAuthService {
   async issueUserCookie(_res: Response): Promise<{ expiresAt: Date }> {
     return { expiresAt: new Date(Date.now() + 3600_000) };
   }
-
-  removeUserCookie(res: Response): void {
-    res.clearCookie('backstage-auth');
-  }
 }
 
 export class UserInfoCompat implements UserInfoService {

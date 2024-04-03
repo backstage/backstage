@@ -168,12 +168,13 @@ export async function createRouter(
 
   const publicDistDir = resolvePath(appDistDir, 'public');
 
-  const enablePublicEntryPoint = await fs.pathExists(publicDistDir);
+  const enablePublicEntryPoint =
+    (await fs.pathExists(publicDistDir)) && auth && httpAuth;
 
   if (enablePublicEntryPoint && auth && httpAuth) {
     const publicRouter = Router();
 
-    publicRouter.use(createCookieAuthRefreshMiddleware({ httpAuth }));
+    publicRouter.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
 
     publicRouter.use(async (req, _res, next) => {
       const credentials = await httpAuth.credentials(req, {
@@ -214,6 +215,7 @@ export async function createRouter(
 
     publicRouter.use(
       await createEntryPointRouter({
+        appMode: 'public',
         logger: logger.child({ entry: 'public' }),
         rootDir: publicDistDir,
         assetStore: assetStore?.withNamespace('public'),
@@ -226,6 +228,7 @@ export async function createRouter(
 
   router.use(
     await createEntryPointRouter({
+      appMode: enablePublicEntryPoint ? 'protected' : 'public',
       logger: logger.child({ entry: 'main' }),
       rootDir: appDistDir,
       assetStore,
@@ -243,6 +246,7 @@ async function createEntryPointRouter({
   rootDir,
   assetStore,
   staticFallbackHandler,
+  appMode,
   appConfigs,
   injectedConfigPath,
 }: {
@@ -250,6 +254,7 @@ async function createEntryPointRouter({
   rootDir: string;
   assetStore?: StaticAssetsStore;
   staticFallbackHandler?: express.Handler;
+  appMode: 'public' | 'protected';
   appConfigs?: AppConfig[];
   injectedConfigPath?: string;
 }) {
@@ -303,14 +308,21 @@ async function createEntryPointRouter({
       },
     }),
   );
+
+  const indexHtmlContent = Buffer.from(
+    (await fs.readFile(resolvePath(rootDir, 'index.html'), 'utf8')).replace(
+      /<head>/,
+      `<head><meta name="backstage-app-mode" content="${appMode}" />`,
+    ),
+    'utf8',
+  );
+
   router.get('/*', (_req, res) => {
-    res.sendFile(resolvePath(rootDir, 'index.html'), {
-      headers: {
-        // The Cache-Control header instructs the browser to not cache the index.html since it might
-        // link to static assets from recently deployed versions.
-        'cache-control': CACHE_CONTROL_NO_CACHE,
-      },
-    });
+    // The Cache-Control header instructs the browser to not cache the index.html since it might
+    // link to static assets from recently deployed versions.
+    res.setHeader('Cache-Control', CACHE_CONTROL_NO_CACHE);
+    res.setHeader('Content-Type', 'text/html;charset=utf-8');
+    res.send(indexHtmlContent);
   });
 
   return router;

@@ -1,6 +1,6 @@
 ---
 id: enable-public-entry
-title: Enabling public entry point
+title: Enabling a public entry point
 description: A guide for how to experiment with public and protected Backstage app bundles
 ---
 
@@ -21,11 +21,14 @@ With that, Backstage's cli and backend will detect public entry point and serve 
 
 - The tutorial will only work for those using backstage-cli to build and serve their Backstage app.
 
-## Trying out this feature
+## Step-by-step
 
-1. Add a `index-public-experimental.tsx` to your app `src` folder;
+1. Create a `index-public-experimental.tsx` in your app `src` folder;
+   :::note
+   The filename is a convention, so it is not currently configurable.
+   :::
 
-2. Prepare an unauthenticated version of your application. This will be the public entry point for your site:
+2. This file is the public entry point for your application, and it should only contain what unauthenticated users should see:
 
    ```tsx title="in packages/app/src/index-public-experimental.tsx"
    import React from 'react';
@@ -42,7 +45,7 @@ With that, Backstage's cli and backend will detect public entry point and serve 
      createApiFactory,
      discoveryApiRef,
    } from '@backstage/core-plugin-api';
-   import { RedirectToRoot } from '@backstage/plugin-auth-react';
+   import { CookieAuthRootRedirect } from '@backstage/plugin-auth-react';
    import { providers } from '../src/identityProviders';
    import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
 
@@ -76,7 +79,7 @@ With that, Backstage's cli and backend will detect public entry point and serve 
        <OAuthRequestDialog />
        <AppRouter>
          {/* This is a special component that does the magic to redirect users to access the home page of your authenticated application version */}
-         <RedirectToRoot />
+         <CookieAuthRootRedirect />
        </AppRouter>
      </>,
    );
@@ -84,35 +87,12 @@ With that, Backstage's cli and backend will detect public entry point and serve 
    ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
    ```
 
-3) Then ensure your main entry is also protected by the experimental app provider, as shown in the following example:
+3. The frontend will handle cookie refreshing automatically, so you don't have to worry about it;
 
-```tsx title="in packages/app/src/index-public-experimental.tsx"
-// ...
-export default app.createRoot(
-  <>
-    <AlertDisplay transientTimeoutMs={2500} />
-    <OAuthRequestDialog />
-    <AppRouter>
-      {/* For now, this is just a temporary solution to ensure the user remains logged in properly and has access to the main app content. */}
-      <ExperimentalAppProtection>
-        <VisitListener />
-        <Root>{routes}</Root>
-      </ExperimentalAppProtection>
-    </AppRouter>
-  </>,
-);
-```
+4. You're now ready to build and serve your frontend and backend as usual;
 
-4. You're now ready to build your front-end app:
+5. After that, access your backend index endpoint to see the public app being served (note that only a minimal app is being served).
 
-```sh
-yarn workspace example-app build
-```
+6. Log in and you will be redirected to the main app home page (check the protected bundle being served from the app-backend after the redirect).
 
-5. And also serve it from your Backstage app backend:
-
-```sh
-yarn start-backend:next
-```
-
-6. Finally, access http://localhost:7007 to see the public app being served (note that only a minimal app is being served). Log in and you will be redirected to the main app home page (check the protected bundle being served from the app-backend after the redirect).
+That's it!

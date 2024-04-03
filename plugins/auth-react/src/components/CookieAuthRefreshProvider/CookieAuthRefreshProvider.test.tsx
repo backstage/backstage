@@ -119,7 +119,7 @@ describe('CookieAuthRefreshProvider', () => {
 
     await waitFor(() =>
       expect(fetchApiMock.fetch).toHaveBeenCalledWith(
-        'http://localhost:7000/techdocs/api/.backstage/v1-cookie',
+        'http://localhost:7000/techdocs/api/.backstage/auth/v1/cookie',
         { credentials: 'include' },
       ),
     );

@@ -42,6 +42,7 @@ import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations
 import { BrowserRouter } from 'react-router-dom';
 import { RouteTracker } from '../routing/RouteTracker';
 import { getBasePath } from '../routing/getBasePath';
+import { AppMode } from '@backstage/plugin-auth-react';
 
 export const AppRoot = createExtension({
   namespace: 'app',
@@ -190,7 +191,7 @@ export function AppRouter(props: AppRouterProps) {
     return (
       <RouterComponent>
         <RouteTracker routeObjects={routeObjects} />
-        {children}
+        <AppMode>{children}</AppMode>
       </RouterComponent>
     );
   }
@@ -202,7 +203,7 @@ export function AppRouter(props: AppRouterProps) {
         component={SignInPageComponent}
         appIdentityProxy={appIdentityProxy}
       >
-        {children}
+        <AppMode>{children}</AppMode>
       </SignInPageWrapper>
     </RouterComponent>
   );

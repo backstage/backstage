@@ -62,9 +62,9 @@ describe('appPlugin', () => {
       fetch(`http://localhost:${server.port()}/api/app/derp.html`).then(res =>
         res.text(),
       ),
-    ).resolves.toBe('winning');
+    ).resolves.toMatch('winning');
     await expect(
       fetch(`http://localhost:${server.port()}`).then(res => res.text()),
-    ).resolves.toBe('winning');
+    ).resolves.toMatch('winning');
   });
 });

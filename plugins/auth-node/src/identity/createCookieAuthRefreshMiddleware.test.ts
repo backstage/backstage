@@ -23,8 +23,9 @@ describe('createCookieAuthRefreshMiddleware', () => {
   let app: express.Express;
 
   beforeAll(async () => {
+    const auth = mockServices.auth();
     const httpAuth = mockServices.httpAuth();
-    const router = createCookieAuthRefreshMiddleware({ httpAuth });
+    const router = createCookieAuthRefreshMiddleware({ auth, httpAuth });
     app = express().use(router);
   });
 
@@ -33,7 +34,7 @@ describe('createCookieAuthRefreshMiddleware', () => {
   });
 
   it('should issue the user cookie', async () => {
-    const response = await request(app).get('/.backstage/v1-cookie');
+    const response = await request(app).get('/.backstage/auth/v1/cookie');
     expect(response.status).toBe(200);
     expect(response.header['set-cookie'][0]).toMatch(
       `backstage-auth=${mockCredentials.limitedUser.token()}`,
@@ -41,7 +42,7 @@ describe('createCookieAuthRefreshMiddleware', () => {
   });
 
   it('should remove the user cookie', async () => {
-    const response = await request(app).delete('/.backstage/v1-cookie');
+    const response = await request(app).delete('/.backstage/auth/v1/cookie');
     expect(response.status).toBe(200);
     expect(response.header['set-cookie'][0]).toMatch('backstage-auth=');
   });

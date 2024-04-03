@@ -864,7 +864,7 @@ describe('Integration Test', () => {
 
     await waitFor(() =>
       expect(fetchApiMock.fetch).toHaveBeenCalledWith(
-        'http://localhost:7007/app/.backstage/v1-cookie',
+        'http://localhost:7007/app/.backstage/auth/v1/cookie',
         { method: 'DELETE' },
       ),
     );

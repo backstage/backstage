@@ -29,6 +29,7 @@ import { isReactRouterBeta } from './isReactRouterBeta';
 import { RouteTracker } from '../routing/RouteTracker';
 import { Route, Routes } from 'react-router-dom';
 import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
+import { AppMode } from '@backstage/plugin-auth-react';
 
 /**
  * Get the app base path from the configured app baseUrl.
@@ -145,7 +146,10 @@ export function AppRouter(props: AppRouterProps) {
         <RouterComponent>
           <RouteTracker routeObjects={routeObjects} />
           <Routes>
-            <Route path={mountPath} element={<>{props.children}</>} />
+            <Route
+              path={mountPath}
+              element={<AppMode>{props.children}</AppMode>}
+            />
           </Routes>
         </RouterComponent>
       );
@@ -154,7 +158,7 @@ export function AppRouter(props: AppRouterProps) {
     return (
       <RouterComponent basename={basePath}>
         <RouteTracker routeObjects={routeObjects} />
-        {props.children}
+        <AppMode>{props.children}</AppMode>
       </RouterComponent>
     );
   }
@@ -168,7 +172,10 @@ export function AppRouter(props: AppRouterProps) {
           appIdentityProxy={appIdentityProxy}
         >
           <Routes>
-            <Route path={mountPath} element={<>{props.children}</>} />
+            <Route
+              path={mountPath}
+              element={<AppMode>{props.children}</AppMode>}
+            />
           </Routes>
         </SignInPageWrapper>
       </RouterComponent>
@@ -182,7 +189,7 @@ export function AppRouter(props: AppRouterProps) {
         component={SignInPageComponent}
         appIdentityProxy={appIdentityProxy}
       >
-        {props.children}
+        <AppMode>{props.children}</AppMode>
       </SignInPageWrapper>
     </RouterComponent>
   );

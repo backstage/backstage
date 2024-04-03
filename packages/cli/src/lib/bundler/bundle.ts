@@ -70,11 +70,7 @@ export async function buildBundle(options: BuildOptions) {
         `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
       ),
     );
-    configs.push(
-      await createConfig(publicPaths, {
-        ...commonConfigOptions,
-      }),
-    );
+    configs.push(await createConfig(publicPaths, commonConfigOptions));
   }
 
   const isCi = yn(process.env.CI, { default: false });

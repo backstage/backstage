@@ -2,4 +2,4 @@
 '@backstage/plugin-auth-react': patch
 ---
 
-Update the default cookie base path and create a experimental redirect to root and protected app components, the components should be used only when the public entry is enabled.
+Update the default cookie base path and create a experimental redirect to root and app mode components, the components authenticate and keep a cookie refresh loop on the client side.

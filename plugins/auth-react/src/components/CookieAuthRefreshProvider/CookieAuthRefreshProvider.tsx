@@ -16,9 +16,9 @@
 
 import React, { ReactNode } from 'react';
 import { ErrorPanel } from '@backstage/core-components';
-import { useApp } from '@backstage/core-plugin-api';
 import { Button } from '@material-ui/core';
 import { useCookieAuthRefresh } from '../../hooks';
+import { CompatAppProgress } from '../CompatAppProgress/CompatAppProgress';
 
 /**
  * @public
@@ -41,13 +41,11 @@ export function CookieAuthRefreshProvider(
   props: CookieAuthRefreshProviderProps,
 ): JSX.Element {
   const { children, ...options } = props;
-  const app = useApp();
-  const { Progress } = app.getComponents();
 
   const result = useCookieAuthRefresh(options);
 
   if (result.status === 'loading') {
-    return <Progress />;
+    return <CompatAppProgress />;
   }
 
   if (result.status === 'error') {

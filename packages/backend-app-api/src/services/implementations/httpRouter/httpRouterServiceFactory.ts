@@ -93,7 +93,7 @@ export const httpRouterServiceFactory = createServiceFactory(
           ) {
             // Only add the cookie refresh middleware once
             hasRegistedCookieAuthRefreshMiddleware = true;
-            router.use(createCookieAuthRefreshMiddleware({ httpAuth }));
+            router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
           }
         },
       };

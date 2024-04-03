@@ -14,9 +14,4 @@
  * limitations under the License.
  */
 
-// The index file in ./components/ is typically responsible for selecting
-// which components are public API and should be exported from the package.
-
-export * from './CookieAuthRootRedirect';
-export * from './CookieAuthRefreshProvider';
-export * from './AppMode';
+export { CookieAuthRootRedirect } from './CookieAuthRootRedirect';

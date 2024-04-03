@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { ExperimentalAppProtection } from './ExperimentalAppProtection';
+export { CompatAppProgress } from './CompatAppProgress';

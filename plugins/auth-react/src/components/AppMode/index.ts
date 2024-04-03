@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { RedirectToRoot } from './RedirectToRoot';
+export { AppMode } from './AppMode';

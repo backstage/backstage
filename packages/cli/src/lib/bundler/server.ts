@@ -216,12 +216,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       );
     }
     const compiler = publicPaths
-      ? webpack([
-          config,
-          await createConfig(publicPaths, {
-            ...commonConfigOptions,
-          }),
-        ])
+      ? webpack([config, await createConfig(publicPaths, commonConfigOptions)])
       : webpack(config);
 
     webpackServer = new WebpackDevServer(

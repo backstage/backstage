@@ -181,6 +181,13 @@ class DefaultHttpAuthService implements HttpAuthService {
 
     let credentials: BackstageCredentials<BackstageUserPrincipal>;
     if (options?.credentials) {
+      if (this.#auth.isPrincipal(options.credentials, 'none')) {
+        res.clearCookie(
+          BACKSTAGE_AUTH_COOKIE,
+          await this.#getCookieOptions(res.req),
+        );
+        return { expiresAt: new Date() };
+      }
       if (!this.#auth.isPrincipal(options.credentials, 'user')) {
         throw new AuthenticationError(
           'Refused to issue cookie for non-user principal',
@@ -196,16 +203,6 @@ class DefaultHttpAuthService implements HttpAuthService {
       return { expiresAt: existingExpiresAt };
     }
 
-    const originHeader = res.req.headers.origin;
-    const origin =
-      !originHeader || originHeader === 'null' ? undefined : originHeader;
-
-    // https://backstage.example.com/api/catalog
-    const externalBaseUrlStr = await this.#discovery.getExternalBaseUrl(
-      this.#pluginId,
-    );
-    const externalBaseUrl = new URL(origin ?? externalBaseUrlStr);
-
     const { token, expiresAt } = await this.#auth.getLimitedUserToken(
       credentials,
     );
@@ -213,20 +210,41 @@ class DefaultHttpAuthService implements HttpAuthService {
       throw new Error('User credentials is unexpectedly missing token');
     }
 
+    res.cookie(BACKSTAGE_AUTH_COOKIE, token, {
+      ...(await this.#getCookieOptions(res.req)),
+      expires: expiresAt,
+    });
+
+    return { expiresAt };
+  }
+
+  async #getCookieOptions(req: Request): Promise<{
+    domain: string;
+    httpOnly: true;
+    secure: boolean;
+    priority: 'high';
+    sameSite: 'none' | 'lax';
+  }> {
+    const originHeader = req.headers.origin;
+    const origin =
+      !originHeader || originHeader === 'null' ? undefined : originHeader;
+
+    const externalBaseUrlStr = await this.#discovery.getExternalBaseUrl(
+      this.#pluginId,
+    );
+    const externalBaseUrl = new URL(origin ?? externalBaseUrlStr);
+
     const secure =
       externalBaseUrl.protocol === 'https:' ||
       externalBaseUrl.hostname === 'localhost';
 
-    res.cookie(BACKSTAGE_AUTH_COOKIE, token, {
+    return {
       domain: externalBaseUrl.hostname,
       httpOnly: true,
-      expires: expiresAt,
       secure,
       priority: 'high',
       sameSite: secure ? 'none' : 'lax',
-    });
-
-    return { expiresAt };
+    };
   }
 
   async #existingCookieExpiration(req: Request): Promise<Date | undefined> {
@@ -253,10 +271,6 @@ class DefaultHttpAuthService implements HttpAuthService {
       }
       throw error;
     }
-  }
-
-  removeUserCookie(res: Response): void {
-    res.clearCookie(BACKSTAGE_AUTH_COOKIE);
   }
 }
 

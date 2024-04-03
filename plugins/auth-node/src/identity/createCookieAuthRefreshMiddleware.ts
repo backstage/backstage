@@ -14,19 +14,20 @@
  * limitations under the License.
  */
 
-import { HttpAuthService } from '@backstage/backend-plugin-api';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 
-const WELL_KNOWN_COOKIE_PATH_V1 = '/.backstage/v1-cookie';
+const WELL_KNOWN_COOKIE_PATH_V1 = '/.backstage/auth/v1/cookie';
 
 /**
  * @public
  * Creates a middleware that can be used to refresh the cookie for the user.
  */
 export function createCookieAuthRefreshMiddleware(options: {
+  auth: AuthService;
   httpAuth: HttpAuthService;
 }) {
-  const { httpAuth } = options;
+  const { auth, httpAuth } = options;
   const router = Router();
 
   // Endpoint that sets the cookie for the user
@@ -37,7 +38,8 @@ export function createCookieAuthRefreshMiddleware(options: {
 
   // Endpoint that removes the cookie for the user
   router.delete(WELL_KNOWN_COOKIE_PATH_V1, async (_, res) => {
-    httpAuth.removeUserCookie(res);
+    const credentials = await auth.getNoneCredentials();
+    await httpAuth.issueUserCookie(res, { credentials });
     res.send(200);
   });
 

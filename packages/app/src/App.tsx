@@ -108,7 +108,6 @@ import { DevToolsPage } from '@backstage/plugin-devtools';
 import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { NotificationsPage } from '@backstage/plugin-notifications';
-import { ExperimentalAppProtection } from '@backstage/plugin-auth-react';
 
 const app = createApp({
   apis,
@@ -283,10 +282,8 @@ export default app.createRoot(
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
     <AppRouter>
-      <ExperimentalAppProtection>
-        <VisitListener />
-        <Root>{routes}</Root>
-      </ExperimentalAppProtection>
+      <VisitListener />
+      <Root>{routes}</Root>
     </AppRouter>
   </>,
 );

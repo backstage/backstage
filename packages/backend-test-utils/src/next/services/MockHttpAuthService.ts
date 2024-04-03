@@ -140,8 +140,4 @@ export class MockHttpAuthService implements HttpAuthService {
 
     return { expiresAt: new Date(Date.now() + 3600_000) };
   }
-
-  removeUserCookie(res: Response): void {
-    res.clearCookie(MOCK_AUTH_COOKIE);
-  }
 }

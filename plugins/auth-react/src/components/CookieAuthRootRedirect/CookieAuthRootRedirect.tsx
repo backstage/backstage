@@ -22,7 +22,7 @@ import { useAsync, useMountEffect } from '@react-hookz/web';
  * @public
  * A component that redirects to the root of the app after a successful sign-in.
  */
-export function RedirectToRoot() {
+export function CookieAuthRootRedirect() {
   const identityApi = useApi(identityApiRef);
 
   const [state, actions] = useAsync(async () => {

@@ -18,9 +18,9 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { identityApiRef } from '@backstage/core-plugin-api';
-import { RedirectToRoot } from './RedirectToRoot';
+import { CookieAuthRootRedirect } from './CookieAuthRootRedirect';
 
-describe('RedirectToRoot', () => {
+describe('CookieAuthRootRedirect', () => {
   const identityApiMock = { getCredentials: jest.fn() };
 
   beforeEach(() => {
@@ -32,7 +32,7 @@ describe('RedirectToRoot', () => {
 
     await renderInTestApp(
       <TestApiProvider apis={[[identityApiRef, identityApiMock]]}>
-        <RedirectToRoot />
+        <CookieAuthRootRedirect />
       </TestApiProvider>,
     );
 
@@ -50,7 +50,7 @@ describe('RedirectToRoot', () => {
 
     await renderInTestApp(
       <TestApiProvider apis={[[identityApiRef, identityApiMock]]}>
-        <RedirectToRoot />
+        <CookieAuthRootRedirect />
       </TestApiProvider>,
     );
 
