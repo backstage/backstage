@@ -59,7 +59,7 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger, reader, config, permissions } = options;
 
-  if (config.getString('azureDevOps.token')) {
+  if (config.getOptionalString('azureDevOps.token')) {
     logger.warn(
       "The 'azureDevOps.token' has been deprecated, use 'integrations.azure' instead, for more details see: https://backstage.io/docs/integrations/azure/locations",
     );
