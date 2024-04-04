@@ -306,6 +306,20 @@ export type DatabaseManagerOptions = {
 };
 
 // @public
+export interface DockerAuthentication {
+  // (undocumented)
+  auth?: string;
+  // (undocumented)
+  email?: string;
+  // (undocumented)
+  password?: string;
+  // (undocumented)
+  serveraddress?: string;
+  // (undocumented)
+  username?: string;
+}
+
+// @public
 export class DockerContainerRunner implements ContainerRunner {
   constructor(options: { dockerClient: Docker });
   // (undocumented)
@@ -740,6 +754,7 @@ export type RunContainerOptions = {
   envVars?: Record<string, string>;
   pullImage?: boolean;
   defaultUser?: boolean;
+  authentication?: DockerAuthentication;
 };
 
 export { SearchOptions };
