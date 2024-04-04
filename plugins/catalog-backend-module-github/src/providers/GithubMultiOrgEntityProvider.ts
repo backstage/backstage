@@ -208,6 +208,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       orgs: options.orgs,
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
+      events: options.events,
     });
 
     provider.schedule(options.schedule);

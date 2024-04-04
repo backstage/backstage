@@ -169,6 +169,7 @@ export class GithubOrgEntityProvider
         DefaultGithubCredentialsProvider.fromIntegrations(integrations),
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
+      events: options.events,
     });
 
     provider.schedule(options.schedule);
