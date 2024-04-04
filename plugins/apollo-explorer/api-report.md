@@ -24,7 +24,6 @@ export const apolloExplorerPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
-  {},
   {}
 >;
 
