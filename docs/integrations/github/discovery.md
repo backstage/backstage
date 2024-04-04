@@ -73,8 +73,8 @@ You can decide between the following options (extensible):
 
 Please follow the installation instructions at
 
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md>
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [event router by `events-backend-module-github`](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md)
 
 Additionally, you need to decide how you want to receive events from external sources like
 

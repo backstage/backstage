@@ -46,9 +46,9 @@ You need to decide how you want to receive events from external sources like
 
 Further documentation:
 
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md>
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md>
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+- [via Bitbucket Cloud](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md)
 
 ### Installation with Legacy Backend System
 
@@ -81,8 +81,8 @@ export default async function createPlugin(
 
 Please follow the installation instructions at
 
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md>
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via Bitbucket Cloud](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-bitbucket-cloud/README.md)
 
 Additionally, you need to decide how you want to receive events from external sources like
 

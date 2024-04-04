@@ -18,8 +18,12 @@
 
 /** @type{import('prism-react-renderer').PrismTheme} **/
 // @ts-ignore
-const prismTheme = require('prism-react-renderer/themes/vsDark');
-prismTheme.plain.backgroundColor = '#232323';
+
+import { themes } from 'prism-react-renderer';
+import type * as Preset from '@docusaurus/preset-classic';
+// '/themes/vsDark'
+const backstageTheme = themes.vsDark
+backstageTheme.plain.backgroundColor = '#232323';
 
 /** @type {import('@docusaurus/types').Config} */
 module.exports = {
@@ -48,8 +52,7 @@ module.exports = {
   onBrokenMarkdownLinks: 'log',
   presets: [
     [
-      '@docusaurus/preset-classic',
-      /** @type {import('@docusaurus/preset-classic').Options} */
+      'classic',
       {
         docs: {
           editUrl: 'https://github.com/backstage/backstage/edit/master/docs/',
@@ -65,7 +68,7 @@ module.exports = {
         gtag: {
           trackingID: 'G-KSEVGGNCJW',
         },
-      },
+      } satisfies Preset.Options,
     ],
   ],
   markdown: {
@@ -165,7 +168,6 @@ module.exports = {
     ],
   ],
   themeConfig:
-    /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     {
       colorMode: {
         defaultMode: 'dark',
@@ -300,7 +302,7 @@ module.exports = {
           },
         ],
         copyright:
-          '<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © 2024 Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>',
+          `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: https://www.linuxfoundation.org/trademark-usage</p>`,
       },
       algolia: {
         apiKey: '1f0ba86672ccfc3576faa94583e5b318',
@@ -309,7 +311,7 @@ module.exports = {
         searchParameters: {},
       },
       prism: {
-        theme: prismTheme,
+        theme: backstageTheme,
         // Supported languages: https://prismjs.com/#supported-languages
         // Default languages: https://github.com/FormidableLabs/prism-react-renderer/blob/master/packages/generate-prism-languages/index.ts#L9-L23
         additionalLanguages: ['docker', 'bash'],
@@ -335,5 +337,5 @@ module.exports = {
           },
         ],
       },
-    },
+    } satisfies Preset.ThemeConfig,
 };
