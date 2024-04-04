@@ -149,14 +149,8 @@ export function createGithubWebhookAction(options: {
         }),
       );
 
-      // If this is a dry run, log the arguments and exit
+      // If this is a dry run, log and return
       if (ctx.isDryRun) {
-        const dryRunArgs = {
-          webhookSecret,
-          events,
-          ...ctx.input,
-        };
-
         ctx.logger.info(`Dry run completed`);
         return;
       }
