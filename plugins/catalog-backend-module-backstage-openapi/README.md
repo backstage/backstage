@@ -18,18 +18,22 @@ backend.add(
 );
 ```
 
-Add a list of plugins (and optionally, a custom name/title) to your config like:
+Add a list of plugins and optional entity overrides to your config. For example:
 
 ```yaml title="app-config.yaml"
 catalog:
   providers:
     backstageOpenapi:
-      name: 'internal_backstage_api' # Optional
-      title: 'Backstage API' # Optional
       plugins:
         - catalog
         - todo
         - search
+      entityOverrides: # All optional
+        metadata:
+          name: 'my name'
+          title: 'my title'
+        spec:
+          owner: 'my team'
 ```
 
 We will attempt to load each plugin's OpenAPI spec hosted at `${pluginRoute}/openapi.json`. These are automatically added if you are using `@backstage/backend-openapi-utils`'s `createValidatedOpenApiRouter`.
