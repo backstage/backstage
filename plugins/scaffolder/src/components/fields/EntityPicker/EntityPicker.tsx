@@ -108,7 +108,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
           let entityRef = ref;
           try {
             // Attempt to parse the entity ref into it's full form.
-            entityRef = entityPresentationApi.forEntity(ref).snapshot.entityRef;
+            entityRef = entityPresentationApi.forEntity(ref, {
+              defaultKind,
+              defaultNamespace,
+            }).snapshot.entityRef;
           } catch (err) {
             // If the passed in value isn't an entity ref, do nothing.
           }

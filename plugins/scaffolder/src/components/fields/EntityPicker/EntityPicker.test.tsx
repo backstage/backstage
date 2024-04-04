@@ -16,14 +16,18 @@
 
 import { CATALOG_FILTER_EXISTS } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-
 import { fireEvent, screen } from '@testing-library/react';
 import React from 'react';
 import { EntityPicker } from './EntityPicker';
 import { EntityPickerProps } from './schema';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
+import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
@@ -50,6 +54,7 @@ describe('<EntityPicker />', () => {
     getLocationByRef: jest.fn(),
     removeEntityByUid: jest.fn(),
   } as any;
+
   let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
 
   beforeEach(() => {
@@ -59,7 +64,15 @@ describe('<EntityPicker />', () => {
     ];
 
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
         {children}
       </TestApiProvider>
     );

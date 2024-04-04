@@ -16,11 +16,16 @@
 
 import { type EntityFilterQuery } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { ScaffolderRJSFFieldProps as FieldProps } from '@backstage/plugin-scaffolder-react';
 import React from 'react';
 import { OwnerPicker } from './OwnerPicker';
+import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 
 const makeEntity = (kind: string, namespace: string, name: string): Entity => ({
   apiVersion: 'backstage.io/v1beta1',
@@ -64,7 +69,15 @@ describe('<OwnerPicker />', () => {
     ];
 
     Wrapper = ({ children }: { children?: React.ReactNode }) => (
-      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
         {children}
       </TestApiProvider>
     );

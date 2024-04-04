@@ -225,7 +225,7 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
     },
   ): EntityRefPresentation {
     const { entityRef, kind, entity, needsLoad } =
-      this.#getEntityForInitialRender(entityOrRef);
+      this.#getEntityForInitialRender(entityOrRef, context);
 
     // Make a wrapping helper for rendering
     const render = (options: {
@@ -304,7 +304,13 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
     };
   }
 
-  #getEntityForInitialRender(entityOrRef: Entity | string): {
+  #getEntityForInitialRender(
+    entityOrRef: Entity | string,
+    context?: {
+      defaultKind?: string;
+      defaultNamespace?: string;
+    },
+  ): {
     entity: Entity | undefined;
     kind: string;
     entityRef: string;
@@ -332,10 +338,11 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       this.#renderer.async !== false &&
       this.#loader !== undefined;
 
+    const compoundEntityRef = parseEntityRef(entityOrRef, context);
     return {
       entity: cachedEntity,
-      kind: parseEntityRef(entityOrRef).kind,
-      entityRef: entityOrRef,
+      kind: compoundEntityRef.kind,
+      entityRef: stringifyEntityRef(compoundEntityRef),
       needsLoad,
     };
   }
