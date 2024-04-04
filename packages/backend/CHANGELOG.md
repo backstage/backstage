@@ -1,5 +1,12 @@
 # example-backend
 
+## 0.2.98
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-backend@0.3.3
+
 ## 0.2.97
 
 ### Patch Changes
