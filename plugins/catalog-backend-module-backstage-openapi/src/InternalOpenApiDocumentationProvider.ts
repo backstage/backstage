@@ -229,19 +229,22 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     const pluginsToMerge = this.config.getStringArray(
       'catalog.providers.backstageOpenapi.plugins',
     );
-    const name = this.config.getOptionalString(
-      'catalog.providers.backstageOpenapi.name',
-    );
-    const title = this.config.getOptionalString(
-      'catalog.providers.backstageOpenapi.title',
-    );
-    logger.info(`Loading specs from from ${pluginsToMerge}.`);
+
+    const getOverride = (key: string, fallbackValue: string = '') => {
+      return (
+        this.config.getOptionalString(
+          `catalog.providers.backstageOpenapi.entityOverrides.${key}`,
+        ) ?? fallbackValue
+      );
+    };
+
+    logger.info(`Loading specs from ${pluginsToMerge}.`);
     const documentationEntity: ApiEntity = {
       apiVersion: 'backstage.io/v1beta1',
       kind: 'API',
       metadata: {
-        name: name ?? 'INTERNAL_instance_openapi_doc',
-        title: title ?? 'Your Backstage Instance documentation',
+        name: getOverride('metadata.name', 'backstage_openapi_doc'),
+        title: getOverride('metadata.title', 'Backstage API Documentation'),
         annotations: {
           [ANNOTATION_LOCATION]:
             'internal-package:@backstage/plugin-catalog-backend-module-backstage-openapi',
@@ -250,9 +253,9 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
         },
       },
       spec: {
-        type: 'openapi',
-        lifecycle: 'production',
-        owner: 'backstage',
+        type: getOverride('spec.type', 'openapi'),
+        lifecycle: getOverride('spec.lifecycle', 'production'),
+        owner: getOverride('spec.owner', 'backstage'),
         definition: JSON.stringify(
           await loadSpecs({
             baseUrl: this.config.getString('backend.baseUrl'),
