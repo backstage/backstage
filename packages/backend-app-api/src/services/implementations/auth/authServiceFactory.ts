@@ -181,6 +181,7 @@ class DefaultAuthService implements AuthService {
     onBehalfOf: BackstageCredentials;
     targetPluginId: string;
   }): Promise<{ token: string }> {
+    const { targetPluginId } = options;
     const internalForward = toInternalBackstageCredentials(options.onBehalfOf);
     const { type } = internalForward.principal;
 
@@ -198,11 +199,16 @@ class DefaultAuthService implements AuthService {
     switch (type) {
       // TODO: Check whether the principal is ourselves
       case 'service':
-        return this.pluginTokenHandler.issueToken({
-          pluginId: this.pluginId,
-          targetPluginId: options.targetPluginId,
-        });
-      // return this.tokenManager.getToken();
+        if (
+          await this.pluginTokenHandler.isTargetPluginSupported(targetPluginId)
+        ) {
+          return this.pluginTokenHandler.issueToken({
+            pluginId: this.pluginId,
+            targetPluginId,
+          });
+        }
+        // If the target plugin does not support the new auth service, fall back to using old token format
+        return this.tokenManager.getToken();
       case 'user':
         if (!internalForward.token) {
           throw new Error('User credentials is unexpectedly missing token');

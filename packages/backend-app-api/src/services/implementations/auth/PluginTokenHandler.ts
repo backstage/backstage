@@ -55,6 +55,10 @@ export class PluginTokenHandler {
   private keyExpiry?: Date;
   private jwksMap = new Map<string, JwksClient>();
 
+  // Tracking state for isTargetPluginSupported
+  private supportedTargetPlugins = new Set<string>();
+  private targetPluginInflightChecks = new Map<string, Promise<boolean>>();
+
   static create(options: Options) {
     return new PluginTokenHandler(
       options.logger,
@@ -140,11 +144,61 @@ export class PluginTokenHandler {
     return { token };
   }
 
+  async isTargetPluginSupported(targetPluginId: string): Promise<boolean> {
+    if (this.supportedTargetPlugins.has(targetPluginId)) {
+      return true;
+    }
+    const inFlight = this.targetPluginInflightChecks.get(targetPluginId);
+    if (inFlight) {
+      return inFlight;
+    }
+
+    const doCheck = async () => {
+      try {
+        const res = await fetch(
+          `${await this.discovery.getBaseUrl(
+            targetPluginId,
+          )}/.backstage/auth/v1/jwks.json`,
+        );
+        if (res.status === 404) {
+          return false;
+        }
+
+        if (!res.ok) {
+          throw new Error(`Failed to fetch jwks.json, ${res.status}`);
+        }
+
+        const data = await res.json();
+        if (!data.keys) {
+          throw new Error(`Invalid jwks.json response, missing keys`);
+        }
+
+        this.supportedTargetPlugins.add(targetPluginId);
+        return true;
+      } catch (error) {
+        this.logger.error('Unexpected failure for target JWKS check', error);
+        return false;
+      } finally {
+        this.targetPluginInflightChecks.delete(targetPluginId);
+      }
+    };
+
+    const check = doCheck();
+    this.targetPluginInflightChecks.set(targetPluginId, check);
+    return check;
+  }
+
   private async getJwksClient(pluginId: string) {
-    // TODO(Rugvip): Make this more resilient to forged tokens, making sure we don't fill up the map
     const client = this.jwksMap.get(pluginId);
     if (client) {
       return client;
+    }
+
+    // Double check that the target plugin has a valid JWKS endpoint, otherwise avoid creating a remote key set
+    if (!(await this.isTargetPluginSupported(pluginId))) {
+      throw new AuthenticationError(
+        'Target plugin does not support self-signed tokens',
+      );
     }
 
     const newClient = new JwksClient(async () => {
