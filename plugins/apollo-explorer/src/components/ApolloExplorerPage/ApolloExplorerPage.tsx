@@ -41,7 +41,12 @@ export type EndpointProps = {
   };
 };
 
-export type authCallback = (options: {
+/**
+ * Export types to be used with {@link @backstage/apollo-explorer#ApolloExplorerPage}.
+ *
+ * @public
+ */
+export type AuthCallback = (options: {
   apiHolder: ApiHolder;
 }) => Promise<string>;
 
@@ -49,7 +54,7 @@ type Props = {
   title?: string | undefined;
   subtitle?: string | undefined;
   endpoints: EndpointProps[];
-  authCallback: authCallback;
+  authCallback?: AuthCallback;
 };
 
 export const ApolloExplorerPage = (props: Props) => {
@@ -63,7 +68,9 @@ export const ApolloExplorerPage = (props: Props) => {
       <Content noPadding>
         <ApolloExplorerBrowser
           endpoints={endpoints}
-          authCallback={() => authCallback({ apiHolder })}
+          authCallback={
+            authCallback ? () => authCallback({ apiHolder }) : undefined
+          }
         />
       </Content>
     </Page>
