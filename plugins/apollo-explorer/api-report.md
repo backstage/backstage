@@ -15,9 +15,8 @@ import { RouteRef } from '@backstage/core-plugin-api';
 export const ApolloExplorerPage: (props: {
   title?: string | undefined;
   subtitle?: string | undefined;
-  endpoints:
-    | EndpointProps[]
-    | ((options: { apiHolder: ApiHolder }) => Promise<EndpointProps[]>);
+  endpoints: EndpointProps[];
+  authCallback?: AuthCallback | undefined;
 }) => JSX_2.Element;
 
 // @public
@@ -25,8 +24,14 @@ export const apolloExplorerPlugin: BackstagePlugin<
   {
     root: RouteRef<undefined>;
   },
+  {},
   {}
 >;
+
+// @public
+export type AuthCallback = (options: {
+  apiHolder: ApiHolder;
+}) => Promise<string>;
 
 // @public
 export type EndpointProps = {
