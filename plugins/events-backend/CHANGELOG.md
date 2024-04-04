@@ -1,5 +1,11 @@
 # @backstage/plugin-events-backend
 
+## 0.3.3
+
+### Patch Changes
+
+- 33248fa: Allow unauthenticated requests for HTTP ingress.
+
 ## 0.3.2
 
 ### Patch Changes

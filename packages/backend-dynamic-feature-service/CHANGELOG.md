@@ -1,5 +1,12 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.2.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-backend@0.3.3
+
 ## 0.2.7
 
 ### Patch Changes
