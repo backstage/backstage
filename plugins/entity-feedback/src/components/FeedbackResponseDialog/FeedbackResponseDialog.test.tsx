@@ -58,7 +58,7 @@ describe('FeedbackResponseDialog', () => {
   it('allows customization of the dialog title', async () => {
     const rendered = await render();
     expect(
-      rendered.getByText('Please provide feedback on what can be improved'),
+      rendered.getByText('Tell us what could be better'),
     ).toBeInTheDocument();
 
     const customRendered = await render({ feedbackDialogTitle: 'Test Title' });
@@ -69,9 +69,7 @@ describe('FeedbackResponseDialog', () => {
     const rendered = await render();
     expect(rendered.getByText('Incorrect info')).toBeInTheDocument();
     expect(rendered.getByText('Missing info')).toBeInTheDocument();
-    expect(
-      rendered.getByText('Other (please specify below)'),
-    ).toBeInTheDocument();
+    expect(rendered.getByText('Other')).toBeInTheDocument();
 
     const customResponses = [
       { id: 'foo', label: 'Foo option' },
@@ -90,9 +88,7 @@ describe('FeedbackResponseDialog', () => {
     await userEvent.click(
       rendered.getByRole('checkbox', { name: 'Incorrect info' }),
     );
-    await userEvent.click(
-      rendered.getByRole('checkbox', { name: 'Other (please specify below)' }),
-    );
+    await userEvent.click(rendered.getByRole('checkbox', { name: 'Other' }));
     await userEvent.type(
       getByRole(
         rendered.getByTestId('feedback-response-dialog-comments-input'),
@@ -108,7 +104,7 @@ describe('FeedbackResponseDialog', () => {
       expect(feedbackApi.recordResponse).toHaveBeenCalledWith(
         'component:default/test',
         {
-          comments: 'test comments',
+          comments: '{"additional":"test comments"}',
           consent: true,
           response: 'incorrect,other',
         },

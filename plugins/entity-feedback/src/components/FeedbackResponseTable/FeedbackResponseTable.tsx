@@ -21,6 +21,7 @@ import { FeedbackResponse } from '@backstage/plugin-entity-feedback-common';
 import Chip from '@material-ui/core/Chip';
 import { makeStyles } from '@material-ui/core/styles';
 import CheckIcon from '@material-ui/icons/Check';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
 
@@ -31,6 +32,13 @@ type ResponseRow = Omit<FeedbackResponse, 'entityRef'>;
 const useStyles = makeStyles(theme => ({
   consentCheck: {
     color: theme.palette.status.ok,
+  },
+  listItem: {
+    padding: '0',
+    marginTop: theme.spacing(1),
+  },
+  list: {
+    paddingLeft: '0',
   },
 }));
 
@@ -91,7 +99,36 @@ export const FeedbackResponseTable = (props: FeedbackResponseTableProps) => {
         </>
       ),
     },
-    { title: 'Comments', field: 'comments', width: '40%' },
+    {
+      title: 'Comments',
+      field: 'comments',
+      width: '40%',
+      render: (response: ResponseRow) => {
+        // Check if comment is a stringified object
+        let parsedComment;
+        try {
+          parsedComment = response?.comments && JSON.parse(response.comments);
+        } catch (e) {
+          // If parsing fails, assume it's a regular string
+          parsedComment = response.comments;
+        }
+        return (
+          <div>
+            {typeof parsedComment === 'object' ? (
+              <ul>
+                {Object.entries<string>(parsedComment)?.map(([key, value]) => (
+                  <li key={key} className={classes.listItem}>
+                    <strong>{key}:</strong> {value}
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <Typography>{parsedComment}</Typography>
+            )}
+          </div>
+        );
+      },
+    },
   ];
 
   if (error) {

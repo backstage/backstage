@@ -19,6 +19,7 @@ import { Progress } from '@backstage/core-components';
 import { ErrorApiError, errorApiRef, useApi } from '@backstage/core-plugin-api';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
+import Collapse from '@material-ui/core/Collapse';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -31,7 +32,7 @@ import Grid from '@material-ui/core/Grid';
 import Switch from '@material-ui/core/Switch';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import React, { ReactNode, useState } from 'react';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 
@@ -44,11 +45,14 @@ export interface EntityFeedbackResponse {
   id: string;
   label: string;
 }
+export interface Comments {
+  [key: string]: string;
+}
 
 const defaultFeedbackResponses: EntityFeedbackResponse[] = [
   { id: 'incorrect', label: 'Incorrect info' },
   { id: 'missing', label: 'Missing info' },
-  { id: 'other', label: 'Other (please specify below)' },
+  { id: 'other', label: 'Other' },
 ];
 
 /**
@@ -62,17 +66,32 @@ export interface FeedbackResponseDialogProps {
   onClose: () => void;
 }
 
-const useStyles = makeStyles({
+const useStyles = makeStyles<Theme>(theme => ({
   contactConsent: {
-    marginTop: '5px',
+    marginTop: theme.spacing(1.5),
   },
-});
+  commentBoxes: {
+    marginBottom: theme.spacing(1.5),
+  },
+  boxContainer: {
+    marginBottom: theme.spacing(1.5),
+    marginTop: theme.spacing(1.5),
+    marginLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+  },
+  formLabel: {
+    marginBottom: theme.spacing(1.5),
+  },
+  dialogActions: {
+    justifyContent: 'flex-start',
+  },
+}));
 
 export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
   const {
     entity,
     feedbackDialogResponses = defaultFeedbackResponses,
-    feedbackDialogTitle = 'Please provide feedback on what can be improved',
+    feedbackDialogTitle = 'Tell us what could be better',
     open,
     onClose,
   } = props;
@@ -82,13 +101,13 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
   const [responseSelections, setResponseSelections] = useState(
     Object.fromEntries(feedbackDialogResponses.map(r => [r.id, false])),
   );
-  const [comments, setComments] = useState('');
+  const [comments, setComments] = useState<Comments>({});
   const [consent, setConsent] = useState(true);
 
   const [{ loading: saving }, saveResponse] = useAsyncFn(async () => {
     try {
       await feedbackApi.recordResponse(stringifyEntityRef(entity), {
-        comments,
+        comments: JSON.stringify(comments),
         consent,
         response: Object.keys(responseSelections)
           .filter(id => responseSelections[id])
@@ -105,44 +124,71 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
       {saving && <Progress />}
       <DialogTitle>{feedbackDialogTitle}</DialogTitle>
       <DialogContent>
-        <FormControl component="fieldset">
-          <FormLabel component="legend">Choose all that apply</FormLabel>
-          <FormGroup>
-            {feedbackDialogResponses.map(response => (
-              <FormControlLabel
-                key={response.id}
-                control={
-                  <Checkbox
-                    checked={responseSelections[response.id]}
+        <FormControl component="fieldset" fullWidth>
+          <FormLabel component="legend">Select all that apply</FormLabel>
+          <FormGroup className={classes.boxContainer}>
+            {feedbackDialogResponses.map((response: EntityFeedbackResponse) => (
+              <Grid container key={response.id} direction="column" spacing={1}>
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={responseSelections[response.id]}
+                      disabled={saving}
+                      name={response.id}
+                      onChange={e =>
+                        setResponseSelections({
+                          ...responseSelections,
+                          [e.target.name]: e.target.checked,
+                        })
+                      }
+                      color="primary"
+                    />
+                  }
+                  label={response.label}
+                />
+                <Collapse in={responseSelections[response.id]}>
+                  <TextField
+                    data-testid="feedback-response-dialog-collapse-comments-input"
                     disabled={saving}
-                    name={response.id}
+                    className={classes.commentBoxes}
+                    multiline
+                    minRows={2}
+                    fullWidth
+                    variant="outlined"
+                    value={comments[response.id] || ''}
                     onChange={e =>
-                      setResponseSelections({
-                        ...responseSelections,
-                        [e.target.name]: e.target.checked,
-                      })
+                      setComments(prevComments => ({
+                        ...prevComments,
+                        [response.id]: e.target.value,
+                      }))
                     }
                   />
-                }
-                label={response.label}
-              />
+                </Collapse>
+              </Grid>
             ))}
           </FormGroup>
         </FormControl>
         <FormControl fullWidth>
+          <FormLabel component="legend" className={classes.formLabel}>
+            Additional comments
+          </FormLabel>
           <TextField
             data-testid="feedback-response-dialog-comments-input"
             disabled={saving}
-            label="Additional comments"
             multiline
             minRows={2}
-            onChange={e => setComments(e.target.value)}
+            onChange={e =>
+              setComments(prevComments => ({
+                ...prevComments,
+                ['additional']: e.target.value,
+              }))
+            }
             variant="outlined"
-            value={comments}
+            value={comments.additional || ''}
           />
         </FormControl>
         <Typography className={classes.contactConsent}>
-          Can we reach out to you for more info?
+          May we contact you about your feedback?
           <Grid component="label" container alignItems="center" spacing={1}>
             <Grid item>No</Grid>
             <Grid item>
@@ -156,10 +202,7 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
           </Grid>
         </Typography>
       </DialogContent>
-      <DialogActions>
-        <Button color="primary" disabled={saving} onClick={onClose}>
-          Close
-        </Button>
+      <DialogActions className={classes.dialogActions}>
         <Button
           color="primary"
           data-testid="feedback-response-dialog-submit-button"
@@ -167,6 +210,9 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
           onClick={saveResponse}
         >
           Submit
+        </Button>
+        <Button color="primary" disabled={saving} onClick={onClose}>
+          Close
         </Button>
       </DialogActions>
     </Dialog>

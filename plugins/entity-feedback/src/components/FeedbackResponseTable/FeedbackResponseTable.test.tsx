@@ -34,6 +34,13 @@ describe('FeedbackResponseTable', () => {
       response: 'resp3,resp4',
       comments: 'test comment 2',
     },
+    {
+      userRef: 'user:default/baz',
+      consent: false,
+      response: 'resp5,resp6',
+      comments:
+        '{"missing":"missing contact","incorrect":"incorrect link","additional":"some comment"}',
+    },
   ];
 
   const feedbackApi: Partial<EntityFeedbackApi> = {
@@ -71,6 +78,10 @@ describe('FeedbackResponseTable', () => {
     expect(rendered.getByText('resp3')).toBeInTheDocument();
     expect(rendered.getByText('resp4')).toBeInTheDocument();
     expect(rendered.getByText('test comment 2')).toBeInTheDocument();
+    expect(rendered.getByText('baz')).toBeInTheDocument();
+    expect(rendered.getByText('resp5')).toBeInTheDocument();
+    expect(rendered.getByText('resp6')).toBeInTheDocument();
+    expect(rendered.getByText('missing contact')).toBeInTheDocument();
   });
 
   it('renders a custom title correctly', async () => {
