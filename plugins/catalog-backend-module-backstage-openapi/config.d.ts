@@ -25,6 +25,20 @@ export interface Config {
          * A list of plugins, whose OpenAPI specs you want to collate in `InternalOpenApiDocumentationProvider`.
          */
         plugins: string[];
+        /**
+         * Options to ovveride the provided entity's default metadata and spec properties
+         */
+        entityOverrides?: {
+          metadata?: {
+            name?: string;
+            title?: string;
+          };
+          spec?: {
+            type?: string;
+            lifecycle?: string;
+            owner?: string;
+          };
+        };
       };
     };
   };
