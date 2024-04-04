@@ -322,14 +322,11 @@ export const createPublishGithubPullRequestAction = (
       );
 
       if (ctx.isDryRun) {
-        ctx.logger.info(
-          `Dry run arguments: ${{
-            ...ctx.input,
-          }}`,
-        );
+        ctx.logger.info(`Performing dry run of creating pull request`);
         ctx.output('targetBranchName', branchName);
         ctx.output('remoteUrl', repoUrl);
         ctx.output('pullRequestNumber', 43);
+        ctx.logger.info(`Dry run complete`);
         return;
       }
 

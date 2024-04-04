@@ -229,7 +229,7 @@ describe('createPublishGithubPullRequestAction', () => {
       expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 123);
     });
 
-    it('handles dry run correctly', async () => {
+    it('sets correct outputs during dry run', async () => {
       ctx.isDryRun = true;
       await instance.handler(ctx);
 
