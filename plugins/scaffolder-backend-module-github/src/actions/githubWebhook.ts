@@ -149,14 +149,15 @@ export function createGithubWebhookAction(options: {
         }),
       );
 
+      // If this is a dry run, log the arguments and exit
       if (ctx.isDryRun) {
-        ctx.logger.info(
-          `Dry run arguments: ${{
-            webhookSecret,
-            events,
-            ...ctx.input,
-          }}`,
-        );
+        const dryRunArgs = {
+          webhookSecret,
+          events,
+          ...ctx.input,
+        };
+
+        ctx.logger.info(`Dry run completed`);
         return;
       }
 

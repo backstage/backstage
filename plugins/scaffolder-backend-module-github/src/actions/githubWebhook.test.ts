@@ -222,37 +222,27 @@ describe('github:repository:webhook:create', () => {
     });
   });
 
-  it('should call the githubApi for creating repository Webhook with dry run', async () => {
+  it('should not call the githubApi for creating repository Webhook with dry run', async () => {
+    // Define constants for reused string literals
     const repoUrl = 'github.com?repo=repo&owner=owner';
     const webhookUrl = 'https://example.com/payload';
-    const ctx = Object.assign({}, mockContext, {
-      input: { repoUrl, webhookUrl },
-    });
-    ctx.isDryRun = true;
-    await action.handler(ctx);
 
-    const webhookSecret = 'yet_another_secret';
-    await action.handler({
+    // Create the context object with the necessary properties for a dry run
+    const ctx = {
       ...mockContext,
+      isDryRun: true,
       input: {
         ...mockContext.input,
-        webhookSecret,
-        events: ['push', 'pull_request'],
+        repoUrl,
+        webhookUrl,
       },
-    });
+    };
 
-    expect(mockOctokit.rest.repos.createWebhook).toHaveBeenCalledWith({
-      owner: 'owner',
-      repo: 'repo',
-      events: ['push', 'pull_request'],
-      active: true,
-      config: {
-        url: webhookUrl,
-        content_type: 'form',
-        secret: webhookSecret,
-        insecure_ssl: '0',
-      },
-    });
+    // Call the handler with the context
+    await action.handler(ctx);
+
+    // Check that the createWebhook method was not called
+    expect(mockOctokit.rest.repos.createWebhook).not.toHaveBeenCalled();
   });
 
   it('should validate input', async () => {
