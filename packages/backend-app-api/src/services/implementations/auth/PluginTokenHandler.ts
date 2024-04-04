@@ -28,8 +28,9 @@ import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { InternalKey, KeyStore } from './types';
 import { AuthenticationError } from '@backstage/errors';
-import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { jwtVerify } from 'jose';
 import { tokenTypes } from '@backstage/plugin-auth-node';
+import { JwksClient } from './JwksClient';
 
 const ALLOWED_PLUGIN_ID_PATTERN = /^[a-z0-9_-]+$/i;
 
@@ -52,7 +53,7 @@ type Options = {
 export class PluginTokenHandler {
   private privateKeyPromise?: Promise<JWK>;
   private keyExpiry?: Date;
-  private jwksMap: Record<string, ReturnType<typeof createRemoteJWKSet>> = {};
+  private jwksMap = new Map<string, JwksClient>();
 
   static create(options: Options) {
     return new PluginTokenHandler(
@@ -94,12 +95,18 @@ export class PluginTokenHandler {
       );
     }
 
-    const JWKS = await this.getJWKS(pluginId);
-    const { payload } = await jwtVerify<{ sub: string }>(token, JWKS, {
-      typ: tokenTypes.plugin.typParam,
-      audience: this.ownPluginId,
-      requiredClaims: ['iat', 'exp', 'sub', 'aud'],
-    }).catch(e => {
+    const jwksClient = await this.getJwksClient(pluginId);
+    await jwksClient.refreshKeyStore(token); // TODO(Rugvip): Refactor so that this isn't needed
+
+    const { payload } = await jwtVerify<{ sub: string }>(
+      token,
+      jwksClient.getKey,
+      {
+        typ: tokenTypes.plugin.typParam,
+        audience: this.ownPluginId,
+        requiredClaims: ['iat', 'exp', 'sub', 'aud'],
+      },
+    ).catch(e => {
       throw new AuthenticationError('Invalid plugin token', e);
     });
 
@@ -133,15 +140,25 @@ export class PluginTokenHandler {
     return { token };
   }
 
-  private async getJWKS(pluginId: string) {
-    if (!this.jwksMap[pluginId]) {
-      const url = `${await this.discovery.getBaseUrl(
-        pluginId,
-      )}/.backstage/auth/v1/jwks.json`;
-      this.jwksMap[pluginId] = createRemoteJWKSet(new URL(url));
+  private async getJwksClient(pluginId: string) {
+    // TODO(Rugvip): Make this more resilient to forged tokens, making sure we don't fill up the map
+    const client = this.jwksMap.get(pluginId);
+    if (client) {
+      return client;
     }
-    return this.jwksMap[pluginId];
+
+    const newClient = new JwksClient(async () => {
+      return new URL(
+        `${await this.discovery.getBaseUrl(
+          pluginId,
+        )}/.backstage/auth/v1/jwks.json`,
+      );
+    });
+
+    this.jwksMap.set(pluginId, newClient);
+    return newClient;
   }
+
   private async getKey(): Promise<JWK> {
     // Make sure that we only generate one key at a time
     if (this.privateKeyPromise) {
@@ -178,7 +195,7 @@ export class PluginTokenHandler {
       //       the new one. This also needs to be implemented cross-service though, meaning new services
       //       that boot up need to be able to grab an existing key to use for signing.
       this.logger.info(`Created new signing key ${kid}`);
-      console.log(`DEBUG: publicKey=`, publicKey);
+
       await this.publicKeyStore.addKey({
         id: kid,
         key: publicKey as InternalKey,
