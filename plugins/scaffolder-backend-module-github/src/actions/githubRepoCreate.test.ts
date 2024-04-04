@@ -699,7 +699,7 @@ describe('github:repo:create', () => {
     );
   });
 
-  it('should NOT call the githubApis with the correct values for createInOrg during dry run', async () => {
+  it('should not call createInOrg during dry run', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'Organization' },
     });
@@ -715,23 +715,10 @@ describe('github:repo:create', () => {
 
     mockContext.isDryRun = true;
     await action.handler(mockContext);
-    expect(mockOctokit.rest.repos.createInOrg).not.toHaveBeenCalledWith({
-      description: 'description',
-      name: 'repo',
-      org: 'owner',
-      private: true,
-      delete_branch_on_merge: false,
-      allow_squash_merge: true,
-      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
-      squash_merge_commit_message: 'COMMIT_MESSAGES',
-      allow_merge_commit: true,
-      allow_rebase_merge: true,
-      allow_auto_merge: false,
-      visibility: 'private',
-    });
+    expect(mockOctokit.rest.repos.createInOrg).not.toHaveBeenCalled();
   });
 
-  it('should not call the githubApis with the correct values for createForAuthenticatedUser during dry run', async () => {
+  it('should not call createForAuthenticatedUser during dry run', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
       data: { type: 'User' },
     });
@@ -740,7 +727,6 @@ describe('github:repo:create', () => {
       data: {},
     });
 
-    mockContext.isDryRun = true;
     await action.handler(mockContext);
     expect(
       mockOctokit.rest.repos.createForAuthenticatedUser,
