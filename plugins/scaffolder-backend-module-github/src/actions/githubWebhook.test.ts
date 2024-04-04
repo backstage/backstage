@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { createGithubWebhookAction } from './githubWebhook';
 import {
-  ScmIntegrations,
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
+  ScmIntegrations,
 } from '@backstage/integration';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+
 import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { createGithubWebhookAction } from './githubWebhook';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 const mockOctokit = {
   rest: {
@@ -216,6 +217,39 @@ describe('github:repository:webhook:create', () => {
         url: webhookUrl,
         content_type: 'form',
         secret: defaultWebhookSecret,
+        insecure_ssl: '0',
+      },
+    });
+  });
+
+  it('should call the githubApi for creating repository Webhook with dry run', async () => {
+    const repoUrl = 'github.com?repo=repo&owner=owner';
+    const webhookUrl = 'https://example.com/payload';
+    const ctx = Object.assign({}, mockContext, {
+      input: { repoUrl, webhookUrl },
+    });
+    ctx.isDryRun = true;
+    await action.handler(ctx);
+
+    const webhookSecret = 'yet_another_secret';
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        webhookSecret,
+        events: ['push', 'pull_request'],
+      },
+    });
+
+    expect(mockOctokit.rest.repos.createWebhook).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      events: ['push', 'pull_request'],
+      active: true,
+      config: {
+        url: webhookUrl,
+        content_type: 'form',
+        secret: webhookSecret,
         insecure_ssl: '0',
       },
     });

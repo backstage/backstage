@@ -152,8 +152,6 @@ export function createGithubWebhookAction(options: {
       if (ctx.isDryRun) {
         ctx.logger.info(
           `Dry run arguments: ${{
-            repoUrl,
-            webhookUrl,
             webhookSecret,
             events,
             ...ctx.input,
