@@ -99,7 +99,6 @@ describe('createRouter', () => {
       mockSearchEngine.query.mockRejectedValueOnce(error);
 
       const response = await request(app).get('/query');
-      console.log((response as any).text);
 
       expect(response.status).toEqual(500);
       expect(response.body).toMatchObject(
@@ -127,6 +126,8 @@ describe('createRouter', () => {
       'types[0]=first-type&types[1]=second-type',
       'filters[prop]=value',
       'pageCursor=foo',
+      // https://github.com/backstage/backstage/issues/23973
+      'term=foo+bar',
     ])('accepts valid query string "%s"', async queryString => {
       const response = await request(app).get(`/query?${queryString}`);
 
