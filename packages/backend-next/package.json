@@ -66,8 +66,7 @@
     "@backstage/plugin-signals-backend": "workspace:^",
     "@backstage/plugin-sonarqube-backend": "workspace:^",
     "@backstage/plugin-techdocs-backend": "workspace:^",
-    "@backstage/plugin-todo-backend": "workspace:^",
-    "express-promise-router": "^4.1.0"
+    "@backstage/plugin-todo-backend": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
