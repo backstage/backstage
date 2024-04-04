@@ -19,6 +19,8 @@ import { Divider, makeStyles, Tab, Tabs } from '@material-ui/core';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
 import { ApolloExplorer } from '@apollo/explorer/react';
 import { Content } from '@backstage/core-components';
+import { ApiHolder } from '@backstage/core-plugin-api';
+import { HandleRequest } from '@apollo/explorer/src/helpers/postMessageRelayHelpers';
 
 const useStyles = makeStyles(theme => ({
   tabs: {
@@ -53,9 +55,42 @@ export type ApolloEndpointProps = {
 
 type Props = {
   endpoints: ApolloEndpointProps[];
+  authCallback?: () => Promise<string>;
+  apiHolder?: ApiHolder;
 };
 
-export const ApolloExplorerBrowser = ({ endpoints }: Props) => {
+export const handleAuthRequest = ({
+  legacyIncludeCookies,
+  authCallback,
+}: {
+  legacyIncludeCookies?: boolean;
+  authCallback: any;
+}): HandleRequest => {
+  let cookies = {};
+  if (legacyIncludeCookies) {
+    cookies = { credentials: 'include' };
+  } else if (legacyIncludeCookies !== undefined) {
+    cookies = { credentials: 'omit' };
+  } else {
+    cookies = {};
+  }
+
+  const handleRequestWithCookiePref: HandleRequest = async (
+    endpointUrl,
+    options,
+  ) =>
+    fetch(endpointUrl, {
+      ...options,
+      headers: {
+        ...options.headers,
+        Authorization: `Bearer ${await authCallback({})}`,
+      },
+      ...cookies,
+    });
+  return handleRequestWithCookiePref;
+};
+
+export const ApolloExplorerBrowser = ({ endpoints, authCallback }: Props) => {
   const classes = useStyles();
   const [tabIndex, setTabIndex] = useState(0);
 
@@ -76,6 +111,14 @@ export const ApolloExplorerBrowser = ({ endpoints }: Props) => {
         <ApolloExplorer
           className={classes.explorer}
           graphRef={endpoints[tabIndex].graphRef}
+          handleRequest={
+            authCallback
+              ? handleAuthRequest({
+                  legacyIncludeCookies: false,
+                  authCallback: authCallback,
+                })
+              : undefined
+          }
           persistExplorerState={endpoints[tabIndex].persistExplorerState}
           initialState={endpoints[tabIndex].initialState}
         />

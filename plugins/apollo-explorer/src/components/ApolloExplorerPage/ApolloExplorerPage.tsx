@@ -19,9 +19,6 @@ import { Content, Header, Page } from '@backstage/core-components';
 import { ApolloExplorerBrowser } from '../ApolloExplorerBrowser';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
 import { ApiHolder, useApiHolder } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
-import { CircularProgress } from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
 
 /**
  * Export types to be used with {@link @backstage/apollo-explorer#ApolloExplorerPage}.
@@ -44,34 +41,30 @@ export type EndpointProps = {
   };
 };
 
-type EndpointPropsCallback = (options: {
+export type authCallback = (options: {
   apiHolder: ApiHolder;
-}) => Promise<EndpointProps[]>;
+}) => Promise<string>;
 
 type Props = {
   title?: string | undefined;
   subtitle?: string | undefined;
-  endpoints: EndpointProps[] | EndpointPropsCallback;
+  endpoints: EndpointProps[];
+  authCallback: authCallback;
 };
 
 export const ApolloExplorerPage = (props: Props) => {
-  const { title, subtitle, endpoints } = props;
-  const apiHolder = useApiHolder();
+  const { title, subtitle, endpoints, authCallback } = props;
 
-  const { value, loading, error } = useAsync(async () => {
-    if (typeof endpoints === 'function') {
-      return await endpoints({ apiHolder });
-    }
-    return endpoints;
-  }, []);
+  const apiHolder = useApiHolder();
 
   return (
     <Page themeId="tool">
       <Header title={title ?? 'Apollo Explorer 👩‍🚀'} subtitle={subtitle ?? ''} />
       <Content noPadding>
-        {loading && <CircularProgress style={{ padding: 5 }} />}
-        {error && <Alert severity="error">{error?.message}</Alert>}
-        {value && <ApolloExplorerBrowser endpoints={value} />}
+        <ApolloExplorerBrowser
+          endpoints={endpoints}
+          authCallback={() => authCallback({ apiHolder })}
+        />
       </Content>
     </Page>
   );
