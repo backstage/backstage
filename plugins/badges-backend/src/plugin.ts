@@ -63,6 +63,10 @@ export const badgesPlugin = createBackendPlugin({
             auth,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/',
+          allow: 'unauthenticated',
+        });
       },
     });
   },
