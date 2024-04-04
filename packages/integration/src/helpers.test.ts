@@ -91,6 +91,24 @@ describe('defaultScmResolveUrl', () => {
     expect(
       defaultScmResolveUrl({
         url: './b.yaml',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/b.yaml',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: './b.yaml',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/subfolder',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/b.yaml',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: './b.yaml',
         base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/a.yaml',
       }),
     ).toBe(
@@ -109,10 +127,104 @@ describe('defaultScmResolveUrl', () => {
     expect(
       defaultScmResolveUrl({
         url: 'b.yaml',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/b.yaml',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: 'b.yaml',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/subfolder',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/b.yaml',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: 'b.yaml',
         base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/a.yaml',
       }),
     ).toBe(
       'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/b.yaml',
+    );
+  });
+
+  it('works for the root path', () => {
+    expect(
+      defaultScmResolveUrl({
+        url: '/',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/a.yaml',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/a.yaml?at=master',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/?at=master',
+    );
+  });
+
+  it('works for files in the repo root', () => {
+    expect(
+      defaultScmResolveUrl({
+        url: '/b.yaml',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/b.yaml',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/b.yaml',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/b.yaml',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/b.yaml',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/a.yaml',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/b.yaml',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/b.yaml',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/a.yaml?at=master',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/b.yaml?at=master',
     );
   });
 
@@ -121,6 +233,24 @@ describe('defaultScmResolveUrl', () => {
       defaultScmResolveUrl({
         url: '/other/b.yaml',
         base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/a.yaml',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/other/b.yaml',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/other/b.yaml',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder',
+      }),
+    ).toBe(
+      'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/other/b.yaml',
+    );
+
+    expect(
+      defaultScmResolveUrl({
+        url: '/other/b.yaml',
+        base: 'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/folder/',
       }),
     ).toBe(
       'https://gitlab.com/groupA/teams/teamA/subgroupA/repoA/-/blob/branch/other/b.yaml',

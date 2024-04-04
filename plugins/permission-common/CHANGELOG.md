@@ -1,5 +1,17 @@
 # @backstage/plugin-permission-common
 
+## 0.7.13
+
+### Patch Changes
+
+- 0502d82: The `token` option of the `PermissionEvaluator` methods is now deprecated. The options that only apply to backend implementations have been moved to `PermissionsService` from `@backstage/backend-plugin-api` instead.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.7.13-next.1
 
 ### Patch Changes

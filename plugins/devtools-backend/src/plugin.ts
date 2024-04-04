@@ -55,6 +55,10 @@ export const devtoolsPlugin = createBackendPlugin({
             httpAuth,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

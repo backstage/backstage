@@ -59,6 +59,8 @@ Valid values are:
 
 - `singleTenant` - This configuration assumes that current component run on one cluster in provided clusters.
 
+- `catalogRelation` - This configuration assumes that the current component runs only on all clusters it is dependant on.
+
 ### `clusterLocatorMethods`
 
 This is an array used to determine where to retrieve cluster configuration from.

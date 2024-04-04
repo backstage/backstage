@@ -17,7 +17,9 @@
 import { Widget } from './types';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
-import { DialogContent, DialogTitle, ListItemAvatar } from '@material-ui/core';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import AddIcon from '@material-ui/icons/Add';
 import ListItemText from '@material-ui/core/ListItemText';
 import React from 'react';

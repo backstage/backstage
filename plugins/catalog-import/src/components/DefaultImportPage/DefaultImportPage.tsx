@@ -22,7 +22,9 @@ import {
   SupportButton,
 } from '@backstage/core-components';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Grid, useMediaQuery, useTheme } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
+import { useTheme } from '@material-ui/core/styles';
 import React from 'react';
 import { ImportInfoCard } from '../ImportInfoCard';
 import { ImportStepper } from '../ImportStepper';

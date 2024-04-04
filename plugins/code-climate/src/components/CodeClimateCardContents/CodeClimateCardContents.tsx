@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { codeClimateApiRef } from '../../api';
 import { CodeClimateTable } from '../CodeClimateTable';
 import { CODECLIMATE_REPO_ID_ANNOTATION } from '../../plugin';

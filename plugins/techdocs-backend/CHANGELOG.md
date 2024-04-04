@@ -1,5 +1,108 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.10.4-next.0
+
+### Patch Changes
+
+- 8e28c88: Allow overriding default techdocs preparers with new `TechdocsPreparerExtensionPoint`
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.12.3-next.0
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.22-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+
+## 1.10.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.6.3
+  - @backstage/backend-common@0.21.6
+  - @backstage/plugin-techdocs-node@1.12.2
+  - @backstage/plugin-search-backend-module-techdocs@0.1.21
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+
+## 1.10.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.6.2
+  - @backstage/backend-common@0.21.5
+  - @backstage/plugin-techdocs-node@1.12.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.20
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+
+## 1.10.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-techdocs@0.1.19
+
+## 1.10.0
+
+### Minor Changes
+
+- 718b734: Create extension point `TechdocsGeneratorExtensionPoint` to allow adding a custom generator
+
+### Patch Changes
+
+- 3f14e9f: Migrate plugin to use the new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-techdocs-node@1.12.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-backend-module-techdocs@0.1.18
+  - @backstage/catalog-client@1.6.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 1.10.0-next.2
+
+### Minor Changes
+
+- 718b734: Create extension point `TechdocsGeneratorExtensionPoint` to allow adding a custom generator
+
+### Patch Changes
+
+- 3f14e9f: Migrate plugin to use the new auth services.
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/plugin-techdocs-node@1.12.0-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-search-backend-module-techdocs@0.1.18-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+
 ## 1.9.7-next.1
 
 ### Patch Changes

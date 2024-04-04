@@ -16,14 +16,12 @@
 
 import React from 'react';
 import { Link } from '@backstage/core-components';
-import {
-  Divider,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
-  Box,
-  Chip,
-} from '@material-ui/core';
+import Divider from '@material-ui/core/Divider';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemText from '@material-ui/core/ListItemText';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
 import { useAnalytics } from '@backstage/core-plugin-api';
 import type { ResultHighlight } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '@backstage/plugin-search-react';

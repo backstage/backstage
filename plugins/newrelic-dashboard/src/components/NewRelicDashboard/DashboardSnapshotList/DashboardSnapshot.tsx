@@ -15,9 +15,12 @@
  */
 
 import React from 'react';
-import { Box, makeStyles, MenuItem, Select } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
 import { useApi, storageApiRef } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import {
   InfoCard,
   Progress,
@@ -26,7 +29,7 @@ import {
 } from '@backstage/core-components';
 import { newRelicDashboardApiRef } from '../../../api';
 import { DashboardSnapshotSummary } from '../../../api/NewRelicDashboardApi';
-import useObservable from 'react-use/lib/useObservable';
+import useObservable from 'react-use/esm/useObservable';
 
 const useStyles = makeStyles(
   theme => ({

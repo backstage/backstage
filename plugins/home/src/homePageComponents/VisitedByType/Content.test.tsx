@@ -66,7 +66,6 @@ describe('<Content kind="recent"/>', () => {
         </ContextProvider>
       </TestApiProvider>,
     );
-    expect(getByText('Recently Visited')).toBeInTheDocument();
     await waitFor(() =>
       expect(getByText('Explore Backstage')).toBeInTheDocument(),
     );
@@ -91,7 +90,6 @@ describe('<Content kind="recent"/>', () => {
         </ContextProvider>
       </TestApiProvider>,
     );
-    expect(getByText('Recently Visited')).toBeInTheDocument();
     await waitFor(() => expect(getByText('Tech Radar')).toBeInTheDocument());
   });
 
@@ -279,7 +277,6 @@ describe('<Content kind="top"/>', () => {
         </ContextProvider>
       </TestApiProvider>,
     );
-    expect(getByText('Top Visited')).toBeInTheDocument();
     await waitFor(() =>
       expect(getByText('Explore Backstage')).toBeInTheDocument(),
     );

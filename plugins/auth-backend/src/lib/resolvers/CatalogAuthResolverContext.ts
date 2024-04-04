@@ -123,8 +123,21 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
       const res = await this.catalogApi.getEntities({ filter }, { token });
       result = res.items;
     } else if ('filter' in query) {
+      const filter = [query.filter].flat().map(value => {
+        if (
+          !Object.keys(value).some(
+            key => key.toLocaleLowerCase('en-US') === 'kind',
+          )
+        ) {
+          return {
+            ...value,
+            kind: 'user',
+          };
+        }
+        return value;
+      });
       const res = await this.catalogApi.getEntities(
-        { filter: query.filter },
+        { filter: filter },
         { token },
       );
       result = res.items;

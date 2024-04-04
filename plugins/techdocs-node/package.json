@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-node",
-  "version": "1.11.6-next.1",
+  "version": "1.12.3-next.0",
   "description": "Common node.js functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
   "backstage": {
     "role": "node-library"
@@ -76,7 +76,7 @@
     "@types/mime-types": "^2.1.0",
     "@types/recursive-readdir": "^2.2.0",
     "@types/supertest": "^2.0.8",
-    "aws-sdk-client-mock": "^3.0.0",
+    "aws-sdk-client-mock": "^4.0.0",
     "supertest": "^6.1.3"
   }
 }

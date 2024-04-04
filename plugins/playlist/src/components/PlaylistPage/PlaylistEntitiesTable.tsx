@@ -29,7 +29,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
 import React, { forwardRef, useCallback, useEffect, useState } from 'react';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 
 import { playlistApiRef } from '../../api';
 import { useTitle } from '../../hooks';

@@ -19,7 +19,7 @@ import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import { compact, isEqual } from 'lodash';
 import { useMemo, useRef } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityUserFilter } from '../../filters';
 import { useEntityList, useStarredEntities } from '../../hooks';

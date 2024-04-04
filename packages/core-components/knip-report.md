@@ -1,11 +1,12 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (3)
 
 | Name          | Location     | Severity |
 | :------------ | :----------- | :------- |
 | @date-io/core | package.json | error    |
 | linkifyjs     | package.json | error    |
+| pluralize     | package.json | error    |
 
 ## Unused devDependencies (4)
 

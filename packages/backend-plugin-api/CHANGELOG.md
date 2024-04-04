@@ -1,5 +1,67 @@
 # @backstage/backend-plugin-api
 
+## 0.6.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.22-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.12-next.0
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.6.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.6.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.10
+  - @backstage/backend-tasks@0.5.20
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.6.14
+
+### Patch Changes
+
+- 4a3d434: Added the new [`auth`](https://backstage.io/docs/backend-system/core-services/auth/), [`httpAuth`](https://backstage.io/docs/backend-system/core-services/http-auth), and [`userInfo`](https://backstage.io/docs/backend-system/core-services/user-info) services that were created as part of [BEP-0003](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution) to the `coreServices`.
+
+  At the same time, the [`httpRouter`](https://backstage.io/docs/backend-system/core-services/http-router) service gained a new `addAuthPolicy` method that lets your plugin declare exemptions to the default auth policy - for example if you want to allow unauthenticated or cookie-based access to some subset of your feature routes.
+
+  If you have migrated to the new backend system, please see the [Auth Service Migration tutorial](https://backstage.io/docs/tutorials/auth-service-migration) for more information on how to move toward using these services.
+
+- 0502d82: Updated the `PermissionsService` methods to accept `BackstageCredentials` through options.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/types@1.1.1
+
+## 0.6.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+
 ## 0.6.14-next.1
 
 ### Patch Changes

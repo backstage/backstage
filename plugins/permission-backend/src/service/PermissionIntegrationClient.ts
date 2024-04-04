@@ -29,6 +29,7 @@ import {
   BackstageCredentials,
   DiscoveryService,
 } from '@backstage/backend-plugin-api';
+import { ResponseError } from '@backstage/errors';
 
 const responseSchema = z.object({
   items: z.array(
@@ -90,9 +91,7 @@ export class PermissionIntegrationClient {
     });
 
     if (!response.ok) {
-      throw new Error(
-        `Unexpected response from plugin upstream when applying conditions. Expected 200 but got ${response.status} - ${response.statusText}`,
-      );
+      throw await ResponseError.fromResponse(response);
     }
 
     const result = responseSchema.parse(await response.json());

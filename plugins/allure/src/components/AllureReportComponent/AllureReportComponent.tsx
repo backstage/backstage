@@ -26,7 +26,7 @@ import {
   getAllureProjectId,
 } from '../annotationHelpers';
 import { Progress } from '@backstage/core-components';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Entity } from '@backstage/catalog-model';
 
 const AllureReport = (props: { entity: Entity }) => {

@@ -281,14 +281,17 @@ export class DefaultApiClient {
     // @ts-ignore
     request: {
       body: GetEntitiesByRefsRequest;
+      query?: {
+        filter?: Array<string>;
+      };
     },
     options?: RequestOptions,
   ): Promise<TypedResponse<EntitiesBatchResponse>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/entities/by-refs`;
+    const uriTemplate = `/entities/by-refs/{?filter*}`;
 
-    const uri = parser.parse(uriTemplate).expand({});
+    const uri = parser.parse(uriTemplate).expand({ ...request.query });
 
     return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
       headers: {

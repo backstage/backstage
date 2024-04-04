@@ -20,7 +20,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import { EntityRefLink } from '@backstage/plugin-catalog-react';
 import { EntityRatingsData } from '@backstage/plugin-entity-feedback-common';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 import { entityFeedbackApiRef } from '../../api';
 

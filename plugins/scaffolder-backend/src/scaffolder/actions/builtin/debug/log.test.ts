@@ -15,21 +15,21 @@
  */
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { Writable } from 'stream';
+import { Logger } from 'winston';
 import { createDebugLogAction } from './log';
 import { join } from 'path';
 import yaml from 'yaml';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 describe('debug:log', () => {
-  const logStream = {
-    write: jest.fn(),
-  } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
+  const logger = {
+    info: jest.fn(),
+  } as unknown as jest.Mocked<Logger>;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
 
-  const mockContext = createMockActionContext({ workspacePath, logStream });
+  const mockContext = createMockActionContext({ workspacePath, logger });
 
   const action = createDebugLogAction();
 
@@ -39,12 +39,6 @@ describe('debug:log', () => {
       [`${mockContext.workspacePath}/a-directory/index.md`]: '',
     });
     jest.resetAllMocks();
-  });
-
-  it('should do nothing', async () => {
-    await action.handler(mockContext);
-
-    expect(logStream.write).toHaveBeenCalledTimes(0);
   });
 
   it('should log the workspace content, if active', async () => {
@@ -57,11 +51,10 @@ describe('debug:log', () => {
 
     await action.handler(context);
 
-    expect(logStream.write).toHaveBeenCalledTimes(1);
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('README.md'),
     );
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining(join('a-directory', 'index.md')),
     );
   });
@@ -76,8 +69,7 @@ describe('debug:log', () => {
 
     await action.handler(context);
 
-    expect(logStream.write).toHaveBeenCalledTimes(1);
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('Hello Backstage!'),
     );
   });
@@ -94,11 +86,10 @@ describe('debug:log', () => {
 
     await action.handler(context);
 
-    expect(logStream.write).toHaveBeenCalledTimes(1);
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('README.md'),
     );
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining(join('a-directory', 'index.md')),
     );
   });
@@ -115,8 +106,7 @@ describe('debug:log', () => {
 
     await action.handler(context);
 
-    expect(logStream.write).toHaveBeenCalledTimes(1);
-    expect(logStream.write).toHaveBeenCalledWith(
+    expect(logger.info).toHaveBeenCalledWith(
       expect.stringContaining('Hello Backstage!'),
     );
   });

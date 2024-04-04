@@ -1,5 +1,51 @@
 # @backstage/plugin-auth-backend-module-pinniped-provider
 
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-auth-node@0.4.12-next.0
+
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/config@1.2.0
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.10
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/config@1.2.0
+
+## 0.1.8
+
+### Patch Changes
+
+- 2af5354: Bump dependency `jose` to v5
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+
+## 0.1.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+
 ## 0.1.8-next.1
 
 ### Patch Changes

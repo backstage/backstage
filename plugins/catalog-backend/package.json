@@ -1,18 +1,30 @@
 {
   "name": "@backstage/plugin-catalog-backend",
+  "version": "1.21.1-next.0",
   "description": "The Backstage backend plugin that provides the Backstage catalog",
-  "version": "1.18.0-next.1",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "backend-plugin"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend"
+  },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -23,27 +35,21 @@
       ]
     }
   },
-  "backstage": {
-    "role": "backend-plugin"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/catalog-backend"
-  },
-  "keywords": [
-    "backstage"
+  "files": [
+    "dist",
+    "migrations/**/*.{js,d.ts}",
+    "config.d.ts"
   ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "fuzz": "backstage-repo-tools package schema openapi fuzz --exclude-checks response_schema_conformance",
+    "generate": "backstage-repo-tools package schema openapi generate --server --client-package packages/catalog-client",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "generate": "backstage-repo-tools package schema openapi generate --server --client-package packages/catalog-client"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -55,14 +61,12 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
-    "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/plugin-search-backend-module-catalog": "workspace:^",
-    "@backstage/repo-tools": "workspace:^",
     "@backstage/types": "workspace:^",
     "@opentelemetry/api": "^1.3.0",
     "@types/express": "^4.17.6",
@@ -90,6 +94,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
+    "@backstage/repo-tools": "workspace:^",
     "@types/core-js": "^2.5.4",
     "@types/git-url-parse": "^9.0.0",
     "@types/glob": "^8.0.0",
@@ -102,10 +107,5 @@
     "supertest": "^6.1.3",
     "wait-for-expect": "^3.0.2"
   },
-  "files": [
-    "dist",
-    "migrations/**/*.{js,d.ts}",
-    "config.d.ts"
-  ],
   "configSchema": "config.d.ts"
 }

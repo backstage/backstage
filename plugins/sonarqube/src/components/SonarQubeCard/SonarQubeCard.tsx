@@ -23,7 +23,8 @@ import {
   useProjectInfo,
 } from '@backstage/plugin-sonarqube-react';
 import { SONARQUBE_PROJECT_KEY_ANNOTATION } from '@backstage/plugin-sonarqube-react';
-import { Chip, Grid } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 import BugReport from '@material-ui/icons/BugReport';
 import Lock from '@material-ui/icons/Lock';
@@ -32,7 +33,7 @@ import Security from '@material-ui/icons/Security';
 import SentimentVeryDissatisfied from '@material-ui/icons/SentimentVeryDissatisfied';
 import SentimentVerySatisfied from '@material-ui/icons/SentimentVerySatisfied';
 import React, { useMemo } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Percentage } from './Percentage';
 import { Rating } from './Rating';
 import { RatingCard } from './RatingCard';

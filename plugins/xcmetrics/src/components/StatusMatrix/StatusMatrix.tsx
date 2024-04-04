@@ -15,13 +15,13 @@
  */
 
 import React from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { xcmetricsApiRef } from '../../api';
-import useAsync from 'react-use/lib/useAsync';
-import useMeasure from 'react-use/lib/useMeasure';
+import useAsync from 'react-use/esm/useAsync';
+import useMeasure from 'react-use/esm/useMeasure';
 import { cn } from '../../utils';
 import { useApi } from '@backstage/core-plugin-api';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { StatusCell } from '../StatusCell';
 
 const CELL_SIZE = 12;

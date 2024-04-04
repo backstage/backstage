@@ -120,7 +120,7 @@ export class OneLoginProvider implements OAuthHandlers {
       await executeRefreshTokenStrategy(
         this._strategy,
         req.refreshToken,
-        req.scope,
+        'openid',
       );
 
     const fullProfile = await executeFetchUserProfileStrategy(

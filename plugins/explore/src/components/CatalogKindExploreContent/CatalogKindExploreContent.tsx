@@ -16,9 +16,9 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { EntityCard } from '../EntityCard';
 import {
   Content,

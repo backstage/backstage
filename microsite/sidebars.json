@@ -1,6 +1,8 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.25.0",
+      "releases/v1.24.0",
       "releases/v1.23.0",
       "releases/v1.22.0",
       "releases/v1.21.0",
@@ -107,6 +109,7 @@
           "features/kubernetes/installation",
           "features/kubernetes/configuration",
           "features/kubernetes/authentication",
+          "features/kubernetes/authentication-strategies",
           "features/kubernetes/troubleshooting",
           "features/kubernetes/proxy"
         ]

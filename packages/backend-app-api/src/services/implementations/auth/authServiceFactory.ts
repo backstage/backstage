@@ -22,13 +22,12 @@ import {
   BackstageServicePrincipal,
   BackstageNonePrincipal,
   BackstageUserPrincipal,
-  IdentityService,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
-import { IdentityApiGetIdentityRequest } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
+import { UserTokenHandler } from './UserTokenHandler';
 
 /** @internal */
 export type InternalBackstageCredentials<TPrincipal = unknown> =
@@ -105,7 +104,7 @@ export function toInternalBackstageCredentials(
 class DefaultAuthService implements AuthService {
   constructor(
     private readonly tokenManager: TokenManager,
-    private readonly identity: IdentityService,
+    private readonly userTokenHandler: UserTokenHandler,
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
   ) {}
@@ -120,22 +119,16 @@ class DefaultAuthService implements AuthService {
       return createCredentialsWithServicePrincipal('external:backstage-plugin');
     }
 
-    // User Backstage token
-    const identity = await this.identity.getIdentity({
-      request: {
-        headers: { authorization: `Bearer ${token}` },
-      },
-    } as IdentityApiGetIdentityRequest);
-
-    if (!identity) {
-      throw new AuthenticationError('Invalid user token');
+    const userResult = await this.userTokenHandler.verifyToken(token);
+    if (userResult) {
+      return createCredentialsWithUserPrincipal(
+        userResult.userEntityRef,
+        token,
+        this.#getJwtExpiration(token),
+      );
     }
 
-    return createCredentialsWithUserPrincipal(
-      identity.identity.userEntityRef,
-      token,
-      this.#getJwtExpiration(token),
-    );
+    throw new AuthenticationError('Unknown token');
   }
 
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
@@ -204,17 +197,15 @@ class DefaultAuthService implements AuthService {
   async getLimitedUserToken(
     credentials: BackstageCredentials<BackstageUserPrincipal>,
   ): Promise<{ token: string; expiresAt: Date }> {
-    const internalCredentials = toInternalBackstageCredentials(credentials);
-
-    const { token } = internalCredentials;
-
-    if (!token) {
+    const { token: backstageToken } =
+      toInternalBackstageCredentials(credentials);
+    if (!backstageToken) {
       throw new AuthenticationError(
         'User credentials is unexpectedly missing token',
       );
     }
 
-    return { token, expiresAt: this.#getJwtExpiration(token) };
+    return this.userTokenHandler.createLimitedUserToken(backstageToken);
   }
 
   #getJwtExpiration(token: string) {
@@ -232,15 +223,15 @@ export const authServiceFactory = createServiceFactory({
   deps: {
     config: coreServices.rootConfig,
     logger: coreServices.rootLogger,
+    discovery: coreServices.discovery,
     plugin: coreServices.pluginMetadata,
-    identity: coreServices.identity,
     // Re-using the token manager makes sure that we use the same generated keys for
     // development as plugins that have not yet been migrated. It's important that this
     // keeps working as long as there are plugins that have not been migrated to the
     // new auth services in the new backend system.
     tokenManager: coreServices.tokenManager,
   },
-  async factory({ config, plugin, identity, tokenManager }) {
+  async factory({ config, discovery, plugin, tokenManager }) {
     const disableDefaultAuthPolicy = Boolean(
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',
@@ -248,7 +239,7 @@ export const authServiceFactory = createServiceFactory({
     );
     return new DefaultAuthService(
       tokenManager,
-      identity,
+      new UserTokenHandler({ discovery }),
       plugin.getId(),
       disableDefaultAuthPolicy,
     );

@@ -16,6 +16,7 @@
 
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 import { AwsS3Integration } from './awsS3/AwsS3Integration';
+import { AwsCodeCommitIntegration } from './awsCodeCommit';
 import { AzureIntegration } from './azure/AzureIntegration';
 import { BitbucketCloudIntegration } from './bitbucketCloud/BitbucketCloudIntegration';
 import { BitbucketIntegration } from './bitbucket/BitbucketIntegration';
@@ -33,6 +34,7 @@ import { GiteaIntegration } from './gitea/GiteaIntegration';
 export interface ScmIntegrationRegistry
   extends ScmIntegrationsGroup<ScmIntegration> {
   awsS3: ScmIntegrationsGroup<AwsS3Integration>;
+  awsCodeCommit: ScmIntegrationsGroup<AwsCodeCommitIntegration>;
   azure: ScmIntegrationsGroup<AzureIntegration>;
   /**
    * @deprecated in favor of `bitbucketCloud` and `bitbucketServer`

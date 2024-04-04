@@ -15,7 +15,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { CardHeader, Divider, IconButton, makeStyles } from '@material-ui/core';
+import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import {
   HeaderIconLinkRow,
@@ -31,8 +34,8 @@ import { EditProjectDialog } from '../EditProjectDialog';
 import { useApi, identityApiRef } from '@backstage/core-plugin-api';
 import { BazaarProject, Member } from '../../types';
 import { bazaarApiRef } from '../../api';
-import { Alert } from '@material-ui/lab';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import Alert from '@material-ui/lab/Alert';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { ConfirmationDialog } from '../ConfirmationDialog';

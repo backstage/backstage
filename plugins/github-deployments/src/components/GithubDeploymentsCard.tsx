@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { GithubDeployment, githubDeploymentsApiRef } from '../api';
 import {
   useEntity,

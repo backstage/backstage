@@ -18,7 +18,7 @@ import { configApiRef, useApi, useApp } from '@backstage/core-plugin-api';
 import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { codesceneApiRef } from '../../api/api';
 import { Analysis } from '../../api/types';
 import { CodeHealthKpisCard } from '../CodeHealthKpisCard/CodeHealthKpisCard';
@@ -29,7 +29,8 @@ import {
 } from '../../utils/commonUtil';
 import { DateTime } from 'luxon';
 import { MissingAnnotationEmptyState } from '@backstage/plugin-catalog-react';
-import { Grid, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 
 export const CodeSceneEntityKPICard = () => {
   const { entity } = useEntity();

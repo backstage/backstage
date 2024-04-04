@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Typography, Box, IconButton, Tooltip } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import RetryIcon from '@material-ui/icons/Replay';
 import GoogleIcon from '@material-ui/icons/CloudCircle';
 import { useWorkflowRuns, WorkflowRun } from '../useWorkflowRuns';
@@ -48,6 +51,14 @@ const generatedColumns: TableColumn[] = [
     render: (row: Partial<WorkflowRun>) => (
       <Typography variant="body2" noWrap>
         {row.id?.substring(0, 8)}
+      </Typography>
+    ),
+  },
+  {
+    title: 'Trigger Name',
+    render: (row: Partial<WorkflowRun>) => (
+      <Typography variant="body2" noWrap>
+        {row.substitutions?.TRIGGER_NAME}
       </Typography>
     ),
   },

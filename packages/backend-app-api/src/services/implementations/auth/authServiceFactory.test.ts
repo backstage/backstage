@@ -17,18 +17,23 @@
 import {
   ServiceFactoryTester,
   mockServices,
+  setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import {
   InternalBackstageCredentials,
   authServiceFactory,
 } from './authServiceFactory';
-import { decodeJwt } from 'jose';
+import { base64url, decodeJwt } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
 import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
 import { tokenManagerServiceFactory } from '../tokenManager';
+import { rest } from 'msw';
+import { setupServer } from 'msw/node';
+
+const server = setupServer();
 
 // TODO: Ship discovery mock service in the service factory tester
 const mockDeps = [
@@ -45,6 +50,12 @@ const mockDeps = [
 ];
 
 describe('authServiceFactory', () => {
+  setupRequestMockHandlers(server);
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
   it('should authenticate issued tokens', async () => {
     const tester = ServiceFactoryTester.from(authServiceFactory, {
       dependencies: mockDeps,
@@ -125,6 +136,92 @@ describe('authServiceFactory', () => {
       expect.objectContaining({
         sub: 'backstage-server',
       }),
+    );
+  });
+
+  it('should issue limited user tokens', async () => {
+    server.use(
+      rest.get(
+        'http://localhost:7007/api/auth/.well-known/jwks.json',
+        (_req, res, ctx) =>
+          res(
+            ctx.json({
+              keys: [
+                {
+                  kty: 'EC',
+                  x: '78-Ei1H3nKM23ZpGMMzte2mVoYCcnfnSiLTm1P7vZM0',
+                  y: 'Z9-PjG_EU598tLLUc2f8sCqxT7bjs8WpoV-lHm9GJHY',
+                  crv: 'P-256',
+                  kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
+                  alg: 'ES256',
+                },
+              ],
+            }),
+          ),
+      ),
+    );
+
+    const expectedIssuedAt = 1712071714;
+    const expectedExpiresAt = 1712075314;
+
+    jest.useFakeTimers({
+      now: expectedIssuedAt * 1000 + 600_000,
+    });
+
+    const tester = ServiceFactoryTester.from(authServiceFactory, {
+      dependencies: mockDeps,
+    });
+
+    const catalogAuth = await tester.get('catalog');
+
+    const fullToken =
+      'eyJ0eXAiOiJ2bmQuYmFja3N0YWdlLnVzZXIiLCJhbGciOiJFUzI1NiIsImtpZCI6IjhkMDFjM2RiLTU2ZjktNDVmMC04NmRkLTA1YjNjODM1YjNkMyJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwMDcvYXBpL2F1dGgiLCJzdWIiOiJ1c2VyOmRldmVsb3BtZW50L2d1ZXN0IiwiZW50IjpbInVzZXI6ZGV2ZWxvcG1lbnQvZ3Vlc3QiLCJncm91cDpkZWZhdWx0L3RlYW0tYSJdLCJhdWQiOiJiYWNrc3RhZ2UiLCJpYXQiOjE3MTIwNzE3MTQsImV4cCI6MTcxMjA3NTMxNCwidWlwIjoiMDFBUUJfSWpHTXRWc2gyWmgzZEg1NXhOX29pSVlhQ1F3ODJjeDZ5M1BQMXlpTjM4eGMzMVpMS2U0YVNDQlJTTy10cjFzZFUzT29ELUxJYV8tNV9RVUEifQ.mjIrZGqbZ2t68fS4U3crlGw-bYJZnMlhMHf-YL7q_u1HfaLr4NMTcHkxdnNS2wfJxCmUBxRfUS8b3nSAKsxcHA';
+
+    const credentials = await catalogAuth.authenticate(fullToken);
+    if (!catalogAuth.isPrincipal(credentials, 'user')) {
+      throw new Error('no a user principal');
+    }
+
+    const { token: limitedToken, expiresAt } =
+      await catalogAuth.getLimitedUserToken(credentials);
+
+    expect(expiresAt).toEqual(new Date(expectedExpiresAt * 1000));
+
+    const expectedTokenHeader = base64url.encode(
+      JSON.stringify({
+        typ: 'vnd.backstage.limited-user',
+        alg: 'ES256',
+        kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
+      }),
+    );
+    const expectedTokenPayload = base64url.encode(
+      JSON.stringify({
+        sub: 'user:development/guest',
+        ent: ['user:development/guest', 'group:default/team-a'],
+        iat: expectedIssuedAt,
+        exp: expectedExpiresAt,
+      }),
+    );
+    const expectedTokenSignature = JSON.parse(
+      atob(fullToken.split('.')[1]),
+    ).uip;
+
+    const expectedToken = `${expectedTokenHeader}.${expectedTokenPayload}.${expectedTokenSignature}`;
+
+    expect(limitedToken).toBe(expectedToken);
+
+    const limitedCredentials = await catalogAuth.authenticate(limitedToken, {
+      allowLimitedAccess: true,
+    });
+
+    if (!catalogAuth.isPrincipal(limitedCredentials, 'user')) {
+      throw new Error('Not user credentials');
+    }
+    expect(limitedCredentials.principal.userEntityRef).toBe(
+      'user:development/guest',
+    );
+    expect(limitedCredentials.expiresAt).toEqual(
+      new Date(expectedExpiresAt * 1000),
     );
   });
 });

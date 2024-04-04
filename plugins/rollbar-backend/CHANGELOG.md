@@ -1,5 +1,45 @@
 # @backstage/plugin-rollbar-backend
 
+## 0.1.62-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/config@1.2.0
+
+## 0.1.61
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/config@1.2.0
+
+## 0.1.60
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/config@1.2.0
+
+## 0.1.59
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+
+## 0.1.59-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/config@1.2.0-next.1
+
 ## 0.1.59-next.1
 
 ### Patch Changes

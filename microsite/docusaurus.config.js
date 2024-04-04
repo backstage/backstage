@@ -24,7 +24,7 @@ prismTheme.plain.backgroundColor = '#232323';
 /** @type {import('@docusaurus/types').Config} */
 module.exports = {
   title: 'Backstage Software Catalog and Developer Platform',
-  tagline: 'An open platform for building developer portals',
+  tagline: 'An open source framework for building developer portals',
   url: 'https://backstage.io',
   baseUrl: '/',
   organizationName: 'Spotify',
@@ -73,7 +73,7 @@ module.exports = {
       // Replace all HTML comments with empty strings as these are not supported by MDXv2.
       return fileContent.replace(/<!--.*?-->/gs, '');
     },
-    format: 'md',
+    format: 'detect',
   },
   webpack: {
     jsLoader: isServer => ({
@@ -198,7 +198,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.23.0',
+            to: 'docs/releases/v1.25.0',
             label: 'Releases',
             position: 'left',
           },

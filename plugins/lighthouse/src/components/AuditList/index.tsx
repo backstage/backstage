@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { Button, Grid } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
 import Pagination from '@material-ui/lab/Pagination';
 import React, { ChangeEvent, ReactNode, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useAsync from 'react-use/lib/useAsync';
-import useLocalStorage from 'react-use/lib/useLocalStorage';
+import useAsync from 'react-use/esm/useAsync';
+import useLocalStorage from 'react-use/esm/useLocalStorage';
 import { lighthouseApiRef } from '../../api';
 import { useQuery } from '../../utils';
 import LighthouseIntro, { LIGHTHOUSE_INTRO_LOCAL_STORAGE } from '../Intro';

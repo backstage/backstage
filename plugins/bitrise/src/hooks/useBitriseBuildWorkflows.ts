@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import useAsync, { AsyncState } from 'react-use/lib/useAsync';
+import useAsync, { AsyncState } from 'react-use/esm/useAsync';
 import { bitriseApiRef } from '../plugin';
 import { BitriseApp } from '../api/bitriseApi.model';
 import { useApi } from '@backstage/core-plugin-api';

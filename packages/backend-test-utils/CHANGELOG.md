@@ -1,5 +1,79 @@
 # @backstage/backend-test-utils
 
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.3-next.0
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.12-next.0
+
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.2
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.1
+  - @backstage/backend-common@0.21.5
+  - @backstage/plugin-auth-node@0.4.10
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.4
+
+### Patch Changes
+
+- 4a3d434: Added support for the new [`auth`](https://backstage.io/docs/backend-system/core-services/auth/) and [`httpAuth`](https://backstage.io/docs/backend-system/core-services/http-auth) services that were created as part of [BEP-0003](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution). These services will be present by default in test apps, and you can access mocked versions of their features under `mockServices.auth` and `mockServices.httpAuth` if you want to inspect or replace their behaviors.
+
+  There is also a new `mockCredentials` that you can use for acquiring mocks of the various types of credentials that are used in the new system.
+
+- 9802004: Added `mockServices.userInfo`, which now also automatically is made available in test backends.
+- fd61d39: Updated dependency `testcontainers` to `^10.0.0`.
+- ff40ada: Updated dependency `mysql2` to `^3.0.0`.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/backend-app-api@0.6.0
+  - @backstage/types@1.1.1
+
+## 0.3.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.0-next.2
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+
 ## 0.3.4-next.1
 
 ### Patch Changes

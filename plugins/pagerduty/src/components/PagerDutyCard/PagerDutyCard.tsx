@@ -15,17 +15,15 @@
  */
 
 import React, { ReactNode, useState, useCallback } from 'react';
-import {
-  Card,
-  CardHeader,
-  Divider,
-  CardContent,
-  TabProps,
-} from '@material-ui/core';
+import Card from '@material-ui/core/Card';
+import { TabProps } from '@material-ui/core/Tab';
+import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
+import CardContent from '@material-ui/core/CardContent';
 import { Incidents } from '../Incident';
 import { EscalationPolicy } from '../Escalation';
-import useAsync from 'react-use/lib/useAsync';
-import { Alert } from '@material-ui/lab';
+import useAsync from 'react-use/esm/useAsync';
+import Alert from '@material-ui/lab/Alert';
 import { pagerDutyApiRef, UnauthorizedError } from '../../api';
 import AlarmAddIcon from '@material-ui/icons/AlarmAdd';
 import { MissingTokenError, ServiceNotFoundError } from '../Errors';

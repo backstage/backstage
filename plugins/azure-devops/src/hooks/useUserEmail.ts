@@ -15,7 +15,7 @@
  */
 
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 export function useUserEmail(): string | undefined {
   const identityApi = useApi(identityApiRef);

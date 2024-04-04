@@ -63,6 +63,7 @@ export interface InternalServiceFactory<
   TScope extends 'plugin' | 'root' = 'plugin' | 'root',
 > extends ServiceFactory<TService, TScope> {
   version: 'v1';
+  initialization?: 'always' | 'lazy';
   deps: { [key in string]: ServiceRef<unknown> };
   createRootContext?(deps: { [key in string]: unknown }): Promise<unknown>;
   factory(
@@ -140,6 +141,7 @@ export interface RootServiceFactoryConfig<
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
 > {
+  initialization?: 'always' | 'lazy';
   service: ServiceRef<TService, 'root'>;
   deps: TDeps;
   factory(deps: ServiceRefsToInstances<TDeps, 'root'>): TImpl | Promise<TImpl>;
@@ -152,6 +154,7 @@ export interface PluginServiceFactoryConfig<
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
 > {
+  initialization?: 'always' | 'lazy';
   service: ServiceRef<TService, 'plugin'>;
   deps: TDeps;
   createRootContext?(
@@ -251,6 +254,7 @@ export function createServiceFactory<
         $$type: '@backstage/BackendFeature',
         version: 'v1',
         service: c.service,
+        initialization: c.initialization,
         deps: c.deps,
         factory: async (deps: TDeps) => c.factory(deps),
       };
@@ -265,6 +269,7 @@ export function createServiceFactory<
       $$type: '@backstage/BackendFeature',
       version: 'v1',
       service: c.service,
+      initialization: c.initialization,
       ...('createRootContext' in c
         ? {
             createRootContext: async (deps: TDeps) =>

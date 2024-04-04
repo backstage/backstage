@@ -1,5 +1,73 @@
 # @backstage/plugin-search-backend-node
 
+## 1.2.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/backend-tasks@0.5.22-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-common@1.2.11
+
+## 1.2.20
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-common@1.2.11
+
+## 1.2.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/backend-tasks@0.5.20
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-common@1.2.11
+
+## 1.2.18
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- 744c0cb: Exports `QueryTranslator`, `QueryRequestOptions` and `SearchEngine` types. These new types were extracted from the `@backstage/plugin-search-common` package and the `token` property was deprecated in favor of the a new credentials one.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/backend-tasks@0.5.19
+
+## 1.2.18-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-search-common@1.2.11-next.1
+
 ## 1.2.18-next.1
 
 ### Patch Changes

@@ -1,5 +1,76 @@
 # @backstage/core-components
 
+## 0.14.4-next.0
+
+### Patch Changes
+
+- f546e38: Added Link component in `TabUI` providing functionality like copy link or open in new tab.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.2
+  - @backstage/version-bridge@1.0.7
+
+## 0.14.3
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.2
+  - @backstage/version-bridge@1.0.7
+
+## 0.14.2
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.2
+  - @backstage/version-bridge@1.0.7
+
+## 0.14.1
+
+### Patch Changes
+
+- 2ff3e6e: The translation support for the `Link` component has been removed for now, in order to avoid broad breakages of tests in existing projects where the component is tested without being wrapped in an API provider.
+- 2d06e4b: Move the text-transform styling on BackstageTableHeader from inline styling to `withStyles` so it can be customised easier
+- 5c271fa: Removed inline styling in breadcrumbs and replaced with a theme reachable class of BreadcrumbsCurrentPage
+- ff33ee2: Removed hardcoded font-family on select input
+- ff7e126: Support i18n for core components
+- 7854120: Create a component abstraction to consume system icons.
+- ce73c3b: Removed the inline color from select icon to allow it to be colored via a theme
+- 0c9d5ea: Updated MUI imports for core-components to not be top level
+- 90d08b0: Updated dependency `react-idle-timer` to `5.7.2`.
+- a8f7904: `SignInPage`'s `'guest'` provider now supports the `@backstage/plugin-auth-backend-module-guest-provider` package to generate tokens. It will continue to use the old frontend-only auth as a fallback.
+- 0a8a1e9: Fix a spacing issue for the SidebarSubmenu in case a SidebarScrollWrapper is used that made it hard to reach the SidebarSubmenu
+- aa1c88d: Deprecate the `customStyles` prop for the `Avatar` component in favour of the `classes` prop.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.14.1-next.2
+
+### Patch Changes
+
+- 0c9d5ea: Updated MUI imports for core-components to not be top level
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/version-bridge@1.0.7
+
 ## 0.14.1-next.1
 
 ### Patch Changes

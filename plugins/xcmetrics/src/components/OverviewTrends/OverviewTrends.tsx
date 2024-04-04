@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { Grid, makeStyles, useTheme } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import React, { useState } from 'react';
 import { Progress, Select } from '@backstage/core-components';
 import { Trend } from '../Trend';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import { xcmetricsApiRef } from '../../api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { DataValueGridItem } from '../DataValue';
 import {

@@ -1,5 +1,35 @@
 # @backstage/integration
 
+## 1.10.0-next.0
+
+### Minor Changes
+
+- 7b11422: Add AWS CodeCommit URL Reader/Integration
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.9.1
+
+### Patch Changes
+
+- 0386fa7: Fixed an issue with resolution of SCM URLs against a base URL with a trailing slash.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.9.1-next.2
+
+### Patch Changes
+
+- 0386fa7: Fixed an issue with resolution of SCM URLs against a base URL with a trailing slash.
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+
 ## 1.9.1-next.1
 
 ### Patch Changes

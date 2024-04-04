@@ -1042,3 +1042,24 @@ backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(authModuleGoogleProvider);
 /* highlight-add-end */
 ```
+
+#### Using Legacy Providers
+
+Not all authentication providers have been refactored to support the new backend system. If your authentication provider module is not available yet, you will need to import your backend auth plugin using the legacy helper:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+/* highlight-add-next-line */
+import { legacyPlugin } from '@backstage/backend-common';
+import { coreServices } from '@backstage/backend-plugin-api';
+
+const backend = createBackend();
+/* highlight-remove-next-line */
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-next-line */
+backend.add(legacyPlugin('auth'), import('./plugins/auth'));
+
+backend.start();
+```
+
+> You can track the progress of the module migration efforts [here](https://github.com/backstage/backstage/issues/19476).

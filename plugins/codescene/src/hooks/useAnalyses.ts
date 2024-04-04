@@ -17,7 +17,7 @@
 import { Analysis } from '../api/types';
 import { codesceneApiRef } from '../api/api';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 export const useAnalyses = (projectId: number) => {
   const codesceneApi = useApi(codesceneApiRef);

@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  Divider,
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  MenuList,
-  Popover,
-  Tooltip,
-} from '@material-ui/core';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Popover from '@material-ui/core/Popover';
+import Tooltip from '@material-ui/core/Tooltip';
 import { Theme, makeStyles } from '@material-ui/core/styles';
 import BugReportIcon from '@material-ui/icons/BugReport';
 import MoreVert from '@material-ui/icons/MoreVert';
@@ -34,7 +32,7 @@ import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
 import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
 import { useApi, alertApiRef } from '@backstage/core-plugin-api';
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
 /** @public */
 export type EntityContextMenuClassKey = 'button';

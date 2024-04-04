@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { createStyles, Divider, Grid, makeStyles } from '@material-ui/core';
+import Divider from '@material-ui/core/Divider';
+import Grid from '@material-ui/core/Grid';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { BuildResponse, xcmetricsApiRef } from '../../api';
 import { Progress, StructuredMetadataTable } from '@backstage/core-components';
-import { Alert } from '@material-ui/lab';
-import useAsync from 'react-use/lib/useAsync';
+import Alert from '@material-ui/lab/Alert';
+import useAsync from 'react-use/esm/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { formatDuration, formatStatus, formatTime } from '../../utils';
 import { StatusIcon } from '../StatusIcon';

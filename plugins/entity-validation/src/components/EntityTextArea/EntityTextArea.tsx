@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React, { useMemo, useState } from 'react';
-import { Box, makeStyles } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import { makeStyles } from '@material-ui/core/styles';
 import CodeMirror from '@uiw/react-codemirror';
 import { showPanel } from '@codemirror/view';
 import { StreamLanguage } from '@codemirror/language';

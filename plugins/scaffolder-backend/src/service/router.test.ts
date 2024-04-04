@@ -316,7 +316,7 @@ describe('createRouter', () => {
             createdBy: 'user:default/mock',
             secrets: {
               backstageToken: token,
-              initiatorCredentials: JSON.stringify(credentials),
+              __initiatorCredentials: JSON.stringify(credentials),
             },
 
             spec: {
@@ -455,7 +455,7 @@ describe('createRouter', () => {
           createdAt: '',
           secrets: {
             backstageToken: token,
-            initiatorCredentials: JSON.stringify(credentials),
+            __initiatorCredentials: JSON.stringify(credentials),
           },
           createdBy: '',
         });
@@ -925,7 +925,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             createdBy: 'user:default/mock',
             secrets: {
               backstageToken: token,
-              initiatorCredentials: JSON.stringify(credentials),
+              __initiatorCredentials: JSON.stringify(credentials),
             },
 
             spec: {
@@ -995,7 +995,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             createdBy: 'user:default/mock',
             secrets: {
               backstageToken: token,
-              initiatorCredentials: JSON.stringify(credentials),
+              __initiatorCredentials: JSON.stringify(credentials),
             },
 
             spec: {
@@ -1084,7 +1084,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             createdBy: 'user:default/mock',
             secrets: {
               backstageToken: token,
-              initiatorCredentials: JSON.stringify(credentials),
+              __initiatorCredentials: JSON.stringify(credentials),
             },
 
             spec: {
@@ -1220,7 +1220,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           createdAt: '',
           secrets: {
             backstageToken: token,
-            initiatorCredentials: JSON.stringify(credentials),
+            __initiatorCredentials: JSON.stringify(credentials),
           },
           createdBy: '',
         });

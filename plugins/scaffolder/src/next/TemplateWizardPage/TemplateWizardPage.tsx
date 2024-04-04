@@ -15,7 +15,11 @@
  */
 import React from 'react';
 import { Navigate, useNavigate } from 'react-router-dom';
-import { stringifyEntityRef } from '@backstage/catalog-model';
+import useAsync from 'react-use/esm/useAsync';
+import {
+  stringifyEntityRef,
+  ANNOTATION_EDIT_URL,
+} from '@backstage/catalog-model';
 import {
   AnalyticsContext,
   useApi,
@@ -30,6 +34,8 @@ import {
   FieldExtensionOptions,
   ReviewStepProps,
 } from '@backstage/plugin-scaffolder-react';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+
 import { Workflow } from '@backstage/plugin-scaffolder-react/alpha';
 import { JsonValue } from '@backstage/types';
 import { Header, Page } from '@backstage/core-components';
@@ -39,6 +45,8 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
 } from '../../routes';
+
+import { TemplateWizardPageContextMenu } from './TemplateWizardPageContextMenu';
 
 /**
  * @alpha
@@ -62,6 +70,7 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
   const taskRoute = useRouteRef(scaffolderTaskRouteRef);
   const { secrets } = useTemplateSecrets();
   const scaffolderApi = useApi(scaffolderApiRef);
+  const catalogApi = useApi(catalogApiRef);
   const navigate = useNavigate();
   const { templateName, namespace } = useRouteRefParams(
     selectedTemplateRouteRef,
@@ -72,6 +81,11 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
     namespace,
     name: templateName,
   });
+
+  const { value: editUrl } = useAsync(async () => {
+    const data = await catalogApi.getEntityByRef(templateRef);
+    return data?.metadata.annotations?.[ANNOTATION_EDIT_URL];
+  }, [templateRef, catalogApi]);
 
   const onCreate = async (values: Record<string, JsonValue>) => {
     const { taskId } = await scaffolderApi.scaffold({
@@ -93,7 +107,9 @@ export const TemplateWizardPage = (props: TemplateWizardPageProps) => {
           title="Create a new component"
           subtitle="Create new software components using standard templates in your organization"
           {...props.headerOptions}
-        />
+        >
+          <TemplateWizardPageContextMenu editUrl={editUrl} />
+        </Header>
         <Workflow
           namespace={namespace}
           templateName={templateName}

@@ -16,7 +16,9 @@
 
 import React from 'react';
 
-import { makeStyles, Theme, Grid, Paper } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import SearchIcon from '@material-ui/icons/Search';
 
 import {

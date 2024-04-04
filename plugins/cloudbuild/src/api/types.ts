@@ -83,6 +83,7 @@ export interface Substitutions {
   SHORT_SHA: string;
   REF_NAME: string;
   REPO_NAME: string;
+  TRIGGER_NAME: string;
   REVISION_ID: string;
 }
 

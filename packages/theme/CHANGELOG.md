@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.5.2
+
+### Patch Changes
+
+- 6f4d2a0: Exported `defaultTypography` to make adjusting these values in a custom theme easier
+
 ## 0.5.2-next.0
 
 ### Patch Changes

@@ -15,16 +15,14 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  capitalize,
-  Card,
-  CardContent,
-  Divider,
-  Tab,
-  Tabs,
-  useTheme,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import { capitalize } from '@material-ui/core/utils';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import Divider from '@material-ui/core/Divider';
+import Tab from '@material-ui/core/Tab';
+import Tabs from '@material-ui/core/Tabs';
+import { useTheme } from '@material-ui/core/styles';
 import { CostOverviewChart } from './CostOverviewChart';
 import { CostOverviewBreakdownChart } from './CostOverviewBreakdownChart';
 import { CostOverviewHeader } from './CostOverviewHeader';

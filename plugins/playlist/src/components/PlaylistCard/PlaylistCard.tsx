@@ -22,17 +22,15 @@ import {
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import { Playlist } from '@backstage/plugin-playlist-common';
-import {
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Chip,
-  makeStyles,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import CardMedia from '@material-ui/core/CardMedia';
+import Chip from '@material-ui/core/Chip';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import LockIcon from '@material-ui/icons/Lock';
 import React from 'react';
 import { playlistRouteRef } from '../../routes';

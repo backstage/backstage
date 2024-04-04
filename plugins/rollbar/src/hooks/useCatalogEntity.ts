@@ -15,7 +15,7 @@
  */
 
 import { catalogApiRef, entityRouteRef } from '@backstage/plugin-catalog-react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { useApi, useRouteRefParams } from '@backstage/core-plugin-api';
 
 export function useCatalogEntity() {

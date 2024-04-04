@@ -20,12 +20,13 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import { TextField, FormControl } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
+import FormControl from '@material-ui/core/FormControl';
 import { MyGroupsPickerProps, MyGroupsPickerSchema } from './schema';
-import { Autocomplete } from '@material-ui/lab';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { NotFoundError } from '@backstage/errors';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 
 export { MyGroupsPickerSchema };
@@ -36,6 +37,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     required,
     rawErrors,
     onChange,
+    formData,
   } = props;
 
   const identityApi = useApi(identityApiRef);
@@ -47,10 +49,6 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       ref: string;
     }[]
   >([]);
-  const [selectedGroup, setSelectedGroup] = useState<null | {
-    label: string;
-    ref: string;
-  }>(null);
 
   useAsync(async () => {
     const { userEntityRef } = await identityApi.getBackstageIdentity();
@@ -81,9 +79,10 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
     _: React.ChangeEvent<{}>,
     value: { label: string; ref: string } | null,
   ) => {
-    setSelectedGroup(value);
     onChange(value?.ref ?? '');
   };
+
+  const selectedEntity = groups?.find(e => e.ref === formData) || null;
 
   return (
     <FormControl
@@ -94,7 +93,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       <Autocomplete
         id="OwnershipEntityRefPicker-dropdown"
         options={groups || []}
-        value={selectedGroup}
+        value={selectedEntity}
         onChange={updateChange}
         getOptionLabel={group => group.label}
         renderInput={params => (

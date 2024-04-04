@@ -15,10 +15,12 @@
  */
 
 import React from 'react';
-import { makeStyles, Grid, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { InfoCard } from '@backstage/core-components';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 import { ScorecardsList } from '../ScorecardsList';
 
 const useStyles = makeStyles(theme => ({
@@ -52,11 +54,22 @@ export const ScorecardInfo = (props: {
   checkResults: CheckResult[];
   title: string;
   description?: string;
+  noWarning?: boolean;
 }) => {
-  const { checkResults, title, description } = props;
+  const { checkResults, title, description, noWarning } = props;
   const classes = useStyles();
 
   if (!checkResults.length) {
+    if (noWarning) {
+      return infoCard(
+        title,
+        description,
+        classes.subheader,
+        <Alert severity="info">
+          All checks passed, or no checks have been performed yet
+        </Alert>,
+      );
+    }
     return infoCard(
       title,
       description,

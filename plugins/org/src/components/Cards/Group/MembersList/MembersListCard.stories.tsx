@@ -17,7 +17,7 @@
 import { Entity, GroupEntity } from '@backstage/catalog-model';
 import { catalogApiRef, EntityProvider } from '@backstage/plugin-catalog-react';
 import { TestApiProvider } from '@backstage/test-utils';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import {

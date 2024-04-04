@@ -19,13 +19,15 @@ import { JsonObject } from '@backstage/types';
 /**
  * @public
  */
-export type SignalServiceOptions = {
+export type SignalsServiceOptions = {
   events: EventsService;
 };
 
 /** @public */
 export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
-  recipients: string[] | string | null;
+  recipients:
+    | { type: 'user'; entityRef: string | string[] }
+    | { type: 'broadcast' };
   channel: string;
   message: TMessage;
 };

@@ -54,6 +54,8 @@ import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { WinstonLogger } from './logger';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -100,25 +102,42 @@ const createStepLogger = ({
   task: TaskContext;
   step: TaskStep;
 }) => {
-  const metadata = { stepId: step.id };
-  const taskLogger = winston.createLogger({
+  const stepLogStream = new PassThrough();
+  stepLogStream.on('data', async data => {
+    const message = data.toString().trim();
+    if (message?.length > 1) {
+      await task.emitLog(message, { stepId: step.id });
+    }
+  });
+
+  const taskLogger = WinstonLogger.create({
     level: process.env.LOG_LEVEL || 'info',
     format: winston.format.combine(
       winston.format.colorize(),
       winston.format.simple(),
     ),
-    defaultMeta: {},
+    transports: [
+      new winston.transports.Console(),
+      new winston.transports.Stream({ stream: stepLogStream }),
+    ],
   });
 
+  taskLogger.addRedactions(Object.values(task.secrets ?? {}));
+
+  // This stream logger should be deprecated. We're going to replace it with
+  // just using the logger directly, as all those logs get written to step logs
+  // using the stepLogStream above.
+  // Initially this stream used to be the only way to write to the client logs, but that
+  // has changed over time, there's not really a need for this anymore.
+  // You can just create a simple wrapper like the below in your action to write to the main logger.
+  // This way we also get recactions for free.
   const streamLogger = new PassThrough();
   streamLogger.on('data', async data => {
     const message = data.toString().trim();
     if (message?.length > 1) {
-      await task.emitLog(message, metadata);
+      taskLogger.info(message);
     }
   });
-
-  taskLogger.add(new winston.transports.Stream({ stream: streamLogger }));
 
   return { taskLogger, streamLogger };
 };
@@ -355,7 +374,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         await action.handler({
           input: iteration.input,
           secrets: task.secrets ?? {},
-          logger: taskLogger,
+          // TODO(blam): move to LoggerService and away from Winston
+          logger: loggerToWinstonLogger(taskLogger),
           logStream: streamLogger,
           workspacePath,
           async checkpoint<U extends JsonValue>(
@@ -414,7 +434,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           user: task.spec.user,
           isDryRun: task.isDryRun,
           signal: task.cancelSignal,
-          getInitiatorCredentials: task.getInitiatorCredentials,
+          getInitiatorCredentials: () => task.getInitiatorCredentials(),
         });
       }
 

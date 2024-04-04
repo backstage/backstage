@@ -41,16 +41,16 @@ standalone mode. You can do a first-light test of your service:
 
 ```sh
 cd plugins/carmen-backend
-LEGACY_BACKEND_START=true yarn start
+yarn start
 ```
 
-> Note: `LEGACY_BACKEND_START=true` is needed while we transition fully to the [New Backend System](../backend-system/index.md). The templates have not been migrated yet; you can track this in [issue 21288](https://github.com/backstage/backstage/issues/21288)
+> Note: this documentation assumes you are using the latest version of Backstage and the new backend system. If you are not please upgrade and migrate your backend using the [Migration Guide](../backend-system/building-backends/08-migrating.md)
 
 This will think for a bit, and then say `Listening on :7007`. In a different
 terminal window, now run
 
 ```sh
-curl localhost:7007/carmen/health
+curl localhost:7007/api/carmen/health
 ```
 
 This should return `{"status":"ok"}`. Success! Press `Ctrl + c` to stop it

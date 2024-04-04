@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { Box } from '@material-ui/core';
-import { Pagination } from '@material-ui/lab';
+import Box from '@material-ui/core/Box';
+import Pagination from '@material-ui/lab/Pagination';
 import { IssueCard } from '../IssueCard';
 import { IssuesByRepo } from '../../../api';
 import { RepositoryFilters } from './Filters';

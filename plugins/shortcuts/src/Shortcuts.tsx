@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import useObservable from 'react-use/lib/useObservable';
+import useObservable from 'react-use/esm/useObservable';
 import PlayListAddIcon from '@material-ui/icons/PlaylistAdd';
 import { ShortcutItem } from './ShortcutItem';
 import { AddShortcut } from './AddShortcut';

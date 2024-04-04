@@ -19,7 +19,7 @@ import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { Autocomplete } from '@material-ui/lab';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityAutocompletePickerOption } from './EntityAutocompletePickerOption';
 import { EntityAutocompletePickerInput } from './EntityAutocompletePickerInput';

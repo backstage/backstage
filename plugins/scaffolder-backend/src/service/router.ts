@@ -88,6 +88,7 @@ import {
   IdentityApi,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
+import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 
 /**
  *
@@ -461,13 +462,15 @@ export async function createRouter(
         defaultKind: 'template',
       });
 
-      const credentials = await httpAuth.credentials(req, { allow: ['user'] });
-
+      const credentials = await httpAuth.credentials(req);
       const { token } = await auth.getPluginRequestToken({
         onBehalfOf: credentials,
         targetPluginId: 'catalog',
       });
-      const userEntityRef = credentials.principal.userEntityRef;
+
+      const userEntityRef = auth.isPrincipal(credentials, 'user')
+        ? credentials.principal.userEntityRef
+        : undefined;
 
       const userEntity = userEntityRef
         ? await catalogClient.getEntityByRef(userEntityRef, { token })
@@ -521,14 +524,16 @@ export async function createRouter(
         },
       };
 
+      const secrets: InternalTaskSecrets = {
+        ...req.body.secrets,
+        backstageToken: token,
+        __initiatorCredentials: JSON.stringify(credentials),
+      };
+
       const result = await taskBroker.dispatch({
         spec: taskSpec,
         createdBy: userEntityRef,
-        secrets: {
-          ...req.body.secrets,
-          backstageToken: token,
-          initiatorCredentials: JSON.stringify(credentials),
-        },
+        secrets,
       });
 
       res.status(201).json({ id: result.taskId });

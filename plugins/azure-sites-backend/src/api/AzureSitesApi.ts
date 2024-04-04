@@ -78,9 +78,17 @@ export class AzureSitesApi {
       subscriptions: this.config.subscriptions,
     });
     for (const v of result.data) {
+      const tags = Object.fromEntries(
+        Object.entries(v.properties.tags ?? {}).filter(
+          ([k, _]) => !k.startsWith('hidden-'),
+        ),
+      );
+
       items.push({
         href: `${this.baseHref(this.config.domain)}${v.id!}`,
-        logstreamHref: `${this.baseHref(this.config.domain)}${v.id!}/logStream`,
+        logstreamHref: `${this.baseHref(
+          this.config.domain,
+        )}${v.id!}/logStream-quickstart`,
         name: v.name!,
         kind: v.kind!,
         resourceGroup: v.resourceGroup!,
@@ -90,7 +98,7 @@ export class AzureSitesApi {
         usageState: v.properties.usageState!,
         state: v.properties.state!,
         containerSize: v.properties.containerSize!,
-        tags: v.properties.tags!,
+        tags,
       });
     }
     return { items: items };

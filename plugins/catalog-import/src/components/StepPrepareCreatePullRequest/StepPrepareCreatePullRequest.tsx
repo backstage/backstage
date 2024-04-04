@@ -21,11 +21,14 @@ import {
   catalogApiRef,
   humanizeEntityRef,
 } from '@backstage/plugin-catalog-react';
-import { Box, FormHelperText, Grid, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import FormHelperText from '@material-ui/core/FormHelperText';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { useCallback, useEffect, useState } from 'react';
 import { UnpackNestedValue, UseFormReturn } from 'react-hook-form';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import YAML from 'yaml';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { useCatalogFilename } from '../../hooks';

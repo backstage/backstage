@@ -1,7 +1,7 @@
 {
   "name": "@backstage/repo-tools",
   "description": "CLI for Backstage repo tooling ",
-  "version": "0.7.0-next.1",
+  "version": "0.8.0-next.0",
   "publishConfig": {
     "access": "public"
   },
@@ -36,6 +36,7 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
+    "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@manypkg/get-packages": "^1.1.3",
     "@microsoft/api-documenter": "^7.22.33",
@@ -50,6 +51,7 @@
     "@stoplight/types": "^14.0.0",
     "chalk": "^4.0.0",
     "codeowners-utils": "^1.0.2",
+    "command-exists": "^1.2.9",
     "commander": "^12.0.0",
     "fs-extra": "^11.2.0",
     "glob": "^8.0.3",
@@ -59,7 +61,6 @@
     "minimatch": "^9.0.0",
     "p-limit": "^3.0.2",
     "portfinder": "^1.0.32",
-    "ts-node": "^10.0.0",
     "yaml-diff-patch": "^2.0.0"
   },
   "devDependencies": {

@@ -38,7 +38,8 @@ type Options = {
 
 export const backendModule = createFactory<Options>({
   name: 'backend-module',
-  description: 'A new backend module',
+  description:
+    'A new backend module that extends an existing backend plugin with additional features',
   optionsDiscovery: async () => ({
     codeOwnersPath: await getCodeownersFilePath(paths.targetRoot),
   }),

@@ -212,6 +212,7 @@ export class DatabaseTaskStore implements TaskStore {
     try {
       const spec = JSON.parse(result.spec);
       const secrets = result.secrets ? JSON.parse(result.secrets) : undefined;
+      const state = result.state ? JSON.parse(result.state).state : undefined;
       return {
         id: result.id,
         spec,
@@ -220,6 +221,7 @@ export class DatabaseTaskStore implements TaskStore {
         createdAt: parseSqlDateToIsoString(result.created_at),
         createdBy: result.created_by ?? undefined,
         secrets,
+        state,
       };
     } catch (error) {
       throw new Error(`Failed to parse spec of task '${taskId}', ${error}`);
@@ -268,6 +270,16 @@ export class DatabaseTaskStore implements TaskStore {
         return undefined;
       }
 
+      const getState = () => {
+        try {
+          return task.state ? JSON.parse(task.state).state : undefined;
+        } catch (error) {
+          throw new Error(
+            `Failed to parse state of the task '${task.id}', ${error}`,
+          );
+        }
+      };
+
       const secrets = this.parseTaskSecrets(task);
       return {
         id: task.id,
@@ -277,6 +289,7 @@ export class DatabaseTaskStore implements TaskStore {
         createdAt: task.created_at,
         createdBy: task.created_by ?? undefined,
         secrets,
+        state: getState(),
       };
     });
   }
@@ -532,7 +545,7 @@ export class DatabaseTaskStore implements TaskStore {
 
       for (const { id, spec } of result) {
         const taskSpec = JSON.parse(spec as string) as TaskSpec;
-        await this.db<RawDbTaskEventRow>('task_events').insert({
+        await tx<RawDbTaskEventRow>('task_events').insert({
           task_id: id,
           event_type: 'recovered',
           body: JSON.stringify({

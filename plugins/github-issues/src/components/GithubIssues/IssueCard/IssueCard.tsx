@@ -15,7 +15,10 @@
  */
 
 import { Link } from '@backstage/core-components';
-import { Box, CardActionArea, Paper, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import CardActionArea from '@material-ui/core/CardActionArea';
+import Paper from '@material-ui/core/Paper';
+import Typography from '@material-ui/core/Typography';
 import Divider from '@material-ui/core/Divider';
 import { DateTime } from 'luxon';
 import React from 'react';
