@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-import { createRootLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
-import {
-  GithubCredentialsProvider,
-  ScmIntegrations,
-} from '@backstage/integration';
 import {
   ActionContext,
   TemplateAction,
 } from '@backstage/plugin-scaffolder-node';
-import fs from 'fs-extra';
-import { createPublishGithubPullRequestAction } from './githubPullRequest';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  GithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
+
+import { ConfigReader } from '@backstage/config';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { createPublishGithubPullRequestAction } from './githubPullRequest';
+import { createRootLogger } from '@backstage/backend-common';
+import fs from 'fs-extra';
 
 // Make sure root logger is initialized ahead of FS mock
 createRootLogger();
@@ -226,6 +227,18 @@ describe('createPublishGithubPullRequestAction', () => {
         'https://github.com/myorg/myrepo/pull/123',
       );
       expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 123);
+    });
+
+    it('handles dry run correctly', async () => {
+      ctx.isDryRun = true;
+      await instance.handler(ctx);
+
+      expect(ctx.output).toHaveBeenCalledWith('targetBranchName', 'new-app');
+      expect(ctx.output).toHaveBeenCalledWith(
+        'remoteUrl',
+        'github.com?owner=myorg&repo=myrepo',
+      );
+      expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 43);
     });
   });
 

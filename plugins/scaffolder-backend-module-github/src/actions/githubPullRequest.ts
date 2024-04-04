@@ -324,10 +324,6 @@ export const createPublishGithubPullRequestAction = (
       if (ctx.isDryRun) {
         ctx.logger.info(
           `Dry run arguments: ${{
-            repoUrl,
-            branchName,
-            title,
-            description,
             ...ctx.input,
           }}`,
         );
