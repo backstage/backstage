@@ -105,6 +105,7 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
             },
             {
               title: 'Template',
+              field: 'spec.templateInfo.entity.metadata.title',
               render: row => (
                 <TemplateTitleColumn
                   entityRef={row.spec.templateInfo?.entityRef}
