@@ -4793,6 +4793,28 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:^, @backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:plugins/auth-backend-module-cloudflare-access-provider":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:plugins/auth-backend-module-cloudflare-access-provider"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    express: ^4.18.2
+    jose: ^5.0.0
+    msw: ^2.0.0
+    node-fetch: ^2.6.7
+    node-mocks-http: ^1.0.0
+    uuid: ^9.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:^, @backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:plugins/auth-backend-module-gcp-iap-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-gcp-iap-provider@workspace:plugins/auth-backend-module-gcp-iap-provider"
@@ -5025,6 +5047,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend-module-atlassian-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-aws-alb-provider": "workspace:^"
+    "@backstage/plugin-auth-backend-module-cloudflare-access-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-gcp-iap-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-gitlab-provider": "workspace:^"
@@ -19252,12 +19275,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:^20.1.1, @types/node@npm:^20.11.16":
-  version: 20.11.17
-  resolution: "@types/node@npm:20.11.17"
+"@types/node@npm:*, @types/node@npm:>=12.12.47, @types/node@npm:>=13.7.0, @types/node@npm:^20.1.1, @types/node@npm:^20.10.6, @types/node@npm:^20.11.16":
+  version: 20.12.4
+  resolution: "@types/node@npm:20.12.4"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 59c0dde187120adc97da30063c86511664b24b50fe777abfe1f557c217d0a0b84a68aaab5ef8ac44f5c2986b3f9cd605a15fa6e4f31195e594da96bbe9617c20
+  checksum: c29879642bd4f1f35ffc6e2356121c5ffdb6530d41db1e6ac013c6fbd1dfa4b213b9529a1213cf1f320f801423d00301176ffb41689f790b0cd8c1e82fe3ee74
   languageName: node
   linkType: hard
 
@@ -20855,7 +20878,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"accepts@npm:~1.3.4, accepts@npm:~1.3.5, accepts@npm:~1.3.8":
+"accepts@npm:^1.3.7, accepts@npm:~1.3.4, accepts@npm:~1.3.5, accepts@npm:~1.3.8":
   version: 1.3.8
   resolution: "accepts@npm:1.3.8"
   dependencies:
@@ -24123,7 +24146,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"content-disposition@npm:0.5.4":
+"content-disposition@npm:0.5.4, content-disposition@npm:^0.5.3":
   version: 0.5.4
   resolution: "content-disposition@npm:0.5.4"
   dependencies:
@@ -25521,7 +25544,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"depd@npm:^1.1.2, depd@npm:~1.1.2":
+"depd@npm:^1.1.0, depd@npm:^1.1.2, depd@npm:~1.1.2":
   version: 1.1.2
   resolution: "depd@npm:1.1.2"
   checksum: 6b406620d269619852885ce15965272b829df6f409724415e0002c8632ab6a8c0a08ec1f0bd2add05dc7bd7507606f7e2cc034fa24224ab829580040b835ecd9
@@ -28672,7 +28695,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fresh@npm:0.5.2":
+"fresh@npm:0.5.2, fresh@npm:^0.5.2":
   version: 0.5.2
   resolution: "fresh@npm:0.5.2"
   checksum: 13ea8b08f91e669a64e3ba3a20eb79d7ca5379a81f1ff7f4310d54e2320645503cc0c78daedc93dfb6191287295f6479544a649c64d8e41a1c0fb0c221552346
@@ -34580,6 +34603,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"merge-descriptors@npm:^1.0.1":
+  version: 1.0.3
+  resolution: "merge-descriptors@npm:1.0.3"
+  checksum: 52117adbe0313d5defa771c9993fe081e2d2df9b840597e966aadafde04ae8d0e3da46bac7ca4efc37d4d2b839436582659cd49c6a43eacb3fe3050896a105d1
+  languageName: node
+  linkType: hard
+
 "merge-stream@npm:^2.0.0":
   version: 2.0.0
   resolution: "merge-stream@npm:2.0.0"
@@ -35004,7 +35034,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mime@npm:1.6.0":
+"mime@npm:1.6.0, mime@npm:^1.3.4":
   version: 1.6.0
   resolution: "mime@npm:1.6.0"
   bin:
@@ -36038,6 +36068,26 @@ __metadata:
   version: 1.1.12
   resolution: "node-machine-id@npm:1.1.12"
   checksum: e23088a0fb4a77a1d6484b7f09a22992fd3e0054d4f2e427692b4c7081e6cf30118ba07b6113b6c89f1ce46fd26ec5ab1d76dcaf6c10317717889124511283a5
+  languageName: node
+  linkType: hard
+
+"node-mocks-http@npm:^1.0.0":
+  version: 1.14.1
+  resolution: "node-mocks-http@npm:1.14.1"
+  dependencies:
+    "@types/express": ^4.17.21
+    "@types/node": ^20.10.6
+    accepts: ^1.3.7
+    content-disposition: ^0.5.3
+    depd: ^1.1.0
+    fresh: ^0.5.2
+    merge-descriptors: ^1.0.1
+    methods: ^1.1.2
+    mime: ^1.3.4
+    parseurl: ^1.3.3
+    range-parser: ^1.2.0
+    type-is: ^1.6.18
+  checksum: cc37618fb5f44a6049f8fcfc73373c4b42943e35e4b0f7463939d3f219663fe647e00e6eb9c3b8aedd48e88e10e1542993ac1a7ff8442ee2c3f6b97f23ced0e0
   languageName: node
   linkType: hard
 
@@ -37262,7 +37312,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"parseurl@npm:~1.3.2, parseurl@npm:~1.3.3":
+"parseurl@npm:^1.3.3, parseurl@npm:~1.3.2, parseurl@npm:~1.3.3":
   version: 1.3.3
   resolution: "parseurl@npm:1.3.3"
   checksum: 407cee8e0a3a4c5cd472559bca8b6a45b82c124e9a4703302326e9ab60fc1081442ada4e02628efef1eb16197ddc7f8822f5a91fd7d7c86b51f530aedb17dfa2
@@ -39163,7 +39213,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"range-parser@npm:^1.2.1, range-parser@npm:~1.2.1":
+"range-parser@npm:^1.2.0, range-parser@npm:^1.2.1, range-parser@npm:~1.2.1":
   version: 1.2.1
   resolution: "range-parser@npm:1.2.1"
   checksum: 0a268d4fea508661cf5743dfe3d5f47ce214fd6b7dec1de0da4d669dd4ef3d2144468ebe4179049eff253d9d27e719c88dae55be64f954e80135a0cada804ec9
@@ -44103,7 +44153,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-is@npm:^1.6.4, type-is@npm:~1.6.18":
+"type-is@npm:^1.6.18, type-is@npm:^1.6.4, type-is@npm:~1.6.18":
   version: 1.6.18
   resolution: "type-is@npm:1.6.18"
   dependencies:

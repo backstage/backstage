@@ -15,6 +15,7 @@ import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ClientAuthResponse } from '@backstage/plugin-auth-node';
+import { cloudflareAccessSignInResolvers } from '@backstage/plugin-auth-backend-module-cloudflare-access-provider';
 import { Config } from '@backstage/config';
 import { CookieConfigurer as CookieConfigurer_2 } from '@backstage/plugin-auth-node';
 import { decodeOAuthState } from '@backstage/plugin-auth-node';
@@ -134,7 +135,7 @@ export class CatalogIdentityClient {
   }): Promise<string[]>;
 }
 
-// @public
+// @public @deprecated
 export type CloudflareAccessClaims = {
   aud: string[];
   email: string;
@@ -147,14 +148,14 @@ export type CloudflareAccessClaims = {
   custom: string;
 };
 
-// @public
+// @public @deprecated
 export type CloudflareAccessGroup = {
   id: string;
   name: string;
   email: string;
 };
 
-// @public
+// @public @deprecated
 export type CloudflareAccessIdentityProfile = {
   id: string;
   name: string;
@@ -162,7 +163,7 @@ export type CloudflareAccessIdentityProfile = {
   groups: CloudflareAccessGroup[];
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type CloudflareAccessResult = {
   claims: CloudflareAccessClaims;
   cfIdentity: CloudflareAccessIdentityProfile;
@@ -454,9 +455,7 @@ export const providers: Readonly<{
       };
       cache?: CacheService | undefined;
     }) => AuthProviderFactory_2;
-    resolvers: Readonly<{
-      emailMatchingUserEntityProfileEmail: () => SignInResolver_2<unknown>;
-    }>;
+    resolvers: Readonly<cloudflareAccessSignInResolvers>;
   }>;
   gcpIap: Readonly<{
     create: (options: {
