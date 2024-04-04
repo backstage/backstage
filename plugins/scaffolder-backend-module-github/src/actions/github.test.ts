@@ -2083,6 +2083,15 @@ describe('publish:github', () => {
 
     mockContext.isDryRun = true;
     await action.handler(mockContext);
+    expect(mockContext.output).toHaveBeenCalledWith('commitHash', 'commitHash');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'www.example.com',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'repoContentsUrl',
+      'www.example.com/contents',
+    );
     expect(mockOctokit.rest.repos.createInOrg).not.toHaveBeenCalled();
   });
 
@@ -2096,6 +2105,15 @@ describe('publish:github', () => {
     });
 
     await action.handler(mockContext);
+    expect(mockContext.output).toHaveBeenCalledWith('commitHash', 'commitHash');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'www.example.com',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'repoContentsUrl',
+      'www.example.com/contents',
+    );
     expect(
       mockOctokit.rest.repos.createForAuthenticatedUser,
     ).not.toHaveBeenCalled();

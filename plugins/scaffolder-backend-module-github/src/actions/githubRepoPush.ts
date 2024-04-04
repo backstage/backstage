@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import { InputError } from '@backstage/errors';
+import * as inputProps from './inputProperties';
+import * as outputProps from './outputProperties';
+
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { Octokit } from 'octokit';
 import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
 import { getOctokitOptions, initRepoPushAndProtect } from './helpers';
-import * as inputProps from './inputProperties';
-import * as outputProps from './outputProperties';
+
+import { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
+import { Octokit } from 'octokit';
 import { examples } from './githubRepoPush.examples';
 
 /**
@@ -155,6 +157,15 @@ export function createGithubRepoPushAction(options: {
 
       const remoteUrl = targetRepo.data.clone_url;
       const repoContentsUrl = `${targetRepo.data.html_url}/blob/${defaultBranch}`;
+
+      if (ctx.isDryRun) {
+        ctx.logger.info(`Performing dry run of creating pull request`);
+        ctx.output('remoteUrl', 'www.example.com');
+        ctx.output('repoContentsUrl', 'www.example.com/content');
+        ctx.output('commitHash', 'commitHash');
+        ctx.logger.info(`Dry run complete`);
+        return;
+      }
 
       const { commitHash } = await initRepoPushAndProtect(
         remoteUrl,

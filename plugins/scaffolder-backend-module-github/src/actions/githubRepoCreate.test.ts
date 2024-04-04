@@ -715,6 +715,10 @@ describe('github:repo:create', () => {
 
     mockContext.isDryRun = true;
     await action.handler(mockContext);
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'www.example.com',
+    );
     expect(mockOctokit.rest.repos.createInOrg).not.toHaveBeenCalled();
   });
 
@@ -728,6 +732,10 @@ describe('github:repo:create', () => {
     });
 
     await action.handler(mockContext);
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'www.example.com',
+    );
     expect(
       mockOctokit.rest.repos.createForAuthenticatedUser,
     ).not.toHaveBeenCalled();

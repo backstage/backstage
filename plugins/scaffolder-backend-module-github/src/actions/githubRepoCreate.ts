@@ -192,7 +192,7 @@ export function createGithubRepoCreateAction(options: {
 
       if (ctx.isDryRun) {
         ctx.logger.info(`Performing dry run of creating repository`);
-        ctx.output('remoteUrl', repoUrl);
+        ctx.output('remoteUrl', 'www.example.com');
         ctx.logger.info(`Dry run complete`);
         return;
       }

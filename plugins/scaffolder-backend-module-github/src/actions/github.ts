@@ -231,7 +231,9 @@ export function createPublishGithubAction(options: {
 
       if (ctx.isDryRun) {
         ctx.logger.info(`Performing dry run of creating repository`);
-        ctx.output('remoteUrl', repoUrl);
+        ctx.output('commitHash', 'commitHash');
+        ctx.output('remoteUrl', 'www.example.com');
+        ctx.output('repoContentsUrl', 'www.example.com/contents');
         ctx.logger.info(`Dry run complete`);
         return;
       }
