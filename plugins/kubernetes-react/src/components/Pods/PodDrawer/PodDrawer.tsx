@@ -129,7 +129,7 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
                 title="Memory limits"
                 usage={podMetrics.memory.currentUsage}
                 total={podMetrics.memory.limitTotal}
-                totalFormatted={bytesToMiB(podMetrics.memory.requestTotal)}
+                totalFormatted={bytesToMiB(podMetrics.memory.limitTotal)}
               />
             </Grid>
           </Grid>
