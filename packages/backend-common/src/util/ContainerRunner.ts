@@ -23,12 +23,16 @@ import { Writable } from 'stream';
  *
  *   @public
  */
-export interface DockerAuthentication {
-  username?: string;
-  password?: string;
-  auth?: string;
-  email?: string;
-  serveraddress?: string;
+export interface PullOptions {
+  authconfig?: {
+    username?: string;
+    password?: string;
+    auth?: string;
+    email?: string;
+    serveraddress?: string;
+    [key: string]: unknown;
+  };
+  [key: string]: unknown;
 }
 
 /**
@@ -46,7 +50,7 @@ export type RunContainerOptions = {
   envVars?: Record<string, string>;
   pullImage?: boolean;
   defaultUser?: boolean;
-  authentication?: DockerAuthentication;
+  pullOptions?: PullOptions;
 };
 
 /**

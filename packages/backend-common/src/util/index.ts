@@ -17,7 +17,7 @@
 export type {
   ContainerRunner,
   RunContainerOptions,
-  DockerAuthentication,
+  PullOptions,
 } from './ContainerRunner';
 export { DockerContainerRunner } from './DockerContainerRunner';
 export type {

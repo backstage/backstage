@@ -87,8 +87,10 @@ describe('DockerContainerRunner', () => {
     await containerTaskApi.runContainer({
       imageName,
       args,
-      authentication: {
-        auth: 'aaaaaaaaa',
+      pullOptions: {
+        authconfig: {
+          auth: 'aaaaaaaaa',
+        },
       },
     });
 

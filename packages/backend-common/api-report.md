@@ -306,20 +306,6 @@ export type DatabaseManagerOptions = {
 };
 
 // @public
-export interface DockerAuthentication {
-  // (undocumented)
-  auth?: string;
-  // (undocumented)
-  email?: string;
-  // (undocumented)
-  password?: string;
-  // (undocumented)
-  serveraddress?: string;
-  // (undocumented)
-  username?: string;
-}
-
-// @public
 export class DockerContainerRunner implements ContainerRunner {
   constructor(options: { dockerClient: Docker });
   // (undocumented)
@@ -657,6 +643,21 @@ export { PluginDatabaseManager };
 export { PluginEndpointDiscovery };
 
 // @public
+export interface PullOptions {
+  // (undocumented)
+  [key: string]: unknown;
+  // (undocumented)
+  authconfig?: {
+    username?: string;
+    password?: string;
+    auth?: string;
+    email?: string;
+    serveraddress?: string;
+    [key: string]: unknown;
+  };
+}
+
+// @public
 export type ReaderFactory = (options: {
   config: Config;
   logger: LoggerService;
@@ -754,7 +755,7 @@ export type RunContainerOptions = {
   envVars?: Record<string, string>;
   pullImage?: boolean;
   defaultUser?: boolean;
-  authentication?: DockerAuthentication;
+  pullOptions?: PullOptions;
 };
 
 export { SearchOptions };
