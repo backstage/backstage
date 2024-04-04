@@ -17,6 +17,21 @@
 import { Writable } from 'stream';
 
 /**
+ *   Allows defining access credentials for a registry
+ *   Follows dockerode auth configuration:
+ *   {@link https://github.com/apocas/dockerode?tab=readme-ov-file#pull-from-private-repos}
+ *
+ *   @public
+ */
+export interface DockerAuthentication {
+  username?: string;
+  password?: string;
+  auth?: string;
+  email?: string;
+  serveraddress?: string;
+}
+
+/**
  * Options passed to the {@link ContainerRunner.runContainer} method.
  *
  * @public
@@ -31,6 +46,7 @@ export type RunContainerOptions = {
   envVars?: Record<string, string>;
   pullImage?: boolean;
   defaultUser?: boolean;
+  authentication?: DockerAuthentication;
 };
 
 /**

@@ -47,6 +47,7 @@ export class DockerContainerRunner implements ContainerRunner {
       envVars = {},
       pullImage = true,
       defaultUser = false,
+      authentication,
     } = options;
 
     // Show a better error message when Docker is unavailable.
@@ -61,13 +62,17 @@ export class DockerContainerRunner implements ContainerRunner {
 
     if (pullImage) {
       await new Promise<void>((resolve, reject) => {
-        this.dockerClient.pull(imageName, {}, (err, stream) => {
-          if (err) return reject(err);
-          stream.pipe(logStream, { end: false });
-          stream.on('end', () => resolve());
-          stream.on('error', (error: Error) => reject(error));
-          return undefined;
-        });
+        this.dockerClient.pull(
+          imageName,
+          { authconfig: authentication },
+          (err, stream) => {
+            if (err) return reject(err);
+            stream.pipe(logStream, { end: false });
+            stream.on('end', () => resolve());
+            stream.on('error', (error: Error) => reject(error));
+            return undefined;
+          },
+        );
       });
     }
 
