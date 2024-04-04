@@ -36,7 +36,7 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
   let openapiPath = '';
   try {
     openapiPath = await getPathToOpenApiSpec(directoryPath);
-  } catch (err) {
+  } catch {
     return;
   }
   const openapiFileContent = await fs.readFile(openapiPath, 'utf8');
