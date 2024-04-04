@@ -74,25 +74,16 @@ Once you authenticate, your graph is ready to use 🚀
 
 If you need to utilize an ApiRef to supply a token to Apollo, you may do so using an ApiHolder.
 
-In `packages/app/src/App.tsx` perform the following modifications from above. The import `ssoAuthApiRef` is used as an example
+In `packages/app/src/App.tsx` perform the following modifications from above. The import `ssoAuthApiRef` is used as an example and does not exist.
 
 ```typescript
 import { ApolloExplorerPage, EndpointProps } from '@backstage/plugin-apollo-explorer';
 import { ssoAuthApiRef } from '@backstage/devkit';
 import { ApiHolder } from '@backstage/core-plugin-api';
 
-
-async function apolloPluginEndpointsCallback(options: { apiHolder: ApiHolder }): Promise<EndpointProps[]> {
-  const sso = options.apiHolder.get(ssoAuthApiRef)
-  return [{
-    title: 'Github',
-    graphRef: 'my-github-graph-ref@current',
-    initialState: {
-      headers: {
-        authorization: `Bearer ${await sso.getToken()}`,
-      },
-    },
-  }]
+async function authCallback(options: { apiHolder: ApiHolder }): Promise<string> {
+  const sso = options.apiHolder.get<any>(ssoAuthApiRef)
+  return await sso.getToken()
 }
 
 const routes = (
@@ -102,8 +93,12 @@ const routes = (
       path="/apollo-explorer"
       element={
         <ApolloExplorerPage
-          endpoints={apolloPluginEndpointsCallback}
+          endpoints={[{
+            title: 'Github',
+            graphRef: 'my-github-graph-ref@current',
+          }]}
         />
       }
+      authCallback={authCallback}
     />
 ```
