@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
+import {
+  DefaultGithubCredentialsProvider,
+  GithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
+
+import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { createGithubRepoCreateAction } from './githubRepoCreate';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { entityRefToName } from './gitHelpers';
+import { when } from 'jest-when';
 
 jest.mock('./gitHelpers', () => {
   return {
@@ -23,15 +33,6 @@ jest.mock('./gitHelpers', () => {
     entityRefToName: jest.fn(),
   };
 });
-
-import { ConfigReader } from '@backstage/config';
-import {
-  DefaultGithubCredentialsProvider,
-  GithubCredentialsProvider,
-  ScmIntegrations,
-} from '@backstage/integration';
-import { createGithubRepoCreateAction } from './githubRepoCreate';
-import { entityRefToName } from './gitHelpers';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
@@ -696,5 +697,53 @@ describe('github:repo:create', () => {
       'remoteUrl',
       'https://github.com/clone/url.git',
     );
+  });
+
+  it('should NOT call the githubApis with the correct values for createInOrg during dry run', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.teams.getByName.mockResolvedValue({
+      data: {
+        name: 'blam',
+        id: 42,
+      },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    mockContext.isDryRun = true;
+    await action.handler(mockContext);
+    expect(mockOctokit.rest.repos.createInOrg).not.toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      visibility: 'private',
+    });
+  });
+
+  it('should not call the githubApis with the correct values for createForAuthenticatedUser during dry run', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {},
+    });
+
+    mockContext.isDryRun = true;
+    await action.handler(mockContext);
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).not.toHaveBeenCalled();
   });
 });
