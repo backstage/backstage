@@ -17,15 +17,11 @@ import {
   type EntityFilterQuery,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
-import {
-  Entity,
-  parseEntityRef,
-  stringifyEntityRef,
-} from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  humanizeEntityRef,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
@@ -65,6 +61,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     uiSchema['ui:options']?.defaultNamespace || undefined;
 
   const catalogApi = useApi(catalogApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
 
   const { value: entities, loading } = useAsync(async () => {
     const fields = ['metadata.name', 'metadata.namespace', 'kind'];
@@ -81,18 +78,15 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const getLabel = useCallback(
     (ref: string) => {
       try {
-        return humanizeEntityRef(
-          parseEntityRef(ref, { defaultKind, defaultNamespace }),
-          {
-            defaultKind,
-            defaultNamespace,
-          },
-        );
+        return entityPresentationApi.forEntity(ref, {
+          defaultKind,
+          defaultNamespace,
+        }).snapshot.primaryTitle;
       } catch (err) {
         return ref;
       }
     },
-    [defaultKind, defaultNamespace],
+    [defaultKind, defaultNamespace, entityPresentationApi],
   );
 
   const onSelect = useCallback(
@@ -100,19 +94,21 @@ export const EntityPicker = (props: EntityPickerProps) => {
       // ref can either be a string from free solo entry or
       if (typeof ref !== 'string') {
         // if ref does not exist: pass 'undefined' to trigger validation for required value
-        onChange(ref ? stringifyEntityRef(ref as Entity) : undefined);
+        onChange(
+          ref
+            ? entityPresentationApi.forEntity(ref, {
+                defaultKind,
+                defaultNamespace,
+              }).snapshot.entityRef
+            : undefined,
+        );
       } else {
         if (reason === 'blur' || reason === 'create-option') {
           // Add in default namespace, etc.
           let entityRef = ref;
           try {
             // Attempt to parse the entity ref into it's full form.
-            entityRef = stringifyEntityRef(
-              parseEntityRef(ref as string, {
-                defaultKind,
-                defaultNamespace,
-              }),
-            );
+            entityRef = entityPresentationApi.forEntity(ref).snapshot.entityRef;
           } catch (err) {
             // If the passed in value isn't an entity ref, do nothing.
           }
@@ -123,20 +119,28 @@ export const EntityPicker = (props: EntityPickerProps) => {
         }
       }
     },
-    [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
+    [
+      onChange,
+      formData,
+      defaultKind,
+      defaultNamespace,
+      allowArbitraryValues,
+      entityPresentationApi,
+    ],
   );
 
   // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
   // back to the given value.
   const selectedEntity =
-    entities?.find(e => stringifyEntityRef(e) === formData) ??
-    (allowArbitraryValues && formData ? getLabel(formData) : '');
+    entities?.find(
+      e => entityPresentationApi.forEntity(e).snapshot.entityRef === formData,
+    ) ?? (allowArbitraryValues && formData ? getLabel(formData) : '');
 
   useEffect(() => {
     if (entities?.length === 1 && selectedEntity === '') {
-      onChange(stringifyEntityRef(entities[0]));
+      onChange(entityPresentationApi.forEntity(entities[0]).snapshot.entityRef);
     }
-  }, [entities, onChange, selectedEntity]);
+  }, [entities, onChange, selectedEntity, entityPresentationApi]);
 
   return (
     <FormControl
@@ -155,7 +159,10 @@ export const EntityPicker = (props: EntityPickerProps) => {
           // option can be a string due to freeSolo.
           typeof option === 'string'
             ? option
-            : humanizeEntityRef(option, { defaultKind, defaultNamespace })!
+            : entityPresentationApi.forEntity(option, {
+                defaultKind,
+                defaultNamespace,
+              }).snapshot.primaryTitle
         }
         autoSelect
         freeSolo={allowArbitraryValues}
