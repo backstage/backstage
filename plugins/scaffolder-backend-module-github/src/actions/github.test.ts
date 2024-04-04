@@ -33,20 +33,22 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
   };
 });
 
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { ConfigReader } from '@backstage/config';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { createPublishGithubAction } from './github';
-import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   entityRefToName,
 } from './gitHelpers';
+
+import { ConfigReader } from '@backstage/config';
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { createPublishGithubAction } from './github';
+import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
+import { when } from 'jest-when';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
@@ -2063,5 +2065,39 @@ describe('publish:github', () => {
       dismissStaleReviews: false,
       requiredCommitSigning: false,
     });
+  });
+
+  it('should not call createInOrg during dry run', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.teams.getByName.mockResolvedValue({
+      data: {
+        name: 'blam',
+        id: 42,
+      },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    mockContext.isDryRun = true;
+    await action.handler(mockContext);
+    expect(mockOctokit.rest.repos.createInOrg).not.toHaveBeenCalled();
+  });
+
+  it('should not call createForAuthenticatedUser during dry run', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'User' },
+    });
+
+    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
+      data: {},
+    });
+
+    await action.handler(mockContext);
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).not.toHaveBeenCalled();
   });
 });
