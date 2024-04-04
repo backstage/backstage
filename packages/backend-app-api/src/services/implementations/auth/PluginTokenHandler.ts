@@ -22,19 +22,22 @@ import {
   JWK,
   importJWK,
   SignJWT,
+  decodeProtectedHeader,
 } from 'jose';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { InternalKey, KeyStore } from './types';
 import { AuthenticationError } from '@backstage/errors';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
+import { tokenTypes } from '@backstage/plugin-auth-node';
+
+const ALLOWED_PLUGIN_ID_PATTERN = /^[a-z0-9_-]+$/i;
 
 type Options = {
+  ownPluginId: string;
   publicKeyStore: KeyStore;
   discovery: DiscoveryService;
   logger: LoggerService;
-  /** Value of the issuer claim in issued tokens */
-  issuer: string;
   /** Expiration time of signing keys in seconds */
   keyDurationSeconds: number;
   /** JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
@@ -54,6 +57,7 @@ export class PluginTokenHandler {
   static create(options: Options) {
     return new PluginTokenHandler(
       options.logger,
+      options.ownPluginId,
       options.publicKeyStore,
       options.keyDurationSeconds,
       options.algorithm ?? 'ES256',
@@ -63,36 +67,43 @@ export class PluginTokenHandler {
 
   private constructor(
     readonly logger: LoggerService,
+    readonly ownPluginId: string,
     readonly publicKeyStore: KeyStore,
     readonly keyDurationSeconds: number,
     readonly algorithm: string,
     readonly discovery: DiscoveryService,
   ) {}
 
-  async verifyToken(token: string): Promise<{ subject: string }> {
-    const claims = decodeJwt(token);
-    const pluginId = claims.sub;
+  async verifyToken(token: string): Promise<{ subject: string } | undefined> {
+    try {
+      const { typ } = decodeProtectedHeader(token);
+      if (typ !== tokenTypes.plugin.typParam) {
+        return undefined;
+      }
+    } catch {
+      return undefined;
+    }
+
+    const pluginId = String(decodeJwt(token).sub);
     if (!pluginId) {
-      throw new AuthenticationError('Invalid subject');
+      throw new AuthenticationError('Invalid plugin token: missing subject');
+    }
+    if (!ALLOWED_PLUGIN_ID_PATTERN.test(pluginId)) {
+      throw new AuthenticationError(
+        'Invalid plugin token: forbidden subject format',
+      );
     }
 
     const JWKS = await this.getJWKS(pluginId);
-    try {
-      const { payload, protectedHeader } = await jwtVerify(token, JWKS, {
-        issuer: 'backstage-plugin',
-        // TODO(vinzscam): add audience verification
-      });
+    const { payload } = await jwtVerify<{ sub: string }>(token, JWKS, {
+      typ: tokenTypes.plugin.typParam,
+      audience: this.ownPluginId,
+      requiredClaims: ['iat', 'exp', 'sub', 'aud'],
+    }).catch(e => {
+      throw new AuthenticationError('Invalid plugin token', e);
+    });
 
-      if (!payload.sub) {
-        throw new AuthenticationError('Missing subject');
-      }
-      console.log('payload', payload);
-      console.log('protected header', protectedHeader);
-      return { subject: payload.sub };
-    } catch (e) {
-      // TODO(vinzscam): here we need to handle errors properly
-      throw e;
-    }
+    return { subject: payload.sub };
   }
 
   async issueToken(options: {
@@ -101,18 +112,18 @@ export class PluginTokenHandler {
   }): Promise<{ token: string }> {
     const key = await this.getKey();
 
-    const iss = 'backstage-plugin';
     const sub = options.pluginId;
     const aud = options.targetPluginId;
     const iat = Math.floor(Date.now() / 1000);
     const exp = iat + this.keyDurationSeconds;
 
-    this.logger.info(`Issuing token for ${sub} with audentice ${aud}`);
-
-    const claims = { iss, sub, aud, iat, exp };
+    const claims = { sub, aud, iat, exp };
     const token = await new SignJWT(claims)
-      .setProtectedHeader({ alg: this.algorithm, kid: key.kid })
-      .setIssuer(iss)
+      .setProtectedHeader({
+        typ: tokenTypes.plugin.typParam,
+        alg: this.algorithm,
+        kid: key.kid,
+      })
       .setAudience(aud)
       .setSubject(sub)
       .setIssuedAt(iat)

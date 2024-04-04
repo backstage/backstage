@@ -24,6 +24,7 @@ export function createAuthIntegrationRouter(options: {
 
   router.get('/.backstage/auth/v1/jwks.json', async (_req, res) => {
     const { keys } = await options.auth.listPublicServiceKeys();
+
     res.json({ keys });
   });
 

@@ -122,23 +122,9 @@ class DefaultAuthService implements AuthService {
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {
-    const { sub, aud, iss } = decodeJwt(token);
-    console.log(`DEBUG: iss=`, iss);
-
-    if (iss === 'backstage-plugin') {
-      console.log('DO THE STUFF!');
-      const { subject } = await this.pluginTokenHandler.verifyToken(token);
-      return createCredentialsWithServicePrincipal(subject);
-    }
-
-    // # identify new token
-    // 1. generate and store public keys in database
-    // 2. verification of token, by fetching all public keys
-
-    // Legacy service-to-service token
-    if (sub === 'backstage-server' && !aud) {
-      await this.tokenManager.authenticate(token);
-      return createCredentialsWithServicePrincipal('external:backstage-plugin');
+    const pluginResult = await this.pluginTokenHandler.verifyToken(token);
+    if (pluginResult) {
+      return createCredentialsWithServicePrincipal(pluginResult.subject);
     }
 
     const userResult = await this.userTokenHandler.verifyToken(token);
@@ -148,6 +134,13 @@ class DefaultAuthService implements AuthService {
         token,
         this.#getJwtExpiration(token),
       );
+    }
+
+    // Legacy service-to-service token
+    const { sub, aud } = decodeJwt(token);
+    if (sub === 'backstage-server' && !aud) {
+      await this.tokenManager.authenticate(token);
+      return createCredentialsWithServicePrincipal('external:backstage-plugin');
     }
 
     throw new AuthenticationError('Unknown token');
@@ -277,8 +270,8 @@ export const authServiceFactory = createServiceFactory({
       disableDefaultAuthPolicy,
       publicKeyStore,
       PluginTokenHandler.create({
+        ownPluginId: plugin.getId(),
         keyDurationSeconds: 60 * 60,
-        issuer: `plugin:${plugin.getId()}`,
         logger,
         publicKeyStore,
         discovery,

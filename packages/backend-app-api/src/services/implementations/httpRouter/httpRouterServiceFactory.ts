@@ -23,7 +23,7 @@ import { Handler } from 'express';
 import PromiseRouter from 'express-promise-router';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
-import { createAuthIntegrationRouter } from '../auth';
+import { createAuthIntegrationRouter } from './createAuthIntegrationRouter';
 
 /**
  * @public

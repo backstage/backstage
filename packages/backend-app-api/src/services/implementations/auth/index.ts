@@ -15,4 +15,3 @@
  */
 
 export { authServiceFactory } from './authServiceFactory';
-export { createAuthIntegrationRouter } from './createAuthIntegrationRouter';
