@@ -31,7 +31,7 @@ describe('DomainV1alpha1Validator', () => {
       },
       spec: {
         owner: 'me',
-        domain: 'parent',
+        subdomainOf: 'parent-domain',
       },
     };
   });
@@ -70,18 +70,18 @@ describe('DomainV1alpha1Validator', () => {
     await expect(validator.check(entity)).rejects.toThrow(/owner/);
   });
 
-  it('accepts missing domain', async () => {
-    delete (entity as any).spec.domain;
+  it('accepts missing subdomainOf', async () => {
+    delete (entity as any).spec.subdomainOf;
     await expect(validator.check(entity)).resolves.toBe(true);
   });
 
-  it('rejects wrong domain', async () => {
-    (entity as any).spec.domain = 7;
-    await expect(validator.check(entity)).rejects.toThrow(/domain/);
+  it('rejects wrong subdomainOf', async () => {
+    (entity as any).spec.subdomainOf = 7;
+    await expect(validator.check(entity)).rejects.toThrow(/subdomainOf/);
   });
 
-  it('rejects empty domain', async () => {
-    (entity as any).spec.domain = '';
-    await expect(validator.check(entity)).rejects.toThrow(/domain/);
+  it('rejects empty subdomainOf', async () => {
+    (entity as any).spec.subdomainOf = '';
+    await expect(validator.check(entity)).rejects.toThrow(/subdomainOf/);
   });
 });

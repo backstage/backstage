@@ -5,3 +5,4 @@ metadata:
   description: Everything related to audio playback
 spec:
   owner: user:frank.tiernan
+  subdomainOf: audio

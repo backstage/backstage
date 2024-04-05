@@ -12,7 +12,7 @@
       },
       "spec": {
         "owner": "artist-relations-team",
-        "domain": "artists"
+        "subdomainOf": "audio"
       }
     }
   ],
@@ -40,10 +40,10 @@
               "examples": ["artist-relations-team", "user:john.johnson"],
               "minLength": 1
             },
-            "domain": {
+            "subdomainOf": {
               "type": "string",
-              "description": "An entity reference to the domain that the system belongs to.",
-              "examples": ["artists"],
+              "description": "An entity reference to another domain of which the domain is a part.",
+              "examples": ["audio"],
               "minLength": 1
             }
           }
