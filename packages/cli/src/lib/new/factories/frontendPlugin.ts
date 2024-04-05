@@ -128,5 +128,9 @@ export const frontendPlugin = createFactory<Options>({
       cwd: targetDir,
       optional: true,
     });
+    await Task.forCommand('yarn backstage-cli repo fix', {
+      cwd: targetDir,
+      optional: true,
+    });
   },
 });

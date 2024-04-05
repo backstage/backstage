@@ -133,7 +133,7 @@ const router = (
 )
 `);
 
-    expect(Task.forCommand).toHaveBeenCalledTimes(2);
+    expect(Task.forCommand).toHaveBeenCalledTimes(3);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
       cwd: mockDir.resolve('plugins/test'),
       optional: true,
@@ -142,6 +142,13 @@ const router = (
       cwd: mockDir.resolve('plugins/test'),
       optional: true,
     });
+    expect(Task.forCommand).toHaveBeenCalledWith(
+      'yarn backstage-cli repo fix',
+      {
+        cwd: mockDir.resolve('plugins/test'),
+        optional: true,
+      },
+    );
   });
 
   it('should create a frontend plugin with more options and codeowners', async () => {
@@ -198,7 +205,7 @@ const router = (
 )
 `);
 
-    expect(Task.forCommand).toHaveBeenCalledTimes(2);
+    expect(Task.forCommand).toHaveBeenCalledTimes(3);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
       cwd: mockDir.resolve('plugins/test'),
       optional: true,
@@ -207,5 +214,12 @@ const router = (
       cwd: mockDir.resolve('plugins/test'),
       optional: true,
     });
+    expect(Task.forCommand).toHaveBeenCalledWith(
+      'yarn backstage-cli repo fix',
+      {
+        cwd: mockDir.resolve('plugins/test'),
+        optional: true,
+      },
+    );
   });
 });

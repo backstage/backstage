@@ -106,7 +106,7 @@ describe('backendModule factory', () => {
     expect(moduleFile).toContain(`pluginId: 'test',`);
     expect(moduleFile).toContain(`moduleId: 'tester-two',`);
 
-    expect(Task.forCommand).toHaveBeenCalledTimes(2);
+    expect(Task.forCommand).toHaveBeenCalledTimes(3);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
       cwd: mockDir.resolve('plugins/test-backend-module-tester-two'),
       optional: true,
@@ -115,5 +115,12 @@ describe('backendModule factory', () => {
       cwd: mockDir.resolve('plugins/test-backend-module-tester-two'),
       optional: true,
     });
+    expect(Task.forCommand).toHaveBeenCalledWith(
+      'yarn backstage-cli repo fix',
+      {
+        cwd: mockDir.resolve('plugins/test-backend-module-tester-two'),
+        optional: true,
+      },
+    );
   });
 });

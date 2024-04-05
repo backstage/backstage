@@ -97,7 +97,7 @@ describe('scaffolderModule factory', () => {
       }),
     );
 
-    expect(Task.forCommand).toHaveBeenCalledTimes(2);
+    expect(Task.forCommand).toHaveBeenCalledTimes(3);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
       cwd: mockDir.resolve('plugins/scaffolder-backend-module-test'),
       optional: true,
@@ -106,5 +106,12 @@ describe('scaffolderModule factory', () => {
       cwd: mockDir.resolve('plugins/scaffolder-backend-module-test'),
       optional: true,
     });
+    expect(Task.forCommand).toHaveBeenCalledWith(
+      'yarn backstage-cli repo fix',
+      {
+        cwd: mockDir.resolve('plugins/scaffolder-backend-module-test'),
+        optional: true,
+      },
+    );
   });
 });

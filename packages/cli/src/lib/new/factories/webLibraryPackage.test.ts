@@ -99,7 +99,7 @@ describe('webLibraryPackage factory', () => {
       }),
     );
 
-    expect(Task.forCommand).toHaveBeenCalledTimes(2);
+    expect(Task.forCommand).toHaveBeenCalledTimes(3);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
       cwd: mockDir.resolve('packages', expectedwebLibraryPackageName),
       optional: true,
@@ -108,6 +108,13 @@ describe('webLibraryPackage factory', () => {
       cwd: mockDir.resolve('packages', expectedwebLibraryPackageName),
       optional: true,
     });
+    expect(Task.forCommand).toHaveBeenCalledWith(
+      'yarn backstage-cli repo fix',
+      {
+        cwd: mockDir.resolve('packages', expectedwebLibraryPackageName),
+        optional: true,
+      },
+    );
   });
 
   it('should create a web library plugin with options and codeowners', async () => {
@@ -136,7 +143,7 @@ describe('webLibraryPackage factory', () => {
       createTemporaryDirectory: () => fs.mkdtemp('test'),
     });
 
-    expect(Task.forCommand).toHaveBeenCalledTimes(2);
+    expect(Task.forCommand).toHaveBeenCalledTimes(3);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
       cwd: mockDir.resolve(expectedwebLibraryPackageName),
       optional: true,
@@ -145,5 +152,12 @@ describe('webLibraryPackage factory', () => {
       cwd: mockDir.resolve(expectedwebLibraryPackageName),
       optional: true,
     });
+    expect(Task.forCommand).toHaveBeenCalledWith(
+      'yarn backstage-cli repo fix',
+      {
+        cwd: mockDir.resolve(expectedwebLibraryPackageName),
+        optional: true,
+      },
+    );
   });
 });

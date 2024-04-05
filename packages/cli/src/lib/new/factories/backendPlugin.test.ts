@@ -99,7 +99,7 @@ describe('backendPlugin factory', () => {
       },
     });
 
-    expect(Task.forCommand).toHaveBeenCalledTimes(2);
+    expect(Task.forCommand).toHaveBeenCalledTimes(3);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
       cwd: mockDir.resolve('plugins/test-backend'),
       optional: true,
@@ -108,5 +108,12 @@ describe('backendPlugin factory', () => {
       cwd: mockDir.resolve('plugins/test-backend'),
       optional: true,
     });
+    expect(Task.forCommand).toHaveBeenCalledWith(
+      'yarn backstage-cli repo fix',
+      {
+        cwd: mockDir.resolve('plugins/test-backend'),
+        optional: true,
+      },
+    );
   });
 });

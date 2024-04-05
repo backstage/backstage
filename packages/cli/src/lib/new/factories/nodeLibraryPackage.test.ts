@@ -99,7 +99,7 @@ describe('nodeLibraryPackage factory', () => {
       }),
     );
 
-    expect(Task.forCommand).toHaveBeenCalledTimes(2);
+    expect(Task.forCommand).toHaveBeenCalledTimes(3);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
       cwd: mockDir.resolve('packages', expectedNodeLibraryPackageName),
       optional: true,
@@ -108,6 +108,13 @@ describe('nodeLibraryPackage factory', () => {
       cwd: mockDir.resolve('packages', expectedNodeLibraryPackageName),
       optional: true,
     });
+    expect(Task.forCommand).toHaveBeenCalledWith(
+      'yarn backstage-cli repo fix',
+      {
+        cwd: mockDir.resolve('packages', expectedNodeLibraryPackageName),
+        optional: true,
+      },
+    );
   });
 
   it('should create a node library plugin with options and codeowners', async () => {
@@ -136,7 +143,7 @@ describe('nodeLibraryPackage factory', () => {
       createTemporaryDirectory: () => fs.mkdtemp('test'),
     });
 
-    expect(Task.forCommand).toHaveBeenCalledTimes(2);
+    expect(Task.forCommand).toHaveBeenCalledTimes(3);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
       cwd: mockDir.resolve(expectedNodeLibraryPackageName),
       optional: true,
@@ -145,5 +152,12 @@ describe('nodeLibraryPackage factory', () => {
       cwd: mockDir.resolve(expectedNodeLibraryPackageName),
       optional: true,
     });
+    expect(Task.forCommand).toHaveBeenCalledWith(
+      'yarn backstage-cli repo fix',
+      {
+        cwd: mockDir.resolve(expectedNodeLibraryPackageName),
+        optional: true,
+      },
+    );
   });
 });
