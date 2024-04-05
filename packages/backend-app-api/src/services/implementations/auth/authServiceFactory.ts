@@ -115,11 +115,6 @@ class DefaultAuthService implements AuthService {
     private readonly pluginTokenHandler: PluginTokenHandler,
   ) {}
 
-  async listPublicServiceKeys(): Promise<{ keys: JsonObject[] }> {
-    const { keys } = await this.publicKeyStore.listKeys();
-    return { keys: keys.map(({ key }) => key) };
-  }
-
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {
     const pluginResult = await this.pluginTokenHandler.verifyToken(token);
@@ -233,6 +228,11 @@ class DefaultAuthService implements AuthService {
     }
 
     return this.userTokenHandler.createLimitedUserToken(backstageToken);
+  }
+
+  async listPublicServiceKeys(): Promise<{ keys: JsonObject[] }> {
+    const { keys } = await this.publicKeyStore.listKeys();
+    return { keys: keys.map(({ key }) => key) };
   }
 
   #getJwtExpiration(token: string) {
