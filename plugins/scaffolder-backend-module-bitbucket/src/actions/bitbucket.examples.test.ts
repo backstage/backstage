@@ -110,7 +110,7 @@ describe('publish:bitbucket', () => {
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
-      gitAuthorInfo: {},
+      gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 
@@ -151,7 +151,7 @@ describe('publish:bitbucket', () => {
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
-      gitAuthorInfo: {},
+      gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 
@@ -189,9 +189,9 @@ describe('publish:bitbucket', () => {
       remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
-      defaultBranch: 'main',
+      defaultBranch: 'master',
       commitMessage: 'initial commit',
-      gitAuthorInfo: {},
+      gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 
@@ -229,9 +229,12 @@ describe('publish:bitbucket', () => {
       remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
       auth: { username: 'x-token-auth', password: 'your-auth-token' },
       logger: mockContext.logger,
-      defaultBranch: 'main',
+      defaultBranch: 'master',
       commitMessage: 'initial commit',
-      gitAuthorInfo: {},
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
@@ -268,9 +271,9 @@ describe('publish:bitbucket', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
-      auth: { username: 'x-token-auth', password: 'your-auth-token' },
+      auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
-      defaultBranch: 'main',
+      defaultBranch: 'master',
       commitMessage: 'Initial commit with custom message',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
@@ -309,10 +312,10 @@ describe('publish:bitbucket', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
-      auth: { username: 'x-token-auth', password: 'your-auth-token' },
+      auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
-      defaultBranch: 'main',
-      commitMessage: 'Initial commit with custom message',
+      defaultBranch: 'master',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: 'your.email@example.com', name: 'Your Name' },
     });
   });

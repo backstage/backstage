@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Initializes a git repository of the content in the workspace, and publishes it to GitLab with the default confiiguration.',
+      'Initializes a git repository with the content in the workspace, and publishes it to GitLab with the default configuration.',
     example: yaml.stringify({
       steps: [
         {
