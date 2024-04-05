@@ -115,7 +115,7 @@ export const FeedbackResponseTable = (props: FeedbackResponseTableProps) => {
         return (
           <div>
             {typeof parsedComment === 'object' ? (
-              <ul>
+              <ul className={classes.list}>
                 {Object.entries<string>(parsedComment)?.map(([key, value]) => (
                   <li key={key} className={classes.listItem}>
                     <strong>{key}:</strong> {value}
