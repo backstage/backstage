@@ -66,26 +66,29 @@ export interface FeedbackResponseDialogProps {
   onClose: () => void;
 }
 
-const useStyles = makeStyles<Theme>(theme => ({
-  contactConsent: {
-    marginTop: theme.spacing(1.5),
-  },
-  commentBoxes: {
-    marginBottom: theme.spacing(1.5),
-  },
-  boxContainer: {
-    marginBottom: theme.spacing(1.5),
-    marginTop: theme.spacing(1.5),
-    marginLeft: theme.spacing(1),
-    paddingRight: theme.spacing(1),
-  },
-  formLabel: {
-    marginBottom: theme.spacing(1.5),
-  },
-  dialogActions: {
-    justifyContent: 'flex-start',
-  },
-}));
+const useStyles = makeStyles<Theme>(
+  theme => ({
+    contactConsent: {
+      marginTop: theme.spacing(1.5),
+    },
+    commentBoxes: {
+      marginBottom: theme.spacing(1.5),
+    },
+    boxContainer: {
+      marginBottom: theme.spacing(1.5),
+      marginTop: theme.spacing(1.5),
+      marginLeft: theme.spacing(1),
+      paddingRight: theme.spacing(1),
+    },
+    formLabel: {
+      marginBottom: theme.spacing(1.5),
+    },
+    dialogActions: {
+      justifyContent: 'flex-start',
+    },
+  }),
+  { name: 'BackstageEntityFeedbackDialog' },
+);
 
 export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
   const {
@@ -148,7 +151,9 @@ export const FeedbackResponseDialog = (props: FeedbackResponseDialogProps) => {
                 />
                 <Collapse in={responseSelections[response.id]}>
                   <TextField
-                    data-testid="feedback-response-dialog-collapse-comments-input"
+                    data-testid={`feedback-response-dialog-collapse-comments-input-${
+                      responseSelections[response.id]
+                    }`}
                     disabled={saving}
                     className={classes.commentBoxes}
                     multiline
