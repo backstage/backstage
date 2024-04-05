@@ -438,7 +438,6 @@ export interface PluginServiceFactoryConfig<
     deps: ServiceRefsToInstances<TDeps>,
     context: TContext,
   ): TImpl | Promise<TImpl>;
-  // (undocumented)
   initialization?: 'always' | 'lazy';
   // (undocumented)
   service: ServiceRef<TService, 'plugin'>;
@@ -519,7 +518,6 @@ export interface RootServiceFactoryConfig<
   deps: TDeps;
   // (undocumented)
   factory(deps: ServiceRefsToInstances<TDeps, 'root'>): TImpl | Promise<TImpl>;
-  // (undocumented)
   initialization?: 'always' | 'lazy';
   // (undocumented)
   service: ServiceRef<TService, 'root'>;
