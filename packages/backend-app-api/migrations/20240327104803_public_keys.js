@@ -32,7 +32,10 @@ exports.up = async function up(knex) {
 
       table.text('key').notNullable().comment('JSON serialized public key');
 
-      table.timestamp('expires_at').notNullable();
+      table
+        .timestamp('expires_at')
+        .notNullable()
+        .comment('The time that the key expires');
     },
   );
 };

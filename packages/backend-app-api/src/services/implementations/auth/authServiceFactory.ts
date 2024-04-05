@@ -267,7 +267,7 @@ export const authServiceFactory = createServiceFactory({
       ),
     );
 
-    const publicKeyStore = await DatabaseKeyStore.create({ database });
+    const publicKeyStore = await DatabaseKeyStore.create({ database, logger });
 
     return new DefaultAuthService(
       tokenManager,
