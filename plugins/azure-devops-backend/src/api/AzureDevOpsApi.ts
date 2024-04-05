@@ -405,7 +405,7 @@ export class AzureDevOpsApi {
 
     const webApiTeams: WebApiTeam[] = await client.getAllTeams(
       undefined,
-      limit,
+      options?.limit,
       undefined,
       undefined,
     );
