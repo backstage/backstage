@@ -88,6 +88,7 @@ import { AppRouter, getBasePath } from './AppRouter';
 import { AppLanguageSelector } from '../apis/implementations/AppLanguageApi';
 import { I18nextTranslationApi } from '../apis/implementations/TranslationApi';
 import { overrideBaseUrlConfigs } from './overrideBaseUrlConfigs';
+import { isProtectedApp } from '@backstage/plugin-auth-react';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -361,11 +362,11 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       this.appIdentityProxy.setSignOutCallback(async () => {
         const fetchApi = apis.get(fetchApiRef);
         const discoveryApi = apis.get(discoveryApiRef);
-        if (!fetchApi || !discoveryApi) return;
+        if (!fetchApi || !discoveryApi || !isProtectedApp()) return;
         // It is fine if we do NOT worry yet about deleting cookies for OTHER backends like techdocs
         const appBaseUrl = await discoveryApi.getBaseUrl('app');
         try {
-          await fetchApi.fetch(`${appBaseUrl}/.backstage/v1-cookie`, {
+          await fetchApi.fetch(`${appBaseUrl}/.backstage/auth/v1/cookie`, {
             method: 'DELETE',
           });
         } catch {

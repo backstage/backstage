@@ -7,7 +7,10 @@ import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
 
 // @public
-export function AppMode(props: { children: ReactNode }): JSX.Element;
+export function AppAuthProvider(props: { children: ReactNode }): JSX.Element;
+
+// @public
+export function CookieAuthRedirect(): React_2.JSX.Element | null;
 
 // @public
 export function CookieAuthRefreshProvider(
@@ -22,7 +25,7 @@ export type CookieAuthRefreshProviderProps = {
 };
 
 // @public
-export function CookieAuthRootRedirect(): React_2.JSX.Element | null;
+export function isProtectedApp(): boolean;
 
 // @public
 export function useCookieAuthRefresh(options: {

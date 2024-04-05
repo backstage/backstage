@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export { CompatAppProgress } from './CompatAppProgress';
+/**
+ * @public
+ * An utility function that detects whether the app is operating in protected mode.
+ */
+export function isProtectedApp() {
+  const element = document.querySelector('meta[name="backstage-app-mode"]');
+  const appMode = element?.getAttribute('content') ?? 'public';
+  return appMode === 'protected';
+}

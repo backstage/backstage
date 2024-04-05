@@ -21,10 +21,10 @@ import {
   createServiceFactory,
   HttpRouterServiceAuthPolicy,
 } from '@backstage/backend-plugin-api';
-import { createCookieAuthRefreshMiddleware } from '@backstage/plugin-auth-node';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
 import { createAuthIntegrationRouter } from './createAuthIntegrationRouter';
+import { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
 
 /**
  * @public
@@ -59,8 +59,6 @@ export const httpRouterServiceFactory = createServiceFactory(
       rootHttpRouter,
       lifecycle,
     }) {
-      let hasRegistedCookieAuthRefreshMiddleware = false;
-
       if (options?.getPath) {
         logger.warn(
           `DEPRECATION WARNING: The 'getPath' option for HttpRouterService is deprecated. The ability to reconfigure the '/api/' path prefix for plugins will be removed in the future.`,
@@ -80,6 +78,7 @@ export const httpRouterServiceFactory = createServiceFactory(
       router.use(createLifecycleMiddleware({ lifecycle }));
       router.use(createAuthIntegrationRouter({ auth }));
       router.use(credentialsBarrier.middleware);
+      router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
 
       return {
         use(handler: Handler): void {
@@ -87,14 +86,6 @@ export const httpRouterServiceFactory = createServiceFactory(
         },
         addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
           credentialsBarrier.addAuthPolicy(policy);
-          if (
-            policy.allow === 'user-cookie' &&
-            !hasRegistedCookieAuthRefreshMiddleware
-          ) {
-            // Only add the cookie refresh middleware once
-            hasRegistedCookieAuthRefreshMiddleware = true;
-            router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
-          }
         },
       };
     },

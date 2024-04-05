@@ -18,7 +18,7 @@ import React, { ReactNode } from 'react';
 import { ErrorPanel } from '@backstage/core-components';
 import { Button } from '@material-ui/core';
 import { useCookieAuthRefresh } from '../../hooks';
-import { CompatAppProgress } from '../CompatAppProgress/CompatAppProgress';
+import { CompatAppProgress } from './CompatAppProgress';
 
 /**
  * @public
@@ -45,6 +45,7 @@ export function CookieAuthRefreshProvider(
   const result = useCookieAuthRefresh(options);
 
   if (result.status === 'loading') {
+    // This component should be compatible with both old and new frontend systems
     return <CompatAppProgress />;
   }
 

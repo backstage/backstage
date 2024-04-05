@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { CookieAuthRootRedirect } from './CookieAuthRootRedirect';
+export { isProtectedApp } from './isProtectedApp';
+export { AppAuthProvider } from './AppAuthProvider';

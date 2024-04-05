@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { AppMode } from './AppMode';
+export { CookieAuthRedirect } from './CookieAuthRedirect';

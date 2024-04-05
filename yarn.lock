@@ -5088,7 +5088,6 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": "*"
-    "@types/express-serve-static-core": ^4.17.5
     "@types/passport": ^1.0.3
     cookie-parser: ^1.4.6
     express: ^4.17.1

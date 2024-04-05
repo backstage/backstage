@@ -45,7 +45,7 @@ With that, Backstage's cli and backend will detect public entry point and serve 
      createApiFactory,
      discoveryApiRef,
    } from '@backstage/core-plugin-api';
-   import { CookieAuthRootRedirect } from '@backstage/plugin-auth-react';
+   import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
    import { providers } from '../src/identityProviders';
    import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
 
@@ -79,7 +79,7 @@ With that, Backstage's cli and backend will detect public entry point and serve 
        <OAuthRequestDialog />
        <AppRouter>
          {/* This is a special component that does the magic to redirect users to access the home page of your authenticated application version */}
-         <CookieAuthRootRedirect />
+         <CookieAuthRedirect />
        </AppRouter>
      </>,
    );

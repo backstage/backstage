@@ -21,7 +21,7 @@ import {
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core-components';
-import { CookieAuthRootRedirect } from '@backstage/plugin-auth-react';
+import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { providers } from '../src/identityProviders';
@@ -59,7 +59,7 @@ const App = app.createRoot(
     <AlertDisplay transientTimeoutMs={2500} />
     <OAuthRequestDialog />
     <AppRouter>
-      <CookieAuthRootRedirect />
+      <CookieAuthRedirect />
     </AppRouter>
   </>,
 );

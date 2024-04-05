@@ -16,9 +16,9 @@
 
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { AppMode } from './AppMode';
-import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 import { componentsApiRef } from '@backstage/frontend-plugin-api';
+import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
+import { AppAuthProvider } from './AppAuthProvider';
 
 const now = 1710316886171;
 const tenMinutesInMilliseconds = 10 * 60 * 1000;
@@ -60,7 +60,7 @@ jest.mock('@backstage/core-plugin-api', () => {
   };
 });
 
-describe('AppMode', () => {
+describe('AppAuthProvider', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers({ now });
@@ -71,7 +71,7 @@ describe('AppMode', () => {
   });
 
   it('should render the children when app mode is undefined', async () => {
-    render(<AppMode>Test content</AppMode>);
+    render(<AppAuthProvider>Test content</AppAuthProvider>);
     await waitFor(() =>
       expect(screen.getByText('Test content')).toBeInTheDocument(),
     );
@@ -81,7 +81,7 @@ describe('AppMode', () => {
     render(
       <>
         <meta name="backstage-app-mode" content="public" />
-        <AppMode>Test content</AppMode>
+        <AppAuthProvider>Test content</AppAuthProvider>
       </>,
     );
     await waitFor(() =>
@@ -93,7 +93,7 @@ describe('AppMode', () => {
     render(
       <>
         <meta name="backstage-app-mode" content="protected" />
-        <AppMode>Test content</AppMode>
+        <AppAuthProvider>Test content</AppAuthProvider>
       </>,
     );
     await waitFor(() =>

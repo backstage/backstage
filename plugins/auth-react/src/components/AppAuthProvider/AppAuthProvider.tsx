@@ -14,29 +14,18 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode } from 'react';
 import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
-import { CompatAppProgress } from '../CompatAppProgress';
+import { isProtectedApp } from './isProtectedApp';
 
 /**
  * @public
  * A provider that will protect the app when running in protected experimental mode.
  */
-export function AppMode(props: { children: ReactNode }): JSX.Element {
+export function AppAuthProvider(props: { children: ReactNode }): JSX.Element {
   const { children } = props;
 
-  const [appMode, setAppMode] = useState<string | null>(null);
-
-  useEffect(() => {
-    const element = document.querySelector('meta[name="backstage-app-mode"]');
-    setAppMode(element?.getAttribute('content') ?? 'public');
-  }, [setAppMode]);
-
-  if (!appMode) {
-    return <CompatAppProgress />;
-  }
-
-  if (appMode === 'protected') {
+  if (isProtectedApp()) {
     return (
       <CookieAuthRefreshProvider pluginId="app">
         {children}

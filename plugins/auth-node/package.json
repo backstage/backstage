@@ -39,7 +39,6 @@
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/express": "*",
-    "@types/express-serve-static-core": "^4.17.5",
     "@types/passport": "^1.0.3",
     "express": "^4.17.1",
     "jose": "^5.0.0",

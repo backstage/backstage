@@ -824,10 +824,23 @@ describe('Integration Test', () => {
   });
 
   it('should clear app cookie when the user logs out', async () => {
-    const fetchApiMock = { fetch: jest.fn().mockResolvedValue({ ok: true }) };
+    const meta = global.document.createElement('meta');
+    meta.name = 'backstage-app-mode';
+    meta.content = 'protected';
+    global.document.head.appendChild(meta);
+
+    const fetchApiMock = {
+      fetch: jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        }),
+      }),
+    };
     const discoveryApiMock = {
       getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007/app'),
     };
+
     const app = new AppManager({
       icons,
       themes,
@@ -855,6 +868,7 @@ describe('Integration Test', () => {
 
     const Root = app.createRoot(
       <AppRouter>
+        <meta name="backstage-app-mode" content="protected" />
         <SignOutButton />
       </AppRouter>,
     );
@@ -868,5 +882,7 @@ describe('Integration Test', () => {
         { method: 'DELETE' },
       ),
     );
+
+    global.document.head.removeChild(meta);
   });
 });
