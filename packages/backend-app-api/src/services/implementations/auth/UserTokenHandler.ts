@@ -151,4 +151,13 @@ export class UserTokenHandler {
 
     return { token: limitedUserToken, expiresAt: new Date(payload.exp * 1000) };
   }
+
+  isLimitedUserToken(token: string): boolean {
+    try {
+      const { typ } = decodeProtectedHeader(token);
+      return typ === tokenTypes.limitedUser.typParam;
+    } catch {
+      return false;
+    }
+  }
 }
