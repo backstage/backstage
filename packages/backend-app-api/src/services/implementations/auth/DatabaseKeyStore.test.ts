@@ -102,6 +102,9 @@ describe('DatabaseKeyStore', () => {
         "Removing expired plugin service keys, 'test-key-2'",
       );
 
+      // Key deletion happens async, so give it a bit of time to complete
+      await new Promise(resolve => setTimeout(resolve, 500));
+
       await expect(knex(TABLE).select('id')).resolves.toEqual([
         { id: testKey.kid },
       ]);
