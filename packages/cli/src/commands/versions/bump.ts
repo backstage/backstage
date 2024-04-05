@@ -262,7 +262,7 @@ export default async (opts: OptionValues) => {
           const movedDep = moved.get(dep.name);
           if (movedDep) {
             console.log(
-              `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
+              `${chalk.yellow('bumping')} ${dep.name} in ${chalk.cyan(
                 name,
               )} to ${chalk.yellow(`${movedDep.name}@${movedDep.range}`)}`,
             );
@@ -276,9 +276,14 @@ export default async (opts: OptionValues) => {
 
           for (const depType of DEP_TYPES) {
             if (depType in pkgJson && dep.name in pkgJson[depType]) {
+              if (movedDep) {
+                delete pkgJson[depType][dep.name];
+                pkgJson[depType][movedDep.name] = movedDep.range;
+                continue;
+              }
+
               const oldRange = pkgJson[depType][dep.name];
 
-              // TODO: Remove & replace when dependency moved
               pkgJson[depType][dep.name] = dep.range;
 
               // Check if the update was at least a pre-v1 minor or post-v1 major release
