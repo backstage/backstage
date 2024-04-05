@@ -172,7 +172,7 @@ export class KubernetesProxy {
             )?.toString(),
           };
 
-          const authHeader = req.header(HEADER_KUBERNETES_AUTH);
+          const authHeader = req.header?.(HEADER_KUBERNETES_AUTH);
           if (authHeader) {
             req.headers.authorization = authHeader;
           } else {
