@@ -34,6 +34,7 @@ describe('oidcAuthenticator', () => {
   let oauthState: OAuthState;
   let idToken: string;
   let publicKey: JWK;
+  const revokedTokenMap: Record<string, boolean> = {};
 
   const mswServer = setupServer();
   setupRequestMockHandlers(mswServer);
@@ -96,6 +97,13 @@ describe('oidcAuthenticator', () => {
         res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
       ),
       rest.post('https://oidc.test/oauth2/token', async (req, res, ctx) => {
+        const formBody = new URLSearchParams(await req.text());
+        if (
+          formBody.get('grant_type') === 'refresh_token' &&
+          revokedTokenMap[formBody.get('refresh_token') as string]
+        ) {
+          return res(ctx.json({}));
+        }
         return res(
           req.headers.get('Authorization')
             ? ctx.json({
@@ -122,6 +130,14 @@ describe('oidcAuthenticator', () => {
               picture: 'http://testPictureUrl/photo.jpg',
             }),
           ),
+      ),
+      rest.post(
+        'https://oidc.test/oauth2/revoke_token',
+        async (req, res, ctx) => {
+          const formBody = new URLSearchParams(await req.text());
+          revokedTokenMap[formBody.get('token') as string] = true;
+          return res(ctx.status(200));
+        },
       ),
     );
 
@@ -432,6 +448,32 @@ describe('oidcAuthenticator', () => {
       );
 
       expect(refreshResponse.session.idToken).toBe(idToken);
+    });
+  });
+
+  describe('#logout', () => {
+    it('should revoke refreshToken', async () => {
+      const refreshToken = 'revokeRefreshToken';
+      const refreshRequest = {
+        scope: '',
+        refreshToken,
+        req: {} as express.Request,
+      };
+      const logoutRequest = {
+        refreshToken,
+        req: {} as express.Request,
+      };
+
+      await oidcAuthenticator.logout?.(logoutRequest, implementation);
+
+      const refreshResponse = oidcAuthenticator.refresh(
+        refreshRequest,
+        implementation,
+      );
+
+      await expect(refreshResponse).rejects.toEqual(
+        new Error('Refresh failed'),
+      );
     });
   });
 });
