@@ -19,11 +19,12 @@ With that, Backstage's cli and backend will detect public entry point and serve 
 
 ## Requirements
 
-- The tutorial will only work for those using backstage-cli to build and serve their Backstage app.
+- The app needs to be served by the `app-backend` plugin, or this won't work;
+- Also it will only work for those using `backstage-cli` to build and serve their Backstage app.
 
 ## Step-by-step
 
-1. Create a `index-public-experimental.tsx` in your app `src` folder;
+1. Create a `index-public-experimental.tsx` in your app `src` folder.
    :::note
    The filename is a convention, so it is not currently configurable.
    :::
@@ -42,11 +43,10 @@ With that, Backstage's cli and backend will detect public entry point and serve 
    } from '@backstage/core-components';
    import {
      configApiRef,
-     createApiFactory,
      discoveryApiRef,
+     createApiFactory,
    } from '@backstage/core-plugin-api';
    import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
-   import { providers } from '../src/identityProviders';
    import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
 
    // Notice that this is only setting up what is needed by the sign-in pages
@@ -64,9 +64,8 @@ With that, Backstage's cli and backend will detect public entry point and serve 
          return (
            <SignInPage
              {...props}
-             providers={['guest', 'custom', ...providers]}
+             providers={['guest']}
              title="Select a sign-in method"
-             align="center"
            />
          );
        },
@@ -78,7 +77,7 @@ With that, Backstage's cli and backend will detect public entry point and serve 
        <AlertDisplay transientTimeoutMs={2500} />
        <OAuthRequestDialog />
        <AppRouter>
-         {/* This is a special component that does the magic to redirect users to access the home page of your authenticated application version */}
+         {/* This component triggers an authenticated redirect to the main app, while staying on the same URL */}
          <CookieAuthRedirect />
        </AppRouter>
      </>,
@@ -87,12 +86,24 @@ With that, Backstage's cli and backend will detect public entry point and serve 
    ReactDOM.createRoot(document.getElementById('root')!).render(<App />);
    ```
 
-3. The frontend will handle cookie refreshing automatically, so you don't have to worry about it;
+   :::note
+   The frontend will handle cookie refreshing automatically, so you don't have to worry about it.
+   :::
 
-4. You're now ready to build and serve your frontend and backend as usual;
+3. Let's verify that everything is working locally. From your project root folder, run the following commands to build the app and start the backend:
 
-5. After that, access your backend index endpoint to see the public app being served (note that only a minimal app is being served).
+   ```sh
+   # building the app package
+   yarn workspace app start
+   # starting the backend api
+   yarn start-backend
+   ```
 
-6. Log in and you will be redirected to the main app home page (check the protected bundle being served from the app-backend after the redirect).
+4. Visit http://localhost:7007 to see the public app and validate that the _index.html_ response only contains a minimal application.
+   :::note
+   Regular app serving will always serve protected apps without authenticating.
+   :::
+
+5. Finally, as soon as you log in, you will be redirected to the main app home page (inspect the page and see that the protected bundle was served from the app backend after the redirect).
 
 That's it!
