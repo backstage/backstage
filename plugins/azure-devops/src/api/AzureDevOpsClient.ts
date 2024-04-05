@@ -166,6 +166,7 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
           if (options?.top) {
             queryString.set('top', options.top.toString());
           }
+          queryString.append('entityRef', entityRef);
           const urlSegment = `builds/${encodeURIComponent(
             projectName,
           )}?${queryString}`;
