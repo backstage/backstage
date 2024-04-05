@@ -22,7 +22,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
 import { ApolloExplorer } from '@apollo/explorer/react';
 import { Content } from '@backstage/core-components';
-import { ApiHolder } from '@backstage/core-plugin-api';
 import { HandleRequest } from '@apollo/explorer/src/helpers/postMessageRelayHelpers';
 
 const useStyles = makeStyles(theme => ({
