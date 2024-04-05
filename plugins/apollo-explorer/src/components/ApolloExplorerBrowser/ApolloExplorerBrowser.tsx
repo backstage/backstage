@@ -61,25 +61,11 @@ type Props = {
 };
 
 export const handleAuthRequest = ({
-  legacyIncludeCookies,
   authCallback,
 }: {
-  legacyIncludeCookies?: boolean;
   authCallback: Props['authCallback'];
 }): HandleRequest => {
-  let cookies = {};
-  if (legacyIncludeCookies) {
-    cookies = { credentials: 'include' };
-  } else if (legacyIncludeCookies !== undefined) {
-    cookies = { credentials: 'omit' };
-  } else {
-    cookies = {};
-  }
-
-  const handleRequestWithCookiePref: HandleRequest = async (
-    endpointUrl,
-    options,
-  ) =>
+  const handleRequest: HandleRequest = async (endpointUrl, options) =>
     fetch(endpointUrl, {
       ...options,
       headers: {
@@ -88,9 +74,8 @@ export const handleAuthRequest = ({
           Authorization: `Bearer ${await authCallback()}`,
         }),
       },
-      ...cookies,
     });
-  return handleRequestWithCookiePref;
+  return handleRequest;
 };
 
 export const ApolloExplorerBrowser = ({ endpoints, authCallback }: Props) => {
@@ -115,7 +100,6 @@ export const ApolloExplorerBrowser = ({ endpoints, authCallback }: Props) => {
           className={classes.explorer}
           graphRef={endpoints[tabIndex].graphRef}
           handleRequest={handleAuthRequest({
-            legacyIncludeCookies: false,
             authCallback: authCallback,
           })}
           persistExplorerState={endpoints[tabIndex].persistExplorerState}
