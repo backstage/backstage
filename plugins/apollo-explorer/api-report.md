@@ -30,7 +30,7 @@ export const apolloExplorerPlugin: BackstagePlugin<
 // @public
 export type AuthCallback = (options: {
   apiHolder: ApiHolder;
-}) => Promise<string>;
+}) => Promise<{ token: string }>;
 
 // @public
 export type EndpointProps = {
