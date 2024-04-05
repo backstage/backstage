@@ -191,7 +191,7 @@ export class KubernetesBuilder {
   protected buildProxy(
     logger: Logger,
     clusterSupplier: KubernetesClustersSupplier_2,
-    httpAuth: HttpAuthService,
+    discovery: DiscoveryService,
   ): KubernetesProxy;
   // (undocumented)
   protected buildRouter(
@@ -241,7 +241,7 @@ export class KubernetesBuilder {
   protected getProxy(
     logger: Logger,
     clusterSupplier: KubernetesClustersSupplier_2,
-    httpAuth: HttpAuthService,
+    discovery: DiscoveryService,
   ): KubernetesProxy;
   // (undocumented)
   protected getServiceLocator(): KubernetesServiceLocator_2;
@@ -348,7 +348,7 @@ export type KubernetesProxyOptions = {
   logger: Logger;
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
-  httpAuth: HttpAuthService;
+  discovery: DiscoveryService;
 };
 
 // @public @deprecated (undocumented)

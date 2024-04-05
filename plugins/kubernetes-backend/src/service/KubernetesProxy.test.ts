@@ -57,7 +57,7 @@ import {
 import type { Request } from 'express';
 import {
   BackstageCredentials,
-  HttpAuthService,
+  DiscoveryService,
 } from '@backstage/backend-plugin-api';
 
 const mockCertDir = createMockDirectory({
@@ -84,9 +84,9 @@ describe('KubernetesProxy', () => {
     authorizeConditional: jest.fn(),
   };
 
-  const mockHttpAuth: jest.Mocked<HttpAuthService> = {
-    credentials: jest.fn(),
-    issueUserCookie: jest.fn(),
+  const mockDisocveryApi: jest.Mocked<DiscoveryService> = {
+    getBaseUrl: jest.fn(),
+    getExternalBaseUrl: jest.fn(),
   };
 
   setupRequestMockHandlers(worker);
@@ -162,7 +162,7 @@ describe('KubernetesProxy', () => {
       logger,
       clusterSupplier,
       authStrategy,
-      httpAuth: mockHttpAuth,
+      discovery: mockDisocveryApi,
     });
     permissionApi.authorize.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
@@ -552,7 +552,7 @@ describe('KubernetesProxy', () => {
       logger: getVoidLogger(),
       clusterSupplier: clusterSupplier,
       authStrategy: strategy,
-      httpAuth: mockHttpAuth,
+      discovery: mockDisocveryApi,
     });
 
     worker.use(
@@ -674,7 +674,7 @@ describe('KubernetesProxy', () => {
       logger: getVoidLogger(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
       authStrategy: new AnonymousStrategy(),
-      httpAuth: mockHttpAuth,
+      discovery: mockDisocveryApi,
     });
 
     worker.use(
