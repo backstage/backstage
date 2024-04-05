@@ -74,11 +74,11 @@ Once you authenticate, your graph is ready to use 🚀
 
 If you need to utilize an ApiRef to supply a token to Apollo, you may do so using an ApiHolder.
 
-In `packages/app/src/App.tsx` perform the following modifications from above. The import `ssoAuthApiRef` is used as an example and does not exist.
+In `packages/app/src/App.tsx` perform the following modifications from above. The import `ssoAuthApiRef` is used as an example and **does not exist**.
 
 ```typescript
 import { ApolloExplorerPage, EndpointProps } from '@backstage/plugin-apollo-explorer';
-import { ssoAuthApiRef } from '@backstage/devkit';
+import { ssoAuthApiRef } from '@companyxyz/devkit';
 import { ApiHolder } from '@backstage/core-plugin-api';
 
 async function authCallback(options: { apiHolder: ApiHolder }): Promise<string> {
