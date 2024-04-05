@@ -238,7 +238,7 @@ export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
       entity,
       auth,
       {
-        credentials: options?.credentials,
+        credentials: options.credentials,
       },
       this.objectTypesToFetch,
     );
