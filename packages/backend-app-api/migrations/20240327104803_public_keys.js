@@ -32,8 +32,9 @@ exports.up = async function up(knex) {
 
       table.text('key').notNullable().comment('JSON serialized public key');
 
+      // Expiration is stored as a string for simplicity, all checks are done client-side
       table
-        .timestamp('expires_at')
+        .string('expires_at')
         .notNullable()
         .comment('The time that the key expires');
     },

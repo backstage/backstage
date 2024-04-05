@@ -28,7 +28,7 @@ export const TABLE = 'backstage_backend_public_keys__keys';
 type Row = {
   id: string;
   key: string;
-  expires_at: string | Date; // Needs parsing to handle different DB implementations
+  expires_at: string;
 };
 
 export function applyDatabaseMigrations(knex: Knex): Promise<void> {
@@ -68,14 +68,10 @@ export class DatabaseKeyStore implements KeyStore {
     key: JsonObject & { kid: string };
     expiresAt: Date;
   }) {
-    const expiresAt = DateTime.fromJSDate(options.expiresAt).toSQL();
-    if (!expiresAt) {
-      throw new Error('Failed to format public key expiration date');
-    }
     await this.client<Row>(TABLE).insert({
       id: options.key.kid,
       key: JSON.stringify(options.key),
-      expires_at: expiresAt,
+      expires_at: options.expiresAt.toISOString(),
     });
   }
 
@@ -84,7 +80,7 @@ export class DatabaseKeyStore implements KeyStore {
     const keys = rows.map(row => ({
       id: row.id,
       key: JSON.parse(row.key),
-      expiresAt: this.#parseDate(row.expires_at),
+      expiresAt: new Date(row.expires_at),
     }));
 
     const validKeys = [];
@@ -119,20 +115,5 @@ export class DatabaseKeyStore implements KeyStore {
     }
 
     return { keys: validKeys };
-  }
-
-  #parseDate(date: string | Date) {
-    const parsedDate =
-      typeof date === 'string'
-        ? DateTime.fromSQL(date, { zone: 'UTC' })
-        : DateTime.fromJSDate(date);
-
-    if (!parsedDate.isValid) {
-      throw new Error(
-        `Failed to parse date, reason: ${parsedDate.invalidReason}, explanation: ${parsedDate.invalidExplanation}`,
-      );
-    }
-
-    return parsedDate.toJSDate();
   }
 }

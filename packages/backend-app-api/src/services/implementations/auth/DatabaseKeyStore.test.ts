@@ -118,7 +118,7 @@ describe('DatabaseKeyStore', () => {
           key: testKey,
           expiresAt: new Date(NaN),
         }),
-      ).rejects.toThrow('Failed to format public key expiration date');
+      ).rejects.toThrow('Invalid time value');
     });
   });
 });
