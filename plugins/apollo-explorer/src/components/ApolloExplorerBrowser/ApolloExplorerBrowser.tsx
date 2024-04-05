@@ -59,7 +59,6 @@ export type ApolloEndpointProps = {
 type Props = {
   endpoints: ApolloEndpointProps[];
   authCallback?: () => Promise<string>;
-  apiHolder?: ApiHolder;
 };
 
 export const handleAuthRequest = ({
