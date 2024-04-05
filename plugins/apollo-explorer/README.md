@@ -81,7 +81,7 @@ import { ApolloExplorerPage, EndpointProps } from '@backstage/plugin-apollo-expl
 import { ssoAuthApiRef } from '@companyxyz/devkit';
 import { ApiHolder } from '@backstage/core-plugin-api';
 
-async function authCallback(options: { apiHolder: ApiHolder }): Promise<string> {
+async function authCallback(options: { apiHolder: ApiHolder }): Promise<{token: string}> {
   const sso = options.apiHolder.get<any>(ssoAuthApiRef)
   return await sso.getToken()
 }
@@ -96,9 +96,9 @@ const routes = (
           endpoints={[{
             title: 'Github',
             graphRef: 'my-github-graph-ref@current',
+            authCallback: authCallback
           }]}
         />
       }
-      authCallback={authCallback}
     />
 ```
