@@ -238,6 +238,27 @@ export async function createRouter(
   return router;
 }
 
+async function injectAppMode(options: {
+  appMode: 'public' | 'protected';
+  rootDir: string;
+}) {
+  const { appMode, rootDir } = options;
+  const originalIndexHtmlContent = await fs.readFile(
+    resolvePath(rootDir, 'index.html'),
+    'utf8',
+  );
+  if (originalIndexHtmlContent.includes('backstage-app-mode')) return;
+  const modifiedIndexHtmlContent = originalIndexHtmlContent.replace(
+    /<head>/,
+    `<head><meta name="backstage-app-mode" content="${appMode}" />`,
+  );
+  await fs.writeFile(
+    resolvePath(rootDir, 'index.html'),
+    modifiedIndexHtmlContent,
+    'utf8',
+  );
+}
+
 async function createEntryPointRouter({
   logger,
   rootDir,
@@ -260,6 +281,8 @@ async function createEntryPointRouter({
   if (appConfigs) {
     await injectConfig({ appConfigs, logger, staticDir });
   }
+
+  await injectAppMode({ appMode, rootDir });
 
   const router = Router();
 
@@ -306,20 +329,14 @@ async function createEntryPointRouter({
     }),
   );
 
-  const indexHtmlContent = Buffer.from(
-    (await fs.readFile(resolvePath(rootDir, 'index.html'), 'utf8')).replace(
-      /<head>/,
-      `<head><meta name="backstage-app-mode" content="${appMode}" />`,
-    ),
-    'utf8',
-  );
-
   router.get('/*', (_req, res) => {
-    // The Cache-Control header instructs the browser to not cache the index.html since it might
-    // link to static assets from recently deployed versions.
-    res.setHeader('Cache-Control', CACHE_CONTROL_NO_CACHE);
-    res.setHeader('Content-Type', 'text/html;charset=utf-8');
-    res.send(indexHtmlContent);
+    res.sendFile(resolvePath(rootDir, 'index.html'), {
+      headers: {
+        // The Cache-Control header instructs the browser to not cache the index.html since it might
+        // link to static assets from recently deployed versions.
+        'cache-control': CACHE_CONTROL_NO_CACHE,
+      },
+    });
   });
 
   return router;
