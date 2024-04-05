@@ -38,11 +38,12 @@ import {
 } from '@backstage/core-plugin-api';
 import { InternalAppContext } from '../wiring/InternalAppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { AppAuthProvider } from '../../../core-app-api/src/app/AppAuthProvider';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BrowserRouter } from 'react-router-dom';
 import { RouteTracker } from '../routing/RouteTracker';
 import { getBasePath } from '../routing/getBasePath';
-import { AppAuthProvider } from '@backstage/plugin-auth-react';
 
 export const AppRoot = createExtension({
   namespace: 'app',

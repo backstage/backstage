@@ -16,7 +16,6 @@
 
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { componentsApiRef } from '@backstage/frontend-plugin-api';
 import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 import { AppAuthProvider } from './AppAuthProvider';
 
@@ -47,15 +46,12 @@ jest.mock('@backstage/core-plugin-api', () => {
         };
       }
 
-      if (ref === componentsApiRef) {
-        return {
-          getComponent: jest
-            .fn()
-            .mockReturnValue(() => <div data-testid="progress" />),
-        };
-      }
-
-      throw new Error(`Attempted to use an unmocked API reference: ${ref}`);
+      // componentsApiRef
+      return {
+        getComponent: jest
+          .fn()
+          .mockReturnValue(() => <div data-testid="progress" />),
+      };
     }),
   };
 });

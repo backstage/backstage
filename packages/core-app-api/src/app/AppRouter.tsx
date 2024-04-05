@@ -29,7 +29,7 @@ import { isReactRouterBeta } from './isReactRouterBeta';
 import { RouteTracker } from '../routing/RouteTracker';
 import { Route, Routes } from 'react-router-dom';
 import { AppIdentityProxy } from '../apis/implementations/IdentityApi/AppIdentityProxy';
-import { AppAuthProvider } from '@backstage/plugin-auth-react';
+import { AppAuthProvider } from './AppAuthProvider';
 
 /**
  * Get the app base path from the configured app baseUrl.

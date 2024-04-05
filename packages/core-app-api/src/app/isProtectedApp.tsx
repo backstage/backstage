@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { isProtectedApp } from './isProtectedApp';
-export { AppAuthProvider } from './AppAuthProvider';
+export function isProtectedApp() {
+  const element = document.querySelector('meta[name="backstage-app-mode"]');
+  const appMode = element?.getAttribute('content') ?? 'public';
+  return appMode === 'protected';
+}

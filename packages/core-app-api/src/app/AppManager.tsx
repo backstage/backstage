@@ -88,7 +88,7 @@ import { AppRouter, getBasePath } from './AppRouter';
 import { AppLanguageSelector } from '../apis/implementations/AppLanguageApi';
 import { I18nextTranslationApi } from '../apis/implementations/TranslationApi';
 import { overrideBaseUrlConfigs } from './overrideBaseUrlConfigs';
-import { isProtectedApp } from '@backstage/plugin-auth-react';
+import { isProtectedApp } from './isProtectedApp';
 
 type CompatiblePlugin =
   | BackstagePlugin

@@ -14,12 +14,20 @@
  * limitations under the License.
  */
 
-/**
- * @public
- * An utility function that detects whether the app is operating in protected mode.
- */
-export function isProtectedApp() {
-  const element = document.querySelector('meta[name="backstage-app-mode"]');
-  const appMode = element?.getAttribute('content') ?? 'public';
-  return appMode === 'protected';
+import React, { ReactNode } from 'react';
+import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
+import { isProtectedApp } from './isProtectedApp';
+
+export function AppAuthProvider(props: { children: ReactNode }): JSX.Element {
+  const { children } = props;
+
+  if (isProtectedApp()) {
+    return (
+      <CookieAuthRefreshProvider pluginId="app">
+        {children}
+      </CookieAuthRefreshProvider>
+    );
+  }
+
+  return <>{children}</>;
 }
