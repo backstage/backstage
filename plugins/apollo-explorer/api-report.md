@@ -28,9 +28,9 @@ export const apolloExplorerPlugin: BackstagePlugin<
 >;
 
 // @public
-export type AuthCallback = (options: {
-  apiHolder: ApiHolder;
-}) => Promise<{ token: string }>;
+export type AuthCallback = (options: { apiHolder: ApiHolder }) => Promise<{
+  token: string;
+}>;
 
 // @public
 export type EndpointProps = {
