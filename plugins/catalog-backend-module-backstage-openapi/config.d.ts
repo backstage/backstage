@@ -28,17 +28,10 @@ export interface Config {
         /**
          * Options to ovveride the provided entity's default metadata and spec properties
          */
-        entityOverrides?: {
-          metadata?: {
-            name?: string;
-            title?: string;
-          };
-          spec?: {
-            type?: string;
-            lifecycle?: string;
-            owner?: string;
-          };
-        };
+        /**
+         * Properties to override on the final entity object.
+         */
+        entityOverrides?: object;
       };
     };
   };
