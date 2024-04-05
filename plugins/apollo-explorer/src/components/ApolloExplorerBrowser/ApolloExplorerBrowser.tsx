@@ -67,7 +67,7 @@ export const handleAuthRequest = ({
   authCallback,
 }: {
   legacyIncludeCookies?: boolean;
-  authCallback: any;
+  authCallback: Props['authCallback'];
 }): HandleRequest => {
   let cookies = {};
   if (legacyIncludeCookies) {
