@@ -84,6 +84,7 @@ export type KubernetesProxyOptions = {
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
   discovery: DiscoveryService;
+  httpAuth?: HttpAuthService;
 };
 
 /**
@@ -102,7 +103,13 @@ export class KubernetesProxy {
     this.logger = options.logger;
     this.clusterSupplier = options.clusterSupplier;
     this.authStrategy = options.authStrategy;
-    this.httpAuth = createLegacyAuthAdapters({ discovery: options.discovery });
+
+    const legacy = createLegacyAuthAdapters({
+      discovery: options.discovery,
+      httpAuth: options.httpAuth,
+    });
+
+    this.httpAuth = legacy.httpAuth;
   }
 
   public createRequestHandler(

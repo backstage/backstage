@@ -157,7 +157,12 @@ export class KubernetesBuilder {
 
     const authStrategyMap = this.getAuthStrategyMap();
 
-    const proxy = this.getProxy(logger, clusterSupplier, this.env.discovery);
+    const proxy = this.getProxy(
+      logger,
+      clusterSupplier,
+      this.env.discovery,
+      httpAuth,
+    );
 
     const serviceLocator = this.getServiceLocator();
 
@@ -351,6 +356,7 @@ export class KubernetesBuilder {
     logger: Logger,
     clusterSupplier: KubernetesClustersSupplier,
     discovery: DiscoveryService,
+    httpAuth: HttpAuthService,
   ): KubernetesProxy {
     const authStrategyMap = this.getAuthStrategyMap();
     const authStrategy = new DispatchStrategy({
@@ -361,6 +367,7 @@ export class KubernetesBuilder {
       clusterSupplier,
       authStrategy,
       discovery,
+      httpAuth,
     });
     return this.proxy;
   }
@@ -536,8 +543,12 @@ export class KubernetesBuilder {
     logger: Logger,
     clusterSupplier: KubernetesClustersSupplier,
     discovery: DiscoveryService,
+    httpAuth: HttpAuthService,
   ) {
-    return this.proxy ?? this.buildProxy(logger, clusterSupplier, discovery);
+    return (
+      this.proxy ??
+      this.buildProxy(logger, clusterSupplier, discovery, httpAuth)
+    );
   }
 
   protected getAuthStrategyMap() {
