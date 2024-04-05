@@ -124,6 +124,21 @@ class DefaultAuthService implements AuthService {
   async authenticate(token: string): Promise<BackstageCredentials> {
     const pluginResult = await this.pluginTokenHandler.verifyToken(token);
     if (pluginResult) {
+      if (pluginResult.limitedUserToken) {
+        const userResult = await this.userTokenHandler.verifyToken(
+          pluginResult.limitedUserToken,
+        );
+        if (!userResult) {
+          throw new AuthenticationError(
+            'Invalid user token in plugin token obo claim',
+          );
+        }
+        return createCredentialsWithUserPrincipal(
+          userResult.userEntityRef,
+          pluginResult.limitedUserToken,
+          this.#getJwtExpiration(pluginResult.limitedUserToken),
+        );
+      }
       return createCredentialsWithServicePrincipal(pluginResult.subject);
     }
 
@@ -194,14 +209,15 @@ class DefaultAuthService implements AuthService {
       return { token: '' };
     }
 
+    const targetSupportsNewAuth =
+      await this.pluginTokenHandler.isTargetPluginSupported(targetPluginId);
+
     // check whether a plugin support the new auth system
     // by checking the public keys endpoint existance.
     switch (type) {
       // TODO: Check whether the principal is ourselves
       case 'service':
-        if (
-          await this.pluginTokenHandler.isTargetPluginSupported(targetPluginId)
-        ) {
+        if (targetSupportsNewAuth) {
           return this.pluginTokenHandler.issueToken({
             pluginId: this.pluginId,
             targetPluginId,
@@ -209,11 +225,31 @@ class DefaultAuthService implements AuthService {
         }
         // If the target plugin does not support the new auth service, fall back to using old token format
         return this.tokenManager.getToken();
-      case 'user':
-        if (!internalForward.token) {
+      case 'user': {
+        const { token } = internalForward;
+        if (!token) {
           throw new Error('User credentials is unexpectedly missing token');
         }
-        return { token: internalForward.token };
+        // If the target plugin supports the new auth service we issue a service
+        // on-behalf-of token rather than forwarding the user token
+        if (targetSupportsNewAuth) {
+          const onBehalfOf = await this.userTokenHandler.createLimitedUserToken(
+            token,
+          );
+          return this.pluginTokenHandler.issueToken({
+            pluginId: this.pluginId,
+            targetPluginId,
+            onBehalfOf,
+          });
+        }
+
+        if (this.userTokenHandler.isLimitedUserToken(token)) {
+          throw new AuthenticationError(
+            `Unable to call '${targetPluginId}' plugin on behalf of user, because the target plugin does not support on-behalf-of tokens`,
+          );
+        }
+        return { token };
+      }
       default:
         throw new AuthenticationError(
           `Refused to issue service token for credential type '${type}'`,
