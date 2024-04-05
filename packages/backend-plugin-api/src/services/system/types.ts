@@ -141,6 +141,16 @@ export interface RootServiceFactoryConfig<
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
 > {
+  /**
+   * The initialization strategy for the service factory. This service is root scoped and will use `always` by default.
+   *
+   * @remarks
+   *
+   * - `always` - The service will always be initialized regardless if it is used or not.
+   * - `lazy` - The service will only be initialized if it is depended on by a different service or feature.
+   *
+   * Service factories for root scoped services use `always` as the default, while plugin scoped services use `lazy`.
+   */
   initialization?: 'always' | 'lazy';
   service: ServiceRef<TService, 'root'>;
   deps: TDeps;
@@ -154,6 +164,16 @@ export interface PluginServiceFactoryConfig<
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
 > {
+  /**
+   * The initialization strategy for the service factory. This service is plugin scoped and will use `lazy` by default.
+   *
+   * @remarks
+   *
+   * - `always` - The service will always be initialized regardless if it is used or not.
+   * - `lazy` - The service will only be initialized if it is depended on by a different service or feature.
+   *
+   * Service factories for root scoped services use `always` as the default, while plugin scoped services use `lazy`.
+   */
   initialization?: 'always' | 'lazy';
   service: ServiceRef<TService, 'plugin'>;
   deps: TDeps;
