@@ -26,6 +26,7 @@ import { KubernetesServiceLocator as KubernetesServiceLocator_2 } from '@backsta
 import { Logger } from 'winston';
 import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RequestHandler } from 'http-proxy-middleware';
 import { TokenCredential } from '@azure/identity';
@@ -339,7 +340,7 @@ export class KubernetesProxy {
 
 // @public
 export type KubernetesProxyCreateRequestHandlerOptions = {
-  permissionApi: PermissionEvaluator;
+  permissionApi: PermissionsService;
 };
 
 // @public

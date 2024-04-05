@@ -20,16 +20,12 @@ import {
   NotFoundError,
   serializeError,
 } from '@backstage/errors';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   KubernetesRequestAuth,
   kubernetesProxyPermission,
 } from '@backstage/plugin-kubernetes-common';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   Cluster,
   KubeConfig,
@@ -45,7 +41,10 @@ import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 import type { Request } from 'express';
 import { IncomingHttpHeaders } from 'http';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  HttpAuthService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 
 export const APPLICATION_JSON: string = 'application/json';
 
@@ -70,7 +69,7 @@ export const HEADER_KUBERNETES_AUTH: string =
  * @public
  */
 export type KubernetesProxyCreateRequestHandlerOptions = {
-  permissionApi: PermissionEvaluator;
+  permissionApi: PermissionsService;
 };
 
 /**
@@ -112,10 +111,7 @@ export class KubernetesProxy {
       const authorizeResponse = await permissionApi.authorize(
         [{ permission: kubernetesProxyPermission }],
         {
-          // todo: this should be updated too.
-          token: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await this.httpAuth.credentials(req),
         },
       );
       const auth = authorizeResponse[0];
