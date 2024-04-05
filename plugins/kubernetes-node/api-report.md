@@ -88,7 +88,7 @@ export const kubernetesAuthStrategyExtensionPoint: ExtensionPoint<KubernetesAuth
 
 // @public
 export interface KubernetesClustersSupplier {
-  getClusters(options?: {
+  getClusters(options: {
     credentials: BackstageCredentials;
   }): Promise<ClusterDetails[]>;
 }
@@ -154,10 +154,16 @@ export interface KubernetesObjectsProvider {
   // (undocumented)
   getCustomResourcesByEntity(
     customResourcesByEntity: CustomResourcesByEntity,
+    options: {
+      credentials: BackstageCredentials;
+    },
   ): Promise<ObjectsByEntityResponse>;
   // (undocumented)
   getKubernetesObjectsByEntity(
     kubernetesObjectsByEntity: KubernetesObjectsByEntity,
+    options: {
+      credentials: BackstageCredentials;
+    },
   ): Promise<ObjectsByEntityResponse>;
 }
 
@@ -269,6 +275,8 @@ export type PinnipedParameters = {
 
 // @public (undocumented)
 export interface ServiceLocatorRequestContext {
+  // (undocumented)
+  credentials: BackstageCredentials;
   // (undocumented)
   customResources: CustomResourceMatcher[];
   // (undocumented)
