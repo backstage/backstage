@@ -181,7 +181,7 @@ export default async (opts: OptionValues) => {
   await runParallelWorkers({
     parallelismFactor: 4,
     items: unlocked,
-    async worker({ name, range, target }) {
+    async worker({ name }) {
       let info = (await fetchPackageInfo(name)) as YarnInfoInspectData & {
         backstage?: { moved: string };
       };
@@ -224,7 +224,7 @@ export default async (opts: OptionValues) => {
 
         // Don't bother removing lockfile entries if they're already on the correct version
         const existingEntry = lockfile.get(name)?.find(e => e.range === range);
-        if (existingEntry?.version === target && !moved) {
+        if (existingEntry?.version === target && !movedPackage) {
           continue;
         }
         const key = JSON.stringify({ name, range });
@@ -283,7 +283,6 @@ export default async (opts: OptionValues) => {
               }
 
               const oldRange = pkgJson[depType][dep.name];
-
               pkgJson[depType][dep.name] = dep.range;
 
               // Check if the update was at least a pre-v1 minor or post-v1 major release
@@ -440,14 +439,12 @@ export function createVersionFinder(options: {
     }
 
     console.log(`Checking for updates of ${name}`);
-
     const manifestVersion = releasePackages.get(name);
     if (manifestVersion) {
       return manifestVersion;
     }
 
-    const info = (await packageInfoFetcher(name)) as YarnInfoInspectData;
-
+    const info = await packageInfoFetcher(name);
     const latestVersion = info['dist-tags'].latest;
     if (!latestVersion) {
       throw new Error(`No target 'latest' version found for ${name}`);
