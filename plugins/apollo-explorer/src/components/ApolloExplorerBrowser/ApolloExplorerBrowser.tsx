@@ -84,7 +84,7 @@ export const handleAuthRequest = ({
       ...options,
       headers: {
         ...options.headers,
-        Authorization: `Bearer ${await authCallback({})}`,
+        Authorization: `Bearer ${await authCallback()}`,
       },
       ...cookies,
     });
