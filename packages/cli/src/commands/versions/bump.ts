@@ -108,6 +108,11 @@ export default async (opts: OptionValues) => {
   const versionBumps = new Map<string, PkgVersionInfo[]>();
   // Track package versions that we want to remove from yarn.lock in order to trigger a bump
   const unlocked = Array<{ name: string; range: string; target: string }>();
+  // Moved packages & their new package version info
+  const moved = new Map<
+    string,
+    { name: string; range: string; target: string }
+  >();
 
   await runParallelWorkers({
     parallelismFactor: 4,
@@ -173,6 +178,33 @@ export default async (opts: OptionValues) => {
     },
   });
 
+  await runParallelWorkers({
+    parallelismFactor: 4,
+    items: unlocked,
+    async worker({ name, range, target }) {
+      let info = (await fetchPackageInfo(name)) as YarnInfoInspectData & {
+        backstage?: { moved: string };
+      };
+
+      // TODO: To be removed
+      if (name === '@backstage/plugin-catalog-react') {
+        info.backstage = {
+          ...info.backstage,
+          moved: '@pagerduty/backstage-plugin',
+        };
+      }
+
+      if (info.backstage?.moved) {
+        info = await fetchPackageInfo(info.backstage?.moved);
+        moved.set(name, {
+          name: info.name,
+          range: `^${info['dist-tags'].latest}`,
+          target: info['dist-tags'].latest,
+        });
+      }
+    },
+  });
+
   console.log();
 
   // Write all discovered version bumps to package.json in this repo
@@ -184,21 +216,35 @@ export default async (opts: OptionValues) => {
 
     if (unlocked.length > 0) {
       const removed = new Set<string>();
-      for (const { name, range, target } of unlocked) {
+      for (const unlockedPackage of unlocked) {
+        const movedPackage = moved.get(unlockedPackage.name);
+        const { name, range, target } = movedPackage
+          ? movedPackage
+          : unlockedPackage;
+
         // Don't bother removing lockfile entries if they're already on the correct version
         const existingEntry = lockfile.get(name)?.find(e => e.range === range);
-        if (existingEntry?.version === target) {
+        if (existingEntry?.version === target && !moved) {
           continue;
         }
         const key = JSON.stringify({ name, range });
         if (!removed.has(key)) {
           removed.add(key);
-          console.log(
-            `${chalk.magenta('unlocking')} ${name}@${chalk.yellow(
-              range,
-            )} ~> ${chalk.yellow(target)}`,
-          );
-          lockfile.remove(name, range);
+          if (movedPackage) {
+            console.log(
+              `${chalk.yellow('moving')} ${unlockedPackage.name}@${
+                unlockedPackage.range
+              } ~> ${chalk.yellow(`${name}@${range}`)}`,
+            );
+            lockfile.remove(unlockedPackage.name, unlockedPackage.range);
+          } else {
+            console.log(
+              `${chalk.magenta('unlocking')} ${name}@${chalk.yellow(
+                range,
+              )} ~> ${chalk.yellow(target)}`,
+            );
+            lockfile.remove(name, range);
+          }
         }
       }
       await lockfile.save(lockfilePath);
@@ -213,15 +259,26 @@ export default async (opts: OptionValues) => {
         const pkgJson = await fs.readJson(pkgPath);
 
         for (const dep of deps) {
-          console.log(
-            `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
-              name,
-            )} to ${chalk.yellow(dep.range)}`,
-          );
+          const movedDep = moved.get(dep.name);
+          if (movedDep) {
+            console.log(
+              `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
+                name,
+              )} to ${chalk.yellow(`${movedDep.name}@${movedDep.range}`)}`,
+            );
+          } else {
+            console.log(
+              `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
+                name,
+              )} to ${chalk.yellow(dep.range)}`,
+            );
+          }
 
           for (const depType of DEP_TYPES) {
             if (depType in pkgJson && dep.name in pkgJson[depType]) {
               const oldRange = pkgJson[depType][dep.name];
+
+              // TODO: Remove & replace when dependency moved
               pkgJson[depType][dep.name] = dep.range;
 
               // Check if the update was at least a pre-v1 minor or post-v1 major release
@@ -372,39 +429,28 @@ export function createVersionFinder(options: {
     releaseManifest?.packages.map(p => [p.name, p.version]),
   );
   return async function findTargetVersion(name: string) {
-    let _name = name;
-    const existing = found.get(_name);
+    const existing = found.get(name);
     if (existing) {
       return existing;
     }
 
-    console.log(`Checking for updates of ${_name}`);
+    console.log(`Checking for updates of ${name}`);
 
-    const manifestVersion = releasePackages.get(_name);
+    const manifestVersion = releasePackages.get(name);
     if (manifestVersion) {
       return manifestVersion;
     }
 
-    // TODO: Properly fix inacurate typing here...
-    const info = (await packageInfoFetcher(_name)) as YarnInfoInspectData & {
-      backstage?: { moved?: string };
-    };
-
-    if (
-      info.backstage?.moved &&
-      info.backstage.moved.startsWith('@backstage-community/')
-    ) {
-      _name = info.backstage.moved;
-    }
+    const info = (await packageInfoFetcher(name)) as YarnInfoInspectData;
 
     const latestVersion = info['dist-tags'].latest;
     if (!latestVersion) {
-      throw new Error(`No target 'latest' version found for ${_name}`);
+      throw new Error(`No target 'latest' version found for ${name}`);
     }
 
     const taggedVersion = info['dist-tags'][distTag];
     if (distTag === 'latest' || !taggedVersion) {
-      found.set(_name, latestVersion);
+      found.set(name, latestVersion);
       return latestVersion;
     }
 
@@ -412,12 +458,12 @@ export function createVersionFinder(options: {
     const taggedVersionDateStr = info.time[taggedVersion];
     if (!latestVersionDateStr) {
       throw new Error(
-        `No time available for version '${latestVersion}' of ${_name}`,
+        `No time available for version '${latestVersion}' of ${name}`,
       );
     }
     if (!taggedVersionDateStr) {
       throw new Error(
-        `No time available for version '${taggedVersion}' of ${_name}`,
+        `No time available for version '${taggedVersion}' of ${name}`,
       );
     }
 
@@ -425,11 +471,11 @@ export function createVersionFinder(options: {
     const taggedVersionRelease = new Date(taggedVersionDateStr).getTime();
     if (latestVersionRelease > taggedVersionRelease) {
       // Prefer latest version if it's newer.
-      found.set(_name, latestVersion);
+      found.set(name, latestVersion);
       return latestVersion;
     }
 
-    found.set(_name, taggedVersion);
+    found.set(name, taggedVersion);
     return taggedVersion;
   };
 }
