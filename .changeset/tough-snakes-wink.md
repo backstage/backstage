@@ -2,4 +2,4 @@
 '@backstage/plugin-search-backend-module-elasticsearch': minor
 ---
 
-For new backend, make Elasticsearch provider optional if no config
+When using the New Backend System, the Elasticsearch provider will only be added if the `search.elasticsearch` config section exists.
