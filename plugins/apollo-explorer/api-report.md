@@ -16,7 +16,6 @@ export const ApolloExplorerPage: (props: {
   title?: string | undefined;
   subtitle?: string | undefined;
   endpoints: EndpointProps[];
-  authCallback?: AuthCallback | undefined;
 }) => JSX_2.Element;
 
 // @public
@@ -36,6 +35,7 @@ export type AuthCallback = (options: { apiHolder: ApiHolder }) => Promise<{
 export type EndpointProps = {
   title: string;
   graphRef: string;
+  authCallback?: AuthCallback;
   persistExplorerState?: boolean;
   initialState?: {
     document?: string;
