@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Initializes a git repository of the content in the workspace, and publishes it to Gitlab with the default confiiguration.',
+      'Initializes a git repository of the content in the workspace, and publishes it to GitLab with the default confiiguration.',
     example: yaml.stringify({
       steps: [
         {
@@ -52,7 +52,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a Gitlab repository with an initial commit message, if not set defaults to `initial commit`.',
+      'Initializes a GitLab repository with an initial commit message, if not set defaults to `initial commit`.',
     example: yaml.stringify({
       steps: [
         {
@@ -69,7 +69,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Initializes a Gitlab repository with aditional settings.',
+    description: 'Initializes a GitLab repository with aditional settings.',
     example: yaml.stringify({
       steps: [
         {
@@ -88,7 +88,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Initializes a Gitlab repository with branch settings.',
+    description: 'Initializes a GitLab repository with branch settings.',
     example: yaml.stringify({
       steps: [
         {
@@ -115,7 +115,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Initializes a Gitlab repository with environment variables.',
+    description: 'Initializes a GitLab repository with environment variables.',
     example: yaml.stringify({
       steps: [
         {
