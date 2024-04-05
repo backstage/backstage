@@ -84,7 +84,9 @@ export const handleAuthRequest = ({
       ...options,
       headers: {
         ...options.headers,
-        Authorization: `Bearer ${await authCallback()}`,
+        ...(authCallback && {
+          Authorization: `Bearer ${await authCallback()}`,
+        }),
       },
       ...cookies,
     });
@@ -112,14 +114,10 @@ export const ApolloExplorerBrowser = ({ endpoints, authCallback }: Props) => {
         <ApolloExplorer
           className={classes.explorer}
           graphRef={endpoints[tabIndex].graphRef}
-          handleRequest={
-            authCallback
-              ? handleAuthRequest({
-                  legacyIncludeCookies: false,
-                  authCallback: authCallback,
-                })
-              : undefined
-          }
+          handleRequest={handleAuthRequest({
+            legacyIncludeCookies: false,
+            authCallback: authCallback,
+          })}
           persistExplorerState={endpoints[tabIndex].persistExplorerState}
           initialState={endpoints[tabIndex].initialState}
         />
