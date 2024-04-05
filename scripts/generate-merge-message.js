@@ -60,7 +60,12 @@ function getReleaseSchedule() {
   return Array(100)
     .fill(0)
     .map((_, i) => {
-      const date = getReleaseOfMonth(firstReleaseYear, firstReleaseMonth + i);
+      // the 1.24 and 1.25 releases were both released in March 2024
+      const modifier = i >= 25 ? -1 : 0;
+      const date = getReleaseOfMonth(
+        firstReleaseYear,
+        firstReleaseMonth + i + modifier,
+      );
       return { version: `1.${i}.0`, date };
     });
 }
