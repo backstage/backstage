@@ -55,6 +55,10 @@ import {
 } from './KubernetesProxy';
 
 import type { Request } from 'express';
+import {
+  BackstageCredentials,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
 
 const mockCertDir = createMockDirectory({
   content: {
@@ -69,12 +73,20 @@ describe('KubernetesProxy', () => {
   const logger = getVoidLogger();
 
   const clusterSupplier: jest.Mocked<KubernetesClustersSupplier> = {
-    getClusters: jest.fn<Promise<ClusterDetails[]>, []>(),
+    getClusters: jest.fn<
+      Promise<ClusterDetails[]>,
+      [{ credentials: BackstageCredentials }]
+    >(),
   };
 
   const permissionApi: jest.Mocked<PermissionEvaluator> = {
     authorize: jest.fn(),
     authorizeConditional: jest.fn(),
+  };
+
+  const mockHttpAuth: jest.Mocked<HttpAuthService> = {
+    credentials: jest.fn(),
+    issueUserCookie: jest.fn(),
   };
 
   setupRequestMockHandlers(worker);
@@ -146,7 +158,12 @@ describe('KubernetesProxy', () => {
       validateCluster: jest.fn(),
       presentAuthMetadata: jest.fn(),
     };
-    proxy = new KubernetesProxy({ logger, clusterSupplier, authStrategy });
+    proxy = new KubernetesProxy({
+      logger,
+      clusterSupplier,
+      authStrategy,
+      httpAuth: mockHttpAuth,
+    });
     permissionApi.authorize.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
     ]);
@@ -535,6 +552,7 @@ describe('KubernetesProxy', () => {
       logger: getVoidLogger(),
       clusterSupplier: clusterSupplier,
       authStrategy: strategy,
+      httpAuth: mockHttpAuth,
     });
 
     worker.use(
@@ -656,6 +674,7 @@ describe('KubernetesProxy', () => {
       logger: getVoidLogger(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
       authStrategy: new AnonymousStrategy(),
+      httpAuth: mockHttpAuth,
     });
 
     worker.use(

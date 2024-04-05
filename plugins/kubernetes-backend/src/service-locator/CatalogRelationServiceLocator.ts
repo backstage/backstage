@@ -33,7 +33,7 @@ export class CatalogRelationServiceLocator implements KubernetesServiceLocator {
   // As this implementation always returns all clusters serviceId is ignored here
   getClustersByEntity(
     entity: Entity,
-    _requestContext: ServiceLocatorRequestContext,
+    requestContext: ServiceLocatorRequestContext,
   ): Promise<{ clusters: ClusterDetails[] }> {
     if (
       entity.relations &&
@@ -41,13 +41,15 @@ export class CatalogRelationServiceLocator implements KubernetesServiceLocator {
         r => r.type === 'dependsOn' && r.targetRef.includes('resource:'),
       )
     ) {
-      return this.clusterSupplier.getClusters().then(clusters => {
-        return {
-          clusters: clusters.filter(c =>
-            this.doesEntityDependOnCluster(entity, c),
-          ),
-        };
-      });
+      return this.clusterSupplier
+        .getClusters({ credentials: requestContext.credentials })
+        .then(clusters => {
+          return {
+            clusters: clusters.filter(c =>
+              this.doesEntityDependOnCluster(entity, c),
+            ),
+          };
+        });
     }
     return Promise.resolve({ clusters: [] });
   }

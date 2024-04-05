@@ -63,10 +63,13 @@ export const addResourceRoutesToRouter = (
 
   router.post('/resources/workloads/query', async (req, res) => {
     const entity = await getEntityByReq(req);
-    const response = await objectsProvider.getKubernetesObjectsByEntity({
-      entity,
-      auth: req.body.auth,
-    });
+    const response = await objectsProvider.getKubernetesObjectsByEntity(
+      {
+        entity,
+        auth: req.body.auth,
+      },
+      { credentials: await httpAuth.credentials(req) },
+    );
     res.json(response);
   });
 
@@ -81,11 +84,14 @@ export const addResourceRoutesToRouter = (
       throw new InputError('at least 1 customResource is required');
     }
 
-    const response = await objectsProvider.getCustomResourcesByEntity({
-      entity,
-      customResources: req.body.customResources,
-      auth: req.body.auth,
-    });
+    const response = await objectsProvider.getCustomResourcesByEntity(
+      {
+        entity,
+        customResources: req.body.customResources,
+        auth: req.body.auth,
+      },
+      { credentials: await httpAuth.credentials(req) },
+    );
     res.json(response);
   });
 };

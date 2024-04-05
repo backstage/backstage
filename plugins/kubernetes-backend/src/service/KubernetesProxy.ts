@@ -45,6 +45,7 @@ import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 import type { Request } from 'express';
 import { IncomingHttpHeaders } from 'http';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 
 export const APPLICATION_JSON: string = 'application/json';
 
@@ -81,6 +82,7 @@ export type KubernetesProxyOptions = {
   logger: Logger;
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
+  httpAuth: HttpAuthService;
 };
 
 /**
@@ -93,11 +95,13 @@ export class KubernetesProxy {
   private readonly logger: Logger;
   private readonly clusterSupplier: KubernetesClustersSupplier;
   private readonly authStrategy: AuthenticationStrategy;
+  private readonly httpAuth: HttpAuthService;
 
   constructor(options: KubernetesProxyOptions) {
     this.logger = options.logger;
     this.clusterSupplier = options.clusterSupplier;
     this.authStrategy = options.authStrategy;
+    this.httpAuth = options.httpAuth;
   }
 
   public createRequestHandler(
@@ -108,6 +112,7 @@ export class KubernetesProxy {
       const authorizeResponse = await permissionApi.authorize(
         [{ permission: kubernetesProxyPermission }],
         {
+          // todo: this should be updated too.
           token: getBearerTokenFromAuthorizationHeader(
             req.header('authorization'),
           ),
@@ -220,7 +225,9 @@ export class KubernetesProxy {
 
   private async getClusterForRequest(req: Request): Promise<ClusterDetails> {
     const clusterName = req.headers[HEADER_KUBERNETES_CLUSTER.toLowerCase()];
-    const clusters = await this.clusterSupplier.getClusters();
+    const clusters = await this.clusterSupplier.getClusters({
+      credentials: await this.httpAuth.credentials(req),
+    });
 
     if (!clusters || clusters.length <= 0) {
       throw new NotFoundError(`No Clusters configured`);
