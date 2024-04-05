@@ -21,7 +21,6 @@
 
 import { themes } from 'prism-react-renderer';
 import type * as Preset from '@docusaurus/preset-classic';
-// '/themes/vsDark'
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 

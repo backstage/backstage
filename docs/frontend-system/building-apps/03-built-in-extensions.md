@@ -115,9 +115,9 @@ An app root element extension that displays messages posted via the [`AlertApi`]
 
 ###### Configurations
 
-| Key                  | Type                                                                       | Default value                             | Description                                                       |
-| -------------------- | -------------------------------------------------------------------------- | ----------------------------------------- | ----------------------------------------------------------------- |
-| `transientTimeoutMs` | number                                                                     | 5000                                      | Time in milliseconds to wait before displaying messages.          |
+| Key                  | Type                                                                        | Default value                              | Description                                                       |
+| -------------------- | --------------------------------------------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------- |
+| `transientTimeoutMs` | number                                                                      | 5000                                       | Time in milliseconds to wait before displaying messages.          |
 | `anchorOrigin`       | \{ vertical: 'top' \| 'bottom', horizontal: 'left' \| 'center' \| 'right' } | \{ vertical: 'top', horizontal: 'center' } | Position on the screen where the message alert will be displayed. |
 
 ###### Override or disable the extension
