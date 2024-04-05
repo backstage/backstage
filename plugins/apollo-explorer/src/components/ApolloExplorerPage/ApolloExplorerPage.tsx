@@ -18,7 +18,7 @@ import React from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 import { ApolloExplorerBrowser } from '../ApolloExplorerBrowser';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
-import { ApiHolder, useApiHolder } from '@backstage/core-plugin-api';
+import { ApiHolder } from '@backstage/core-plugin-api';
 
 /**
  * Export types to be used with {@link @backstage/apollo-explorer#ApolloExplorerPage}.
@@ -28,6 +28,7 @@ import { ApiHolder, useApiHolder } from '@backstage/core-plugin-api';
 export type EndpointProps = {
   title: string;
   graphRef: string;
+  authCallback?: AuthCallback;
   persistExplorerState?: boolean;
   initialState?: {
     document?: string;
@@ -54,24 +55,16 @@ type Props = {
   title?: string | undefined;
   subtitle?: string | undefined;
   endpoints: EndpointProps[];
-  authCallback?: AuthCallback;
 };
 
 export const ApolloExplorerPage = (props: Props) => {
-  const { title, subtitle, endpoints, authCallback } = props;
-
-  const apiHolder = useApiHolder();
+  const { title, subtitle, endpoints } = props;
 
   return (
     <Page themeId="tool">
       <Header title={title ?? 'Apollo Explorer 👩‍🚀'} subtitle={subtitle ?? ''} />
       <Content noPadding>
-        <ApolloExplorerBrowser
-          endpoints={endpoints}
-          authCallback={
-            authCallback ? () => authCallback({ apiHolder }) : undefined
-          }
-        />
+        <ApolloExplorerBrowser endpoints={endpoints} />
       </Content>
     </Page>
   );
