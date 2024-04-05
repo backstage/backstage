@@ -48,7 +48,7 @@ export type EndpointProps = {
  */
 export type AuthCallback = (options: {
   apiHolder: ApiHolder;
-}) => Promise<string>;
+}) => Promise<{ token: string }>;
 
 type Props = {
   title?: string | undefined;

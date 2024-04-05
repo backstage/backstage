@@ -57,7 +57,7 @@ export type ApolloEndpointProps = {
 
 type Props = {
   endpoints: ApolloEndpointProps[];
-  authCallback?: () => Promise<string>;
+  authCallback?: () => Promise<{ token: string }>;
 };
 
 export const handleAuthRequest = ({
@@ -71,7 +71,7 @@ export const handleAuthRequest = ({
       headers: {
         ...options.headers,
         ...(authCallback && {
-          Authorization: `Bearer ${await authCallback()}`,
+          Authorization: `Bearer ${(await authCallback()).token}`,
         }),
       },
     });
