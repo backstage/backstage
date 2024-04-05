@@ -28,7 +28,7 @@ export interface Config {
      * @visibility secret
      * @deprecated Use `integrations.azure` instead, see {@link https://backstage.io/docs/integrations/azure/locations}
      */
-    token: string;
+    token?: string;
     /**
      * The organization of the given Azure instance
      */
