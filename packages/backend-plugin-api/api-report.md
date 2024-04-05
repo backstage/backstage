@@ -55,6 +55,10 @@ export interface AuthService {
     credentials: BackstageCredentials,
     type: TType,
   ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
+  // (undocumented)
+  listPublicServiceKeys(): Promise<{
+    keys: JsonObject[];
+  }>;
 }
 
 // @public (undocumented)
