@@ -10164,7 +10164,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/theme@^0.5.0, @backstage/theme@^0.5.1, @backstage/theme@^0.5.2, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
+"@backstage/theme@^0.5.0, @backstage/theme@^0.5.2, @backstage/theme@workspace:^, @backstage/theme@workspace:packages/theme":
   version: 0.0.0-use.local
   resolution: "@backstage/theme@workspace:packages/theme"
   dependencies:
@@ -15656,14 +15656,14 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-travis-ci@npm:^2.0.5":
-  version: 2.1.21
-  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.1.21"
+  version: 2.1.22
+  resolution: "@roadiehq/backstage-plugin-travis-ci@npm:2.1.22"
   dependencies:
-    "@backstage/catalog-model": ^1.4.4
-    "@backstage/core-components": ^0.14.0
-    "@backstage/core-plugin-api": ^1.9.0
-    "@backstage/plugin-catalog-react": ^1.10.0
-    "@backstage/theme": ^0.5.1
+    "@backstage/catalog-model": ^1.4.5
+    "@backstage/core-components": ^0.14.3
+    "@backstage/core-plugin-api": ^1.9.1
+    "@backstage/plugin-catalog-react": ^1.11.2
+    "@backstage/theme": ^0.5.2
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.11.2
     "@material-ui/lab": 4.0.0-alpha.57
@@ -15677,7 +15677,7 @@ __metadata:
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
-  checksum: 542a4e2239c18c29923e27fddcde7e39a036907ab7e04255b05d3e55a44530b76ab2af8866697fbbf42a1445d63dcf1b4cd9a8062c71f211b74679a19785623d
+  checksum: 7c9537c7e277ffc430daac1afdd53765c27d2c12af73860e249ab859c096c732d1ad0166ddbe9a5bff9ff749908da3199b49da1e4028a7cee1c1cf1fbc9c50b5
   languageName: node
   linkType: hard
 
