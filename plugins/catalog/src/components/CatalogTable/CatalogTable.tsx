@@ -88,10 +88,15 @@ export const CatalogTable = (props: CatalogTableProps) => {
   } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const entityListContext = useEntityList();
-  const { loading, error, entities, filters, pageInfo, totalItems } =
-    entityListContext;
+  const {
+    loading,
+    error,
+    entities,
+    filters,
+    pageInfo,
+    totalItems = 0,
+  } = entityListContext;
   const enablePagination = !!pageInfo;
-
   const tableColumns = useMemo(
     () =>
       typeof columns === 'function' ? columns(entityListContext) : columns,
