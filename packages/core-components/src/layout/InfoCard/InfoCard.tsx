@@ -217,10 +217,7 @@ export function InfoCard(props: Props): JSX.Element {
     }
 
     return (
-      <div
-        className={classes.headerSubheader}
-        data-testid="info-card-subheader"
-      >
+      <div data-testid="info-card-subheader">
         {subheader && <div className={classes.subheader}>{subheader}</div>}
         {icon}
       </div>
