@@ -31917,9 +31917,9 @@ __metadata:
   linkType: hard
 
 "jest-date-mock@npm:^1.0.8":
-  version: 1.0.8
-  resolution: "jest-date-mock@npm:1.0.8"
-  checksum: 7b012870440b0df742d0b651435b91625dbbf02d916633a0c70c7deb5d5087f9aadc59847602312368826325909e70e95cd412896a0c9ee1d5ac382000bf5ef9
+  version: 1.0.9
+  resolution: "jest-date-mock@npm:1.0.9"
+  checksum: 4f8c4914348c59c4b3951577276dfea6f714fa24d032a774225f41288da1a191cfe14f95e1ba59dcc0db8cf1c9f7d3a1581b18ade6fc7b63118b04166a127c0a
   languageName: node
   linkType: hard
 
