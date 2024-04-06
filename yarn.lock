@@ -3565,7 +3565,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.4.3, @backstage/catalog-model@^1.4.4, @backstage/catalog-model@^1.4.5, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.4.3, @backstage/catalog-model@^1.4.5, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -3939,7 +3939,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-components@npm:^0.14.0, @backstage/core-components@npm:^0.14.3":
+"@backstage/core-components@npm:^0.14.3":
   version: 0.14.3
   resolution: "@backstage/core-components@npm:0.14.3"
   dependencies:
@@ -4063,7 +4063,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@^1.8.2, @backstage/core-plugin-api@^1.9.0, @backstage/core-plugin-api@^1.9.1, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
+"@backstage/core-plugin-api@^1.8.2, @backstage/core-plugin-api@^1.9.1, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-plugin-api@workspace:packages/core-plugin-api"
   dependencies:
@@ -5964,7 +5964,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.10.0, @backstage/plugin-catalog-react@npm:^1.11.2, @backstage/plugin-catalog-react@npm:^1.9.3":
+"@backstage/plugin-catalog-react@npm:^1.11.2, @backstage/plugin-catalog-react@npm:^1.9.3":
   version: 1.11.2
   resolution: "@backstage/plugin-catalog-react@npm:1.11.2"
   dependencies:
@@ -20230,9 +20230,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@uiw/codemirror-extensions-basic-setup@npm:4.21.24":
-  version: 4.21.24
-  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.21.24"
+"@uiw/codemirror-extensions-basic-setup@npm:4.21.25":
+  version: 4.21.25
+  resolution: "@uiw/codemirror-extensions-basic-setup@npm:4.21.25"
   dependencies:
     "@codemirror/autocomplete": ^6.0.0
     "@codemirror/commands": ^6.0.0
@@ -20249,19 +20249,19 @@ __metadata:
     "@codemirror/search": ">=6.0.0"
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
-  checksum: db42a1651d7d482e1811cd629a3a8a53c3ac09bfabf376dd35c0cbbaf5780f80c873d6da55294245850f7d8e13da92ec5885eea4938c85c957c38c23394e11f9
+  checksum: 1714fcb9ff1a80c14cef5b6b78f41d18f3991877fc088e5c5edf4ce4ee203f468a6401aab7d042ceae527f6475e2e11d4f30dbab6e127bd157c6aaf4c68049d2
   languageName: node
   linkType: hard
 
 "@uiw/react-codemirror@npm:^4.9.3":
-  version: 4.21.24
-  resolution: "@uiw/react-codemirror@npm:4.21.24"
+  version: 4.21.25
+  resolution: "@uiw/react-codemirror@npm:4.21.25"
   dependencies:
     "@babel/runtime": ^7.18.6
     "@codemirror/commands": ^6.1.0
     "@codemirror/state": ^6.1.1
     "@codemirror/theme-one-dark": ^6.0.0
-    "@uiw/codemirror-extensions-basic-setup": 4.21.24
+    "@uiw/codemirror-extensions-basic-setup": 4.21.25
     codemirror: ^6.0.0
   peerDependencies:
     "@babel/runtime": ">=7.11.0"
@@ -20271,7 +20271,7 @@ __metadata:
     codemirror: ">=6.0.0"
     react: ">=16.8.0"
     react-dom: ">=16.8.0"
-  checksum: 6adbee6608f3ec0806ff4b2d2e759fd314d3727c805cf58a6b1d524fe4e12b261b38d31374307eeb51aa34f68e113b298efdc13de807e93ca50a357e5b0f3eff
+  checksum: 63d7578dab73f66d0357bdd566d24c3c43431627c77b5756f0a982ac5ebff35322e3292ce33a16cb19d5e8fb750a64f59d17c35a3d84c66b38c8454d06613dff
   languageName: node
   linkType: hard
 
