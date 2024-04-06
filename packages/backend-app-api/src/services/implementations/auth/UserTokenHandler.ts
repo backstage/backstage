@@ -14,23 +14,17 @@
  * limitations under the License.
  */
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import {
   base64url,
-  createRemoteJWKSet,
   decodeJwt,
   decodeProtectedHeader,
-  FlattenedJWSInput,
-  JWSHeaderParameters,
   jwtVerify,
   JWTVerifyOptions,
 } from 'jose';
-import { GetKeyFunction } from 'jose/dist/types/types';
-
-const CLOCK_MARGIN_S = 10;
+import { JwksClient } from './JwksClient';
 
 /**
  * An identity client to interact with auth-backend and authenticate Backstage
@@ -39,15 +33,15 @@ const CLOCK_MARGIN_S = 10;
  * @internal
  */
 export class UserTokenHandler {
-  readonly #discovery: PluginEndpointDiscovery;
+  readonly #jwksClient: JwksClient;
   readonly #algorithms?: string[];
 
-  #keyStore?: GetKeyFunction<JWSHeaderParameters, FlattenedJWSInput>;
-  #keyStoreUpdated: number = 0;
-
   constructor(options: { discovery: DiscoveryService }) {
-    this.#discovery = options.discovery;
     this.#algorithms = ['ES256']; // TODO: configurable?
+    this.#jwksClient = new JwksClient(async () => {
+      const url = await options.discovery.getBaseUrl('auth');
+      return new URL(`${url}/.well-known/jwks.json`);
+    });
   }
 
   async verifyToken(token: string) {
@@ -56,15 +50,12 @@ export class UserTokenHandler {
       return undefined;
     }
 
-    await this.refreshKeyStore(token);
-    if (!this.#keyStore) {
-      throw new AuthenticationError('No keystore exists');
-    }
+    await this.#jwksClient.refreshKeyStore(token);
 
     // Verify a limited token, ensuring the necessarily claims are present and token type is correct
     const { payload } = await jwtVerify(
       token,
-      this.#keyStore,
+      this.#jwksClient.getKey,
       verifyOpts,
     ).catch(e => {
       throw new AuthenticationError('Invalid token', e);
@@ -159,38 +150,5 @@ export class UserTokenHandler {
     ].join('.');
 
     return { token: limitedUserToken, expiresAt: new Date(payload.exp * 1000) };
-  }
-
-  /**
-   * If the last keystore refresh is stale, update the keystore URL to the latest
-   */
-  private async refreshKeyStore(rawJwtToken: string): Promise<void> {
-    const payload = await decodeJwt(rawJwtToken);
-    const header = await decodeProtectedHeader(rawJwtToken);
-
-    // Refresh public keys if needed
-    let keyStoreHasKey;
-    try {
-      if (this.#keyStore) {
-        // Check if the key is present in the keystore
-        const [_, rawPayload, rawSignature] = rawJwtToken.split('.');
-        keyStoreHasKey = await this.#keyStore(header, {
-          payload: rawPayload,
-          signature: rawSignature,
-        });
-      }
-    } catch (error) {
-      keyStoreHasKey = false;
-    }
-    // Refresh public key URL if needed
-    // Add a small margin in case clocks are out of sync
-    const issuedAfterLastRefresh =
-      payload?.iat && payload.iat > this.#keyStoreUpdated - CLOCK_MARGIN_S;
-    if (!this.#keyStore || (!keyStoreHasKey && issuedAfterLastRefresh)) {
-      const url = await this.#discovery.getBaseUrl('auth');
-      const endpoint = new URL(`${url}/.well-known/jwks.json`);
-      this.#keyStore = createRemoteJWKSet(endpoint);
-      this.#keyStoreUpdated = Date.now() / 1000;
-    }
   }
 }

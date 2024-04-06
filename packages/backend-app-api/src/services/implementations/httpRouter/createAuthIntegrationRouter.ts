@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,14 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AuthService } from '@backstage/backend-plugin-api';
+import express from 'express';
+import Router from 'express-promise-router';
 
-import { Command } from 'commander';
-import { run } from './run';
+export function createAuthIntegrationRouter(options: {
+  auth: AuthService;
+}): express.Router {
+  const router = Router();
 
-export function registerCommands(program: Command) {
-  program
-    .command('run')
-    .option('--keep', 'Do not remove the temporary dir after tests complete')
-    .description('Run e2e tests')
-    .action(run);
+  router.get('/.backstage/auth/v1/jwks.json', async (_req, res) => {
+    const { keys } = await options.auth.listPublicServiceKeys();
+
+    res.json({ keys });
+  });
+
+  return router;
 }

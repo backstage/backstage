@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/types';
+
 /**
  * @public
  */
@@ -91,4 +93,8 @@ export interface AuthService {
   getLimitedUserToken(
     credentials: BackstageCredentials<BackstageUserPrincipal>,
   ): Promise<{ token: string; expiresAt: Date }>;
+
+  listPublicServiceKeys(): Promise<{
+    keys: JsonObject[];
+  }>;
 }

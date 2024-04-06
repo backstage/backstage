@@ -36,6 +36,7 @@ import {
   UserTokenPayload,
   ServiceTokenPayload,
 } from './mockCredentials';
+import { JsonObject } from '@backstage/types';
 
 /** @internal */
 export class MockAuthService implements AuthService {
@@ -183,5 +184,9 @@ export class MockAuthService implements AuthService {
       ),
       expiresAt: new Date(Date.now() + 3600_000),
     };
+  }
+
+  listPublicServiceKeys(): Promise<{ keys: JsonObject[] }> {
+    throw new Error('Not implemented');
   }
 }

@@ -389,7 +389,7 @@ export const tokenTypes = Object.freeze({
   limitedUser: Object.freeze({
     typParam: 'vnd.backstage.limited-user',
   }),
-  service: Object.freeze({
-    typParam: 'vnd.backstage.service',
+  plugin: Object.freeze({
+    typParam: 'vnd.backstage.plugin',
   }),
 });

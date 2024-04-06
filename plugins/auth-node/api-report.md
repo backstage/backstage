@@ -648,8 +648,8 @@ export const tokenTypes: Readonly<{
   limitedUser: Readonly<{
     typParam: 'vnd.backstage.limited-user';
   }>;
-  service: Readonly<{
-    typParam: 'vnd.backstage.service';
+  plugin: Readonly<{
+    typParam: 'vnd.backstage.plugin';
   }>;
 }>;
 

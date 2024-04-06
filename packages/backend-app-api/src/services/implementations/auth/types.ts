@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { run } from './run';
+import { JsonObject } from '@backstage/types';
 
-export function registerCommands(program: Command) {
-  program
-    .command('run')
-    .option('--keep', 'Do not remove the temporary dir after tests complete')
-    .description('Run e2e tests')
-    .action(run);
-}
+export type KeyStore = {
+  addKey(key: KeyPayload): Promise<any>;
+  listKeys(): Promise<{ keys: KeyPayload[] }>;
+};
+
+export type KeyPayload = {
+  id: string;
+  key: InternalKey;
+  expiresAt: Date;
+};
+
+export type InternalKey = JsonObject & { kid: string };

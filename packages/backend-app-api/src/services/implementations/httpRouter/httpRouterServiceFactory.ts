@@ -23,6 +23,7 @@ import { Handler } from 'express';
 import PromiseRouter from 'express-promise-router';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
+import { createAuthIntegrationRouter } from './createAuthIntegrationRouter';
 
 /**
  * @public
@@ -38,23 +39,36 @@ export interface HttpRouterFactoryOptions {
 export const httpRouterServiceFactory = createServiceFactory(
   (options?: HttpRouterFactoryOptions) => ({
     service: coreServices.httpRouter,
+    initialization: 'always',
     deps: {
       plugin: coreServices.pluginMetadata,
       config: coreServices.rootConfig,
       lifecycle: coreServices.lifecycle,
       rootHttpRouter: coreServices.rootHttpRouter,
+      auth: coreServices.auth,
       httpAuth: coreServices.httpAuth,
     },
-    async factory({ httpAuth, config, plugin, rootHttpRouter, lifecycle }) {
+    async factory({
+      auth,
+      httpAuth,
+      config,
+      plugin,
+      rootHttpRouter,
+      lifecycle,
+    }) {
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
 
       const router = PromiseRouter();
       rootHttpRouter.use(path, router);
 
-      const credentialsBarrier = createCredentialsBarrier({ httpAuth, config });
+      const credentialsBarrier = createCredentialsBarrier({
+        httpAuth,
+        config,
+      });
 
       router.use(createLifecycleMiddleware({ lifecycle }));
+      router.use(createAuthIntegrationRouter({ auth }));
       router.use(credentialsBarrier.middleware);
 
       return {

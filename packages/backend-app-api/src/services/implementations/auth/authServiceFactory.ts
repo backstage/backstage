@@ -28,6 +28,10 @@ import {
 import { AuthenticationError } from '@backstage/errors';
 import { decodeJwt } from 'jose';
 import { UserTokenHandler } from './UserTokenHandler';
+import { PluginTokenHandler } from './PluginTokenHandler';
+import { JsonObject } from '@backstage/types';
+import { DatabaseKeyStore } from './DatabaseKeyStore';
+import { KeyStore } from './types';
 
 /** @internal */
 export type InternalBackstageCredentials<TPrincipal = unknown> =
@@ -107,16 +111,15 @@ class DefaultAuthService implements AuthService {
     private readonly userTokenHandler: UserTokenHandler,
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
+    private readonly publicKeyStore: KeyStore,
+    private readonly pluginTokenHandler: PluginTokenHandler,
   ) {}
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
   async authenticate(token: string): Promise<BackstageCredentials> {
-    const { sub, aud } = decodeJwt(token);
-
-    // Legacy service-to-service token
-    if (sub === 'backstage-server' && !aud) {
-      await this.tokenManager.authenticate(token);
-      return createCredentialsWithServicePrincipal('external:backstage-plugin');
+    const pluginResult = await this.pluginTokenHandler.verifyToken(token);
+    if (pluginResult) {
+      return createCredentialsWithServicePrincipal(pluginResult.subject);
     }
 
     const userResult = await this.userTokenHandler.verifyToken(token);
@@ -126,6 +129,13 @@ class DefaultAuthService implements AuthService {
         token,
         this.#getJwtExpiration(token),
       );
+    }
+
+    // Legacy service-to-service token
+    const { sub, aud } = decodeJwt(token);
+    if (sub === 'backstage-server' && !aud) {
+      await this.tokenManager.authenticate(token);
+      return createCredentialsWithServicePrincipal('external:backstage-plugin');
     }
 
     throw new AuthenticationError('Unknown token');
@@ -166,6 +176,7 @@ class DefaultAuthService implements AuthService {
     onBehalfOf: BackstageCredentials;
     targetPluginId: string;
   }): Promise<{ token: string }> {
+    const { targetPluginId } = options;
     const internalForward = toInternalBackstageCredentials(options.onBehalfOf);
     const { type } = internalForward.principal;
 
@@ -178,9 +189,20 @@ class DefaultAuthService implements AuthService {
       return { token: '' };
     }
 
+    // check whether a plugin support the new auth system
+    // by checking the public keys endpoint existance.
     switch (type) {
       // TODO: Check whether the principal is ourselves
       case 'service':
+        if (
+          await this.pluginTokenHandler.isTargetPluginSupported(targetPluginId)
+        ) {
+          return this.pluginTokenHandler.issueToken({
+            pluginId: this.pluginId,
+            targetPluginId,
+          });
+        }
+        // If the target plugin does not support the new auth service, fall back to using old token format
         return this.tokenManager.getToken();
       case 'user':
         if (!internalForward.token) {
@@ -208,6 +230,11 @@ class DefaultAuthService implements AuthService {
     return this.userTokenHandler.createLimitedUserToken(backstageToken);
   }
 
+  async listPublicServiceKeys(): Promise<{ keys: JsonObject[] }> {
+    const { keys } = await this.publicKeyStore.listKeys();
+    return { keys: keys.map(({ key }) => key) };
+  }
+
   #getJwtExpiration(token: string) {
     const { exp } = decodeJwt(token);
     if (!exp) {
@@ -225,23 +252,36 @@ export const authServiceFactory = createServiceFactory({
     logger: coreServices.rootLogger,
     discovery: coreServices.discovery,
     plugin: coreServices.pluginMetadata,
+    database: coreServices.database,
     // Re-using the token manager makes sure that we use the same generated keys for
     // development as plugins that have not yet been migrated. It's important that this
     // keeps working as long as there are plugins that have not been migrated to the
     // new auth services in the new backend system.
     tokenManager: coreServices.tokenManager,
   },
-  async factory({ config, discovery, plugin, tokenManager }) {
+
+  async factory({ config, discovery, plugin, tokenManager, logger, database }) {
     const disableDefaultAuthPolicy = Boolean(
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',
       ),
     );
+
+    const publicKeyStore = await DatabaseKeyStore.create({ database, logger });
+
     return new DefaultAuthService(
       tokenManager,
       new UserTokenHandler({ discovery }),
       plugin.getId(),
       disableDefaultAuthPolicy,
+      publicKeyStore,
+      PluginTokenHandler.create({
+        ownPluginId: plugin.getId(),
+        keyDurationSeconds: 60 * 60,
+        logger,
+        publicKeyStore,
+        discovery,
+      }),
     );
   },
 });
