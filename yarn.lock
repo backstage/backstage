@@ -4292,7 +4292,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/integration-react@npm:^1.1.24, @backstage/integration-react@npm:^1.1.25":
+"@backstage/integration-react@npm:^1.1.25":
   version: 1.1.25
   resolution: "@backstage/integration-react@npm:1.1.25"
   dependencies:
@@ -5964,7 +5964,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.10.0, @backstage/plugin-catalog-react@npm:^1.9.3":
+"@backstage/plugin-catalog-react@npm:^1.10.0, @backstage/plugin-catalog-react@npm:^1.11.2, @backstage/plugin-catalog-react@npm:^1.9.3":
   version: 1.11.2
   resolution: "@backstage/plugin-catalog-react@npm:1.11.2"
   dependencies:
@@ -15599,15 +15599,15 @@ __metadata:
   linkType: hard
 
 "@roadiehq/backstage-plugin-github-insights@npm:^2.0.5":
-  version: 2.3.27
-  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.3.27"
+  version: 2.3.28
+  resolution: "@roadiehq/backstage-plugin-github-insights@npm:2.3.28"
   dependencies:
-    "@backstage/catalog-model": ^1.4.4
-    "@backstage/core-components": ^0.14.0
-    "@backstage/core-plugin-api": ^1.9.0
-    "@backstage/integration-react": ^1.1.24
-    "@backstage/plugin-catalog-react": ^1.10.0
-    "@backstage/theme": ^0.5.1
+    "@backstage/catalog-model": ^1.4.5
+    "@backstage/core-components": ^0.14.3
+    "@backstage/core-plugin-api": ^1.9.1
+    "@backstage/integration-react": ^1.1.25
+    "@backstage/plugin-catalog-react": ^1.11.2
+    "@backstage/theme": ^0.5.2
     "@date-io/core": 2.10.7
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
@@ -15622,7 +15622,7 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router: 6.0.0-beta.0 || ^6.3.0
-  checksum: d92f8a8f0ca66ff81722f319d55d2532436aa99cc5053a1f57bd4b82c297ab05869fce88615663fb4faf490deba1ea6b2f6ff6ddcf4412296a3c4416bb6d327e
+  checksum: a7955de4d5af049c8af3216b394c157d90e3890f8c31ab47042ab8cd423b3fb98808eb8c9997b66cdd0868ee6bea067e71b110909302841c686559e83ca4dfd1
   languageName: node
   linkType: hard
 
