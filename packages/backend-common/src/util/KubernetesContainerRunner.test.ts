@@ -204,6 +204,7 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
     await containerRunner.runContainer(runOptions);
 
     expect(logStream.writableEnded).toBe(false);
+    expect(logStream.destroyed).toBe(false);
   });
 
   describe('with namespace test', () => {
