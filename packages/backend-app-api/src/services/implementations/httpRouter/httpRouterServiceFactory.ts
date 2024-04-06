@@ -43,6 +43,7 @@ export const httpRouterServiceFactory = createServiceFactory(
     deps: {
       plugin: coreServices.pluginMetadata,
       config: coreServices.rootConfig,
+      logger: coreServices.logger,
       lifecycle: coreServices.lifecycle,
       rootHttpRouter: coreServices.rootHttpRouter,
       auth: coreServices.auth,
@@ -52,10 +53,16 @@ export const httpRouterServiceFactory = createServiceFactory(
       auth,
       httpAuth,
       config,
+      logger,
       plugin,
       rootHttpRouter,
       lifecycle,
     }) {
+      if (options?.getPath) {
+        logger.warn(
+          `DEPRECATION WARNING: The 'getPath' option for HttpRouterService is deprecated. The ability to reconfigure the '/api/' path prefix for plugins will be removed in the future.`,
+        );
+      }
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
 
