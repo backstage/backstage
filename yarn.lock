@@ -3565,7 +3565,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/catalog-model@^1.4.3, @backstage/catalog-model@^1.4.4, @backstage/catalog-model@^1.4.5, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
+"@backstage/catalog-model@^1.4.3, @backstage/catalog-model@^1.4.5, @backstage/catalog-model@workspace:^, @backstage/catalog-model@workspace:packages/catalog-model":
   version: 0.0.0-use.local
   resolution: "@backstage/catalog-model@workspace:packages/catalog-model"
   dependencies:
@@ -3939,7 +3939,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@backstage/core-components@npm:^0.14.0, @backstage/core-components@npm:^0.14.3":
+"@backstage/core-components@npm:^0.14.3":
   version: 0.14.3
   resolution: "@backstage/core-components@npm:0.14.3"
   dependencies:
@@ -4063,7 +4063,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/core-plugin-api@^1.8.2, @backstage/core-plugin-api@^1.9.0, @backstage/core-plugin-api@^1.9.1, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
+"@backstage/core-plugin-api@^1.8.2, @backstage/core-plugin-api@^1.9.1, @backstage/core-plugin-api@workspace:^, @backstage/core-plugin-api@workspace:packages/core-plugin-api":
   version: 0.0.0-use.local
   resolution: "@backstage/core-plugin-api@workspace:packages/core-plugin-api"
   dependencies:
@@ -5964,7 +5964,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-react@npm:^1.10.0, @backstage/plugin-catalog-react@npm:^1.11.2, @backstage/plugin-catalog-react@npm:^1.9.3":
+"@backstage/plugin-catalog-react@npm:^1.11.2, @backstage/plugin-catalog-react@npm:^1.9.3":
   version: 1.11.2
   resolution: "@backstage/plugin-catalog-react@npm:1.11.2"
   dependencies:
@@ -16792,10 +16792,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/ordered-object-literal@npm:^1.0.1, @stoplight/ordered-object-literal@npm:^1.0.3":
-  version: 1.0.4
-  resolution: "@stoplight/ordered-object-literal@npm:1.0.4"
-  checksum: 81afa24943880b0a213af3728a9fe0a28bd01d4840b9583d448f7823ced5b6e673628698b59d201cef50afebcbd89256e133714a174968d11b624d943e0c2c2f
+"@stoplight/ordered-object-literal@npm:^1.0.3, @stoplight/ordered-object-literal@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "@stoplight/ordered-object-literal@npm:1.0.5"
+  checksum: 84fe385ed742c5298fd5bee3f95366bfe17a2b99ed52f9b323180756d3495078dfb3bf7e5f49f3c8dee7b79f2e8358b38fe4977b7b6475f0094765160d716bb5
   languageName: node
   linkType: hard
 
@@ -16886,14 +16886,14 @@ __metadata:
   linkType: hard
 
 "@stoplight/spectral-parsers@npm:^1.0.0, @stoplight/spectral-parsers@npm:^1.0.2":
-  version: 1.0.3
-  resolution: "@stoplight/spectral-parsers@npm:1.0.3"
+  version: 1.0.4
+  resolution: "@stoplight/spectral-parsers@npm:1.0.4"
   dependencies:
     "@stoplight/json": ~3.21.0
-    "@stoplight/types": ^13.6.0
-    "@stoplight/yaml": ~4.2.3
+    "@stoplight/types": ^14.1.1
+    "@stoplight/yaml": ~4.3.0
     tslib: ^2.3.1
-  checksum: e1120e9ffc3db7f50573db08768c1206f5adc5fc503e77d3696e86e0765ce247c3c513ed12e53318b6aef0de33fc730aa78ccd542142d17d6bae01e23cba5879
+  checksum: ca88183661651d99b40da254316fec062c219253ea3054151b9379e7c492121cdeef49a2d1ac08cd89b2f89f7d16dbc4ecf9da6d7a7539979ac6418991fe804a
   languageName: node
   linkType: hard
 
@@ -16957,7 +16957,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/types@npm:^12.3.0 || ^13.0.0, @stoplight/types@npm:^13.0.0, @stoplight/types@npm:^13.12.0, @stoplight/types@npm:^13.15.0, @stoplight/types@npm:^13.6.0":
+"@stoplight/types@npm:^12.3.0 || ^13.0.0, @stoplight/types@npm:^13.12.0, @stoplight/types@npm:^13.15.0, @stoplight/types@npm:^13.6.0":
   version: 13.20.0
   resolution: "@stoplight/types@npm:13.20.0"
   dependencies:
@@ -16967,7 +16967,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/types@npm:^14.0.0":
+"@stoplight/types@npm:^14.0.0, @stoplight/types@npm:^14.1.1":
   version: 14.1.1
   resolution: "@stoplight/types@npm:14.1.1"
   dependencies:
@@ -16987,22 +16987,22 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@stoplight/yaml-ast-parser@npm:0.0.48":
-  version: 0.0.48
-  resolution: "@stoplight/yaml-ast-parser@npm:0.0.48"
-  checksum: 4e252a874636d4015ff78a638075c438ccf7b8b4b38e3df12f7b8381da2da0411dfff7a6de38354b8093a36a8911a9dd656264fb0d34453cb7bcf78a3627dfa0
+"@stoplight/yaml-ast-parser@npm:0.0.50":
+  version: 0.0.50
+  resolution: "@stoplight/yaml-ast-parser@npm:0.0.50"
+  checksum: dd46f2e39cef4e3a56276202872282bc435c5f92ea7cf344abd6722fbdab62547ec7d2b84983c6c05aaa2776ac29efd53affe6d9753cce10ef37b4e15ce6ccdc
   languageName: node
   linkType: hard
 
-"@stoplight/yaml@npm:~4.2.3":
-  version: 4.2.3
-  resolution: "@stoplight/yaml@npm:4.2.3"
+"@stoplight/yaml@npm:~4.3.0":
+  version: 4.3.0
+  resolution: "@stoplight/yaml@npm:4.3.0"
   dependencies:
-    "@stoplight/ordered-object-literal": ^1.0.1
-    "@stoplight/types": ^13.0.0
-    "@stoplight/yaml-ast-parser": 0.0.48
+    "@stoplight/ordered-object-literal": ^1.0.5
+    "@stoplight/types": ^14.1.1
+    "@stoplight/yaml-ast-parser": 0.0.50
     tslib: ^2.2.0
-  checksum: 8e61c4499c0849dafecf487e51e10d4d3e99192834dd87eba4b27c20c42d3fe1b5b022f9c3eb63b96249b46d7277ffb4ce37447d84d01d4768b88d142e3d0e15
+  checksum: f113f600a62b75c76c96c27ce3713ba2c48be205fca73097699b66b6f861411c6917dcc5afa4dd08c17fe63f5181b49fa2be9c6500140ea5d05a107ffcb48a4f
   languageName: node
   linkType: hard
 
