@@ -171,10 +171,9 @@ export function Gauge(props: GaugeProps) {
         <Box className={classes.description}>{description}</Box>
       ) : (
         <Box
-          className={classNames(
-            classes.overlay,
-            size === 'small' ? classes.overlaySmall : undefined,
-          )}
+          className={classNames(classes.overlay, {
+            [classes.overlaySmall]: size === 'small',
+          })}
         >
           {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
         </Box>
