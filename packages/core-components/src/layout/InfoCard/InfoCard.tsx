@@ -155,6 +155,7 @@ export type Props = {
   className?: string;
   noPadding?: boolean;
   titleTypographyProps?: object;
+  subheaderTypographyProps?: object;
 };
 
 /**
@@ -185,6 +186,7 @@ export function InfoCard(props: Props): JSX.Element {
     className,
     noPadding,
     titleTypographyProps,
+    subheaderTypographyProps,
   } = props;
   const classes = useStyles();
   /**
@@ -246,6 +248,7 @@ export function InfoCard(props: Props): JSX.Element {
             action={action}
             style={{ ...headerStyle }}
             titleTypographyProps={titleTypographyProps}
+            subheaderTypographyProps={subheaderTypographyProps}
             {...headerProps}
           />
         )}

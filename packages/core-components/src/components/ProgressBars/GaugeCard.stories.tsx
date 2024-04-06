@@ -234,6 +234,7 @@ export const Small = () => (
         alignGauge="bottom"
         size="small"
         title="Progress"
+        subheader="With a subheader"
         progress={0.57}
       />
     </Grid>

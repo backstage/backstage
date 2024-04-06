@@ -91,13 +91,12 @@ export function GaugeCard(props: Props) {
         variant={variant}
         alignContent={alignGauge}
         icon={icon}
-        titleTypographyProps={
-          size === 'small'
-            ? {
-                variant: 'h6',
-              }
-            : undefined
-        }
+        titleTypographyProps={{
+          ...(size === 'small' ? { variant: 'subtitle2' } : undefined),
+        }}
+        subheaderTypographyProps={{
+          ...(size === 'small' ? { variant: 'body2' } : undefined),
+        }}
       >
         <Gauge {...gaugeProps} size={size} />
       </InfoCard>
