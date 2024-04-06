@@ -74,7 +74,6 @@ import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend
 import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
 import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
 import { version as pluginScaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
-import { version as pluginScaffolderBackendModuleGithub } from '../../../../plugins/scaffolder-backend-module-github/package.json';
 import { version as pluginSearch } from '../../../../plugins/search/package.json';
 import { version as pluginSearchReact } from '../../../../plugins/search-react/package.json';
 import { version as pluginSearchBackend } from '../../../../plugins/search-backend/package.json';
@@ -135,8 +134,6 @@ export const packageVersions = {
   '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
-  '@backstage/plugin-scaffolder-backend-module-github':
-    pluginScaffolderBackendModuleGithub,
   '@backstage/plugin-search': pluginSearch,
   '@backstage/plugin-search-react': pluginSearchReact,
   '@backstage/plugin-search-backend': pluginSearchBackend,
