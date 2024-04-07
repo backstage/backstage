@@ -108,12 +108,11 @@ export class PullRequestsDashboardProvider {
   public async getDashboardPullRequests(
     projectName: string,
     options: PullRequestOptions,
-    teamsLimit?: number,
   ): Promise<DashboardPullRequest[]> {
     const dashboardPullRequests =
       await this.azureDevOpsApi.getDashboardPullRequests(projectName, options);
 
-    await this.getAllTeams(teamsLimit); // Make sure team members are loaded
+    await this.getAllTeams({ limit: options.teamsLimit }); // Make sure team members are loaded
 
     return dashboardPullRequests.map(pr => {
       if (pr.createdBy?.id) {
@@ -129,7 +128,7 @@ export class PullRequestsDashboardProvider {
   }
 
   public async getUserTeamIds(email: string): Promise<string[]> {
-    await this.getAllTeams(); // Make sure team members are loaded
+    await this.getAllTeams({}); // Make sure team members are loaded
     return (
       Array.from(this.teamMembers.values()).find(
         teamMember => teamMember.uniqueName === email,
@@ -137,9 +136,9 @@ export class PullRequestsDashboardProvider {
     );
   }
 
-  public async getAllTeams(limit?: number): Promise<Team[]> {
+  public async getAllTeams(options: { limit?: number }): Promise<Team[]> {
     if (!this.teams.size) {
-      const maxTeams = limit ?? DEFAULT_TEAMS_LIMIT;
+      const maxTeams = options?.limit ?? DEFAULT_TEAMS_LIMIT;
       await this.readTeams(maxTeams);
     }
 

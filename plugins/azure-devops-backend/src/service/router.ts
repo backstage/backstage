@@ -241,6 +241,7 @@ export async function createRouter(
     const pullRequestOptions: PullRequestOptions = {
       top: top,
       status: status,
+      teamsLimit: teamsLimit,
     };
 
     const token = getBearerTokenFromAuthorizationHeader(
@@ -267,7 +268,6 @@ export async function createRouter(
       await pullRequestsDashboardProvider.getDashboardPullRequests(
         projectName,
         pullRequestOptions,
-        teamsLimit,
       );
 
     res.status(200).json(pullRequests);
@@ -275,7 +275,7 @@ export async function createRouter(
 
   router.get('/all-teams', async (req, res) => {
     const limit = req.query.limit ? Number(req.query.limit) : undefined;
-    const allTeams = await pullRequestsDashboardProvider.getAllTeams(limit);
+    const allTeams = await pullRequestsDashboardProvider.getAllTeams({ limit });
     res.status(200).json(allTeams);
   });
 
