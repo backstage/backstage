@@ -45,6 +45,22 @@ function parseRefString(ref: string): {
 }
 
 /**
+ * Checks if ref is a string a entity string reference
+ * This function does not check the catalog for its existence but rather only checks the format
+ *
+ * @public
+ * @param ref - a string
+ */
+export function isEntityRef(ref: string): boolean {
+  try {
+    parseRefString(ref);
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+/**
  * Extracts the kind, namespace and name that form the compound entity ref
  * triplet of the given entity.
  *

@@ -262,6 +262,9 @@ export function isComponentEntity(
 // @public (undocumented)
 export function isDomainEntity(entity: Entity): entity is DomainEntityV1alpha1;
 
+// @public
+export function isEntityRef(ref: string): boolean;
+
 // @public (undocumented)
 export function isGroupEntity(entity: Entity): entity is GroupEntityV1alpha1;
 

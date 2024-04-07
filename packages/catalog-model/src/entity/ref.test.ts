@@ -14,9 +14,23 @@
  * limitations under the License.
  */
 
-import { parseEntityRef } from './ref';
+import { isEntityRef, parseEntityRef } from './ref';
 
 describe('ref', () => {
+  describe('isEntityRef', () => {
+    it.each`
+      input                                                       | expected
+      ${''}                                                       | ${false}
+      ${'https://mygit.example.com/myOrg/myRepo'}                 | ${false}
+      ${'https://mygit.example.com/myOrg/myRepo/master/test.git'} | ${false}
+      ${'component:default/backstage-plugins-example'}            | ${true}
+      ${'default/backstage-plugins-example'}                      | ${true}
+      ${'component:backstage-plugins-example'}                    | ${true}
+      ${'backstage-plugins-example'}                              | ${true}
+    `(`$input should return $expected`, ({ input, expected }) => {
+      expect(isEntityRef(input)).toBe(expected);
+    });
+  });
   describe('parseEntityRef', () => {
     it('handles some omissions', () => {
       expect(parseEntityRef('a:b/c')).toEqual({

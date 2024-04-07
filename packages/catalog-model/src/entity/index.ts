@@ -23,4 +23,5 @@ export {
   getCompoundEntityRef,
   parseEntityRef,
   stringifyEntityRef,
+  isEntityRef,
 } from './ref';
