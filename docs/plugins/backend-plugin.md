@@ -44,7 +44,7 @@ cd plugins/carmen-backend
 yarn start
 ```
 
-> Note: this documentation assumes you are using the latest version of Backstage and the new backend system. If you are not please upgrade and migrate your backend using the [Migration Guide](../backend-system/building-backends/08-migrating.md)
+> Note: this documentation assumes you are using the latest version of Backstage and the new backend system. If you are not, please upgrade and migrate your backend using the [Migration Guide](../backend-system/building-backends/08-migrating.md)
 
 This will think for a bit, and then say `Listening on :7007`. In a different
 terminal window, now run
@@ -72,38 +72,19 @@ to your backend.
 yarn --cwd packages/backend add @internal/plugin-carmen-backend@^0.1.0 # Change this to match the plugin's package.json
 ```
 
-Create a new file named `packages/backend/src/plugins/carmen.ts`, and add the
-following to it
+Update `packages/backend/src/index` with the following,
 
 ```ts
-import { createRouter } from '@internal/plugin-carmen-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
+const backend = createBackend();
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  // Here is where you will add all of the required initialization code that
-  // your backend plugin needs to be able to start!
-
-  // The env contains a lot of goodies, but our router currently only
-  // needs a logger
-  return await createRouter({
-    logger: env.logger,
-  });
-}
-```
-
-And finally, wire this into the overall backend router. Edit
-`packages/backend/src/index.ts`:
-
-```ts
-import carmen from './plugins/carmen';
 // ...
-async function main() {
-  // ...
-  const carmenEnv = useHotMemoize(module, () => createEnv('carmen'));
-  apiRouter.use('/carmen', await carmen(carmenEnv));
+
+// highlight-add-next-line
+backend.add(import('@internal/plugin-carmen-backend'));
+
+// ...
+
+backend.start();
 ```
 
 After you start the backend (e.g. using `yarn start-backend` from the repo
@@ -122,30 +103,48 @@ The Backstage backend comes with a builtin facility for SQL database access.
 Most plugins that have persistence needs will choose to make use of this
 facility, so that Backstage operators can manage database needs uniformly.
 
-As part of the environment object that is passed to your `createPlugin`
-function, there is a `database` field. You can use that to get a
-[Knex](http://knexjs.org/) connection object.
+You can access this by adding a dependency on the `coreServices.database` service.
+That will give you a [Knex](http://knexjs.org/) connection object.
 
-```ts
-// in packages/backend/src/plugins/carmen.ts
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const db: Knex<any, unknown[]> = await env.database.getClient();
-
-  // You will then pass this client into your actual plugin implementation
-  // code, maybe similar to the following:
-  const model = new CarmenDatabaseModel(db);
-  return await createRouter({
-    model: model,
-    logger: env.logger,
-  });
-}
+```ts title="plugins/carmen-backend/src/plugin.ts"
+export const carmenPlugin = createBackendPlugin({
+  pluginId: 'carmenPlugin',
+  register(env) {
+    env.registerInit({
+      deps: {
+        httpRouter: coreServices.httpRouter,
+        logger: coreServices.logger,
+        // highlight-next-line
+        database: coreServices.database,
+      },
+      async init({
+        httpRouter,
+        logger,
+        // highlight-next-line
+        database,
+      }) {
+        // You will then pass this client into your actual plugin implementation
+        // code, maybe similar to the following:
+        const model = new CarmenDatabaseModel(db);
+        httpRouter.use(
+          await createRouter({
+            // highlight-next-line
+            model,
+            logger,
+          }),
+        );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
+      },
+    });
+  },
+});
 ```
 
-You may note that the `getClient` call has no parameters. This is because all
-plugin database needs are configured under the `backend.database` config key of
-your `app-config.yaml`. The framework may even make sure behind the scenes that
+All plugin database needs are configured under the `backend.database` config key
+of your `app-config.yaml`. The framework may even make sure behind the scenes that
 the logical database is created automatically if it doesn't exist, based on
 rules that the Backstage operator decides on.
 
@@ -159,24 +158,36 @@ database..
 
 ## Making Use of the User's Identity
 
-The Backstage backend comes with a facility for retrieving the identity of the
-logged in user.
+The Backstage backend also offers a core service to access the user's identity. You can access it through the `coreServices.identity` dependency.
 
-As part of the environment object that is passed to your `createPlugin`
-function, there is a `identity` field. You can use that to get an identity
-from the request.
-
-```ts
-// in packages/backend/src/plugins/carmen.ts
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  return await createRouter({
-    model: model,
-    logger: env.logger,
-    identity: env.identity,
-  });
-}
+```ts title="plugins/carmen-backend/src/plugin.ts"
+export const carmenPlugin = createBackendPlugin({
+  pluginId: 'carmenPlugin',
+  register(env) {
+    env.registerInit({
+      deps: {
+        httpRouter: coreServices.httpRouter,
+        logger: coreServices.logger,
+        // highlight-next-line
+        identity: coreServices.identity,
+      },
+      async init({
+        httpRouter,
+        logger,
+        // highlight-next-line
+        identity,
+      }) {
+        httpRouter.use(
+          await createRouter({
+            // highlight-next-line
+            identity,
+            logger,
+          }),
+        );
+      },
+    });
+  },
+});
 ```
 
 The plugin can then extract the identity from the request.
