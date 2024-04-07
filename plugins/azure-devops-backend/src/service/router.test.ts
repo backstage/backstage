@@ -348,7 +348,74 @@ describe('createRouter', () => {
       expect(azureDevOpsApi.getPullRequests).toHaveBeenCalledWith(
         'myProject',
         'myRepo',
-        { status: 1, top: 50 },
+        { status: 1, top: 50, teamsLimit: 100 },
+        undefined,
+        undefined,
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(pullRequests);
+    });
+    it('fetches a list of pull requests when using teamsLimit', async () => {
+      const firstPullRequest: PullRequest = {
+        pullRequestId: 7181,
+        repoName: 'super-feature-repo',
+        title: 'My Awesome New Feature',
+        createdBy: 'Jane Doe',
+        creationDate: '2020-09-12T06:10:23.932Z',
+        sourceRefName: 'refs/heads/topic/super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7181',
+      };
+
+      const secondPullRequest: PullRequest = {
+        pullRequestId: 7182,
+        repoName: 'super-feature-repo',
+        title: 'Refactoring My Awesome New Feature',
+        createdBy: 'Jane Doe',
+        creationDate: '2020-09-12T06:10:23.932Z',
+        sourceRefName: 'refs/heads/topic/refactor-super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7182',
+      };
+
+      const thirdPullRequest: PullRequest = {
+        pullRequestId: 7183,
+        repoName: 'super-feature-repo',
+        title: 'Bug Fix for My Awesome New Feature',
+        createdBy: 'Jane Doe',
+        creationDate: '2020-09-12T06:10:23.932Z',
+        sourceRefName: 'refs/heads/topic/fix-super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7183',
+      };
+
+      const pullRequests: PullRequest[] = [
+        firstPullRequest,
+        secondPullRequest,
+        thirdPullRequest,
+      ];
+
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+
+      azureDevOpsApi.getPullRequests.mockResolvedValueOnce(pullRequests);
+
+      const response = await request(app)
+        .get('/pull-requests/myProject/myRepo')
+        .query({ entityRef: 'component:default/mycomponent' })
+        .query({ top: '50', status: 1, teamsLimit: 50 });
+
+      expect(azureDevOpsApi.getPullRequests).toHaveBeenCalledWith(
+        'myProject',
+        'myRepo',
+        { status: 1, top: 50, teamsLimit: 50 },
         undefined,
         undefined,
       );
