@@ -31532,8 +31532,8 @@ __metadata:
   linkType: hard
 
 "isomorphic-git@npm:^1.23.0":
-  version: 1.25.6
-  resolution: "isomorphic-git@npm:1.25.6"
+  version: 1.25.7
+  resolution: "isomorphic-git@npm:1.25.7"
   dependencies:
     async-lock: ^1.1.0
     clean-git-ref: ^2.0.1
@@ -31548,7 +31548,7 @@ __metadata:
     simple-get: ^4.0.1
   bin:
     isogit: cli.cjs
-  checksum: d1fa30ede586f6bb36a526924dafa92d67a55b331ca1c2e95fe96bbd4b614302a87c1c016a1f7ca76c44cfa80b6c0e83c9df114417a6caabe82a8472d86346c3
+  checksum: 6655c70c8c9974c907f6ca864ca16b0aed113ca8b6f50de4858a624b2ed66633a83ce64ca8935f370e328a29bc37811447eb7494be379388123feb811e867459
   languageName: node
   linkType: hard
 
