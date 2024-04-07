@@ -10,16 +10,18 @@ git repository.
 
 ## Action Modules
 
-The GitHub module is included out of the box, but several other modules are available:
+There are also several modules available for various SCM tools:
 
 - Azure DevOps: `@backstage/plugin-scaffolder-backend-module-azure`
 - Bitbucket Cloud: `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`
 - Bitbucket Server: `@backstage/plugin-scaffolder-backend-module-bitbucket-server`
 - Gerrit: `@backstage/plugin-scaffolder-backend-module-gerrit`
-- Gittea: `@backstage/plugin-scaffolder-backend-module-gittea`
+- Gitea: `@backstage/plugin-scaffolder-backend-module-gitea`
 - GitLab: `@backstage/plugin-scaffolder-backend-module-gitlab`
 
-Here's how to add an action module, this is a simplified backend for example purposes:
+## Installing Action Modules
+
+Here's how to add an action module, this is a simplified new backend system for example purposes:
 
 ```ts title="/packages/backend/src/index.ts
 import { createBackend } from '@backstage/backend-defaults';
