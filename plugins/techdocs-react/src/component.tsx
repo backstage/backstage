@@ -22,7 +22,8 @@ import React, {
 } from 'react';
 
 import { create } from 'jss';
-import { StylesProvider, jssPreset } from '@material-ui/styles';
+import StylesProvider from '@material-ui/styles/StylesProvider';
+import jssPreset from '@material-ui/styles/jssPreset';
 
 import { Progress } from '@backstage/core-components';
 
