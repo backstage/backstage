@@ -70,6 +70,17 @@ export const makeProfileInfo = (
   };
 };
 
+const getPublicKeyEndpoint = (region: string) => {
+  const commercialEndpoint = `https://public-keys.auth.elb.${encodeURIComponent(
+    region,
+  )}.amazonaws.com/`;
+  const govEndpoint = `https://s3-${encodeURIComponent(
+    region,
+  )}.amazonaws.com/aws-elb-public-keys-prod-${encodeURIComponent(region)}/`;
+
+  return region.startsWith('us-gov') ? govEndpoint : commercialEndpoint;
+};
+
 export const provisionKeyCache = (region: string, keyCache: NodeCache) => {
   return async (header: JWTHeaderParameters): Promise<KeyObject> => {
     if (!header.kid) {
@@ -79,10 +90,9 @@ export const provisionKeyCache = (region: string, keyCache: NodeCache) => {
     if (optionalCacheKey) {
       return crypto.createPublicKey(optionalCacheKey);
     }
+
     const keyText: string = await fetch(
-      `https://public-keys.auth.elb.${encodeURIComponent(
-        region,
-      )}.amazonaws.com/${encodeURIComponent(header.kid)}`,
+      getPublicKeyEndpoint(region) + header.kid,
     ).then(response => response.text());
 
     const keyValue = crypto.createPublicKey(keyText);
