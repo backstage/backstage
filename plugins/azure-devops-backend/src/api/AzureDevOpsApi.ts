@@ -397,7 +397,7 @@ export class AzureDevOpsApi {
       .filter((policy): policy is Policy => Boolean(policy));
   }
 
-  public async getAllTeams(options?: { limit?: number }): Promise<Team[]> {
+  public async getAllTeams(options?: { limit?: number }): Promise<Team[]> {
     this.logger?.debug('Getting all teams.');
 
     const webApi = await this.getWebApi();
