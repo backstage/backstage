@@ -72,7 +72,7 @@
     "@types/pluralize": "^0.0.33",
     "@types/recharts": "^1.8.14",
     "@types/regression": "^2.0.0",
-    "@types/yup": "^0.29.13",
+    "@types/yup": "^0.32.0",
     "canvas": "^2.10.2"
   },
   "peerDependencies": {
