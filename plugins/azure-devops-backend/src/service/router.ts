@@ -178,6 +178,9 @@ export async function createRouter(
     const { projectName, repoName } = req.params;
 
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+    const teamsLimit = req.query.teamsLimit
+      ? Number(req.query.teamsLimit)
+      : DEFAULT_TEAMS_LIMIT;
     const host = req.query.host?.toString();
     const org = req.query.org?.toString();
     const status = req.query.status
@@ -187,6 +190,7 @@ export async function createRouter(
     const pullRequestOptions: PullRequestOptions = {
       top: top,
       status: status,
+      teamsLimit: teamsLimit,
     };
 
     const entityRef = req.query.entityRef;

@@ -107,6 +107,9 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (options?.status) {
       queryString.append('status', options.status.toString());
     }
+    if (options?.teamsLimit) {
+      queryString.append('teamsLimit', options.teamsLimit.toString());
+    }
     if (host) {
       queryString.append('host', host);
     }
