@@ -48,7 +48,7 @@ export class PullRequestsDashboardProvider {
   public async readTeams(limit?: number): Promise<void> {
     this.logger.info('Reading teams.');
 
-    let teams = await this.azureDevOpsApi.getAllTeams(limit);
+    let teams = await this.azureDevOpsApi.getAllTeams({ limit });
 
     // This is used to filter out the default Azure Devops project teams.
     teams = teams.filter(team =>
