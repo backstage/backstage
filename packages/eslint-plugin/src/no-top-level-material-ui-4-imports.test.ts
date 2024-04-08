@@ -58,6 +58,11 @@ import Typography from '@material-ui/core/Typography';`,
       output: `import Box from '@material-ui/core/Box';`,
     },
     {
+      code: `import { ThemeProvider } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import { ThemeProvider } from '@material-ui/core/styles';`,
+    },
+    {
       code: `import {
                   Box,
                   DialogActions,
@@ -65,6 +70,7 @@ import Typography from '@material-ui/core/Typography';`,
                   DialogTitle,
                   Grid,
                   makeStyles,
+                  ThemeProvider,
                 } from '@material-ui/core';`,
       errors: [{ messageId: 'topLevelImport' }],
       output: `import Box from '@material-ui/core/Box';
@@ -72,7 +78,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';`,
+import { makeStyles, ThemeProvider } from '@material-ui/core/styles';`,
     },
     {
       code: `import { Box, Button, makeStyles } from '@material-ui/core';`,
