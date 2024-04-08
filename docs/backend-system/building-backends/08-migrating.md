@@ -1118,7 +1118,7 @@ backend.add(
 
 #### Search Collators
 
-The following sections outline how you add the Catalog and TechDocs search collators
+The following sections outline how you add search collators (input sources for the search indexing process).
 
 ##### Catalog
 
