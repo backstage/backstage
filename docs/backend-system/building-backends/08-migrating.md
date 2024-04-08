@@ -1082,7 +1082,7 @@ backend.add(import('@backstage/plugin-search-backend/alpha'));
 
 #### Search Engines
 
-The following sections outline how you can add other Search engines
+The following sections outline how you can add other Search engines than the default lunr engine.
 
 ##### Postgres
 
