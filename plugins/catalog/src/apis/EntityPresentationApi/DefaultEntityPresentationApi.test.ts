@@ -86,6 +86,21 @@ describe('DefaultEntityPresentationApi', () => {
       },
       update$: undefined,
     });
+
+    expect(
+      api.forEntity('entity', {
+        defaultKind: 'component',
+        defaultNamespace: 'default',
+      }),
+    ).toEqual({
+      snapshot: {
+        entityRef: 'component:default/entity',
+        primaryTitle: 'entity',
+        secondaryTitle: 'component:default/entity',
+        Icon: expect.anything(),
+      },
+      update$: undefined,
+    });
   });
 
   it('works in catalog mode', async () => {
