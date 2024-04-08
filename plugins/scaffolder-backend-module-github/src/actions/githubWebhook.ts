@@ -56,6 +56,7 @@ export function createGithubWebhookAction(options: {
     id: 'github:webhook',
     description: 'Creates webhook for a repository on GitHub.',
     examples,
+    supportsDryRun: true,
     schema: {
       input: {
         type: 'object',
