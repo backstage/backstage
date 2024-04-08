@@ -63,6 +63,18 @@ import Typography from '@material-ui/core/Typography';`,
       output: `import { ThemeProvider } from '@material-ui/core/styles';`,
     },
     {
+      code: `import { Grid, GridProps, Theme, makeStyles } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import Grid, { GridProps } from '@material-ui/core/Grid';
+import { Theme, makeStyles } from '@material-ui/core/styles';`,
+    },
+    {
+      code: `import { Grid, GridProps, SvgIcon, SvgIconProps } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import Grid, { GridProps } from '@material-ui/core/Grid';
+import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';`,
+    },
+    {
       code: `import {
                   Box,
                   DialogActions,
