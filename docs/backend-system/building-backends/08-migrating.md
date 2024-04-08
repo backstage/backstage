@@ -1186,11 +1186,13 @@ import {
 } from '@backstage/plugin-permission-node';
 import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
 
-class ExampleAllowAllPermissionPolicy implements PermissionPolicy {
+class CustomPermissionPolicy implements PermissionPolicy {
   async handle(
-    _request: PolicyQuery,
-    _user?: BackstageIdentityResponse,
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
+    // TODO: Add code here that inspects the incoming request and user, and returns AuthorizeResult.ALLOW, AuthorizeResult.DENY, or AuthorizeResult.CONDITIONAL as needed. See the docs at https://backstage.io/docs/permissions/writing-a-policy for more information
+
     return {
       result: AuthorizeResult.ALLOW,
     };
@@ -1230,7 +1232,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
 /* highlight-add-end */
 ```
 
