@@ -22,8 +22,18 @@ export class DefaultNotificationService implements NotificationService {
 
 // @public (undocumented)
 export interface NotificationProcessor {
-  decorate?(notification: Notification_2): Promise<Notification_2>;
-  send?(notification: Notification_2): Promise<void>;
+  getName(): string;
+  postProcess?(
+    notification: Notification_2,
+    options: NotificationSendOptions,
+  ): Promise<void>;
+  preProcess?(
+    notification: Notification_2,
+    options: NotificationSendOptions,
+  ): Promise<Notification_2>;
+  processOptions?(
+    options: NotificationSendOptions,
+  ): Promise<NotificationSendOptions>;
 }
 
 // @public (undocumented)

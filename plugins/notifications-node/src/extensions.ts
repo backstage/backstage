@@ -15,25 +15,58 @@
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { Notification } from '@backstage/plugin-notifications-common';
+import { NotificationSendOptions } from './service';
 
 /**
  * @public
  */
 export interface NotificationProcessor {
   /**
-   * Decorate notification before sending it
-   *
-   * @param notification - The notification to decorate
-   * @returns The same notification or a modified version of it
+   * Human-readable name of this processor like Email, Slack, etc.
    */
-  decorate?(notification: Notification): Promise<Notification>;
+  getName(): string;
 
   /**
-   * Send notification using this processor.
+   * Process the notification options.
+   *
+   * This can be used to modify the options before sending the notification or even sending the notification to
+   * external services. This function is called only once for each notification before processing it.
+   *
+   * @param options - The original options to send the notification
+   */
+  processOptions?(
+    options: NotificationSendOptions,
+  ): Promise<NotificationSendOptions>;
+
+  /**
+   * Pre-process notification before sending it to Backstage UI.
+   *
+   * Can be used to send the notification to external services or to decorate the notification with additional
+   * information. This function is called for each notification recipient individually or once for broadcast
+   * notification.
+   *
+   * @param notification - The notification to decorate
+   * @param options - The options to send the notification
+   * @returns The same notification or a modified version of it
+   */
+  preProcess?(
+    notification: Notification,
+    options: NotificationSendOptions,
+  ): Promise<Notification>;
+
+  /**
+   * Post process notification after sending it to Backstage UI.
+   *
+   * Can be used to send the notification to external services. This function is called for each notification
+   * recipient individually or once for broadcast notification.
    *
    * @param notification - The notification to send
+   * @param options - The options to send the notification
    */
-  send?(notification: Notification): Promise<void>;
+  postProcess?(
+    notification: Notification,
+    options: NotificationSendOptions,
+  ): Promise<void>;
 }
 
 /**
