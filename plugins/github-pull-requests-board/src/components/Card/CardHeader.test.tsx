@@ -37,13 +37,15 @@ const props = {
       name: 'documentation',
     },
   ],
-  status: {
-    commit: {
-      statusCheckRollup: {
-        state: 'SUCCESS',
+  status: [
+    {
+      commit: {
+        statusCheckRollup: {
+          state: 'SUCCESS',
+        },
       },
     },
-  },
+  ],
 };
 
 describe('<CardHeader/>', () => {
