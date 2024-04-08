@@ -15,6 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
+import throttle from 'lodash/throttle';
 import {
   Content,
   PageWithHeader,
@@ -33,6 +34,8 @@ import {
 } from '../NotificationsFilters';
 import { GetNotificationsOptions } from '../../api';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
+
+const ThrottleDelayMs = 2000;
 
 export const NotificationsPage = () => {
   const [refresh, setRefresh] = React.useState(false);
@@ -83,21 +86,26 @@ export const NotificationsPage = () => {
     ],
   );
 
+  const throttledSetRefresh = React.useMemo(
+    () => throttle(setRefresh, ThrottleDelayMs),
+    [setRefresh],
+  );
+
   useEffect(() => {
-    if (refresh) {
+    if (refresh && !loading) {
       retry();
       setRefresh(false);
     }
-  }, [refresh, setRefresh, retry]);
+  }, [refresh, setRefresh, retry, loading]);
 
   useEffect(() => {
     if (lastSignal && lastSignal.action) {
-      setRefresh(true);
+      throttledSetRefresh(true);
     }
-  }, [lastSignal]);
+  }, [lastSignal, throttledSetRefresh]);
 
   const onUpdate = () => {
-    setRefresh(true);
+    throttledSetRefresh(true);
   };
 
   if (error) {
