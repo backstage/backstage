@@ -38,7 +38,7 @@ describe('authPlugin', () => {
     );
     expect(res.status).toBe(200);
     expect(res.body).toMatchObject({
-      claims_supported: ['sub'],
+      claims_supported: ['sub', 'ent'],
       issuer: `http://localhost:${server.port()}/api/auth`,
     });
   });
