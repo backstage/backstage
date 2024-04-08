@@ -194,6 +194,33 @@ async function main() {
 That's it! TechDocs frontend and backend have now been added to your Backstage
 app. Now let us tweak some configurations to suit your needs.
 
+### New Backend System
+
+To install TechDocs when using the New Backend system you will need to do the following.
+
+Navigate to `packages/backend` of your Backstage app, and install the `@backstage/plugin-techdocs-backend` package.
+
+```bash
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-techdocs-backend
+```
+
+Then in your backend `index.ts` you will add the following line.
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+/* highlight-add-end */
+
+backend.start();
+```
+
+> Note: The above is a very simplified example, you may have more content then this in your version.
+
 ## Setting the configuration
 
 **See [TechDocs Configuration Options](configuration.md) for complete
