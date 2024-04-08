@@ -89,4 +89,36 @@ describe('DefaultRootHttpRouter', () => {
 
     expect('test').toBe('test');
   });
+
+  it('should treat unknown /api/ routes as 404', async () => {
+    const router = DefaultRootHttpRouter.create();
+    const app = express();
+    app.use(router.handler());
+
+    router.use('/api/app', (_req, res) => res.status(201).end());
+    router.use('/api/catalog', (_req, res) => res.status(202).end());
+
+    await request(app).get('/').expect(201);
+    await request(app).get('/api/catalog').expect(202);
+    await request(app).get('/unknown').expect(201);
+    await request(app).get('/api/unknown').expect(404);
+
+    expect('test').toBe('test');
+  });
+
+  it('should treat unknown /api/ routes as 404 without an index path', async () => {
+    const router = DefaultRootHttpRouter.create({ indexPath: false });
+    const app = express();
+    app.use(router.handler());
+
+    router.use('/api/app', (_req, res) => res.status(201).end());
+    router.use('/api/catalog', (_req, res) => res.status(202).end());
+
+    await request(app).get('/').expect(404);
+    await request(app).get('/api/catalog').expect(202);
+    await request(app).get('/unknown').expect(404);
+    await request(app).get('/api/unknown').expect(404);
+
+    expect('test').toBe('test');
+  });
 });

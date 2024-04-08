@@ -66,6 +66,12 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
   private constructor(indexPath?: string) {
     this.#indexPath = indexPath;
     this.#router.use(this.#namedRoutes);
+
+    // Any request with a /api/ prefix will skip the index router, even if no named router matches
+    this.#router.use('/api/', (_req, _res, next) => {
+      next('router');
+    });
+
     if (this.#indexPath) {
       this.#router.use(this.#indexRouter);
     }
