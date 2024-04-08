@@ -21,7 +21,7 @@ addHook(
   (code, filename) => {
     const transformed = transformSync(code, {
       filename,
-      sourceMaps: 'inline',
+      // sourceMaps: 'inline',
       module: { type: 'commonjs' },
       jsc: {
         target: 'es2022',
@@ -31,6 +31,9 @@ addHook(
         },
       },
     });
+    if (filename.includes('backend-next')) {
+      console.log(transformed.code);
+    }
     process.send?.({ type: 'watch', path: filename });
     return transformed.code;
   },
