@@ -17,13 +17,21 @@ There are also several modules available for various SCM tools:
 - Bitbucket Server: `@backstage/plugin-scaffolder-backend-module-bitbucket-server`
 - Gerrit: `@backstage/plugin-scaffolder-backend-module-gerrit`
 - Gitea: `@backstage/plugin-scaffolder-backend-module-gitea`
+- GitHub: `@backstage/plugin-scaffolder-backend-module-github`
 - GitLab: `@backstage/plugin-scaffolder-backend-module-gitlab`
 
 ## Installing Action Modules
 
-Here's how to add an action module, this is a simplified new backend system for example purposes:
+Here's how to add an action module, first you need to run this command:
 
-```ts title="/packages/backend/src/index.ts
+```sh
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-scaffolder-backend-module-github
+```
+
+Then you need to add it to your backend, this is a simplified new backend system for example purposes:
+
+```ts title="/packages/backend/src/index.ts"
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
@@ -41,13 +49,15 @@ backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 {
   /* highlight-add-start */
 }
-backend.add(import('@backstage/plugin-scaffolder-backend-module-azure'));
+backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 {
   /* highlight-add-end */
 }
 
 backend.start();
 ```
+
+> Note: This is a simplified example of what your backend may look like, you may have more code in here then this.
 
 ## Listing Actions
 
