@@ -21,6 +21,7 @@ import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
+  EntityDisplayName,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
@@ -158,6 +159,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
         loading={loading}
         onChange={onSelect}
         options={entities || []}
+        renderOption={option => <EntityDisplayName entityRef={option} />}
         getOptionLabel={option =>
           // option can be a string due to freeSolo.
           typeof option === 'string'
