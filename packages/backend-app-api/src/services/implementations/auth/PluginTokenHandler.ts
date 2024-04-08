@@ -79,7 +79,9 @@ export class PluginTokenHandler {
     readonly discovery: DiscoveryService,
   ) {}
 
-  async verifyToken(token: string): Promise<{ subject: string } | undefined> {
+  async verifyToken(
+    token: string,
+  ): Promise<{ subject: string; limitedUserToken?: string } | undefined> {
     try {
       const { typ } = decodeProtectedHeader(token);
       if (typ !== tokenTypes.plugin.typParam) {
@@ -102,7 +104,7 @@ export class PluginTokenHandler {
     const jwksClient = await this.getJwksClient(pluginId);
     await jwksClient.refreshKeyStore(token); // TODO(Rugvip): Refactor so that this isn't needed
 
-    const { payload } = await jwtVerify<{ sub: string }>(
+    const { payload } = await jwtVerify<{ sub: string; obo?: string }>(
       token,
       jwksClient.getKey,
       {
@@ -114,21 +116,26 @@ export class PluginTokenHandler {
       throw new AuthenticationError('Invalid plugin token', e);
     });
 
-    return { subject: payload.sub };
+    return { subject: `plugin:${payload.sub}`, limitedUserToken: payload.obo };
   }
 
   async issueToken(options: {
     pluginId: string;
     targetPluginId: string;
+    onBehalfOf?: { token: string; expiresAt: Date };
   }): Promise<{ token: string }> {
+    const { pluginId, targetPluginId, onBehalfOf } = options;
     const key = await this.getKey();
 
-    const sub = options.pluginId;
-    const aud = options.targetPluginId;
+    const sub = pluginId;
+    const aud = targetPluginId;
     const iat = Math.floor(Date.now() / 1000);
-    const exp = iat + this.keyDurationSeconds;
+    const ourExp = iat + this.keyDurationSeconds;
+    const exp = onBehalfOf
+      ? Math.min(ourExp, Math.floor(onBehalfOf.expiresAt.getTime() / 1000))
+      : ourExp;
 
-    const claims = { sub, aud, iat, exp };
+    const claims = { sub, aud, iat, exp, obo: onBehalfOf?.token };
     const token = await new SignJWT(claims)
       .setProtectedHeader({
         typ: tokenTypes.plugin.typParam,
@@ -197,7 +204,7 @@ export class PluginTokenHandler {
     // Double check that the target plugin has a valid JWKS endpoint, otherwise avoid creating a remote key set
     if (!(await this.isTargetPluginSupported(pluginId))) {
       throw new AuthenticationError(
-        'Target plugin does not support self-signed tokens',
+        `Received a plugin token where the source '${pluginId}' plugin unexpectedly does not have a JWKS endpoint`,
       );
     }
 
