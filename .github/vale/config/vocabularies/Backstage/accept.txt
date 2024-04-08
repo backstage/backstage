@@ -16,6 +16,7 @@ api
 asciidoc
 async
 Atlassian
+autofix
 automations
 autoscaling
 Autoscaling

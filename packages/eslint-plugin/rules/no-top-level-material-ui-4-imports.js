@@ -23,6 +23,7 @@ const KNOWN_STYLES = [
   'styled',
   'useTheme',
   'Theme',
+  'ThemeProvider',
 ];
 
 /** @type {import('eslint').Rule.RuleModule} */
