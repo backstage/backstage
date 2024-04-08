@@ -19030,10 +19030,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/luxon@npm:^3.0.0, @types/luxon@npm:~3.3.0":
-  version: 3.3.8
-  resolution: "@types/luxon@npm:3.3.8"
-  checksum: 026711b4aefc01c6e233e359c693b6d4c0873acc3f52a08661ea3751b2cf3e34d1ce1d5b0b99b0e40a059a2a3755acc20498d37db5f9a5a4f0f330cdf72db3db
+"@types/luxon@npm:^3.0.0, @types/luxon@npm:~3.4.0":
+  version: 3.4.2
+  resolution: "@types/luxon@npm:3.4.2"
+  checksum: 6f92d5bd02e89f310395753506bcd9cef3a56f5940f7a50db2a2b9822bce753553ac767d143cb5b4f9ed5ddd4a84e64f89ff538082ceb4d18739af7781b56925
   languageName: node
   linkType: hard
 
@@ -24377,12 +24377,12 @@ __metadata:
   linkType: hard
 
 "cron@npm:^3.0.0":
-  version: 3.1.6
-  resolution: "cron@npm:3.1.6"
+  version: 3.1.7
+  resolution: "cron@npm:3.1.7"
   dependencies:
-    "@types/luxon": ~3.3.0
+    "@types/luxon": ~3.4.0
     luxon: ~3.4.0
-  checksum: e97bb6f85acf3195577c609f28bbac2e22812d8632802752a13591882deceeeeefd2c91c1293fb5102ef442f96ae17ca687854fd0b005149aae9a25834363e1d
+  checksum: d98ee5297543c138221d96dd49270bf6576db80134e6041f4ce4a3c0cb6060863d76910209b34fee66fbf134461449ec3bd283d6a76d1c50da220cde7fc10c65
   languageName: node
   linkType: hard
 
