@@ -1232,7 +1232,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
 /* highlight-add-end */
 ```
 
