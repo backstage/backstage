@@ -77,4 +77,4 @@ backend.add(
 );
 ```
 
-Note that requests towards `/api/*` will always fall through the `routes` if there is no matching plugin route, and never be caught by the configured `indexPath`.
+Note that requests towards `/api/*` will never be handled by the `routes` handler unless a matching plugin exists, and will instead typically falling through to the `middleware.notFound()` handler. That is the case regardless of whether there is a configured `indexPath` or not.
