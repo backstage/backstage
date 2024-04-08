@@ -1167,7 +1167,7 @@ backend.add(
 /* highlight-add-end */
 ```
 
-> Note: the above includes a default allow all policy, if that is not what you want do not add the 2nd line.
+> Note: The above example includes a default allow-all policy. If that is not what you want, do not add the second line and instead investigate one of the options below.
 
 #### Custom Permission Policy
 
