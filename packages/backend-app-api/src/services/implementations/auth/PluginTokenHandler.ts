@@ -130,9 +130,10 @@ export class PluginTokenHandler {
     const sub = pluginId;
     const aud = targetPluginId;
     const iat = Math.floor(Date.now() / 1000);
+    const ourExp = iat + this.keyDurationSeconds;
     const exp = onBehalfOf
-      ? Math.floor(onBehalfOf.expiresAt.getTime() / 1000)
-      : iat + this.keyDurationSeconds;
+      ? Math.min(ourExp, Math.floor(onBehalfOf.expiresAt.getTime() / 1000))
+      : ourExp;
 
     const claims = { sub, aud, iat, exp, obo: onBehalfOf?.token };
     const token = await new SignJWT(claims)
