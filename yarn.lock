@@ -33181,8 +33181,8 @@ __metadata:
   linkType: hard
 
 "knip@npm:^5.0.0":
-  version: 5.1.2
-  resolution: "knip@npm:5.1.2"
+  version: 5.9.1
+  resolution: "knip@npm:5.9.1"
   dependencies:
     "@ericcornelissen/bash-parser": 0.5.2
     "@nodelib/fs.walk": 2.0.0
@@ -33199,19 +33199,20 @@ __metadata:
     micromatch: 4.0.5
     minimist: 1.2.8
     picocolors: 1.0.0
-    picomatch: 4.0.1
+    picomatch: ^4.0.1
     pretty-ms: 9.0.0
+    resolve: 1.22.8
     smol-toml: 1.1.4
     strip-json-comments: 5.0.1
     summary: 2.1.0
-    zod: 3.22.4
-    zod-validation-error: 3.0.3
+    zod: ^3.22.4
+    zod-validation-error: ^3.0.3
   peerDependencies:
     "@types/node": ">=18"
     typescript: ">=5.0.4"
   bin:
     knip: bin/knip.js
-  checksum: ff27c3ffa20b188ac2bc7a84b6aff49016236fa41c57b4c6650e5dae0d292747159e08045aabf858d24195214a3421bef73651235530828c1d238a598f68b95f
+  checksum: cba74d28ba07f05cf8ba829a5536e0355a29b9264ec49c3ec93aed6c30d85d43f5bc31cc049d9c233e7ddbc127388266f5f33b2088783078f2650d855aefb950
   languageName: node
   linkType: hard
 
@@ -37887,17 +37888,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"picomatch@npm:4.0.1":
-  version: 4.0.1
-  resolution: "picomatch@npm:4.0.1"
-  checksum: f135d38bb7d190186907714cf2f3abe043de9c66b1c5e5687ae7ae63fd9693a51634aa3662ac1dcd79e1209e02edcaa0740c4f3edda2ffed03f1a0bee38d8f67
-  languageName: node
-  linkType: hard
-
 "picomatch@npm:^2.0.4, picomatch@npm:^2.2.1, picomatch@npm:^2.2.2, picomatch@npm:^2.2.3, picomatch@npm:^2.3.0, picomatch@npm:^2.3.1":
   version: 2.3.1
   resolution: "picomatch@npm:2.3.1"
   checksum: 050c865ce81119c4822c45d3c84f1ced46f93a0126febae20737bd05ca20589c564d6e9226977df859ed5e03dc73f02584a2b0faad36e896936238238b0446cf
+  languageName: node
+  linkType: hard
+
+"picomatch@npm:^4.0.1":
+  version: 4.0.2
+  resolution: "picomatch@npm:4.0.2"
+  checksum: a7a5188c954f82c6585720e9143297ccd0e35ad8072231608086ca950bee672d51b0ef676254af0788205e59bd4e4deb4e7708769226bed725bf13370a7d1464
   languageName: node
   linkType: hard
 
@@ -40720,7 +40721,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@npm:^1.1.6, resolve@npm:^1.10.0, resolve@npm:^1.14.2, resolve@npm:^1.17.0, resolve@npm:^1.19.0, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.4, resolve@npm:~1.22.1":
+"resolve@npm:1.22.8, resolve@npm:^1.1.6, resolve@npm:^1.10.0, resolve@npm:^1.14.2, resolve@npm:^1.17.0, resolve@npm:^1.19.0, resolve@npm:^1.20.0, resolve@npm:^1.22.1, resolve@npm:^1.22.4, resolve@npm:~1.22.1":
   version: 1.22.8
   resolution: "resolve@npm:1.22.8"
   dependencies:
@@ -40756,7 +40757,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.4#~builtin<compat/resolve>, resolve@patch:resolve@~1.22.1#~builtin<compat/resolve>":
+"resolve@patch:resolve@1.22.8#~builtin<compat/resolve>, resolve@patch:resolve@^1.1.6#~builtin<compat/resolve>, resolve@patch:resolve@^1.10.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.14.2#~builtin<compat/resolve>, resolve@patch:resolve@^1.17.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.19.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.20.0#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.1#~builtin<compat/resolve>, resolve@patch:resolve@^1.22.4#~builtin<compat/resolve>, resolve@patch:resolve@~1.22.1#~builtin<compat/resolve>":
   version: 1.22.8
   resolution: "resolve@patch:resolve@npm%3A1.22.8#~builtin<compat/resolve>::version=1.22.8&hash=c3c19d"
   dependencies:
@@ -46623,16 +46624,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-validation-error@npm:3.0.3":
-  version: 3.0.3
-  resolution: "zod-validation-error@npm:3.0.3"
+"zod-validation-error@npm:^3.0.3":
+  version: 3.1.0
+  resolution: "zod-validation-error@npm:3.1.0"
   peerDependencies:
     zod: ^3.18.0
-  checksum: 08ff4ccb2eb27bc1dd24dbf5cbd3196a21304cac05e554e4ef3e65ca7269fc4311fad2d0047878ed745077b8990b4f274c69f8ef79a29d13d255736889b87df3
+  checksum: 84df01c91d594701eaf7f5f007be881e47f7adef2e3f3765f7be031cb78033f9be0924273106cb81b586d8020da9885dbb81b3da363f00a51df00f26274f2b23
   languageName: node
   linkType: hard
 
-"zod@npm:3.22.4, zod@npm:^3.22.4":
+"zod@npm:^3.22.4":
   version: 3.22.4
   resolution: "zod@npm:3.22.4"
   checksum: 80bfd7f8039b24fddeb0718a2ec7c02aa9856e4838d6aa4864335a047b6b37a3273b191ef335bf0b2002e5c514ef261ffcda5a589fb084a48c336ffc4cdbab7f
