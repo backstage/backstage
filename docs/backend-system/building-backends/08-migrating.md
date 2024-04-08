@@ -1150,7 +1150,7 @@ backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
 /* highlight-add-end */
 ```
 
-### The Permissions Plugin
+### The Permission Plugin
 
 A basic installation of the Permission plugin will look as follows:
 
