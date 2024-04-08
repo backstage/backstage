@@ -1204,7 +1204,7 @@ const customPermissionBackendModule = createBackendModule({
     reg.registerInit({
       deps: { policy: policyExtensionPoint },
       async init({ policy }) {
-        policy.setPolicy(new ExampleAllowAllPermissionPolicy());
+        policy.setPolicy(new CustomPermissionPolicy());
       },
     });
   },
