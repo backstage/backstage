@@ -1199,7 +1199,7 @@ class ExampleAllowAllPermissionPolicy implements PermissionPolicy {
 
 const customPermissionBackendModule = createBackendModule({
   pluginId: 'permission',
-  moduleId: 'allow-all-policy',
+  moduleId: 'custom-policy',
   register(reg) {
     reg.registerInit({
       deps: { policy: policyExtensionPoint },
