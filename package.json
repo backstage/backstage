@@ -109,6 +109,7 @@
     "@techdocs/cli": "workspace:*",
     "@types/node": "^18.17.8",
     "@types/webpack": "^5.28.0",
+    "array-to-table": "^1.0.1",
     "command-exists": "^1.2.9",
     "cross-env": "^7.0.0",
     "e2e-test": "workspace:*",

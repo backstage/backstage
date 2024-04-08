@@ -21369,6 +21369,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"array-to-table@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "array-to-table@npm:1.0.1"
+  checksum: 3ca021c642b8698dc2ab3ca48c969af8d3f3d2f0444c5306b456cb716daf6ecdfb442be4bec54b9331de895b384de4e7e77e6f8b453e265e8328519bedd8f9a7
+  languageName: node
+  linkType: hard
+
 "array-union@npm:^2.1.0":
   version: 2.1.0
   resolution: "array-union@npm:2.1.0"
@@ -41154,6 +41161,7 @@ __metadata:
     "@types/node": ^18.17.8
     "@types/webpack": ^5.28.0
     "@useoptic/optic": ^0.50.10
+    array-to-table: ^1.0.1
     command-exists: ^1.2.9
     cross-env: ^7.0.0
     e2e-test: "workspace:*"
