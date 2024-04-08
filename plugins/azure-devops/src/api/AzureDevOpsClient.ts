@@ -107,6 +107,9 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
     if (options?.status) {
       queryString.append('status', options.status.toString());
     }
+    if (options?.teamsLimit) {
+      queryString.append('teamsLimit', options.teamsLimit.toString());
+    }
     if (host) {
       queryString.append('host', host);
     }
@@ -124,14 +127,27 @@ export class AzureDevOpsClient implements AzureDevOpsApi {
 
   public getDashboardPullRequests(
     projectName: string,
+    teamsLimit?: number,
   ): Promise<DashboardPullRequest[]> {
-    return this.get<DashboardPullRequest[]>(
-      `dashboard-pull-requests/${projectName}?top=100`,
-    );
+    const queryString = new URLSearchParams();
+    queryString.append('top', '100');
+    if (teamsLimit) {
+      queryString.append('teamsLimit', teamsLimit.toString());
+    }
+    const urlSegment = `dashboard-pull-requests/${projectName}?${queryString}`;
+    return this.get<DashboardPullRequest[]>(urlSegment);
   }
 
-  public getAllTeams(): Promise<Team[]> {
-    return this.get<Team[]>('all-teams');
+  public getAllTeams(limit?: number): Promise<Team[]> {
+    const queryString = new URLSearchParams();
+    if (limit) {
+      queryString.append('limit', limit.toString());
+    }
+    let urlSegment = 'all-teams';
+    if (queryString.toString()) {
+      urlSegment += `?${queryString}`;
+    }
+    return this.get<Team[]>(urlSegment);
   }
 
   public getUserTeamIds(userId: string): Promise<string[]> {

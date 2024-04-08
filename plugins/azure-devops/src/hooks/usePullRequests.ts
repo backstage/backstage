@@ -31,16 +31,19 @@ export function usePullRequests(
   entity: Entity,
   defaultLimit?: number,
   requestedStatus?: PullRequestStatus,
+  defaultTeamsLimit?: number,
 ): {
   items?: PullRequest[];
   loading: boolean;
   error?: Error;
 } {
   const top = defaultLimit ?? AZURE_DEVOPS_DEFAULT_TOP;
+  const teamsLimit = defaultTeamsLimit ?? undefined;
   const status = requestedStatus ?? PullRequestStatus.Active;
   const options: PullRequestOptions = {
     top,
     status,
+    teamsLimit,
   };
 
   const api = useApi(azureDevOpsApiRef);

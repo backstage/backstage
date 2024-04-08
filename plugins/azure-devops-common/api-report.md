@@ -215,6 +215,7 @@ export type PullRequest = {
 export type PullRequestOptions = {
   top: number;
   status: PullRequestStatus;
+  teamsLimit?: number;
 };
 
 // @public (undocumented)
