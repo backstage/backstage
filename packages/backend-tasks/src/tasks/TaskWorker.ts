@@ -186,8 +186,12 @@ export class TaskWorker {
     }
 
     if (isCron) {
-      const time = new CronTime(settings.cadence)
-        .sendAt()
+      // Convoluted cast because the cron library pulls in an old and slightly
+      // different version of luxon, so we go via the js Date type and create an
+      // instance of our own based on that.
+      const time = DateTime.fromJSDate(
+        new CronTime(settings.cadence).sendAt().toJSDate(),
+      )
         .minus({ seconds: 1 }) // immediately, if "* * * * * *"
         .toUTC();
 
@@ -320,7 +324,12 @@ export class TaskWorker {
 
     let nextRun: Knex.Raw;
     if (isCron) {
-      const time = new CronTime(settings.cadence).sendAt().toUTC();
+      // Convoluted cast because the cron library pulls in an old and slightly
+      // different version of luxon, so we go via the js Date type and create an
+      // instance of our own based on that.
+      const time = DateTime.fromJSDate(
+        new CronTime(settings.cadence).sendAt().toJSDate(),
+      ).toUTC();
       this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
 
       nextRun = this.nextRunAtRaw(time);
