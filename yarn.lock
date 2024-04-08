@@ -38787,12 +38787,12 @@ __metadata:
   linkType: hard
 
 "prom-client@npm:^15.0.0":
-  version: 15.1.0
-  resolution: "prom-client@npm:15.1.0"
+  version: 15.1.1
+  resolution: "prom-client@npm:15.1.1"
   dependencies:
     "@opentelemetry/api": ^1.4.0
     tdigest: ^0.1.1
-  checksum: 85bb134dfd0aab4606a27bce2d478d82650053da4340390210ed8280c14af24fc703a28fbc401b5edb4b756686a3df229f243ce5c7166c53925236fb763e4a51
+  checksum: f10d68e22a8fb7e41ca3700af7b6ea6950dd8e505743db6fd2071ceccdfdc971dbf7f0438ff77d01e7408e76feb0c7ea52f3904cc680ef0431b9465d37497959
   languageName: node
   linkType: hard
 
