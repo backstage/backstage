@@ -184,11 +184,22 @@ export const columnFactories = Object.freeze({
     key: string,
     options?: { title?: string; defaultValue?: string },
   ): TableColumn<CatalogTableRow> {
+    function formatContent(keyLabel: string, entity: Entity): string {
+      const labels: Record<string, string> | undefined =
+        entity.metadata?.labels;
+      return (labels && labels[keyLabel]) || '';
+    }
+
     return {
       title: options?.title || 'Label',
       field: 'entity.metadata.labels',
       cellStyle: {
         padding: '0px 16px 0px 20px',
+      },
+      customSort({ entity: entity1 }, { entity: entity2 }) {
+        return formatContent(key, entity1).localeCompare(
+          formatContent(key, entity2),
+        );
       },
       render: ({ entity }: { entity: Entity }) => {
         const labels: Record<string, string> | undefined =
