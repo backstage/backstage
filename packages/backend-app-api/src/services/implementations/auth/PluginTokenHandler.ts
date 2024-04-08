@@ -24,13 +24,19 @@ import {
   SignJWT,
   decodeProtectedHeader,
 } from 'jose';
-import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { InternalKey, KeyStore } from './types';
 import { AuthenticationError } from '@backstage/errors';
 import { jwtVerify } from 'jose';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { JwksClient } from './JwksClient';
+
+/**
+ * The margin for how many times longer we make the public key available
+ * compared to how long we use the private key to sign new tokens.
+ */
+const KEY_EXPIRATION_MARGIN_FACTOR = 3;
+const SECONDS_IN_MS = 1000;
 
 const ALLOWED_PLUGIN_ID_PATTERN = /^[a-z0-9_-]+$/i;
 
@@ -71,12 +77,12 @@ export class PluginTokenHandler {
   }
 
   private constructor(
-    readonly logger: LoggerService,
-    readonly ownPluginId: string,
-    readonly publicKeyStore: KeyStore,
-    readonly keyDurationSeconds: number,
-    readonly algorithm: string,
-    readonly discovery: DiscoveryService,
+    private readonly logger: LoggerService,
+    private readonly ownPluginId: string,
+    private readonly publicKeyStore: KeyStore,
+    private readonly keyDurationSeconds: number,
+    private readonly algorithm: string,
+    private readonly discovery: DiscoveryService,
   ) {}
 
   async verifyToken(
@@ -129,10 +135,13 @@ export class PluginTokenHandler {
 
     const sub = pluginId;
     const aud = targetPluginId;
-    const iat = Math.floor(Date.now() / 1000);
+    const iat = Math.floor(Date.now() / SECONDS_IN_MS);
     const ourExp = iat + this.keyDurationSeconds;
     const exp = onBehalfOf
-      ? Math.min(ourExp, Math.floor(onBehalfOf.expiresAt.getTime() / 1000))
+      ? Math.min(
+          ourExp,
+          Math.floor(onBehalfOf.expiresAt.getTime() / SECONDS_IN_MS),
+        )
       : ourExp;
 
     const claims = { sub, aud, iat, exp, obo: onBehalfOf?.token };
@@ -223,22 +232,16 @@ export class PluginTokenHandler {
   private async getKey(): Promise<JWK> {
     // Make sure that we only generate one key at a time
     if (this.privateKeyPromise) {
-      if (
-        this.keyExpiry &&
-        DateTime.fromJSDate(this.keyExpiry) > DateTime.local()
-      ) {
+      if (this.keyExpiry && this.keyExpiry.getTime() > Date.now()) {
         return this.privateKeyPromise;
       }
       this.logger.info(`Signing key has expired, generating new key`);
       delete this.privateKeyPromise;
     }
 
-    const keyExpiry = DateTime.utc()
-      .plus({
-        seconds: this.keyDurationSeconds,
-      })
-      .toJSDate();
-    this.keyExpiry = keyExpiry;
+    this.keyExpiry = new Date(
+      Date.now() + this.keyDurationSeconds * SECONDS_IN_MS,
+    );
 
     const promise = (async () => {
       // This generates a new signing key to be used to sign tokens until the next key rotation
@@ -260,7 +263,12 @@ export class PluginTokenHandler {
       await this.publicKeyStore.addKey({
         id: kid,
         key: publicKey as InternalKey,
-        expiresAt: keyExpiry,
+        expiresAt: new Date(
+          Date.now() +
+            this.keyDurationSeconds *
+              SECONDS_IN_MS *
+              KEY_EXPIRATION_MARGIN_FACTOR,
+        ),
       });
 
       // At this point we are allowed to start using the new key
