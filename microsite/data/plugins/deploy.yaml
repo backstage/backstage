@@ -3,9 +3,9 @@ title: Deploy
 author: digital.ai
 authorUrl: https://digital.ai/
 category: CI/CD
-description: Deploy is an agentless deployment automation solution, enabling software development organizations to deploy, upgrade, and rollback complex applications to target environments!
+description: The plugin offers integration with Digital.ai Deploy and backstage components and services. It provide access to deployments and reports.
 documentation: https://github.com/digital-ai/backstage-deploy/blob/main/README.md
-iconUrl: /img/deploy.png
+iconUrl: /img/deploy.svg
 npmPackageName: '@digital.ai/plugin-dai-deploy'
 tags:
   - ci
