@@ -122,7 +122,7 @@ interface DomainEntityV1alpha1 extends Entity {
   // (undocumented)
   spec: {
     owner: string;
-    domain?: string;
+    subdomainOf?: string;
   };
 }
 export { DomainEntityV1alpha1 as DomainEntity };
