@@ -1057,7 +1057,7 @@ const backend = createBackend();
 /* highlight-remove-next-line */
 backend.add(import('@backstage/plugin-auth-backend'));
 /* highlight-add-next-line */
-backend.add(legacyPlugin('auth'), import('./plugins/auth'));
+backend.add(legacyPlugin('auth', import('./plugins/auth')));
 
 backend.start();
 ```
