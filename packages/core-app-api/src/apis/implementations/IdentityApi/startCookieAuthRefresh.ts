@@ -55,7 +55,7 @@ export function startCookieAuthRefresh({
     try {
       const baseUrl = await discoveryApi.getBaseUrl(PLUGIN_ID);
       const requestUrl = `${baseUrl}/.backstage/auth/v1/cookie`;
-      const res = await fetchApi.fetch(`${requestUrl}`, {
+      const res = await fetchApi.fetch(requestUrl, {
         credentials: 'include',
       });
 
@@ -64,8 +64,6 @@ export function startCookieAuthRefresh({
           `Request failed with status ${res.status} ${res.statusText}, see request towards ${requestUrl} for more details`,
         );
       }
-
-      firstError = true;
 
       const data = await res.json();
       if (!data.expiresAt) {
@@ -76,6 +74,8 @@ export function startCookieAuthRefresh({
       if (Number.isNaN(expiresAt)) {
         throw new Error('Invalid expiration date in response');
       }
+
+      firstError = true;
 
       channel?.postMessage({
         action: 'COOKIE_REFRESH_SUCCESS',
@@ -94,7 +94,7 @@ export function startCookieAuthRefresh({
           errorBackoff * ERROR_BACKOFF_FACTOR,
         );
         // eslint-disable-next-line no-console
-        console.error(`Session cookie refresh failed: ${error.message}`);
+        console.error('Session cookie refresh failed', error);
         errorApi.post(
           new Error(
             `Session refresh failed, see developer console for details`,

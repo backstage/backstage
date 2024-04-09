@@ -166,8 +166,6 @@ describe('startCookieAuthRefresh', () => {
       stop();
     });
 
-    expect(error).toEqual([
-      'Session cookie refresh failed: Failed to get cookie again',
-    ]);
+    expect(error).toEqual(['Session cookie refresh failed']);
   });
 });
