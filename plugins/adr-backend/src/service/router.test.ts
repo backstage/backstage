@@ -286,7 +286,10 @@ describe('createRouter', () => {
       const imageData = imageResponse.body;
       const imageError = imageResponse.error;
       const imageType = urlToProcess.match(/\.([a-z0-9]+)(\?.*)?$/i);
-      const contentType = imageTypeMap[imageType?.[1].toLowerCase()];
+      let contentType;
+      if (imageType) {
+        contentType = imageTypeMap[imageType[1].toLowerCase()];
+      }
 
       const expectedStatusCode = 200;
 
