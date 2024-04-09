@@ -20,6 +20,7 @@ import { RouteRef } from '@backstage/core-plugin-api';
 
 // @public
 export interface AdrApi {
+  imageAdr(url: string): Promise<AdrImageResult>;
   listAdrs(url: string): Promise<AdrListResult>;
   readAdr(url: string): Promise<AdrReadResult>;
 }
@@ -30,6 +31,8 @@ export const adrApiRef: ApiRef<AdrApi>;
 // @public
 export class AdrClient implements AdrApi {
   constructor(options: AdrClientOptions);
+  // (undocumented)
+  imageAdr(url: string): Promise<AdrReadResult>;
   // (undocumented)
   listAdrs(url: string): Promise<AdrListResult>;
   // (undocumented)
@@ -60,6 +63,11 @@ export type AdrFileInfo = {
   title?: string;
   status?: string;
   date?: string;
+};
+
+// @public
+export type AdrImageResult = {
+  data: string;
 };
 
 // @public

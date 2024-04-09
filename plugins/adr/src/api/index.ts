@@ -22,4 +22,5 @@ export type {
   AdrFileInfo,
   AdrListResult,
   AdrReadResult,
+  AdrImageResult,
 } from './types';
