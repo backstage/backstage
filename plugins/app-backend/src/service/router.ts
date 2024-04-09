@@ -263,12 +263,10 @@ async function injectAppMode(options: {
 
   let newContent;
   if (content.includes('backstage-app-mode')) {
-    console.log(`DEBUG: REPLACE`, metaTag);
     newContent = content.replace(
       /<meta name="backstage-app-mode" content="[^"]+">/,
       metaTag,
     );
-    console.log(`DEBUG: newContent=`, newContent);
   } else {
     newContent = content.replace(/<head>/, `<head>${metaTag}`);
   }

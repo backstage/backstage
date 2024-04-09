@@ -24,7 +24,7 @@ describe('useCookieAuthRefresh', () => {
   const discoveryApiMock = {
     getBaseUrl: jest
       .fn()
-      .mockResolvedValue('http://localhost:7000/techdocs/api'),
+      .mockResolvedValue('http://localhost:7000/api/techdocs'),
   };
 
   const now = 1710316886171;
@@ -236,7 +236,7 @@ describe('useCookieAuthRefresh', () => {
 
     await waitFor(() =>
       expect(fetchApiMock.fetch).toHaveBeenCalledWith(
-        'http://localhost:7000/techdocs/api/.backstage/auth/v1/cookie',
+        'http://localhost:7000/api/techdocs/.backstage/auth/v1/cookie',
         { credentials: 'include' },
       ),
     );

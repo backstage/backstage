@@ -22,10 +22,7 @@ export type CookieAuthRefreshProviderProps = {
 };
 
 // @public
-export function useCookieAuthRefresh(options: {
-  pluginId: string;
-  path?: string;
-}):
+export function useCookieAuthRefresh(options: { pluginId: string }):
   | {
       status: 'loading';
     }

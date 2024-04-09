@@ -55,7 +55,7 @@ export class AppIdentityProxy implements IdentityApi {
   private resolveTarget: (api: CompatibilityIdentityApi) => void = () => {};
   private signOutTargetUrl = '/';
 
-  #cookieAuthSignOut?: () => void;
+  #cookieAuthSignOut?: () => Promise<void>;
 
   constructor() {
     this.waitForTarget = new Promise<CompatibilityIdentityApi>(resolve => {
