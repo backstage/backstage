@@ -15,7 +15,7 @@
  */
 
 import { ScmIntegration, ScmIntegrationsGroup } from '@backstage/integration';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import React from 'react';
 import { scmIntegrationsApiRef } from '../src/ScmIntegrationsApi';
 
