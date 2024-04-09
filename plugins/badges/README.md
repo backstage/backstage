@@ -89,7 +89,7 @@ This plugin requires explicit registration, so you will need to add it to your A
 
 ```ts
 // ...
-export { badgesPlugin } from '@backstage/plugin-badges';
+import { badgesPlugin } from '@backstage/plugin-badges';
 ```
 
 If you don't have a `plugins.ts` file see: [troubleshooting](#troubleshooting)
