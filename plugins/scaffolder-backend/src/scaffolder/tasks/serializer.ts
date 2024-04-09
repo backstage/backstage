@@ -18,6 +18,7 @@ import tar from 'tar';
 import concatStream from 'concat-stream';
 import { promisify } from 'util';
 import { pipeline as pipelineCb } from 'stream';
+import fs from 'fs-extra';
 
 const pipeline = promisify(pipelineCb);
 
@@ -25,4 +26,14 @@ export const serializeWorkspace = async (path: string): Promise<Buffer> => {
   return await new Promise<Buffer>(async resolve => {
     await pipeline(tar.create({ cwd: path }, ['']), concatStream(resolve));
   });
+};
+
+export const restoreWorkspace = async (path: string, buffer?: Buffer) => {
+  if (buffer) {
+    fs.createReadStream(buffer).pipe(
+      tar.extract({
+        C: path,
+      }),
+    );
+  }
 };

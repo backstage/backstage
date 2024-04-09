@@ -511,6 +511,15 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
+  async getWorkspace?(options: {
+    taskId: string;
+  }): Promise<Buffer | undefined> {
+    const [result] = await this.db<RawDbTaskRow>('tasks')
+      .where({ id: options.taskId })
+      .select('workspace');
+    return result.workspace;
+  }
+
   async serializeWorkspace(options: {
     path: string;
     taskId: string;

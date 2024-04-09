@@ -212,6 +212,8 @@ export interface TaskStore {
 
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
 
+  getWorkspace?(options: { taskId: string }): Promise<Buffer | undefined>;
+
   serializeWorkspace?({
     path,
     taskId,

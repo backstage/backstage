@@ -145,6 +145,8 @@ export interface TaskContext {
 
   getWorkspaceName(): Promise<string>;
 
+  getWorkspace(options: { taskId: string }): Promise<Buffer | undefined>;
+
   getInitiatorCredentials(): Promise<BackstageCredentials>;
 }
 

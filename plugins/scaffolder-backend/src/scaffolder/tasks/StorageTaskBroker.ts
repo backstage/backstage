@@ -99,6 +99,10 @@ export class TaskManager implements TaskContext {
     return this.task.taskId;
   }
 
+  async getWorkspace(options: { taskId: string }): Promise<Buffer | undefined> {
+    return this.storage.getWorkspace?.(options);
+  }
+
   get done() {
     return this.isDone;
   }
@@ -226,6 +230,8 @@ export interface CurrentClaimedTask {
    * The creator of the task.
    */
   createdBy?: string;
+
+  workspace?: Promise<Buffer>;
 }
 
 function defer() {
