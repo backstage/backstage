@@ -270,18 +270,31 @@ describe('createRouter', () => {
     });
 
     it('returns the correct image when reading a url', async () => {
+      const urlToProcess = 'testImage.png';
+      const imageTypeMap: Record<string, string> = {
+        png: 'image/png',
+        jpg: 'image/jpeg',
+        jpeg: 'image/jpeg',
+        gif: 'image/gif',
+        svg: 'image/svg+xml',
+        webp: 'image/webp',
+      };
       const imageResponse = await request(app).get(
-        `${imageEndpointName}?url=testImage.png`,
+        `${imageEndpointName}?url=${urlToProcess}`,
       );
       const imageStatus = imageResponse.status;
       const imageData = imageResponse.body;
       const imageError = imageResponse.error;
+      const imageType = urlToProcess.match(/\.([a-z0-9]+)(\?.*)?$/i);
+      const contentType = imageTypeMap[imageType?.[1].toLowerCase()];
 
       const expectedStatusCode = 200;
 
       expect(imageError).toBeFalsy();
       expect(imageStatus).toBe(expectedStatusCode);
-      expect(imageData.toString()).toBe(testImageContent);
+      expect(imageData.data).toBe(
+        `data:${contentType};base64,${btoa(testImageContent)}`,
+      );
     });
   });
 });

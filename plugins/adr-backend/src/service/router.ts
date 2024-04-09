@@ -134,7 +134,6 @@ export async function createRouter(
   });
 
   router.get('/image', async (req, res) => {
-    // console.log("I'M IN IMAGE ENDPOINT")
     const urlToProcess = req.query.url as string;
     if (!urlToProcess) {
       res.statusCode = 400;
