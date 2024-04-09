@@ -25,7 +25,7 @@ describe('EntitySearchBar', () => {
   it('should display search value and execute set callback', async () => {
     const updateFilters = jest.fn();
 
-    renderInTestApp(
+    await renderInTestApp(
       <MockEntityListContextProvider
         value={{
           updateFilters,
