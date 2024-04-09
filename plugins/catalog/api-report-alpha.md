@@ -29,6 +29,7 @@ export const catalogTranslationRef: TranslationRef<
     readonly 'aboutCard.title': 'About';
     readonly 'aboutCard.refreshButtonTitle': 'Schedule entity refresh';
     readonly 'aboutCard.editButtonTitle': 'Edit Metadata';
+    readonly 'aboutCard.createSimilarButtonTitle': 'Create something similar';
     readonly 'aboutCard.refreshScheduledMessage': 'Refresh scheduled';
     readonly 'aboutCard.launchTemplate': 'Launch Template';
     readonly 'aboutCard.viewTechdocs': 'View TechDocs';
