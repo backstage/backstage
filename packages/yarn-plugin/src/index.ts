@@ -13,9 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+/**
+ * Yarn plugin for resolving package versions based on
+ * a Backstage version manifest.
+ *
+ * @packageDocumentation
+ */
+
 import { Plugin } from '@yarnpkg/core';
 import { BackstageResolver } from './resolver/BackstageResolver';
 
+/**
+ * @public
+ */
 const plugin: Plugin = {
   resolvers: [BackstageResolver],
 };
