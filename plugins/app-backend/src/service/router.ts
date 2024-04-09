@@ -171,6 +171,10 @@ export async function createRouter(
     (await fs.pathExists(publicDistDir)) && auth && httpAuth;
 
   if (enablePublicEntryPoint && auth && httpAuth) {
+    logger.info(
+      `App is running in protected mode, serving public content from ${publicDistDir}`,
+    );
+
     const publicRouter = Router();
 
     publicRouter.use(async (req, _res, next) => {
