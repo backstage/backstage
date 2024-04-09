@@ -232,7 +232,7 @@ class DefaultHttpAuthService implements HttpAuthService {
     const externalBaseUrlStr = await this.#discovery.getExternalBaseUrl(
       this.#pluginId,
     );
-    const externalBaseUrl = new URL(origin ?? externalBaseUrlStr);
+    const externalBaseUrl = new URL(externalBaseUrlStr ?? origin);
 
     const secure =
       externalBaseUrl.protocol === 'https:' ||
