@@ -30,6 +30,11 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test"
   },
+  "dependencies": {
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/plugin-auth-backend": "workspace:^",
+    "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
   }

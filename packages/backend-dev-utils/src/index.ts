@@ -21,3 +21,4 @@
  */
 
 export { DevDataStore } from './DevDataStore';
+export { createDevBackend } from './createDevBackend';
