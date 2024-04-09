@@ -42,7 +42,7 @@ import {
   ScmIntegrationsApi,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
-import { Box } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
 import React, { ComponentType, ReactNode, PropsWithChildren } from 'react';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
