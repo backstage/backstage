@@ -1,5 +1,84 @@
 # @backstage/plugin-catalog-backend
 
+## 1.21.1-next.1
+
+### Patch Changes
+
+- c52f7ac: Make entity collection errors a little quieter in the logs.
+
+  Instead of logging a warning line when an entity has an error
+  during processing, it will now instead emit an event on the event
+  broker.
+
+  This only removes a single log line, however it is possible to
+  add the log line back if it is required by subscribing to the
+  `CATALOG_ERRORS_TOPIC` as shown below.
+
+  ```typescript
+  env.eventBroker.subscribe({
+    supportsEventTopics(): string[] {
+      return [CATALOG_ERRORS_TOPIC];
+    },
+
+    async onEvent(
+      params: EventParams<{
+        entity: string;
+        location?: string;
+        errors: Array<Error>;
+      }>,
+    ): Promise<void> {
+      const { entity, location, errors } = params.eventPayload;
+      for (const error of errors) {
+        env.logger.warn(error.message, {
+          entity,
+          location,
+        });
+      }
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/backend-tasks@0.5.22-next.1
+  - @backstage/plugin-events-node@0.3.3-next.1
+  - @backstage/plugin-permission-node@0.7.28-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.22-next.1
+  - @backstage/backend-openapi-utils@0.1.10-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-catalog-node@1.11.1-next.1
+  - @backstage/plugin-permission-common@0.7.13
+
+## 1.21.1-next.0
+
+### Patch Changes
+
+- cfdc5e7: Fixes an issue where `/analyze-location` would incorrectly throw a 500 error on an invalid url.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/backend-openapi-utils@0.1.10-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/backend-tasks@0.5.22-next.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-catalog-node@1.11.1-next.0
+  - @backstage/plugin-events-node@0.3.3-next.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-node@0.7.28-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.22-next.0
+
 ## 1.21.0
 
 ### Minor Changes

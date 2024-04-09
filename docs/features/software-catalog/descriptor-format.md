@@ -659,6 +659,8 @@ metadata:
   name: v1beta2-demo
   title: Test Action template
   description: scaffolder v1beta2 template demo
+  annotations:
+    backstage.io/time-saved: PT4H
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -735,6 +737,16 @@ A list of strings that can be associated with the template, e.g.
 
 This list will also be used in the frontend to display to the user so you can
 potentially search and group templates by these tags.
+
+### `metadata.annotations.[backstage.io/time-saved]` [optional]
+
+An ISO 8601 duration representing the approximate amount of time saved when
+someone uses this template (e.g. `PT8H` to mean "8 hours saved" or `PT15M` to
+mean "15 minutes saved").
+
+Can be used in combination with the `backstage.io/source-template` annotation,
+or analytics data, to calculate how much time has been saved through the use
+of the Scaffolder plugin.
 
 ### `spec.type` [required]
 

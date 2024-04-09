@@ -1,5 +1,55 @@
 # @backstage/backend-app-api
 
+## 0.7.0-next.1
+
+### Minor Changes
+
+- 3256f14: **BREAKING**: Modules are no longer loaded unless the plugin that they extend is present.
+
+### Patch Changes
+
+- 10327fb: Deprecate the `getPath` option for the `httpRouterServiceFactory` and more generally the ability to configure plugin API paths to be anything else than `/api/:pluginId/`. Requests towards `/api/*` that do not match an installed plugin will also no longer be handled by the index router, typically instead returning a 404.
+- 1a20b12: Make the auth service create and validate dedicated OBO tokens, containing the user identity proof.
+- bce0879: Service-to-service authentication has been improved.
+
+  Each plugin now has the capability to generate its own signing keys for token issuance. The generated public keys are stored in a database, and they are made accessible through a newly created endpoint: `/.backstage/auth/v1/jwks.json`.
+
+  `AuthService` can now issue tokens with a reduced scope using the `getPluginRequestToken` method. This improvement enables plugins to identify the plugin originating the request.
+
+- 54f2ac8: Added `initialization` option to `createServiceFactory` which defines the initialization strategy for the service. The default strategy mimics the current behavior where plugin scoped services are initialized lazily by default and root scoped services are initialized eagerly.
+- d62bc51: Add support for limited user tokens by using user identity proof provided by the auth backend.
+- c884b9a: Automatically creates a get and delete cookie endpoint when a `user-cookie` policy is added.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/backend-tasks@0.5.22-next.1
+  - @backstage/plugin-permission-node@0.7.28-next.1
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.6.3-next.0
+
+### Patch Changes
+
+- 7e584d6: Fixed a bug where expired cookies would not be refreshed.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/backend-tasks@0.5.22-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.12-next.0
+  - @backstage/plugin-permission-node@0.7.28-next.0
+
 ## 0.6.2
 
 ### Patch Changes

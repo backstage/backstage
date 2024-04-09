@@ -397,12 +397,18 @@ export class AzureDevOpsApi {
       .filter((policy): policy is Policy => Boolean(policy));
   }
 
-  public async getAllTeams(): Promise<Team[]> {
+  public async getAllTeams(options?: { limit?: number }): Promise<Team[]> {
     this.logger?.debug('Getting all teams.');
 
     const webApi = await this.getWebApi();
     const client = await webApi.getCoreApi();
-    const webApiTeams: WebApiTeam[] = await client.getAllTeams();
+
+    const webApiTeams: WebApiTeam[] = await client.getAllTeams(
+      undefined,
+      options?.limit,
+      undefined,
+      undefined,
+    );
 
     const teams: Team[] = webApiTeams.map(team => ({
       id: team.id,

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-proxy-backend",
-  "version": "0.4.14",
+  "version": "0.4.15-next.1",
   "description": "A Backstage backend plugin that helps you set up proxy endpoints in the backend",
   "backstage": {
     "role": "backend-plugin"
@@ -71,7 +71,7 @@
     "@types/http-proxy-middleware": "^0.19.3",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^9.0.0",
-    "@types/yup": "^0.29.13",
+    "@types/yup": "^0.32.0",
     "msw": "^1.0.0",
     "supertest": "^6.1.3"
   },

@@ -1155,7 +1155,7 @@ export function useRouteRef<
   TParams extends AnyRouteRefParams,
 >(
   routeRef: ExternalRouteRef<TParams, TOptional>,
-): TParams extends true ? RouteFunc<TParams> | undefined : RouteFunc<TParams>;
+): TOptional extends true ? RouteFunc<TParams> | undefined : RouteFunc<TParams>;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(

@@ -15,11 +15,7 @@
  */
 
 import { Request, Response } from 'express';
-import {
-  BackstageCredentials,
-  BackstagePrincipalTypes,
-  BackstageUserPrincipal,
-} from './AuthService';
+import { BackstageCredentials, BackstagePrincipalTypes } from './AuthService';
 
 /** @public */
 export interface HttpAuthService {
@@ -34,7 +30,7 @@ export interface HttpAuthService {
   issueUserCookie(
     res: Response,
     options?: {
-      credentials?: BackstageCredentials<BackstageUserPrincipal>;
+      credentials?: BackstageCredentials;
     },
   ): Promise<{ expiresAt: Date }>;
 }

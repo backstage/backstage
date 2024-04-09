@@ -216,13 +216,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       );
     }
     const compiler = publicPaths
-      ? webpack([
-          config,
-          await createConfig(publicPaths, {
-            ...commonConfigOptions,
-            publicSubPath: '/public',
-          }),
-        ])
+      ? webpack([config, await createConfig(publicPaths, commonConfigOptions)])
       : webpack(config);
 
     webpackServer = new WebpackDevServer(
@@ -246,13 +240,16 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
           // The index needs to be rewritten relative to the new public path, including subroutes.
           index: `${config.output?.publicPath}index.html`,
         },
-        https:
+        server:
           url.protocol === 'https:'
             ? {
-                cert: fullConfig.getString('app.https.certificate.cert'),
-                key: fullConfig.getString('app.https.certificate.key'),
+                type: 'https',
+                options: {
+                  cert: fullConfig.getString('app.https.certificate.cert'),
+                  key: fullConfig.getString('app.https.certificate.key'),
+                },
               }
-            : false,
+            : {},
         host,
         port,
         proxy: targetPkg.proxy,
@@ -286,7 +283,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
-        webpackServer?.close();
+        webpackServer?.stop();
         viteServer?.close();
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
         process.exit();

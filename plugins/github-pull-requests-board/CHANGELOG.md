@@ -1,5 +1,28 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.1.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/plugin-catalog-react@1.11.3-next.1
+
+## 0.1.28-next.0
+
+### Patch Changes
+
+- 617faf0: Handle null values returned from GitHub for the statusCheckRollup value on the commit object
+- Updated dependencies
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/plugin-catalog-react@1.11.3-next.0
+
 ## 0.1.27
 
 ### Patch Changes

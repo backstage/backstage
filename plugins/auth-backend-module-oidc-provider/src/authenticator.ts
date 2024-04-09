@@ -197,4 +197,12 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       });
     });
   },
+
+  async logout(input, ctx) {
+    const { client } = await ctx.promise;
+
+    if (input.refreshToken) {
+      await client.revoke(input.refreshToken);
+    }
+  },
 });

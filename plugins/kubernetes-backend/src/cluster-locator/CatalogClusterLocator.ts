@@ -52,7 +52,7 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
     return new CatalogClusterLocator(catalogApi, auth);
   }
 
-  async getClusters(options: {
+  async getClusters(options?: {
     credentials: BackstageCredentials;
   }): Promise<ClusterDetails[]> {
     const apiServerKey = `metadata.annotations.${ANNOTATION_KUBERNETES_API_SERVER}`;
@@ -71,7 +71,7 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       {
         filter: [filter],
       },
-      options.credentials
+      options?.credentials
         ? {
             token: (
               await this.auth.getPluginRequestToken({

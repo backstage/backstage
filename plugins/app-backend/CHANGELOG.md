@@ -1,5 +1,32 @@
 # @backstage/plugin-app-backend
 
+## 0.3.65-next.1
+
+### Patch Changes
+
+- c884b9a: Track assets namespace in the cache store, implement a cookie authentication for when the public entry is enabled and used with the new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.17-next.1
+
+## 0.3.65-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.17-next.0
+
 ## 0.3.64
 
 ### Patch Changes

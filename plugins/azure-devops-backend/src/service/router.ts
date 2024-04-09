@@ -23,7 +23,10 @@ import {
 import { AzureDevOpsApi } from '../api';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
-import { PullRequestsDashboardProvider } from '../api/PullRequestsDashboardProvider';
+import {
+  PullRequestsDashboardProvider,
+  DEFAULT_TEAMS_LIMIT,
+} from '../api/PullRequestsDashboardProvider';
 import Router from 'express-promise-router';
 import { errorHandler, UrlReader } from '@backstage/backend-common';
 import express from 'express';
@@ -59,7 +62,7 @@ export async function createRouter(
 ): Promise<express.Router> {
   const { logger, reader, config, permissions } = options;
 
-  if (config.getString('azureDevOps.token')) {
+  if (config.getOptionalString('azureDevOps.token')) {
     logger.warn(
       "The 'azureDevOps.token' has been deprecated, use 'integrations.azure' instead, for more details see: https://backstage.io/docs/integrations/azure/locations",
     );
@@ -175,6 +178,9 @@ export async function createRouter(
     const { projectName, repoName } = req.params;
 
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+    const teamsLimit = req.query.teamsLimit
+      ? Number(req.query.teamsLimit)
+      : DEFAULT_TEAMS_LIMIT;
     const host = req.query.host?.toString();
     const org = req.query.org?.toString();
     const status = req.query.status
@@ -184,6 +190,7 @@ export async function createRouter(
     const pullRequestOptions: PullRequestOptions = {
       top: top,
       status: status,
+      teamsLimit: teamsLimit,
     };
 
     const entityRef = req.query.entityRef;
@@ -227,6 +234,9 @@ export async function createRouter(
     const { projectName } = req.params;
 
     const top = req.query.top ? Number(req.query.top) : DEFAULT_TOP;
+    const teamsLimit = req.query.teamsLimit
+      ? Number(req.query.teamsLimit)
+      : DEFAULT_TEAMS_LIMIT;
 
     const status = req.query.status
       ? Number(req.query.status)
@@ -235,6 +245,7 @@ export async function createRouter(
     const pullRequestOptions: PullRequestOptions = {
       top: top,
       status: status,
+      teamsLimit: teamsLimit,
     };
 
     const token = getBearerTokenFromAuthorizationHeader(
@@ -266,8 +277,9 @@ export async function createRouter(
     res.status(200).json(pullRequests);
   });
 
-  router.get('/all-teams', async (_req, res) => {
-    const allTeams = await pullRequestsDashboardProvider.getAllTeams();
+  router.get('/all-teams', async (req, res) => {
+    const limit = req.query.limit ? Number(req.query.limit) : undefined;
+    const allTeams = await pullRequestsDashboardProvider.getAllTeams({ limit });
     res.status(200).json(allTeams);
   });
 

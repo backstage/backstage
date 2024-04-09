@@ -26,6 +26,7 @@ import { KubernetesServiceLocator as KubernetesServiceLocator_2 } from '@backsta
 import { Logger } from 'winston';
 import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RequestHandler } from 'http-proxy-middleware';
 import { TokenCredential } from '@azure/identity';
@@ -190,6 +191,8 @@ export class KubernetesBuilder {
   protected buildProxy(
     logger: Logger,
     clusterSupplier: KubernetesClustersSupplier_2,
+    discovery: DiscoveryService,
+    httpAuth: HttpAuthService,
   ): KubernetesProxy;
   // (undocumented)
   protected buildRouter(
@@ -239,6 +242,8 @@ export class KubernetesBuilder {
   protected getProxy(
     logger: Logger,
     clusterSupplier: KubernetesClustersSupplier_2,
+    discovery: DiscoveryService,
+    httpAuth: HttpAuthService,
   ): KubernetesProxy;
   // (undocumented)
   protected getServiceLocator(): KubernetesServiceLocator_2;
@@ -337,7 +342,7 @@ export class KubernetesProxy {
 
 // @public
 export type KubernetesProxyCreateRequestHandlerOptions = {
-  permissionApi: PermissionEvaluator;
+  permissionApi: PermissionsService;
 };
 
 // @public
@@ -345,6 +350,8 @@ export type KubernetesProxyOptions = {
   logger: Logger;
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
+  discovery: DiscoveryService;
+  httpAuth?: HttpAuthService;
 };
 
 // @public @deprecated (undocumented)

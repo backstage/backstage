@@ -375,3 +375,21 @@ export type CookieConfigurer = (ctx: {
   secure: boolean;
   sameSite?: 'none' | 'lax' | 'strict';
 };
+
+/**
+ * Core properties of various token types.
+ *
+ * @public
+ */
+export const tokenTypes = Object.freeze({
+  user: Object.freeze({
+    typParam: 'vnd.backstage.user',
+    audClaim: 'backstage',
+  }),
+  limitedUser: Object.freeze({
+    typParam: 'vnd.backstage.limited-user',
+  }),
+  plugin: Object.freeze({
+    typParam: 'vnd.backstage.plugin',
+  }),
+});

@@ -1,5 +1,24 @@
 # @backstage/plugin-proxy-backend
 
+## 0.4.15-next.1
+
+### Patch Changes
+
+- 43ca784: Updated dependency `@types/yup` to `^0.32.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/config@1.2.0
+
+## 0.4.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/config@1.2.0
+
 ## 0.4.14
 
 ### Patch Changes

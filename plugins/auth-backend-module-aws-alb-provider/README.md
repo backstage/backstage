@@ -1,6 +1,6 @@
 # Auth Module: AWS ALB Provider
 
-This module provides an GitHub auth provider implementation for `@backstage/plugin-auth-backend`.
+This module provides an AWS application load balancer auth provider implementation for `@backstage/plugin-auth-backend`.
 
 ## Links
 

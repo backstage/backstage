@@ -38,9 +38,9 @@ You can also use the signal API directly. This allows more fine-grained control 
 subscriptions.
 
 ```ts
-import { signalsApiRef } from '@backstage/plugin-signals-react';
+import { signalApiRef } from '@backstage/plugin-signals-react';
 
-const signals = useApi(signalsApiRef);
+const signals = useApi(signalApiRef);
 const { unsubscribe } = signals.subscribe(
   'myplugin:channel',
   (message: JsonObject) => {

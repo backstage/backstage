@@ -61,6 +61,14 @@ export function isResourceType(types: string | string[]) {
 }
 
 /**
+ * For use in EntitySwitch.Case. Matches if the entity is an API of a given spec.type.
+ * @public
+ */
+export function isApiType(types: string | string[]) {
+  return isEntityWith({ kind: 'api', type: types });
+}
+
+/**
  * For use in EntitySwitch.Case. Matches if the entity is the specified kind and type (if present).
  * @public
  */

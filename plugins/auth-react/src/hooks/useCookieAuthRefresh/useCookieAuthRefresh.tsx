@@ -23,6 +23,8 @@ import {
 import { useAsync, useMountEffect } from '@react-hookz/web';
 import { ResponseError } from '@backstage/errors';
 
+const COOKIE_PATH = '/.backstage/auth/v1/cookie';
+
 /**
  * @public
  * A hook that will refresh the cookie when it is about to expire.
@@ -31,13 +33,11 @@ import { ResponseError } from '@backstage/errors';
 export function useCookieAuthRefresh(options: {
   // The plugin id used for discovering the API origin
   pluginId: string;
-  // The path used for calling the refresh cookie endpoint, default to '/cookie'
-  path?: string;
 }):
   | { status: 'loading' }
   | { status: 'error'; error: Error; retry: () => void }
   | { status: 'success'; data: { expiresAt: string } } {
-  const { pluginId, path = '/cookie' } = options ?? {};
+  const { pluginId } = options ?? {};
   const fetchApi = useApi(fetchApiRef);
   const discoveryApi = useApi(discoveryApiRef);
 
@@ -49,7 +49,7 @@ export function useCookieAuthRefresh(options: {
 
   const [state, actions] = useAsync<{ expiresAt: string }>(async () => {
     const apiOrigin = await discoveryApi.getBaseUrl(pluginId);
-    const requestUrl = `${apiOrigin}${path}`;
+    const requestUrl = `${apiOrigin}${COOKIE_PATH}`;
     const response = await fetchApi.fetch(`${requestUrl}`, {
       credentials: 'include',
     });

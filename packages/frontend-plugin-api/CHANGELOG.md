@@ -1,5 +1,26 @@
 # @backstage/frontend-plugin-api
 
+## 0.6.4-next.1
+
+### Patch Changes
+
+- 35452b3: Fixed the type for `useRouteRef`, which wasn't handling optional external route refs correctly.
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
+## 0.6.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 0.6.3
 
 ### Patch Changes

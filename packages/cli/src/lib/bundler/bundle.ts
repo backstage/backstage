@@ -70,12 +70,7 @@ export async function buildBundle(options: BuildOptions) {
         `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
       ),
     );
-    configs.push(
-      await createConfig(publicPaths, {
-        ...commonConfigOptions,
-        publicSubPath: '/public',
-      }),
-    );
+    configs.push(await createConfig(publicPaths, commonConfigOptions));
   }
 
   const isCi = yn(process.env.CI, { default: false });
@@ -91,6 +86,14 @@ export async function buildBundle(options: BuildOptions) {
       dereference: true,
       filter: file => file !== paths.targetHtml,
     });
+
+    // If we've got a separate public index entry point, copy public content there too
+    if (publicPaths) {
+      await fs.copy(paths.targetPublic, publicPaths.targetDist, {
+        dereference: true,
+        filter: file => file !== paths.targetHtml,
+      });
+    }
   }
 
   if (configSchema) {

@@ -32,9 +32,15 @@ import { JsonObject } from '@backstage/types';
 export interface KubernetesObjectsProvider {
   getKubernetesObjectsByEntity(
     kubernetesObjectsByEntity: KubernetesObjectsByEntity,
+    options: {
+      credentials: BackstageCredentials;
+    },
   ): Promise<ObjectsByEntityResponse>;
   getCustomResourcesByEntity(
     customResourcesByEntity: CustomResourcesByEntity,
+    options: {
+      credentials: BackstageCredentials;
+    },
   ): Promise<ObjectsByEntityResponse>;
 }
 
@@ -135,7 +141,7 @@ export interface KubernetesClustersSupplier {
    * Implementations _should_ cache the clusters and refresh them periodically,
    * as getClusters is called whenever the list of clusters is needed.
    */
-  getClusters(options?: {
+  getClusters(options: {
     credentials: BackstageCredentials;
   }): Promise<ClusterDetails[]>;
 }
@@ -248,6 +254,7 @@ export interface KubernetesFetcher {
 export interface ServiceLocatorRequestContext {
   objectTypesToFetch: Set<ObjectToFetch>;
   customResources: CustomResourceMatcher[];
+  credentials: BackstageCredentials;
 }
 
 /**

@@ -17,7 +17,7 @@
 import React, { ReactNode } from 'react';
 import { ErrorPanel } from '@backstage/core-components';
 import { useApp } from '@backstage/core-plugin-api';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import { useCookieAuthRefresh } from '../../hooks';
 
 /**
@@ -27,8 +27,6 @@ import { useCookieAuthRefresh } from '../../hooks';
 export type CookieAuthRefreshProviderProps = {
   // The plugin ID used for discovering the API origin
   pluginId: string;
-  // The path used for calling the refresh cookie endpoint, default to '/cookie'
-  path?: string;
   // The children to render when the refresh is successful
   children: ReactNode;
 };

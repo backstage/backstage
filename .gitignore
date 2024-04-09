@@ -166,3 +166,7 @@ plugins-report.csv
 
 # Temporary knip configs
 knip.json
+
+# Schemathesis temporary files
+.hypothesis/
+.cassettes/

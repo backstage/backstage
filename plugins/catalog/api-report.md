@@ -560,6 +560,11 @@ export interface HasSystemsCardProps {
 }
 
 // @public
+export function isApiType(
+  types: string | string[],
+): (entity: Entity) => boolean;
+
+// @public
 export function isComponentType(
   types: string | string[],
 ): (entity: Entity) => boolean;

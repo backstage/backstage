@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.14.4-next.0
+
+### Patch Changes
+
+- f546e38: Added Link component in `TabUI` providing functionality like copy link or open in new tab.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.2
+  - @backstage/version-bridge@1.0.7
+
 ## 0.14.3
 
 ### Patch Changes

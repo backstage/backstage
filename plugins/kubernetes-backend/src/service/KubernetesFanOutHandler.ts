@@ -48,7 +48,9 @@ import {
   CustomResourcesByEntity,
   KubernetesCredential,
   KubernetesObjectsByEntity,
+  KubernetesObjectsProvider,
 } from '@backstage/plugin-kubernetes-node';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 /**
  *
@@ -190,7 +192,7 @@ const toClientSafePodMetrics = (
 
 type responseWithMetrics = [FetchResponseWrapper, PodStatusFetchResponse[]];
 
-export class KubernetesFanOutHandler {
+export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
   private readonly logger: Logger;
   private readonly fetcher: KubernetesFetcher;
   private readonly serviceLocator: KubernetesServiceLocator;
@@ -214,30 +216,38 @@ export class KubernetesFanOutHandler {
     this.authStrategy = authStrategy;
   }
 
-  async getCustomResourcesByEntity({
-    entity,
-    auth,
-    customResources,
-  }: CustomResourcesByEntity): Promise<ObjectsByEntityResponse> {
+  async getCustomResourcesByEntity(
+    { entity, auth, customResources }: CustomResourcesByEntity,
+    options: { credentials: BackstageCredentials },
+  ): Promise<ObjectsByEntityResponse> {
     // Don't fetch the default object types only the provided custom resources
     return this.fanOutRequests(
       entity,
       auth,
+      { credentials: options.credentials },
       new Set<ObjectToFetch>(),
       customResources,
     );
   }
 
-  async getKubernetesObjectsByEntity({
-    entity,
-    auth,
-  }: KubernetesObjectsByEntity): Promise<ObjectsByEntityResponse> {
-    return this.fanOutRequests(entity, auth, this.objectTypesToFetch);
+  async getKubernetesObjectsByEntity(
+    { entity, auth }: KubernetesObjectsByEntity,
+    options: { credentials: BackstageCredentials },
+  ): Promise<ObjectsByEntityResponse> {
+    return this.fanOutRequests(
+      entity,
+      auth,
+      {
+        credentials: options.credentials,
+      },
+      this.objectTypesToFetch,
+    );
   }
 
   private async fanOutRequests(
     entity: Entity,
     auth: KubernetesRequestAuth,
+    options: { credentials: BackstageCredentials },
     objectTypesToFetch: Set<ObjectToFetch>,
     customResources?: CustomResourceMatcher[],
   ) {
@@ -248,6 +258,7 @@ export class KubernetesFanOutHandler {
     const { clusters } = await this.serviceLocator.getClustersByEntity(entity, {
       objectTypesToFetch: objectTypesToFetch,
       customResources: customResources ?? [],
+      credentials: options.credentials,
     });
 
     this.logger.info(
