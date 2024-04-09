@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
+import { Handler } from 'express';
+import PromiseRouter from 'express-promise-router';
 import {
   coreServices,
   createServiceFactory,
   HttpRouterServiceAuthPolicy,
 } from '@backstage/backend-plugin-api';
-import { Handler } from 'express';
-import PromiseRouter from 'express-promise-router';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
 import { createAuthIntegrationRouter } from './createAuthIntegrationRouter';
+import { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
 
 /**
  * @public
@@ -77,6 +78,7 @@ export const httpRouterServiceFactory = createServiceFactory(
       router.use(createLifecycleMiddleware({ lifecycle }));
       router.use(createAuthIntegrationRouter({ auth }));
       router.use(credentialsBarrier.middleware);
+      router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
 
       return {
         use(handler: Handler): void {

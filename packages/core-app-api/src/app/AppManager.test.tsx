@@ -20,7 +20,8 @@ import {
   renderWithEffects,
   withLogCollector,
 } from '@backstage/test-utils';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React, { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
@@ -36,7 +37,11 @@ import {
   analyticsApiRef,
   useApi,
   errorApiRef,
+  fetchApiRef,
+  discoveryApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
+import { AppRouter } from './AppRouter';
 import { AppManager } from './AppManager';
 import { AppComponents, AppIcons } from './types';
 import { FeatureFlagged } from '../routing/FeatureFlagged';
@@ -816,5 +821,68 @@ describe('Integration Test', () => {
         ).toBeTruthy();
       },
     );
+  });
+
+  it('should clear app cookie when the user logs out', async () => {
+    const meta = global.document.createElement('meta');
+    meta.name = 'backstage-app-mode';
+    meta.content = 'protected';
+    global.document.head.appendChild(meta);
+
+    const fetchApiMock = {
+      fetch: jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        }),
+      }),
+    };
+    const discoveryApiMock = {
+      getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007/app'),
+    };
+
+    const app = new AppManager({
+      icons,
+      themes,
+      components,
+      configLoader: async () => [],
+      defaultApis: [
+        noopErrorApi,
+        createApiFactory({
+          api: fetchApiRef,
+          deps: {},
+          factory: () => fetchApiMock,
+        }),
+        createApiFactory({
+          api: discoveryApiRef,
+          deps: {},
+          factory: () => discoveryApiMock,
+        }),
+      ],
+    });
+
+    const SignOutButton = () => {
+      const identityApi = useApi(identityApiRef);
+      return <button onClick={() => identityApi.signOut()}>Sign Out</button>;
+    };
+
+    const Root = app.createRoot(
+      <AppRouter>
+        <meta name="backstage-app-mode" content="protected" />
+        <SignOutButton />
+      </AppRouter>,
+    );
+    await renderWithEffects(<Root />);
+
+    await userEvent.click(screen.getByText('Sign Out'));
+
+    await waitFor(() =>
+      expect(fetchApiMock.fetch).toHaveBeenCalledWith(
+        'http://localhost:7007/app/.backstage/auth/v1/cookie',
+        { method: 'DELETE' },
+      ),
+    );
+
+    global.document.head.removeChild(meta);
   });
 });

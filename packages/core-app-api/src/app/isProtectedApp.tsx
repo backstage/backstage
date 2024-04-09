@@ -14,23 +14,8 @@
  * limitations under the License.
  */
 
-import { Request, Response } from 'express';
-import { BackstageCredentials, BackstagePrincipalTypes } from './AuthService';
-
-/** @public */
-export interface HttpAuthService {
-  credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
-    req: Request<any, any, any, any, any>,
-    options?: {
-      allow?: Array<TAllowed>;
-      allowLimitedAccess?: boolean;
-    },
-  ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>>;
-
-  issueUserCookie(
-    res: Response,
-    options?: {
-      credentials?: BackstageCredentials;
-    },
-  ): Promise<{ expiresAt: Date }>;
+export function isProtectedApp() {
+  const element = document.querySelector('meta[name="backstage-app-mode"]');
+  const appMode = element?.getAttribute('content') ?? 'public';
+  return appMode === 'protected';
 }

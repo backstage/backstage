@@ -65,8 +65,10 @@ export const appPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
-      async init({ logger, config, database, httpRouter }) {
+      async init({ logger, config, database, httpRouter, auth, httpAuth }) {
         const appPackageName =
           config.getOptionalString('app.packageName') ?? 'app';
 
@@ -76,11 +78,15 @@ export const appPlugin = createBackendPlugin({
           logger: winstonLogger,
           config,
           database,
+          auth,
+          httpAuth,
           appPackageName,
           staticFallbackHandler,
           schema,
         });
         httpRouter.use(router);
+
+        // Access control is handled within the router
         httpRouter.addAuthPolicy({
           allow: 'unauthenticated',
           path: '/',

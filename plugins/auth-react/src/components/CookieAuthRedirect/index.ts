@@ -14,23 +14,4 @@
  * limitations under the License.
  */
 
-import { Request, Response } from 'express';
-import { BackstageCredentials, BackstagePrincipalTypes } from './AuthService';
-
-/** @public */
-export interface HttpAuthService {
-  credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
-    req: Request<any, any, any, any, any>,
-    options?: {
-      allow?: Array<TAllowed>;
-      allowLimitedAccess?: boolean;
-    },
-  ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>>;
-
-  issueUserCookie(
-    res: Response,
-    options?: {
-      credentials?: BackstageCredentials;
-    },
-  ): Promise<{ expiresAt: Date }>;
-}
+export { CookieAuthRedirect } from './CookieAuthRedirect';

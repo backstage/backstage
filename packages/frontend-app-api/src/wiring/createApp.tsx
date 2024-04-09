@@ -43,6 +43,9 @@ import {
   featureFlagsApiRef,
   identityApiRef,
   AppTheme,
+  errorApiRef,
+  discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { getAvailableFeatures } from './discovery';
 import {
@@ -53,6 +56,8 @@ import {
 } from '@backstage/core-app-api';
 
 // TODO: Get rid of all of these
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { isProtectedApp } from '../../../core-app-api/src/app/isProtectedApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -280,6 +285,22 @@ export function createSpecializedApp(options?: {
     ),
     options?.icons,
   );
+
+  if (isProtectedApp()) {
+    const discoveryApi = apiHolder.get(discoveryApiRef);
+    const errorApi = apiHolder.get(errorApiRef);
+    const fetchApi = apiHolder.get(fetchApiRef);
+    if (!discoveryApi || !errorApi || !fetchApi) {
+      throw new Error(
+        'App is running in protected mode but missing required APIs',
+      );
+    }
+    appIdentityProxy.enableCookieAuth({
+      discoveryApi,
+      errorApi,
+      fetchApi,
+    });
+  }
 
   const featureFlagApi = apiHolder.get(featureFlagsApiRef);
   if (featureFlagApi) {

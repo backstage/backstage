@@ -325,7 +325,7 @@ export interface HttpAuthService {
   issueUserCookie(
     res: Response_2,
     options?: {
-      credentials?: BackstageCredentials<BackstageUserPrincipal>;
+      credentials?: BackstageCredentials;
     },
   ): Promise<{
     expiresAt: Date;
