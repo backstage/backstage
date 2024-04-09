@@ -7203,6 +7203,8 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@backstage/types": "workspace:^"
+    cross-fetch: ^4.0.0
+    uri-template: ^2.0.0
   languageName: unknown
   linkType: soft
 
@@ -7577,6 +7579,16 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-todo-common@workspace:plugins/todo-common":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-todo-common@workspace:plugins/todo-common"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    cross-fetch: ^4.0.0
+    uri-template: ^2.0.0
   languageName: unknown
   linkType: soft
 
