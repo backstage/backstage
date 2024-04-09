@@ -20,6 +20,17 @@ import { PullRequests, PullRequestsColumn } from '../utils/types';
 import { useGetPullRequestsFromRepository } from '../api/useGetPullRequestsFromRepository';
 import { useGetPullRequestsFromUser } from '../api/useGetPullRequestsFromUser';
 import { useGetPullRequestDetails } from '../api/useGetPullRequestDetails';
+import { useEntity } from '@backstage/plugin-catalog-react';
+import { ANNOTATION_LOCATION, Entity } from '@backstage/catalog-model';
+import gitUrlParse from 'git-url-parse';
+
+export const getHostnameFromEntity = (entity: Entity) => {
+  const location = entity?.metadata.annotations?.[ANNOTATION_LOCATION];
+
+  return location?.startsWith('url:')
+    ? gitUrlParse(location.slice(4)).resource
+    : undefined;
+};
 
 export function usePullRequestsByTeam(
   repositories: string[],
@@ -27,11 +38,14 @@ export function usePullRequestsByTeam(
   organization?: string,
   pullRequestLimit?: number,
 ) {
+  const { entity: teamEntity } = useEntity();
+  const hostname = getHostnameFromEntity(teamEntity);
   const [pullRequests, setPullRequests] = useState<PullRequestsColumn[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const getPullRequestsFromRepository = useGetPullRequestsFromRepository();
-  const getPullRequestsFromUser = useGetPullRequestsFromUser();
-  const getPullRequestDetails = useGetPullRequestDetails();
+  const getPullRequestsFromRepository =
+    useGetPullRequestsFromRepository(hostname);
+  const getPullRequestsFromUser = useGetPullRequestsFromUser(hostname);
+  const getPullRequestDetails = useGetPullRequestDetails(hostname);
 
   const getPRsPerRepository = useCallback(
     async (repository: string): Promise<PullRequests> => {

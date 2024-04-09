@@ -77,3 +77,9 @@ const groupPage = (
     </EntityLayoutWrapper>;
 )
 ```
+
+## Multiple GitHub backends
+
+The plugin uses the `scmAuthApi` under the hood to support multiple GitHub backends (e.g. `github.com` and a privately hosted _GitHub Enterprise Server_).
+The plugin will automatically determine the GitHub backend based on the `backstage.io/managed-by-location` annotation of the entity (The
+[catalog-backend-module-github-org](../catalog-backend-module-github-org/README.md) sets this annotation automatically).

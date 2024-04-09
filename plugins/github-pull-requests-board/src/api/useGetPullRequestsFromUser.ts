@@ -24,9 +24,11 @@ import { useOctokitGraphQl } from './useOctokitGraphQl';
 const PULL_REQUEST_LIMIT = 10;
 const GITHUB_GRAPHQL_MAX_ITEMS = 100;
 
-export const useGetPullRequestsFromUser = () => {
+export const useGetPullRequestsFromUser = (hostname: string = 'github.com') => {
   const graphql =
-    useOctokitGraphQl<GraphQlUserPullRequests<PullRequestsNumberAndOwner[]>>();
+    useOctokitGraphQl<GraphQlUserPullRequests<PullRequestsNumberAndOwner[]>>(
+      hostname,
+    );
 
   const fn = React.useRef(
     async (

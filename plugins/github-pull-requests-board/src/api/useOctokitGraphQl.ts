@@ -14,29 +14,27 @@
  * limitations under the License.
  */
 import { Octokit } from '@octokit/rest';
-import {
-  useApi,
-  githubAuthApiRef,
-  configApiRef,
-} from '@backstage/core-plugin-api';
+import { useApi, configApiRef } from '@backstage/core-plugin-api';
 import { readGithubIntegrationConfigs } from '@backstage/integration';
+import { ScmAuthApi, scmAuthApiRef } from '@backstage/integration-react';
 
 let octokit: any;
 
-export const useOctokitGraphQl = <T>() => {
-  const auth = useApi(githubAuthApiRef);
+export const useOctokitGraphQl = <T>(hostname: string) => {
+  const scmAuthApi = useApi(scmAuthApiRef);
   const config = useApi(configApiRef);
 
-  const baseUrl = readGithubIntegrationConfigs(
+  const configs = readGithubIntegrationConfigs(
     config.getOptionalConfigArray('integrations.github') ?? [],
-  )[0].apiBaseUrl;
+  );
+  const githubIntegrationConfig = configs.find(v => v.host === hostname);
+  const baseUrl = githubIntegrationConfig?.apiBaseUrl;
 
   return (path: string, options?: any): Promise<T> =>
-    auth
-      .getAccessToken(['repo'])
+    getAccessToken(scmAuthApi, hostname)
       .then((token: string) => {
         if (!octokit) {
-          octokit = new Octokit({ auth: token, ...(baseUrl && { baseUrl }) });
+          octokit = new Octokit({ auth: token, baseUrl });
         }
 
         return octokit;
@@ -45,3 +43,21 @@ export const useOctokitGraphQl = <T>() => {
         return octokitInstance.graphql(path, options);
       });
 };
+
+function getAccessToken(
+  scmAuthApi: ScmAuthApi,
+  hostname: string,
+): Promise<string> {
+  return scmAuthApi
+    .getCredentials({
+      url: `https://${hostname}/`,
+      additionalScope: {
+        customScopes: {
+          github: ['repo'],
+        },
+      },
+    })
+    .then((response: any) => {
+      return response.token;
+    });
+}

@@ -18,8 +18,8 @@ import React from 'react';
 import { GraphQlPullRequest, PullRequest } from '../utils/types';
 import { useOctokitGraphQl } from './useOctokitGraphQl';
 
-export const useGetPullRequestDetails = () => {
-  const graphql = useOctokitGraphQl<GraphQlPullRequest<PullRequest>>();
+export const useGetPullRequestDetails = (hostname: string = 'github.com') => {
+  const graphql = useOctokitGraphQl<GraphQlPullRequest<PullRequest>>(hostname);
 
   const fn = React.useRef(
     async (repo: string, number: number): Promise<PullRequest> => {

@@ -7076,6 +7076,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
@@ -7086,6 +7087,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    git-url-parse: ^14.0.0
     luxon: ^3.0.0
     p-limit: ^3.1.0
   peerDependencies:
