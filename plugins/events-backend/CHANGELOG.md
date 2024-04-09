@@ -1,5 +1,16 @@
 # @backstage/plugin-events-backend
 
+## 0.3.4-next.1
+
+### Patch Changes
+
+- 7899e55: Allow unauthenticated requests for HTTP ingress.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-events-node@0.3.3-next.1
+  - @backstage/config@1.2.0
+
 ## 0.3.3-next.0
 
 ### Patch Changes

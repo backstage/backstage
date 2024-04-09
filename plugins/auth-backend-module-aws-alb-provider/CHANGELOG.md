@@ -1,5 +1,20 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 30f5a51: Added `authModuleAwsAlbProvider` as a default export.
+
+  It can now be used like this in your backend: `backend.add(import('@backstage/plugin-auth-backend-module-aws-alb-provider'));`
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/plugin-auth-backend@0.22.4-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/errors@1.2.4
+
 ## 0.1.9-next.0
 
 ### Patch Changes

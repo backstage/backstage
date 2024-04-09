@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-cicd-statistics-module-gitlab",
-  "version": "0.1.30-next.0",
+  "version": "0.1.30-next.1",
   "description": "CI/CD Statistics plugin module; Gitlab CICD",
   "backstage": {
     "role": "frontend-plugin-module"

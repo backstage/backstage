@@ -1,5 +1,25 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.8.4-next.1
+
+### Patch Changes
+
+- 87d2eb8: Updated dependency `json-schema-library` to `^9.0.0`.
+- df99f62: The `value` sent on the `create` analytics event (fired when a Scaffolder template is executed) is now set to the number of minutes saved by executing the template. This value is derived from the `backstage.io/time-saved` annotation on the template entity, if available.
+
+  Note: the `create` event is now captured in the `<Workflow>` component. If you are directly making use of the alpha-exported `<Stepper>` component, an analytics `create` event will no longer be captured on your behalf.
+
+- Updated dependencies
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/theme@0.5.2
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+  - @backstage/plugin-catalog-react@1.11.3-next.1
+  - @backstage/plugin-scaffolder-common@1.5.1
+
 ## 1.8.4-next.0
 
 ### Patch Changes

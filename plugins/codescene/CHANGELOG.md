@@ -1,5 +1,18 @@
 # @backstage/plugin-codescene
 
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.2
+  - @backstage/plugin-catalog-react@1.11.3-next.1
+
 ## 0.1.26-next.0
 
 ### Patch Changes

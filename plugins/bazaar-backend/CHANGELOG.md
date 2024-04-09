@@ -1,5 +1,15 @@
 # @backstage/plugin-bazaar-backend
 
+## 0.3.15-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/config@1.2.0
+
 ## 0.3.15-next.0
 
 ### Patch Changes
