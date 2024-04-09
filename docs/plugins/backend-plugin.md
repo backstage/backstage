@@ -181,6 +181,25 @@ In the new backend, dependencies are defined statically during registration and 
   },
 ```
 
+You can add your own dependencies by adding a named item to the `deps` parameter:
+
+```ts
+deps: {
+  // highlight-next-line
+  myDependency: coreServices.rootConfig,
+},
+```
+
+And then you can access it by referencing it in the `init` block of your plugin definition,
+
+```ts
+async init({ myDependency }) {
+   // ..
+}
+```
+
+And then you're free to call it and pass it into your router as needed.
+
 Backstage provides a bunch of `coreServices` out of box:
 
 - **Database**: A database connection layer using knex.
