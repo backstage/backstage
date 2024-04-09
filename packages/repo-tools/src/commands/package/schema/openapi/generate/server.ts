@@ -42,7 +42,7 @@ async function generateSpecFile() {
   await fs.mkdirp(schemaDir);
 
   const oldTsPath = cliPaths.resolveTarget(OLD_SCHEMA_PATH);
-  if (oldTsPath) {
+  if (fs.existsSync(oldTsPath)) {
     console.warn(`Removing old schema file at ${oldTsPath}`);
     fs.removeSync(oldTsPath);
   }
