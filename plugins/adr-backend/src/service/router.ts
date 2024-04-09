@@ -134,6 +134,7 @@ export async function createRouter(
   });
 
   router.get('/image', async (req, res) => {
+    // console.log("I'M IN IMAGE ENDPOINT")
     const urlToProcess = req.query.url as string;
     if (!urlToProcess) {
       res.statusCode = 400;
@@ -174,15 +175,13 @@ export async function createRouter(
       });
 
       const fileBuffer = await fileGetResponse.buffer();
-      const data = fileBuffer.toString();
+      const data = fileBuffer.toString('base64');
 
       await cacheClient.set(urlToProcess, {
         data,
         etag: fileGetResponse.etag,
       });
-
-      res.setHeader('Content-Type', contentType);
-      res.send(fileBuffer);
+      res.json({ data: `data:${contentType};base64,${data}` });
     } catch (error) {
       if (cachedFileContent && error.name === NotModifiedError.name) {
         const buffer = Buffer.from(cachedFileContent.data, 'utf-8');
