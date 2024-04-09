@@ -1,5 +1,22 @@
 # @backstage/plugin-notifications
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- ec40998: On the Notifications page, the user can trigger "Save" or "Mark as read" actions once for multiple selected notifications.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-signals-react@0.0.3-next.0
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.2
+
 ## 0.1.3-next.0
 
 ### Patch Changes

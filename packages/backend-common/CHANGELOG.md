@@ -1,5 +1,24 @@
 # @backstage/backend-common
 
+## 0.21.7-next.1
+
+### Patch Changes
+
+- 007e7ea: Added placeholder for `listPublicServiceKeys()` in the `AuthService` returned by `createLegacyAuthAdapters`.
+- 75a53b8: KubernetesContainerRunner.runContainer no longer closes the `logStream` it receives as input.
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.0-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.21.7-next.0
 
 ### Patch Changes

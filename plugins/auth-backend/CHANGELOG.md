@@ -1,5 +1,33 @@
 # @backstage/plugin-auth-backend
 
+## 0.22.4-next.1
+
+### Patch Changes
+
+- d62bc51: Added token type header parameter and user identity proof to issued user tokens.
+- bf4d71a: Initial implementation of the `/v1/userinfo` endpoint, which is now able to parse and return the `sub` and `ent` claims from a Backstage user token.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.9-next.1
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.8-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.9-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.12-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.14-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.14-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.14-next.1
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.12-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.14-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.10-next.1
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.10-next.1
+  - @backstage/plugin-catalog-node@1.11.1-next.1
+
 ## 0.22.4-next.0
 
 ### Patch Changes

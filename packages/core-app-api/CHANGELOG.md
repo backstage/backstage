@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.12.4-next.0
+
+### Patch Changes
+
+- c884b9a: The app is now aware of if it is being served from the `app-backend` with a separate public and protected bundles. When in protected mode the app will now continuously refresh the session cookie, as well as clear the cookie if the user signs out.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 1.12.3
 
 ### Patch Changes

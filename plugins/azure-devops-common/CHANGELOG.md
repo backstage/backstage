@@ -1,5 +1,17 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.4.1-next.0
+
+### Patch Changes
+
+- 95b0573: `getAllTeams` now accepts an optional `limit` parameter which can be used to return more than the default limit of 100 teams from the Azure DevOps API
+
+  `pullRequestOptions` have been equipped with `teamsLimit` so that the property can be used with `getAllTeams`
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.4.0
 
 ### Minor Changes

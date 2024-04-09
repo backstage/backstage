@@ -1,5 +1,30 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.17.0-next.1
+
+### Minor Changes
+
+- 6c19c14: **BREAKING**: `KubernetesProxy` now requires the `DiscoveryService` to be passed to the constuctor
+
+### Patch Changes
+
+- f5cec55: Fixing issue where `BackstageCredentials` were not properly forwarded for all calls
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.1.11-next.1
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/plugin-permission-node@0.7.28-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.11.1-next.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.16.4-next.0
 
 ### Patch Changes
