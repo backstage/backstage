@@ -108,7 +108,7 @@ That will give you a [Knex](http://knexjs.org/) connection object.
 
 ```ts title="plugins/carmen-backend/src/plugin.ts"
 export const carmenPlugin = createBackendPlugin({
-  pluginId: 'carmenPlugin',
+  pluginId: 'carmen',
   register(env) {
     env.registerInit({
       deps: {
@@ -125,7 +125,7 @@ export const carmenPlugin = createBackendPlugin({
       }) {
         // You will then pass this client into your actual plugin implementation
         // code, maybe similar to the following:
-        const model = new CarmenDatabaseModel(db);
+        const model = new CarmenDatabaseModel(database);
         httpRouter.use(
           await createRouter({
             // highlight-next-line
