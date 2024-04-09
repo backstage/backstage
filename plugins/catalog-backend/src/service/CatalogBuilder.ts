@@ -15,10 +15,10 @@
  */
 
 import {
-  PluginDatabaseManager,
-  HostDiscovery,
-  UrlReader,
   createLegacyAuthAdapters,
+  HostDiscovery,
+  PluginDatabaseManager,
+  UrlReader,
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import {
@@ -65,7 +65,11 @@ import {
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
 import { LocationAnalyzer } from '../ingestion';
-import { CatalogProcessingEngine } from '../processing';
+import {
+  CatalogProcessingEngine,
+  createRandomProcessingInterval,
+  ProcessingIntervalFunction,
+} from '../processing';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
@@ -73,10 +77,6 @@ import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
-import {
-  createRandomProcessingInterval,
-  ProcessingIntervalFunction,
-} from '../processing';
 import { createRouter } from './createRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { AuthorizedRefreshService } from './AuthorizedRefreshService';
@@ -86,17 +86,15 @@ import { Logger } from 'winston';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import {
   Permission,
-  PermissionRuleParams,
-} from '@backstage/plugin-permission-common';
-import { permissionRules as catalogPermissionRules } from '../permissions/rules';
-import { PermissionRule } from '@backstage/plugin-permission-node';
-import {
   PermissionAuthorizer,
+  PermissionRuleParams,
   toPermissionEvaluator,
 } from '@backstage/plugin-permission-common';
+import { permissionRules as catalogPermissionRules } from '../permissions/rules';
 import {
   createConditionTransformer,
   createPermissionIntegrationRouter,
+  PermissionRule,
 } from '@backstage/plugin-permission-node';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 import { basicEntityFilter } from './request';
@@ -110,8 +108,8 @@ import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { durationToMilliseconds } from '@backstage/types';
 import {
-  DiscoveryService,
   AuthService,
+  DiscoveryService,
   HttpAuthService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
@@ -825,11 +823,15 @@ export class CatalogBuilder {
     config: Config,
   ): ProcessingIntervalFunction {
     const processingIntervalKey = 'catalog.processingInterval';
+    const multiplier = Math.max(
+      1,
+      config.getOptionalNumber('catalog.processingIntervalMultiplier') ?? 1.5,
+    );
 
     if (!config.has(processingIntervalKey)) {
       return createRandomProcessingInterval({
         minSeconds: 100,
-        maxSeconds: 150,
+        maxSeconds: 100 * multiplier,
       });
     }
 
@@ -843,7 +845,7 @@ export class CatalogBuilder {
 
     return createRandomProcessingInterval({
       minSeconds: seconds,
-      maxSeconds: seconds * 1.5,
+      maxSeconds: seconds * multiplier,
     });
   }
 }

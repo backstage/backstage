@@ -182,5 +182,22 @@ export interface Config {
      * housing catalog-info files.
      */
     processingInterval?: HumanDuration;
+
+    /**
+     * The multiplier for maximum processing interval used to multiply the processingInterval
+     * with this value.
+     *
+     * Default is 1.5.
+     *
+     * @remarks
+     *
+     * Example:
+     *
+     * ```yaml
+     * catalog:
+     *   processingIntervalMultiplier: 3
+     * ```
+     */
+    processingIntervalMultiplier?: number;
   };
 }
