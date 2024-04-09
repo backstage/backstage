@@ -40,7 +40,7 @@ export function createCookieAuthRefreshMiddleware(options: {
   router.delete(WELL_KNOWN_COOKIE_PATH_V1, async (_, res) => {
     const credentials = await auth.getNoneCredentials();
     await httpAuth.issueUserCookie(res, { credentials });
-    res.send(200);
+    res.status(204).end();
   });
 
   return router;

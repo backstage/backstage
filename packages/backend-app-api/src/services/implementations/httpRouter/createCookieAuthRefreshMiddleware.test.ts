@@ -43,7 +43,7 @@ describe('createCookieAuthRefreshMiddleware', () => {
 
   it('should remove the user cookie', async () => {
     const response = await request(app).delete('/.backstage/auth/v1/cookie');
-    expect(response.status).toBe(200);
+    expect(response.status).toBe(204);
     expect(response.header['set-cookie'][0]).toMatch('backstage-auth=');
   });
 });
