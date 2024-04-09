@@ -145,6 +145,7 @@ Usage: backstage-repo-tools package schema openapi generate [options]
 
 Options:
   --client-package [package]
+  --server-client-import [import]
   -h, --help
 ```
 
