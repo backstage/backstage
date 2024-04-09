@@ -134,17 +134,6 @@ export async function createRouter(
 
   logger.info(`Serving static app content from ${appDistDir}`);
 
-  let injectedConfigPath: string | undefined;
-  if (!disableConfigInjection) {
-    const appConfigs = await readConfigs({
-      config,
-      appDistDir,
-      env: process.env,
-      schema: options.schema,
-    });
-
-    injectedConfigPath = await injectConfig({ appConfigs, logger, staticDir });
-  }
   const appConfigs = disableConfigInjection
     ? undefined
     : await readConfigs({
@@ -245,7 +234,6 @@ export async function createRouter(
       assetStore,
       staticFallbackHandler,
       appConfigs,
-      injectedConfigPath,
     }),
   );
 
@@ -281,7 +269,6 @@ async function createEntryPointRouter({
   staticFallbackHandler,
   appMode,
   appConfigs,
-  injectedConfigPath,
 }: {
   logger: Logger;
   rootDir: string;
@@ -289,13 +276,11 @@ async function createEntryPointRouter({
   staticFallbackHandler?: express.Handler;
   appMode: 'public' | 'protected';
   appConfigs?: AppConfig[];
-  injectedConfigPath?: string;
 }) {
   const staticDir = resolvePath(rootDir, 'static');
 
-  if (appConfigs) {
-    await injectConfig({ appConfigs, logger, staticDir });
-  }
+  const injectedConfigPath =
+    appConfigs && (await injectConfig({ appConfigs, logger, staticDir }));
 
   await injectAppMode({ appMode, rootDir });
 
