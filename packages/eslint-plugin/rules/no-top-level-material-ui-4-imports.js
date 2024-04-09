@@ -74,70 +74,55 @@ module.exports = {
           );
 
           const specifiersMap = specifiers.map(s => {
-            const propsMatch = /^([A-Z]\w+)Props$/.exec(s.local.name);
+            const value = s.local.name;
+            const propsMatch = /^([A-Z]\w+)Props$/.exec(value);
+
+            const emitProp = propsMatch !== null;
+            const emitComponent = !emitProp;
+            const emitComponentAndProp =
+              emitProp && specifiers.some(s => s.local.name === propsMatch[1]);
 
             return {
-              emitComponent: !(propsMatch !== null),
-              emitProp: propsMatch !== null,
-              value: s.local.name,
-              propValue: propsMatch ? propsMatch[1] : undefined,
+              emitComponent: emitComponent || emitComponentAndProp,
+              emitProp,
+              value,
+              componentValue: propsMatch ? propsMatch[1] : undefined,
             };
           });
+
+          // Filter out duplicates where we have both component and component+prop
+          const filteredMap = specifiersMap.filter(
+            f => !specifiersMap.some(s => f.value === s.componentValue),
+          );
 
           // We have 3 cases:
           // 1 - Just Prop: import { TabProps } from '@material-ui/core';
           // 2 - Just Component: import { Box } from '@material-ui/core';
           // 3 - Component and Prop: import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
-          const components = specifiersMap
-            .filter(f => {
-              return f.emitComponent;
-            })
-            .map(m => m.value);
-          const props = specifiersMap
-            .filter(f => {
-              return f.emitProp;
-            })
-            .map(m => m.value);
-
-          if (
-            specifiersMap.some(s => s.emitProp) &&
-            !specifiersMap.some(s => s.emitComponent)
-          ) {
-            // 1 - Just Prop
-            const propValue = specifiersMap
-              .filter(f => {
-                return f.emitProp;
-              })
-              .map(m => m.propValue);
-            replacements.push(
-              `import { ${props.join(', ')} } from '@material-ui/core/${
-                propValue[0]
-              }';`,
-            );
-          } else if (
-            !specifiersMap.some(s => s.emitProp) &&
-            specifiersMap.some(s => s.emitComponent)
-          ) {
-            // 2 - Just Component
-            for (const specifier of specifiers) {
-              if (KNOWN_STYLES.includes(specifier.local.name)) {
-                styles.push(specifier.local.name);
+          for (const specifier of filteredMap) {
+            // Just Component
+            if (specifier.emitComponent && !specifier.emitProp) {
+              if (KNOWN_STYLES.includes(specifier.value)) {
+                styles.push(specifier.value);
               } else {
-                const replacement = `import ${specifier.local.name} from '${node.source.value}/${specifier.local.name}';`;
+                const replacement = `import ${specifier.value} from '${node.source.value}/${specifier.value}';`;
                 replacements.push(replacement);
               }
             }
-          } else if (
-            specifiersMap.some(s => s.emitProp) &&
-            specifiersMap.some(s => s.emitComponent)
-          ) {
-            // 3 - Component and Prop
-            replacements.push(
-              `import ${components[0]}, { ${props.join(
-                ', ',
-              )} } from '@material-ui/core/${components[0]}';`,
-            );
+
+            // Just Prop
+            if (specifier.emitProp && !specifier.emitComponent) {
+              const replacement = `import { ${specifier.value} } from '@material-ui/core/${specifier.componentValue}';`;
+              replacements.push(replacement);
+            }
+
+            // Component and Prop
+            if (specifier.emitComponent && specifier.emitProp) {
+              replacements.push(
+                `import ${specifier.componentValue}, { ${specifier.value} } from '@material-ui/core/${specifier.componentValue}';`,
+              );
+            }
           }
 
           if (styles.length > 0) {
