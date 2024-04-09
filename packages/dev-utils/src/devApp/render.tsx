@@ -25,6 +25,7 @@ import {
   SidebarPage,
   SidebarSpace,
   SidebarSpacer,
+  SignInPage,
 } from '@backstage/core-components';
 import {
   AnyApiFactory,
@@ -128,6 +129,13 @@ export class DevAppBuilder {
     return this;
   }
 
+  addSidebarItem(element: JSX.Element): DevAppBuilder {
+    if (element) {
+      this.sidebarItems.push(element);
+    }
+    return this;
+  }
+
   /**
    * Adds a page component along with accompanying sidebar item.
    *
@@ -193,6 +201,18 @@ export class DevAppBuilder {
       apis,
       plugins: this.plugins,
       themes: this.themes,
+      components: {
+        SignInPage: props => {
+          return (
+            <SignInPage
+              {...props}
+              providers={['guest']}
+              title="Select a sign-in method"
+              align="center"
+            />
+          );
+        },
+      },
       bindRoutes: ({ bind }) => {
         for (const plugin of this.plugins ?? []) {
           const targets: Record<string, RouteRef<any>> = {};
