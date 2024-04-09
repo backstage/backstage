@@ -28,6 +28,7 @@ import {
   isGroupEntity,
   isUserEntity,
   RELATION_HAS_MEMBER,
+  RELATION_PARENT_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { NotificationProcessor } from '@backstage/plugin-notifications-node';
@@ -102,7 +103,13 @@ export async function createRouter(
     const entities = await catalogClient.getEntitiesByRefs(
       {
         entityRefs: refs,
-        fields: ['kind', 'metadata.name', 'metadata.namespace'],
+        fields: [
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'relations',
+          'spec.owner',
+        ],
       },
       { token },
     );
@@ -120,10 +127,24 @@ export async function createRouter(
               relation.type === RELATION_HAS_MEMBER && relation.targetRef,
           )
           .map(r => r.targetRef);
+
+        const childGroupRefs = entity.relations
+          .filter(
+            relation =>
+              relation.type === RELATION_PARENT_OF && relation.targetRef,
+          )
+          .map(r => r.targetRef);
+
         const childGroups = await catalogClient.getEntitiesByRefs(
           {
-            entityRefs: entity.spec.children,
-            fields: ['kind', 'metadata.name', 'metadata.namespace'],
+            entityRefs: childGroupRefs,
+            fields: [
+              'kind',
+              'metadata.name',
+              'metadata.namespace',
+              'relations',
+              'spec.owner',
+            ],
           },
           { token },
         );
