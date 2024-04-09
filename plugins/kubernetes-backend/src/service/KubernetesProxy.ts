@@ -20,16 +20,12 @@ import {
   NotFoundError,
   serializeError,
 } from '@backstage/errors';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   KubernetesRequestAuth,
   kubernetesProxyPermission,
 } from '@backstage/plugin-kubernetes-common';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   Cluster,
   KubeConfig,
@@ -45,6 +41,12 @@ import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 import type { Request } from 'express';
 import { IncomingHttpHeaders } from 'http';
+import {
+  DiscoveryService,
+  HttpAuthService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 
 export const APPLICATION_JSON: string = 'application/json';
 
@@ -69,7 +71,7 @@ export const HEADER_KUBERNETES_AUTH: string =
  * @public
  */
 export type KubernetesProxyCreateRequestHandlerOptions = {
-  permissionApi: PermissionEvaluator;
+  permissionApi: PermissionsService;
 };
 
 /**
@@ -81,6 +83,8 @@ export type KubernetesProxyOptions = {
   logger: Logger;
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
+  discovery: DiscoveryService;
+  httpAuth?: HttpAuthService;
 };
 
 /**
@@ -93,11 +97,19 @@ export class KubernetesProxy {
   private readonly logger: Logger;
   private readonly clusterSupplier: KubernetesClustersSupplier;
   private readonly authStrategy: AuthenticationStrategy;
+  private readonly httpAuth: HttpAuthService;
 
   constructor(options: KubernetesProxyOptions) {
     this.logger = options.logger;
     this.clusterSupplier = options.clusterSupplier;
     this.authStrategy = options.authStrategy;
+
+    const legacy = createLegacyAuthAdapters({
+      discovery: options.discovery,
+      httpAuth: options.httpAuth,
+    });
+
+    this.httpAuth = legacy.httpAuth;
   }
 
   public createRequestHandler(
@@ -108,9 +120,7 @@ export class KubernetesProxy {
       const authorizeResponse = await permissionApi.authorize(
         [{ permission: kubernetesProxyPermission }],
         {
-          token: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await this.httpAuth.credentials(req),
         },
       );
       const auth = authorizeResponse[0];
@@ -220,7 +230,9 @@ export class KubernetesProxy {
 
   private async getClusterForRequest(req: Request): Promise<ClusterDetails> {
     const clusterName = req.headers[HEADER_KUBERNETES_CLUSTER.toLowerCase()];
-    const clusters = await this.clusterSupplier.getClusters();
+    const clusters = await this.clusterSupplier.getClusters({
+      credentials: await this.httpAuth.credentials(req),
+    });
 
     if (!clusters || clusters.length <= 0) {
       throw new NotFoundError(`No Clusters configured`);

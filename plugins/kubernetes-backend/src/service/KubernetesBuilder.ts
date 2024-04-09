@@ -157,7 +157,12 @@ export class KubernetesBuilder {
 
     const authStrategyMap = this.getAuthStrategyMap();
 
-    const proxy = this.getProxy(logger, clusterSupplier);
+    const proxy = this.getProxy(
+      logger,
+      clusterSupplier,
+      this.env.discovery,
+      httpAuth,
+    );
 
     const serviceLocator = this.getServiceLocator();
 
@@ -350,6 +355,8 @@ export class KubernetesBuilder {
   protected buildProxy(
     logger: Logger,
     clusterSupplier: KubernetesClustersSupplier,
+    discovery: DiscoveryService,
+    httpAuth: HttpAuthService,
   ): KubernetesProxy {
     const authStrategyMap = this.getAuthStrategyMap();
     const authStrategy = new DispatchStrategy({
@@ -359,6 +366,8 @@ export class KubernetesBuilder {
       logger,
       clusterSupplier,
       authStrategy,
+      discovery,
+      httpAuth,
     });
     return this.proxy;
   }
@@ -386,10 +395,13 @@ export class KubernetesBuilder {
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
       try {
-        const response = await objectsProvider.getKubernetesObjectsByEntity({
-          entity: requestBody.entity,
-          auth: requestBody.auth || {},
-        });
+        const response = await objectsProvider.getKubernetesObjectsByEntity(
+          {
+            entity: requestBody.entity,
+            auth: requestBody.auth || {},
+          },
+          { credentials: await httpAuth.credentials(req) },
+        );
         res.json(response);
       } catch (e) {
         logger.error(
@@ -530,8 +542,13 @@ export class KubernetesBuilder {
   protected getProxy(
     logger: Logger,
     clusterSupplier: KubernetesClustersSupplier,
+    discovery: DiscoveryService,
+    httpAuth: HttpAuthService,
   ) {
-    return this.proxy ?? this.buildProxy(logger, clusterSupplier);
+    return (
+      this.proxy ??
+      this.buildProxy(logger, clusterSupplier, discovery, httpAuth)
+    );
   }
 
   protected getAuthStrategyMap() {
