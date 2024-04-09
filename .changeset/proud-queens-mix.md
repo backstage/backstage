@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend-module-gitlab': minor
+'@backstage/plugin-scaffolder-backend-module-gitlab': patch
 ---
 
-Add examples for gitlab:group:ensureExists scaffolder action & improve related tests
+Add examples for `gitlab:group:ensureExists` scaffolder action & improve related tests
