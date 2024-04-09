@@ -4193,7 +4193,6 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
-    "@backstage/plugin-auth-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
     "@backstage/types": "workspace:^"
@@ -5112,9 +5111,7 @@ __metadata:
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/errors": "workspace:^"
-    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    "@backstage/version-bridge": "workspace:^"
     "@material-ui/core": ^4.9.13
     "@react-hookz/web": ^24.0.0
     "@testing-library/jest-dom": ^6.0.0
