@@ -97,6 +97,109 @@ curl localhost:7007/api/carmen/health
 
 This should return `{"status":"ok"}` like before. Success!
 
+## Secure by Default
+
+In 1.25, Backstage started moving to a secure by default model for plugins. This means that network requests to plugins will by default not allow unauthenticated users. Let's take a deeper look at the above curl request which should allow unauthenticated access.
+
+The actual endpoint that is being called is defined in
+
+```ts title="plugins/carmen-backend/src/service/router.ts"
+export async function createRouter(
+  options: RouterOptions,
+): Promise<express.Router> {
+  const { logger } = options;
+
+  const router = Router();
+  router.use(express.json());
+
+  // highlight-start
+  router.get('/health', (_, response) => {
+    logger.info('PONG!');
+    response.json({ status: 'ok' });
+  });
+  // highlight-end
+
+  router.use(errorHandler());
+  return router;
+}
+```
+
+You'll notice that there is no authentication mechanism defined here, just the route name and response data. That's because the authentication is handled in your plugin definition,
+
+```ts title="plugins/carmen-backend/src/plugin.ts"
+export const carmenPlugin = createBackendPlugin({
+  pluginId: 'carmenPlugin',
+  register(env) {
+    env.registerInit({
+      deps: {
+        httpRouter: coreServices.httpRouter,
+        logger: coreServices.logger,
+      },
+      async init({ httpRouter, logger }) {
+        httpRouter.use(
+          await createRouter({
+            logger,
+          }),
+        );
+        // highlight-start
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
+        // highlight-end
+      },
+    });
+  },
+});
+```
+
+This allows requests to this plugin's `/health` endpoint to go through unauthenticated!
+
+## Using Dependencies
+
+In the new backend, dependencies are defined statically during registration and then "injected" during initialization. Here's an example of what this looks like,
+
+```ts title="plugins/carmen-backend/src/plugin.ts"
+  register(env) {
+    env.registerInit({
+      // highlight-start
+      deps: {
+        httpRouter: coreServices.httpRouter,
+        logger: coreServices.logger,
+      },
+      // highlight-end
+      // And then you can use them through the options property!
+      // highlight-next-line
+      async init({ httpRouter, logger }) {
+        httpRouter.use(
+          await createRouter({
+            logger,
+          }),
+        );
+      },
+    });
+  },
+```
+
+Backstage provides a bunch of `coreServices` out of box:
+
+- **Database**: A database connection layer using knex.
+- **Root Config**: Access to the config that Backstage was started with.
+- **Logger**: A plugin scoped logger ready for logging!
+- **HTTP Router**: An `express`-compatible router for adding HTTP routes to your plugin.
+- **User Info**: Personalize your plugin experience for users by getting the currently logged in user.
+- **Auth**: Perform low level authentication.
+- **HTTP Auth**: HTTP authentication mechanisms, for example, allowing unauthenticated access. See [here](https://backstage.io/docs/backend-system/core-services/http-auth) for more info.
+- **Cache**: A plugin-scoped cache.
+- **Discovery**: Service discovery mechanism for your plugins.
+- **Plugin Metadata**: Introspect your plugin.
+- **Lifecycle**: Add hooks to lifecycle events.
+- **Permissions**: Authorize requests to specific resources in your plugins.
+- **URL Reader**: Authenticated URL calling mechanism.
+- **Scheduler**: Schedule jobs to run on a certain cadence.
+
+If you want to override or create new ones, you can also define your own services much like you create your own plugins.
+
 ## Making Use of a Database
 
 The Backstage backend comes with a builtin facility for SQL database access.
@@ -133,10 +236,6 @@ export const carmenPlugin = createBackendPlugin({
             logger,
           }),
         );
-        httpRouter.addAuthPolicy({
-          path: '/health',
-          allow: 'unauthenticated',
-        });
       },
     });
   },
