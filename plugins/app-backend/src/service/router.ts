@@ -257,20 +257,23 @@ async function injectAppMode(options: {
   rootDir: string;
 }) {
   const { appMode, rootDir } = options;
-  const originalIndexHtmlContent = await fs.readFile(
-    resolvePath(rootDir, 'index.html'),
-    'utf8',
-  );
-  if (originalIndexHtmlContent.includes('backstage-app-mode')) return;
-  const modifiedIndexHtmlContent = originalIndexHtmlContent.replace(
-    /<head>/,
-    `<head><meta name="backstage-app-mode" content="${appMode}" />`,
-  );
-  await fs.writeFile(
-    resolvePath(rootDir, 'index.html'),
-    modifiedIndexHtmlContent,
-    'utf8',
-  );
+  const content = await fs.readFile(resolvePath(rootDir, 'index.html'), 'utf8');
+
+  const metaTag = `<meta name="backstage-app-mode" content="${appMode}">`;
+
+  let newContent;
+  if (content.includes('backstage-app-mode')) {
+    console.log(`DEBUG: REPLACE`, metaTag);
+    newContent = content.replace(
+      /<meta name="backstage-app-mode" content="[^"]+">/,
+      metaTag,
+    );
+    console.log(`DEBUG: newContent=`, newContent);
+  } else {
+    newContent = content.replace(/<head>/, `<head>${metaTag}`);
+  }
+
+  await fs.writeFile(resolvePath(rootDir, 'index.html'), newContent, 'utf8');
 }
 
 async function createEntryPointRouter({
