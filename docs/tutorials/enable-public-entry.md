@@ -47,18 +47,11 @@ With that, Backstage's cli and backend will detect public entry point and serve 
      createApiFactory,
    } from '@backstage/core-plugin-api';
    import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
-   import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
 
    // Notice that this is only setting up what is needed by the sign-in pages
    const app = createApp({
-     apis: [
-       createApiFactory({
-         api: discoveryApiRef,
-         deps: { configApi: configApiRef },
-         factory: ({ configApi }) =>
-           AuthProxyDiscoveryApi.fromConfig(configApi),
-       }),
-     ],
+     // If you have any custom APIs that your sign-in page depends on, you need to add them here
+     apis: [],
      components: {
        SignInPage: props => {
          return (
