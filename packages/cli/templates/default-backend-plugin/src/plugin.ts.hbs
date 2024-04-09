@@ -10,7 +10,7 @@ import { createRouter } from './service/router';
  * @public
  */
 export const {{pluginVar}} = createBackendPlugin({
-  pluginId: '{{pluginVar}}',
+  pluginId: '{{id}}',
   register(env) {
     env.registerInit({
       deps: {
@@ -26,6 +26,10 @@ export const {{pluginVar}} = createBackendPlugin({
             logger,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

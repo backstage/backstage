@@ -207,6 +207,7 @@ export namespace mockServices {
       isPrincipal: jest.fn() as any,
       getPluginRequestToken: jest.fn(),
       getLimitedUserToken: jest.fn(),
+      listPublicServiceKeys: jest.fn(),
     }));
   }
 

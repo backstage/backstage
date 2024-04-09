@@ -1,5 +1,24 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.46-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.3.45
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/integration@1.9.1
+
 ## 0.3.44
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-todo-backend",
-  "version": "0.3.14",
+  "version": "0.3.16-next.0",
   "description": "A Backstage backend plugin that lets you browse TODO comments in your source code",
   "backstage": {
     "role": "backend-plugin"
@@ -25,6 +25,7 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
+    "fuzz": "backstage-repo-tools package schema openapi fuzz",
     "generate": "backstage-repo-tools package schema openapi generate --server",
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",

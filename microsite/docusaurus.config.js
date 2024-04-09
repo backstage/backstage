@@ -73,7 +73,7 @@ module.exports = {
       // Replace all HTML comments with empty strings as these are not supported by MDXv2.
       return fileContent.replace(/<!--.*?-->/gs, '');
     },
-    format: 'md',
+    format: 'detect',
   },
   webpack: {
     jsLoader: isServer => ({
@@ -198,7 +198,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.24.0',
+            to: 'docs/releases/v1.25.0',
             label: 'Releases',
             position: 'left',
           },

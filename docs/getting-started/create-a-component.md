@@ -20,6 +20,8 @@ If you're running Backstage with Node 20 or later, you'll need to pass the flag 
 
 You should already have [a standalone app](./index.md).
 
+You will also need to register the [GitHub Scaffolder Action module](../features/software-templates/builtin-actions.md#installing-action-modules) before moving forward.
+
 ## Creating your component
 
 - Go to `create` and choose to create a website with the `Example Node.js Template`

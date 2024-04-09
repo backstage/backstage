@@ -24,9 +24,13 @@ import { CatalogClient } from '@backstage/catalog-client';
 import { createApiExtension } from '@backstage/frontend-plugin-api';
 import {
   catalogApiRef,
+  entityPresentationApiRef,
   starredEntitiesApiRef,
 } from '@backstage/plugin-catalog-react';
-import { DefaultStarredEntitiesApi } from '../apis';
+import {
+  DefaultEntityPresentationApi,
+  DefaultStarredEntitiesApi,
+} from '../apis';
 
 export const catalogApi = createApiExtension({
   factory: createApiFactory({
@@ -48,4 +52,13 @@ export const catalogStarredEntitiesApi = createApiExtension({
   }),
 });
 
-export default [catalogApi, catalogStarredEntitiesApi];
+export const entityPresentationApi = createApiExtension({
+  factory: createApiFactory({
+    api: entityPresentationApiRef,
+    deps: { catalogApiImp: catalogApiRef },
+    factory: ({ catalogApiImp }) =>
+      DefaultEntityPresentationApi.create({ catalogApi: catalogApiImp }),
+  }),
+});
+
+export default [catalogApi, catalogStarredEntitiesApi, entityPresentationApi];

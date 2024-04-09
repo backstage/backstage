@@ -640,6 +640,20 @@ export type TokenParams = {
 };
 
 // @public
+export const tokenTypes: Readonly<{
+  user: Readonly<{
+    typParam: 'vnd.backstage.user';
+    audClaim: 'backstage';
+  }>;
+  limitedUser: Readonly<{
+    typParam: 'vnd.backstage.limited-user';
+  }>;
+  plugin: Readonly<{
+    typParam: 'vnd.backstage.plugin';
+  }>;
+}>;
+
+// @public
 export type WebMessageResponse =
   | {
       type: 'authorization_response';

@@ -1,5 +1,32 @@
 # @backstage/repo-tools
 
+## 0.8.0-next.0
+
+### Minor Changes
+
+- cfdc5e7: Adds two new commands, `repo schema openapi fuzz` and `package schema openapi fuzz` for fuzzing your plugins documented with OpenAPI. This can help find bugs in your application code through the use of auto-generated schema-compliant inputs. For more information on the underlying library this leverages, take a look at [the docs](https://schemathesis.readthedocs.io/en/stable/index.html).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/errors@1.2.4
+
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/errors@1.2.4
+
 ## 0.7.1
 
 ### Patch Changes

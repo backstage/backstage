@@ -1,5 +1,25 @@
 # @backstage/plugin-microsoft-calendar
 
+## 0.1.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+
+## 0.1.15
+
+### Patch Changes
+
+- 4bba771: Added ESLint rule `no-top-level-material-ui-4-imports` in the `microsoft-calender` plugin to migrate the Material UI imports.
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+
 ## 0.1.14
 
 ### Patch Changes

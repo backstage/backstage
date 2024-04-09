@@ -1,5 +1,24 @@
 # @backstage/plugin-proxy-backend
 
+## 0.4.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/config@1.2.0
+
+## 0.4.14
+
+### Patch Changes
+
+- eae097c: Allow unauthenticated requests.
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/config@1.2.0
+
 ## 0.4.13
 
 ### Patch Changes

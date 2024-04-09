@@ -1,6 +1,6 @@
 # GoCD
 
-Welcome to the GoCD plugin!
+This plugin is an open-source tool which is used in software development to help teams and organizations automate the continuous delivery of software.
 
 - View recent GoCD Builds
 

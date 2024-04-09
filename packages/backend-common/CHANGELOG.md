@@ -1,5 +1,41 @@
 # @backstage/backend-common
 
+## 0.21.7-next.0
+
+### Patch Changes
+
+- 7b11422: Add AWS CodeCommit URL Reader/Integration
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.3-next.0
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.12-next.0
+
+## 0.21.6
+
+### Patch Changes
+
+- 81a995f: Updated dependency `aws-sdk-client-mock` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.2
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/types@1.1.1
+
 ## 0.21.5
 
 ### Patch Changes

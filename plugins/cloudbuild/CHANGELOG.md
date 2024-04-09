@@ -1,5 +1,30 @@
 # @backstage/plugin-cloudbuild
 
+## 0.5.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/plugin-catalog-react@1.11.3-next.0
+
+## 0.5.0
+
+### Minor Changes
+
+- 5a78b73: Added a new column to `EntityCloudbuildContent` displaying the trigger name for each build.
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+
 ## 0.4.2
 
 ### Patch Changes

@@ -22,5 +22,6 @@ export {
   isNamespace,
   isComponentType,
   isResourceType,
+  isApiType,
   isEntityWith,
 } from './conditions';

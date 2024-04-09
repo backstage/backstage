@@ -1,5 +1,26 @@
 # @backstage/plugin-graphiql
 
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-compat-api@0.2.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.4-next.0
+
+## 0.3.6
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/core-compat-api@0.2.3
+  - @backstage/core-plugin-api@1.9.1
+
 ## 0.3.5
 
 ### Patch Changes

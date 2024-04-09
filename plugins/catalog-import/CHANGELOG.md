@@ -1,5 +1,42 @@
 # @backstage/plugin-catalog-import
 
+## 0.10.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/core-compat-api@0.2.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.4-next.0
+  - @backstage/integration-react@1.1.26-next.0
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-catalog-react@1.11.3-next.0
+
+## 0.10.9
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/catalog-client@1.6.3
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/integration-react@1.1.25
+  - @backstage/core-compat-api@0.2.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-catalog-common@1.0.22
+
 ## 0.10.8
 
 ### Patch Changes

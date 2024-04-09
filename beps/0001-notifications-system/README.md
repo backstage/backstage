@@ -155,7 +155,7 @@ The `notification-backend` shall provide necessary parameters for paging and fil
 
 The notification frontend plugin provides a UI for viewing notifications, which in the initial implementation can be as simple as needed. The only requirement is that a user is able to view recent notifications and distinguish between read and unread notifications. The frontend plugin also subscribes to the notifications signal channel and alerts the user when a new notification is received.
 
-Both the individual and broadcasted messages are rendered together in a single list. There will be a filter choosing of of those types or `all`.
+Both the individual and broadcast messages are rendered together in a single list. There will be a filter choosing among those types or `all`.
 
 ### Architecture Overview
 
@@ -217,7 +217,7 @@ export type NotificationPayload = {
 export type Notification = {
   id: string;
   userRef: string;
-  broadcasted: boolean;
+  isBroadcast: boolean;
   created: Date;
   saved?: Date;
   read?: Date;
@@ -246,18 +246,18 @@ Each notification is always routed to individual users unless its type is `broad
 
 The `notification-backend` will figure out which users will receive a notification based on the `recipients` parameter, resolving it to the concrete list of users at the time of sending the notification.
 
-##### Broadcasted notifications
+##### Broadcast notifications
 
-Broadcasted messages are stored in a separate database table for performance reasons and simplicity of queries.
+Broadcast messages are stored in a separate database table for performance reasons and simplicity of queries.
 There is only one record per message.
 
 To maintain flags, there will be another table with 1:N relation. This table will contain `user`, `read`, `saved` and `updated` columns, linked via message ID foreign-key.
 This table of flags is not prefilled on a broadcast message creation but a record is added when there is an updating POST by a particular user.
 
-When notifications are queried, two (main) database queries are issued - for both the individual and broadcasted messages.
-Their results are merged into a single response but setting the `broadcasted` flag based on source.
+When notifications are queried, two (main) database queries are issued - for both the individual and broadcast messages.
+Their results are merged into a single response but setting the `isBroadcast` flag based on source.
 
-If an individual message is queried (via GET `/notifications/:id`), both the individual and broadcasted tables are searched. The first result found is used for the response.
+If an individual message is queried (via GET `/notifications/:id`), both the individual and broadcast tables are searched. The first result found is used for the response.
 
 #### `SignalService`
 

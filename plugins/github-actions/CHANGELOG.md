@@ -1,5 +1,30 @@
 # @backstage/plugin-github-actions
 
+## 0.6.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/integration-react@1.1.26-next.0
+  - @backstage/plugin-catalog-react@1.11.3-next.0
+
+## 0.6.14
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/integration-react@1.1.25
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/integration@1.9.1
+
 ## 0.6.13
 
 ### Patch Changes

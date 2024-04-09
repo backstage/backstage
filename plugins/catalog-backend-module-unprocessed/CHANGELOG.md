@@ -1,5 +1,34 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-auth-node@0.4.12-next.0
+  - @backstage/plugin-catalog-node@1.11.1-next.0
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.1
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.4.3
+
+### Patch Changes
+
+- f3e2e86: Internal update that injects custom permissions into the catalog using its extension point
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.1
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.4.2
 
 ### Patch Changes

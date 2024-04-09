@@ -1,7 +1,7 @@
 {
   "name": "@backstage/eslint-plugin",
-  "description": "Backstage ESLint plugin",
   "version": "0.1.6",
+  "description": "Backstage ESLint plugin",
   "publishConfig": {
     "access": "public"
   },

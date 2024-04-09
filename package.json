@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.24.2",
+  "version": "1.26.0-next.0",
   "private": true,
   "repository": {
     "type": "git",
@@ -23,8 +23,8 @@
     "build:plugins-report": "node ./scripts/build-plugins-report",
     "clean": "backstage-cli repo clean",
     "create-plugin": "echo \"use 'yarn new' instead\"",
-    "dev": "concurrently 'yarn start' 'yarn start-backend'",
-    "dev:next": "concurrently 'yarn start:next' 'yarn start-backend:next'",
+    "dev": "yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
+    "dev:next": "yarn workspaces foreach -A --include example-backend-next --include example-app-next --parallel -v -i run start",
     "docker-build": "yarn tsc && yarn workspace example-backend build && yarn workspace example-backend build-image",
     "fix": "backstage-cli repo fix",
     "postinstall": "husky || true",
@@ -42,7 +42,7 @@
     "start": "yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
     "start-backend:next": "yarn workspace example-backend-next start",
-    "start:lighthouse": "concurrently 'yarn start' 'yarn start-backend:next'",
+    "start:lighthouse": "yarn workspaces foreach -A --include example-backend-next --include example-app --parallel -v -i run start",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn workspace example-app-next start",
     "storybook": "yarn --cwd storybook && yarn --cwd storybook start",
@@ -109,8 +109,8 @@
     "@techdocs/cli": "workspace:*",
     "@types/node": "^18.17.8",
     "@types/webpack": "^5.28.0",
+    "array-to-table": "^1.0.1",
     "command-exists": "^1.2.9",
-    "concurrently": "^8.0.0",
     "cross-env": "^7.0.0",
     "e2e-test": "workspace:*",
     "eslint": "^8.6.0",
@@ -130,7 +130,7 @@
     "sort-package-json": "^2.8.0",
     "typescript": "~5.1.0"
   },
-  "packageManager": "yarn@3.2.3",
+  "packageManager": "yarn@3.8.1",
   "engines": {
     "node": "18 || 20"
   }

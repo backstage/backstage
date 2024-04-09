@@ -85,7 +85,7 @@ export type Status = {
   commit: {
     statusCheckRollup: {
       state: string;
-    };
+    } | null;
   };
 };
 

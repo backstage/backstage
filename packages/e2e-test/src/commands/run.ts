@@ -34,6 +34,7 @@ import mysql from 'mysql2/promise';
 import pgtools from 'pgtools';
 
 import { findPaths } from '@backstage/cli-common';
+import { OptionValues } from 'commander';
 
 // eslint-disable-next-line no-restricted-syntax
 const paths = findPaths(__dirname);
@@ -45,7 +46,7 @@ const templatePackagePaths = [
   'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
 ];
 
-export async function run() {
+export async function run(opts: OptionValues) {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
   print(`CLI E2E test root: ${rootDir}\n`);
 
@@ -109,8 +110,12 @@ export async function run() {
     // runner will be destroyed anyway
     print('All tests successful');
   } else {
-    print('All tests successful, removing test dir');
-    await fs.remove(rootDir);
+    if (opts.keep) {
+      print(`All tests successful, app dir available at ${appDir}`);
+    } else {
+      print('All tests successful, removing test dir');
+      await fs.remove(rootDir);
+    }
   }
 
   // Just in case some child process was left hanging
@@ -497,6 +502,8 @@ async function testBackendStart(appDir: string, ...args: string[]) {
     env: {
       ...process.env,
       GITHUB_TOKEN: 'abc',
+      // TODO: Default auth policy is disabled for e2e tests - replace this with external service auth
+      APP_CONFIG_backend_auth_dangerouslyDisableDefaultAuthPolicy: 'true',
     },
   });
 
@@ -542,13 +549,24 @@ async function testBackendStart(appDir: string, ...args: string[]) {
       // Skipping the whole block
       throw new Error(stderr);
     }
-    await new Promise(resolve => setTimeout(resolve, 500));
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     print('Try to fetch entities from the backend');
     // Try fetch entities, should be ok
-    await fetch('http://localhost:7007/api/catalog/entities').then(res =>
-      res.json(),
-    );
+    const res = await fetch('http://localhost:7007/api/catalog/entities');
+    if (!res.ok) {
+      throw new Error(
+        `Failed to fetch entities: ${res.status} ${res.statusText}`,
+      );
+    }
+    const content = await res.text();
+    try {
+      JSON.parse(content);
+    } catch (error) {
+      throw new Error(
+        `Failed to parse entities JSON response: ${error}\n${content}`,
+      );
+    }
     print('Entities fetched successfully');
     successful = true;
   } catch (error) {

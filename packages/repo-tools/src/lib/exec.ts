@@ -14,20 +14,50 @@
  * limitations under the License.
  */
 import { promisify } from 'util';
-import { ExecOptions, exec as execCb } from 'child_process';
+import {
+  ExecOptions,
+  SpawnOptions,
+  exec as execCb,
+  spawn as spawnOriginal,
+} from 'child_process';
 
 const execPromise = promisify(execCb);
 
 export const exec = (
   command: string,
-  options: string[] = [],
-  execOptions?: ExecOptions,
+  args: string[] = [],
+  options?: ExecOptions,
 ) => {
   return execPromise(
     [
       command,
-      ...options.filter(e => e).map(e => (e.startsWith('-') ? e : `"${e}"`)),
+      ...args.filter(e => e).map(e => (e.startsWith('-') ? e : `"${e}"`)),
     ].join(' '),
-    execOptions,
+    options,
   );
+};
+
+export const spawn = (
+  command: string,
+  args: string[],
+  options?: SpawnOptions,
+) => {
+  return new Promise((resolve, reject) => {
+    const cp = spawnOriginal(command, args, options ?? {});
+    const error: string[] = [];
+    const stdout: string[] = [];
+
+    cp.stdout?.on('data', data => {
+      stdout.push(data.toString());
+    });
+
+    cp.on('error', e => {
+      error.push(e.toString());
+    });
+
+    cp.on('close', exitCode => {
+      if (exitCode) reject(error.join(''));
+      else resolve(stdout.join(''));
+    });
+  });
 };

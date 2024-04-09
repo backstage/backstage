@@ -26,7 +26,7 @@ backend:
   listen:
     # The $PORT environment variable is a feature of Koyeb
     # https://www.koyeb.com/docs/apps/services
-    port: ${PORT]
+    port: ${PORT}
 ```
 
 ## Push and deploy Backstage to Koyeb

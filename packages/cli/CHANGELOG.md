@@ -1,5 +1,49 @@
 # @backstage/cli
 
+## 0.26.3-next.0
+
+### Patch Changes
+
+- e3c213e: Add the deprecation plugin to the default linter setup, switched off.
+
+  This allows to disable deprecation warnings for `backstage-cli repo list-deprecations` with inline comments.
+
+- 4946f03: Updated dependency `webpack-dev-server` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.6
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.2
+
+### Patch Changes
+
+- eeb226a: Updated dependency `rollup` to `^4.0.0`.
+- 91192f4: Updated backend plugin template to work better with new backend system
+- cc371d6: Ignore transforming only on `react-use/lib`, not whole `react-use` in jest.
+
+  ** POTENTIAL BREAKAGE **
+  If your tests fail, please change to use path import from `react-use/esm/`. It is also recommended to migrate from `react-user/lib` imports to `react-use/esm`
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.6
+  - @backstage/integration@1.9.1
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.26.1
 
 ### Patch Changes

@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.1.11-next.0
+
+### Patch Changes
+
+- 58763e8: Use direct access of openapi.json files and not external route
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.1.10-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/backend-tasks@0.5.22-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-node@1.11.1-next.0
+
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/backend-openapi-utils@0.1.9
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.9
 
 ### Patch Changes

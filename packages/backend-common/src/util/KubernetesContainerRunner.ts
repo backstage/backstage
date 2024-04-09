@@ -132,11 +132,16 @@ export class KubernetesContainerRunner implements ContainerRunner {
       imageName,
       command,
       args,
-      logStream = new PassThrough(),
+      logStream,
       mountDirs = {},
       workingDir,
       envVars = {},
     } = options;
+
+    const containerLogStream = new PassThrough();
+    if (logStream) {
+      containerLogStream.pipe(logStream, { end: false });
+    }
 
     const commandArr = typeof command === 'string' ? [command] : command;
 
@@ -209,7 +214,7 @@ export class KubernetesContainerRunner implements ContainerRunner {
       },
     };
 
-    await this.runJob(jobSpec, taskId, logStream);
+    await this.runJob(jobSpec, taskId, containerLogStream);
   }
 
   private handleError(err: any, errorCallback: (reason: any) => void) {

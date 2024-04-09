@@ -1,5 +1,34 @@
 # @backstage/dev-utils
 
+## 1.0.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/app-defaults@1.5.4-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-app-api@1.12.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/integration-react@1.1.26-next.0
+  - @backstage/theme@0.5.2
+  - @backstage/plugin-catalog-react@1.11.3-next.0
+
+## 1.0.30
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/core-app-api@1.12.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/app-defaults@1.5.3
+  - @backstage/integration-react@1.1.25
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/theme@0.5.2
+
 ## 1.0.29
 
 ### Patch Changes

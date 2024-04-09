@@ -7,6 +7,8 @@ description: Documentation for the Root Http Router service
 
 The root HTTP router is a service that allows you to register routes on the root of the backend service. This is useful for things like health checks, or other routes that you want to expose on the root of the backend service. It is used as the base router that backs the `httpRouter` service. Most likely you won't need to use this service directly, but rather use the `httpRouter` service.
 
+The `/api/:pluginId/` path prefix is reserved for use by plugins to register their own routes via the [HttpRouter](./http-router.md) service.
+
 ## Using the service
 
 The following example shows how to get the root HTTP router service in your `example` backend plugin to register a health check route.
@@ -27,11 +29,11 @@ createBackendPlugin({
       },
       async init({ rootHttpRouter }) {
         const router = Router();
-        router.get('/health', (request, response) => {
+        router.get('/readiness', (request, response) => {
           response.send('OK');
         });
 
-        rootHttpRouter.use(router);
+        rootHttpRouter.use('/health', router);
       },
     });
   },
@@ -74,3 +76,5 @@ backend.add(
   }),
 );
 ```
+
+Note that requests towards `/api/*` will never be handled by the `routes` handler unless a matching plugin exists, and will instead typically falling through to the `middleware.notFound()` handler. That is the case regardless of whether there is a configured `indexPath` or not.

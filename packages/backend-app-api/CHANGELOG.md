@@ -1,5 +1,41 @@
 # @backstage/backend-app-api
 
+## 0.6.3-next.0
+
+### Patch Changes
+
+- 7e584d6: Fixed a bug where expired cookies would not be refreshed.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/backend-tasks@0.5.22-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.12-next.0
+  - @backstage/plugin-permission-node@0.7.28-next.0
+
+## 0.6.2
+
+### Patch Changes
+
+- e848644: Temporarily revert the rate limiting
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/plugin-permission-node@0.7.27
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.6.1
 
 ### Patch Changes

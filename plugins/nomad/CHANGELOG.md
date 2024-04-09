@@ -1,5 +1,27 @@
 # @backstage/plugin-nomad
 
+## 0.1.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/plugin-catalog-react@1.11.3-next.0
+
+## 0.1.14
+
+### Patch Changes
+
+- c116096: Added an optional ESLint rule - no-top-level-material-ui-4-imports -in nomad plugin which has an auto fix function to migrate the imports and used it to migrate the Material UI imports for plugins/nomad.
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+
 ## 0.1.13
 
 ### Patch Changes

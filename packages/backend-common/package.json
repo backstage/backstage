@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-common",
   "description": "Common functionality library for Backstage backends",
-  "version": "0.21.5",
+  "version": "0.21.7-next.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -51,6 +51,7 @@
   },
   "dependencies": {
     "@aws-sdk/abort-controller": "^3.347.0",
+    "@aws-sdk/client-codecommit": "^3.350.0",
     "@aws-sdk/client-s3": "^3.350.0",
     "@aws-sdk/credential-providers": "^3.350.0",
     "@aws-sdk/types": "^3.347.0",

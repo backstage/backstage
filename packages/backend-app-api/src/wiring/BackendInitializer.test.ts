@@ -30,15 +30,6 @@ import {
   rootLifecycleServiceFactory,
 } from '../services/implementations';
 
-const rootRef = createServiceRef<{ x: number }>({
-  id: '1',
-  scope: 'root',
-});
-
-const pluginRef = createServiceRef<{ x: number }>({
-  id: '2',
-});
-
 class MockLogger {
   debug() {}
   info() {}
@@ -60,35 +51,115 @@ const baseFactories = [
   loggerServiceFactory(),
 ];
 
+const testPlugin = createBackendPlugin({
+  pluginId: 'test',
+  register(reg) {
+    reg.registerInit({
+      deps: {},
+      async init() {},
+    });
+  },
+})();
+
 describe('BackendInitializer', () => {
   it('should initialize root scoped services', async () => {
-    const rootFactory = jest.fn();
-    const pluginFactory = jest.fn();
+    const ref1 = createServiceRef<{ x: number }>({
+      id: '1',
+      scope: 'root',
+    });
+    const ref2 = createServiceRef<{ x: number }>({
+      id: '2',
+      scope: 'root',
+    });
+    const ref3 = createServiceRef<{ x: number }>({
+      id: '3',
+      scope: 'root',
+    });
+    const factory1 = jest.fn();
+    const factory2 = jest.fn();
+    const factory3 = jest.fn();
 
     const services = [
+      ...baseFactories,
       createServiceFactory({
-        service: rootRef,
+        service: ref1,
+        initialization: 'always',
         deps: {},
-        factory: rootFactory,
+        factory: factory1,
       })(),
       createServiceFactory({
-        service: pluginRef,
+        service: ref2,
         deps: {},
-        factory: pluginFactory,
+        factory: factory2,
       })(),
-      rootLifecycleServiceFactory(),
       createServiceFactory({
-        service: coreServices.rootLogger,
+        service: ref3,
+        initialization: 'lazy',
         deps: {},
-        factory: () => new MockLogger(),
+        factory: factory3,
       })(),
     ];
 
     const init = new BackendInitializer(services);
     await init.start();
 
-    expect(rootFactory).toHaveBeenCalled();
-    expect(pluginFactory).not.toHaveBeenCalled();
+    expect(factory1).toHaveBeenCalled();
+    expect(factory2).toHaveBeenCalled();
+    expect(factory3).not.toHaveBeenCalled();
+  });
+
+  it('should initialize plugin scoped services with eager initialization', async () => {
+    const ref1 = createServiceRef<{ x: number }>({
+      id: '1',
+    });
+    const ref2 = createServiceRef<{ x: number }>({
+      id: '2',
+    });
+    const ref3 = createServiceRef<{ x: number }>({
+      id: '3',
+    });
+    const factory1 = jest.fn();
+    const factory2 = jest.fn();
+    const factory3 = jest.fn();
+
+    const services = [
+      ...baseFactories,
+      createServiceFactory({
+        service: ref1,
+        initialization: 'always',
+        deps: {},
+        factory: factory1,
+      })(),
+      createServiceFactory({
+        service: ref2,
+        deps: {},
+        factory: factory2,
+      })(),
+      createServiceFactory({
+        service: ref3,
+        initialization: 'lazy',
+        deps: {},
+        factory: factory3,
+      })(),
+    ];
+
+    const init = new BackendInitializer(services);
+    init.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      })(),
+    );
+    await init.start();
+
+    expect(factory1).toHaveBeenCalled();
+    expect(factory2).not.toHaveBeenCalled();
+    expect(factory3).not.toHaveBeenCalled();
   });
 
   it('should initialize modules with extension points', async () => {
@@ -99,6 +170,7 @@ describe('BackendInitializer', () => {
     });
     const init = new BackendInitializer(baseFactories);
 
+    init.add(testPlugin);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -172,6 +244,7 @@ describe('BackendInitializer', () => {
 
   it('should forward errors when modules fail to start', async () => {
     const init = new BackendInitializer([]);
+    init.add(testPlugin);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -222,6 +295,7 @@ describe('BackendInitializer', () => {
 
   it('should reject duplicate modules', async () => {
     const init = new BackendInitializer([]);
+    init.add(testPlugin);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -262,6 +336,7 @@ describe('BackendInitializer', () => {
         factory: () => new MockLogger(),
       })(),
     ]);
+    init.add(testPlugin);
     init.add(
       createBackendModule({
         pluginId: 'test',
@@ -308,9 +383,10 @@ describe('BackendInitializer', () => {
         },
       })(),
     );
+    init.add(testPlugin);
     init.add(
       createBackendModule({
-        pluginId: 'test-b',
+        pluginId: 'test',
         moduleId: 'mod',
         register(reg) {
           reg.registerInit({
@@ -321,7 +397,7 @@ describe('BackendInitializer', () => {
       })(),
     );
     await expect(init.start()).rejects.toThrow(
-      "Illegal dependency: Module 'mod' for plugin 'test-b' attempted to depend on extension point 'a' for plugin 'test-a'. Extension points can only be used within their plugin's scope.",
+      "Illegal dependency: Module 'mod' for plugin 'test' attempted to depend on extension point 'a' for plugin 'test-a'. Extension points can only be used within their plugin's scope.",
     );
   });
 });
