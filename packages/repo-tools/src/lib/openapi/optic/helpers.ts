@@ -87,9 +87,7 @@ function getOperationsText(
         ...[...ops.removed].map(o => `\`${o}\` (removed)`),
       ].join('\n')
     : '';
-  return `${getOperationsChangedLabel(groupedDiffs, {
-    joiner: options.labelJoiner,
-  })}
+  return `${getOperationsChangedLabel(groupedDiffs)}
     
       ${operationsText}
     `;
