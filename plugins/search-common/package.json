@@ -14,9 +14,7 @@
     ]
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "keywords": [
     "backstage",
@@ -31,13 +29,13 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/search-common"
   },
+  "license": "Apache-2.0",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./client": "./src/client.ts",
     "./package.json": "./package.json"
   },
-  "license": "Apache-2.0",
-  "sideEffects": false,
   "main": "src/index.ts",
   "types": "src/index.ts",
   "typesVersions": {
