@@ -177,16 +177,26 @@ export async function createRouter(
 
     const publicRouter = Router();
 
-    publicRouter.use(async (req, _res, next) => {
-      const credentials = await httpAuth.credentials(req, {
-        allow: ['user', 'service', 'none'],
-        allowLimitedAccess: true,
-      });
+    publicRouter.use(async (req, res, next) => {
+      try {
+        const credentials = await httpAuth.credentials(req, {
+          allow: ['user', 'service', 'none'],
+          allowLimitedAccess: true,
+        });
 
-      if (credentials.principal.type === 'none') {
+        if (credentials.principal.type === 'none') {
+          next();
+        } else {
+          next('router');
+        }
+      } catch {
+        // If we fail to authenticate, make sure the session cookie is cleared
+        // and continue as unauthenticated. If the user is logged in they will
+        // immediately be redirected back to the protected app via the POST.
+        await httpAuth.issueUserCookie(res, {
+          credentials: await auth.getNoneCredentials(),
+        });
         next();
-      } else {
-        next('router');
       }
     });
 
