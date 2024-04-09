@@ -113,6 +113,7 @@ export class MicrosoftGraphClient {
   requestRaw(
     url: string,
     headers?: Record<string, string>,
+    retryCount?: number,
   ): Promise<Response_2>;
 }
 
@@ -210,6 +211,7 @@ export type MicrosoftGraphProviderConfig = {
   groupSearch?: string;
   groupSelect?: string[];
   queryMode?: 'basic' | 'advanced';
+  loadUserPhotos?: boolean;
   schedule?: TaskScheduleDefinition;
 };
 
@@ -244,6 +246,7 @@ export function readMicrosoftGraphOrg(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
     groupExpand?: string;
