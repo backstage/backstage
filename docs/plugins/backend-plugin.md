@@ -107,10 +107,7 @@ The actual endpoint that is being called is defined in
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger } = options;
-
-  const router = Router();
-  router.use(express.json());
+  // ...
 
   // highlight-start
   router.get('/health', (_, response) => {
@@ -119,7 +116,7 @@ export async function createRouter(
   });
   // highlight-end
 
-  router.use(errorHandler());
+  // ...
   return router;
 }
 ```
@@ -127,30 +124,17 @@ export async function createRouter(
 You'll notice that there is no authentication mechanism defined here, just the route name and response data. That's because the authentication is handled in your plugin definition,
 
 ```ts title="plugins/carmen-backend/src/plugin.ts"
-export const carmenPlugin = createBackendPlugin({
-  pluginId: 'carmenPlugin',
-  register(env) {
-    env.registerInit({
-      deps: {
-        httpRouter: coreServices.httpRouter,
-        logger: coreServices.logger,
-      },
-      async init({ httpRouter, logger }) {
-        httpRouter.use(
-          await createRouter({
-            logger,
-          }),
-        );
-        // highlight-start
-        httpRouter.addAuthPolicy({
-          path: '/health',
-          allow: 'unauthenticated',
-        });
-        // highlight-end
-      },
-    });
-  },
+httpRouter.use(
+  await createRouter({
+    logger,
+  }),
+);
+// highlight-start
+httpRouter.addAuthPolicy({
+  path: '/health',
+  allow: 'unauthenticated',
 });
+// highlight-end
 ```
 
 This allows requests to this plugin's `/health` endpoint to go through unauthenticated!
@@ -160,25 +144,19 @@ This allows requests to this plugin's `/health` endpoint to go through unauthent
 In the new backend, dependencies are defined statically during registration and then "injected" during initialization. Here's an example of what this looks like,
 
 ```ts title="plugins/carmen-backend/src/plugin.ts"
-  register(env) {
-    env.registerInit({
-      // highlight-start
-      deps: {
-        httpRouter: coreServices.httpRouter,
-        logger: coreServices.logger,
-      },
-      // highlight-end
-      // And then you can use them through the options property!
-      // highlight-next-line
-      async init({ httpRouter, logger }) {
-        httpRouter.use(
-          await createRouter({
-            logger,
-          }),
-        );
-      },
-    });
-  },
+
+// highlight-start
+deps: {
+  httpRouter: coreServices.httpRouter,
+  logger: coreServices.logger,
+},
+// highlight-end
+// And then you can use them through the options property!
+// highlight-next-line
+async init({ httpRouter, logger }) {
+    // ...
+},
+
 ```
 
 You can add your own dependencies by adding a named item to the `deps` parameter:
@@ -200,24 +178,7 @@ async init({ myDependency }) {
 
 And then you're free to call it and pass it into your router as needed.
 
-Backstage provides a bunch of `coreServices` out of box:
-
-- **Database**: A database connection layer using knex.
-- **Root Config**: Access to the config that Backstage was started with.
-- **Logger**: A plugin scoped logger ready for logging!
-- **HTTP Router**: An `express`-compatible router for adding HTTP routes to your plugin.
-- **User Info**: Personalize your plugin experience for users by getting the currently logged in user.
-- **Auth**: Perform low level authentication.
-- **HTTP Auth**: HTTP authentication mechanisms, for example, allowing unauthenticated access. See [here](https://backstage.io/docs/backend-system/core-services/http-auth) for more info.
-- **Cache**: A plugin-scoped cache.
-- **Discovery**: Service discovery mechanism for your plugins.
-- **Plugin Metadata**: Introspect your plugin.
-- **Lifecycle**: Add hooks to lifecycle events.
-- **Permissions**: Authorize requests to specific resources in your plugins.
-- **URL Reader**: Authenticated URL calling mechanism.
-- **Scheduler**: Schedule jobs to run on a certain cadence.
-
-If you want to override or create new ones, you can also define your own services much like you create your own plugins.
+Backstage provides a bunch of `coreServices` out of box, see the more in depth docs [here](https://backstage.io/docs/backend-system/core-services/index).
 
 ## Making Use of a Database
 
@@ -229,36 +190,26 @@ You can access this by adding a dependency on the `coreServices.database` servic
 That will give you a [Knex](http://knexjs.org/) connection object.
 
 ```ts title="plugins/carmen-backend/src/plugin.ts"
-export const carmenPlugin = createBackendPlugin({
-  pluginId: 'carmen',
-  register(env) {
-    env.registerInit({
-      deps: {
-        httpRouter: coreServices.httpRouter,
-        logger: coreServices.logger,
-        // highlight-next-line
-        database: coreServices.database,
-      },
-      async init({
-        httpRouter,
-        logger,
-        // highlight-next-line
-        database,
-      }) {
-        // You will then pass this client into your actual plugin implementation
-        // code, maybe similar to the following:
-        const model = new CarmenDatabaseModel(database);
-        httpRouter.use(
-          await createRouter({
-            // highlight-next-line
-            model,
-            logger,
-          }),
-        );
-      },
-    });
-  },
-});
+deps: {
+  // ...
+  // highlight-next-line
+  database: coreServices.database,
+},
+async init({
+  // highlight-next-line
+  database,
+}) {
+  // You will then pass this client into your actual plugin implementation
+  // code, maybe similar to the following:
+  const model = new CarmenDatabaseModel(database);
+  httpRouter.use(
+    await createRouter({
+      // highlight-next-line
+      model,
+      logger,
+    }),
+  );
+}
 ```
 
 All plugin database needs are configured under the `backend.database` config key
@@ -279,33 +230,22 @@ database..
 The Backstage backend also offers a core service to access the user's identity. You can access it through the `coreServices.identity` dependency.
 
 ```ts title="plugins/carmen-backend/src/plugin.ts"
-export const carmenPlugin = createBackendPlugin({
-  pluginId: 'carmenPlugin',
-  register(env) {
-    env.registerInit({
-      deps: {
-        httpRouter: coreServices.httpRouter,
-        logger: coreServices.logger,
-        // highlight-next-line
-        identity: coreServices.identity,
-      },
-      async init({
-        httpRouter,
-        logger,
-        // highlight-next-line
-        identity,
-      }) {
-        httpRouter.use(
-          await createRouter({
-            // highlight-next-line
-            identity,
-            logger,
-          }),
-        );
-      },
-    });
-  },
-});
+deps: {
+  // highlight-next-line
+  identity: coreServices.identity,
+},
+async init({
+  // highlight-next-line
+  identity,
+}) {
+  httpRouter.use(
+    await createRouter({
+      // highlight-next-line
+      identity,
+      logger,
+    }),
+  );
+}
 ```
 
 The plugin can then extract the identity from the request.
@@ -314,7 +254,7 @@ The plugin can then extract the identity from the request.
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const router = Router();
+  // ...
   const { identity } = options;
 
   router.post('/example', async (req, res) => {
