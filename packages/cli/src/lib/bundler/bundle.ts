@@ -82,15 +82,18 @@ export async function buildBundle(options: BuildOptions) {
   await fs.emptyDir(paths.targetDist);
 
   if (paths.targetPublic) {
-    await fs.copy(
-      paths.targetPublic,
-      // If we've got a separate public index entry point, copy public content there instead
-      publicPaths?.targetDist ?? paths.targetDist,
-      {
+    await fs.copy(paths.targetPublic, paths.targetDist, {
+      dereference: true,
+      filter: file => file !== paths.targetHtml,
+    });
+
+    // If we've got a separate public index entry point, copy public content there too
+    if (publicPaths) {
+      await fs.copy(paths.targetPublic, publicPaths.targetDist, {
         dereference: true,
         filter: file => file !== paths.targetHtml,
-      },
-    );
+      });
+    }
   }
 
   if (configSchema) {
