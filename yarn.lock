@@ -19405,11 +19405,11 @@ __metadata:
   linkType: hard
 
 "@types/node@npm:^18.17.15, @types/node@npm:^18.17.8":
-  version: 18.19.31
-  resolution: "@types/node@npm:18.19.31"
+  version: 18.19.8
+  resolution: "@types/node@npm:18.19.8"
   dependencies:
     undici-types: ~5.26.4
-  checksum: 949bddfd7071bd47300d1f33d380ee34695ccd5f046f1a03e4d2be0d953ace896905144d44a6f483f241b5ef34b86f0e40a0e312201117782eecf89e81a4ff13
+  checksum: fa291495d6157a9d9393b4c3bdbf1ce12a8f661dc9da6a4fa19bcdb19af1c62bb8dbf7fb66ae135f29cd788b618e9845b83e9c47edcf39f0953a8561fdacd9a3
   languageName: node
   linkType: hard
 
