@@ -146,12 +146,12 @@ export async function createRouter(
     injectedConfigPath = await injectConfig({ appConfigs, logger, staticDir });
   }
   const appConfigs = disableConfigInjection
-    ? await readConfigs({
+    ? undefined
+    : await readConfigs({
         config,
         appDistDir,
         env: process.env,
-      })
-    : undefined;
+      });
 
   const assetStore =
     options.database && !disableStaticFallbackCache
