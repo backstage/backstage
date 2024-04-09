@@ -18,7 +18,11 @@ import {
   IdentityApi,
   ProfileInfo,
   BackstageUserIdentity,
+  ErrorApi,
+  DiscoveryApi,
+  FetchApi,
 } from '@backstage/core-plugin-api';
+import { startCookieAuthRefresh } from './startCookieAuthRefresh';
 
 function mkError(thing: string) {
   return new Error(
@@ -50,7 +54,8 @@ export class AppIdentityProxy implements IdentityApi {
   private waitForTarget: Promise<CompatibilityIdentityApi>;
   private resolveTarget: (api: CompatibilityIdentityApi) => void = () => {};
   private signOutTargetUrl = '/';
-  #signOutCallback?: () => Promise<void>;
+
+  #cookieAuthSignOut?: () => void;
 
   constructor() {
     this.waitForTarget = new Promise<CompatibilityIdentityApi>(resolve => {
@@ -66,10 +71,6 @@ export class AppIdentityProxy implements IdentityApi {
     this.target = identityApi;
     this.signOutTargetUrl = targetOptions.signOutTargetUrl;
     this.resolveTarget(identityApi);
-  }
-
-  setSignOutCallback(signOutCallback: () => Promise<void>): void {
-    this.#signOutCallback = signOutCallback;
   }
 
   getUserId(): string {
@@ -129,7 +130,35 @@ export class AppIdentityProxy implements IdentityApi {
 
   async signOut(): Promise<void> {
     await this.waitForTarget.then(target => target.signOut());
-    await this.#signOutCallback?.();
+
+    await this.#cookieAuthSignOut?.();
+
     window.location.href = this.signOutTargetUrl;
+  }
+
+  enableCookieAuth(ctx: {
+    errorApi: ErrorApi;
+    fetchApi: FetchApi;
+    discoveryApi: DiscoveryApi;
+  }) {
+    if (this.#cookieAuthSignOut) {
+      return;
+    }
+
+    const stopRefresh = startCookieAuthRefresh(ctx);
+
+    this.#cookieAuthSignOut = async () => {
+      stopRefresh();
+
+      // It is fine if we do NOT worry yet about deleting cookies for OTHER backends like techdocs
+      const appBaseUrl = await ctx.discoveryApi.getBaseUrl('app');
+      try {
+        await ctx.fetchApi.fetch(`${appBaseUrl}/.backstage/auth/v1/cookie`, {
+          method: 'DELETE',
+        });
+      } catch {
+        // Ignore the error for those who use static serving of the frontend
+      }
+    };
   }
 }

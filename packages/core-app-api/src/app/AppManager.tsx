@@ -44,6 +44,7 @@ import {
   FeatureFlag,
   fetchApiRef,
   discoveryApiRef,
+  errorApiRef,
 } from '@backstage/core-plugin-api';
 import {
   AppLanguageApi,
@@ -359,20 +360,21 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
       const apis = this.getApiHolder();
 
-      this.appIdentityProxy.setSignOutCallback(async () => {
+      if (isProtectedApp()) {
+        const errorApi = apis.get(errorApiRef);
         const fetchApi = apis.get(fetchApiRef);
         const discoveryApi = apis.get(discoveryApiRef);
-        if (!fetchApi || !discoveryApi || !isProtectedApp()) return;
-        // It is fine if we do NOT worry yet about deleting cookies for OTHER backends like techdocs
-        const appBaseUrl = await discoveryApi.getBaseUrl('app');
-        try {
-          await fetchApi.fetch(`${appBaseUrl}/.backstage/auth/v1/cookie`, {
-            method: 'DELETE',
-          });
-        } catch {
-          // Ignore the error for those who use static serving of the frontend
+        if (!errorApi || !fetchApi || !discoveryApi) {
+          throw new Error(
+            'App is running in protected mode but missing required APIs',
+          );
         }
-      });
+        this.appIdentityProxy.enableCookieAuth({
+          errorApi,
+          fetchApi,
+          discoveryApi,
+        });
+      }
 
       return (
         <ApiProvider apis={apis}>
