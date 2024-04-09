@@ -17,7 +17,6 @@ export function CookieAuthRefreshProvider(
 // @public
 export type CookieAuthRefreshProviderProps = {
   pluginId: string;
-  path?: string;
   children: ReactNode;
 };
 
