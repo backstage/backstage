@@ -103,7 +103,13 @@ export async function createRouter(
     const entities = await catalogClient.getEntitiesByRefs(
       {
         entityRefs: refs,
-        fields: ['kind', 'metadata.name', 'metadata.namespace', 'relations'],
+        fields: [
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'relations',
+          'spec.owner',
+        ],
       },
       { token },
     );
@@ -137,6 +143,7 @@ export async function createRouter(
               'metadata.name',
               'metadata.namespace',
               'relations',
+              'spec.owner',
             ],
           },
           { token },
