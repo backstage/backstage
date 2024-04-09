@@ -38,8 +38,6 @@ import {
 } from '@backstage/core-plugin-api';
 import { InternalAppContext } from '../wiring/InternalAppContext';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { AppAuthProvider } from '../../../core-app-api/src/app/AppAuthProvider';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BrowserRouter } from 'react-router-dom';
 import { RouteTracker } from '../routing/RouteTracker';
@@ -192,7 +190,7 @@ export function AppRouter(props: AppRouterProps) {
     return (
       <RouterComponent>
         <RouteTracker routeObjects={routeObjects} />
-        <AppAuthProvider>{children}</AppAuthProvider>
+        {children}
       </RouterComponent>
     );
   }
@@ -204,7 +202,7 @@ export function AppRouter(props: AppRouterProps) {
         component={SignInPageComponent}
         appIdentityProxy={appIdentityProxy}
       >
-        <AppAuthProvider>{children}</AppAuthProvider>
+        {children}
       </SignInPageWrapper>
     </RouterComponent>
   );
