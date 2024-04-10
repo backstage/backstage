@@ -22,8 +22,8 @@ import React, {
   useEffect,
   useState,
 } from 'react';
-import useAsync, { AsyncState } from 'react-use/lib/useAsync';
-import usePrevious from 'react-use/lib/usePrevious';
+import useAsync, { AsyncState } from 'react-use/esm/useAsync';
+import usePrevious from 'react-use/esm/usePrevious';
 
 import {
   createVersionedContext,

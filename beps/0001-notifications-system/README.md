@@ -95,6 +95,7 @@ The role of the notifications plugin is to manage the lifecycle of notifications
 The notification backend stores notification using the [database service](https://backstage.io/docs/backend-system/core-services/index#database). In particular it needs to store the following information for each notification:
 
 - ID
+- Recipients
 - Read date
 - Saved status
 - Creation date
@@ -105,7 +106,6 @@ The notification backend stores notification using the [database service](https:
   - Origin
   - Link (optional)
   - Additional links (optional)
-  - Recipients
   - Severity (optional, default normal)
   - Topic (optional)
   - Scope (optional)
@@ -153,7 +153,9 @@ The `notification-backend` does not provide any new permissions, since creating 
 
 The `notification-backend` shall provide necessary parameters for paging and filtering notifications from the frontend.
 
-The notification frontend plugin provides a UI for viewing notifications, which in the initial implementation can be as simple as needed. The only requirement is that a user is able to view recent notifications and distinguish between read and unread notifications. A notification as marked as read once it has been interacted with. The frontend plugin also subscribes to the notifications signal channel and alerts the user when a new notification is received.
+The notification frontend plugin provides a UI for viewing notifications, which in the initial implementation can be as simple as needed. The only requirement is that a user is able to view recent notifications and distinguish between read and unread notifications. The frontend plugin also subscribes to the notifications signal channel and alerts the user when a new notification is received.
+
+Both the individual and broadcast messages are rendered together in a single list. There will be a filter choosing among those types or `all`.
 
 ### Architecture Overview
 
@@ -165,11 +167,12 @@ The components that are presented with dashed lines are not directly part of thi
 
 Let's walk through the process of sending of a notification to a user:
 
-1. A backend plugin that wants to send a notification to a user uses the `NotificationService`, which in turn makes a POST request to the notification backend. The request contains a filter to select the target users, as well as the notification payload.
+1. A backend plugin that wants to send a notification to a user uses the `NotificationService`, which in turn makes a POST request to the notification backend. The request contains either a filter to select the target users or type `broadcast`, as well as the notification payload.
 
    1b. As the notification backend handles the request it could optionally invoke a series of notification processors. These processors can be used to transform the notification payload, send the notification through other channels, and decide whether the regular notification flow should continue or not. This step is not in scope for this proposal.
 
 2. The notification backend stores the received notification in its database. At this point the notification is available from the notification backend's read API.
+
 3. The notification backend published an event to the event bus on the `'signal'` topic. This event payload contains the signaling channel, in this case `'notifications'`, as well as the target user ID and the notification ID, but not the notification payload.
 4. Each instance of the signal backend plugin subscribes to the `'signal'` topic and receives the event.
 5. Each signal backend instance has a set of push channels set up to online users. The incoming event is filtered based on the target user ID and the signaling is pushed through all connections with a matching user ID.
@@ -214,6 +217,7 @@ export type NotificationPayload = {
 export type Notification = {
   id: string;
   userRef: string;
+  isBroadcast: boolean;
   created: Date;
   saved?: Date;
   read?: Date;
@@ -232,11 +236,28 @@ interface NotificationService {
 }
 ```
 
-Each notification is always routed to individual users unless it's a broadcast. The `notification-backend` will figure out which users will receive a notification based on the `recipients` parameter, resolving it to the concrete list of users at the time of sending the notification.
-
 Each notification contains a human readable `title`, `origin` and optionally `link` for additional details. The `created`, `id`, `read` and `saved` properties are handled by the backend based and cannot be passed during the notification creation.
 
 Calling `sendNotification` should never throw an error so that it doesn't block the current processing. Notifications should be considered as second-level citizens that are not critical if not delivered.
+
+Each notification is always routed to individual users unless its type is `broadcast`.
+
+##### Individual user notifications
+
+The `notification-backend` will figure out which users will receive a notification based on the `recipients` parameter, resolving it to the concrete list of users at the time of sending the notification.
+
+##### Broadcast notifications
+
+Broadcast messages are stored in a separate database table for performance reasons and simplicity of queries.
+There is only one record per message.
+
+To maintain flags, there will be another table with 1:N relation. This table will contain `user`, `read`, `saved` and `updated` columns, linked via message ID foreign-key.
+This table of flags is not prefilled on a broadcast message creation but a record is added when there is an updating POST by a particular user.
+
+When notifications are queried, two (main) database queries are issued - for both the individual and broadcast messages.
+Their results are merged into a single response but setting the `isBroadcast` flag based on source.
+
+If an individual message is queried (via GET `/notifications/:id`), both the individual and broadcast tables are searched. The first result found is used for the response.
 
 #### `SignalService`
 
@@ -269,7 +290,6 @@ Example signal payload for a new notification:
 
 #### Future considerations and BEP TODO
 
-- Broadcast messages are to be saved to a separate table for performance reasons
 - OpenAPI tooling is taken into use for the notification router and client
 - Allow using dynamic values in notification payload, for example entity references `{{ user:default/john.doe }}` should be rendered by the frontend with `EntityRefLink` component. Defining the dynamic data values should be done before implementation.
 - Add configurable automatic clean-up of old notifications to save storage space

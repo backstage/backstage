@@ -15,7 +15,7 @@
  */
 
 import React, { ReactNode } from 'react';
-import useAsync, { AsyncState } from 'react-use/lib/useAsync';
+import useAsync, { AsyncState } from 'react-use/esm/useAsync';
 import { isFunction } from 'lodash';
 
 import {

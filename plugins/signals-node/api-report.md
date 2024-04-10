@@ -7,10 +7,13 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
+// @public @deprecated (undocumented)
+export const DefaultSignalService: typeof DefaultSignalsService;
+
 // @public (undocumented)
-export class DefaultSignalService implements SignalService {
+export class DefaultSignalsService implements SignalsService {
   // (undocumented)
-  static create(options: SignalServiceOptions): DefaultSignalService;
+  static create(options: SignalsServiceOptions): DefaultSignalsService;
   publish<TMessage extends JsonObject = JsonObject>(
     signal: SignalPayload<TMessage>,
   ): Promise<void>;
@@ -18,25 +21,38 @@ export class DefaultSignalService implements SignalService {
 
 // @public (undocumented)
 export type SignalPayload<TMessage extends JsonObject = JsonObject> = {
-  recipients: string[] | string | null;
+  recipients:
+    | {
+        type: 'user';
+        entityRef: string | string[];
+      }
+    | {
+        type: 'broadcast';
+      };
   channel: string;
   message: TMessage;
 };
 
+// @public @deprecated (undocumented)
+export interface SignalService extends SignalsService {}
+
+// @public @deprecated (undocumented)
+export const signalService: ServiceRef<SignalsService, 'plugin'>;
+
 // @public (undocumented)
-export interface SignalService {
+export interface SignalsService {
   publish<TMessage extends JsonObject = JsonObject>(
     signal: SignalPayload<TMessage>,
   ): Promise<void>;
 }
 
 // @public (undocumented)
-export const signalService: ServiceRef<SignalService, 'plugin'>;
-
-// @public (undocumented)
-export type SignalServiceOptions = {
+export type SignalsServiceOptions = {
   events: EventsService;
 };
+
+// @public (undocumented)
+export const signalsServiceRef: ServiceRef<SignalsService, 'plugin'>;
 
 // (No @packageDocumentation comment for this package)
 ```

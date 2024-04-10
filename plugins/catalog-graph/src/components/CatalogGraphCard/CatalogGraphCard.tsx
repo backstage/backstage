@@ -26,7 +26,7 @@ import {
   useEntity,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
-import { makeStyles, Theme } from '@material-ui/core';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
 import React, { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';

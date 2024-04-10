@@ -16,10 +16,12 @@
 
 import React from 'react';
 import CloudDownload from '@material-ui/icons/CloudDownload';
-import { CircularProgress, IconButton, Tooltip } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
 import LinkIcon from '@material-ui/icons/Link';
 import { useBitriseArtifactDetails } from '../useBitriseArtifactDetails';
-import { Alert } from '@material-ui/lab';
+import Alert from '@material-ui/lab/Alert';
 
 type BitriseDownloadArtifactComponentProps = {
   appSlug: string;

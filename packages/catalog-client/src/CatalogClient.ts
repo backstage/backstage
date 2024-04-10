@@ -15,32 +15,32 @@
  */
 
 import {
-  Entity,
   CompoundEntityRef,
+  Entity,
   parseEntityRef,
   stringifyEntityRef,
   stringifyLocationRef,
 } from '@backstage/catalog-model';
 import { ResponseError } from '@backstage/errors';
 import {
-  CATALOG_FILTER_EXISTS,
   AddLocationRequest,
   AddLocationResponse,
+  CATALOG_FILTER_EXISTS,
   CatalogApi,
-  GetEntitiesRequest,
-  GetEntitiesResponse,
   CatalogRequestOptions,
-  GetEntityAncestorsRequest,
-  GetEntityAncestorsResponse,
-  Location,
-  GetEntityFacetsRequest,
-  GetEntityFacetsResponse,
-  ValidateEntityResponse,
+  EntityFilterQuery,
   GetEntitiesByRefsRequest,
   GetEntitiesByRefsResponse,
+  GetEntitiesRequest,
+  GetEntitiesResponse,
+  GetEntityAncestorsRequest,
+  GetEntityAncestorsResponse,
+  GetEntityFacetsRequest,
+  GetEntityFacetsResponse,
+  Location,
   QueryEntitiesRequest,
-  EntityFilterQuery,
   QueryEntitiesResponse,
+  ValidateEntityResponse,
 } from './types/api';
 import { isQueryEntitiesInitialRequest } from './utils';
 import { DefaultApiClient, TypedResponse } from './generated';
@@ -143,6 +143,11 @@ export class CatalogClient implements CatalogApi {
       ),
     );
 
+    // do not sort entities, if order is provided
+    if (encodedOrder.length) {
+      return { items: entities };
+    }
+
     const refCompare = (a: Entity, b: Entity) => {
       // in case field filtering is used, these fields might not be part of the response
       if (
@@ -177,7 +182,13 @@ export class CatalogClient implements CatalogApi {
   ): Promise<GetEntitiesByRefsResponse> {
     const response = await this.apiClient.getEntitiesByRefs(
       {
-        body: request,
+        body: {
+          entityRefs: request.entityRefs,
+          fields: request.fields,
+        },
+        query: {
+          filter: this.getFilterValue(request.filter),
+        },
       },
       options,
     );

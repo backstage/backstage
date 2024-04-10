@@ -240,4 +240,25 @@ describe('<EntityNamespacePicker/>', () => {
       expect(screen.queryByText('Namespace')).not.toBeInTheDocument(),
     );
   });
+  it('renders initially selected namespaces', async () => {
+    render(
+      <TestApiProvider apis={[[catalogApiRef, mockCatalogApiRef]]}>
+        <MockEntityListContextProvider value={{}}>
+          <EntityNamespacePicker
+            initiallySelectedNamespaces={['namespace-2', 'namespace-3']}
+          />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.getByText('Namespace')).toBeInTheDocument(),
+    );
+
+    const buttons = screen
+      .getAllByRole('button')
+      .map(o => o.textContent)
+      .filter(b => b);
+
+    expect(buttons).toEqual(['namespace-2', 'namespace-3']);
+  });
 });

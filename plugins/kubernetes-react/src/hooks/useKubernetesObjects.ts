@@ -16,11 +16,11 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { useCallback } from 'react';
-import useInterval from 'react-use/lib/useInterval';
+import useInterval from 'react-use/esm/useInterval';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { useApi } from '@backstage/core-plugin-api';
 import { generateAuth } from './auth';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { kubernetesAuthProvidersApiRef } from '../kubernetes-auth-provider';
 import { kubernetesApiRef } from '../api/types';
 

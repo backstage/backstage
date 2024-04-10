@@ -21,6 +21,7 @@
  */
 
 export * from './awsS3';
+export * from './awsCodeCommit';
 export * from './azure';
 export * from './bitbucket';
 export * from './bitbucketCloud';

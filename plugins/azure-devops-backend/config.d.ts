@@ -18,7 +18,7 @@ export interface Config {
   /**
    * Configuration options for the azure-devops-backend plugin
    */
-  azureDevOps: {
+  azureDevOps?: {
     /**
      * The hostname of the given Azure instance
      */
@@ -26,8 +26,9 @@ export interface Config {
     /**
      * Token used to authenticate requests.
      * @visibility secret
+     * @deprecated Use `integrations.azure` instead, see {@link https://backstage.io/docs/integrations/azure/locations}
      */
-    token: string;
+    token?: string;
     /**
      * The organization of the given Azure instance
      */

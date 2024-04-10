@@ -1,5 +1,70 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.23-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/theme@0.5.2
+  - @backstage/types@1.1.1
+
+## 0.3.22
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/theme@0.5.2
+  - @backstage/types@1.1.1
+
+## 0.3.21
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/theme@0.5.2
+  - @backstage/types@1.1.1
+
+## 0.3.20
+
+### Patch Changes
+
+- 26a15f7: Added ESLint rule `no-top-level-material-ui-4-imports` in the `shortcuts` plugin to migrate the Material UI imports.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/theme@0.5.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/types@1.1.1
+
+## 0.3.20-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/types@1.1.1
+
+## 0.3.20-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/theme@0.5.2-next.0
+  - @backstage/types@1.1.1
+
 ## 0.3.20-next.0
 
 ### Patch Changes

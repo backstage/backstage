@@ -1,12 +1,12 @@
 {
   "name": "@backstage/plugin-scaffolder-node-test-utils",
-  "version": "0.1.0-next.0",
+  "version": "0.1.3-next.1",
   "backstage": {
     "role": "node-library"
   },
   "publishConfig": {
     "access": "public",
-    "main": "dist/index.esm.js",
+    "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
   "repository": {
@@ -33,14 +33,11 @@
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/plugin-scaffolder-common": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@backstage/types": "workspace:^",
-    "winston": "^3.2.1"
+    "@backstage/types": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@testing-library/jest-dom": "^6.0.0",
     "@types/react": "*"
   }
 }

@@ -34,7 +34,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import useDebounce from 'react-use/lib/useDebounce';
+import useDebounce from 'react-use/esm/useDebounce';
 
 import { SearchContextProvider, useSearch } from '../../context';
 

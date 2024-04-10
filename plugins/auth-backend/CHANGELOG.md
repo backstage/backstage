@@ -1,5 +1,218 @@
 # @backstage/plugin-auth-backend
 
+## 0.22.4-next.1
+
+### Patch Changes
+
+- d62bc51: Added token type header parameter and user identity proof to issued user tokens.
+- bf4d71a: Initial implementation of the `/v1/userinfo` endpoint, which is now able to parse and return the `sub` and `ent` claims from a Backstage user token.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.9-next.1
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.8-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.9-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.12-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.14-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.14-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.14-next.1
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.12-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.14-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.10-next.1
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.10-next.1
+  - @backstage/plugin-catalog-node@1.11.1-next.1
+
+## 0.22.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.9-next.0
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.9-next.0
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.12-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.14-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.14-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.14-next.0
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.12-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.14-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.8-next.0
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.10-next.0
+  - @backstage/plugin-auth-node@0.4.12-next.0
+  - @backstage/plugin-catalog-node@1.11.1-next.0
+
+## 0.22.3
+
+### Patch Changes
+
+- 038b2e6: Only consider entities of kind `User` when using `findCatalogUser` with a filter query, unless an explicit `kind` filter is provided.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-common@0.21.6
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.8
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.8
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.13
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.13
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.13
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.13
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.7
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.9
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.11
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.9
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.22.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.10.0
+  - @backstage/catalog-client@1.6.2
+  - @backstage/backend-common@0.21.5
+  - @backstage/plugin-auth-node@0.4.10
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.7
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.6
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.7
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.10
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.12
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.12
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.12
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.10
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.12
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.8
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.8
+
+## 0.22.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.6
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.6
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.9
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.5
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.7
+
+## 0.22.0
+
+### Minor Changes
+
+- 293c835: Add support for Service Tokens to Cloudflare Access auth provider
+- 492fe83: **BREAKING**: The `CatalogIdentityClient` constructor now also requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support the new auth services, which has also been done for the `createRouter` function.
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+- 7c29e7f: Fixed refresh scope to match start method in OneLogin provider.
+- 2af5354: Bump dependency `jose` to v5
+- 38af71a: Updated dependency `google-auth-library` to `^9.0.0`.
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- fa7ea3f: Internal refactor to break out how the router is constructed
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.4
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.7
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.9
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.5
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.9
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.6
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.7
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+
+## 0.22.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.4-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.6-next.2
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.5-next.2
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.9-next.2
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.11-next.2
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.11-next.2
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.11-next.2
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.9-next.2
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.11-next.2
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.7-next.2
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.7-next.2
+
+## 0.22.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.5-next.1
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.9-next.1
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.4-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.6-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.9-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.11-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.11-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.11-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.11-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.7-next.1
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.7-next.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+
 ## 0.22.0-next.0
 
 ### Minor Changes

@@ -1,5 +1,90 @@
 # @backstage/plugin-scaffolder-backend-module-azure
 
+## 0.1.9-next.1
+
+### Patch Changes
+
+- 33f958a: Improve examples to ensure consistency across all publish actions
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-scaffolder-node@0.4.3-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0-next.0
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-scaffolder-node@0.4.3-next.0
+
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/plugin-scaffolder-node@0.4.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.1
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+
+## 0.1.6
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- f44589d: Introduced `createMockActionContext` to unify the way of creating scaffolder mock context.
+
+  It will help to maintain tests in a long run during structural changes of action context.
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+
+## 0.1.6-next.2
+
+### Patch Changes
+
+- 2bd1410: Removed unused dependencies
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.0-next.2
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/plugin-scaffolder-node@0.4.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+
 ## 0.1.5-next.0
 
 ### Patch Changes

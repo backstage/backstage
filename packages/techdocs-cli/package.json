@@ -1,7 +1,7 @@
 {
   "name": "@techdocs/cli",
   "description": "Utility CLI for managing TechDocs sites in Backstage.",
-  "version": "1.8.5-next.0",
+  "version": "1.8.9-next.1",
   "publishConfig": {
     "access": "public"
   },
@@ -44,8 +44,7 @@
     "@types/webpack-env": "^1.15.3",
     "find-process": "^1.4.5",
     "nodemon": "^3.0.1",
-    "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app",
-    "ts-node": "^10.0.0"
+    "techdocs-cli-embedded-app": "link:../techdocs-cli-embedded-app"
   },
   "files": [
     "bin",

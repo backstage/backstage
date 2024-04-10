@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/styles';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 
 const useStyles = makeStyles({

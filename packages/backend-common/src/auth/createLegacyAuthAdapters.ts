@@ -44,6 +44,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
 import { PluginEndpointDiscovery } from '../discovery';
+import { JsonObject } from '@backstage/types';
 
 class AuthCompat implements AuthService {
   constructor(
@@ -164,6 +165,10 @@ class AuthCompat implements AuthService {
       throw new AuthenticationError('User token is missing expiration');
     }
     return new Date(exp * 1000);
+  }
+
+  listPublicServiceKeys(): Promise<{ keys: JsonObject[] }> {
+    throw new Error('Not implemented');
   }
 }
 

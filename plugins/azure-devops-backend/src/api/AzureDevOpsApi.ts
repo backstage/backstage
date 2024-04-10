@@ -108,10 +108,17 @@ export class AzureDevOpsApi {
     // If no host or org is provided we fall back to the values from the `azureDevOps` config section
     // these may have been setup in the `integrations.azure` config section
     // which is why use them here and not just falling back on them entirely
-    const validHost = host ?? this.config.getString('azureDevOps.host');
-    const validOrg = org ?? this.config.getString('azureDevOps.organization');
-    const url = `https://${validHost}/${encodeURIComponent(validOrg)}`;
+    const validHost = host ?? this.config.getOptionalString('azureDevOps.host');
+    const validOrg =
+      org ?? this.config.getOptionalString('azureDevOps.organization');
 
+    if (!validHost || !validOrg) {
+      throw new Error(
+        "No 'host' or 'org' provided in annotations or configuration, unable to retrieve needed credentials",
+      );
+    }
+
+    const url = `https://${validHost}/${encodeURIComponent(validOrg)}`;
     const credentials = await this.credentialsProvider.getCredentials({
       url,
     });
@@ -120,7 +127,15 @@ export class AzureDevOpsApi {
     if (!credentials) {
       // No credentials found for the provided host and org in the `integrations.azure` config section
       // use the fall back personal access token from `azureDevOps.token`
-      const token = this.config.getString('azureDevOps.token');
+      const token = this.config.getOptionalString('azureDevOps.token');
+      if (!token) {
+        throw new Error(
+          "No 'azureDevOps.token' provided in configuration and credentials were not found in 'integrations.azure', unable to proceed",
+        );
+      }
+      this.logger.warn(
+        "Using the token from 'azureDevOps.token' has been deprecated, use 'integrations.azure' instead, for more details see: https://backstage.io/docs/integrations/azure/locations",
+      );
       authHandler = getPersonalAccessTokenHandler(token);
     } else {
       authHandler = getHandlerFromToken(credentials.token);
@@ -382,12 +397,18 @@ export class AzureDevOpsApi {
       .filter((policy): policy is Policy => Boolean(policy));
   }
 
-  public async getAllTeams(): Promise<Team[]> {
+  public async getAllTeams(options?: { limit?: number }): Promise<Team[]> {
     this.logger?.debug('Getting all teams.');
 
     const webApi = await this.getWebApi();
     const client = await webApi.getCoreApi();
-    const webApiTeams: WebApiTeam[] = await client.getAllTeams();
+
+    const webApiTeams: WebApiTeam[] = await client.getAllTeams(
+      undefined,
+      options?.limit,
+      undefined,
+      undefined,
+    );
 
     const teams: Team[] = webApiTeams.map(team => ({
       id: team.id,

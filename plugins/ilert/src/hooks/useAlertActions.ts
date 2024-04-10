@@ -16,7 +16,7 @@
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 import React from 'react';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
 import { ilertApiRef } from '../api';
 import { Alert, AlertAction } from '../types';
 

@@ -30,7 +30,7 @@ import {
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import React from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';
 import { EntityRefLink } from '../../EntityRefLink';
 import { KeyValueListItem, ListItemText } from './common';

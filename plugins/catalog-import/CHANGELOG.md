@@ -1,5 +1,137 @@
 # @backstage/plugin-catalog-import
 
+## 0.10.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/frontend-plugin-api@0.6.4-next.1
+  - @backstage/core-compat-api@0.2.4-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/integration-react@1.1.26-next.0
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-catalog-react@1.11.3-next.1
+
+## 0.10.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/core-compat-api@0.2.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.4-next.0
+  - @backstage/integration-react@1.1.26-next.0
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-catalog-react@1.11.3-next.0
+
+## 0.10.9
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/catalog-client@1.6.3
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/integration-react@1.1.25
+  - @backstage/core-compat-api@0.2.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 0.10.8
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/catalog-client@1.6.2
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-catalog-react@1.11.1
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/integration-react@1.1.25
+  - @backstage/core-compat-api@0.2.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 0.10.7
+
+### Patch Changes
+
+- b91a8d2: Added the `no-top-level-material-ui-4-imports` ESLint rule to aid with the migration to Material UI v5
+- 75f686b: Fixed an issue generating a wrong entity link at the end of the import process
+- adc0414: fix related to component name not adhering to kubernetes valid object name.
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration-react@1.1.25
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 0.10.7-next.2
+
+### Patch Changes
+
+- adc0414: fix related to component name not adhering to kubernetes valid object name.
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/integration-react@1.1.25-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/core-compat-api@0.2.1-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+
+## 0.10.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/integration-react@1.1.25-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-compat-api@0.2.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+
 ## 0.10.7-next.0
 
 ### Patch Changes

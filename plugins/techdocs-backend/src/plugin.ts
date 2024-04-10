@@ -15,9 +15,9 @@
  */
 
 import {
+  cacheToPluginCacheManager,
   DockerContainerRunner,
   loggerToWinstonLogger,
-  cacheToPluginCacheManager,
 } from '@backstage/backend-common';
 import {
   coreServices,
@@ -26,10 +26,15 @@ import {
 
 import {
   DocsBuildStrategy,
-  Preparers,
   Generators,
+  PreparerBase,
+  Preparers,
   Publisher,
+  RemoteProtocol,
   techdocsBuildsExtensionPoint,
+  TechdocsGenerator,
+  techdocsGeneratorExtensionPoint,
+  techdocsPreparerExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
 import Docker from 'dockerode';
 import { createRouter } from '@backstage/plugin-techdocs-backend';
@@ -51,6 +56,29 @@ export const techdocsPlugin = createBackendPlugin({
       },
     });
 
+    let customTechdocsGenerator: TechdocsGenerator | undefined;
+    env.registerExtensionPoint(techdocsGeneratorExtensionPoint, {
+      setTechdocsGenerator(generator: TechdocsGenerator) {
+        if (customTechdocsGenerator) {
+          throw new Error('TechdocsGenerator may only be set once');
+        }
+
+        customTechdocsGenerator = generator;
+      },
+    });
+
+    const customPreparers = new Map<RemoteProtocol, PreparerBase>();
+    env.registerExtensionPoint(techdocsPreparerExtensionPoint, {
+      registerPreparer(protocol: RemoteProtocol, preparer: PreparerBase) {
+        if (customPreparers.has(protocol)) {
+          throw new Error(
+            `Preparer for protocol ${protocol} is already registered`,
+          );
+        }
+        customPreparers.set(protocol, preparer);
+      },
+    });
+
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
@@ -59,14 +87,28 @@ export const techdocsPlugin = createBackendPlugin({
         http: coreServices.httpRouter,
         discovery: coreServices.discovery,
         cache: coreServices.cache,
+        httpAuth: coreServices.httpAuth,
+        auth: coreServices.auth,
       },
-      async init({ config, logger, urlReader, http, discovery, cache }) {
+      async init({
+        config,
+        logger,
+        urlReader,
+        http,
+        discovery,
+        cache,
+        httpAuth,
+        auth,
+      }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         // Preparers are responsible for fetching source files for documentation.
         const preparers = await Preparers.fromConfig(config, {
           reader: urlReader,
           logger: winstonLogger,
         });
+        for (const [protocol, preparer] of customPreparers.entries()) {
+          preparers.register(protocol, preparer);
+        }
 
         // Docker client (conditionally) used by the generators, based on techdocs.generators config.
         const dockerClient = new Docker();
@@ -76,6 +118,7 @@ export const techdocsPlugin = createBackendPlugin({
         const generators = await Generators.fromConfig(config, {
           logger: winstonLogger,
           containerRunner,
+          customGenerator: customTechdocsGenerator,
         });
 
         // Publisher is used for
@@ -100,8 +143,15 @@ export const techdocsPlugin = createBackendPlugin({
             publisher,
             config,
             discovery,
+            httpAuth,
+            auth,
           }),
         );
+
+        http.addAuthPolicy({
+          path: '/static',
+          allow: 'user-cookie',
+        });
       },
     });
   },

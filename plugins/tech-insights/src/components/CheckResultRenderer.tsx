@@ -16,7 +16,7 @@
 
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import React from 'react';
-import { BooleanCheck } from './BooleanCheck';
+import { BooleanCheck, isBooleanCheckFailed } from './BooleanCheck';
 
 /**
  * Defines a react component that is responsible for rendering a result of a given type.
@@ -27,6 +27,7 @@ export type CheckResultRenderer = {
   type: string;
   component: (check: CheckResult) => React.ReactElement;
   description?: (check: CheckResult) => string | React.ReactElement;
+  isFailed?: (check: CheckResult) => boolean;
 };
 
 /**
@@ -39,4 +40,5 @@ export const jsonRulesEngineCheckResultRenderer: CheckResultRenderer = {
   component: (checkResult: CheckResult) => (
     <BooleanCheck checkResult={checkResult} />
   ),
+  isFailed: isBooleanCheckFailed,
 };

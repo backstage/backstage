@@ -22,7 +22,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import List from '@material-ui/core/List';
 import Button from '@material-ui/core/Button';
 import React, { useMemo, useState } from 'react';
-import useObservable from 'react-use/lib/useObservable';
+import useObservable from 'react-use/esm/useObservable';
 import LoginRequestListItem from './LoginRequestListItem';
 import {
   useApi,

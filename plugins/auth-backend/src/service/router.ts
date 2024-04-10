@@ -151,6 +151,7 @@ export async function createRouter(
   });
 
   bindOidcRouter(router, {
+    auth,
     tokenIssuer,
     baseUrl: authUrl,
   });

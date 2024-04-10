@@ -21,20 +21,17 @@ import {
 } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { Execution, stackstormApiRef } from '../../api';
-import useAsync from 'react-use/lib/useAsync';
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  makeStyles,
-  Table,
-  TableBody,
-  TableCell,
-  TableRow,
-  Typography,
-  withStyles,
-} from '@material-ui/core';
+import useAsync from 'react-use/esm/useAsync';
+import Button from '@material-ui/core/Button';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles, withStyles } from '@material-ui/core/styles';
 import { Status } from './Status';
 
 const useStyles = makeStyles(theme => ({

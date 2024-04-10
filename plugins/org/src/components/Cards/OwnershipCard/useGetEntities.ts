@@ -29,9 +29,9 @@ import {
 } from '@backstage/plugin-catalog-react';
 import limiterFactory from 'p-limit';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import qs from 'qs';
-import { EntityRelationAggregation as EntityRelationsAggregation } from './types';
+import { EntityRelationAggregation } from '../types';
 import { uniq } from 'lodash';
 
 const limiter = limiterFactory(10);
@@ -125,7 +125,7 @@ const getChildOwnershipEntityRefs = async (
 
 const getOwners = async (
   entity: Entity,
-  relations: EntityRelationsAggregation,
+  relations: EntityRelationAggregation,
   catalogApi: CatalogApi,
 ): Promise<string[]> => {
   const isGroup = entity.kind === 'Group';
@@ -166,7 +166,7 @@ const getOwnedEntitiesByOwners = (
 
 export function useGetEntities(
   entity: Entity,
-  relations: EntityRelationsAggregation,
+  relations: EntityRelationAggregation,
   entityFilterKind?: string[],
   entityLimit = 6,
 ): {

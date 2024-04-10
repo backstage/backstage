@@ -15,12 +15,13 @@
  */
 
 import React, { useEffect } from 'react';
+import throttle from 'lodash/throttle';
 import {
   Content,
   PageWithHeader,
   ResponseErrorPanel,
 } from '@backstage/core-components';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import { useSignal } from '@backstage/plugin-signals-react';
 
 import { NotificationsTable } from '../NotificationsTable';
@@ -28,17 +29,27 @@ import { useNotificationsApi } from '../../hooks';
 import {
   CreatedAfterOptions,
   NotificationsFilters,
+  SortBy,
+  SortByOptions,
 } from '../NotificationsFilters';
 import { GetNotificationsOptions } from '../../api';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
+
+const ThrottleDelayMs = 2000;
 
 export const NotificationsPage = () => {
   const [refresh, setRefresh] = React.useState(false);
   const { lastSignal } = useSignal('notifications');
   const [unreadOnly, setUnreadOnly] = React.useState<boolean | undefined>(true);
+  const [saved, setSaved] = React.useState<boolean | undefined>(undefined);
   const [pageNumber, setPageNumber] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(5);
   const [containsText, setContainsText] = React.useState<string>();
   const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
+  const [sorting, setSorting] = React.useState<SortBy>(
+    SortByOptions.newest.sortBy,
+  );
+  const [severity, setSeverity] = React.useState<NotificationSeverity>('low');
 
   const { error, value, retry, loading } = useNotificationsApi(
     api => {
@@ -46,9 +57,14 @@ export const NotificationsPage = () => {
         search: containsText,
         limit: pageSize,
         offset: pageNumber * pageSize,
+        minimumSeverity: severity,
+        ...(sorting || {}),
       };
       if (unreadOnly !== undefined) {
         options.read = !unreadOnly;
+      }
+      if (saved !== undefined) {
+        options.saved = saved;
       }
 
       const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
@@ -58,24 +74,38 @@ export const NotificationsPage = () => {
 
       return api.getNotifications(options);
     },
-    [containsText, unreadOnly, createdAfter, pageNumber, pageSize],
+    [
+      containsText,
+      unreadOnly,
+      createdAfter,
+      pageNumber,
+      pageSize,
+      sorting,
+      saved,
+      severity,
+    ],
+  );
+
+  const throttledSetRefresh = React.useMemo(
+    () => throttle(setRefresh, ThrottleDelayMs),
+    [setRefresh],
   );
 
   useEffect(() => {
-    if (refresh) {
+    if (refresh && !loading) {
       retry();
       setRefresh(false);
     }
-  }, [refresh, setRefresh, retry]);
+  }, [refresh, setRefresh, retry, loading]);
 
   useEffect(() => {
     if (lastSignal && lastSignal.action) {
-      setRefresh(true);
+      throttledSetRefresh(true);
     }
-  }, [lastSignal]);
+  }, [lastSignal, throttledSetRefresh]);
 
   const onUpdate = () => {
-    setRefresh(true);
+    throttledSetRefresh(true);
   };
 
   if (error) {
@@ -92,8 +122,12 @@ export const NotificationsPage = () => {
               onUnreadOnlyChanged={setUnreadOnly}
               createdAfter={createdAfter}
               onCreatedAfterChanged={setCreatedAfter}
-              // setSorting={setSorting}
-              // sorting={sorting}
+              onSortingChanged={setSorting}
+              sorting={sorting}
+              saved={saved}
+              onSavedChanged={setSaved}
+              severity={severity}
+              onSeverityChanged={setSeverity}
             />
           </Grid>
           <Grid item xs={10}>

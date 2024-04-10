@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { Table, TableColumn } from '@backstage/core-components';
-import { Box, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import RetryIcon from '@material-ui/icons/Replay';
 import { default as React } from 'react';
 import { Project } from '../../../../api/JenkinsApi';

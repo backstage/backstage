@@ -95,6 +95,10 @@ export type AvatarClassKey = 'avatar';
 
 // @public
 export interface AvatarProps {
+  classes?: {
+    [key in 'avatar' | 'avatarText']?: string;
+  };
+  // @deprecated
   customStyles?: CSSProperties;
   displayName?: string;
   picture?: string;
@@ -135,6 +139,9 @@ export function Breadcrumbs(props: Props_18): React_2.JSX.Element;
 
 // @public (undocumented)
 export type BreadcrumbsClickableTextClassKey = 'root';
+
+// @public (undocumented)
+export type BreadcrumbsCurrentPageClassKey = 'root';
 
 // @public (undocumented)
 export type BreadcrumbsStyledBoxClassKey = 'root';

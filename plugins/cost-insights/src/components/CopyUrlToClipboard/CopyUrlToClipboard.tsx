@@ -16,8 +16,9 @@
 
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
-import { Tooltip, IconButton } from '@material-ui/core';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
 import AssignmentOutlinedIcon from '@material-ui/icons/AssignmentOutlined';
 import AssignmentTurnedInOutlinedIcon from '@material-ui/icons/AssignmentTurnedInOutlined';
 import SentimentVeryDissatisfiedIcon from '@material-ui/icons/SentimentVeryDissatisfied';

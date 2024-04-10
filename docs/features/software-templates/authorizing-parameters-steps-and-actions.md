@@ -15,6 +15,8 @@ apiVersion: scaffolder.backstage.io/v1beta3
 kind: Template
 metadata:
   name: my_custom_template
+spec:
+  type: service
   parameters:
     - title: Provide some simple information
       properties:
@@ -173,3 +175,58 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 ```
 
 Although the rules exported by the scaffolder are simple, combining them can help you achieve more complex cases.
+
+### Authorizing in the New Backend System
+
+Instead of the changes in `permission.ts` noted in the above example you will make them in your `index.ts`. You will need to create a module where your permission policy will get added. Here is a very simplified example of how to do that:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import {
+  PolicyDecision,
+  AuthorizeResult,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+} from '@backstage/plugin-permission-node';
+import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
+
+class ExamplePermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
+    // Various scaffolder permission checks ...
+
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
+}
+
+const customPermissionBackendModule = createBackendModule({
+  pluginId: 'permission',
+  moduleId: 'allow-all-policy',
+  register(reg) {
+    reg.registerInit({
+      deps: { policy: policyExtensionPoint },
+      async init({ policy }) {
+        policy.setPolicy(new ExamplePermissionPolicy());
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-permission-backend/alpha'));
+backend.add(customPermissionBackendModule);
+/* highlight-add-end */
+```
+
+> Note: the `ExamplePermissionPolicy` here could be the one from the [Authorizing parameters and steps](#authorizing-parameters-and-steps) example or from the [Authorizing actions](#authorizing-actions) example. It would work the same way for both of them.

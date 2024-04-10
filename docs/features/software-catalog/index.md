@@ -40,9 +40,11 @@ browse the catalog at `http://localhost:3000`.
 
 ## Adding components to the catalog
 
-The source of truth for the components in your software catalog are
-[metadata YAML files](descriptor-format.md) stored in source control (GitHub,
-GitHub Enterprise, GitLab, ...).
+The source of truth for the components in your software catalog are [metadata
+YAML files](descriptor-format.md) stored in source control (GitHub, GitHub
+Enterprise, GitLab, ...). Repositories can include one or multiple metadata
+files. Usually the metadata file is located in the repository root. This is not
+a formal requirement & metadata files can be placed anywhere in the repository.
 
 There are 3 ways to add components to the catalog:
 
@@ -132,7 +134,7 @@ in the catalog.
 
 ![screenshot of tools](https://backstage.io/assets/images/tabs-abfdf72185d3ceb1d92c4237f7f78809.png)
 
-The Backstage platform can be customized by incorporating
+Your Backstage developer portal can be customized by incorporating
 [existing open source plugins](https://github.com/backstage/backstage/tree/master/plugins),
 or by [building your own](../../plugins/index.md).
 

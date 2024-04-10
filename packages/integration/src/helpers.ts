@@ -84,8 +84,10 @@ export function defaultScmResolveUrl(options: {
 
   if (url.startsWith('/')) {
     // If it is an absolute path, move relative to the repo root
-    const { filepath } = parseGitUrl(base);
-    updated = new URL(base);
+    const { href, filepath } = parseGitUrl(base);
+
+    updated = new URL(href);
+
     const repoRootPath = trimEnd(
       updated.pathname.substring(0, updated.pathname.length - filepath.length),
       '/',

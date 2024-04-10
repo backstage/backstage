@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { CircularProgress, TextField } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TextField from '@material-ui/core/TextField';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
-import { Autocomplete } from '@material-ui/lab';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import React from 'react';
 import { Controller, FieldErrors } from 'react-hook-form';
 

@@ -1,5 +1,47 @@
 # @backstage/plugin-azure-devops-common
 
+## 0.4.1-next.0
+
+### Patch Changes
+
+- 95b0573: `getAllTeams` now accepts an optional `limit` parameter which can be used to return more than the default limit of 100 teams from the Azure DevOps API
+
+  `pullRequestOptions` have been equipped with `teamsLimit` so that the property can be used with `getAllTeams`
+
+- Updated dependencies
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.4.0
+
+### Minor Changes
+
+- 9fdb86a: Ability to fetch the README file from a different Azure DevOps path.
+
+  Defaults to the current, Azure DevOps default behaviour (`README.md` in the root of the git repo); to use a different path, add the annotation `dev.azure.com/readme-path`
+
+  Example:
+
+  ```yaml
+  dev.azure.com/readme-path: /my-path/README.md
+  ```
+
+### Patch Changes
+
+- 3270b1b: Azure DevOps plugin is now integrated with permission framework for its core features, see the https://github.com/backstage/backstage/blob/master/plugins/azure-devops/README.md#permission-framework for more details.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 0.4.0-next.1
+
+### Patch Changes
+
+- 3270b1b: Azure DevOps plugin is now integrated with permission framework for its core features, see the https://github.com/backstage/backstage/blob/master/plugins/azure-devops/README.md#permission-framework for more details.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+
 ## 0.4.0-next.0
 
 ### Minor Changes

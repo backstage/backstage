@@ -27,6 +27,7 @@ export class DefaultJenkinsInfoProvider implements JenkinsInfoProvider {
     catalog: CatalogApi;
     discovery: DiscoveryService;
     auth?: AuthService;
+    httpAuth?: HttpAuthService;
   }): DefaultJenkinsInfoProvider;
   // (undocumented)
   getInstance(opt: {

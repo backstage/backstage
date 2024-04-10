@@ -55,7 +55,7 @@ export async function createConfigSecretEnumerator(options: {
     );
     const secrets = new Set<string>();
     JSON.parse(
-      JSON.stringify(secretsData),
+      JSON.stringify(secretsData.data),
       (_, v) => typeof v === 'string' && secrets.add(v),
     );
     logger.info(

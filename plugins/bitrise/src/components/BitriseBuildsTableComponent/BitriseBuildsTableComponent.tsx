@@ -15,8 +15,8 @@
  */
 
 import React, { useState } from 'react';
-import { Alert } from '@material-ui/lab';
-import { Button } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+import Button from '@material-ui/core/Button';
 import GitHubIcon from '@material-ui/icons/GitHub';
 import { useBitriseBuilds } from '../../hooks/useBitriseBuilds';
 import {

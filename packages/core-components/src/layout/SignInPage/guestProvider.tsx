@@ -23,7 +23,7 @@ import { ProviderComponent, ProviderLoader, SignInProvider } from './types';
 import { ProxiedSignInIdentity } from '../ProxiedSignInPage/ProxiedSignInIdentity';
 import { discoveryApiRef, useApi } from '@backstage/core-plugin-api';
 import { GuestUserIdentity } from './GuestUserIdentity';
-import useLocalStorage from 'react-use/lib/useLocalStorage';
+import useLocalStorage from 'react-use/esm/useLocalStorage';
 import { ResponseError } from '@backstage/errors';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';

@@ -16,7 +16,9 @@
 
 import React, { ReactNode, PropsWithChildren } from 'react';
 import classnames from 'classnames';
-import { Box, Divider, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
 import { useTooltipStyles as useStyles } from '../../utils/styles';
 
 /** @public */

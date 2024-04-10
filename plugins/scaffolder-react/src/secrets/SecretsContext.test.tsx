@@ -35,4 +35,20 @@ describe('SecretsContext', () => {
 
     expect(result.current.hook?.secrets.foo).toEqual('bar');
   });
+
+  it('should create SecretsContextProvider with initial secrets', async () => {
+    const { result } = renderHook(
+      () => ({
+        hook: useTemplateSecrets(),
+      }),
+      {
+        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+          <SecretsContextProvider initialSecrets={{ foo: 'bar' }}>
+            {children}
+          </SecretsContextProvider>
+        ),
+      },
+    );
+    expect(result.current.hook?.secrets.foo).toEqual('bar');
+  });
 });

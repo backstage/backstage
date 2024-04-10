@@ -46,7 +46,7 @@ export const signInAsGuestUser: (config: Config) => SignInResolver<{}> =
       'ownershipEntityRefs',
     ) ?? [userRef];
     try {
-      return ctx.signInWithCatalogUser({ entityRef: userRef });
+      return await ctx.signInWithCatalogUser({ entityRef: userRef });
     } catch (err) {
       // We can't guarantee that a guest user exists in the catalog, so we issue a token directly,
       return ctx.issueToken({

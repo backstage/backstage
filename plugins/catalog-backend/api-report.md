@@ -132,6 +132,9 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor_2 {
 // @public (undocumented)
 export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';
 
+// @public (undocumented)
+export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
+
 // @public
 export class CatalogBuilder {
   addEntityPolicy(
@@ -148,6 +151,7 @@ export class CatalogBuilder {
       CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
     >
   ): this;
+  addPermissions(...permissions: Array<Permission | Array<Permission>>): this;
   addProcessor(
     ...processors: Array<CatalogProcessor_2 | Array<CatalogProcessor_2>>
   ): CatalogBuilder;

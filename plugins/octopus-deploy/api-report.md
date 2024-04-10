@@ -11,6 +11,7 @@ import { ConfigApi } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { FieldExtensionComponent } from '@backstage/plugin-scaffolder-react';
 import { JSX as JSX_2 } from 'react';
 
 // @public (undocumented)
@@ -28,6 +29,8 @@ export const OCTOPUS_DEPLOY_PROJECT_ID_ANNOTATION = 'octopus.com/project-id';
 export interface OctopusDeployApi {
   // (undocumented)
   getConfig(): Promise<OctopusPluginConfig>;
+  // (undocumented)
+  getProjectGroups(): Promise<OctopusProjectGroup[]>;
   // (undocumented)
   getProjectInfo(projectReference: ProjectReference): Promise<OctopusProject>;
   // (undocumented)
@@ -51,6 +54,8 @@ export class OctopusDeployClient implements OctopusDeployApi {
   // (undocumented)
   getConfig(): Promise<OctopusPluginConfig>;
   // (undocumented)
+  getProjectGroups(): Promise<OctopusProjectGroup[]>;
+  // (undocumented)
   getProjectInfo(projectReference: ProjectReference): Promise<OctopusProject>;
   // (undocumented)
   getReleaseProgression(opts: {
@@ -58,6 +63,12 @@ export class OctopusDeployClient implements OctopusDeployApi {
     releaseHistoryCount: number;
   }): Promise<OctopusProgression>;
 }
+
+// @public (undocumented)
+export const OctopusDeployDropdownFieldExtension: FieldExtensionComponent<
+  string,
+  {}
+>;
 
 // @public (undocumented)
 export type OctopusDeployment = {
@@ -95,6 +106,13 @@ export type OctopusProject = {
   Name: string;
   Slug: string;
   Links: OctopusLinks;
+};
+
+// @public (undocumented)
+export type OctopusProjectGroup = {
+  Id: string;
+  Name: string;
+  Description: string;
 };
 
 // @public (undocumented)

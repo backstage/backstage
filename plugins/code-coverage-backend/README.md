@@ -74,7 +74,7 @@ The code coverage backend plugin has support for the [new backend system](https:
 In your `packages/backend/src/index.ts` make the following changes:
 
 ```diff
-+ backend.add(import('@backstage/plugin-explore-backend'));
++ backend.add(import('@backstage/plugin-code-coverage-backend'));
 ```
 
 ## Configuring your entity

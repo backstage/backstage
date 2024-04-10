@@ -21,33 +21,44 @@ import {
   PullRequestStatus,
 } from '@backstage/plugin-azure-devops-common';
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { getAnnotationValuesFromEntity } from '../utils';
 
 export function usePullRequests(
   entity: Entity,
   defaultLimit?: number,
   requestedStatus?: PullRequestStatus,
+  defaultTeamsLimit?: number,
 ): {
   items?: PullRequest[];
   loading: boolean;
   error?: Error;
 } {
   const top = defaultLimit ?? AZURE_DEVOPS_DEFAULT_TOP;
+  const teamsLimit = defaultTeamsLimit ?? undefined;
   const status = requestedStatus ?? PullRequestStatus.Active;
   const options: PullRequestOptions = {
     top,
     status,
+    teamsLimit,
   };
 
   const api = useApi(azureDevOpsApiRef);
 
   const { value, loading, error } = useAsync(() => {
     const { project, repo, host, org } = getAnnotationValuesFromEntity(entity);
-    return api.getPullRequests(project, repo as string, host, org, options);
+    const entityRef = stringifyEntityRef(entity);
+    return api.getPullRequests(
+      project,
+      repo as string,
+      entityRef,
+      host,
+      org,
+      options,
+    );
   }, [api, top, status]);
 
   return {

@@ -15,7 +15,10 @@
  */
 
 import React from 'react';
-import { Typography, Box, Avatar, makeStyles } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import Avatar from '@material-ui/core/Avatar';
+import { makeStyles } from '@material-ui/core/styles';
 
 type AssigneesProps = {
   name?: string;

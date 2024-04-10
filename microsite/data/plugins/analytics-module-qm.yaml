@@ -1,0 +1,10 @@
+---
+title: 'Analytics Module: Quantum Metric'
+author: Quantum Metric
+authorUrl: https://github.com/quantummetric
+category: Monitoring
+description: Track usage of your Backstage instance using Quantum Metric.
+documentation: https://github.com/quantummetric/analytics-module-qm/blob/main/README.md
+iconUrl: /img/qm-icon.png
+npmPackageName: '@quantum-metric/plugin-analytics-module-qm'
+addedDate: '2024-03-15'

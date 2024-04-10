@@ -28,8 +28,12 @@ import {
   TaskCompletionState,
   TaskContext,
 } from '@backstage/plugin-scaffolder-node';
-import { TaskStore } from './types';
+import { InternalTaskSecrets, TaskStore } from './types';
 import { readDuration } from './helper';
+import {
+  AuthService,
+  BackstageCredentials,
+} from '@backstage/backend-plugin-api';
 
 type TaskState = {
   checkpoints: {
@@ -59,8 +63,9 @@ export class TaskManager implements TaskContext {
     storage: TaskStore,
     abortSignal: AbortSignal,
     logger: Logger,
+    auth?: AuthService,
   ) {
-    const agent = new TaskManager(task, storage, abortSignal, logger);
+    const agent = new TaskManager(task, storage, abortSignal, logger, auth);
     agent.startTimeout();
     return agent;
   }
@@ -71,6 +76,7 @@ export class TaskManager implements TaskContext {
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
+    private readonly auth?: AuthService,
   ) {}
 
   get spec() {
@@ -171,6 +177,20 @@ export class TaskManager implements TaskContext {
       }
     }, 1000);
   }
+
+  async getInitiatorCredentials(): Promise<BackstageCredentials> {
+    const secrets = this.task.secrets as InternalTaskSecrets;
+
+    if (secrets && secrets.__initiatorCredentials) {
+      return JSON.parse(secrets.__initiatorCredentials);
+    }
+    if (!this.auth) {
+      throw new Error(
+        'Failed to create none credentials in scaffolder task. The TaskManager has not been initialized with an auth service implementation',
+      );
+    }
+    return this.auth.getNoneCredentials();
+  }
 }
 
 /**
@@ -214,6 +234,7 @@ export class StorageTaskBroker implements TaskBroker {
     private readonly storage: TaskStore,
     private readonly logger: Logger,
     private readonly config?: Config,
+    private readonly auth?: AuthService,
   ) {}
 
   async list(options?: {
@@ -295,10 +316,12 @@ export class StorageTaskBroker implements TaskBroker {
             spec: pendingTask.spec,
             secrets: pendingTask.secrets,
             createdBy: pendingTask.createdBy,
+            state: pendingTask.state,
           },
           this.storage,
           abortController.signal,
           this.logger,
+          this.auth,
         );
       }
 

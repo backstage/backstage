@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-app-api",
   "description": "Core API used by Backstage backend apps",
-  "version": "0.6.0-next.0",
+  "version": "0.7.0-next.1",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "publishConfig": {
@@ -37,12 +37,12 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -67,8 +67,10 @@
     "fs-extra": "^11.2.0",
     "helmet": "^6.0.0",
     "jose": "^5.0.0",
+    "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "logform": "^2.3.2",
+    "luxon": "^3.0.0",
     "minimatch": "^9.0.0",
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
@@ -76,6 +78,7 @@
     "path-to-regexp": "^6.2.1",
     "selfsigned": "^2.0.0",
     "stoppable": "^1.1.0",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0"
   },
@@ -90,12 +93,14 @@
     "@types/node-forge": "^1.3.0",
     "@types/stoppable": "^1.1.0",
     "http-errors": "^2.0.0",
+    "msw": "^1.0.0",
     "supertest": "^6.1.3"
   },
   "configSchema": "config.d.ts",
   "files": [
     "dist",
     "config.d.ts",
-    "alpha"
+    "alpha",
+    "migrations/**/*.{js,d.ts}"
   ]
 }

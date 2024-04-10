@@ -38,7 +38,7 @@ import {
   NOMAD_NAMESPACE_ANNOTATION,
   isNomadAllocationsAvailable,
 } from '../../annotations';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 type rowType = Allocation & { nomadAddr: string };
 

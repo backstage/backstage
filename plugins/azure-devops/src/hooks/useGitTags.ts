@@ -16,10 +16,10 @@
 
 import { GitTag } from '@backstage/plugin-azure-devops-common';
 
-import { Entity } from '@backstage/catalog-model';
+import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { azureDevOpsApiRef } from '../api';
 import { useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { getAnnotationValuesFromEntity } from '../utils';
 
 export function useGitTags(entity: Entity): {
@@ -31,7 +31,13 @@ export function useGitTags(entity: Entity): {
 
   const { value, loading, error } = useAsync(() => {
     const { project, repo, host, org } = getAnnotationValuesFromEntity(entity);
-    return api.getGitTags(project, repo as string, host, org);
+    return api.getGitTags(
+      project,
+      repo as string,
+      stringifyEntityRef(entity),
+      host,
+      org,
+    );
   }, [api]);
 
   return {

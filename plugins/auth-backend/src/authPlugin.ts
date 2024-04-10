@@ -54,6 +54,8 @@ export const authPlugin = createBackendPlugin({
         database: coreServices.database,
         discovery: coreServices.discovery,
         tokenManager: coreServices.tokenManager,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
         catalogApi: catalogServiceRef,
       },
       async init({
@@ -63,6 +65,8 @@ export const authPlugin = createBackendPlugin({
         database,
         discovery,
         tokenManager,
+        auth,
+        httpAuth,
         catalogApi,
       }) {
         const router = await createRouter({
@@ -71,6 +75,8 @@ export const authPlugin = createBackendPlugin({
           database,
           discovery,
           tokenManager,
+          auth,
+          httpAuth,
           catalogApi,
           providerFactories: Object.fromEntries(providers),
           disableDefaultProviderFactories: true,

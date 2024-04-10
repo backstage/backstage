@@ -49,13 +49,27 @@ export function createCatalogWriteAction() {
     examples,
     supportsDryRun: true,
     async handler(ctx) {
-      ctx.logStream.write(`Writing catalog-info.yaml`);
+      ctx.logger.info(`Writing catalog-info.yaml`);
       const { filePath, entity } = ctx.input;
+      const entityRef = ctx.templateInfo?.entityRef;
       const path = filePath ?? 'catalog-info.yaml';
 
       await fs.writeFile(
         resolveSafeChildPath(ctx.workspacePath, path),
-        yaml.stringify(entity),
+        yaml.stringify({
+          ...entity,
+          metadata: {
+            ...entity.metadata,
+            ...(entityRef
+              ? {
+                  annotations: {
+                    ...entity.metadata.annotations,
+                    'backstage.io/source-template': entityRef,
+                  },
+                }
+              : undefined),
+          },
+        }),
       );
     },
   });

@@ -39,6 +39,7 @@ export type CheckResultRenderer = {
   type: string;
   component: (check: CheckResult) => React_2.ReactElement;
   description?: (check: CheckResult) => string | React_2.ReactElement;
+  isFailed?: (check: CheckResult) => boolean;
 };
 
 // @public (undocumented)
@@ -46,6 +47,7 @@ export const EntityTechInsightsScorecardCard: (props: {
   title: string;
   description?: string | undefined;
   checksId?: string[] | undefined;
+  onlyFailed?: boolean | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -73,6 +75,7 @@ export const ScorecardInfo: (props: {
   checkResults: CheckResult[];
   title: string;
   description?: string | undefined;
+  noWarning?: boolean | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)

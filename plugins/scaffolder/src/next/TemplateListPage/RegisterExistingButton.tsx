@@ -22,7 +22,7 @@ import { Link as RouterLink, LinkProps } from 'react-router-dom';
 import AddCircleOutline from '@material-ui/icons/AddCircleOutline';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
-import { Theme } from '@material-ui/core';
+import { Theme } from '@material-ui/core/styles';
 
 /**
  * Properties for {@link RegisterExistingButton}

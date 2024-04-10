@@ -1,5 +1,57 @@
 # @backstage/create-app
 
+## 0.5.14-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.14-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.13
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.12
+
+### Patch Changes
+
+- 4cca80f: Bumped create-app version.
+- 8db51ca: Bumped create-app version.
+- 778bc48: Bumped create-app version.
+- 1bd4596: Removed the `ts-node` dev dependency.
+- 829a249: Migrated the backend of the create app template to use the new backend system. For information on how to migrate your existing backend, see the [migration guide](https://backstage.io/docs/backend-system/building-backends/migrating).
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.12-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
+## 0.5.12-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.5.12-next.0
 
 ### Patch Changes

@@ -15,13 +15,13 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { useApi } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { useEntity } from '@backstage/plugin-catalog-react';
 import { bazaarApiRef } from '../../api';
 import { EntityBazaarInfoContent } from '../EntityBazaarInfoContent';
-import { Card } from '@material-ui/core';
+import Card from '@material-ui/core/Card';
 import { parseBazaarResponse } from '../../util/parseMethods';
 
 /** @public */

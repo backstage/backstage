@@ -1,5 +1,98 @@
 # @backstage/repo-tools
 
+## 0.8.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/errors@1.2.4
+
+## 0.8.0-next.0
+
+### Minor Changes
+
+- cfdc5e7: Adds two new commands, `repo schema openapi fuzz` and `package schema openapi fuzz` for fuzzing your plugins documented with OpenAPI. This can help find bugs in your application code through the use of auto-generated schema-compliant inputs. For more information on the underlying library this leverages, take a look at [the docs](https://schemathesis.readthedocs.io/en/stable/index.html).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/errors@1.2.4
+
+## 0.7.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/errors@1.2.4
+
+## 0.7.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/errors@1.2.4
+
+## 0.7.0
+
+### Minor Changes
+
+- 8bfcc50: Fix knip-report command to send 1 exit status in case of fail
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+- 1bd4596: Removed the `ts-node` dev dependency.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/errors@1.2.4
+  - @backstage/cli-node@0.2.4
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+
+## 0.7.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4-next.0
+  - @backstage/errors@1.2.4-next.0
+
+## 0.7.0-next.1
+
+### Minor Changes
+
+- 8bfcc50: Fix knip-report command to send 1 exit status in case of fail
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4-next.0
+  - @backstage/errors@1.2.4-next.0
+
 ## 0.6.3-next.0
 
 ### Patch Changes

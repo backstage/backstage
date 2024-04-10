@@ -1,5 +1,101 @@
 # @backstage/plugin-devtools
 
+## 0.1.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.4-next.1
+  - @backstage/core-compat-api@0.2.4-next.1
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.9
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-compat-api@0.2.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.4-next.0
+  - @backstage/plugin-devtools-common@0.1.9
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.12
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/core-compat-api@0.2.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.9
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.11
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/core-compat-api@0.2.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-devtools-common@0.1.9
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.10
+
+### Patch Changes
+
+- a0e3393: Updated to use `fetchApi` as per [ADR013](https://backstage.io/docs/architecture-decisions/adrs-adr013)
+- 8b0026d: Removed unused `devDependencies` identified in Knip Report
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/errors@1.2.4
+  - @backstage/core-compat-api@0.2.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/plugin-devtools-common@0.1.9
+  - @backstage/plugin-permission-react@0.4.21
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- 8b0026d: Removed unused `devDependencies` identified in Knip Report
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/core-compat-api@0.2.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-devtools-common@0.1.9-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/plugin-permission-react@0.4.21-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/core-compat-api@0.2.1-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-devtools-common@0.1.9-next.1
+
 ## 0.1.10-next.0
 
 ### Patch Changes

@@ -1,5 +1,30 @@
 # @backstage/plugin-signals-react
 
+## 0.0.3-next.0
+
+### Patch Changes
+
+- f06458c: fixed typo in docs
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/types@1.1.1
+
+## 0.0.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/types@1.1.1
+
+## 0.0.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/types@1.1.1
+
 ## 0.0.2-next.0
 
 ### Patch Changes

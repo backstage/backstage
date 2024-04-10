@@ -28,6 +28,8 @@ import { FilterType } from './lib/filters';
 import { PullRequestGrid } from './lib/PullRequestGrid';
 import { useDashboardPullRequests } from '../../hooks';
 import { useFilterProcessor } from './lib/hooks';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { azureDevOpsPullRequestDashboardReadPermission } from '@backstage/plugin-azure-devops-common';
 
 type PullRequestsPageContentProps = {
   pullRequestGroups: PullRequestGroup[] | undefined;
@@ -68,14 +70,17 @@ type PullRequestsPageProps = {
   projectName?: string;
   pollingInterval?: number;
   defaultColumnConfigs?: PullRequestColumnConfig[];
+  teamsLimit?: number;
 };
 
 export const PullRequestsPage = (props: PullRequestsPageProps) => {
-  const { projectName, pollingInterval, defaultColumnConfigs } = props;
+  const { projectName, pollingInterval, defaultColumnConfigs, teamsLimit } =
+    props;
 
   const { pullRequests, loading, error } = useDashboardPullRequests(
     projectName,
     pollingInterval,
+    teamsLimit,
   );
 
   const [columnConfigs] = useState(
@@ -98,11 +103,15 @@ export const PullRequestsPage = (props: PullRequestsPageProps) => {
     <Page themeId="tool">
       <Header title="Azure Pull Requests" />
       <Content>
-        <PullRequestsPageContent
-          pullRequestGroups={pullRequestGroups}
-          loading={loading}
-          error={error}
-        />
+        <RequirePermission
+          permission={azureDevOpsPullRequestDashboardReadPermission}
+        >
+          <PullRequestsPageContent
+            pullRequestGroups={pullRequestGroups}
+            loading={loading}
+            error={error}
+          />
+        </RequirePermission>
       </Content>
     </Page>
   );

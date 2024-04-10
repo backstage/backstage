@@ -5,6 +5,7 @@
 ```ts
 /// <reference types="node" />
 
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Logger } from 'winston';
@@ -39,6 +40,7 @@ export type ActionContext<
     value: TActionOutput[keyof TActionOutput],
   ): void;
   createTemporaryDirectory(): Promise<string>;
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
   templateInfo?: TemplateInfo;
   isDryRun?: boolean;
   user?: {
@@ -284,6 +286,7 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
+  state?: JsonObject;
 };
 
 // @public
@@ -348,6 +351,8 @@ export interface TaskContext {
   done: boolean;
   // (undocumented)
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
+  // (undocumented)
+  getInitiatorCredentials(): Promise<BackstageCredentials>;
   // (undocumented)
   getTaskState?(): Promise<
     | {

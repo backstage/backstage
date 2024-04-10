@@ -29,8 +29,8 @@ export * from './proxy';
 export * from './sign-in';
 export type {
   AuthProviderConfig,
-  AuthProviderRouteHandlers,
   AuthProviderFactory,
+  AuthProviderRouteHandlers,
   AuthResolverCatalogUserQuery,
   AuthResolverContext,
   BackstageIdentityResponse,
@@ -44,3 +44,4 @@ export type {
   SignInResolver,
   TokenParams,
 } from './types';
+export { tokenTypes } from './types';

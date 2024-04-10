@@ -16,7 +16,10 @@
 import { Link, Progress, TableColumn } from '@backstage/core-components';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
-import { Box, IconButton, Tooltip, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import RetryIcon from '@material-ui/icons/Replay';
 import VisibilityIcon from '@material-ui/icons/Visibility';
 import HistoryIcon from '@material-ui/icons/History';

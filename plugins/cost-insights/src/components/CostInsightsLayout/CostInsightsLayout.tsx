@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren } from 'react';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { Group } from '@backstage/plugin-cost-insights-common';
 import { CostInsightsTabs } from '../CostInsightsTabs';
 import { Header, Page } from '@backstage/core-components';

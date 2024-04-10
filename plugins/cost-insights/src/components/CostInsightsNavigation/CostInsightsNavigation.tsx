@@ -15,15 +15,13 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import {
-  Collapse,
-  MenuList,
-  MenuItem,
-  ListItemIcon,
-  ListItemText,
-  Typography,
-  Badge,
-} from '@material-ui/core';
+import Collapse from '@material-ui/core/Collapse';
+import MenuList from '@material-ui/core/MenuList';
+import MenuItem from '@material-ui/core/MenuItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Typography from '@material-ui/core/Typography';
+import Badge from '@material-ui/core/Badge';
 import { useNavigationStyles as useStyles } from '../../utils/styles';
 import { useConfig, useScroll } from '../../hooks';
 import { findAlways } from '../../utils/assert';

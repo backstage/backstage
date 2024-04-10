@@ -34,7 +34,11 @@ import { ReportIssue } from '@backstage/plugin-techdocs-module-addons-contrib';
 import { FlatRoutes } from '@backstage/core-app-api';
 
 import { Page } from '@backstage/core-components';
-import { configApiRef } from '@backstage/core-plugin-api';
+import {
+  configApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
 
 const mockEntityMetadata = {
   locationMetadata: {
@@ -59,10 +63,12 @@ const mockTechDocsMetadata = {
 
 const getEntityMetadata = jest.fn();
 const getTechDocsMetadata = jest.fn();
+const getCookie = jest.fn();
 
 const techdocsApiMock = {
   getEntityMetadata,
   getTechDocsMetadata,
+  getCookie,
 };
 
 const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
@@ -72,6 +78,22 @@ const techdocsStorageApiMock: jest.Mocked<typeof techdocsStorageApiRef.T> = {
   getEntityDocs: jest.fn(),
   getStorageUrl: jest.fn(),
   syncEntityDocs: jest.fn(),
+};
+
+const discoveryApiMock = {
+  getBaseUrl: jest
+    .fn()
+    .mockResolvedValue('https://localhost:7000/api/techdocs'),
+};
+
+const fetchApiMock = {
+  fetch: jest.fn().mockResolvedValue({
+    ok: true,
+    json: jest.fn().mockResolvedValue({
+      // Expires in 10 minutes
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    }),
+  }),
 };
 
 const PageMock = () => {
@@ -94,6 +116,8 @@ const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <TestApiProvider
       apis={[
+        [fetchApiRef, fetchApiMock],
+        [discoveryApiRef, discoveryApiMock],
         [scmIntegrationsApiRef, {}],
         [configApiRef, configApi],
         [techdocsApiRef, techdocsApiMock],
@@ -115,10 +139,14 @@ describe('<TechDocsReaderPage />', () => {
   beforeEach(() => {
     getEntityMetadata.mockResolvedValue(mockEntityMetadata);
     getTechDocsMetadata.mockResolvedValue(mockTechDocsMetadata);
+    getCookie.mockResolvedValue({
+      // Expires in 10 minutes
+      expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+    });
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   beforeEach(() => {

@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Grid, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import { Entity } from '@backstage/catalog-model';
 import {
   ErrorPanel,

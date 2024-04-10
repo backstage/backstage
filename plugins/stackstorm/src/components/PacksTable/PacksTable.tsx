@@ -20,7 +20,7 @@ import {
   Table,
   TableColumn,
 } from '@backstage/core-components';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { useApi } from '@backstage/core-plugin-api';
 import { Pack, stackstormApiRef } from '../../api';
 

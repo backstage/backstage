@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { JSX } from 'react';
+import React, { JSX, ReactNode } from 'react';
 import { ConfigReader } from '@backstage/config';
 import {
   AppTree,
@@ -43,6 +43,9 @@ import {
   featureFlagsApiRef,
   identityApiRef,
   AppTheme,
+  errorApiRef,
+  discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { getAvailableFeatures } from './discovery';
 import {
@@ -53,6 +56,8 @@ import {
 } from '@backstage/core-app-api';
 
 // TODO: Get rid of all of these
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { isProtectedApp } from '../../../core-app-api/src/app/isProtectedApp';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeProvider } from '../../../core-app-api/src/app/AppThemeProvider';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -170,9 +175,21 @@ export function createApp(options?: {
   features?: (FrontendFeature | CreateAppFeatureLoader)[];
   configLoader?: () => Promise<{ config: ConfigApi }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+  /**
+   * The component to render while loading the app (waiting for config, features, etc)
+   *
+   * Is the text "Loading..." by default.
+   * If set to "null" then no loading fallback component is rendered.   *
+   */
+  loadingComponent?: ReactNode;
 }): {
   createRoot(): JSX.Element;
 } {
+  let suspenseFallback = options?.loadingComponent;
+  if (suspenseFallback === undefined) {
+    suspenseFallback = 'Loading...';
+  }
+
   async function appLoader() {
     const config =
       (await options?.configLoader?.().then(c => c.config)) ??
@@ -214,7 +231,7 @@ export function createApp(options?: {
     createRoot() {
       const LazyApp = React.lazy(appLoader);
       return (
-        <React.Suspense fallback="Loading...">
+        <React.Suspense fallback={suspenseFallback}>
           <LazyApp />
         </React.Suspense>
       );
@@ -268,6 +285,22 @@ export function createSpecializedApp(options?: {
     ),
     options?.icons,
   );
+
+  if (isProtectedApp()) {
+    const discoveryApi = apiHolder.get(discoveryApiRef);
+    const errorApi = apiHolder.get(errorApiRef);
+    const fetchApi = apiHolder.get(fetchApiRef);
+    if (!discoveryApi || !errorApi || !fetchApi) {
+      throw new Error(
+        'App is running in protected mode but missing required APIs',
+      );
+    }
+    appIdentityProxy.enableCookieAuth({
+      discoveryApi,
+      errorApi,
+      fetchApi,
+    });
+  }
 
   const featureFlagApi = apiHolder.get(featureFlagsApiRef);
   if (featureFlagApi) {

@@ -39,20 +39,4 @@ createBackendPlugin({
 
 ## Configuring the service
 
-There's additional configuration that you can optionally pass to setup the `httpRouter` core service.
-
-- `getPath` - Can be used to generate a path for each plugin. Currently defaults to `/api/${pluginId}`
-
-You can configure these additional options by adding an override for the core service when calling `createBackend` like follows:
-
-```ts
-import { httpRouterServiceFactory } from '@backstage/backend-app-api';
-
-const backend = createBackend();
-
-backend.add(
-  httpRouterServiceFactory({
-    getPath: (pluginId: string) => `/plugins/${pluginId}`,
-  }),
-);
-```
+This service does not have any configuration options.

@@ -22,7 +22,7 @@ import {
   ResourceData,
 } from '../../../types';
 import { Entity } from '@backstage/plugin-cost-insights-common';
-import { useTheme } from '@material-ui/core';
+import { useTheme } from '@material-ui/core/styles';
 
 type MigrationBarChartProps = {
   currentProduct: string;

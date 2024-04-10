@@ -1,5 +1,56 @@
 # @backstage/plugin-apache-airflow
 
+## 0.2.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.2.23
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.2.22
+
+### Patch Changes
+
+- e8f026a: Use ESM exports of react-use library
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.2.21
+
+### Patch Changes
+
+- 161114f: added an optional ESLint rule - no-top-level-material-ui-4-imports - which has an auto fix function to migrate the imports and used it to migrate the imports for plugins/apache-airflow
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.2.21-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.2.21-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+
 ## 0.2.21-next.0
 
 ### Patch Changes

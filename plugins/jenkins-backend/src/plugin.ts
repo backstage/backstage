@@ -40,6 +40,7 @@ export const jenkinsPlugin = createBackendPlugin({
         catalogClient: catalogServiceRef,
         discovery: coreServices.discovery,
         auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
       async init({
         logger,
@@ -49,10 +50,12 @@ export const jenkinsPlugin = createBackendPlugin({
         catalogClient,
         discovery,
         auth,
+        httpAuth,
       }) {
         const winstonLogger = loggerToWinstonLogger(logger);
         const jenkinsInfoProvider = DefaultJenkinsInfoProvider.fromConfig({
           auth,
+          httpAuth,
           config,
           catalog: catalogClient,
           discovery,
@@ -70,6 +73,7 @@ export const jenkinsPlugin = createBackendPlugin({
             jenkinsInfoProvider,
             discovery,
             auth,
+            httpAuth,
           }),
         );
       },

@@ -1,5 +1,86 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.1.8-next.1
+
+### Patch Changes
+
+- 28eb473: Support revoke refresh token to oidc logout function
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/plugin-auth-backend@0.22.4-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+
+## 0.1.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/plugin-auth-backend@0.22.4-next.0
+  - @backstage/plugin-auth-node@0.4.12-next.0
+
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.22.3
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+
+## 0.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/plugin-auth-backend@0.22.2
+  - @backstage/plugin-auth-node@0.4.10
+  - @backstage/backend-plugin-api@0.6.15
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.22.1
+
+## 0.1.4
+
+### Patch Changes
+
+- 74b1dc9: Increased HTTP request timeout used by OIDC authenticator.
+- 2af5354: Bump dependency `jose` to v5
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-auth-backend@0.22.0
+
+## 0.1.4-next.2
+
+### Patch Changes
+
+- 74b1dc9: Increased HTTP request timeout used by OIDC authenticator.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-auth-backend@0.22.0-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-auth-backend@0.22.0-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+
 ## 0.1.3-next.0
 
 ### Patch Changes

@@ -75,6 +75,11 @@ const useStyles = makeStyles(theme => ({
 export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: FieldExtensionOptions<any, any>[];
+  /**
+   * @deprecated This was only ever used for analytics tracking purposes, which
+   * is now handled in the `<Workflow />` component. Passing it in will have no
+   * effect.
+   */
   templateName?: string;
   formProps?: FormProps;
   initialState?: Record<string, JsonValue>;
@@ -147,10 +152,7 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleCreate = useCallback(() => {
     props.onCreate(formState);
-    const name =
-      typeof formState.name === 'string' ? formState.name : undefined;
-    analytics.captureEvent('create', name ?? props.templateName ?? 'unknown');
-  }, [props, formState, analytics]);
+  }, [props, formState]);
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
 

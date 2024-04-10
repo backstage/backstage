@@ -15,8 +15,8 @@
  */
 
 import { errorApiRef, useApi } from '@backstage/core-plugin-api';
-import useAsyncRetry from 'react-use/lib/useAsyncRetry';
-import useInterval from 'react-use/lib/useInterval';
+import useAsyncRetry from 'react-use/esm/useAsyncRetry';
+import useInterval from 'react-use/esm/useInterval';
 
 import { DashboardPullRequest } from '@backstage/plugin-azure-devops-common';
 import { azureDevOpsApiRef } from '../api';
@@ -27,6 +27,7 @@ const POLLING_INTERVAL = 10000;
 export function useDashboardPullRequests(
   project?: string,
   pollingInterval: number = POLLING_INTERVAL,
+  teamsLimit?: number,
 ): {
   pullRequests?: DashboardPullRequest[];
   loading: boolean;
@@ -43,7 +44,7 @@ export function useDashboardPullRequests(
     }
 
     try {
-      return await api.getDashboardPullRequests(project);
+      return await api.getDashboardPullRequests(project, teamsLimit);
     } catch (error) {
       if (error instanceof Error) {
         errorApi.post(error);
@@ -51,7 +52,7 @@ export function useDashboardPullRequests(
 
       return Promise.reject(error);
     }
-  }, [project, api, errorApi]);
+  }, [project, api, teamsLimit, errorApi]);
 
   const {
     value: pullRequests,

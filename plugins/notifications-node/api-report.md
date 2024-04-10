@@ -27,10 +27,14 @@ export interface NotificationProcessor {
 }
 
 // @public (undocumented)
-export type NotificationRecipients = {
-  type: 'entity';
-  entityRef: string | string[];
-};
+export type NotificationRecipients =
+  | {
+      type: 'entity';
+      entityRef: string | string[];
+    }
+  | {
+      type: 'broadcast';
+    };
 
 // @public (undocumented)
 export type NotificationSendOptions = {

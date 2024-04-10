@@ -16,6 +16,7 @@ api
 asciidoc
 async
 Atlassian
+autofix
 automations
 autoscaling
 Autoscaling
@@ -34,6 +35,7 @@ Blackbox
 bool
 boolean
 Brex
+broadcasted
 bugfixes
 builtins
 callout
@@ -84,6 +86,7 @@ debuggability
 declaratively
 deduplicated
 deliverables
+denormalized
 dependabot
 deps
 destructured
@@ -329,6 +332,7 @@ reusability
 Reusability
 roadmaps
 rollbar
+rollout
 Roboto
 Rollbar
 Rollup

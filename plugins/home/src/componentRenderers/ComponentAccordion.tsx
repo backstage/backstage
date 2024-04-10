@@ -16,14 +16,12 @@
 
 import React from 'react';
 import { SettingsModal } from '@backstage/plugin-home-react';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Typography,
-  IconButton,
-  Theme,
-} from '@material-ui/core';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import { Theme } from '@material-ui/core/styles';
 import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import SettingsIcon from '@material-ui/icons/Settings';

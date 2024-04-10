@@ -20,7 +20,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { AwsAlbResult } from './types';
 /**
- * Available sign-in resolvers for the Google auth provider.
+ * Available sign-in resolvers for the AWS ALB auth provider.
  *
  * @public
  */

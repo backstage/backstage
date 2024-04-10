@@ -90,7 +90,10 @@ export const scaffolderPlugin = createBackendPlugin({
         reader: coreServices.urlReader,
         permissions: coreServices.permissions,
         database: coreServices.database,
+        auth: coreServices.auth,
+        discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
+        httpAuth: coreServices.httpAuth,
         catalogClient: catalogServiceRef,
       },
       async init({
@@ -99,7 +102,10 @@ export const scaffolderPlugin = createBackendPlugin({
         lifecycle,
         reader,
         database,
+        auth,
+        discovery,
         httpRouter,
+        httpAuth,
         catalogClient,
         permissions,
       }) {
@@ -128,8 +134,8 @@ export const scaffolderPlugin = createBackendPlugin({
           createDebugLogAction(),
           createWaitAction(),
           // todo(blam): maybe these should be a -catalog module?
-          createCatalogRegisterAction({ catalogClient, integrations }),
-          createFetchCatalogEntityAction({ catalogClient }),
+          createCatalogRegisterAction({ catalogClient, integrations, auth }),
+          createFetchCatalogEntityAction({ catalogClient, auth }),
           createCatalogWriteAction(),
           createFilesystemDeleteAction(),
           createFilesystemRenameAction(),
@@ -152,6 +158,9 @@ export const scaffolderPlugin = createBackendPlugin({
           taskBroker,
           additionalTemplateFilters,
           additionalTemplateGlobals,
+          auth,
+          httpAuth,
+          discovery,
           permissions,
         });
         httpRouter.use(router);

@@ -24,7 +24,7 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import 'graphql-voyager/dist/voyager.css';
 import { graphQlVoyagerApiRef } from '../../lib/api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { GraphQLVoyagerBrowser } from '../GraphQLVoyagerBrowser';
 
 /** @public */

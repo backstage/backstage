@@ -17,23 +17,21 @@
 import React, { cloneElement, Fragment, useEffect, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { searchApiRef, useSearch } from '@backstage/plugin-search-react';
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-} from '@material-ui/core';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import AllIcon from '@material-ui/icons/FontDownload';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 const useStyles = makeStyles(theme => ({
   card: {
@@ -43,7 +41,7 @@ const useStyles = makeStyles(theme => ({
     paddingTop: theme.spacing(1),
   },
   icon: {
-    color: theme.palette.common.black,
+    color: theme.palette.text.primary,
   },
   list: {
     width: '100%',

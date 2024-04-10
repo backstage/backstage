@@ -35,10 +35,26 @@ import { createRouter } from './router';
 import express from 'express';
 import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
 import request from 'supertest';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 
 describe('createRouter', () => {
   let azureDevOpsApi: jest.Mocked<AzureDevOpsApi>;
   let app: express.Express;
+  const mockedAuthorize = jest
+    .fn()
+    .mockImplementation(async () => [{ result: AuthorizeResult.ALLOW }]);
+  const mockedAuthorizeConditional = jest
+    .fn()
+    .mockImplementation(async () => [{ result: AuthorizeResult.ALLOW }]);
+
+  const mockPermissionEvaluator = {
+    authorize: mockedAuthorize,
+    authorizeConditional: mockedAuthorizeConditional,
+  };
+
+  jest.mock('@backstage/plugin-auth-node', () => ({
+    getBearerTokenFromAuthorizationHeader: () => 'token',
+  }));
 
   beforeAll(async () => {
     azureDevOpsApi = {
@@ -75,6 +91,7 @@ describe('createRouter', () => {
         config,
         logger,
       }),
+      permissions: mockPermissionEvaluator,
     });
 
     app = express().use(router);
@@ -251,7 +268,13 @@ describe('createRouter', () => {
 
       azureDevOpsApi.getGitTags.mockResolvedValueOnce(gitTags);
 
-      const response = await request(app).get('/git-tags/myProject/myRepo');
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+
+      const response = await request(app)
+        .get('/git-tags/myProject/myRepo')
+        .query({ entityRef: 'component:default/mycomponent' });
 
       expect(azureDevOpsApi.getGitTags).toHaveBeenCalledWith(
         'myProject',
@@ -311,16 +334,88 @@ describe('createRouter', () => {
         thirdPullRequest,
       ];
 
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+
       azureDevOpsApi.getPullRequests.mockResolvedValueOnce(pullRequests);
 
       const response = await request(app)
         .get('/pull-requests/myProject/myRepo')
+        .query({ entityRef: 'component:default/mycomponent' })
         .query({ top: '50', status: 1 });
 
       expect(azureDevOpsApi.getPullRequests).toHaveBeenCalledWith(
         'myProject',
         'myRepo',
-        { status: 1, top: 50 },
+        { status: 1, top: 50, teamsLimit: 100 },
+        undefined,
+        undefined,
+      );
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual(pullRequests);
+    });
+    it('fetches a list of pull requests when using teamsLimit', async () => {
+      const firstPullRequest: PullRequest = {
+        pullRequestId: 7181,
+        repoName: 'super-feature-repo',
+        title: 'My Awesome New Feature',
+        createdBy: 'Jane Doe',
+        creationDate: '2020-09-12T06:10:23.932Z',
+        sourceRefName: 'refs/heads/topic/super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7181',
+      };
+
+      const secondPullRequest: PullRequest = {
+        pullRequestId: 7182,
+        repoName: 'super-feature-repo',
+        title: 'Refactoring My Awesome New Feature',
+        createdBy: 'Jane Doe',
+        creationDate: '2020-09-12T06:10:23.932Z',
+        sourceRefName: 'refs/heads/topic/refactor-super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7182',
+      };
+
+      const thirdPullRequest: PullRequest = {
+        pullRequestId: 7183,
+        repoName: 'super-feature-repo',
+        title: 'Bug Fix for My Awesome New Feature',
+        createdBy: 'Jane Doe',
+        creationDate: '2020-09-12T06:10:23.932Z',
+        sourceRefName: 'refs/heads/topic/fix-super-awesome-feature',
+        targetRefName: 'refs/heads/main',
+        status: PullRequestStatus.Active,
+        isDraft: false,
+        link: 'https://host.com/myOrg/_git/super-feature-repo/pullrequest/7183',
+      };
+
+      const pullRequests: PullRequest[] = [
+        firstPullRequest,
+        secondPullRequest,
+        thirdPullRequest,
+      ];
+
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
+
+      azureDevOpsApi.getPullRequests.mockResolvedValueOnce(pullRequests);
+
+      const response = await request(app)
+        .get('/pull-requests/myProject/myRepo')
+        .query({ entityRef: 'component:default/mycomponent' })
+        .query({ top: '50', status: 1, teamsLimit: 50 });
+
+      expect(azureDevOpsApi.getPullRequests).toHaveBeenCalledWith(
+        'myProject',
+        'myRepo',
+        { status: 1, top: 50, teamsLimit: 50 },
         undefined,
         undefined,
       );
@@ -398,8 +493,13 @@ describe('createRouter', () => {
 
         azureDevOpsApi.getBuildRuns.mockResolvedValueOnce(buildRuns);
 
+        mockedAuthorize.mockImplementationOnce(async () => [
+          { result: AuthorizeResult.ALLOW },
+        ]);
+
         const response = await request(app)
           .get('/builds/myProject')
+          .query({ entityRef: 'component:default/mycomponent' })
           .query({ top: '50', repoName: 'myRepo' });
 
         expect(azureDevOpsApi.getBuildRuns).toHaveBeenCalledWith(
@@ -453,10 +553,15 @@ describe('createRouter', () => {
           thirdBuildRun,
         ];
 
+        mockedAuthorize.mockImplementationOnce(async () => [
+          { result: AuthorizeResult.ALLOW },
+        ]);
+
         azureDevOpsApi.getBuildRuns.mockResolvedValueOnce(buildRuns);
 
         const response = await request(app)
           .get('/builds/myProject')
+          .query({ entityRef: 'component:default/mycomponent' })
           .query({ top: '50', definitionName: 'myDefinition' });
 
         expect(azureDevOpsApi.getBuildRuns).toHaveBeenCalledWith(
@@ -490,8 +595,13 @@ describe('createRouter', () => {
         content,
         url,
       });
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
 
-      const response = await request(app).get('/readme/myProject/myRepo');
+      const response = await request(app)
+        .get('/readme/myProject/myRepo?path=README.md')
+        .query({ entityRef: 'component:default/mycomponent' });
       expect(azureDevOpsApi.getReadme).toHaveBeenCalledWith(
         'host.com',
         'myOrg',
@@ -516,10 +626,13 @@ describe('createRouter', () => {
         content,
         url,
       });
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
 
-      const response = await request(app).get(
-        '/readme/myProject/myRepo?path=README_NOT_DEFAULT.md',
-      );
+      const response = await request(app)
+        .get('/readme/myProject/myRepo?path=README_NOT_DEFAULT.md')
+        .query({ entityRef: 'component:default/mycomponent' });
       expect(azureDevOpsApi.getReadme).toHaveBeenCalledWith(
         'host.com',
         'myOrg',
@@ -544,10 +657,13 @@ describe('createRouter', () => {
         content,
         url,
       });
+      mockedAuthorize.mockImplementationOnce(async () => [
+        { result: AuthorizeResult.ALLOW },
+      ]);
 
-      const response = await request(app).get(
-        '/readme/myProject/myRepo?path=/my-path/README.md',
-      );
+      const response = await request(app)
+        .get('/readme/myProject/myRepo?path=/my-path/README.md')
+        .query({ entityRef: 'component:default/mycomponent' });
       expect(azureDevOpsApi.getReadme).toHaveBeenCalledWith(
         'host.com',
         'myOrg',

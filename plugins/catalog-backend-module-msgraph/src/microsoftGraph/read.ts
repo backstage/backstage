@@ -49,6 +49,7 @@ export async function readMicrosoftGraphUsers(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    loadUserPhotos?: boolean;
     transformer?: UserTransformer;
     logger: Logger;
   },
@@ -70,6 +71,7 @@ export async function readMicrosoftGraphUsers(
       client,
       users,
       options.logger,
+      options.loadUserPhotos,
       options.transformer,
     ),
   };
@@ -82,6 +84,7 @@ export async function readMicrosoftGraphUsersInGroups(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
     groupExpand?: string;
@@ -145,6 +148,7 @@ export async function readMicrosoftGraphUsersInGroups(
       client,
       userGroupMembers.values(),
       options.logger,
+      options.loadUserPhotos,
       options.transformer,
     ),
   };
@@ -366,6 +370,7 @@ export async function readMicrosoftGraphOrg(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
     groupExpand?: string;
@@ -391,6 +396,7 @@ export async function readMicrosoftGraphOrg(
         userSelect: options.userSelect,
         userGroupMemberFilter: options.userGroupMemberFilter,
         userGroupMemberSearch: options.userGroupMemberSearch,
+        loadUserPhotos: options.loadUserPhotos,
         transformer: options.userTransformer,
         logger: options.logger,
       },
@@ -402,6 +408,7 @@ export async function readMicrosoftGraphOrg(
       userExpand: options.userExpand,
       userFilter: options.userFilter,
       userSelect: options.userSelect,
+      loadUserPhotos: options.loadUserPhotos,
       transformer: options.userTransformer,
       logger: options.logger,
     });
@@ -429,6 +436,7 @@ async function transformUsers(
   client: MicrosoftGraphClient,
   users: Iterable<MicrosoftGraph.User> | AsyncIterable<MicrosoftGraph.User>,
   logger: Logger,
+  loadUserPhotos = true,
   transformer?: UserTransformer,
 ) {
   const limiter = limiterFactory(10);
@@ -443,12 +451,14 @@ async function transformUsers(
       limiter(async () => {
         let userPhoto;
         try {
-          userPhoto = await client.getUserPhotoWithSizeLimit(
-            user.id!,
-            // We are limiting the photo size, as users with full resolution photos
-            // can make the Backstage API slow
-            120,
-          );
+          if (loadUserPhotos) {
+            userPhoto = await client.getUserPhotoWithSizeLimit(
+              user.id!,
+              // We are limiting the photo size, as users with full resolution photos
+              // can make the Backstage API slow
+              120,
+            );
+          }
         } catch (e) {
           logger.warn(`Unable to load user photo for`, {
             user: user.id,

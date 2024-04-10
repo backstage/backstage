@@ -198,8 +198,13 @@ jobs:
 
     steps:
       - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
-      - name: fetch branch master
+      - name: fetch master branch
         run: git fetch origin master
+
+        # Need to fetch the base branch to be able to verify the release
+      - name: fetch base branch
+        if: github.event.pull_request.base.ref != 'master'
+        run: git fetch origin ${{ github.event.pull_request.base.ref }}
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
@@ -211,6 +216,10 @@ jobs:
         uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
+
+      # This check is done here since it needs git history
+      - name: verify release
+        run: node scripts/verify-release.js
 
       - name: lint changed packages
         run: yarn backstage-cli repo lint --since origin/master

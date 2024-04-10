@@ -10,7 +10,7 @@ import { AppTheme } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { GridProps } from '@material-ui/core';
+import { GridProps } from '@material-ui/core/Grid';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';

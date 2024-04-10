@@ -1,5 +1,158 @@
 # @backstage/cli
 
+## 0.26.3-next.1
+
+### Patch Changes
+
+- c884b9a: Fix the bundle public subpath configuration.
+- 6b5ddbe: Fix the backend plugin to use correct plugin id
+- 4fecffc: When building the frontend app public assets are now also copied to the public dist directory when in use.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.7-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.3-next.0
+
+### Patch Changes
+
+- e3c213e: Add the deprecation plugin to the default linter setup, switched off.
+
+  This allows to disable deprecation warnings for `backstage-cli repo list-deprecations` with inline comments.
+
+- 4946f03: Updated dependency `webpack-dev-server` to `^5.0.0`.
+- Updated dependencies
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.6
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.2
+
+### Patch Changes
+
+- eeb226a: Updated dependency `rollup` to `^4.0.0`.
+- 91192f4: Updated backend plugin template to work better with new backend system
+- cc371d6: Ignore transforming only on `react-use/lib`, not whole `react-use` in jest.
+
+  ** POTENTIAL BREAKAGE **
+  If your tests fail, please change to use path import from `react-use/esm/`. It is also recommended to migrate from `react-user/lib` imports to `react-use/esm`
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.6
+  - @backstage/integration@1.9.1
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.1
+
+### Patch Changes
+
+- eeb226a: Updated dependency `rollup` to `^4.0.0`.
+- cc371d6: Ignore transforming only on `react-use/lib`, not whole `react-use` in jest.
+
+  ** POTENTIAL BREAKAGE **
+  If your tests fail, please change to use path import from `react-use/esm/`. It is also recommended to migrate from `react-user/lib` imports to `react-use/esm`
+
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.6
+  - @backstage/integration@1.9.1
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.0
+
+### Minor Changes
+
+- 0d72065: The backend devlopment server transpilation has been replaced with a simplified solution based on SWC, which is already the transpiler used for tests. This fixed an issue where never versions of the `tsx` dependency had a new contract for signalling dependencies, breaking watch mode. This change fixed file watches as well as enables sourcemaps.
+
+### Patch Changes
+
+- fe1a55e: Extend option to minify generated code to the `backend` package.
+- b0875e5: Fixed a bug that could cause the `build-workspace` command to fail when invoked with `--alwaysYarnPack` enabled in environments with limited resources.
+- bdf9ec1: New backend plugins with cli are now created using the new backend system
+- cadbb82: Added a `EXPERIMENTAL_LAZY_COMPILATION` flag, which enables the experimental Webpack lazy compilation option in frontend builds.
+- 999224f: Bump dependency `minimatch` to v9
+- 1bd4596: Removed the `ts-node` dev dependency.
+- 8dce287: Fix prettier issues on default plugins & module templates
+- f86e34c: Removed unused `replace-in-file` dependency
+- 2398c7c: Updated dependency `@spotify/prettier-config` to `^15.0.0`.
+  Updated dependency `@spotify/eslint-config-base` to `^15.0.0`.
+  Updated dependency `@spotify/eslint-config-react` to `^15.0.0`.
+  Updated dependency `@spotify/eslint-config-typescript` to `^15.0.0`.
+- f4404e5: Add .ico import support
+- f39dfd3: Tweak the descriptions of the CLI templates
+- Updated dependencies
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.6
+  - @backstage/config-loader@1.7.0
+  - @backstage/cli-node@0.2.4
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.25.3-next.2
+
+### Patch Changes
+
+- f39dfd3: Tweak the descriptions of the CLI templates
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/eslint-plugin@0.1.6-next.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.25.3-next.1
+
+### Patch Changes
+
+- 8dce287: Fix prettier issues on default plugins & module templates
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/eslint-plugin@0.1.6-next.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.25.3-next.0
 
 ### Patch Changes

@@ -1,5 +1,75 @@
 # @backstage/plugin-analytics-module-ga
 
+## 0.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.4-next.1
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.4-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/config@1.2.0
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/config@1.2.0
+
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/frontend-plugin-api@0.6.1
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+
 ## 0.2.1-next.0
 
 ### Patch Changes

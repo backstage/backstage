@@ -29,7 +29,7 @@ import { useEntity } from '@backstage/plugin-catalog-react';
 import { adrDecoratorFactories } from './decorators';
 import { AdrContentDecorator } from './types';
 import { adrApiRef } from '../../api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 const imageUrlsRegExp =
   /(!\[[^\[\]]*\])\((https?:\/\/.*?\.png|\.jpg|\.jpeg|\.gif|\.webp.*)\)/gim;

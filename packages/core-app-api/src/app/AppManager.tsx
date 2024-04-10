@@ -22,7 +22,7 @@ import React, {
   useMemo,
   useRef,
 } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import {
   ApiProvider,
   AppThemeSelector,
@@ -42,6 +42,9 @@ import {
   identityApiRef,
   BackstagePlugin,
   FeatureFlag,
+  fetchApiRef,
+  discoveryApiRef,
+  errorApiRef,
 } from '@backstage/core-plugin-api';
 import {
   AppLanguageApi,
@@ -86,6 +89,7 @@ import { AppRouter, getBasePath } from './AppRouter';
 import { AppLanguageSelector } from '../apis/implementations/AppLanguageApi';
 import { I18nextTranslationApi } from '../apis/implementations/TranslationApi';
 import { overrideBaseUrlConfigs } from './overrideBaseUrlConfigs';
+import { isProtectedApp } from './isProtectedApp';
 
 type CompatiblePlugin =
   | BackstagePlugin
@@ -354,8 +358,26 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
       const { ThemeProvider = AppThemeProvider, Progress } = this.components;
 
+      const apis = this.getApiHolder();
+
+      if (isProtectedApp()) {
+        const errorApi = apis.get(errorApiRef);
+        const fetchApi = apis.get(fetchApiRef);
+        const discoveryApi = apis.get(discoveryApiRef);
+        if (!errorApi || !fetchApi || !discoveryApi) {
+          throw new Error(
+            'App is running in protected mode but missing required APIs',
+          );
+        }
+        this.appIdentityProxy.enableCookieAuth({
+          errorApi,
+          fetchApi,
+          discoveryApi,
+        });
+      }
+
       return (
-        <ApiProvider apis={this.getApiHolder()}>
+        <ApiProvider apis={apis}>
           <AppContextProvider appContext={appContext}>
             <ThemeProvider>
               <RoutingProvider

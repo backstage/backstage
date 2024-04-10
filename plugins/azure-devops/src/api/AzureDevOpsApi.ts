@@ -48,6 +48,7 @@ export interface AzureDevOpsApi {
   getGitTags(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
   ): Promise<{ items: GitTag[] }>;
@@ -55,6 +56,7 @@ export interface AzureDevOpsApi {
   getPullRequests(
     projectName: string,
     repoName: string,
+    entityRef: string,
     host?: string,
     org?: string,
     options?: PullRequestOptions,
@@ -62,14 +64,16 @@ export interface AzureDevOpsApi {
 
   getDashboardPullRequests(
     projectName: string,
+    teamsLimit?: number,
   ): Promise<DashboardPullRequest[]>;
 
-  getAllTeams(): Promise<Team[]>;
+  getAllTeams(limit?: number): Promise<Team[]>;
 
   getUserTeamIds(userId: string): Promise<string[]>;
 
   getBuildRuns(
     projectName: string,
+    entityRef: string,
     repoName?: string,
     definitionName?: string,
     host?: string,

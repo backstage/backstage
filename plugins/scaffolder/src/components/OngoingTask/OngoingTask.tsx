@@ -16,7 +16,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, makeStyles, Paper } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   ScaffolderTaskOutput,
   scaffolderApiRef,

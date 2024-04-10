@@ -1,5 +1,90 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.3.4-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/plugin-catalog-react@1.11.3-next.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+
+## 0.11.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/plugin-catalog-react@1.11.3-next.0
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/plugin-kubernetes-react@0.3.4-next.0
+
+## 0.11.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.3
+  - @backstage/plugin-kubernetes-react@0.3.3
+  - @backstage/plugin-catalog-react@1.11.2
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-kubernetes-common@0.7.5
+
+## 0.11.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.2
+  - @backstage/plugin-kubernetes-react@0.3.2
+  - @backstage/plugin-catalog-react@1.11.1
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-kubernetes-common@0.7.5
+
+## 0.11.6
+
+### Patch Changes
+
+- 0e1941b: Added an optional ESLint rule - no-top-level-material-ui-4-imports -in kubernetes plugin which has an auto fix function to migrate the imports and used it to migrate the Material UI imports for plugins/kubernetes.
+- Updated dependencies
+  - @backstage/core-components@0.14.1
+  - @backstage/plugin-catalog-react@1.11.0
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/plugin-kubernetes-react@0.3.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.1
+
+## 0.11.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.2
+  - @backstage/plugin-catalog-react@1.11.0-next.2
+  - @backstage/plugin-kubernetes-react@0.3.1-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/plugin-kubernetes-common@0.7.5-next.1
+
+## 0.11.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.1-next.1
+  - @backstage/plugin-catalog-react@1.10.1-next.1
+  - @backstage/core-plugin-api@1.9.1-next.1
+  - @backstage/plugin-kubernetes-react@0.3.1-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/plugin-kubernetes-common@0.7.5-next.1
+
 ## 0.11.6-next.0
 
 ### Patch Changes

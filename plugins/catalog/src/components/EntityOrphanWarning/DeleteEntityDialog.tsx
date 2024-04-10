@@ -16,7 +16,10 @@
 
 import { Entity } from '@backstage/catalog-model';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { Button, Dialog, DialogActions, DialogTitle } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import React, { useState } from 'react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import { assertError } from '@backstage/errors';

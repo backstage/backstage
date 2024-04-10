@@ -15,7 +15,7 @@
  */
 
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { ROLLBAR_ANNOTATION } from '../constants';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 

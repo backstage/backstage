@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import HoverPopover from 'material-ui-popup-state/HoverPopover';

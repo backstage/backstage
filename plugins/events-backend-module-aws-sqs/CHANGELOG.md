@@ -1,5 +1,122 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/backend-tasks@0.5.22-next.1
+  - @backstage/plugin-events-node@0.3.3-next.1
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/backend-tasks@0.5.22-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.3-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- 81a995f: Updated dependency `aws-sdk-client-mock` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/plugin-events-node@0.3.2
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.3.1
+
+### Patch Changes
+
+- 81a995f: Updated dependency `aws-sdk-client-mock` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/backend-tasks@0.5.20
+  - @backstage/plugin-events-node@0.3.1
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.3.0
+
+### Minor Changes
+
+- 132d672: BREAKING CHANGE: Migrate `AwsSqsConsumingEventPublisher` and its backend module to use `EventsService`.
+
+  Uses the `EventsService` instead of `EventBroker` at `AwsSqsConsumingEventPublisher`,
+  dropping the use of `EventPublisher` including `setEventBroker(..)`.
+
+  Now, `AwsSqsConsumingEventPublisher.fromConfig` requires `events: EventsService` as option.
+
+  ```diff
+    const sqs = AwsSqsConsumingEventPublisher.fromConfig({
+      config: env.config,
+  +   events: env.events,
+      logger: env.logger,
+      scheduler: env.scheduler,
+    });
+  + await Promise.all(sqs.map(publisher => publisher.start()));
+
+    // e.g. at packages/backend/src/plugins/events.ts
+  - await new EventsBackend(env.logger)
+  -   .setEventBroker(env.eventBroker)
+  -   .addPublishers(sqs)
+  -   .start();
+
+    // or for other kinds of setups
+  - await Promise.all(sqs.map(publisher => publisher.setEventBroker(eventBroker)));
+  ```
+
+  `eventsModuleAwsSqsConsumingEventPublisher` uses the `eventsServiceRef` as dependency,
+  instead of `eventsExtensionPoint`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/types@1.1.1
+
+## 0.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.0-next.2
+
+## 0.3.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/backend-tasks@0.5.19-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.0-next.1
+
 ## 0.3.0-next.0
 
 ### Minor Changes

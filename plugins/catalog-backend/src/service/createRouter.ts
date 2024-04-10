@@ -23,7 +23,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { NotFoundError, serializeError } from '@backstage/errors';
+import { InputError, NotFoundError, serializeError } from '@backstage/errors';
 import express from 'express';
 import { Logger } from 'winston';
 import yn from 'yn';
@@ -219,6 +219,7 @@ export async function createRouter(
         const request = entitiesBatchRequest(req);
         const response = await entitiesCatalog.entitiesBatch({
           entityRefs: request.entityRefs,
+          filter: parseEntityFilterParams(req.query),
           fields: parseEntityTransformParams(req.query, request.fields),
           credentials: await httpAuth.credentials(req),
         });
@@ -297,8 +298,20 @@ export async function createRouter(
         location: locationInput,
         catalogFilename: z.string().optional(),
       });
-      const output = await locationAnalyzer.analyzeLocation(schema.parse(body));
-      res.status(200).json(output);
+      const parsedBody = schema.parse(body);
+      try {
+        const output = await locationAnalyzer.analyzeLocation(parsedBody);
+        res.status(200).json(output);
+      } catch (err) {
+        if (
+          // Catch errors from parse-url library.
+          err.name === 'Error' &&
+          'subject_url' in err
+        ) {
+          throw new InputError('The given location.target is not a URL');
+        }
+        throw err;
+      }
     });
   }
 

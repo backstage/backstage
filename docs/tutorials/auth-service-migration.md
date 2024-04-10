@@ -59,6 +59,15 @@ auth:
     guest: null
 ```
 
+If you still want to enable guest login in non-development environments, you can use this config snippet:
+
+```yaml
+auth:
+  providers:
+    guest:
+      dangerouslyAllowOutsideDevelopment: true
+```
+
 That's all you need for guest authentication! The default `SignInPage` from `@backstage/core-components` will detect and use the guest provider if it's enabled.
 
 Since the default auth policy is in effect for all plugins running in the new backend system, you do not need to worry about whether individual plugins are protected or not. The impact of plugins not yet being migrated is that they may have endpoints that should allow unauthenticated requests, but are now blocked by the default auth policy. If you want to temporarily work around this for individual plugins, you can install a module for the plugin that adds the required policy via the [http router service](../backend-system/core-services/http-router.md).

@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Box, Button, styled } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import { styled } from '@material-ui/core/styles';
 import { CalendarEvent } from './CalendarEvent';
 import mockEvents from './eventMock.json';
 import { MicrosoftCalendarEvent } from '../api';

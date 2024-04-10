@@ -15,14 +15,10 @@
  */
 
 import React, { useEffect, useState, useMemo } from 'react';
-import {
-  createStyles,
-  InputBase,
-  makeStyles,
-  MenuItem,
-  Select,
-  Theme,
-} from '@material-ui/core';
+import InputBase from '@material-ui/core/InputBase';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import {
   EntityKindFilter,
   useEntityList,

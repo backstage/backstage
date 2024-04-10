@@ -1,5 +1,115 @@
 # @backstage/plugin-techdocs-node
 
+## 1.12.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.11
+
+## 1.12.3-next.0
+
+### Patch Changes
+
+- 8e28c88: Allow overriding default techdocs preparers with new `TechdocsPreparerExtensionPoint`
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.11
+
+## 1.12.2
+
+### Patch Changes
+
+- 81a995f: Updated dependency `aws-sdk-client-mock` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-search-common@1.2.11
+
+## 1.12.1
+
+### Patch Changes
+
+- 81a995f: Updated dependency `aws-sdk-client-mock` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/integration-aws-node@0.1.11
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-search-common@1.2.11
+
+## 1.12.0
+
+### Minor Changes
+
+- 718b734: Create extension point `TechdocsGeneratorExtensionPoint` to allow adding a custom generator
+
+### Patch Changes
+
+- 5b4f565: Fix handling of default plugins that have configuration
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/catalog-model@1.4.5
+  - @backstage/integration-aws-node@0.1.10
+
+## 1.12.0-next.2
+
+### Minor Changes
+
+- 718b734: Create extension point `TechdocsGeneratorExtensionPoint` to allow adding a custom generator
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/integration-aws-node@0.1.10-next.1
+  - @backstage/plugin-search-common@1.2.11-next.1
+
+## 1.11.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/integration-aws-node@0.1.10-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/plugin-search-common@1.2.11-next.1
+
 ## 1.11.5-next.0
 
 ### Patch Changes

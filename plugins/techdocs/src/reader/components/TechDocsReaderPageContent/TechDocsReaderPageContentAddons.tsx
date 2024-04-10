@@ -15,7 +15,7 @@
  */
 
 import React from 'react';
-import { Portal } from '@material-ui/core';
+import Portal from '@material-ui/core/Portal';
 import {
   useTechDocsAddons,
   TechDocsAddonLocations as locations,
