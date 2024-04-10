@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 
 export type KeyStore = {
@@ -28,3 +29,10 @@ export type KeyPayload = {
 };
 
 export type InternalKey = JsonObject & { kid: string };
+
+/** @internal */
+export type InternalBackstageCredentials<TPrincipal = unknown> =
+  BackstageCredentials<TPrincipal> & {
+    version: string;
+    token?: string;
+  };
