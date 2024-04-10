@@ -19,32 +19,86 @@ export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
 /** @public */
 export type NotificationPayload = {
+  /**
+   * Notification title
+   */
   title: string;
+  /**
+   * Optional longer description for the notification
+   */
   description?: string;
+  /**
+   * Optional link where the notification is pointing to
+   */
   link?: string;
   // TODO: Add support for additional links
   // additionalLinks?: string[];
+  /**
+   * Notification severity, defaults to 'normal'
+   */
   severity?: NotificationSeverity;
+  /**
+   * Optional notification topic
+   */
   topic?: string;
+  /**
+   * Notification scope, can be used to re-send same notifications in case
+   * the scope and origin matches.
+   */
   scope?: string;
+  /**
+   * Optional notification icon
+   */
   icon?: string;
 };
 
 /** @public */
 export type Notification = {
+  /**
+   * Unique identifier for the notification
+   */
   id: string;
-  user: string;
+  /**
+   * The user entity reference that the notification is targeted to or null
+   * for broadcast notifications
+   */
+  user: string | null;
+  /**
+   * Notification creation date
+   */
   created: Date;
+  /**
+   * If user has saved the notification, the date when it was saved
+   */
   saved?: Date;
+  /**
+   * If user has read the notification, the date when it was read
+   */
   read?: Date;
+  /**
+   * If the notification has been updated due to it being in the same scope
+   * and from same origin as previous notification, the date when it was updated
+   */
   updated?: Date;
+  /**
+   * Origin of the notification as in the reference to sender
+   */
   origin: string;
+  /**
+   * Actual notification payload
+   */
   payload: NotificationPayload;
 };
 
 /** @public */
 export type NotificationStatus = {
+  /**
+   * Total number of unread notifications for the user
+   */
   unread: number;
+  /**
+   * Total number of read notifications for the user
+   */
   read: number;
 };
 
