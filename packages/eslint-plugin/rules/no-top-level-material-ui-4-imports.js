@@ -27,7 +27,23 @@
  */
 
 const KNOWN_STYLES = [
-  // TODO: add exports from colorManipulator and transitions
+  // colorManipulator
+  'hexToRgb',
+  'rgbToHex',
+  'hslToRgb',
+  'decomposeColor',
+  'recomposeColor',
+  'getContrastRatio',
+  'getLuminance',
+  'emphasize',
+  'fade',
+  'alpha',
+  'darken',
+  'lighten',
+  // transitions
+  'easing',
+  'duration',
+  // styles
   'createTheme',
   'unstable_createMuiStrictModeTheme',
   'createMuiTheme',
