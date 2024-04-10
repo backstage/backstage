@@ -140,6 +140,6 @@ Alternatively, we could maintain the current state by allowing callers to indepe
 
 Another alternative is to retain access control on a per-plugin basis, as demonstrated in https://github.com/backstage/backstage/pull/23441. Given the repetitive nature of this use-case, establishing a common mechanism may present a more favorable option.
 
-### Shared Token Requestor
+### Shared Token Requester
 
-Implementing a shared token requestor, as showcased in https://github.com/backstage/backstage/pull/23465, offers another potential solution. This approach may streamline token management and enhance accessibility, but requires thorough consideration of its implications and integration into the existing system.
+Implementing a shared token requester, as showcased in https://github.com/backstage/backstage/pull/23465, offers another potential solution. This approach may streamline token management and enhance accessibility, but requires thorough consideration of its implications and integration into the existing system.
