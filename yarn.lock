@@ -14743,12 +14743,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pnpm/error@npm:5.0.3":
-  version: 5.0.3
-  resolution: "@pnpm/error@npm:5.0.3"
+"@pnpm/error@npm:5.0.2":
+  version: 5.0.2
+  resolution: "@pnpm/error@npm:5.0.2"
   dependencies:
     "@pnpm/constants": 7.1.1
-  checksum: b0c5b8b18c4302aeef59554b07107046679189d24eac6b34df59a28f6567f999bd589d7f64c75fcfee2e25f4175f5c0b1089fb2c5b633257836ced185e531726
+  checksum: 490e90b3a6fa6527a5a2b07dfd46982e005d8834036871a30cf03fcb389497b9828ed01c0d39e88b6352a340556de316eae9dbefcb3246f368815a03241576e6
   languageName: node
   linkType: hard
 
@@ -14792,12 +14792,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pnpm/npm-resolver@npm:18.1.1":
-  version: 18.1.1
-  resolution: "@pnpm/npm-resolver@npm:18.1.1"
+"@pnpm/npm-resolver@npm:18.1.0":
+  version: 18.1.0
+  resolution: "@pnpm/npm-resolver@npm:18.1.0"
   dependencies:
     "@pnpm/core-loggers": 9.0.6
-    "@pnpm/error": 5.0.3
+    "@pnpm/error": 5.0.2
     "@pnpm/fetching-types": 5.0.0
     "@pnpm/graceful-fs": 3.2.0
     "@pnpm/resolve-workspace-range": 5.0.1
@@ -14819,7 +14819,7 @@ __metadata:
     version-selector-type: ^3.0.0
   peerDependencies:
     "@pnpm/logger": ^5.0.0
-  checksum: 6157882e654c088b2a4b4948e911fd0e8e9e1eca8cf54637757b17ac13330d3a22f429b0183cb7dbbd1015830acdd476e4b719d038ebe0c020f34e33f2b823d5
+  checksum: 81b0dd97a0062374db7aecd68a94e7e52dd19c9675bd052c7fa7a2b5edb6219dc525e71dccb70bf4bae90faf44f6e1cd0d4f155606bc754ffcec4f9ab6852c08
   languageName: node
   linkType: hard
 
@@ -14848,15 +14848,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@pnpm/workspace.pkgs-graph@npm:^2.0.15":
-  version: 2.0.15
-  resolution: "@pnpm/workspace.pkgs-graph@npm:2.0.15"
+"@pnpm/workspace.pkgs-graph@npm:2.0.14":
+  version: 2.0.14
+  resolution: "@pnpm/workspace.pkgs-graph@npm:2.0.14"
   dependencies:
     "@pnpm/npm-package-arg": ^1.0.0
-    "@pnpm/npm-resolver": 18.1.1
+    "@pnpm/npm-resolver": 18.1.0
     "@pnpm/resolve-workspace-range": 5.0.1
     ramda: "npm:@pnpm/ramda@0.28.1"
-  checksum: f16cebedb0aed369ffe744792859e8cca016069013e4a0e0317f9e4dec72fd0f44042999b30d490f37ed29aaa64fcb92e0ff715069b1854a3c96926f417d3255
+  checksum: ff3b5234611da1ec4b636616554abcb4720c4fcd3db33bcb7b4b1e4ed5ebd091a854163876c1b1f7d56d2ec6e4f344c22eaf02054f2963d9a50a49462412793d
   languageName: node
   linkType: hard
 
@@ -33242,15 +33242,15 @@ __metadata:
   linkType: hard
 
 "knip@npm:^5.0.0":
-  version: 5.9.1
-  resolution: "knip@npm:5.9.1"
+  version: 5.9.3
+  resolution: "knip@npm:5.9.3"
   dependencies:
     "@ericcornelissen/bash-parser": 0.5.2
     "@nodelib/fs.walk": 2.0.0
     "@npmcli/map-workspaces": 3.0.4
     "@npmcli/package-json": 5.0.0
     "@pnpm/logger": 5.0.0
-    "@pnpm/workspace.pkgs-graph": ^2.0.15
+    "@pnpm/workspace.pkgs-graph": 2.0.14
     "@snyk/github-codeowners": 1.1.0
     "@types/picomatch": 2.3.3
     easy-table: 1.2.0
@@ -33273,7 +33273,7 @@ __metadata:
     typescript: ">=5.0.4"
   bin:
     knip: bin/knip.js
-  checksum: cba74d28ba07f05cf8ba829a5536e0355a29b9264ec49c3ec93aed6c30d85d43f5bc31cc049d9c233e7ddbc127388266f5f33b2088783078f2650d855aefb950
+  checksum: 5a4b8696ddd6d603a490fb759f91c4fa81e66a2f090a0010abcdb3c7cb53467833a0c37ecbde91aee7b8289172a3d161f8b74af1fd5e78bbd2cc9be4203ec53c
   languageName: node
   linkType: hard
 
