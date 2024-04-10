@@ -154,5 +154,12 @@ import { styled, withStyles, alpha, duration } from '@material-ui/core/styles';`
       errors: [{ messageId: 'topLevelImport' }],
       output: `import { styled as s } from '@material-ui/core/styles';`,
     },
+    {
+      code: `import { TreeItem, TreeItemProps, TreeView, AlertProps } from '@material-ui/lab';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
+import TreeView from '@material-ui/lab/TreeView';
+import { AlertProps } from '@material-ui/lab/Alert';`,
+    },
   ],
 });

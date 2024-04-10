@@ -204,7 +204,7 @@ module.exports = {
             if (specifier.emitProp && !specifier.emitComponent) {
               const replacement = `import { ${getNamedImportValue(
                 specifier,
-              )} } from '@material-ui/core/${specifier.componentValue}';`;
+              )} } from '${node.source.value}/${specifier.componentValue}';`;
               replacements.push(replacement);
             }
 
@@ -213,9 +213,9 @@ module.exports = {
               replacements.push(
                 `import ${
                   specifier.componentAlias ?? specifier.componentValue
-                }, { ${getNamedImportValue(
-                  specifier,
-                )} } from '@material-ui/core/${specifier.componentValue}';`,
+                }, { ${getNamedImportValue(specifier)} } from '${
+                  node.source.value
+                }/${specifier.componentValue}';`,
               );
             }
           }
