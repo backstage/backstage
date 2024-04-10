@@ -163,6 +163,15 @@ module.exports = {
         ],
       },
     ],
+    [
+      'docusaurus-pushfeedback',
+      {
+        project: 'q8w1i6cair',
+        hideIcon: true,
+        customFont: true,
+        buttonStyle: 'dark',
+      },
+    ],
   ],
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
