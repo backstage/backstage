@@ -37510,12 +37510,11 @@ __metadata:
   linkType: hard
 
 "passport-microsoft@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "passport-microsoft@npm:1.0.0"
+  version: 1.1.0
+  resolution: "passport-microsoft@npm:1.1.0"
   dependencies:
-    passport-oauth2: 1.6.1
-    pkginfo: 0.4.x
-  checksum: 9f66b857364a1653a2becc255be098f895bdfd53425ad3ba95eb0a99820c5f38a0f03935d70122fad2608a6506d9de49fc9696e60df3d60fa7619585ab5dbd5d
+    passport-oauth2: 1.8.0
+  checksum: 97cb68f3adba8914a9375ebf1b0a05f33d8ca53ddad50948a254219e01672e726fc8eb7152d4e31de86041ab603dea950cec4f3dee5c6ade3bcc3de23aa44408
   languageName: node
   linkType: hard
 
@@ -37530,20 +37529,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"passport-oauth2@npm:1.6.1":
-  version: 1.6.1
-  resolution: "passport-oauth2@npm:1.6.1"
-  dependencies:
-    base64url: 3.x.x
-    oauth: 0.9.x
-    passport-strategy: 1.x.x
-    uid2: 0.0.x
-    utils-merge: 1.x.x
-  checksum: 2a5b01a884ebade01770543d3b84fbdbc45c75ca13b320b88ae59e33388bb485a27c323c2d3904058dca57065bf0e2a78c645cbb62600ced2dcdd43094259f0e
-  languageName: node
-  linkType: hard
-
-"passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.1.2, passport-oauth2@npm:^1.4.0, passport-oauth2@npm:^1.6.0, passport-oauth2@npm:^1.6.1, passport-oauth2@npm:^1.7.0":
+"passport-oauth2@npm:1.8.0, passport-oauth2@npm:1.x.x, passport-oauth2@npm:^1.1.2, passport-oauth2@npm:^1.4.0, passport-oauth2@npm:^1.6.0, passport-oauth2@npm:^1.6.1, passport-oauth2@npm:^1.7.0":
   version: 1.8.0
   resolution: "passport-oauth2@npm:1.8.0"
   dependencies:
@@ -38114,7 +38100,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pkginfo@npm:0.4.x, pkginfo@npm:^0.4.1":
+"pkginfo@npm:^0.4.1":
   version: 0.4.1
   resolution: "pkginfo@npm:0.4.1"
   checksum: 0f13694f3682345647b7cb887fb6fe258df51b635f252324cd75eeb8181b4381cb8b9d91dc2d869849e857192b403bea65038d2f7c05b524eeae69ece5048209
