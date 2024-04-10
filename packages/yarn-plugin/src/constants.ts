@@ -14,25 +14,4 @@
  * limitations under the License.
  */
 
-/**
- * Yarn plugin for resolving package versions based on
- * a Backstage version manifest.
- *
- * @packageDocumentation
- */
-
-import { Plugin } from '@yarnpkg/core';
-import { beforeWorkspacePacking } from './handlers/beforeWorkspacePacking';
-import { BackstageResolver } from './resolver/BackstageResolver';
-
-/**
- * @public
- */
-const plugin: Plugin = {
-  hooks: {
-    beforeWorkspacePacking,
-  },
-  resolvers: [BackstageResolver],
-};
-
-export default plugin;
+export const PROTOCOL = 'backstage:';

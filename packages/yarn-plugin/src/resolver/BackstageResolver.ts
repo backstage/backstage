@@ -21,11 +21,11 @@ import {
   Package,
   Resolver,
 } from '@yarnpkg/core';
-import { xfs, npath } from '@yarnpkg/fslib';
-import { getManifestByVersion } from '@backstage/release-manifests';
+import { PROTOCOL } from '../constants';
+import { inferBackstageVersion, inferPackageVersion } from '../util';
 
 export class BackstageResolver implements Resolver {
-  static protocol = `backstage:`;
+  static protocol = PROTOCOL;
 
   supportsDescriptor = (descriptor: Descriptor) =>
     descriptor.range.startsWith(BackstageResolver.protocol);
@@ -33,39 +33,18 @@ export class BackstageResolver implements Resolver {
   shouldPersistResolution = () => true;
 
   bindDescriptor(descriptor: Descriptor): Descriptor {
-    if (descriptor.range === `${BackstageResolver.protocol}*`) {
-      const backstageJson = xfs.readJsonSync(
-        npath.toPortablePath('./backstage.json'),
-      );
-
-      return structUtils.makeDescriptor(
-        descriptor,
-        `backstage:${backstageJson.version}`,
-      );
-    }
-
-    return descriptor;
+    return structUtils.makeDescriptor(
+      descriptor,
+      `backstage:${inferBackstageVersion(descriptor)}`,
+    );
   }
 
   async getCandidates(descriptor: Descriptor): Promise<Locator[]> {
-    const backstageVersion = descriptor.range.replace(
-      BackstageResolver.protocol,
-      '',
-    );
-
-    const manifest = await getManifestByVersion({ version: backstageVersion });
-    const ident = structUtils.stringifyIdent(descriptor);
-
-    const manifestEntry = manifest.packages.find(
-      candidate => candidate.name === ident,
-    );
-
-    if (!manifestEntry) {
-      throw new Error(`Package ${ident} not found in manifest`);
-    }
-
     return [
-      structUtils.makeLocator(descriptor, `npm:${manifestEntry.version}`),
+      structUtils.makeLocator(
+        descriptor,
+        `npm:${await inferPackageVersion(descriptor)}`,
+      ),
     ];
   }
 

@@ -1,42 +1,43 @@
 {
   "name": "yarn-plugin-backstage",
-  "description": "Yarn plugin for working with Backstage monorepos",
   "version": "0.0.0",
-  "private": true,
+  "description": "Yarn plugin for working with Backstage monorepos",
   "backstage": {
     "role": "node-library"
   },
+  "private": true,
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/yarn-plugin"
   },
-  "keywords": [
-    "backstage"
-  ],
   "license": "Apache-2.0",
   "main": "./src/index.ts",
   "scripts": {
     "build": "builder build plugin",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
-    "start": "nodemon --"
+    "lint": "backstage-cli package lint",
+    "start": "nodemon --",
+    "test": "backstage-cli package test"
+  },
+  "nodemonConfig": {
+    "exec": "builder build plugin",
+    "ext": "ts",
+    "watch": "./src"
   },
   "dependencies": {
     "@backstage/release-manifests": "workspace:^",
     "@yarnpkg/core": "^4.0.3",
-    "@yarnpkg/fslib": "^3.0.2"
+    "@yarnpkg/fslib": "^3.0.2",
+    "semver": "^7.6.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@yarnpkg/builder": "^4.0.0",
     "nodemon": "^3.0.1"
-  },
-  "nodemonConfig": {
-    "watch": "./src",
-    "exec": "builder build plugin",
-    "ext": "ts"
   }
 }
