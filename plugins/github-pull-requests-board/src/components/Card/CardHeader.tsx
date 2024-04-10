@@ -32,7 +32,7 @@ type Props = {
   isDraft: boolean;
   repositoryIsArchived: boolean;
   labels?: Label[];
-  status?: Status;
+  status?: Status[];
 };
 
 const CardHeader: FunctionComponent<Props> = (props: Props) => {
@@ -92,7 +92,9 @@ const CardHeader: FunctionComponent<Props> = (props: Props) => {
         <Box display="flex" alignItems="center" flexWrap="wrap" paddingTop={1}>
           <Typography variant="body2" component="p">
             Commit Status:{' '}
-            <strong>{status.commit.statusCheckRollup?.state || 'N/A'}</strong>
+            <strong>
+              {status[0]?.commit.statusCheckRollup?.state || 'N/A'}
+            </strong>
           </Typography>
         </Box>
       )}
