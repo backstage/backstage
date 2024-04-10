@@ -46,16 +46,16 @@ auth:
       development:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
-        scopes: ${AUTH_ATLASSIAN_SCOPES}
+        scope: ${AUTH_ATLASSIAN_SCOPES}
 ```
 
 The Atlassian provider is a structure with three configuration keys:
 
 - `clientId`: The Key you generated in the developer console.
 - `clientSecret`: The Secret tied to the generated Key.
-- `scopes`: List of scopes the app has permissions for, separated by spaces.
+- `scope`: List of scopes the app has permissions for, separated by spaces.
 
-**NOTE:** the scopes `offline_access` and `read:me` are provided by default.
+**NOTE:** the scopes `offline_access`, `read:jira-work`, and `read:jira-user` are provided by default.
 
 ## Adding the provider to the Backstage frontend
 
