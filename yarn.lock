@@ -45137,6 +45137,7 @@ __metadata:
     "@yarnpkg/core": ^4.0.3
     "@yarnpkg/fslib": ^3.0.2
     nodemon: ^3.0.1
+    semver: ^7.6.0
   languageName: unknown
   linkType: soft
 
