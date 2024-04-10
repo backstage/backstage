@@ -46,8 +46,7 @@ The previous tutorial lacked clarity on how to effectively structure the call, r
 
 Examples of potential use-cases include:
 
-- An external asynchronous service requiring the ability to send notifications to users. Configuration details will be provided to facilitate this process.
-- more TBD
+- An external asynchronous service requiring the ability to send notifications to users. To facilitate this process, no code change but configuration only is needed on the Backstage side.
 
 ### Goals
 
@@ -66,7 +65,7 @@ It is not a goal
 
 ## Proposal
 
-The `app-config.yaml` `backend.auth.keys` property will become an array an array containing alternative authentication mechanisms for callers.
+The `app-config.yaml` `backend.auth.keys` property will become an array containing alternative authentication mechanisms for callers.
 
 JWT tokens remain obligatory for internal Backstage calls and become optional for external callers. Given the complexity associated with composing JWT tokens by external entities, alternative authentication options will be provided for external callers:
 
@@ -86,7 +85,7 @@ backend:
       context: '/foo/bar'
 ```
 
-The static type is designed for a straightforward shared-key strategy. In this approach, an external service provides a secret string to authenticate itself and access REST resources within a specified context. The shared key is transmitted via a new request header, authorization_static.
+The static type is designed for a straightforward shared-key strategy. In this approach, an external service provides a secret string to authenticate itself and access REST resources within a specified context. The shared key is transmitted via a new request header, `authorization_static`.
 
 Ideally, each external service should have its own unique secret key, even when accessing the same context. If a service requires access to different, separate contexts, multiple corresponding entries will be added to the configuration.
 
