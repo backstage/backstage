@@ -15975,20 +15975,20 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@sagold/json-pointer@npm:^5.1.1":
-  version: 5.1.1
-  resolution: "@sagold/json-pointer@npm:5.1.1"
-  checksum: d0aa16330997d479b8035f22cab3e2f63f3ae8d9e5ab1137746056581606baba47a7b15116a751c9ea430e1aba9ee7a5459a3ee352509a4afca109cce1dcd9e1
+"@sagold/json-pointer@npm:^5.1.2":
+  version: 5.1.2
+  resolution: "@sagold/json-pointer@npm:5.1.2"
+  checksum: e29afd3f7e21196e369b332e99504472742ac5a0c141438071e822d3bd9fa55164a14dd25cc0396f2d50b0f9d9b76161e81c83c2035e16e72731b98130968cda
   languageName: node
   linkType: hard
 
-"@sagold/json-query@npm:^6.1.1":
-  version: 6.1.1
-  resolution: "@sagold/json-query@npm:6.1.1"
+"@sagold/json-query@npm:^6.1.3":
+  version: 6.2.0
+  resolution: "@sagold/json-query@npm:6.2.0"
   dependencies:
-    "@sagold/json-pointer": ^5.1.1
+    "@sagold/json-pointer": ^5.1.2
     ebnf: ^1.9.1
-  checksum: bc9697ae45efce92600185491679379e44d494ed13fdb927984aaade40939e6ab2e6f982cf8b1b8b29ec80df560bab0052a86b349cc0071e0e5feb40c465ba54
+  checksum: 1c29a1bb81fa14573d37f485170083b0f43ecee66d08422f8ff6d3083ab65954cff9178502132d87175f34cf1e432e1ee7985d60417e350a730de907c63ef633
   languageName: node
   linkType: hard
 
@@ -27984,7 +27984,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-copy@npm:^3.0.1":
+"fast-copy@npm:^3.0.2":
   version: 3.0.2
   resolution: "fast-copy@npm:3.0.2"
   checksum: 47f584bcede08ab3198559d3e0e093a547d567715b86be2198da6e3366c3c73eed550d97b86f9fb90dae179982b89c15d68187def960f522cdce14bacdfc6184
@@ -32659,17 +32659,17 @@ __metadata:
   linkType: hard
 
 "json-schema-library@npm:^9.0.0":
-  version: 9.1.3
-  resolution: "json-schema-library@npm:9.1.3"
+  version: 9.3.4
+  resolution: "json-schema-library@npm:9.3.4"
   dependencies:
-    "@sagold/json-pointer": ^5.1.1
-    "@sagold/json-query": ^6.1.1
+    "@sagold/json-pointer": ^5.1.2
+    "@sagold/json-query": ^6.1.3
     deepmerge: ^4.3.1
-    fast-copy: ^3.0.1
+    fast-copy: ^3.0.2
     fast-deep-equal: ^3.1.3
     smtp-address-parser: 1.0.10
     valid-url: ^1.0.9
-  checksum: 0fd5c0a23fa146cab9c0e3bdfa5da46e7139f750091a64ee4f3ee10f44d114ef8b2db2a41be7e8591b37ebed47c40057e1b418de420a1226d9a16ec9dca7b164
+  checksum: 6e3accc45bdf0fe4831c8b2a560d8feaa9402bd6c5833a0c7e11ee78c316b17a389a3368a7ee2c989d4aac36018742d7dcc83c66b11170c54800b0e56418638f
   languageName: node
   linkType: hard
 
