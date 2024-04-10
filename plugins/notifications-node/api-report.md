@@ -20,7 +20,7 @@ export class DefaultNotificationService implements NotificationService {
   send(notification: NotificationSendOptions): Promise<void>;
 }
 
-// @public (undocumented)
+// @public
 export interface NotificationProcessor {
   getName(): string;
   postProcess?(
