@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@types/estree": "^1.0.5",
     "eslint": "^8.33.0"
   }
 }
