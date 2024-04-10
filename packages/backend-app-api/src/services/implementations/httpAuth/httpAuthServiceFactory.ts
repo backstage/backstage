@@ -225,14 +225,12 @@ class DefaultHttpAuthService implements HttpAuthService {
     priority: 'high';
     sameSite: 'none' | 'lax';
   }> {
-    const originHeader = req.headers.origin;
-    const origin =
-      !originHeader || originHeader === 'null' ? undefined : originHeader;
+    const requestBaseUrl = `${req.protocol}://${req.hostname}`;
 
     const externalBaseUrlStr = await this.#discovery.getExternalBaseUrl(
       this.#pluginId,
     );
-    const externalBaseUrl = new URL(externalBaseUrlStr ?? origin);
+    const externalBaseUrl = new URL(requestBaseUrl ?? externalBaseUrlStr);
 
     const secure =
       externalBaseUrl.protocol === 'https:' ||
