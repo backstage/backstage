@@ -240,7 +240,7 @@ class DefaultAuthService implements AuthService {
 
         if (this.userTokenHandler.isLimitedUserToken(token)) {
           throw new AuthenticationError(
-            `Unable to call '${targetPluginId}' plugin on behalf of user, because the target plugin does not support on-behalf-of tokens`,
+            `Unable to call '${targetPluginId}' plugin on behalf of user, because the target plugin does not support on-behalf-of tokens or the plugin doesn't exist`,
           );
         }
         return { token };

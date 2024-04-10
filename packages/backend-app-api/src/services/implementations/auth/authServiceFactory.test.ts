@@ -384,7 +384,7 @@ describe('authServiceFactory', () => {
         targetPluginId: 'kubernetes',
       }),
     ).rejects.toThrow(
-      "Unable to call 'kubernetes' plugin on behalf of user, because the target plugin does not support on-behalf-of tokens",
+      "Unable to call 'kubernetes' plugin on behalf of user, because the target plugin does not support on-behalf-of tokens or the plugin doesn't exist",
     );
   });
 });
