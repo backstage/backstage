@@ -18027,8 +18027,8 @@ __metadata:
   linkType: hard
 
 "@testing-library/react@npm:^14.0.0":
-  version: 14.2.2
-  resolution: "@testing-library/react@npm:14.2.2"
+  version: 14.3.0
+  resolution: "@testing-library/react@npm:14.3.0"
   dependencies:
     "@babel/runtime": ^7.12.5
     "@testing-library/dom": ^9.0.0
@@ -18036,7 +18036,7 @@ __metadata:
   peerDependencies:
     react: ^18.0.0
     react-dom: ^18.0.0
-  checksum: cb73df588592d9101429f057eaa6f320fc12524d5eb2acc8a16002c1ee2d9422a49e44841003bba42974c9ae1ced6b134f0d647826eca42ab8f19e4592971b16
+  checksum: 4aa7e583feac7e9bd93ff981d1dc5113329181bf01ad955af2f748f263dc52cdbff6ead6664a8762481e30b70d7f402aaac7a497d9d1a1747ad6906dfb0eabad
   languageName: node
   linkType: hard
 
