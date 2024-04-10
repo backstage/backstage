@@ -63,6 +63,14 @@ export const badgesPlugin = createBackendPlugin({
             auth,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/entity/:entityUuid/:badgeId',
+          allow: 'unauthenticated',
+        });
+        httpRouter.addAuthPolicy({
+          path: '/entity/:namespace/:kind/:name/badge/:badgeId',
+          allow: 'unauthenticated',
+        });
       },
     });
   },
