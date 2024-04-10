@@ -36775,8 +36775,8 @@ __metadata:
   linkType: hard
 
 "octokit@npm:^3.0.0":
-  version: 3.1.2
-  resolution: "octokit@npm:3.1.2"
+  version: 3.2.0
+  resolution: "octokit@npm:3.2.0"
   dependencies:
     "@octokit/app": ^14.0.2
     "@octokit/core": ^5.0.0
@@ -36788,7 +36788,7 @@ __metadata:
     "@octokit/plugin-throttling": ^8.0.0
     "@octokit/request-error": ^5.0.0
     "@octokit/types": ^12.0.0
-  checksum: 8ef0d57a0e0129da5a3fddf2b2150c3214fd19b5cbefdd2fe7fa4604f45aae90587080ce1498fadef6714d385835ee00b7c86c526f31d67c93fcd545e041568c
+  checksum: 3ec8efe02144aa6210a5c846947245cbe58d31144fa8e6a1726782001d77fcd044b7e1498a56c5e47aba44c1f5726a37c261f474cb46b816579549f7a09db1f6
   languageName: node
   linkType: hard
 
