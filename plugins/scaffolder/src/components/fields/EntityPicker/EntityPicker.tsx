@@ -103,14 +103,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
       // ref can either be a string from free solo entry or
       if (typeof ref !== 'string') {
         // if ref does not exist: pass 'undefined' to trigger validation for required value
-        onChange(
-          ref
-            ? entityPresentationApi.forEntity(ref, {
-                defaultKind,
-                defaultNamespace,
-              }).snapshot.entityRef
-            : undefined,
-        );
+        onChange(ref ? stringifyEntityRef(ref as Entity) : undefined);
       } else {
         if (reason === 'blur' || reason === 'create-option') {
           // Add in default namespace, etc.
@@ -133,14 +126,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
         }
       }
     },
-    [
-      onChange,
-      formData,
-      defaultKind,
-      defaultNamespace,
-      allowArbitraryValues,
-      entityPresentationApi,
-    ],
+    [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
   );
 
   // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
@@ -151,9 +137,9 @@ export const EntityPicker = (props: EntityPickerProps) => {
 
   useEffect(() => {
     if (entities?.length === 1 && selectedEntity === '') {
-      onChange(entityPresentationApi.forEntity(entities[0]).snapshot.entityRef);
+      onChange(stringifyEntityRef(entities[0]));
     }
-  }, [entities, onChange, selectedEntity, entityPresentationApi]);
+  }, [entities, onChange, selectedEntity]);
 
   return (
     <FormControl
