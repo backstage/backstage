@@ -17,7 +17,11 @@ import {
   type EntityFilterQuery,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
-import { Entity } from '@backstage/catalog-model';
+import {
+  Entity,
+  parseEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
@@ -77,14 +81,18 @@ export const EntityPicker = (props: EntityPickerProps) => {
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
 
   const getLabel = useCallback(
-    (ref: string) => {
+    (formDataOrRef: string) => {
       try {
-        return entityPresentationApi.forEntity(ref, {
+        const parsedRef = stringifyEntityRef(
+          parseEntityRef(formDataOrRef, { defaultKind, defaultNamespace }),
+        );
+
+        return entityPresentationApi.forEntity(parsedRef, {
           defaultKind,
           defaultNamespace,
         }).snapshot.primaryTitle;
       } catch (err) {
-        return ref;
+        return formDataOrRef;
       }
     },
     [defaultKind, defaultNamespace, entityPresentationApi],
@@ -109,10 +117,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
           let entityRef = ref;
           try {
             // Attempt to parse the entity ref into it's full form.
-            entityRef = entityPresentationApi.forEntity(ref, {
-              defaultKind,
-              defaultNamespace,
-            }).snapshot.entityRef;
+            entityRef = stringifyEntityRef(
+              parseEntityRef(ref as string, {
+                defaultKind,
+                defaultNamespace,
+              }),
+            );
           } catch (err) {
             // If the passed in value isn't an entity ref, do nothing.
           }
@@ -136,9 +146,8 @@ export const EntityPicker = (props: EntityPickerProps) => {
   // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
   // back to the given value.
   const selectedEntity =
-    entities?.find(
-      e => entityPresentationApi.forEntity(e).snapshot.entityRef === formData,
-    ) ?? (allowArbitraryValues && formData ? getLabel(formData) : '');
+    entities?.find(e => stringifyEntityRef(e) === formData) ??
+    (allowArbitraryValues && formData ? getLabel(formData) : '');
 
   useEffect(() => {
     if (entities?.length === 1 && selectedEntity === '') {
