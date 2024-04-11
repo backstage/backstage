@@ -50,6 +50,13 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
                 ? lighten(theme.palette.textVerySubtle, 0.2)
                 : darken(theme.palette.textVerySubtle, 0.2),
           },
+        '&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover':
+          {
+            backgroundColor:
+              theme.palette.mode === 'dark'
+                ? lighten(theme.palette.textVerySubtle, 0.2)
+                : darken(theme.palette.textVerySubtle, 0.2),
+          },
       },
       a: {
         color: 'inherit',
