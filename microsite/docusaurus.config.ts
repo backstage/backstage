@@ -21,11 +21,12 @@
 
 import { themes } from 'prism-react-renderer';
 import type * as Preset from '@docusaurus/preset-classic';
+import { Config } from '@docusaurus/types';
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 
 /** @type {import('@docusaurus/types').Config} */
-module.exports = {
+const config:Config = {
   title: 'Backstage Software Catalog and Developer Platform',
   tagline: 'An open source framework for building developer portals',
   url: 'https://backstage.io',
@@ -96,6 +97,7 @@ module.exports = {
   plugins: [
     'docusaurus-plugin-sass',
     () => ({
+      name:"webpack-config",
       configureWebpack() {
         return {
           module: {
@@ -335,3 +337,4 @@ module.exports = {
     },
   } satisfies Preset.ThemeConfig,
 };
+export default config;
