@@ -123,7 +123,7 @@ export class ServerPermissionClient implements PermissionsService {
 
       return this.#auth.getPluginRequestToken({
         onBehalfOf: options.credentials,
-        targetPluginId: 'permissions',
+        targetPluginId: 'permission',
       });
     }
 

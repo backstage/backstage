@@ -99,7 +99,7 @@ export type PullRequest = {
     nodes: Reviews;
   };
   commits: {
-    nodes: Status;
+    nodes: Status[];
   };
   mergeable: boolean;
   state: string;

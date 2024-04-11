@@ -21,8 +21,8 @@ import {
   createServiceFactory,
   BackstageCredentials,
 } from '@backstage/backend-plugin-api';
-import { toInternalBackstageCredentials } from '../auth/authServiceFactory';
 import { decodeJwt } from 'jose';
+import { toInternalBackstageCredentials } from '../auth/helpers';
 
 // TODO: The intention is for this to eventually be replaced by a call to the auth-backend
 export class DefaultUserInfoService implements UserInfoService {

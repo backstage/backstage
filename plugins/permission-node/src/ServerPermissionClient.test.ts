@@ -277,7 +277,7 @@ describe('ServerPermissionClient', () => {
         ).toBe(
           mockCredentials.service.header({
             onBehalfOf: mockCredentials.user(),
-            targetPluginId: 'permissions',
+            targetPluginId: 'permission',
           }),
         );
       });
@@ -357,7 +357,7 @@ describe('ServerPermissionClient', () => {
         ).toBe(
           mockCredentials.service.header({
             onBehalfOf: mockCredentials.user(),
-            targetPluginId: 'permissions',
+            targetPluginId: 'permission',
           }),
         );
       });

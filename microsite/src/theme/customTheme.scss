@@ -121,3 +121,26 @@
 }
 
 /* #endregion */
+
+/* For the docusaurus-pushfeedback plugin */
+:root {
+  --feedback-primary-color: var(--ifm-color-primary);
+  --feedback-button-dark-text-color: var(--ifm-color-black);
+
+  --feedback-modal-button-submit-bg-color: var(--ifm-color-primary);
+  --feedback-modal-button-submit-bg-color-hover: var(--ifm-color-primary-dark);
+
+  --feedback-modal-button-submit-text-color: var(--ifm-color-black);
+  --feedback-modal-button-submit-text-color-hover: var(--ifm-color-black);
+
+  --feedback-button-text-font-size: 1rem;
+  --feedback-button-text-font-weight: 600;
+}
+
+/* Hide feedback button unless we're in docs */
+feedback-button {
+  display: none;
+}
+html.plugin-docs feedback-button {
+  display: initial;
+}

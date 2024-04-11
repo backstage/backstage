@@ -37,13 +37,15 @@ const props = {
       name: 'documentation',
     },
   ],
-  status: {
-    commit: {
-      statusCheckRollup: {
-        state: 'SUCCESS',
+  status: [
+    {
+      commit: {
+        statusCheckRollup: {
+          state: 'SUCCESS',
+        },
       },
     },
-  },
+  ],
 };
 
 describe('<CardHeader/>', () => {
@@ -65,7 +67,7 @@ describe('<CardHeader/>', () => {
   it('finds commit status in PR Card Header', async () => {
     await renderInTestApp(<CardHeader {...props} />);
     expect(screen.getByText('Commit Status:')).toBeInTheDocument();
-    expect(props.status?.commit.statusCheckRollup.state).toBeTruthy();
+    expect(props.status[0].commit.statusCheckRollup.state).toBeTruthy();
   });
 
   it('does not find commit status in PR Card Header when PR does not include status', async () => {
