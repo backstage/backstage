@@ -27,12 +27,16 @@ const DEP_TYPES = [
   'optionalDependencies',
 ] as const;
 
-// Package data as returned by `yarn info`
+// Package data as returned by `yarn info`. This is an uncomplete type fullfilling the required needs in the CLI
 export type YarnInfoInspectData = {
   name: string;
   'dist-tags': Record<string, string>;
   versions: string[];
   time: { [version: string]: string };
+  backstage?: {
+    role?: string;
+    moved?: string;
+  };
 };
 
 // Possible `yarn info` output

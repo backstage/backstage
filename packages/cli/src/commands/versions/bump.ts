@@ -182,9 +182,7 @@ export default async (opts: OptionValues) => {
     parallelismFactor: 4,
     items: unlocked,
     async worker({ name }) {
-      let info = (await fetchPackageInfo(name)) as YarnInfoInspectData & {
-        backstage?: { moved: string };
-      };
+      let info = await fetchPackageInfo(name);
 
       // TODO: To be removed
       if (name === '@backstage/plugin-catalog-react') {
@@ -195,7 +193,7 @@ export default async (opts: OptionValues) => {
       }
 
       if (info.backstage?.moved) {
-        info = await fetchPackageInfo(info.backstage?.moved);
+        info = await fetchPackageInfo(info.backstage.moved);
         moved.set(name, {
           name: info.name,
           range: `^${info['dist-tags'].latest}`,
