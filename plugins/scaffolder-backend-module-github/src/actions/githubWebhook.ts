@@ -152,7 +152,7 @@ export function createGithubWebhookAction(options: {
 
       // If this is a dry run, log and return
       if (ctx.isDryRun) {
-        ctx.logger.info(`Dry run completed`);
+        ctx.logger.info(`Dry run complete`);
         return;
       }
 
