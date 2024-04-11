@@ -38,7 +38,8 @@ import {
   DiscoveryService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import * as uuid from 'uuid';
+import uuid from 'uuid';
+import lodash from 'lodash';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 
 const HTTP_VERBS: (keyof PathItemObject)[] = [
@@ -229,22 +230,26 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     const pluginsToMerge = this.config.getStringArray(
       'catalog.providers.backstageOpenapi.plugins',
     );
+    const configToMerge = this.config.getOptional(
+      'catalog.providers.backstageOpenapi.entityOverrides',
+    );
 
-    const getOverride = (key: string, fallbackValue: string = '') => {
-      return (
-        this.config.getOptionalString(
-          `catalog.providers.backstageOpenapi.entityOverrides.${key}`,
-        ) ?? fallbackValue
-      );
+    const baseConfig = {
+      metadata: {
+        name: 'internal_backstage_plugin',
+        title: 'Default Backstage API',
+      },
+      spec: {
+        owner: 'backstage',
+        lifecycle: 'production',
+      },
     };
 
     logger.info(`Loading specs from ${pluginsToMerge}.`);
-    const documentationEntity: ApiEntity = {
+    const requiredConfig = {
       apiVersion: 'backstage.io/v1beta1',
       kind: 'API',
       metadata: {
-        name: getOverride('metadata.name', 'backstage_openapi_doc'),
-        title: getOverride('metadata.title', 'Backstage API Documentation'),
         annotations: {
           [ANNOTATION_LOCATION]:
             'internal-package:@backstage/plugin-catalog-backend-module-backstage-openapi',
@@ -253,9 +258,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
         },
       },
       spec: {
-        type: getOverride('spec.type', 'openapi'),
-        lifecycle: getOverride('spec.lifecycle', 'production'),
-        owner: getOverride('spec.owner', 'backstage'),
+        type: 'openapi',
         definition: JSON.stringify(
           await loadSpecs({
             baseUrl: this.config.getString('backend.baseUrl'),
@@ -267,6 +270,15 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
         ),
       },
     };
+
+    // Overwrite base config with options from config file.
+    const mergedConfig = lodash.merge(baseConfig, configToMerge);
+    // Overwite mergedConfig with requiredConfig (i.e., spec.type and spec.definition) to avoid bad configuration.
+    const documentationEntity = lodash.merge(
+      mergedConfig,
+      requiredConfig,
+    ) as ApiEntity;
+
     await this.connection?.applyMutation({
       type: 'full',
       entities: [
