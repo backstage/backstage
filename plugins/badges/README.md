@@ -88,8 +88,7 @@ yarn --cwd packages/app add @backstage/plugin-badges
 This plugin requires explicit registration, so you will need to add it to your App's `plugins.ts` file:
 
 ```ts
-// ...
-export { badgesPlugin } from '@backstage/plugin-badges';
+import { badgesPlugin } from '@backstage/plugin-badges';
 ```
 
 If you don't have a `plugins.ts` file see: [troubleshooting](#troubleshooting)
