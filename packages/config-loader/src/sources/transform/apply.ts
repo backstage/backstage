@@ -105,8 +105,10 @@ export function createConfigTransformer(options: {
   substitutionFunc?: SubstitutionFunc;
   readFile?(path: string): Promise<string>;
 }): ConfigTransformer {
-  const { substitutionFunc = async name => process.env[name], readFile } =
-    options;
+  const {
+    substitutionFunc = async name => process.env[name]?.trim(),
+    readFile,
+  } = options;
   const substitutionTransform = createSubstitutionTransform(substitutionFunc);
   const transforms = [substitutionTransform];
   if (readFile) {
