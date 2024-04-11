@@ -20,4 +20,13 @@ describe('newrelic', () => {
   it('should export plugin', () => {
     expect(newRelicPlugin).toBeDefined();
   });
+
+  it('proves my point', () => {
+    expect(require('@backstage/cli/package.json').version).toBe('up-to-date');
+    // eslint-disable-next-line no-console
+    console.log(
+      `DEBUG: require('@backstage/cli/package.json').version=`,
+      require('@backstage/cli/package.json').version,
+    );
+  });
 });
