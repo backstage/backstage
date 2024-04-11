@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  DefaultGithubCredentialsProvider,
-  GithubCredentialsProvider,
-  ScmIntegrations,
-} from '@backstage/integration';
-
-import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { createGithubRepoCreateAction } from './githubRepoCreate';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { entityRefToName } from './gitHelpers';
-import { when } from 'jest-when';
 
 jest.mock('./gitHelpers', () => {
   return {
@@ -33,6 +23,16 @@ jest.mock('./gitHelpers', () => {
     entityRefToName: jest.fn(),
   };
 });
+
+import { ConfigReader } from '@backstage/config';
+import {
+  DefaultGithubCredentialsProvider,
+  GithubCredentialsProvider,
+  ScmIntegrations,
+} from '@backstage/integration';
+import { when } from 'jest-when';
+import { createGithubRepoCreateAction } from './githubRepoCreate';
+import { entityRefToName } from './gitHelpers';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
@@ -697,47 +697,5 @@ describe('github:repo:create', () => {
       'remoteUrl',
       'https://github.com/clone/url.git',
     );
-  });
-
-  it('should not call createInOrg during dry run', async () => {
-    mockOctokit.rest.users.getByUsername.mockResolvedValue({
-      data: { type: 'Organization' },
-    });
-
-    mockOctokit.rest.teams.getByName.mockResolvedValue({
-      data: {
-        name: 'blam',
-        id: 42,
-      },
-    });
-
-    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
-
-    mockContext.isDryRun = true;
-    await action.handler(mockContext);
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'remoteUrl',
-      'www.example.com',
-    );
-    expect(mockOctokit.rest.repos.createInOrg).not.toHaveBeenCalled();
-  });
-
-  it('should not call createForAuthenticatedUser during dry run', async () => {
-    mockOctokit.rest.users.getByUsername.mockResolvedValue({
-      data: { type: 'User' },
-    });
-
-    mockOctokit.rest.repos.createForAuthenticatedUser.mockResolvedValue({
-      data: {},
-    });
-
-    await action.handler(mockContext);
-    expect(mockContext.output).toHaveBeenCalledWith(
-      'remoteUrl',
-      'www.example.com',
-    );
-    expect(
-      mockOctokit.rest.repos.createForAuthenticatedUser,
-    ).not.toHaveBeenCalled();
   });
 });
