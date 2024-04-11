@@ -21,6 +21,7 @@ import { GroupSchema } from '@gitbeaker/core/dist/types/resources/Groups';
 import commonGitlabConfig from '../commonGitlabConfig';
 import { getToken } from '../util';
 import { z } from 'zod';
+import { examples } from './createGitlabGroupEnsureExistsAction.examples';
 
 /**
  * Creates an `gitlab:group:ensureExists` Scaffolder action.
@@ -36,6 +37,7 @@ export const createGitlabGroupEnsureExistsAction = (options: {
     id: 'gitlab:group:ensureExists',
     description: 'Ensures a Gitlab group exists',
     supportsDryRun: true,
+    examples,
     schema: {
       input: commonGitlabConfig.merge(
         z.object({
