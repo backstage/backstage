@@ -26,7 +26,7 @@ const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 
 /** @type {import('@docusaurus/types').Config} */
-const config:Config = {
+const config: Config = {
   title: 'Backstage Software Catalog and Developer Platform',
   tagline: 'An open source framework for building developer portals',
   url: 'https://backstage.io',
@@ -97,7 +97,7 @@ const config:Config = {
   plugins: [
     'docusaurus-plugin-sass',
     () => ({
-      name:"webpack-config",
+      name: 'webpack-config',
       configureWebpack() {
         return {
           module: {
