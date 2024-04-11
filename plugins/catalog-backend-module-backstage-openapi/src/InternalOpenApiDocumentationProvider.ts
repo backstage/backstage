@@ -236,12 +236,12 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
 
     const baseConfig = {
       metadata: {
-        name: 'internal_backstage_plugin',
-        title: 'Default Backstage API',
+        name: 'internal_backstage_openapi_doc',
+        title: 'Backstage API',
       },
       spec: {
-        owner: 'backstage',
         lifecycle: 'production',
+        owner: 'backstage',
       },
     };
 
@@ -271,8 +271,9 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       },
     };
 
-    // Overwrite base config with options from config file.
+    // Overwrite baseConfig with options from config file.
     const mergedConfig = lodash.merge(baseConfig, configToMerge);
+
     // Overwite mergedConfig with requiredConfig (i.e., spec.type and spec.definition) to avoid bad configuration.
     const documentationEntity = lodash.merge(
       mergedConfig,
