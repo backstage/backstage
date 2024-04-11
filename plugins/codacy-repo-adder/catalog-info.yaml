@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-codacy-repo-adder
+  title: '@backstage/plugin-codacy-repo-adder'
+  description: The codacy backend module for the scaffolder plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

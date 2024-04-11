@@ -1,0 +1,10 @@
+---
+title: Codacy Repo Adder
+author: Codacy
+authorUrl: https://www.codacy.com/
+category: Quality
+description: A Template Action to automatically add a Repository to Codacy
+documentation: https://github.com/backstage/backstage/blob/master/plugins/codacy-repo-adder/README.md
+iconUrl: /img/codacy-icon.svg
+npmPackageName: '@backstage/plugin-codacy-repo-adder'
+addedDate: '2024-11-04'
