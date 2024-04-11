@@ -14,26 +14,24 @@
  * limitations under the License.
  */
 
-import * as inputProps from './inputProperties';
-import * as outputProps from './outputProperties';
-
+import { Config } from '@backstage/config';
+import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
+import { Octokit } from 'octokit';
+import {
+  createTemplateAction,
+  parseRepoUrl,
+} from '@backstage/plugin-scaffolder-node';
 import {
   createGithubRepoWithCollaboratorsAndTopics,
   getOctokitOptions,
   initRepoPushAndProtect,
 } from './helpers';
-import {
-  createTemplateAction,
-  parseRepoUrl,
-} from '@backstage/plugin-scaffolder-node';
-
-import { Config } from '@backstage/config';
-import { InputError } from '@backstage/errors';
-import { Octokit } from 'octokit';
+import * as inputProps from './inputProperties';
+import * as outputProps from './outputProperties';
 import { examples } from './github.examples';
 
 /**
