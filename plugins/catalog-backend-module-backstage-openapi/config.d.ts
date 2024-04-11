@@ -26,9 +26,6 @@ export interface Config {
          */
         plugins: string[];
         /**
-         * Options to ovveride the provided entity's default metadata and spec properties
-         */
-        /**
          * Properties to override on the final entity object.
          */
         entityOverrides?: object;
