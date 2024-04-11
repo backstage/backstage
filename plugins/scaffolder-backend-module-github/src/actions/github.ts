@@ -229,15 +229,6 @@ export function createPublishGithubAction(options: {
         throw new InputError('Invalid repository owner provided in repoUrl');
       }
 
-      if (ctx.isDryRun) {
-        ctx.logger.info(`Performing dry run of creating repository`);
-        ctx.output('commitHash', 'commitHash');
-        ctx.output('remoteUrl', 'www.example.com');
-        ctx.output('repoContentsUrl', 'www.example.com/contents');
-        ctx.logger.info(`Dry run complete`);
-        return;
-      }
-
       const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
         client,
         repo,
