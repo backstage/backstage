@@ -484,7 +484,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     });
 
     try {
-      const workspace = await task.getWorkspace({ taskId });
+      const workspace = await task.getWorkspace?.({ taskId });
       await restoreWorkspace(workspacePath, workspace);
 
       const taskTrack = await this.tracker.taskStart(task);

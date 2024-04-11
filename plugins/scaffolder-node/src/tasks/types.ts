@@ -143,7 +143,7 @@ export interface TaskContext {
 
   serializeWorkspace?(options: { path: string }): Promise<void>;
 
-  getWorkspaceName?(): Promise<string>;
+  getWorkspaceName(): Promise<string>;
 
   getWorkspace?(options: { taskId: string }): Promise<Buffer | undefined>;
 
