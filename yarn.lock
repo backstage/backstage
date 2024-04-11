@@ -4793,7 +4793,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:plugins/auth-backend-module-azure-easyauth-provider":
+"@backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:^, @backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:plugins/auth-backend-module-azure-easyauth-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:plugins/auth-backend-module-azure-easyauth-provider"
   dependencies:
@@ -5065,6 +5065,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend-module-atlassian-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-aws-alb-provider": "workspace:^"
+    "@backstage/plugin-auth-backend-module-azure-easyauth-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-cloudflare-access-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-gcp-iap-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"

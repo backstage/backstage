@@ -10,6 +10,7 @@ import { AuthResolverCatalogUserQuery as AuthResolverCatalogUserQuery_2 } from '
 import { AuthResolverContext as AuthResolverContext_2 } from '@backstage/plugin-auth-node';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AwsAlbResult as AwsAlbResult_2 } from '@backstage/plugin-auth-backend-module-aws-alb-provider';
+import { AzureEasyAuthResult } from '@backstage/plugin-auth-backend-module-azure-easyauth-provider';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CacheService } from '@backstage/backend-plugin-api';
@@ -199,11 +200,8 @@ export const defaultAuthProviderFactories: {
   [providerId: string]: AuthProviderFactory_2;
 };
 
-// @public (undocumented)
-export type EasyAuthResult = {
-  fullProfile: Profile;
-  accessToken?: string;
-};
+// @public @deprecated (undocumented)
+export type EasyAuthResult = AzureEasyAuthResult;
 
 // @public @deprecated (undocumented)
 export const encodeState: typeof encodeOAuthState;
@@ -634,9 +632,9 @@ export const providers: Readonly<{
     create: (
       options?:
         | {
-            authHandler?: AuthHandler<EasyAuthResult> | undefined;
+            authHandler?: AuthHandler<AzureEasyAuthResult> | undefined;
             signIn: {
-              resolver: SignInResolver_2<EasyAuthResult>;
+              resolver: SignInResolver_2<AzureEasyAuthResult>;
             };
           }
         | undefined,
