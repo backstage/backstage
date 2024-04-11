@@ -33,22 +33,21 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
   };
 });
 
+import { TemplateAction } from '@backstage/plugin-scaffolder-node';
+import { ConfigReader } from '@backstage/config';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
+import { when } from 'jest-when';
+import { createPublishGithubAction } from './github';
+import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import {
   enableBranchProtectionOnDefaultRepoBranch,
   entityRefToName,
 } from './gitHelpers';
-
-import { ConfigReader } from '@backstage/config';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { createPublishGithubAction } from './github';
-import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
-import { when } from 'jest-when';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
