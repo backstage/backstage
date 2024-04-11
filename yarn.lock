@@ -13677,18 +13677,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@npmcli/map-workspaces@npm:3.0.4":
-  version: 3.0.4
-  resolution: "@npmcli/map-workspaces@npm:3.0.4"
-  dependencies:
-    "@npmcli/name-from-folder": ^2.0.0
-    glob: ^10.2.2
-    minimatch: ^9.0.0
-    read-package-json-fast: ^3.0.0
-  checksum: 99607dbc502b16d0ce7a47a81ccc496b3f5ed10df4e61e61a505929de12c356092996044174ae0cfd6d8cc177ef3b597eef4987b674fc0c5a306d3a8cc1fe91a
-  languageName: node
-  linkType: hard
-
 "@npmcli/map-workspaces@npm:^2.0.0":
   version: 2.0.0
   resolution: "@npmcli/map-workspaces@npm:2.0.0"
@@ -13698,6 +13686,18 @@ __metadata:
     minimatch: ^3.0.4
     read-package-json-fast: ^2.0.1
   checksum: 33707f80cc556aca2d748e228bbe62b6d7ae4a6e95b18b94ca64dd72e9c071ace29e7dd140bce4c2f96a238e40030212ee0ac00dda6026c7b2e23b2f173d75c8
+  languageName: node
+  linkType: hard
+
+"@npmcli/map-workspaces@npm:^3.0.4":
+  version: 3.0.6
+  resolution: "@npmcli/map-workspaces@npm:3.0.6"
+  dependencies:
+    "@npmcli/name-from-folder": ^2.0.0
+    glob: ^10.2.2
+    minimatch: ^9.0.0
+    read-package-json-fast: ^3.0.0
+  checksum: bdb09ee1d044bb9b2857d9e2d7ca82f40783a8549b5a7e150e25f874ee354cdbc8109ad7c3df42ec412f7057d95baa05920c4d361c868a93a42146b8e4390d3d
   languageName: node
   linkType: hard
 
@@ -13754,9 +13754,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@npmcli/package-json@npm:5.0.0":
-  version: 5.0.0
-  resolution: "@npmcli/package-json@npm:5.0.0"
+"@npmcli/package-json@npm:^1.0.1":
+  version: 1.0.1
+  resolution: "@npmcli/package-json@npm:1.0.1"
+  dependencies:
+    json-parse-even-better-errors: ^2.3.1
+  checksum: 08b66c8ddb1d6b678975a83006d2fe5070b3013bcb68ea9d54c0142538a614596ddfd1143183fbb8f82c5cecf477d98f3c4e473ef34df3bbf3814e97e37e18d3
+  languageName: node
+  linkType: hard
+
+"@npmcli/package-json@npm:^5.0.0":
+  version: 5.0.2
+  resolution: "@npmcli/package-json@npm:5.0.2"
   dependencies:
     "@npmcli/git": ^5.0.0
     glob: ^10.2.2
@@ -13765,16 +13774,7 @@ __metadata:
     normalize-package-data: ^6.0.0
     proc-log: ^3.0.0
     semver: ^7.5.3
-  checksum: 0d128e84e05e8a1771c8cc1f4232053fecf32e28f44e123ad16366ca3a7fd06f272f25f0b7d058f2763cab26bc479c8fc3c570af5de6324b05cb39868dcc6264
-  languageName: node
-  linkType: hard
-
-"@npmcli/package-json@npm:^1.0.1":
-  version: 1.0.1
-  resolution: "@npmcli/package-json@npm:1.0.1"
-  dependencies:
-    json-parse-even-better-errors: ^2.3.1
-  checksum: 08b66c8ddb1d6b678975a83006d2fe5070b3013bcb68ea9d54c0142538a614596ddfd1143183fbb8f82c5cecf477d98f3c4e473ef34df3bbf3814e97e37e18d3
+  checksum: f0e69d093a5733c7d31ce45098e2ce059f01d09b79329a7f3e975baf91d87f4bf3171fadc27442f4f540dc546954259f178be40ca632b87cfe16bcfe04f00dd3
   languageName: node
   linkType: hard
 
@@ -33249,13 +33249,13 @@ __metadata:
   linkType: hard
 
 "knip@npm:^5.0.0":
-  version: 5.9.3
-  resolution: "knip@npm:5.9.3"
+  version: 5.9.4
+  resolution: "knip@npm:5.9.4"
   dependencies:
     "@ericcornelissen/bash-parser": 0.5.2
     "@nodelib/fs.walk": 2.0.0
-    "@npmcli/map-workspaces": 3.0.4
-    "@npmcli/package-json": 5.0.0
+    "@npmcli/map-workspaces": ^3.0.4
+    "@npmcli/package-json": ^5.0.0
     "@pnpm/logger": 5.0.0
     "@pnpm/workspace.pkgs-graph": 2.0.14
     "@snyk/github-codeowners": 1.1.0
@@ -33280,7 +33280,7 @@ __metadata:
     typescript: ">=5.0.4"
   bin:
     knip: bin/knip.js
-  checksum: 5a4b8696ddd6d603a490fb759f91c4fa81e66a2f090a0010abcdb3c7cb53467833a0c37ecbde91aee7b8289172a3d161f8b74af1fd5e78bbd2cc9be4203ec53c
+  checksum: 112f93982090c8947bd28904ad835b4b2793f9ee23fcb895ba0815e759d6b644e9d6ff6d6661af56ecbebb2f6bff21e4e3afcccce93df778aadf9c6d52ca9541
   languageName: node
   linkType: hard
 
