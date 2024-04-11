@@ -14587,59 +14587,59 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@opentelemetry/core@npm:1.22.0":
-  version: 1.22.0
-  resolution: "@opentelemetry/core@npm:1.22.0"
+"@opentelemetry/core@npm:1.23.0":
+  version: 1.23.0
+  resolution: "@opentelemetry/core@npm:1.23.0"
   dependencies:
-    "@opentelemetry/semantic-conventions": 1.22.0
+    "@opentelemetry/semantic-conventions": 1.23.0
   peerDependencies:
     "@opentelemetry/api": ">=1.0.0 <1.9.0"
-  checksum: 0056bbaceb922816ec87e7e21aa8a7687377a41ba36a598bb6c49738d1eb5767f823e5758b5bf844d2b10aa075c553e98904dd6fd4f02c24cf335e3951fe78a6
+  checksum: 88aa733364c42f90a61a6efc8b5138dcfed4763f3a0692d957d506a6fe49db943169a0631ad762ac7569723faf5eaca092d6590eca1ad8ff77583fb10512a06b
   languageName: node
   linkType: hard
 
-"@opentelemetry/exporter-prometheus@npm:^0.49.0":
-  version: 0.49.1
-  resolution: "@opentelemetry/exporter-prometheus@npm:0.49.1"
+"@opentelemetry/exporter-prometheus@npm:^0.50.0":
+  version: 0.50.0
+  resolution: "@opentelemetry/exporter-prometheus@npm:0.50.0"
   dependencies:
-    "@opentelemetry/core": 1.22.0
-    "@opentelemetry/resources": 1.22.0
-    "@opentelemetry/sdk-metrics": 1.22.0
+    "@opentelemetry/core": 1.23.0
+    "@opentelemetry/resources": 1.23.0
+    "@opentelemetry/sdk-metrics": 1.23.0
   peerDependencies:
     "@opentelemetry/api": ^1.3.0
-  checksum: 979d5d981c3b9efc3c0f03e6ddbc3c37b6552e5284f738297582896274b06b18a8a95d84e855ce6e263d01aba18ab9a2b5c8ff17e35822749f564836f3f9615e
+  checksum: 0bb3e6c36f2a6ef4822d31eb23254e6f6380b3bf50b29767349881ce606bd685bb4e728adb93187c9df190291e3d64f7f98593f96ec7bb5eff76be9e338f1d05
   languageName: node
   linkType: hard
 
-"@opentelemetry/resources@npm:1.22.0":
-  version: 1.22.0
-  resolution: "@opentelemetry/resources@npm:1.22.0"
+"@opentelemetry/resources@npm:1.23.0":
+  version: 1.23.0
+  resolution: "@opentelemetry/resources@npm:1.23.0"
   dependencies:
-    "@opentelemetry/core": 1.22.0
-    "@opentelemetry/semantic-conventions": 1.22.0
+    "@opentelemetry/core": 1.23.0
+    "@opentelemetry/semantic-conventions": 1.23.0
   peerDependencies:
     "@opentelemetry/api": ">=1.0.0 <1.9.0"
-  checksum: f1da492d9fa7dbe3e5f08a511654b45265fcd16c4695bb1ae92488baa45ae9910d5a962166aaa4ae63be4c75393680c6f064450a5f10b86501b9df427ac49f27
+  checksum: e780d34f8107cdd2853aab3c0c680a817da54d9c6020bba9b8a6b8e7b637487592d87440e5c4f09a10dfad7aededde34532e0e337a5c2d441bf26dd921836cfc
   languageName: node
   linkType: hard
 
-"@opentelemetry/sdk-metrics@npm:1.22.0, @opentelemetry/sdk-metrics@npm:^1.13.0":
-  version: 1.22.0
-  resolution: "@opentelemetry/sdk-metrics@npm:1.22.0"
+"@opentelemetry/sdk-metrics@npm:1.23.0, @opentelemetry/sdk-metrics@npm:^1.13.0":
+  version: 1.23.0
+  resolution: "@opentelemetry/sdk-metrics@npm:1.23.0"
   dependencies:
-    "@opentelemetry/core": 1.22.0
-    "@opentelemetry/resources": 1.22.0
+    "@opentelemetry/core": 1.23.0
+    "@opentelemetry/resources": 1.23.0
     lodash.merge: ^4.6.2
   peerDependencies:
     "@opentelemetry/api": ">=1.3.0 <1.9.0"
-  checksum: 43b6599432bece2e41a48d40653f4f928ad7ba0b74c50a17bdb38f13bcb47cec1e08ce9af7f8cc643dc2c28cb127ef5ef4ce3e53cd1bf386d54fdaca361f29f2
+  checksum: ca24338ceb537fa9c4d9a87b4e81164db1275d96ecf97347a2e48f07cfaab0fb25013091898fb435751eb488efcd6d01232150cce3c034263fe293ce6bd83abd
   languageName: node
   linkType: hard
 
-"@opentelemetry/semantic-conventions@npm:1.22.0":
-  version: 1.22.0
-  resolution: "@opentelemetry/semantic-conventions@npm:1.22.0"
-  checksum: cb3bdca1a29d3c32c44599bdf5ee5143b84e81aaa61edcd3f750133bfaffd7c1b36755c877921e4993e2468284a0564388844a7dda388122bee486d3f67fa4c8
+"@opentelemetry/semantic-conventions@npm:1.23.0":
+  version: 1.23.0
+  resolution: "@opentelemetry/semantic-conventions@npm:1.23.0"
+  checksum: a4bd6e67e0fe5821be7dc14baff77574e9881d208a63740a3ab416b367c132bc77cf3c0b398daea1344c9af2f32383cf6c7da3141ba6d1e87e30756e4f2234b8
   languageName: node
   linkType: hard
 
@@ -27702,7 +27702,7 @@ __metadata:
     "@gitbeaker/node": ^35.1.0
     "@octokit/rest": ^19.0.3
     "@opentelemetry/api": ^1.4.1
-    "@opentelemetry/exporter-prometheus": ^0.49.0
+    "@opentelemetry/exporter-prometheus": ^0.50.0
     "@opentelemetry/sdk-metrics": ^1.13.0
     "@types/dockerode": ^3.3.0
     "@types/express": ^4.17.6
