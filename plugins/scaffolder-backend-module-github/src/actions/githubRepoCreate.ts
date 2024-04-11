@@ -14,24 +14,22 @@
  * limitations under the License.
  */
 
-import * as inputProps from './inputProperties';
-import * as outputProps from './outputProperties';
-
+import { InputError } from '@backstage/errors';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import {
-  createGithubRepoWithCollaboratorsAndTopics,
-  getOctokitOptions,
-} from './helpers';
+import { Octokit } from 'octokit';
 import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-
-import { InputError } from '@backstage/errors';
-import { Octokit } from 'octokit';
+import {
+  createGithubRepoWithCollaboratorsAndTopics,
+  getOctokitOptions,
+} from './helpers';
+import * as inputProps from './inputProperties';
+import * as outputProps from './outputProperties';
 import { examples } from './githubRepoCreate.examples';
 
 /**
@@ -188,13 +186,6 @@ export function createGithubRepoCreateAction(options: {
 
       if (!owner) {
         throw new InputError('Invalid repository owner provided in repoUrl');
-      }
-
-      if (ctx.isDryRun) {
-        ctx.logger.info(`Performing dry run of creating repository`);
-        ctx.output('remoteUrl', 'www.example.com');
-        ctx.logger.info(`Dry run complete`);
-        return;
       }
 
       const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
