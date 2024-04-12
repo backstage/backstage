@@ -64,6 +64,26 @@ export default async function createPlugin(
 }
 ```
 
+### New Backend System
+
+This entity provider will work with the new backend system. Here is how to install it:
+
+Run the following command to add the module's package:
+
+```bash
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-msgraph/alpha
+```
+
+Then updated your backend by adding the following line:
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-msgraph/alpha'));
+/* highlight-add-end */
+```
+
 ## Authenticating with Microsoft Graph
 
 ### Local Development
@@ -242,6 +262,41 @@ export async function myOrganizationTransformer(
 ): Promise<GroupEntity | undefined> {
   return undefined;
 }
+```
+
+### Using Transformers in the New Backend System
+
+Transformers can be configured by extending `microsoftGraphOrgEntityProviderTransformExtensionPoint`. Here is an example:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { microsoftGraphOrgEntityProviderTransformExtensionPoint } from '@backstage/plugin-catalog-backend-module-msgraph/alpha';
+
+backend.add(
+  createBackendModule({
+    pluginId: 'catalog',
+    moduleId: 'microsoft-graph-extensions',
+    register(env) {
+      env.registerInit({
+        deps: {
+          /* highlight-add-start */
+          microsoftGraphTransformers:
+            microsoftGraphOrgEntityProviderTransformExtensionPoint,
+          /* highlight-add-end */
+        },
+        async init({ microsoftGraphTransformers }) {
+          /* highlight-add-start */
+          microsoftGraphTransformers.setUserTransformer(myUserTransformer);
+          microsoftGraphTransformers.setGroupTransformer(myGroupTransformer);
+          microsoftGraphTransformers.setOrganizationTransformer(
+            myOrganizationTransformer,
+          );
+          /* highlight-add-end */
+        },
+      });
+    },
+  }),
+);
 ```
 
 ## Troubleshooting

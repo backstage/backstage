@@ -127,6 +127,26 @@ builder.addEntityProvider(
 /* highlight-add-end */
 ```
 
+### New Backend System
+
+This entity provider will work with the new backend system. Here is how to install it:
+
+Run the following command to add the module's package:
+
+```bash
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-azure
+```
+
+Then updated your backend by adding the following line:
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-catalog-backend-module-azure/alpha'));
+/* highlight-add-end */
+```
+
 ## Alternative Processor
 
 As an alternative to the entity provider `AzureDevOpsEntityProvider`, you can still use the `AzureDevopsDiscoveryProcessor`.
