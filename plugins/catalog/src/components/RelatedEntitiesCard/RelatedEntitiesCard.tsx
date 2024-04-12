@@ -40,7 +40,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   entityKind?: string;
   relationType: string;
   emptyMessage: string;
-  emptyHelpLink: string;
+  emptyHelpLink?: string;
   asRenderableEntities: (entities: Entity[]) => T[];
   tableOptions?: TableOptions;
 };
@@ -101,9 +101,11 @@ export function RelatedEntitiesCard<T extends Entity>(
       emptyContent={
         <div style={{ textAlign: 'center' }}>
           <Typography variant="body1">{emptyMessage}</Typography>
-          <Typography variant="body2">
-            <Link to={emptyHelpLink}>Learn how to change this.</Link>
-          </Typography>
+          {emptyHelpLink && (
+            <Typography variant="body2">
+              <Link to={emptyHelpLink}>Learn how to change this.</Link>
+            </Typography>
+          )}
         </div>
       }
       columns={columns}

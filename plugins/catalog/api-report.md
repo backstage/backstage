@@ -610,7 +610,7 @@ export type RelatedEntitiesCardProps<T extends Entity> = {
   entityKind?: string;
   relationType: string;
   emptyMessage: string;
-  emptyHelpLink: string;
+  emptyHelpLink?: string;
   asRenderableEntities: (entities: Entity[]) => T[];
   tableOptions?: TableOptions;
 };
