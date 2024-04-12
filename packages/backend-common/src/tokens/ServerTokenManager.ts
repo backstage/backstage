@@ -74,12 +74,17 @@ export class ServerTokenManager implements TokenManager {
   }
 
   static fromConfig(config: Config, options: ServerTokenManagerOptions) {
-    const keys = config.getOptionalConfigArray('backend.auth.keys');
-    if (keys?.length) {
-      return new ServerTokenManager(
-        keys.map(key => key.getString('secret')),
-        options,
-      );
+    const oldSecrets = config
+      .getOptionalConfigArray('backend.auth.keys')
+      ?.map(c => c.getString('secret'));
+    const newSecrets = config
+      .getOptionalConfigArray('backend.auth.externalAccess')
+      ?.filter(c => c.getString('type') === 'legacy')
+      .map(c => c.getString('config.secret'));
+    const secrets = [...(oldSecrets ?? []), ...(newSecrets ?? [])];
+
+    if (secrets.length) {
+      return new ServerTokenManager(secrets, options);
     }
 
     if (process.env.NODE_ENV !== 'development') {
