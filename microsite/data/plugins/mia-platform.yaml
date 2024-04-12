@@ -1,0 +1,13 @@
+---
+title: Mia Platform Sync
+author: Mia-Platform
+authorUrl: https://mia-platform.eu
+category: Discovery
+description: Elevate your workflow with our plugin that seamlessly integrates your Mia-Platform components into Backstage. Keep your information synchronized effortlessly and gain insights into your company's domains, projects, deployment environments, and repository links, all while exploring their interrelations.
+documentation: https://github.com/mia-platform/backstage-plugin/blob/main/README.md
+iconUrl: /img/mia-platform.png
+npmPackageName: '@mia-platform/backstage-plugin-frontend'
+tags:
+  - platform
+  - discovery
+addedDate: '2024-04-12'
