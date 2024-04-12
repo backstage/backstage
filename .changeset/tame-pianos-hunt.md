@@ -2,4 +2,4 @@
 '@backstage/backend-common': minor
 ---
 
-Allow providing authentication which in turn allows usage of private registries
+Added `pullOptions` to `DockerContainerRunner#runContainer` method to pass down options when pulling an image.
