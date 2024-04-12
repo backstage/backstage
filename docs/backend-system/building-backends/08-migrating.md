@@ -816,9 +816,9 @@ auth:
         tenantId: ${AZURE_TENANT_ID}
         signIn:
           resolvers:
-            - resolver: emailMatchingUserEntityAnnotation
             - resolver: emailMatchingUserEntityProfileEmail
             - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: emailMatchingUserEntityAnnotation
 ```
 
 > Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
@@ -848,7 +848,7 @@ Additional resolvers:
 
 - [usernameMatchingUserEntityName](https://github.com/backstage/backstage/blob/5447cffd23cf00772988fb799ced0ec5e54efb2e/plugins/auth-backend-module-atlassian-provider/src/resolvers.ts#L33C16-L33C46)
 
-##### GCP IAM
+##### GCP IAP (Google Identity-Aware Proxy)
 
 Setup:
 

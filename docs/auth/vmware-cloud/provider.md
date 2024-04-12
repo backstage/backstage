@@ -156,7 +156,14 @@ auth:
       development:
         clientId: ${APP_ID}
         organizationId: ${ORG_ID}
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: vmwareCloudSignInResolvers
 ```
+
+> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 
 where `APP_ID` refers to the ID retrieved when creating the OAuth App, and
 `ORG_ID` is the [long ID of the

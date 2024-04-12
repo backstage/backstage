@@ -47,7 +47,14 @@ auth:
         idp: ${AUTH_OKTA_IDP} # Optional
         # https://developer.okta.com/docs/reference/api/oidc/#scope-dependent-claims-not-always-returned
         additionalScopes: ${AUTH_OKTA_ADDITIONAL_SCOPES} # Optional
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: emailMatchingUserEntityAnnotation
 ```
+
+> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 
 The values referenced are found on the Application page on your Okta site.
 

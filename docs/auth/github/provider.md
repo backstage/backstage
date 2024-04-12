@@ -41,7 +41,14 @@ auth:
         clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
         ## uncomment if using GitHub Enterprise
         # enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: usernameMatchingUserEntityName
 ```
+
+> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 
 The GitHub provider is a structure with three configuration keys:
 

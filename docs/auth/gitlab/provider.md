@@ -43,7 +43,14 @@ auth:
         # audience: https://gitlab.company.com
         ## uncomment if using a custom redirect URI
         # callbackUrl: https://${BASE_URL}/api/auth/gitlab/handler/frame
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: usernameMatchingUserEntityName
 ```
+
+> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 
 The GitLab provider is a structure with three configuration keys:
 

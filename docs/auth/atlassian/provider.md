@@ -47,7 +47,14 @@ auth:
         clientId: ${AUTH_ATLASSIAN_CLIENT_ID}
         clientSecret: ${AUTH_ATLASSIAN_CLIENT_SECRET}
         scope: ${AUTH_ATLASSIAN_SCOPES}
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: usernameMatchingUserEntityName
 ```
+
+> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 
 The Atlassian provider is a structure with three configuration keys:
 

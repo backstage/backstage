@@ -57,7 +57,14 @@ auth:
         domainHint: ${AZURE_TENANT_ID}
         additionalScopes:
           - Mail.Send
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: emailMatchingUserEntityAnnotation
 ```
+
+> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 
 The Microsoft provider is a structure with three mandatory configuration keys:
 

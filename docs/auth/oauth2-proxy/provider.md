@@ -22,8 +22,16 @@ The provider configuration can be added to your `app-config.yaml` under the root
 auth:
   environment: development
   providers:
-    oauth2Proxy: {}
+    oauth2Proxy:
+      development:
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: forwardedUserMatchingUserEntityName
 ```
+
+> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 
 Right now no configuration options are supported, but the empty object is needed
 to enable the provider in the auth backend.
