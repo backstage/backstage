@@ -24,7 +24,6 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 import {
   GitLabClient,
   GitLabProject,
@@ -32,6 +31,7 @@ import {
   paginated,
   readGitlabConfigs,
 } from '../lib';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type Result = {
   scanned: number;
@@ -45,14 +45,14 @@ type Result = {
 export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private readonly config: GitlabProviderConfig;
   private readonly integration: GitLabIntegration;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
 
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -98,7 +98,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   private constructor(options: {
     config: GitlabProviderConfig;
     integration: GitLabIntegration;
-    logger: Logger;
+    logger: LoggerService;
     taskRunner: TaskRunner;
   }) {
     this.config = options.config;
@@ -143,7 +143,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
     };
   }
 
-  async refresh(logger: Logger): Promise<void> {
+  async refresh(logger: LoggerService): Promise<void> {
     if (!this.connection) {
       throw new Error(
         `Gitlab discovery connection not initialized for ${this.getProviderName()}`,

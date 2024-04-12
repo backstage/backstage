@@ -21,16 +21,16 @@ import {
   SingleHostDiscovery,
 } from '@backstage/backend-common';
 import { Server } from 'http';
-import { Logger } from 'winston';
 import { AzureSitesApi } from '../api';
 import { createRouter } from './router';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { CatalogClient } from '@backstage/catalog-client';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 export async function startStandaloneServer(

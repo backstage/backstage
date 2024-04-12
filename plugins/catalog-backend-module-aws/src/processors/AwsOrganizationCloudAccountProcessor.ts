@@ -27,12 +27,12 @@ import {
   ListAccountsResponse,
   Organizations,
 } from '@aws-sdk/client-organizations';
-import { Logger } from 'winston';
 import { readAwsOrganizationConfig } from '../awsOrganization/config';
 import {
   AwsCredentialProvider,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const AWS_ORGANIZATION_REGION = 'us-east-1';
 const LOCATION_TYPE = 'aws-cloud-accounts';
@@ -54,9 +54,9 @@ const ACCOUNT_STATUS_LABEL = 'amazonaws.com/account-status';
  */
 export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   private readonly organizations: Organizations;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
-  static async fromConfig(config: Config, options: { logger: Logger }) {
+  static async fromConfig(config: Config, options: { logger: LoggerService }) {
     const c = config.getOptionalConfig('catalog.processors.awsOrganization');
     const orgConfig = c ? readAwsOrganizationConfig(c) : undefined;
     const awsCredentialsManager =
@@ -72,7 +72,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
 
   private constructor(
     private readonly credProvider: AwsCredentialProvider,
-    logger: Logger,
+    logger: LoggerService,
   ) {
     this.logger = logger?.child({
       target: this.getProcessorName(),

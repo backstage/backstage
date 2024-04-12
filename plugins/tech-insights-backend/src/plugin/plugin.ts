@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -114,7 +113,6 @@ export const techInsightsPlugin = createBackendPlugin({
         tokenManager,
         auth,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         const factRetrievers: FactRetrieverRegistration[] = Object.entries(
           addedFactRetrievers,
         )
@@ -134,7 +132,7 @@ export const techInsightsPlugin = createBackendPlugin({
           factCheckerFactory,
           factRetrieverRegistry,
           factRetrievers,
-          logger: winstonLogger,
+          logger,
           persistenceContext,
           scheduler,
           tokenManager,
@@ -145,7 +143,7 @@ export const techInsightsPlugin = createBackendPlugin({
           await createRouter({
             ...context,
             config,
-            logger: winstonLogger,
+            logger,
           }),
         );
       },

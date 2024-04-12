@@ -18,14 +18,14 @@ import { errorHandler } from '@backstage/backend-common';
 import { GetExploreToolsRequest } from '@backstage/plugin-explore-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { ExploreToolProvider } from '../tools';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
  */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   toolProvider: ExploreToolProvider;
 }
 

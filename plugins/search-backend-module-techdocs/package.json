@@ -60,8 +60,7 @@
     "@backstage/plugin-techdocs-node": "workspace:^",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
-    "p-limit": "^3.1.0",
-    "winston": "^3.2.1"
+    "p-limit": "^3.1.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

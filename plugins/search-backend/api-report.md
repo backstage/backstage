@@ -9,7 +9,7 @@ import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
@@ -24,7 +24,7 @@ export type RouterOptions = {
   discovery?: DiscoveryService;
   permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
 };

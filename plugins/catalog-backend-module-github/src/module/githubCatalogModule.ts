@@ -15,10 +15,9 @@
  */
 
 import {
-  createBackendModule,
   coreServices,
+  createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   catalogAnalysisExtensionPoint,
   catalogProcessingExtensionPoint,
@@ -68,7 +67,7 @@ export const githubCatalogModule = createBackendModule({
         catalog.addEntityProvider(
           GithubEntityProvider.fromConfig(config, {
             events,
-            logger: loggerToWinstonLogger(logger),
+            logger,
             scheduler,
           }),
         );

@@ -23,8 +23,8 @@ import {
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
-import { Logger } from 'winston';
 import { PreparerResponse, RemoteProtocol } from './stages/prepare/types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Parsed location annotation
@@ -146,7 +146,7 @@ export const getLocationForEntity = (
 export const getDocFilesFromRepository = async (
   reader: UrlReader,
   entity: Entity,
-  opts?: { etag?: string; logger?: Logger },
+  opts?: { etag?: string; logger?: LoggerService },
 ): Promise<PreparerResponse> => {
   const { target } = parseReferenceAnnotation(
     'backstage.io/techdocs-ref',

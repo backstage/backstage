@@ -15,11 +15,10 @@
  */
 
 import {
-  RootConfigService,
   LoggerService,
+  RootConfigService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { stringifyError } from '@backstage/errors';
 import {
   EntityProvider,
@@ -77,7 +76,7 @@ export class WrapperProviders {
   async adminRouter(): Promise<express.Router> {
     return await new IncrementalProviderRouter(
       new IncrementalIngestionDatabaseManager({ client: this.options.client }),
-      loggerToWinstonLogger(this.options.logger),
+      this.options.logger,
     ).createRouter();
   }
 
@@ -86,11 +85,9 @@ export class WrapperProviders {
     providerOptions: IncrementalEntityProviderOptions,
     connection: EntityProviderConnection,
   ) {
-    const logger = loggerToWinstonLogger(
-      this.options.logger.child({
-        entityProvider: provider.getProviderName(),
-      }),
-    );
+    const logger = this.options.logger.child({
+      entityProvider: provider.getProviderName(),
+    });
 
     try {
       if (!this.migrate) {

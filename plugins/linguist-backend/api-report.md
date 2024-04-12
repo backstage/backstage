@@ -15,7 +15,7 @@ import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HumanDuration } from '@backstage/types';
 import { Languages } from '@backstage/plugin-linguist-common';
 import { LanguageType } from '@backstage/plugin-linguist-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
@@ -74,7 +74,7 @@ export interface LinguistTagsProcessorOptions {
   languageMap?: Record<string, string | undefined>;
   languageTypes?: LanguageType[];
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   shouldProcessEntity?: ShouldProcessEntity;
 }
 
@@ -109,7 +109,7 @@ export interface RouterOptions {
   // (undocumented)
   linguistBackendApi?: LinguistBackendApi;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
   reader: UrlReader;
   // (undocumented)

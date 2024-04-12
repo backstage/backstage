@@ -8,7 +8,7 @@ import { Config } from '@backstage/config';
 import * as container from '@google-cloud/container';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
 
 // @public
@@ -25,7 +25,7 @@ export class GkeEntityProvider implements EntityProvider {
     scheduler,
     config,
   }: {
-    logger: Logger;
+    logger: LoggerService;
     scheduler: SchedulerService;
     config: Config;
   }): GkeEntityProvider;
@@ -36,7 +36,7 @@ export class GkeEntityProvider implements EntityProvider {
     config,
     clusterManagerClient,
   }: {
-    logger: Logger;
+    logger: LoggerService;
     scheduler: SchedulerService;
     config: Config;
     clusterManagerClient: container.v1.ClusterManagerClient;

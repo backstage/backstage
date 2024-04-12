@@ -18,11 +18,11 @@ import { Config } from '@backstage/config';
 import { isError } from '@backstage/errors';
 import { FactResponse } from '@backstage/plugin-tech-insights-common';
 import {
-  FactChecker,
-  TechInsightCheckRegistry,
-  FlatTechInsightFact,
-  TechInsightsStore,
   CheckValidationResponse,
+  FactChecker,
+  FlatTechInsightFact,
+  TechInsightCheckRegistry,
+  TechInsightsStore,
 } from '@backstage/plugin-tech-insights-node';
 import Ajv, { SchemaObject } from 'ajv';
 import {
@@ -32,12 +32,12 @@ import {
   TopLevelCondition,
 } from 'json-rules-engine';
 import { pick } from 'lodash';
-import { Logger } from 'winston';
 import { JSON_RULE_ENGINE_CHECK_TYPE } from '../constants';
 import { JsonRuleBooleanCheckResult, TechInsightJsonRuleCheck } from '../types';
 import { DefaultCheckRegistry } from './CheckRegistry';
 import { readChecksFromConfig } from './config';
 import * as validationSchema from './validation-schema.json';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const noopEvent = {
   type: 'noop',
@@ -52,7 +52,7 @@ const noopEvent = {
 export type JsonRulesEngineFactCheckerOptions = {
   checks: TechInsightJsonRuleCheck[];
   repository: TechInsightsStore;
-  logger: Logger;
+  logger: LoggerService;
   checkRegistry?: TechInsightCheckRegistry<any>;
   operators?: Operator[];
 };
@@ -68,7 +68,7 @@ export class JsonRulesEngineFactChecker
 {
   private readonly checkRegistry: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
   private repository: TechInsightsStore;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly validationSchema: SchemaObject;
   private readonly operators: Operator[];
 
@@ -164,7 +164,7 @@ export class JsonRulesEngineFactChecker
       const msg = 'Failed to to validate conditions against JSON schema';
       this.logger.warn(
         'Failed to to validate conditions against JSON schema',
-        validator.errors,
+        new Error(JSON.stringify(validator.errors)),
       );
       return {
         valid: false,
@@ -346,7 +346,7 @@ export class JsonRulesEngineFactChecker
  */
 export type JsonRulesEngineFactCheckerFactoryOptions = {
   checks: TechInsightJsonRuleCheck[];
-  logger: Logger;
+  logger: LoggerService;
   checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
   operators?: Operator[];
 };
@@ -360,7 +360,7 @@ export type JsonRulesEngineFactCheckerFactoryOptions = {
  */
 export class JsonRulesEngineFactCheckerFactory {
   private readonly checks: TechInsightJsonRuleCheck[];
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly checkRegistry?: TechInsightCheckRegistry<TechInsightJsonRuleCheck>;
   private readonly operators?: Operator[];
 

@@ -8,7 +8,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Observable } from '@backstage/types';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -26,8 +26,7 @@ export type ActionContext<
   TActionInput extends JsonObject,
   TActionOutput extends JsonObject = JsonObject,
 > = {
-  logger: Logger;
-  logStream: Writable;
+  logger: LoggerService;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
@@ -63,7 +62,7 @@ export function addFiles(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
 }): Promise<void>;
 
 // @public (undocumented)
@@ -78,7 +77,7 @@ export function cloneRepo(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService;
   ref?: string | undefined;
   depth?: number | undefined;
   noCheckout?: boolean | undefined;
@@ -95,7 +94,7 @@ export function commitAndPushBranch(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService | undefined;
   commitMessage: string;
   gitAuthorInfo?: {
     name?: string;
@@ -119,7 +118,7 @@ export function commitAndPushRepo(input: {
     | {
         token: string;
       };
-  logger: Logger;
+  logger: LoggerService;
   commitMessage: string;
   gitAuthorInfo?: {
     name?: string;
@@ -143,7 +142,7 @@ export function createBranch(options: {
     | {
         token: string;
       };
-  logger?: Logger | undefined;
+  logger?: LoggerService;
 }): Promise<void>;
 
 // @public
@@ -232,7 +231,7 @@ export function initRepoAndPush(input: {
     | {
         token: string;
       };
-  logger: Logger;
+  logger: LoggerService;
   defaultBranch?: string;
   commitMessage?: string;
   gitAuthorInfo?: {

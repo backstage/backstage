@@ -15,14 +15,14 @@
  */
 import { createServiceBuilder } from '@backstage/backend-common';
 import { Server } from 'http';
-import { Logger } from 'winston';
 import { createRouter } from './router';
 import { Config } from '@backstage/config';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   config: Config;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
   port: number;
 }
 

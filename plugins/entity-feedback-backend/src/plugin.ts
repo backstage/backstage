@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -53,7 +52,7 @@ export const entityFeedbackPlugin = createBackendPlugin({
             database,
             discovery,
             identity,
-            logger: loggerToWinstonLogger(logger),
+            logger,
             auth,
             httpAuth,
           }),

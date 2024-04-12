@@ -19,18 +19,17 @@ import {
   EntityResults,
   Language,
   Languages,
+  LINGUIST_ANNOTATION,
 } from '@backstage/plugin-linguist-common';
 import {
   CATALOG_FILTER_EXISTS,
-  GetEntitiesRequest,
   CatalogApi,
+  GetEntitiesRequest,
 } from '@backstage/catalog-client';
 import { UrlReader } from '@backstage/backend-common';
 
 import { DateTime } from 'luxon';
-import { LINGUIST_ANNOTATION } from '@backstage/plugin-linguist-common';
 import { LinguistBackendStore } from '../db';
-import { Logger } from 'winston';
 import fs from 'fs-extra';
 import linguist from 'linguist-js';
 import {
@@ -40,7 +39,7 @@ import {
 import { assertError } from '@backstage/errors';
 import { HumanDuration } from '@backstage/types';
 import { Results } from 'linguist-js/dist/types';
-import { type AuthService } from '@backstage/backend-plugin-api';
+import { type AuthService, LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface LinguistBackendApi {
@@ -50,7 +49,7 @@ export interface LinguistBackendApi {
 
 /** @public */
 export class LinguistBackendClient implements LinguistBackendApi {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly store: LinguistBackendStore;
   private readonly urlReader: UrlReader;
   private readonly auth: AuthService;
@@ -62,7 +61,7 @@ export class LinguistBackendClient implements LinguistBackendApi {
   private readonly kind: string[];
   private readonly linguistJsOptions?: Record<string, unknown>;
   public constructor(
-    logger: Logger,
+    logger: LoggerService,
     store: LinguistBackendStore,
     urlReader: UrlReader,
     auth: AuthService,

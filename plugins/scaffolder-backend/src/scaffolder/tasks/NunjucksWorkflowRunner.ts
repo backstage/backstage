@@ -31,16 +31,17 @@ import {
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
 import {
+  TaskRecovery,
   TaskSpec,
   TaskSpecV1beta3,
   TaskStep,
 } from '@backstage/plugin-scaffolder-common';
 
 import {
+  TaskContext,
   TemplateAction,
   TemplateFilter,
   TemplateGlobal,
-  TaskContext,
 } from '@backstage/plugin-scaffolder-node';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { UserEntity } from '@backstage/catalog-model';
@@ -52,9 +53,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
-import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { WinstonLogger } from './logger';
 
 type NunjucksWorkflowRunnerOptions = {
@@ -124,22 +123,7 @@ const createStepLogger = ({
 
   taskLogger.addRedactions(Object.values(task.secrets ?? {}));
 
-  // This stream logger should be deprecated. We're going to replace it with
-  // just using the logger directly, as all those logs get written to step logs
-  // using the stepLogStream above.
-  // Initially this stream used to be the only way to write to the client logs, but that
-  // has changed over time, there's not really a need for this anymore.
-  // You can just create a simple wrapper like the below in your action to write to the main logger.
-  // This way we also get recactions for free.
-  const streamLogger = new PassThrough();
-  streamLogger.on('data', async data => {
-    const message = data.toString().trim();
-    if (message?.length > 1) {
-      taskLogger.info(message);
-    }
-  });
-
-  return { taskLogger, streamLogger };
+  return taskLogger;
 };
 
 const isActionAuthorized = createConditionAuthorizer(
@@ -262,7 +246,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const action: TemplateAction<JsonObject> =
         this.options.actionRegistry.get(step.action);
-      const { taskLogger, streamLogger } = createStepLogger({ task, step });
+      const taskLogger = createStepLogger({ task, step });
 
       if (task.isDryRun) {
         const redactedSecrets = Object.fromEntries(
@@ -374,9 +358,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         await action.handler({
           input: iteration.input,
           secrets: task.secrets ?? {},
-          // TODO(blam): move to LoggerService and away from Winston
-          logger: loggerToWinstonLogger(taskLogger),
-          logStream: streamLogger,
+          logger: taskLogger,
           workspacePath,
           async checkpoint<U extends JsonValue>(
             keySuffix: string,

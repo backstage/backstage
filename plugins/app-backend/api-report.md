@@ -8,7 +8,7 @@ import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @public (undocumented)
@@ -26,7 +26,7 @@ export interface RouterOptions {
   // (undocumented)
   httpAuth?: HttpAuthService;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   schema?: ConfigSchema;
   staticFallbackHandler?: express.Handler;
 }

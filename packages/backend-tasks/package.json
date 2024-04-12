@@ -33,6 +33,7 @@
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
@@ -43,7 +44,6 @@
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
     "uuid": "^9.0.0",
-    "winston": "^3.2.1",
     "zod": "^3.22.4"
   },
   "devDependencies": {

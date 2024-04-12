@@ -12,7 +12,7 @@ import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
@@ -48,7 +48,7 @@ export type GeneratorBuilder = {
 // @public
 export type GeneratorOptions = {
   containerRunner?: ContainerRunner;
-  logger: Logger;
+  logger: LoggerService;
 };
 
 // @public
@@ -57,7 +57,7 @@ export type GeneratorRunOptions = {
   outputDir: string;
   parsedLocationAnnotation?: ParsedLocationAnnotation;
   etag?: string;
-  logger: Logger;
+  logger: LoggerService;
   logStream?: Writable;
   siteOptions?: {
     name?: string;
@@ -70,7 +70,7 @@ export class Generators implements GeneratorBuilder {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       containerRunner: ContainerRunner;
       customGenerator?: TechdocsGenerator;
     },
@@ -85,7 +85,7 @@ export const getDocFilesFromRepository: (
   entity: Entity,
   opts?: {
     etag?: string;
-    logger?: Logger;
+    logger?: LoggerService;
   },
 ) => Promise<PreparerResponse>;
 
@@ -155,13 +155,13 @@ export type PreparerBuilder = {
 
 // @public
 export type PreparerConfig = {
-  logger: Logger;
+  logger: LoggerService;
   reader: UrlReader;
 };
 
 // @public
 export type PreparerOptions = {
-  logger?: Logger;
+  logger?: LoggerService;
   etag?: ETag;
 };
 
@@ -203,7 +203,7 @@ export interface PublisherBase {
 
 // @public
 export type PublisherFactory = {
-  logger: Logger;
+  logger: LoggerService;
   discovery: PluginEndpointDiscovery;
 };
 
@@ -260,7 +260,7 @@ export interface TechDocsDocument extends IndexableDocument {
 // @public
 export class TechdocsGenerator implements GeneratorBase {
   constructor(options: {
-    logger: Logger;
+    logger: LoggerService;
     containerRunner?: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;

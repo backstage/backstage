@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
 import { ScmIntegrations } from '@backstage/integration';
-import { Logger } from 'winston';
 
 import {
   ReadTodosOptions,
@@ -32,6 +31,7 @@ import {
   coreServices,
   createServiceFactory,
   createServiceRef,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
 const excludedExtensions = [
@@ -48,7 +48,7 @@ const MAX_FILE_SIZE = 200000;
 
 /** @public */
 export type TodoScmReaderOptions = {
-  logger: Logger;
+  logger: LoggerService;
   reader: UrlReader;
   integrations: ScmIntegrations;
   parser?: TodoParser;
@@ -62,7 +62,7 @@ type CacheItem = {
 
 /** @public */
 export class TodoScmReader implements TodoReader {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly reader: UrlReader;
   private readonly parser: TodoParser;
   private readonly integrations: ScmIntegrations;
@@ -187,9 +187,8 @@ export const todoReaderServiceRef = createServiceRef<TodoReader>({
         logger: coreServices.logger,
       },
       factory: async ({ reader, config, logger }) => {
-        const winstonLogger = loggerToWinstonLogger(logger);
         return TodoScmReader.fromConfig(config, {
-          logger: winstonLogger,
+          logger,
           reader,
         });
       },

@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-
 import {
-  createServiceRef,
-  createServiceFactory,
   coreServices,
+  createExtensionPoint,
+  createServiceFactory,
+  createServiceRef,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
-import { createExtensionPoint } from '@backstage/backend-plugin-api';
 
 import {
+  IndexBuilder,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
-} from '@backstage/plugin-search-backend-node';
-
-import {
   SearchEngine,
-  IndexBuilder,
 } from '@backstage/plugin-search-backend-node';
 
 /**
@@ -78,7 +73,7 @@ export interface SearchEngineRegistryExtensionPoint {
 }
 
 type DefaultSearchIndexServiceOptions = {
-  logger: Logger;
+  logger: LoggerService;
 };
 
 /**
@@ -86,7 +81,7 @@ type DefaultSearchIndexServiceOptions = {
  * Reponsible for register the indexing task and start the schedule.
  */
 class DefaultSearchIndexService implements SearchIndexService {
-  private logger: Logger;
+  private logger: LoggerService;
   private indexBuilder: IndexBuilder | null = null;
 
   private constructor(options: DefaultSearchIndexServiceOptions) {
@@ -134,7 +129,7 @@ export const searchIndexServiceRef = createServiceRef<SearchIndexService>({
       },
       factory({ logger }) {
         return DefaultSearchIndexService.fromConfig({
-          logger: loggerToWinstonLogger(logger),
+          logger,
         });
       },
     }),

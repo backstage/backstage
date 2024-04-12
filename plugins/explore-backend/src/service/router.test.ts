@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   ExploreTool,
   GetExploreToolsRequest,
@@ -23,6 +22,7 @@ import express from 'express';
 import request from 'supertest';
 import { ExploreToolProvider } from '../tools';
 import { createRouter } from './router';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mockTools: ExploreTool[] = [
   { title: 'Tool 1', url: 'https://example.com/tool1', image: '' },
@@ -42,7 +42,7 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const router = await createRouter({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       toolProvider,
     });
     app = express().use(router);

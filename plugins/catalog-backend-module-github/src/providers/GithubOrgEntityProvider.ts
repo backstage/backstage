@@ -43,28 +43,28 @@ import {
   TeamEvent,
 } from '@octokit/webhooks-types';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 import {
-  TeamTransformer,
-  UserTransformer,
   defaultOrganizationTeamTransformer,
   defaultUserTransformer,
+  TeamTransformer,
+  UserTransformer,
 } from '../lib/defaultTransformers';
 import {
-  DeferredEntitiesBuilder,
-  GithubTeam,
   createAddEntitiesOperation,
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
+  DeferredEntitiesBuilder,
   getOrganizationTeam,
   getOrganizationTeams,
   getOrganizationTeamsFromUsers,
   getOrganizationUsers,
+  GithubTeam,
 } from '../lib/github';
 import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
 import { parseGithubOrgUrl } from '../lib/util';
 import { withLocations } from '../lib/withLocations';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const EVENT_TOPICS = [
   'github.membership',
@@ -115,7 +115,7 @@ export interface GithubOrgEntityProviderOptions {
   /**
    * The logger to use.
    */
-  logger: Logger;
+  logger: LoggerService;
 
   /**
    * Optionally supply a custom credentials provider, replacing the default one.
@@ -183,7 +183,7 @@ export class GithubOrgEntityProvider
       id: string;
       orgUrl: string;
       gitHubConfig: GithubIntegrationConfig;
-      logger: Logger;
+      logger: LoggerService;
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
@@ -214,7 +214,7 @@ export class GithubOrgEntityProvider
    * Runs one single complete ingestion. This is only necessary if you use
    * manual scheduling.
    */
-  async read(options?: { logger?: Logger }) {
+  async read(options?: { logger?: LoggerService }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -618,7 +618,7 @@ export class GithubOrgEntityProvider
 }
 
 // Helps wrap the timing and logging behaviors
-function trackProgress(logger: Logger) {
+function trackProgress(logger: LoggerService) {
   let timestamp = Date.now();
   let summary: string;
 

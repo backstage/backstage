@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import {
+  BackstageCredentials,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { TaskRunner } from '@backstage/backend-tasks';
 import {
   DocumentCollatorFactory,
@@ -23,7 +26,6 @@ import {
   SearchQuery,
 } from '@backstage/plugin-search-common';
 import { Writable } from 'stream';
-import { Logger } from 'winston';
 
 /**
  * Options required to instantiate the index builder.
@@ -31,7 +33,7 @@ import { Logger } from 'winston';
  */
 export type IndexBuilderOptions = {
   searchEngine: SearchEngine;
-  logger: Logger;
+  logger: LoggerService;
 };
 
 /**

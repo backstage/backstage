@@ -32,6 +32,7 @@ import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Ingest entities into the catalog in bite-sized chunks.
@@ -200,7 +201,7 @@ export interface IterationEngine {
 }
 
 export interface IterationEngineOptions {
-  logger: Logger;
+  logger: LoggerService;
   connection: EntityProviderConnection;
   manager: IncrementalIngestionDatabaseManager;
   provider: IncrementalEntityProvider<unknown, unknown>;

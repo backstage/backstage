@@ -3504,6 +3504,7 @@ __metadata:
   resolution: "@backstage/backend-tasks@workspace:packages/backend-tasks"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
@@ -3517,7 +3518,6 @@ __metadata:
     luxon: ^3.0.0
     uuid: ^9.0.0
     wait-for-expect: ^3.0.2
-    winston: ^3.2.1
     zod: ^3.22.4
   languageName: unknown
   linkType: soft
@@ -4406,7 +4406,6 @@ __metadata:
     marked: ^12.0.0
     node-fetch: ^2.6.5
     supertest: ^6.1.3
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -4459,6 +4458,7 @@ __metadata:
   dependencies:
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@types/express": "*"
@@ -4468,7 +4468,6 @@ __metadata:
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
     supertest: ^6.1.6
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -4720,7 +4719,6 @@ __metadata:
     luxon: ^3.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.3
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -5163,7 +5161,6 @@ __metadata:
     mime-types: ^2.1.27
     p-limit: ^3.1.0
     supertest: ^6.1.6
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -5231,7 +5228,6 @@ __metadata:
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -5343,7 +5339,6 @@ __metadata:
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^3.0.0
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -5476,7 +5471,6 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^9.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -5542,7 +5536,6 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^9.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -5560,7 +5553,6 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-kubernetes-common": "workspace:^"
     "@google-cloud/container": ^5.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -5583,7 +5575,6 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^9.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -5631,7 +5622,6 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^9.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -5655,7 +5645,6 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^9.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -5683,7 +5672,6 @@ __metadata:
     knex: ^3.0.0
     luxon: ^3.0.0
     uuid: ^9.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -5732,7 +5720,6 @@ __metadata:
     p-limit: ^3.0.2
     qs: ^6.9.4
     uuid: ^9.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -5778,7 +5765,6 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     uuid: ^9.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -5865,7 +5851,7 @@ __metadata:
     supertest: ^6.1.3
     uuid: ^9.0.0
     wait-for-expect: ^3.0.2
-    winston: ^3.2.1
+    winston: ^3.13.0
     yaml: ^2.0.0
     yn: ^4.0.0
     zod: ^3.22.4
@@ -6293,7 +6279,6 @@ __metadata:
     knex: ^3.0.0
     supertest: ^6.1.6
     uuid: ^9.0.0
-    winston: ^3.2.1
     xml2js: ^0.6.0
     yn: ^4.0.0
   languageName: unknown
@@ -6474,7 +6459,6 @@ __metadata:
     ping: ^0.4.1
     semver: ^7.5.3
     supertest: ^6.2.4
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -6562,7 +6546,6 @@ __metadata:
     knex: ^3.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -6779,7 +6762,6 @@ __metadata:
     lodash: ^4.17.21
     node-fetch: ^2.6.7
     supertest: ^6.2.4
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -7354,7 +7336,6 @@ __metadata:
     express-promise-router: ^4.1.0
     jenkins: ^1.0.0
     node-fetch: ^2.6.7
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -7416,7 +7397,6 @@ __metadata:
     kafkajs: ^2.0.0
     lodash: ^4.17.21
     supertest: ^6.1.3
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -7728,7 +7708,6 @@ __metadata:
     node-fetch: ^2.6.7
     supertest: ^6.2.4
     uuid: ^9.0.0
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -7864,7 +7843,6 @@ __metadata:
     express-promise-router: ^4.1.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -8146,7 +8124,6 @@ __metadata:
     express-promise-router: ^4.1.0
     node-fetch: ^2.6.7
     supertest: ^6.1.6
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -8212,7 +8189,6 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.1.6
-    winston: ^3.2.1
     yn: ^4.0.0
     zod: ^3.22.4
   languageName: unknown
@@ -8300,7 +8276,6 @@ __metadata:
     node-fetch: ^2.6.7
     supertest: ^6.1.3
     uuid: ^9.0.0
-    winston: ^3.2.1
     yn: ^4.0.0
     zod: ^3.22.4
   languageName: unknown
@@ -8639,7 +8614,6 @@ __metadata:
     libsodium-wrappers: ^0.7.11
     octokit: ^3.0.0
     octokit-plugin-create-pull-request: ^5.0.0
-    winston: ^3.2.1
     yaml: ^2.0.0
   languageName: unknown
   linkType: soft
@@ -8829,7 +8803,6 @@ __metadata:
     globby: ^11.0.0
     jsonschema: ^1.2.6
     p-limit: ^3.1.0
-    winston: ^3.2.1
     zod: ^3.22.4
     zod-to-json-schema: ^3.20.4
   languageName: unknown
@@ -9015,7 +8988,6 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     msw: ^1.2.1
     node-fetch: ^2.6.7
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -9052,7 +9024,6 @@ __metadata:
     msw: ^1.2.1
     node-fetch: ^2.6.7
     qs: ^6.9.4
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -9078,7 +9049,6 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     p-limit: ^3.1.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -9100,7 +9070,6 @@ __metadata:
     lunr: ^2.3.9
     ndjson: ^2.0.0
     uuid: ^9.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -9377,7 +9346,6 @@ __metadata:
     msw: ^1.0.0
     node-fetch: ^2.6.7
     supertest: ^6.2.4
-    winston: ^3.2.1
     yn: ^5.0.0
   languageName: unknown
   linkType: soft
@@ -9546,7 +9514,6 @@ __metadata:
     json-rules-engine: ^6.1.2
     lodash: ^4.17.21
     luxon: ^3.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -9579,7 +9546,6 @@ __metadata:
     supertest: ^6.1.3
     uuid: ^9.0.0
     wait-for-expect: ^3.0.2
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -9607,7 +9573,6 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/luxon": ^3.0.0
     luxon: ^3.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -9798,7 +9763,6 @@ __metadata:
     p-limit: ^3.1.0
     recursive-readdir: ^2.2.2
     supertest: ^6.1.3
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
@@ -9900,7 +9864,6 @@ __metadata:
     express: ^4.17.1
     leasot: ^12.0.0
     supertest: ^6.1.3
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -12082,7 +12045,6 @@ __metadata:
     express-promise-router: ^4.1.0
     supertest: ^6.1.6
     uuid: ^9.0.0
-    winston: ^3.2.1
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -46087,7 +46049,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"winston@npm:^3.2.1":
+"winston@npm:^3.13.0, winston@npm:^3.2.1":
   version: 3.13.0
   resolution: "winston@npm:3.13.0"
   dependencies:

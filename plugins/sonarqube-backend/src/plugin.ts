@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { DefaultSonarqubeInfoProvider } from './service/sonarqubeInfoProvider';
 import { createRouter } from './service/router';
@@ -37,13 +36,12 @@ export const sonarqubePlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
       },
       async init({ logger, config, httpRouter }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         httpRouter.use(
           await createRouter({
             /**
              * Logger for logging purposes
              */
-            logger: winstonLogger,
+            logger,
             /**
              * Info provider to be able to get all necessary information for the APIs
              */

@@ -57,7 +57,6 @@
     "luxon": "^3.0.0",
     "semver": "^7.5.3",
     "uuid": "^9.0.0",
-    "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {

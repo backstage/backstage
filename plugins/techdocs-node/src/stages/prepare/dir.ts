@@ -22,7 +22,6 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
-import { Logger } from 'winston';
 import { parseReferenceAnnotation, transformDirLocation } from '../../helpers';
 import {
   PreparerBase,
@@ -30,6 +29,7 @@ import {
   PreparerOptions,
   PreparerResponse,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Preparer used to retrieve documentation files from a local directory
@@ -53,7 +53,7 @@ export class DirectoryPreparer implements PreparerBase {
 
   private constructor(
     config: Config,
-    _logger: Logger | null,
+    _logger: LoggerService | null,
     reader: UrlReader,
   ) {
     this.reader = reader;

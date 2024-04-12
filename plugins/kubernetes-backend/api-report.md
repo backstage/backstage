@@ -24,6 +24,7 @@ import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesServiceLocator as KubernetesServiceLocator_2 } from '@backstage/plugin-kubernetes-node';
 import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
@@ -75,7 +76,7 @@ export class AwsIamStrategy implements AuthenticationStrategy_2 {
 
 // @public (undocumented)
 export class AzureIdentityStrategy implements AuthenticationStrategy_2 {
-  constructor(logger: Logger, tokenCredential?: TokenCredential);
+  constructor(logger: LoggerService, tokenCredential?: TokenCredential);
   // (undocumented)
   getCredential(): Promise<KubernetesCredential_2>;
   // (undocumented)
@@ -189,7 +190,7 @@ export class KubernetesBuilder {
   ): KubernetesObjectsProvider_2;
   // (undocumented)
   protected buildProxy(
-    logger: Logger,
+    logger: LoggerService,
     clusterSupplier: KubernetesClustersSupplier_2,
     discovery: DiscoveryService,
     httpAuth: HttpAuthService,
@@ -240,7 +241,7 @@ export class KubernetesBuilder {
   protected getObjectTypesToFetch(): ObjectToFetch_2[] | undefined;
   // (undocumented)
   protected getProxy(
-    logger: Logger,
+    logger: LoggerService,
     clusterSupplier: KubernetesClustersSupplier_2,
     discovery: DiscoveryService,
     httpAuth: HttpAuthService,
@@ -301,7 +302,7 @@ export interface KubernetesEnvironment {
   // (undocumented)
   httpAuth?: HttpAuthService;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
   permissions: PermissionEvaluator;
 }
@@ -321,7 +322,7 @@ export interface KubernetesObjectsProviderOptions {
   // (undocumented)
   fetcher: k8sAuthTypes.KubernetesFetcher;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
   objectTypesToFetch?: k8sAuthTypes.ObjectToFetch[];
   // (undocumented)
@@ -347,7 +348,7 @@ export type KubernetesProxyCreateRequestHandlerOptions = {
 
 // @public
 export type KubernetesProxyOptions = {
-  logger: Logger;
+  logger: LoggerService;
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
   discovery: DiscoveryService;

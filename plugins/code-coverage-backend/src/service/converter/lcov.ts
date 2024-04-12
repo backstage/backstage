@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { FileEntry } from '../types';
-import { Logger } from 'winston';
 import { Converter } from './Converter';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export class Lcov implements Converter {
-  constructor(readonly logger: Logger) {
+  constructor(readonly logger: LoggerService) {
     this.logger = logger;
   }
 

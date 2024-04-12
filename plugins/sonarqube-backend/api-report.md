@@ -6,7 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -26,7 +26,7 @@ export class DefaultSonarqubeInfoProvider implements SonarqubeInfoProvider {
 
 // @public
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   sonarqubeInfoProvider: SonarqubeInfoProvider;
 }
 

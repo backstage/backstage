@@ -22,19 +22,18 @@ import {
 } from '@backstage/errors';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-  KubernetesRequestAuth,
   kubernetesProxyPermission,
+  KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
-  Cluster,
-  KubeConfig,
   bufferFromFileOrString,
+  Cluster,
+  Config,
+  KubeConfig,
 } from '@kubernetes/client-node';
 import { createProxyMiddleware, RequestHandler } from 'http-proxy-middleware';
-import { Logger } from 'winston';
 import fs from 'fs-extra';
-import { Config } from '@kubernetes/client-node';
 
 import { AuthenticationStrategy } from '../auth';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
@@ -44,9 +43,13 @@ import { IncomingHttpHeaders } from 'http';
 import {
   DiscoveryService,
   HttpAuthService,
+  LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
-import { createLegacyAuthAdapters } from '@backstage/backend-common';
+import {
+  createLegacyAuthAdapters,
+  loggerToWinstonLogger,
+} from '@backstage/backend-common';
 
 export const APPLICATION_JSON: string = 'application/json';
 
@@ -80,7 +83,7 @@ export type KubernetesProxyCreateRequestHandlerOptions = {
  * @public
  */
 export type KubernetesProxyOptions = {
-  logger: Logger;
+  logger: LoggerService;
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
   discovery: DiscoveryService;
@@ -94,7 +97,7 @@ export type KubernetesProxyOptions = {
  */
 export class KubernetesProxy {
   private readonly middlewareForClusterName = new Map<string, RequestHandler>();
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly clusterSupplier: KubernetesClustersSupplier;
   private readonly authStrategy: AuthenticationStrategy;
   private readonly httpAuth: HttpAuthService;
@@ -154,7 +157,8 @@ export class KubernetesProxy {
     if (!middleware) {
       const logger = this.logger.child({ cluster: originalCluster.name });
       middleware = createProxyMiddleware({
-        logProvider: () => logger,
+        // TODO: Add 'log' to LoggerService
+        logProvider: () => loggerToWinstonLogger(logger),
         ws: true,
         secure: !originalCluster.skipTLSVerify,
         changeOrigin: true,
@@ -211,7 +215,7 @@ export class KubernetesProxy {
             error,
           );
 
-          logger.error(wrappedError);
+          logger.error(wrappedError.message);
 
           const body: ErrorResponseBody = {
             error: serializeError(wrappedError, {

@@ -29,11 +29,14 @@ import { NotFoundError } from '@backstage/errors';
 import { BadgeBuilder, DefaultBadgeBuilder } from '../lib/BadgeBuilder';
 import { BadgeContext, BadgeFactories } from '../types';
 import { isNil } from 'lodash';
-import { Logger } from 'winston';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { BadgesStore, DatabaseBadgesStore } from '../database/badgesStore';
 import { createDefaultBadgeFactories } from '../badges';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface RouterOptions {
@@ -45,7 +48,7 @@ export interface RouterOptions {
   tokenManager: TokenManager;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
-  logger: Logger;
+  logger: LoggerService;
   identity: IdentityApi;
   badgeStore?: BadgesStore;
 }
@@ -95,7 +98,7 @@ async function obfuscatedRoute(
   router: express.Router,
   catalog: CatalogApi,
   badgeBuilder: BadgeBuilder,
-  logger: Logger,
+  logger: LoggerService,
   options: RouterOptions,
   config: Config,
   baseUrl: string,

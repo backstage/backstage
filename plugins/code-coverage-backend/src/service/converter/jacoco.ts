@@ -16,8 +16,8 @@
 
 import { BranchHit, FileEntry } from '../types';
 import { JacocoSourceFile, JacocoXML } from './types';
-import { Logger } from 'winston';
 import { Converter } from './Converter';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type ParsedLine = {
   number: number;
@@ -28,7 +28,7 @@ type ParsedLine = {
 };
 
 export class Jacoco implements Converter {
-  constructor(readonly logger: Logger) {
+  constructor(readonly logger: LoggerService) {
     this.logger = logger;
   }
 

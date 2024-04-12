@@ -15,7 +15,7 @@ import express from 'express';
 import { GitRepository } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import { GitTag } from '@backstage/plugin-azure-devops-common';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { Project } from '@backstage/plugin-azure-devops-common';
 import { PullRequest } from '@backstage/plugin-azure-devops-common';
@@ -51,7 +51,7 @@ export class AzureDevOpsApi {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       urlReader: UrlReader;
     },
   ): AzureDevOpsApi;
@@ -159,7 +159,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
   permissions: PermissionEvaluator;
   // (undocumented)

@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import { Writable } from 'stream';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { TaskSecrets } from '../tasks';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UserEntity } from '@backstage/catalog-model';
 import { Schema } from 'jsonschema';
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import {
+  BackstageCredentials,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * ActionContext is passed into scaffolder actions.
@@ -31,10 +32,7 @@ export type ActionContext<
   TActionInput extends JsonObject,
   TActionOutput extends JsonObject = JsonObject,
 > = {
-  // TODO(blam): move this to LoggerService
-  logger: Logger;
-  /** @deprecated - use `ctx.logger` instead */
-  logStream: Writable;
+  logger: LoggerService;
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;

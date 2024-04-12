@@ -15,11 +15,11 @@
  */
 import { BranchHit, FileEntry } from '../types';
 import { CoberturaXML, InnerClass, LineHit } from './types';
-import { Logger } from 'winston';
 import { Converter } from './Converter';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export class Cobertura implements Converter {
-  constructor(readonly logger: Logger) {
+  constructor(readonly logger: LoggerService) {
     this.logger = logger;
   }
 
