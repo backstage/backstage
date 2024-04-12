@@ -17,7 +17,11 @@ request its contents.
 
 ## Setup
 
-In a newly created Backstage app, the backend is setup up to not require any
+In a newly created Backstage app, service to service auth is enabled by default. You will need to provide a [Secret Key](#secret-key)
+
+### Legacy Backend Setup
+
+In a Backstage app built with the legacy backend, the backend is setup up to not require any
 auth at all. This means that generated service-to-service tokens are empty, and
 that incoming requests are not validated. If you want to enable
 service-to-service auth, the first step is to switch out the following line in
@@ -36,6 +40,8 @@ development setup will generally not be impacted by this, as temporary keys are
 generated under the hood. But for the production setup, this means you must now
 provide a shared secret that enables your backend plugins to communicate with
 each other.
+
+## Secret Key
 
 Backstage service-to-service tokens are currently always signed with a single
 secret key. It needs to be shared across all backend plugins and services that
