@@ -21,13 +21,11 @@ import React, {
   PropsWithChildren,
 } from 'react';
 
-import {
-  Grid,
-  ListItem,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-} from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
 import DocsIcon from '@material-ui/icons/InsertDriveFile';
 
 import { JsonValue } from '@backstage/types';

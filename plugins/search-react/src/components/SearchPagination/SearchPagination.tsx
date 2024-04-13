@@ -21,7 +21,7 @@ import React, {
   useCallback,
   useMemo,
 } from 'react';
-import { TablePagination } from '@material-ui/core';
+import TablePagination from '@material-ui/core/TablePagination';
 import { useSearch } from '../../context';
 
 const encodePageCursor = (pageCursor: number): string => {

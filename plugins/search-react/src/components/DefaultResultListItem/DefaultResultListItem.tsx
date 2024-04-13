@@ -21,7 +21,9 @@ import {
   SearchDocument,
 } from '@backstage/plugin-search-common';
 import { HighlightedSearchResultText } from '../HighlightedSearchResultText';
-import { ListItemIcon, ListItemText, Box } from '@material-ui/core';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { Link } from '@backstage/core-components';
 
