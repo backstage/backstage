@@ -80,7 +80,7 @@
     "diff": "^5.0.0",
     "esbuild": "^0.20.0",
     "esbuild-loader": "^4.0.0",
-    "eslint": "^8.6.0",
+    "eslint": "^9.0.0",
     "eslint-config-prettier": "^9.0.0",
     "eslint-formatter-friendly": "^7.0.0",
     "eslint-plugin-deprecation": "^2.0.0",

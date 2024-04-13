@@ -113,7 +113,7 @@
     "command-exists": "^1.2.9",
     "cross-env": "^7.0.0",
     "e2e-test": "workspace:*",
-    "eslint": "^8.6.0",
+    "eslint": "^9.0.0",
     "eslint-plugin-notice": "^0.9.10",
     "eslint-plugin-react": "^7.28.0",
     "eslint-plugin-testing-library": "^6.0.0",
