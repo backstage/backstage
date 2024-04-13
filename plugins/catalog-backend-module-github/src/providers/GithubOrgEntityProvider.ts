@@ -28,11 +28,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import {
-  EventParams,
-  EventsService,
-  EventSubscriber,
-} from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
 import {
   MembershipEvent,
@@ -138,9 +134,7 @@ export interface GithubOrgEntityProviderOptions {
  *
  * @public
  */
-export class GithubOrgEntityProvider
-  implements EntityProvider, EventSubscriber
-{
+export class GithubOrgEntityProvider implements EntityProvider {
   private readonly credentialsProvider: GithubCredentialsProvider;
   private connection?: EntityProviderConnection;
   private scheduleFn?: () => Promise<void>;
@@ -268,8 +262,7 @@ export class GithubOrgEntityProvider
     markCommitComplete();
   }
 
-  /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.onEvent} */
-  async onEvent(params: EventParams): Promise<void> {
+  private async onEvent(params: EventParams): Promise<void> {
     const { logger } = this.options;
     logger.debug(`Received event from ${params.topic}`);
 
@@ -333,11 +326,6 @@ export class GithubOrgEntityProvider
     }
 
     return;
-  }
-
-  /** {@inheritdoc @backstage/plugin-events-node#EventSubscriber.supportsEventTopics} */
-  supportsEventTopics(): string[] {
-    return EVENT_TOPICS;
   }
 
   private async onTeamEditedInOrganization(
