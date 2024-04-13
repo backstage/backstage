@@ -17864,11 +17864,11 @@ __metadata:
   linkType: hard
 
 "@swc/helpers@npm:^0.5.0":
-  version: 0.5.8
-  resolution: "@swc/helpers@npm:0.5.8"
+  version: 0.5.9
+  resolution: "@swc/helpers@npm:0.5.9"
   dependencies:
     tslib: ^2.4.0
-  checksum: 001bb4ef9c59083fd4325e295f800b6ef61b8a2109424060a7dcc73b3c01c6ecbbf90a53db05fddf33025c301d1350e425798dc6d4ffc685f9b1051ad3177dae
+  checksum: ef2f076560711adbc37157e796046c358dc5c91716ce2ddc8d1a6d4a71e0769e145b28d1d1c7689c57d1087509b40646af84e15d623cade7ab653ebf50270bda
   languageName: node
   linkType: hard
 
