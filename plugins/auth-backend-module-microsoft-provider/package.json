@@ -44,7 +44,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "@types/passport-microsoft": "^1.0.0",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "supertest": "^6.3.3"
   },
   "configSchema": "config.d.ts",
