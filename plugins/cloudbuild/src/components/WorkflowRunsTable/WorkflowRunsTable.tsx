@@ -48,11 +48,18 @@ const generatedColumns: TableColumn[] = [
     field: 'id',
     type: 'numeric',
     width: '150px',
-    render: (row: Partial<WorkflowRun>) => (
-      <Typography variant="body2" noWrap>
-        {row.id?.substring(0, 8)}
-      </Typography>
-    ),
+    render: (row: Partial<WorkflowRun>) => {
+      const LinkWrapper = () => {
+        const routeLink = useRouteRef(buildRouteRef);
+        return (
+          <Link data-testid="cell-source" to={routeLink({ id: row.id! })}>
+            {row.id?.substring(0, 8)}
+          </Link>
+        );
+      };
+
+      return <LinkWrapper />;
+    },
   },
   {
     title: 'Trigger Name',
@@ -67,18 +74,11 @@ const generatedColumns: TableColumn[] = [
     field: 'source',
     highlight: true,
     width: '200px',
-    render: (row: Partial<WorkflowRun>) => {
-      const LinkWrapper = () => {
-        const routeLink = useRouteRef(buildRouteRef);
-        return (
-          <Link data-testid="cell-source" to={routeLink({ id: row.id! })}>
-            {row.message}
-          </Link>
-        );
-      };
-
-      return <LinkWrapper />;
-    },
+    render: (row: Partial<WorkflowRun>) => (
+      <Typography variant="body2" noWrap>
+        {row.message}
+      </Typography>
+    ),
   },
   {
     title: 'Ref',
