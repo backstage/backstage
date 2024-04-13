@@ -15,14 +15,14 @@
  */
 
 import React from 'react';
+import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
 import {
   createStyles,
-  IconButton,
   Theme,
-  Typography,
   withStyles,
   WithStyles,
-} from '@material-ui/core';
+} from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import MuiDialogTitle from '@material-ui/core/DialogTitle';
 

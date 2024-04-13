@@ -15,8 +15,8 @@
  */
 
 import React from 'react';
-import { Alert } from '@material-ui/lab';
-import { Box } from '@material-ui/core';
+import Alert from '@material-ui/lab/Alert';
+import Box from '@material-ui/core/Box';
 
 import { TEST_IDS } from '../test-helpers/test-ids';
 
