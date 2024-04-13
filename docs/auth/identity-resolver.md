@@ -194,6 +194,13 @@ backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 backend.add(customAuth);
 ```
 
+Check out [the naming patterns
+article](../backend-system/architecture/07-naming-patterns.md) for what rules
+apply regarding how to form valid IDs. In this example we also put the module
+declaration directly in `packages/backend/src/index.ts` but that's just for
+simplicity. You can place it anywhere you like, including in other packages, and
+import from there if you prefer.
+
 The `createOAuthProviderFactory` / `createProxyAuthProviderFactory` functions
 have additional options for profile and state transforms - not covered here, but
 good to know about if you need them.
@@ -233,6 +240,13 @@ async signInResolver(info, ctx) {
   });
 }
 ```
+
+If you throw an error in the sign in resolver function, the sign in attempt is
+immediately rejected, and the error details are presented in the user interface.
+
+The `ctx` context [has several useful
+functions](https://backstage.io/docs/reference/plugin-auth-node.authresolvercontext/)
+for issuing tokens in various ways.
 
 ### Custom Ownership Resolution
 
