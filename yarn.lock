@@ -8719,6 +8719,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     winston: ^3.2.1
+    yaml: ^2.0.0
     yeoman-environment: ^3.9.1
   languageName: unknown
   linkType: soft
