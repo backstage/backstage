@@ -44,7 +44,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "openapi3-ts": "^3.1.2"
+    "openapi3-ts": "^4.0.0"
   },
   "configSchema": "config.d.ts"
 }

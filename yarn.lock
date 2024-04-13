@@ -3478,7 +3478,7 @@ __metadata:
     json-schema-to-ts: ^3.0.0
     lodash: ^4.17.21
     openapi-merge: ^1.3.2
-    openapi3-ts: ^3.1.2
+    openapi3-ts: ^4.0.0
     supertest: ^6.1.3
   languageName: unknown
   linkType: soft
@@ -5494,7 +5494,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     cross-fetch: ^4.0.0
     openapi-merge: ^1.3.2
-    openapi3-ts: ^3.1.2
+    openapi3-ts: ^4.0.0
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -36757,12 +36757,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"openapi3-ts@npm:^3.1.2":
-  version: 3.2.0
-  resolution: "openapi3-ts@npm:3.2.0"
+"openapi3-ts@npm:^4.0.0":
+  version: 4.3.1
+  resolution: "openapi3-ts@npm:4.3.1"
   dependencies:
-    yaml: ^2.2.1
-  checksum: 8796a29a1363bc892ba1acb3ddffd9e6b80e8f83cbfad4cd507262e957317139cac2528ab4b14c1b30bf350ebc9cc4c43ad32a89da4d7c4b85f7e815ffba3ebe
+    yaml: ^2.4.1
+  checksum: dcb49d6ce0b696add71400a232b3049fb387a021dc677dba39995d01ec83da35b07decb2e1220b49266226d3ce78e4e71f8a03d544020572cf3d827d59c9fe86
   languageName: node
   linkType: hard
 
@@ -46178,7 +46178,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2, yaml@npm:^2.3.3":
+"yaml@npm:^2.0.0, yaml@npm:^2.0.0-10, yaml@npm:^2.1.1, yaml@npm:^2.2.2, yaml@npm:^2.3.2, yaml@npm:^2.3.3, yaml@npm:^2.4.1":
   version: 2.4.1
   resolution: "yaml@npm:2.4.1"
   bin:
