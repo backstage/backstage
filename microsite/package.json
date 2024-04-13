@@ -17,7 +17,6 @@
     "version": "docusaurus-version",
     "write-translations": "docusaurus-write-translations"
   },
-  "prettier": "@spotify/prettier-config",
   "dependencies": {
     "@docusaurus/core": "^3.1.1",
     "@docusaurus/plugin-client-redirects": "^3.1.1",
@@ -35,7 +34,6 @@
   },
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.1.1",
-    "@spotify/prettier-config": "^15.0.0",
     "@tsconfig/docusaurus": "^2.0.0",
     "@types/luxon": "^3.0.0",
     "@types/webpack-env": "^1.18.0",
