@@ -22,7 +22,7 @@ import {
   fetchApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 
 export type Todo = {
   title: string;
