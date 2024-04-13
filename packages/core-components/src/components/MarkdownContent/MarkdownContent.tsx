@@ -127,7 +127,7 @@ export function MarkdownContent(props: Props) {
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
-      className={`${classes.markdown} ${className}`}
+      className={`${classes.markdown} ${className ?? ''}`.trim()}
       children={content}
       components={components}
       linkTarget={linkTarget}
