@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { Box, TextFieldProps, Typography, makeStyles } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import { TextFieldProps } from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Autocomplete } from '@material-ui/lab';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
