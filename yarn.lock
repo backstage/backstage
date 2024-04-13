@@ -7211,7 +7211,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
-    graphql-voyager: ^1.0.0-rc.31
+    graphql-voyager: ^2.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -29527,9 +29527,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"graphql-voyager@npm:^1.0.0-rc.31":
-  version: 1.3.0
-  resolution: "graphql-voyager@npm:1.3.0"
+"graphql-voyager@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "graphql-voyager@npm:2.0.0"
   dependencies:
     "@emotion/react": 11.10.5
     "@emotion/styled": 11.10.5
@@ -29537,13 +29537,11 @@ __metadata:
     "@mui/lab": 5.0.0-alpha.114
     "@mui/material": 5.11.2
     commonmark: 0.30.0
-    lodash: 4.17.21
     svg-pan-zoom: 3.6.1
   peerDependencies:
     graphql: ">=16.5.0"
     react: ">=18.0.0"
-    react-dom: ">=18.0.0"
-  checksum: 664d8adb932e3d72189e24dfb09fe364cc0e2852ab615eddeac250d9b4a0e6130a5ea363aec87c516b3c134c070c4c15999ccedec89f57afd554e600c6d4ca34
+  checksum: 5635e8de7bf8aa4e5dda9a0c4475fbc03697a40ce735572e7e08ab3db4d85980e9c0c3962b7258fe722bf214e993cbd85b6b83314b848affe92878292dfacf3f
   languageName: node
   linkType: hard
 
