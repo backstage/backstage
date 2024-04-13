@@ -27,7 +27,7 @@ import Typography from '@material-ui/core/Typography';
 import { ilertApiRef } from '../../api';
 import { useShiftOverride } from '../../hooks/useShiftOverride';
 import { Shift } from '../../types';
-import DateTimePicker from '@material-ui/pickers/DateTimePicker';
+import { DateTimePicker } from '@material-ui/pickers/DateTimePicker';
 import MuiPickersUtilsProvider from '@material-ui/pickers/MuiPickersUtilsProvider';
 import LuxonUtils from '@date-io/luxon';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
