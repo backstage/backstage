@@ -16,9 +16,11 @@ By default, every Backstage auth provider is configured only for the use-case of
 access delegation. This enables Backstage to request resources and actions from
 external systems on behalf of the user, for example re-triggering a build in CI.
 
-If you want to use an auth provider to sign in users, you need to explicitly configure
-it have sign-in enabled and also tell it how the external identities should
-be mapped to user identities within Backstage.
+If you want to use an auth provider to sign in users, you need to explicitly
+configure it have sign-in enabled and also tell it how the external identities
+should be mapped to user identities within Backstage. You do this by either
+choosing a built-in sign in resolver, or supplying your own. Both methods are
+listed below.
 
 ## Quick Start
 
@@ -99,21 +101,20 @@ still have to make a choice - as mentioned above, even if there are a set of
 builtins, none of them are selected by default.
 
 You set up builtin sign in resolvers using [your app-config](../conf/index.md),
-next to the respective provider's configuration. Here's an example for Microsoft
-Azure:
+next to the respective provider's configuration. Here's an example for GitHub:
 
 ```yaml title="in e.g. app-config.yaml"
 auth:
   environment: development
   providers:
-    microsoft:
+    github:
       development:
-        clientId: ${AZURE_CLIENT_ID}
-        clientSecret: ${AZURE_CLIENT_SECRET}
-        tenantId: ${AZURE_TENANT_ID}
+        clientId: ${AUTH_GITHUB_CLIENT_ID}
+        clientSecret: ${AUTH_GITHUB_CLIENT_SECRET}
+        enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
         signIn:
           resolvers:
-            - resolver: emailMatchingUserEntityAnnotation
+            - resolver: usernameMatchingUserEntityName
             - resolver: emailMatchingUserEntityProfileEmail
             - resolver: emailLocalPartMatchingUserEntityName
 ```
@@ -122,8 +123,9 @@ Note that in this instance it lists several resolvers, which means that the
 framework will try them one by one until one succeeds. If none of them do, the
 sign in attempt is rejected.
 
-To find the list of available resolvers, consult the documentation of the
-respective provider.
+The list of available resolvers is different for each provider, since they often
+depend on the information model returned from the upstream provider service.
+Consult the documentation of the respective provider to find the list.
 
 ### Building Custom Resolvers
 
