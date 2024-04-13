@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { makeStyles, Typography, Button } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import { makeStyles } from '@material-ui/core/styles';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import PeopleIcon from '@material-ui/icons/People';
 
