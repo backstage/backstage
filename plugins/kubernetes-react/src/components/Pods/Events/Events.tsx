@@ -15,24 +15,22 @@
  */
 import React from 'react';
 
-import {
-  Avatar,
-  Container,
-  Grid,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemText,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
+import Container from '@material-ui/core/Container';
+import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemAvatar from '@material-ui/core/ListItemAvatar';
+import ListItemText from '@material-ui/core/ListItemText';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 
 import InfoIcon from '@material-ui/icons/Info';
 import WarningIcon from '@material-ui/icons/Warning';
 import { DateTime } from 'luxon';
 
 import { useEvents } from './useEvents';
-import { Skeleton } from '@material-ui/lab';
+import Skeleton from '@material-ui/lab/Skeleton';
 import { DismissableBanner } from '@backstage/core-components';
 import { Event } from 'kubernetes-models/v1';
 
