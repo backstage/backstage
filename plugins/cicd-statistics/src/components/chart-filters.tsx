@@ -30,7 +30,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import ShowChartIcon from '@material-ui/icons/ShowChart';
 import BarChartIcon from '@material-ui/icons/BarChart';
 import MuiPickersUtilsProvider from '@material-ui/pickers/MuiPickersUtilsProvider';
-import KeyboardDatePicker from '@material-ui/pickers/KeyboardDatePicker';
+import { KeyboardDatePicker } from '@material-ui/pickers/DatePicker';
 import { DateTime } from 'luxon';
 import LuxonUtils from '@date-io/luxon';
 
