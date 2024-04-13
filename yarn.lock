@@ -8661,7 +8661,6 @@ __metadata:
     "@gitbeaker/core": ^35.8.0
     "@gitbeaker/node": ^35.8.0
     "@gitbeaker/rest": ^39.25.0
-    jest-date-mock: ^1.0.8
     luxon: ^3.0.0
     yaml: ^2.0.0
     zod: ^3.22.4
@@ -31913,13 +31912,6 @@ __metadata:
   dependencies:
     identity-obj-proxy: 3.0.0
   checksum: ddf01a327379f0186fc506b0c2a6cecad59acf3a7c947113f75530d1ea87e4f09aa98c9894283c0ead29688ef9fbc3c91ce1b158756034872fa097e491ee9f8c
-  languageName: node
-  linkType: hard
-
-"jest-date-mock@npm:^1.0.8":
-  version: 1.0.8
-  resolution: "jest-date-mock@npm:1.0.8"
-  checksum: 7b012870440b0df742d0b651435b91625dbbf02d916633a0c70c7deb5d5087f9aadc59847602312368826325909e70e95cd412896a0c9ee1d5ac382000bf5ef9
   languageName: node
   linkType: hard
 
