@@ -71,18 +71,15 @@ export const makeProfileInfo = (
 };
 
 const getPublicKeyEndpoint = (region: string) => {
-  const commercialEndpoint = `https://public-keys.auth.elb.${encodeURIComponent(
-    region,
-  )}.amazonaws.com`;
-  const govEndpoint = `https://s3-${encodeURIComponent(
-    region,
-  )}.amazonaws.com/aws-elb-public-keys-prod-${encodeURIComponent(region)}`;
-
   if (region.startsWith('us-gov')) {
-    return govEndpoint;
+    return `https://s3-${encodeURIComponent(
+      region,
+    )}.amazonaws.com/aws-elb-public-keys-prod-${encodeURIComponent(region)}`;
   }
 
-  return commercialEndpoint;
+  return `https://public-keys.auth.elb.${encodeURIComponent(
+    region,
+  )}.amazonaws.com`;
 };
 
 export const provisionKeyCache = (region: string, keyCache: NodeCache) => {
