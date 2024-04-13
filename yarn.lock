@@ -27073,13 +27073,13 @@ __metadata:
   linkType: hard
 
 "eslint-plugin-testing-library@npm:^6.0.0":
-  version: 6.2.0
-  resolution: "eslint-plugin-testing-library@npm:6.2.0"
+  version: 6.2.1
+  resolution: "eslint-plugin-testing-library@npm:6.2.1"
   dependencies:
     "@typescript-eslint/utils": ^5.58.0
   peerDependencies:
     eslint: ^7.5.0 || ^8.0.0
-  checksum: 7af7e0a1eee44c6ba65ce2ae99f8e46ce709a319f4cce778bb0af2dda5828d78f3a81e8989c7b691a8b9b9fef102b56136209aac700038b9e64794600b0d12db
+  checksum: 27c6aa32bfaba83f3d7c1477ebe75cd9ab414e8ecac8c10da18ed237fe6827df4ab1194addca7a259bfbdca1d929d88e93ed847c388f8882cbb83b84fb831e3f
   languageName: node
   linkType: hard
 
