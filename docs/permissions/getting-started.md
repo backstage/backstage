@@ -20,19 +20,11 @@ The permissions framework depends on a few other Backstage systems, which must b
 
 The permissions framework itself is new to Backstage and still evolving quickly. To ensure your version of Backstage has all the latest permission-related functionality, it’s important to upgrade to the latest version. The [Backstage upgrade helper](https://backstage.github.io/upgrade-helper/) is a great tool to help ensure that you’ve made all the necessary changes during the upgrade!
 
-### Enable service-to-service authentication
-
-Service-to-service authentication allows Backstage backend code to verify that a given request originates from elsewhere in the Backstage backend. This is useful for tasks like collation of catalog entities in the search index. This type of request shouldn’t be permissioned, so it’s important to configure this feature before trying to use the permissions framework.
-
-To set up service-to-service authentication, follow the [service-to-service authentication docs](../auth/service-to-service-auth.md).
-
 ### Supply an identity resolver to populate group membership on sign in
 
 **Note**: If you are working off of an existing Backstage instance, you likely already have some form of an identity resolver set up.
 
 Like many other parts of Backstage, the permissions framework relies on information about group membership. This simplifies authoring policies through the use of groups, rather than requiring each user to be listed in the configuration. Group membership is also often useful for conditional permissions, for example allowing permissions to act on an entity to be granted when a user is a member of a group that owns that entity.
-
-[The IdentityResolver docs](../auth/identity-resolver.md) describe the process for resolving group membership on sign in.
 
 ## Optionally add cookie-based authentication
 
@@ -44,68 +36,32 @@ Asset requests initiated by the browser will not include a token in the `Authori
 
 The permissions framework uses a new `permission-backend` plugin to accept authorization requests from other plugins across your Backstage instance. The Backstage backend does not include this permission backend by default, so you will need to add it:
 
-1. Add `@backstage/plugin-permission-backend` as a dependency of your Backstage backend:
+1. Add `@backstage/plugin-permission-backend` and `@backstage/plugin-permission-backend-module-allow-all-policy` to your backend dependencies, this will add the permission backend and a policy that allows all permissions:
 
    ```bash
    # From your Backstage root directory
    yarn --cwd packages/backend add @backstage/plugin-permission-backend
    ```
 
-2. Add the following to a new file, `packages/backend/src/plugins/permission.ts`. This adds the permission-backend router, and configures it with a policy which allows everything.
-
-   ```typescript title="packages/backend/src/plugins/permission.ts"
-   import { createRouter } from '@backstage/plugin-permission-backend';
-   import {
-     AuthorizeResult,
-     PolicyDecision,
-   } from '@backstage/plugin-permission-common';
-   import { PermissionPolicy } from '@backstage/plugin-permission-node';
-   import { Router } from 'express';
-   import { PluginEnvironment } from '../types';
-
-   class TestPermissionPolicy implements PermissionPolicy {
-     async handle(): Promise<PolicyDecision> {
-       return { result: AuthorizeResult.ALLOW };
-     }
-   }
-
-   export default async function createPlugin(
-     env: PluginEnvironment,
-   ): Promise<Router> {
-     return await createRouter({
-       config: env.config,
-       logger: env.logger,
-       discovery: env.discovery,
-       policy: new TestPermissionPolicy(),
-       identity: env.identity,
-     });
-   }
+   ```bash
+   # From your Backstage root directory
+   yarn --cwd packages/backend add @backstage/plugin-permission-backend-module-allow-all-policy
    ```
 
-3. Wire up the permission policy in `packages/backend/src/index.ts`. [The index in the example backend](https://github.com/backstage/backstage/blob/master/packages/backend/src/index.ts) shows how to do this. You’ll need to import the module from the previous step, create a plugin environment, and add the router to the express app:
+2. Add the following to `packages/backend/src/index.ts`. This adds the permission-backend router, and configures it with a policy which allows everything.
 
-   ```ts title="packages/backend/src/index.ts"
-   import proxy from './plugins/proxy';
-   import techdocs from './plugins/techdocs';
-   import search from './plugins/search';
+   ```typescript title="packages/backend/src/index.ts"
+   import { createBackend } from '@backstage/backend-defaults';
+   const backend = createBackend();
+   // ...
    /* highlight-add-next-line */
-   import permission from './plugins/permission';
-
-   async function main() {
-     const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
-     const searchEnv = useHotMemoize(module, () => createEnv('search'));
-     const appEnv = useHotMemoize(module, () => createEnv('app'));
-     /* highlight-add-next-line */
-     const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
-     // ..
-
-     apiRouter.use('/techdocs', await techdocs(techdocsEnv));
-     apiRouter.use('/proxy', await proxy(proxyEnv));
-     apiRouter.use('/search', await search(searchEnv));
-     /* highlight-add-next-line */
-     apiRouter.use('/permission', await permission(permissionEnv));
-     // ..
-   }
+   backend.add(import('@backstage/plugin-permission-backend/alpha'));
+   /* highlight-add-next-line */
+   backend.add(
+     import('@backstage/plugin-permission-backend-module-allow-all-policy'),
+   );
+   // ...
+   backend.start();
    ```
 
 ### 2. Enable and test the permissions system
@@ -119,43 +75,61 @@ Now that the permission backend is running, it’s time to enable the permission
      enabled: true
    ```
 
-2. Update the PermissionPolicy in `packages/backend/src/plugins/permission.ts` to disable a permission that’s easy for us to test. This policy rejects any attempt to delete a catalog entity:
+2. Its now all wired up and working, great! But perhaps we don't want to simply allow everything, lets try and create our own policy, to do this you can create a new folder in `packages/backend/src` called `permissions` and create a new file called `policy.ts`, in that file we can add the following to create a policy that denies deleting entities from the catalog:
 
-   ```ts title="packages/backend/src/plugins/permission.ts"
-   import { createRouter } from '@backstage/plugin-permission-backend';
+   ```ts title="packages/backend/src/permissions/policy.ts"
    import {
      AuthorizeResult,
      PolicyDecision,
    } from '@backstage/plugin-permission-common';
-   /* highlight-remove-next-line */
-   import { PermissionPolicy } from '@backstage/plugin-permission-node';
-   /* highlight-add-start */
    import {
      PermissionPolicy,
      PolicyQuery,
    } from '@backstage/plugin-permission-node';
-   /* highlight-add-end */
-   import { Router } from 'express';
-   import { PluginEnvironment } from '../types';
-
-   class TestPermissionPolicy implements PermissionPolicy {
-     /* highlight-remove-next-line */
-     async handle(): Promise<PolicyDecision> {
-     /* highlight-add-start */
-     async handle(request: PolicyQuery): Promise<PolicyDecision> {
-       if (request.permission.name === 'catalog.entity.delete') {
-         return {
-           result: AuthorizeResult.DENY,
-         };
-       }
-     /* highlight-add-end */
-
-       return { result: AuthorizeResult.ALLOW };
-     }
-   }
    ```
 
-3. Now that you’ve made this change, you should find that the unregister entity menu option on the catalog entity page is disabled.
+export class DenyCatalogDeletePolicy implements PermissionPolicy {
+async handle(request: PolicyQuery): Promise<PolicyDecision> {
+if (request.permission.name === 'catalog.entity.delete') {
+return {
+result: AuthorizeResult.DENY,
+};
+}
+
+      return { result: AuthorizeResult.ALLOW };
+    }
+
+}
+
+````
+3. We then need to use the permissions backend policy extension point to register our policy, to do this we can add the following to `packages/backend/src/index.ts`:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+import { DenyCatalogDeletePolicy } from './permissions/policy';
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-permission-backend/alpha'));
+/* highlight-remove-next-line */
+backend.add(import('@backstage/plugin-permission-backend-module-allow-all-policy'));
+ /* highlight-add-next-line */
+ backend.add(createBackendModule({
+   pluginId: 'permission',
+   moduleId: 'deny-catalog-delete-policy',
+   register(reg){
+     reg.registerInit({
+       deps: { policy: policyExtensionPoint },
+       async init({ policy }) {
+         policy.setPolicy(new DenyCatalogDeletePolicy());
+       }
+     })
+   }
+}));
+// ...
+backend.start();
+````
+
+4. Now that you’ve made this change, you should find that the unregister entity menu option on the catalog entity page is disabled.
 
 ![Entity detail page showing disabled unregister entity context menu entry](../assets/permissions/disabled-unregister-entity.png)
 
