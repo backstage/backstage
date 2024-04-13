@@ -95,6 +95,7 @@ module.exports = {
   plugins: [
     'docusaurus-plugin-sass',
     () => ({
+      name: 'yaml-loader',
       configureWebpack() {
         return {
           module: {
