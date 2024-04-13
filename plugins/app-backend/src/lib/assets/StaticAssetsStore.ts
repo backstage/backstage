@@ -120,7 +120,7 @@ export class StaticAssetsStore implements StaticAssetProvider {
           content: await asset.content(),
           namespace: this.#namespace,
         })
-        .onConflict('path')
+        .onConflict(['namespace', 'path'])
         .ignore();
     }
   }
