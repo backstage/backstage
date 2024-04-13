@@ -16,7 +16,8 @@
 
 import React, { CSSProperties, DependencyList } from 'react';
 import useAsync from 'react-use/esm/useAsync';
-import { Box, LinearProgress } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import LinearProgress from '@material-ui/core/LinearProgress';
 import Timeline from '@material-ui/lab/Timeline';
 import TimelineItem from '@material-ui/lab/TimelineItem';
 import TimelineSeparator from '@material-ui/lab/TimelineSeparator';
