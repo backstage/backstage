@@ -17,7 +17,7 @@ import React, { useMemo } from 'react';
 import useObservable from 'react-use/esm/useObservable';
 import { configSchemaApiRef } from '../../api';
 import { SchemaViewer } from '../SchemaViewer';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 
 import { Header, Page, Content, Progress } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
