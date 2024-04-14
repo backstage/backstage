@@ -15,17 +15,15 @@
  */
 
 import React, { ReactElement, ChangeEvent } from 'react';
-import {
-  makeStyles,
-  FormControl,
-  FormControlLabel,
-  InputLabel,
-  Checkbox,
-  Select,
-  MenuItem,
-  FormLabel,
-  Typography,
-} from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import InputLabel from '@material-ui/core/InputLabel';
+import Checkbox from '@material-ui/core/Checkbox';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import FormLabel from '@material-ui/core/FormLabel';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 
 import { useSearch } from '../../context';
 import {
