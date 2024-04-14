@@ -128,7 +128,7 @@
     "shx": "^0.3.2",
     "sloc": "^0.3.1",
     "sort-package-json": "^2.8.0",
-    "typescript": "~5.1.0"
+    "typescript": "~5.4.0"
   },
   "packageManager": "yarn@3.8.1",
   "engines": {
