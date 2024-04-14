@@ -45,8 +45,7 @@ import { buildRouteRef } from '../../routes';
 import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { getHostnameFromEntity } from '../getHostnameFromEntity';
 
-import Alert from '@material-ui/lab/Alert';
-import { Color } from '@material-ui/lab/';
+import Alert, { Color } from '@material-ui/lab/Alert';
 import { Entity } from '@backstage/catalog-model';
 
 const useStyles = makeStyles((theme: Theme) =>
