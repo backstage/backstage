@@ -12,20 +12,24 @@ jobs:
         with:
           egress-policy: audit
 
-      # Setup node & install deps before checkout, keeping install quick
-      - uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
-        with:
-          node-version: 18.x
-      - name: Install dependencies
-        # Just the deps for the assemble manifest script
-        run: npm install semver@7.3.5 fs-extra@10.0.0 @manypkg/get-packages@1.1.1
-
       - name: Checkout
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
         with:
           path: backstage
           # 'v' prefix is added here for the tag, we keep it out of the manifest logic
           ref: v${{ github.event.client_payload.version }}
+
+      - name: use node.js 18.x
+        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+        with:
+          node-version: 18.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
+        with:
+          path: backstage
+          cache-prefix: ${{ runner.os }}-v18.x
 
       # Checkout backstage/versions into /backstage/versions, which is where store the output
       - name: Checkout versions
