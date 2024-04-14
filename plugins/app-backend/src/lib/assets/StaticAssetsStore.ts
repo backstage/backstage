@@ -50,7 +50,7 @@ export interface StaticAssetsStoreOptions {
 export class StaticAssetsStore implements StaticAssetProvider {
   #db: Knex;
   #logger: Logger;
-  #namespace: string | null;
+  #namespace: string;
 
   static async create(options: StaticAssetsStoreOptions) {
     const { database } = options;
@@ -68,7 +68,7 @@ export class StaticAssetsStore implements StaticAssetProvider {
   private constructor(client: Knex, logger: Logger, namespace?: string) {
     this.#db = client;
     this.#logger = logger;
-    this.#namespace = namespace ?? null;
+    this.#namespace = namespace ?? 'default';
   }
 
   /**

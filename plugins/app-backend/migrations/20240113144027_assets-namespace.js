@@ -22,7 +22,10 @@
 exports.up = async function up(knex) {
   await knex.schema.alterTable('static_assets_cache', table => {
     // The namespace is used to allow operations on asset groups, e.g. delete all assets in a namespace
-    table.string('namespace').comment('The namespace of the file');
+    table
+      .string('namespace')
+      .defaultTo('default')
+      .comment('The namespace of the file');
     table.dropPrimary();
     table.primary(['namespace', 'path']);
   });
@@ -32,7 +35,10 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
-  await knex.delete().from('static_assets_cache').whereNotNull('namespace');
+  await knex
+    .delete()
+    .from('static_assets_cache')
+    .whereNot('namespace', 'default');
 
   await knex.schema.alterTable('static_assets_cache', table => {
     table.dropPrimary();
