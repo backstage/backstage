@@ -31,8 +31,8 @@ export const inferBackstageVersion = (descriptor: Descriptor) => {
 
   let selector = range.selector;
 
-  // For backstage:* we look up the version from backstage.json
-  if (selector === `*`) {
+  // For backstage:^ we look up the version from backstage.json
+  if (selector === `^`) {
     const backstageJson = xfs.readJsonSync(
       npath.toPortablePath('./backstage.json'),
     );

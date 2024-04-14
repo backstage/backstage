@@ -45,10 +45,7 @@ export const beforeWorkspacePacking = async (
   ] as const) {
     const entries = Array.from(
       workspace.manifest.getForScope(dependencyType).values(),
-    ).filter(
-      descriptor =>
-        structUtils.parseRange(descriptor.range).protocol === PROTOCOL,
-    );
+    ).filter(descriptor => descriptor.range === `${PROTOCOL}^`);
 
     for (const descriptor of entries) {
       const finalDependencyType = getFinalDependencyType(

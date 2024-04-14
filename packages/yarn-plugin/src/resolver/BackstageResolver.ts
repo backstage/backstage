@@ -35,7 +35,7 @@ export class BackstageResolver implements Resolver {
   bindDescriptor(descriptor: Descriptor): Descriptor {
     return structUtils.makeDescriptor(
       descriptor,
-      `backstage:${inferBackstageVersion(descriptor)}`,
+      `${PROTOCOL}${inferBackstageVersion(descriptor)}`,
     );
   }
 
