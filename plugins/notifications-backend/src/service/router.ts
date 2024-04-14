@@ -262,9 +262,9 @@ export async function createRouter(
       }
       opts.createdAfter = new Date(sinceEpoch);
     }
-    if (req.query.minimal_severity) {
+    if (req.query.minimumSeverity) {
       opts.minimumSeverity = normalizeSeverity(
-        req.query.minimal_severity.toString(),
+        req.query.minimumSeverity.toString(),
       );
     }
 
