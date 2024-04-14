@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { makeStyles, TextField, TextFieldProps } from '@material-ui/core';
+import TextField, { TextFieldProps } from '@material-ui/core/TextField';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import classnames from 'classnames';
 
