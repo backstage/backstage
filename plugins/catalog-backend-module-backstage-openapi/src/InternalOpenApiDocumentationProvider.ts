@@ -38,7 +38,8 @@ import {
   DiscoveryService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import * as uuid from 'uuid';
+import uuid from 'uuid';
+import lodash from 'lodash';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 
 const HTTP_VERBS: (keyof PathItemObject)[] = [
@@ -229,13 +230,26 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     const pluginsToMerge = this.config.getStringArray(
       'catalog.providers.backstageOpenapi.plugins',
     );
-    logger.info(`Loading specs from from ${pluginsToMerge}.`);
-    const documentationEntity: ApiEntity = {
+    const configToMerge = this.config.getOptional(
+      'catalog.providers.backstageOpenapi.entityOverrides',
+    );
+
+    const baseConfig = {
+      metadata: {
+        name: 'internal_backstage_openapi_doc',
+        title: 'Backstage API',
+      },
+      spec: {
+        lifecycle: 'production',
+        owner: 'backstage',
+      },
+    };
+
+    logger.info(`Loading specs from ${pluginsToMerge}.`);
+    const requiredConfig = {
       apiVersion: 'backstage.io/v1beta1',
       kind: 'API',
       metadata: {
-        name: 'INTERNAL_instance_openapi_doc',
-        title: 'Your Backstage Instance documentation',
         annotations: {
           [ANNOTATION_LOCATION]:
             'internal-package:@backstage/plugin-catalog-backend-module-backstage-openapi',
@@ -245,8 +259,6 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       },
       spec: {
         type: 'openapi',
-        lifecycle: 'production',
-        owner: 'backstage',
         definition: JSON.stringify(
           await loadSpecs({
             baseUrl: this.config.getString('backend.baseUrl'),
@@ -258,6 +270,16 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
         ),
       },
     };
+
+    // Overwrite baseConfig with options from config file.
+    const mergedConfig = lodash.merge(baseConfig, configToMerge);
+
+    // Overwite mergedConfig with requiredConfig (i.e., spec.type and spec.definition) to avoid bad configuration.
+    const documentationEntity = lodash.merge(
+      mergedConfig,
+      requiredConfig,
+    ) as ApiEntity;
+
     await this.connection?.applyMutation({
       type: 'full',
       entities: [
