@@ -18,7 +18,6 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { createGitlabIssueAction, IssueType } from './createGitlabIssueAction';
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { advanceTo, clear } from 'jest-date-mock';
 
 const mockGitlabClient = {
   Issues: {
@@ -36,11 +35,13 @@ jest.mock('@gitbeaker/rest', () => ({
 describe('gitlab:issues:create', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    advanceTo(new Date(1988, 5, 3, 12, 0, 0)); // Set the desired date and time
+    jest.useFakeTimers({
+      now: new Date(1988, 5, 3, 12, 0, 0),
+    });
   });
 
   afterEach(() => {
-    clear(); // Reset the date mock after each test
+    jest.useRealTimers();
   });
 
   const config = new ConfigReader({
