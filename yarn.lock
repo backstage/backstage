@@ -4462,7 +4462,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@types/express": "*"
-    "@types/http-proxy-middleware": ^0.19.3
+    "@types/http-proxy-middleware": ^1.0.0
     "@types/supertest": ^2.0.8
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -7481,7 +7481,7 @@ __metadata:
     "@kubernetes/client-node": 0.20.0
     "@types/aws4": ^1.5.1
     "@types/express": ^4.17.6
-    "@types/http-proxy-middleware": ^0.19.3
+    "@types/http-proxy-middleware": ^1.0.0
     "@types/luxon": ^3.0.0
     compression: ^1.7.4
     cors: ^2.8.5
@@ -8374,7 +8374,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
     "@types/express": ^4.17.6
-    "@types/http-proxy-middleware": ^0.19.3
+    "@types/http-proxy-middleware": ^1.0.0
     "@types/supertest": ^2.0.8
     "@types/uuid": ^9.0.0
     "@types/yup": ^0.32.0
@@ -18918,18 +18918,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/http-proxy-middleware@npm:^0.19.3":
-  version: 0.19.3
-  resolution: "@types/http-proxy-middleware@npm:0.19.3"
+"@types/http-proxy-middleware@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@types/http-proxy-middleware@npm:1.0.0"
   dependencies:
-    "@types/connect": "*"
-    "@types/http-proxy": "*"
-    "@types/node": "*"
-  checksum: 51000558db0aad31947fd60b6ba6cbd05782e09c17ded63bf9de2574200695885b362d23cf16cb796797d5779c1e3b32792bbef69386dd2a9ce688f7856cd8ec
+    http-proxy-middleware: "*"
+  checksum: 643ce3ec3b9f302328eadd8d6487c01dd8702dd17beaa1bcf35c3cdb4c9eaf512ffd3c8aa8c66790900ec60315ecdbbc8895244203c5296fdd24843d451496ae
   languageName: node
   linkType: hard
 
-"@types/http-proxy@npm:*, @types/http-proxy@npm:^1.17.4, @types/http-proxy@npm:^1.17.8":
+"@types/http-proxy@npm:^1.17.10, @types/http-proxy@npm:^1.17.4, @types/http-proxy@npm:^1.17.8":
   version: 1.17.14
   resolution: "@types/http-proxy@npm:1.17.14"
   dependencies:
@@ -30224,6 +30222,20 @@ __metadata:
     agent-base: ^7.1.0
     debug: ^4.3.4
   checksum: 670858c8f8f3146db5889e1fa117630910101db601fff7d5a8aa637da0abedf68c899f03d3451cac2f83bcc4c3d2dabf339b3aa00ff8080571cceb02c3ce02f3
+  languageName: node
+  linkType: hard
+
+"http-proxy-middleware@npm:*":
+  version: 3.0.0
+  resolution: "http-proxy-middleware@npm:3.0.0"
+  dependencies:
+    "@types/http-proxy": ^1.17.10
+    debug: ^4.3.4
+    http-proxy: ^1.18.1
+    is-glob: ^4.0.1
+    is-plain-obj: ^3.0.0
+    micromatch: ^4.0.5
+  checksum: 2c286f0604f7a08af707a8df8e6f043fca022e55df6f7f843ea48081c9288277fc7fd7196446a7c8e8568dd1db8bf89f1555b2bc8a11bda87123f9f28aebd3a5
   languageName: node
   linkType: hard
 
