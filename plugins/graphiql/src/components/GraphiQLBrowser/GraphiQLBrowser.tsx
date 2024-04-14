@@ -15,7 +15,11 @@
  */
 
 import React, { useState, Suspense } from 'react';
-import { Tabs, Tab, makeStyles, Typography, Divider } from '@material-ui/core';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
+import Typography from '@material-ui/core/Typography';
+import Divider from '@material-ui/core/Divider';
+import { makeStyles } from '@material-ui/core/styles';
 import 'graphiql/graphiql.css';
 import { StorageBucket } from '../../lib/storage';
 import { GraphQLEndpoint } from '../../lib/api';
