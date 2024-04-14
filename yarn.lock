@@ -4681,10 +4681,12 @@ __metadata:
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@material-ui/core": ^4.12.2
+    "@material-ui/lab": ^4.0.0-alpha.61
     "@testing-library/dom": ^9.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    react-use: ^17.5.0
     use-deep-compare-effect: ^1.8.1
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -39887,7 +39889,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-use@npm:^17.2.4, react-use@npm:^17.3.1, react-use@npm:^17.3.2, react-use@npm:^17.4.0":
+"react-use@npm:^17.2.4, react-use@npm:^17.3.1, react-use@npm:^17.3.2, react-use@npm:^17.4.0, react-use@npm:^17.5.0":
   version: 17.5.0
   resolution: "react-use@npm:17.5.0"
   dependencies:
