@@ -218,21 +218,19 @@ class DefaultHttpAuthService implements HttpAuthService {
     return { expiresAt };
   }
 
-  async #getCookieOptions(req: Request): Promise<{
+  async #getCookieOptions(_req: Request): Promise<{
     domain: string;
     httpOnly: true;
     secure: boolean;
     priority: 'high';
     sameSite: 'none' | 'lax';
   }> {
-    const originHeader = req.headers.origin;
-    const origin =
-      !originHeader || originHeader === 'null' ? undefined : originHeader;
-
+    // TODO: eventually we should read from `${req.protocol}://${req.hostname}`
+    // once https://github.com/backstage/backstage/issues/24169 has landed
     const externalBaseUrlStr = await this.#discovery.getExternalBaseUrl(
       this.#pluginId,
     );
-    const externalBaseUrl = new URL(origin ?? externalBaseUrlStr);
+    const externalBaseUrl = new URL(externalBaseUrlStr);
 
     const secure =
       externalBaseUrl.protocol === 'https:' ||
