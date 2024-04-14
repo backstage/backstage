@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog': minor
+'@backstage/plugin-catalog': patch
 ---
 
-added custom sort on createLabelColumn
+Fixed sorting of columns created with `CatalogTable.columns.createLabelColumn`.
