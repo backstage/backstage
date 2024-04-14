@@ -20,19 +20,63 @@
  * @param {import('knex').Knex} knex
  */
 exports.up = async function up(knex) {
+  const isMySQL = knex.client.config.client.includes('mysql');
+
   await knex.schema.alterTable('static_assets_cache', table => {
     // The namespace is used to allow operations on asset groups, e.g. delete all assets in a namespace
-    table.string('namespace').comment('The namespace of the file');
-    table.index('namespace', 'static_asset_cache_namespace_idx');
+    table
+      .string('namespace')
+      .defaultTo('default')
+      .comment('The namespace of the file');
+
+    if (!isMySQL) {
+      table.dropPrimary();
+      table.primary(['namespace', 'path']);
+    }
   });
+
+  if (isMySQL) {
+    await knex.schema.raw(
+      'drop index static_assets_cache_path_idx on static_assets_cache;',
+    );
+    await knex.schema.raw(
+      'create unique index static_assets_cache_path_idx on static_assets_cache(namespace, path(254));',
+    );
+  }
 };
 
 /**
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
+  const isMySQL = knex.client.config.client.includes('mysql');
+
+  await knex
+    .delete()
+    .from('static_assets_cache')
+    .whereNot('namespace', 'default');
+
+  if (isMySQL) {
+    await knex.schema.raw(
+      'drop index static_assets_cache_path_idx on static_assets_cache;',
+    );
+  }
+
   await knex.schema.alterTable('static_assets_cache', table => {
-    table.dropIndex([], 'static_asset_cache_namespace_idx');
+    if (!isMySQL) {
+      table.dropPrimary();
+    }
+
     table.dropColumn('namespace');
+
+    if (!isMySQL) {
+      table.primary(['path']);
+    }
   });
+
+  if (isMySQL) {
+    await knex.schema.raw(
+      'create unique index static_assets_cache_path_idx on static_assets_cache(path(254));',
+    );
+  }
 };
