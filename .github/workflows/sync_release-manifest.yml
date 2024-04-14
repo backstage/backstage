@@ -31,6 +31,10 @@ jobs:
           path: backstage
           cache-prefix: ${{ runner.os }}-v18.x
 
+      - name: Build yarn plugin
+        working-directory: backstage/packages/yarn-plugin
+        run: yarn build
+
       # Checkout backstage/versions into /backstage/versions, which is where store the output
       - name: Checkout versions
         uses: actions/checkout@692973e3d937129bcbf40652eb9f2f61becf3332 # v4.1.7
@@ -51,6 +55,20 @@ jobs:
           mkdir -p scripts
           wget -O scripts/assemble-manifest.js https://raw.githubusercontent.com/backstage/backstage/master/scripts/assemble-manifest.js
           node scripts/assemble-manifest.js ${{ github.event.client_payload.version }}
+
+      # Copies the build output of the yarn-plugin package to the appropriate
+      # directory, allowing the plugin to be installed with a command like
+      # `yarn plugin import https://versions.backstage.io/v1/tags/main/yarn-plugin`
+      - name: Add yarn plugin to release
+        working-directory: backstage/packages/yarn-plugin
+        run: >-
+          cp
+          bundles/@yarnpkg/plugin-backstage.js
+          ../../versions/v1/releases/${{ github.event.client_payload.version }}/yarn-plugin
+
+      - name: Commit to versions repo
+        working-directory: backstage/versions
+        run: |
           cd versions
           git add .
           git commit -am "${{ github.event.client_payload.version }}"
