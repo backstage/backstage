@@ -48,7 +48,7 @@ const DEP_TYPES = [
   'optionalDependencies',
 ];
 
-const DEFAULT_PATTERN_GLOB = '@backstage?(-community)/*';
+const DEFAULT_PATTERN_GLOB = '@backstage/*';
 
 type PkgVersionInfo = {
   range: string;
