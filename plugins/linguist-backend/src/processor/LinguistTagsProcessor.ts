@@ -19,11 +19,10 @@ import {
   CatalogProcessor,
   CatalogProcessorCache,
 } from '@backstage/plugin-catalog-node';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 import { Languages, LanguageType } from '@backstage/plugin-linguist-common';
 import fetch from 'node-fetch';
-import { Logger } from 'winston';
-import { HumanDuration, durationToMilliseconds } from '@backstage/types';
+import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Config } from '@backstage/config';
 
 /**
@@ -43,7 +42,7 @@ interface CachedData {
  * @public
  */
 export interface LinguistTagsProcessorOptions {
-  logger: Logger;
+  logger: LoggerService;
   discovery: DiscoveryService;
   /**
    * Optional map that gives full control over which linguist languages should be included as tags and
@@ -84,7 +83,7 @@ export interface LinguistTagsProcessorOptions {
  * @public
  * */
 export class LinguistTagsProcessor implements CatalogProcessor {
-  private logger: Logger;
+  private logger: LoggerService;
   private discovery: DiscoveryService;
   private loggerMeta = { plugin: 'LinguistTagsProcessor' };
   private languageMap: Record<string, string | undefined> = {};

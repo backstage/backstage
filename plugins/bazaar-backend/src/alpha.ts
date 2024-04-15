@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -43,7 +42,7 @@ export default createBackendPlugin({
             database,
             config,
             identity,
-            logger: loggerToWinstonLogger(logger),
+            logger,
           }),
         );
       },

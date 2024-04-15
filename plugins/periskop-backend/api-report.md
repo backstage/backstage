@@ -5,7 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -15,7 +15,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
 }
 
 // (No @packageDocumentation comment for this package)

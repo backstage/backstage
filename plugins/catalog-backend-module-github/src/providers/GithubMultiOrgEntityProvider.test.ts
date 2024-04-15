@@ -25,7 +25,7 @@ import {
   GithubMultiOrgEntityProvider,
   withLocations,
 } from './GithubMultiOrgEntityProvider';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 jest.mock('@octokit/graphql');
 
@@ -43,7 +43,7 @@ describe('GithubMultiOrgEntityProvider', () => {
   describe('read', () => {
     let mockClient: jest.Mock<any, any, any>;
     let entityProviderConnection: EntityProviderConnection;
-    let logger: Logger;
+    let logger: LoggerService;
     let gitHubConfig: { host: string };
     let mockGetCredentials: jest.Mock<any, any, any>;
     let entityProvider: GithubMultiOrgEntityProvider;

@@ -24,7 +24,7 @@ import {
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const listEndpointName = '/list';
 const fileEndpointName = '/file';
@@ -122,7 +122,7 @@ describe('createRouter', () => {
       cacheClient: new MockCacheClient(),
       logger: {
         error: (message: any) => message,
-      } as Logger,
+      } as LoggerService,
     });
     app = express().use(router);
   });

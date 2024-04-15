@@ -19,7 +19,7 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegrationConfig } from '@backstage/integration';
 import { graphql } from '@octokit/graphql';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -41,14 +41,14 @@ export const defaultUserTransformer: (
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubDiscoveryProcessor;
@@ -70,7 +70,7 @@ export class GitHubEntityProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -78,7 +78,7 @@ export class GitHubEntityProvider implements EntityProvider {
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
-  refresh(logger: Logger): Promise<void>;
+  refresh(logger: LoggerService): Promise<void>;
 }
 
 // @public
@@ -90,7 +90,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     config: Config,
     options: {
       events?: EventsService;
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -100,7 +100,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   // (undocumented)
   onEvent(params: EventParams): Promise<void>;
   // (undocumented)
-  refresh(logger: Logger): Promise<void>;
+  refresh(logger: LoggerService): Promise<void>;
   // (undocumented)
   supportsEventTopics(): string[];
 }
@@ -147,7 +147,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     gitHubConfig: GithubIntegrationConfig;
     githubCredentialsProvider: GithubCredentialsProvider;
     githubUrl: string;
-    logger: Logger;
+    logger: LoggerService;
     orgs?: string[];
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
@@ -161,7 +161,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
   ): GithubMultiOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
-  read(options?: { logger?: Logger }): Promise<void>;
+  read(options?: { logger?: LoggerService }): Promise<void>;
 }
 
 // @public
@@ -172,7 +172,7 @@ export interface GithubMultiOrgEntityProviderOptions {
   githubCredentialsProvider?: GithubCredentialsProvider;
   githubUrl: string;
   id: string;
-  logger: Logger;
+  logger: LoggerService;
   orgs?: string[];
   schedule?: 'manual' | TaskRunner;
   teamTransformer?: TeamTransformer;
@@ -183,7 +183,7 @@ export interface GithubMultiOrgEntityProviderOptions {
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
     orgs: GithubMultiOrgConfig;
     githubCredentialsProvider?: GithubCredentialsProvider;
     userTransformer?: UserTransformer;
@@ -193,7 +193,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
@@ -227,7 +227,7 @@ export class GithubOrgEntityProvider
     id: string;
     orgUrl: string;
     gitHubConfig: GithubIntegrationConfig;
-    logger: Logger;
+    logger: LoggerService;
     githubCredentialsProvider?: GithubCredentialsProvider;
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
@@ -243,7 +243,7 @@ export class GithubOrgEntityProvider
   getProviderName(): string;
   // (undocumented)
   onEvent(params: EventParams): Promise<void>;
-  read(options?: { logger?: Logger }): Promise<void>;
+  read(options?: { logger?: LoggerService }): Promise<void>;
   // (undocumented)
   supportsEventTopics(): string[];
 }
@@ -256,7 +256,7 @@ export interface GithubOrgEntityProviderOptions {
   events?: EventsService;
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
-  logger: Logger;
+  logger: LoggerService;
   orgUrl: string;
   schedule?: 'manual' | TaskRunner;
   teamTransformer?: TeamTransformer;
@@ -267,14 +267,14 @@ export interface GithubOrgEntityProviderOptions {
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
     githubCredentialsProvider?: GithubCredentialsProvider;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ): GithubOrgReaderProcessor;

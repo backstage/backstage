@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -39,7 +38,7 @@ export const exampleTodoListPlugin = createBackendPlugin({
         httpRouter.use(
           await createRouter({
             identity,
-            logger: loggerToWinstonLogger(logger),
+            logger,
           }),
         );
         httpRouter.addAuthPolicy({

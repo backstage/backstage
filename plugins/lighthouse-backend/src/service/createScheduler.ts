@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
@@ -22,14 +21,18 @@ import { LighthouseRestApi } from '@backstage/plugin-lighthouse-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { LighthouseAuditScheduleImpl } from '../config';
 import {
-  TokenManager,
   createLegacyAuthAdapters,
+  TokenManager,
 } from '@backstage/backend-common';
-import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 /** @public **/
 export interface CreateLighthouseSchedulerOptions {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   discovery: DiscoveryService;
   scheduler?: PluginTaskScheduler;

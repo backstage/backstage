@@ -25,7 +25,6 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 import express from 'express';
 import Router from 'express-promise-router';
 import { Duration } from 'luxon';
-import { Logger } from 'winston';
 
 import {
   AksStrategy,
@@ -46,15 +45,16 @@ import {
   BackstageCredentials,
   DiscoveryService,
   HttpAuthService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 import {
-  AuthMetadata,
   AuthenticationStrategy,
+  AuthMetadata,
   CustomResource,
   KubernetesClustersSupplier,
   KubernetesFetcher,
-  KubernetesObjectTypes,
   KubernetesObjectsProvider,
+  KubernetesObjectTypes,
   KubernetesServiceLocator,
 } from '@backstage/plugin-kubernetes-node';
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
@@ -78,7 +78,7 @@ import { KubernetesProxy } from './KubernetesProxy';
  * @public
  */
 export interface KubernetesEnvironment {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   catalogApi: CatalogApi;
   discovery: DiscoveryService;
@@ -353,7 +353,7 @@ export class KubernetesBuilder {
   }
 
   protected buildProxy(
-    logger: Logger,
+    logger: LoggerService,
     clusterSupplier: KubernetesClustersSupplier,
     discovery: DiscoveryService,
     httpAuth: HttpAuthService,
@@ -540,7 +540,7 @@ export class KubernetesBuilder {
   }
 
   protected getProxy(
-    logger: Logger,
+    logger: LoggerService,
     clusterSupplier: KubernetesClustersSupplier,
     discovery: DiscoveryService,
     httpAuth: HttpAuthService,

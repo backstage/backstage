@@ -11,7 +11,7 @@ import { Conditions } from '@backstage/plugin-permission-node';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionCondition } from '@backstage/plugin-permission-common';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
@@ -100,7 +100,7 @@ export interface RouterOptions {
   // (undocumented)
   identity: IdentityApi;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
   permissions: PermissionsService;
 }

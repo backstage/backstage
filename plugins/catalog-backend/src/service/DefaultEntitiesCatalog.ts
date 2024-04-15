@@ -21,23 +21,22 @@ import {
 } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
-import { isEqual, chunk as lodashChunk } from 'lodash';
-import { Logger } from 'winston';
+import { chunk as lodashChunk, isEqual } from 'lodash';
 import { z } from 'zod';
 import {
+  Cursor,
   EntitiesBatchRequest,
   EntitiesBatchResponse,
-  Cursor,
   EntitiesCatalog,
   EntitiesRequest,
   EntitiesResponse,
   EntityAncestryResponse,
   EntityFacetsRequest,
   EntityFacetsResponse,
+  EntityOrder,
   EntityPagination,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
-  EntityOrder,
 } from '../catalog/types';
 import {
   DbFinalEntitiesRow,
@@ -57,6 +56,7 @@ import {
   EntitiesSearchFilter,
   EntityFilter,
 } from '@backstage/plugin-catalog-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const defaultSortField: EntityOrder = {
   field: 'metadata.uid',
@@ -190,10 +190,14 @@ function parseFilter(
 
 export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly stitcher: Stitcher;
 
-  constructor(options: { database: Knex; logger: Logger; stitcher: Stitcher }) {
+  constructor(options: {
+    database: Knex;
+    logger: LoggerService;
+    stitcher: Stitcher;
+  }) {
     this.database = options.database;
     this.logger = options.logger;
     this.stitcher = options.stitcher;

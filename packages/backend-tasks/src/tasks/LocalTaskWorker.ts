@@ -17,9 +17,9 @@
 import { ConflictError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { DateTime, Duration } from 'luxon';
-import { Logger } from 'winston';
 import { TaskFunction, TaskSettingsV2 } from './types';
 import { delegateAbortController, sleep } from './util';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Implements tasks that run locally without cross-host collaboration.
@@ -32,7 +32,7 @@ export class LocalTaskWorker {
   constructor(
     private readonly taskId: string,
     private readonly fn: TaskFunction,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
   ) {}
 
   start(settings: TaskSettingsV2, options?: { signal?: AbortSignal }) {

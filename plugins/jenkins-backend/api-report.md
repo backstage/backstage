@@ -12,7 +12,7 @@ import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
@@ -102,7 +102,7 @@ export interface RouterOptions {
   // (undocumented)
   jenkinsInfoProvider: JenkinsInfoProvider;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
   permissions?: PermissionEvaluator | PermissionAuthorizer;
 }

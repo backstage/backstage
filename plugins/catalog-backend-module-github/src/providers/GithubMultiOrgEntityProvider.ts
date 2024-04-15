@@ -47,10 +47,10 @@ import { graphql } from '@octokit/graphql';
 import {
   InstallationCreatedEvent,
   InstallationEvent,
+  MembershipEvent,
   OrganizationEvent,
   OrganizationMemberAddedEvent,
   OrganizationMemberRemovedEvent,
-  MembershipEvent,
   TeamCreatedEvent,
   TeamDeletedEvent,
   TeamEditedEvent,
@@ -58,7 +58,6 @@ import {
 } from '@octokit/webhooks-types';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 
 import {
   assignGroupsToUsers,
@@ -83,6 +82,7 @@ import {
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const EVENT_TOPICS = [
   'github.installation',
@@ -140,7 +140,7 @@ export interface GithubMultiOrgEntityProviderOptions {
   /**
    * The logger to use.
    */
-  logger: Logger;
+  logger: LoggerService;
 
   /**
    * Optionally supply a custom credentials provider, replacing the default one.
@@ -230,7 +230,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       gitHubConfig: GithubIntegrationConfig;
       githubCredentialsProvider: GithubCredentialsProvider;
       githubUrl: string;
-      logger: Logger;
+      logger: LoggerService;
       orgs?: string[];
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
@@ -257,7 +257,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
    * Runs one single complete ingestion. This is only necessary if you use
    * manual scheduling.
    */
-  async read(options?: { logger?: Logger }) {
+  async read(options?: { logger?: LoggerService }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -925,7 +925,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 }
 
 // Helps wrap the timing and logging behaviors
-function trackProgress(logger: Logger) {
+function trackProgress(logger: LoggerService) {
   let timestamp = Date.now();
   let summary: string;
 

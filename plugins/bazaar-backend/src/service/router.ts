@@ -17,14 +17,14 @@
 import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { DatabaseHandler } from './DatabaseHandler';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   database: PluginDatabaseManager;
   config: Config;
   identity: IdentityApi;

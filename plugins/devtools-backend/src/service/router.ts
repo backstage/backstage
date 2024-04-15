@@ -23,7 +23,6 @@ import {
 
 import { Config } from '@backstage/config';
 import { DevToolsBackendApi } from '../api';
-import { Logger } from 'winston';
 import { NotAllowedError } from '@backstage/errors';
 import Router from 'express-promise-router';
 import {
@@ -35,13 +34,14 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 import {
   DiscoveryService,
   HttpAuthService,
+  LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface RouterOptions {
   devToolsBackendApi?: DevToolsBackendApi;
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   permissions: PermissionsService;
   discovery: DiscoveryService;

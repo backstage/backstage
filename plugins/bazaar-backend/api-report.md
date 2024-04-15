@@ -6,7 +6,7 @@
 import { Config } from '@backstage/config';
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @public (undocumented)
@@ -21,7 +21,7 @@ export interface RouterOptions {
   // (undocumented)
   identity: IdentityApi;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
 }
 
 // (No @packageDocumentation comment for this package)

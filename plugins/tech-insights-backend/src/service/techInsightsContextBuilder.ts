@@ -18,14 +18,13 @@ import {
   DefaultFactRetrieverEngine,
   FactRetrieverEngine,
 } from './fact/FactRetrieverEngine';
-import { Logger } from 'winston';
 import { DefaultFactRetrieverRegistry } from './fact/FactRetrieverRegistry';
 import { Config } from '@backstage/config';
 import {
+  createLegacyAuthAdapters,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
-  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import {
   FactChecker,
@@ -38,7 +37,7 @@ import {
 import { initializePersistenceContext } from './persistence';
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -78,7 +77,7 @@ export interface TechInsightsOptions<
    */
   persistenceContext?: PersistenceContext;
 
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   discovery: PluginEndpointDiscovery;
   database: PluginDatabaseManager;

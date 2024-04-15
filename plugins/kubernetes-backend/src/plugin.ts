@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -24,20 +23,20 @@ import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
 
 import {
-  kubernetesAuthStrategyExtensionPoint,
-  kubernetesClusterSupplierExtensionPoint,
-  kubernetesFetcherExtensionPoint,
-  kubernetesObjectsProviderExtensionPoint,
-  kubernetesServiceLocatorExtensionPoint,
   type AuthenticationStrategy,
+  kubernetesAuthStrategyExtensionPoint,
   type KubernetesAuthStrategyExtensionPoint,
-  type KubernetesClusterSupplierExtensionPoint,
   type KubernetesClustersSupplier,
+  kubernetesClusterSupplierExtensionPoint,
+  type KubernetesClusterSupplierExtensionPoint,
   type KubernetesFetcher,
+  kubernetesFetcherExtensionPoint,
   type KubernetesFetcherExtensionPoint,
   type KubernetesObjectsProvider,
+  kubernetesObjectsProviderExtensionPoint,
   type KubernetesObjectsProviderExtensionPoint,
   type KubernetesServiceLocator,
+  kubernetesServiceLocatorExtensionPoint,
   type KubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 
@@ -194,10 +193,9 @@ export const kubernetesPlugin = createBackendPlugin({
         auth,
         httpAuth,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         // TODO: expose all of the customization & extension points of the builder here
         const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
-          logger: winstonLogger,
+          logger,
           config,
           catalogApi,
           permissions,

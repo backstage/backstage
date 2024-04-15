@@ -24,7 +24,6 @@ import {
 } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { LinguistBackendApi } from '../api';
 import { LinguistBackendDatabase } from '../db';
 import {
@@ -36,7 +35,11 @@ import { HumanDuration } from '@backstage/types';
 import { CatalogClient } from '@backstage/catalog-client';
 import { LinguistBackendClient } from '../api/LinguistBackendClient';
 import { Config } from '@backstage/config';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface PluginOptions {
@@ -51,7 +54,7 @@ export interface PluginOptions {
 /** @public */
 export interface RouterOptions {
   linguistBackendApi?: LinguistBackendApi;
-  logger: Logger;
+  logger: LoggerService;
   reader: UrlReader;
   tokenManager: TokenManager;
   database: PluginDatabaseManager;

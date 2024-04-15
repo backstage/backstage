@@ -28,8 +28,8 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
-import { Logger } from 'winston';
 import { getOrganizationRepositories } from '../lib';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Extracts repositories out of a GitHub org.
@@ -49,13 +49,13 @@ import { getOrganizationRepositories } from '../lib';
  */
 export class GithubDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ) {
@@ -69,7 +69,7 @@ export class GithubDiscoveryProcessor implements CatalogProcessor {
 
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
     githubCredentialsProvider?: GithubCredentialsProvider;
   }) {
     this.integrations = options.integrations;

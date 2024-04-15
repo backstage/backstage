@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -39,7 +38,7 @@ export const explorePlugin = createBackendPlugin({
       async init({ config, httpRouter, logger }) {
         httpRouter.use(
           await createRouter({
-            logger: loggerToWinstonLogger(logger),
+            logger,
             toolProvider: StaticExploreToolProvider.fromConfig(config),
           }),
         );

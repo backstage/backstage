@@ -9,7 +9,7 @@ import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionPolicy } from '@backstage/plugin-permission-node';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
@@ -29,7 +29,7 @@ export interface RouterOptions {
   // (undocumented)
   identity?: IdentityApi;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
   policy: PermissionPolicy;
   // (undocumented)

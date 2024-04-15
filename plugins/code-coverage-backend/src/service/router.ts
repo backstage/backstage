@@ -16,7 +16,6 @@
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import BodyParser from 'body-parser';
 import bodyParserXml from 'body-parser-xml';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
@@ -32,9 +31,13 @@ import { Config } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { CodeCoverageDatabase } from './CodeCoverageDatabase';
 import { aggregateCoverage, CoverageUtils } from './CoverageUtils';
-import { Converter, Jacoco, Cobertura, Lcov } from './converter';
+import { Cobertura, Converter, Jacoco, Lcov } from './converter';
 import { getEntitySourceLocation } from '@backstage/catalog-model';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Options for {@link createRouter}.
@@ -46,7 +49,7 @@ export interface RouterOptions {
   discovery: PluginEndpointDiscovery;
   database: PluginDatabaseManager;
   urlReader: UrlReader;
-  logger: Logger;
+  logger: LoggerService;
   catalogApi?: CatalogApi;
   auth?: AuthService;
   httpAuth?: HttpAuthService;

@@ -20,7 +20,11 @@ import {
   PluginDatabaseManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { IdentityApi } from '@backstage/plugin-auth-node';
@@ -31,7 +35,6 @@ import {
 import { InputError } from '@backstage/errors';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 
 import { DatabaseHandler } from './DatabaseHandler';
 
@@ -42,7 +45,7 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   discovery: PluginEndpointDiscovery;
   identity: IdentityApi;
-  logger: Logger;
+  logger: LoggerService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
 }

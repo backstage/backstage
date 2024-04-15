@@ -17,7 +17,6 @@
 import { z } from 'zod';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import {
   createLegacyAuthAdapters,
   errorHandler,
@@ -29,11 +28,11 @@ import {
 } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
-  EvaluatePermissionResponse,
   EvaluatePermissionRequest,
-  IdentifiedPermissionMessage,
   EvaluatePermissionRequestBatch,
+  EvaluatePermissionResponse,
   EvaluatePermissionResponseBatch,
+  IdentifiedPermissionMessage,
   isResourcePermission,
   PermissionAttributes,
 } from '@backstage/plugin-permission-common';
@@ -53,6 +52,7 @@ import {
   BackstageUserPrincipal,
   DiscoveryService,
   HttpAuthService,
+  LoggerService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 
@@ -101,7 +101,7 @@ const evaluatePermissionRequestBatchSchema: z.ZodSchema<EvaluatePermissionReques
  * @public
  */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   discovery: DiscoveryService;
   policy: PermissionPolicy;
   identity?: IdentityApi;

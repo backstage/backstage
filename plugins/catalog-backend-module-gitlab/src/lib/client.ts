@@ -18,7 +18,7 @@ import {
   GitLabIntegrationConfig,
 } from '@backstage/integration';
 import fetch from 'node-fetch';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 import {
   GitLabDescendantGroupsResponse,
@@ -47,9 +47,12 @@ interface UserListOptions extends CommonListOptions {
 
 export class GitLabClient {
   private readonly config: GitLabIntegrationConfig;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
-  constructor(options: { config: GitLabIntegrationConfig; logger: Logger }) {
+  constructor(options: {
+    config: GitLabIntegrationConfig;
+    logger: LoggerService;
+  }) {
     this.config = options.config;
     this.logger = options.logger;
   }

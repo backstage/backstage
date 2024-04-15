@@ -31,12 +31,11 @@ import {
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import {
-  PLAYLIST_LIST_RESOURCE_TYPE,
   permissions,
+  PLAYLIST_LIST_RESOURCE_TYPE,
 } from '@backstage/plugin-playlist-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 
 import { rules, transformConditions } from '../permissions';
 import { DatabaseHandler } from './DatabaseHandler';
@@ -44,6 +43,7 @@ import { parseListPlaylistsFilterParams } from './ListPlaylistsFilter';
 import {
   AuthService,
   HttpAuthService,
+  LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 
@@ -54,7 +54,7 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   discovery: PluginEndpointDiscovery;
   identity: IdentityApi;
-  logger: Logger;
+  logger: LoggerService;
   permissions: PermissionsService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;

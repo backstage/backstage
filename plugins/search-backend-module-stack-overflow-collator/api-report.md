@@ -9,7 +9,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
 
 // @public
@@ -51,7 +51,7 @@ export type StackOverflowQuestionsCollatorFactoryOptions = {
   apiAccessToken?: string;
   teamName?: string;
   requestParams?: StackOverflowQuestionsRequestParams;
-  logger: Logger;
+  logger: LoggerService;
 };
 
 // @public

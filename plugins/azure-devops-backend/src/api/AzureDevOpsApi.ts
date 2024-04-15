@@ -23,12 +23,12 @@ import {
   DashboardPullRequest,
   GitTag,
   Policy,
+  Project,
   PullRequest,
   PullRequestOptions,
   RepoBuild,
   Team,
   TeamMember,
-  Project,
 } from '@backstage/plugin-azure-devops-common';
 import {
   GitPullRequest,
@@ -37,20 +37,19 @@ import {
   GitRepository,
 } from 'azure-devops-node-api/interfaces/GitInterfaces';
 import {
+  buildEncodedUrl,
   convertDashboardPullRequest,
   convertPolicy,
   getArtifactId,
   replaceReadme,
-  buildEncodedUrl,
 } from '../utils';
 
 import { TeamMember as AdoTeamMember } from 'azure-devops-node-api/interfaces/common/VSSInterfaces';
-import { Logger } from 'winston';
 import { PolicyEvaluationRecord } from 'azure-devops-node-api/interfaces/PolicyInterfaces';
 import {
-  WebApi,
   getHandlerFromToken,
   getPersonalAccessTokenHandler,
+  WebApi,
 } from 'azure-devops-node-api';
 import {
   TeamProjectReference,
@@ -69,16 +68,17 @@ import {
   mappedPullRequest,
   mappedRepoBuild,
 } from './mappers';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export class AzureDevOpsApi {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly urlReader: UrlReader;
   private readonly config: Config;
   private readonly credentialsProvider: AzureDevOpsCredentialsProvider;
 
   private constructor(
-    logger: Logger,
+    logger: LoggerService,
     urlReader: UrlReader,
     config: Config,
     credentialsProvider: AzureDevOpsCredentialsProvider,
@@ -91,7 +91,7 @@ export class AzureDevOpsApi {
 
   static fromConfig(
     config: Config,
-    options: { logger: Logger; urlReader: UrlReader },
+    options: { logger: LoggerService; urlReader: UrlReader },
   ) {
     const scmIntegrations = ScmIntegrations.fromConfig(config);
     const credentialsProvider =

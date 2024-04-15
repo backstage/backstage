@@ -8,7 +8,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { UrlReader } from '@backstage/backend-common';
@@ -136,7 +136,7 @@ export class TodoScmReader implements TodoReader {
 
 // @public (undocumented)
 export type TodoScmReaderOptions = {
-  logger: Logger;
+  logger: LoggerService;
   reader: UrlReader;
   integrations: ScmIntegrations;
   parser?: TodoParser;

@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 
@@ -36,13 +35,12 @@ export const nomadPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
       },
       async init({ logger, config, httpRouter }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         httpRouter.use(
           await createRouter({
             /**
              * Logger for logging purposes
              */
-            logger: winstonLogger,
+            logger,
             config,
           }),
         );

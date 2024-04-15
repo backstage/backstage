@@ -15,19 +15,18 @@
  */
 
 import { Readable } from 'stream';
-import { Logger } from 'winston';
 import {
   CacheClient,
+  createLegacyAuthAdapters,
   PluginCacheManager,
   PluginEndpointDiscovery,
   TokenManager,
   UrlReader,
-  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import {
+  CATALOG_FILTER_EXISTS,
   CatalogApi,
   CatalogClient,
-  CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -47,7 +46,7 @@ import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 
 import { createMadrParser } from './createMadrParser';
 import { AdrParser } from './types';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Options to configure the AdrCollatorFactory
@@ -78,7 +77,7 @@ export type AdrCollatorFactoryOptions = {
   /**
    * Logger
    */
-  logger: Logger;
+  logger: LoggerService;
   /**
    * ADR content parser. Defaults to built in MADR parser.
    */
@@ -106,7 +105,7 @@ export class DefaultAdrCollatorFactory implements DocumentCollatorFactory {
   private readonly adrFilePathFilterFn: AdrFilePathFilterFn;
   private readonly cacheClient: CacheClient;
   private readonly catalogClient: CatalogApi;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly parser: AdrParser;
   private readonly reader: UrlReader;
   private readonly auth: AuthService;

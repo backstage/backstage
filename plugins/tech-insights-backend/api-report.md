@@ -16,7 +16,7 @@ import { FactRetriever } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistration } from '@backstage/plugin-tech-insights-node';
 import { FactRetrieverRegistry as FactRetrieverRegistry_2 } from '@backstage/plugin-tech-insights-node';
 import { HumanDuration } from '@backstage/types';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PersistenceContext as PersistenceContext_2 } from '@backstage/plugin-tech-insights-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
@@ -79,7 +79,7 @@ export type PersistenceContext = PersistenceContext_2;
 
 // @public
 export type PersistenceContextOptions = {
-  logger: Logger;
+  logger: LoggerService;
 };
 
 // @public
@@ -89,7 +89,7 @@ export interface RouterOptions<
 > {
   config: Config;
   factChecker?: FactChecker<CheckType, CheckResultType>;
-  logger: Logger;
+  logger: LoggerService;
   persistenceContext: PersistenceContext_2;
 }
 
@@ -123,7 +123,7 @@ export interface TechInsightsOptions<
   factRetrieverRegistry?: FactRetrieverRegistry_2;
   factRetrievers?: FactRetrieverRegistration[];
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   persistenceContext?: PersistenceContext_2;
   // (undocumented)
   scheduler: PluginTaskScheduler;

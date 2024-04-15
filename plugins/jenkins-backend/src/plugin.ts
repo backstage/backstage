@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { DefaultJenkinsInfoProvider } from './service/jenkinsInfoProvider';
 import { createRouter } from './service/router';
@@ -52,7 +51,6 @@ export const jenkinsPlugin = createBackendPlugin({
         auth,
         httpAuth,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         const jenkinsInfoProvider = DefaultJenkinsInfoProvider.fromConfig({
           auth,
           httpAuth,
@@ -66,7 +64,7 @@ export const jenkinsPlugin = createBackendPlugin({
             /**
              * Logger for logging purposes
              */
-            logger: winstonLogger,
+            logger,
             /**
              * Info provider to be able to get all necessary information for the APIs
              */

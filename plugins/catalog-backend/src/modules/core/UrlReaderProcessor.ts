@@ -18,7 +18,6 @@ import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { assertError } from '@backstage/errors';
 import limiterFactory from 'p-limit';
-import { Logger } from 'winston';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import parseGitUrl from 'git-url-parse';
 import {
@@ -30,6 +29,7 @@ import {
   CatalogProcessorResult,
   processingResult,
 } from '@backstage/plugin-catalog-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const CACHE_KEY = 'v1';
 
@@ -48,7 +48,7 @@ export class UrlReaderProcessor implements CatalogProcessor {
   constructor(
     private readonly options: {
       reader: UrlReader;
-      logger: Logger;
+      logger: LoggerService;
     },
   ) {}
 

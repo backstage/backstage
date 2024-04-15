@@ -20,7 +20,6 @@ import {
 } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { JenkinsInfoProvider } from './jenkinsInfoProvider';
 import { JenkinsApiImpl } from './jenkinsApi';
 import {
@@ -36,11 +35,12 @@ import {
   AuthService,
   DiscoveryService,
   HttpAuthService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   jenkinsInfoProvider: JenkinsInfoProvider;
   permissions?: PermissionEvaluator | PermissionAuthorizer;
   discovery: DiscoveryService;

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -48,7 +47,7 @@ export const codeCoveragePlugin = createBackendPlugin({
         httpRouter.use(
           await createRouter({
             config,
-            logger: loggerToWinstonLogger(logger),
+            logger,
             urlReader,
             discovery,
             database,

@@ -11,7 +11,7 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
@@ -25,7 +25,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -33,7 +33,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
-  refresh(logger: Logger): Promise<void>;
+  refresh(logger: LoggerService): Promise<void>;
 }
 
 // @public
@@ -42,7 +42,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       skipReposWithoutExactFileMatch?: boolean;
       skipForkedRepos?: boolean;
     },
@@ -80,7 +80,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
       userTransformer?: UserTransformer;

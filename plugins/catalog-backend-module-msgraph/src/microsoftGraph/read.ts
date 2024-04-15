@@ -20,7 +20,6 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import limiterFactory from 'p-limit';
-import { Logger } from 'winston';
 import { MicrosoftGraphClient } from './client';
 import {
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
@@ -39,6 +38,7 @@ import {
   defaultUserTransformer,
 } from './defaultTransformers';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const PAGE_SIZE = 999;
 
@@ -51,7 +51,7 @@ export async function readMicrosoftGraphUsers(
     userSelect?: string[];
     loadUserPhotos?: boolean;
     transformer?: UserTransformer;
-    logger: Logger;
+    logger: LoggerService;
   },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
@@ -89,7 +89,7 @@ export async function readMicrosoftGraphUsersInGroups(
     userGroupMemberFilter?: string;
     groupExpand?: string;
     transformer?: UserTransformer;
-    logger: Logger;
+    logger: LoggerService;
   },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
@@ -381,7 +381,7 @@ export async function readMicrosoftGraphOrg(
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
-    logger: Logger;
+    logger: LoggerService;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
   const users: UserEntity[] = [];
@@ -435,7 +435,7 @@ export async function readMicrosoftGraphOrg(
 async function transformUsers(
   client: MicrosoftGraphClient,
   users: Iterable<MicrosoftGraph.User> | AsyncIterable<MicrosoftGraph.User>,
-  logger: Logger,
+  logger: LoggerService,
   loadUserPhotos = true,
   transformer?: UserTransformer,
 ) {
