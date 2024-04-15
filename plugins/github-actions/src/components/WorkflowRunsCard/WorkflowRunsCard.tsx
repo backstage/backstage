@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 import React, { ChangeEvent, useEffect, useState } from 'react';
-import {
-  Typography,
-  Box,
-  IconButton,
-  Tooltip,
-  Button,
-  Chip,
-  ButtonGroup,
-  Grid,
-  makeStyles,
-  createStyles,
-  Theme,
-  TablePagination,
-  Select,
-  MenuItem,
-  TextField,
-  CircularProgress,
-} from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
+import ButtonGroup from '@material-ui/core/ButtonGroup';
+import Grid from '@material-ui/core/Grid';
+import TablePagination from '@material-ui/core/TablePagination';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import {
   EmptyState,
   Link,
@@ -49,7 +45,7 @@ import { buildRouteRef } from '../../routes';
 import { getProjectNameFromEntity } from '../getProjectNameFromEntity';
 import { getHostnameFromEntity } from '../getHostnameFromEntity';
 
-import { Alert, Color } from '@material-ui/lab';
+import Alert, { Color } from '@material-ui/lab/Alert';
 import { Entity } from '@backstage/catalog-model';
 
 const useStyles = makeStyles((theme: Theme) =>

@@ -15,3 +15,4 @@
  */
 
 export * from './EntityGridItem';
+export * from './SidebarSignOutButton';

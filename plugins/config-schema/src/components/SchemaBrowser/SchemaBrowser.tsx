@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { createStyles, alpha, withStyles } from '@material-ui/core';
+import { alpha } from '@material-ui/core/styles';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { TreeItem, TreeItemProps, TreeView } from '@material-ui/lab';
+import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
+import TreeView from '@material-ui/lab/TreeView';
 import { Schema } from 'jsonschema';
 import React, { ReactNode, useMemo, useRef } from 'react';
 import { useScrollTargets } from '../ScrollTargetsContext';

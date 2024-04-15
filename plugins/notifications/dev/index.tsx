@@ -15,13 +15,14 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { notificationsPlugin } from '../src/plugin';
+import { NotificationsPage, notificationsPlugin } from '../src/plugin';
+import { NotificationsSidebarItem } from '../src';
 
 createDevApp()
   .registerPlugin(notificationsPlugin)
   .addPage({
-    element: <div />,
-    title: 'Root Page',
+    element: <NotificationsPage />,
     path: '/notifications',
   })
+  .addSidebarItem(<NotificationsSidebarItem />)
   .render();

@@ -22,6 +22,7 @@ import commonGitlabConfig from '../commonGitlabConfig';
 import { getToken } from '../util';
 import { InputError } from '@backstage/errors';
 import { z } from 'zod';
+import { examples } from './createGitlabProjectDeployTokenAction.examples';
 
 /**
  * Creates a `gitlab:projectDeployToken:create` Scaffolder action.
@@ -35,6 +36,7 @@ export const createGitlabProjectDeployTokenAction = (options: {
   const { integrations } = options;
   return createTemplateAction({
     id: 'gitlab:projectDeployToken:create',
+    examples,
     schema: {
       input: commonGitlabConfig.merge(
         z.object({

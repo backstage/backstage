@@ -475,3 +475,4 @@ Zolotusky
 zoomable
 zsh
 scrollable
+severities

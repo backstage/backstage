@@ -19,19 +19,17 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  TextField,
-  Typography,
-  makeStyles,
-  Tooltip,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import Tooltip from '@material-ui/core/Tooltip';
+import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Autocomplete } from '@material-ui/lab';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';

@@ -36,7 +36,9 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@material-ui/core": "^4.12.2",
+    "@material-ui/lab": "^4.0.0-alpha.61",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-use": "^17.5.0",
     "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
@@ -44,7 +46,7 @@
     "@backstage/dev-utils": "workspace:^",
     "@testing-library/dom": "^9.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0"
+    "@testing-library/react": "^15.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",

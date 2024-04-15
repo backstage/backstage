@@ -643,6 +643,21 @@ export { PluginDatabaseManager };
 export { PluginEndpointDiscovery };
 
 // @public
+export interface PullOptions {
+  // (undocumented)
+  [key: string]: unknown;
+  // (undocumented)
+  authconfig?: {
+    username?: string;
+    password?: string;
+    auth?: string;
+    email?: string;
+    serveraddress?: string;
+    [key: string]: unknown;
+  };
+}
+
+// @public
 export type ReaderFactory = (options: {
   config: Config;
   logger: LoggerService;
@@ -740,6 +755,7 @@ export type RunContainerOptions = {
   envVars?: Record<string, string>;
   pullImage?: boolean;
   defaultUser?: boolean;
+  pullOptions?: PullOptions;
 };
 
 export { SearchOptions };

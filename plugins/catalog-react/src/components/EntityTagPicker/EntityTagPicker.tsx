@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { EntityTagFilter } from '../../filters';
 import { EntityAutocompletePicker } from '../EntityAutocompletePicker/EntityAutocompletePicker';

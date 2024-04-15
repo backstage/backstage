@@ -15,17 +15,15 @@
  */
 
 import React, { Dispatch, useEffect, useState } from 'react';
-import {
-  Box,
-  Card,
-  Chip,
-  IconButton,
-  LinearProgress,
-  Menu,
-  MenuItem,
-  Snackbar,
-  Tooltip,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Card from '@material-ui/core/Card';
+import Chip from '@material-ui/core/Chip';
+import IconButton from '@material-ui/core/IconButton';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import Snackbar from '@material-ui/core/Snackbar';
+import Tooltip from '@material-ui/core/Tooltip';
 import { default as MuiAlert } from '@material-ui/lab/Alert';
 import {
   AzureSite,

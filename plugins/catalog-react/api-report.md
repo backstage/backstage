@@ -12,7 +12,7 @@ import { ComponentEntity } from '@backstage/catalog-model';
 import { ComponentProps } from 'react';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { LinkProps } from '@backstage/core-components';
@@ -27,7 +27,7 @@ import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
-import { TextFieldProps } from '@material-ui/core';
+import { TextFieldProps } from '@material-ui/core/TextField';
 
 // @public (undocumented)
 export type AllowedEntityFilters<T extends DefaultEntityFilters> = {
