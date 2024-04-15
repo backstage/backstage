@@ -34,7 +34,6 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   ): GitlabDiscoveryEntityProvider[];
   // (undocumented)
   getProviderName(): string;
-  // (undocumented)
   refresh(logger: LoggerService): Promise<void>;
 }
 
