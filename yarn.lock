@@ -8811,6 +8811,7 @@ __metadata:
     globby: ^11.0.0
     jsonschema: ^1.2.6
     p-limit: ^3.1.0
+    winston: ^3.2.1
     zod: ^3.22.4
     zod-to-json-schema: ^3.20.4
   languageName: unknown
@@ -9775,6 +9776,7 @@ __metadata:
     p-limit: ^3.1.0
     recursive-readdir: ^2.2.2
     supertest: ^6.1.3
+    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 

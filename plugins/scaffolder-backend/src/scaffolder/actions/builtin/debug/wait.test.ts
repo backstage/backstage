@@ -15,12 +15,19 @@
  */
 
 import { createWaitAction } from './wait';
+import { Writable } from 'stream';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('debug:wait', () => {
   const action = createWaitAction();
 
-  const mockContext = createMockActionContext({});
+  const logStream = {
+    write: jest.fn(),
+  } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
+
+  const mockContext = createMockActionContext({
+    logStream,
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();

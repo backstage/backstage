@@ -15,7 +15,6 @@
 '@backstage/plugin-catalog-backend-module-azure': patch
 '@backstage/plugin-catalog-backend-module-aws': patch
 '@backstage/plugin-catalog-backend-module-gcp': patch
-'@backstage/plugin-scaffolder-node-test-utils': patch
 '@backstage/plugin-entity-feedback-backend': patch
 '@backstage/plugin-code-coverage-backend': patch
 '@backstage/plugin-tech-insights-backend': patch
@@ -40,7 +39,6 @@
 '@backstage/plugin-search-backend': patch
 '@backstage/plugin-kafka-backend': patch
 '@backstage/plugin-nomad-backend': patch
-'@backstage/plugin-techdocs-node': patch
 '@backstage/plugin-todo-backend': patch
 '@backstage/plugin-adr-backend': patch
 '@backstage/plugin-app-backend': patch

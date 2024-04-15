@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { PassThrough } from 'stream';
 import { getVoidLogger } from '@backstage/backend-common';
 import {
   createMockDirectory,
@@ -37,6 +38,7 @@ export const createMockActionContext = <
   const credentials = mockCredentials.user();
   const defaultContext = {
     logger: getVoidLogger(),
+    logStream: new PassThrough(),
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
     input: {} as TActionInput,
@@ -55,7 +57,8 @@ export const createMockActionContext = <
     };
   }
 
-  const { input, logger, secrets, templateInfo, workspacePath } = options;
+  const { input, logger, logStream, secrets, templateInfo, workspacePath } =
+    options;
 
   return {
     ...defaultContext,
@@ -64,6 +67,7 @@ export const createMockActionContext = <
       createTemporaryDirectory: jest.fn().mockResolvedValue(workspacePath),
     }),
     ...(logger && { logger }),
+    ...(logStream && { logStream }),
     ...(input && { input }),
     ...(secrets && { secrets }),
     templateInfo,
