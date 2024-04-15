@@ -53,11 +53,11 @@ backend:
   auth:
     externalAccess:
       - type: static
-        config:
+        options:
           token: ${CICD_TOKEN}
           subject: cicd-system-completion-events
       - type: static
-        config:
+        options:
           token: ${ADMIN_CURL_TOKEN}
           subject: admin-curl-access
 ```
@@ -99,11 +99,11 @@ backend:
   auth:
     externalAccess:
       - type: legacy
-        config:
+        options:
           secret: my-secret-key-catalog
           subject: legacy-catalog
       - type: legacy
-        config:
+        options:
           secret: my-secret-key-scaffolder
           subject: legacy-scaffolder
 ```

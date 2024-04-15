@@ -244,7 +244,7 @@ describe('ServerTokenManager', () => {
             auth: {
               keys: [{ secret: oldSecret }],
               externalAccess: [
-                { type: 'legacy', config: { secret: newSecret } },
+                { type: 'legacy', options: { secret: newSecret } },
               ],
             },
           },

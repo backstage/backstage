@@ -80,7 +80,7 @@ export class ServerTokenManager implements TokenManager {
     const newSecrets = config
       .getOptionalConfigArray('backend.auth.externalAccess')
       ?.filter(c => c.getString('type') === 'legacy')
-      .map(c => c.getString('config.secret'));
+      .map(c => c.getString('options.secret'));
     const secrets = [...(oldSecrets ?? []), ...(newSecrets ?? [])];
 
     if (secrets.length) {
