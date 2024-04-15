@@ -3884,6 +3884,7 @@ __metadata:
     "@types/webpack-env": ^1.18.0
     clsx: ^2.0.0
     docusaurus-plugin-sass: ^0.2.3
+    docusaurus-pushfeedback: ^1.0.0
     js-yaml: ^4.1.0
     luxon: ^3.0.0
     prettier: ^2.6.2
@@ -5134,6 +5135,15 @@ __metadata:
     "@docusaurus/core": ^2.0.0-beta || ^3.0.0-alpha
     sass: ^1.30.0
   checksum: db17a8c87a344330717962fe195c94089e32281dc7f79b66bf99587254ebad71353b8588c5b74feb1c2841c6183e59b20259f5fb1a5c74026903557cbb113a68
+  languageName: node
+  linkType: hard
+
+"docusaurus-pushfeedback@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "docusaurus-pushfeedback@npm:1.0.0"
+  peerDependencies:
+    "@docusaurus/core": 3.x
+  checksum: 5f119fac4b18198ecab7ca3892b8d19ea21c1f4147b7500de0f2a341651630ff090e38ac4984e33d87729f1b00d621ae8945efe2a2ea37b9a74b76c7f468f21e
   languageName: node
   linkType: hard
 

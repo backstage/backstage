@@ -97,7 +97,7 @@ const config: Config = {
   plugins: [
     'docusaurus-plugin-sass',
     () => ({
-      name: 'webpack-config',
+      name: 'yaml-loader',
       configureWebpack() {
         return {
           module: {
@@ -164,6 +164,15 @@ const config: Config = {
             to: '/docs/getting-started/#next-steps',
           },
         ],
+      },
+    ],
+    [
+      'docusaurus-pushfeedback',
+      {
+        project: 'q8w1i6cair',
+        hideIcon: true,
+        customFont: true,
+        buttonStyle: 'dark',
       },
     ],
   ],
