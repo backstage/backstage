@@ -17,6 +17,8 @@
 import { Config } from '@backstage/config';
 import { TokenHandler } from './types';
 
+const MIN_TOKEN_LENGTH = 8;
+
 /**
  * Handles `type: static` access.
  *
@@ -30,6 +32,11 @@ export class StaticTokenHandler implements TokenHandler {
     if (!token.match(/^\S+$/)) {
       throw new Error('Illegal token, must be a set of non-space characters');
     }
+    if (token.length < MIN_TOKEN_LENGTH) {
+      throw new Error(
+        `Illegal token, must be at least ${MIN_TOKEN_LENGTH} characters length`,
+      );
+    }
 
     const subject = options.getString('subject');
     if (!subject.match(/^\S+$/)) {
@@ -39,17 +46,12 @@ export class StaticTokenHandler implements TokenHandler {
     this.#entries.push({ token, subject });
   }
 
-  async verifyToken(
-    token: string,
-  ): Promise<{ subject: string; token: string } | undefined> {
+  async verifyToken(token: string) {
     const entry = this.#entries.find(e => e.token === token);
     if (!entry) {
       return undefined;
     }
 
-    return {
-      subject: entry.subject,
-      token: token,
-    };
+    return { subject: entry.subject };
   }
 }

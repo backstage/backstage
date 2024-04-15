@@ -77,9 +77,7 @@ export class ExternalTokenHandler {
 
   constructor(private readonly handlers: TokenHandler[]) {}
 
-  async verifyToken(
-    token: string,
-  ): Promise<{ subject: string; token?: string } | undefined> {
+  async verifyToken(token: string): Promise<{ subject: string } | undefined> {
     for (const handler of this.handlers) {
       const result = await handler.verifyToken(token);
       if (result) {

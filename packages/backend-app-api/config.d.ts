@@ -37,8 +37,6 @@ export interface Config {
        * Configures methods of external access, ie ways for callers outside of
        * the Backstage ecosystem to get authorized for access to APIs that do
        * not permit unauthorized access.
-       *
-       * @deepVisibility secret
        */
       externalAccess: Array<
         | {
@@ -79,6 +77,8 @@ export interface Config {
                * ```sh
                * node -p 'require("crypto").randomBytes(24).toString("base64")'
                * ```
+               *
+               * @visibility secret
                */
               secret: string;
 
@@ -119,6 +119,8 @@ export interface Config {
                * adding a `freben-local-dev-` prefix for debugging purposes to a
                * token that you know will be handed out for use as a personal
                * access token during development.
+               *
+               * @visibility secret
                */
               token: string;
 

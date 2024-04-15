@@ -82,10 +82,7 @@ export class DefaultAuthService implements AuthService {
 
     const externalResult = await this.externalTokenHandler.verifyToken(token);
     if (externalResult) {
-      return createCredentialsWithServicePrincipal(
-        externalResult.subject,
-        externalResult.token,
-      );
+      return createCredentialsWithServicePrincipal(externalResult.subject);
     }
 
     throw new AuthenticationError('Illegal token');

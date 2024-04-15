@@ -54,7 +54,6 @@ describe('LegacyTokenHandler', () => {
 
     await expect(tokenHandler.verifyToken(token1)).resolves.toEqual({
       subject: 'key1',
-      token: token1,
     });
 
     const token2 = await new SignJWT({
@@ -66,7 +65,6 @@ describe('LegacyTokenHandler', () => {
 
     await expect(tokenHandler.verifyToken(token2)).resolves.toEqual({
       subject: 'key2',
-      token: token2,
     });
 
     const token3 = await new SignJWT({
@@ -78,7 +76,6 @@ describe('LegacyTokenHandler', () => {
 
     await expect(tokenHandler.verifyToken(token3)).resolves.toEqual({
       subject: 'external:backstage-plugin',
-      token: token3,
     });
   });
 

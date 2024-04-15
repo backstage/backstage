@@ -55,9 +55,7 @@ export class LegacyTokenHandler implements TokenHandler {
     this.#entries.push({ key, subject });
   }
 
-  async verifyToken(
-    token: string,
-  ): Promise<{ subject: string; token?: string } | undefined> {
+  async verifyToken(token: string) {
     // First do a duck typing check to see if it remotely looks like a legacy token
     try {
       // We do a fair amount of checking upfront here. Since we aren't certain
@@ -81,10 +79,7 @@ export class LegacyTokenHandler implements TokenHandler {
     for (const entry of this.#entries) {
       try {
         await jwtVerify(token, entry.key);
-        return {
-          subject: entry.subject,
-          token: token,
-        };
+        return { subject: entry.subject };
       } catch (e) {
         if (e.code !== 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
           throw e;
