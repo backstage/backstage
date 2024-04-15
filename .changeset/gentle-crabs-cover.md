@@ -1,6 +1,6 @@
 ---
-'@backstage/plugin-kubernetes-backend': patch
-'@backstage/plugin-tech-insights-node': patch
+'@backstage/plugin-kubernetes-backend': minor
+'@backstage/plugin-tech-insights-node': minor
 ---
 
 **BREAKING** Winston logger has been replaced with `LoggerService`
