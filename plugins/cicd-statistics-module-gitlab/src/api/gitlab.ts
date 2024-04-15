@@ -49,13 +49,16 @@ export type GitlabClient = {
 export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
   readonly #gitLabAuthApi: OAuthApi;
   readonly #cicdDefaults: Partial<CicdDefaults>;
+  private readonly staticToken?: string;
 
   constructor(
     gitLabAuthApi: OAuthApi,
     cicdDefaults: Partial<CicdDefaults> = {},
+    staticToken?: string
   ) {
     this.#gitLabAuthApi = gitLabAuthApi;
     this.#cicdDefaults = cicdDefaults;
+    this.staticToken = staticToken;
   }
 
   public async createGitlabApi(
@@ -65,7 +68,10 @@ export class CicdStatisticsApiGitlab implements CicdStatisticsApi {
     const entityInfo = getEntitySourceLocation(entity);
     const url = new URL(entityInfo.target);
     const owner = url.pathname.split('/-/blob/')[0];
-    const oauthToken = await this.#gitLabAuthApi.getAccessToken(scopes);
+    const oauthToken = this.staticToken; // Use the static token if available
+    if (!oauthToken) { // If not available, fallback to OAuth token
+      oauthToken = await this.#gitLabAuthApi.getAccessToken(scopes);
+    }
     return {
       api: new Gitlab({
         host: `https://${url.host}`,
