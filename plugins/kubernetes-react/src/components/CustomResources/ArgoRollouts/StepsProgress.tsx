@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { Step, StepLabel, Stepper } from '@material-ui/core';
+import Step from '@material-ui/core/Step';
+import StepLabel from '@material-ui/core/StepLabel';
+import Stepper from '@material-ui/core/Stepper';
 import Typography from '@material-ui/core/Typography';
 import {
   ArgoRolloutCanaryStep,

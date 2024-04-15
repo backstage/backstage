@@ -16,7 +16,9 @@
 import React from 'react';
 import { V1CronJob } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
-import { Typography, Grid, Chip } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Chip from '@material-ui/core/Chip';
 
 export const CronJobDrawer = ({
   cronJob,

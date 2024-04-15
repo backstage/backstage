@@ -17,13 +17,9 @@
 import React from 'react';
 
 import { ItemCardGrid } from '@backstage/core-components';
-import {
-  createStyles,
-  makeStyles,
-  Theme,
-  Grid,
-  Typography,
-} from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 import { Pod } from 'kubernetes-models/v1';
 

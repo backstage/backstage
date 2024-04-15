@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { KubernetesStructuredMetadataTableDrawer } from '../../KubernetesDrawer';
-import { Typography, Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 
 export const RolloutDrawer = ({
   rollout,
