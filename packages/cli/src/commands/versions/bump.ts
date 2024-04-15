@@ -14,32 +14,32 @@
  * limitations under the License.
  */
 
-import { BACKSTAGE_JSON } from '@backstage/cli-common';
-import { PackageGraph } from '@backstage/cli-node';
+import fs from 'fs-extra';
+import chalk from 'chalk';
+import ora from 'ora';
+import semver from 'semver';
+import { minimatch } from 'minimatch';
+import { OptionValues } from 'commander';
 import { isError, NotFoundError } from '@backstage/errors';
+import { resolve as resolvePath } from 'path';
+import { run } from '../../lib/run';
+import { paths } from '../../lib/paths';
+import {
+  mapDependencies,
+  fetchPackageInfo,
+  Lockfile,
+  YarnInfoInspectData,
+} from '../../lib/versioning';
+import { forbiddenDuplicatesFilter } from './lint';
+import { BACKSTAGE_JSON } from '@backstage/cli-common';
+import { runParallelWorkers } from '../../lib/parallel';
 import {
   getManifestByReleaseLine,
   getManifestByVersion,
   ReleaseManifest,
 } from '@backstage/release-manifests';
-import chalk from 'chalk';
-import { OptionValues } from 'commander';
-import fs from 'fs-extra';
 import 'global-agent/bootstrap';
-import { minimatch } from 'minimatch';
-import ora from 'ora';
-import { resolve as resolvePath } from 'path';
-import semver from 'semver';
-import { runParallelWorkers } from '../../lib/parallel';
-import { paths } from '../../lib/paths';
-import { run } from '../../lib/run';
-import {
-  fetchPackageInfo,
-  Lockfile,
-  mapDependencies,
-  YarnInfoInspectData,
-} from '../../lib/versioning';
-import { forbiddenDuplicatesFilter } from './lint';
+import { PackageGraph } from '@backstage/cli-node';
 
 const DEP_TYPES = [
   'dependencies',
@@ -48,7 +48,7 @@ const DEP_TYPES = [
   'optionalDependencies',
 ];
 
-const DEFAULT_PATTERN_GLOB = '@backstage/*';
+const DEFAULT_PATTERN_GLOB = '@backstage?(-community)/*';
 
 type PkgVersionInfo = {
   range: string;
@@ -108,13 +108,6 @@ export default async (opts: OptionValues) => {
   const versionBumps = new Map<string, PkgVersionInfo[]>();
   // Track package versions that we want to remove from yarn.lock in order to trigger a bump
   const unlocked = Array<{ name: string; range: string; target: string }>();
-  // All backstage package versions in yarn.lock that are not in `unlocked`
-  const outsideRange = Array<{ name: string; range: string; target: string }>();
-  // Moved packages & their new package version info
-  const moved = new Map<
-    string,
-    { name: string; range: string; target: string }
-  >();
 
   await runParallelWorkers({
     parallelismFactor: 4,
@@ -172,7 +165,6 @@ export default async (opts: OptionValues) => {
         // Ignore lockfile entries that don't satisfy the version range, since
         // these can't cause the package to be locked to an older version
         if (!semver.satisfies(target, entry.range)) {
-          outsideRange.push({ name, range: entry.range, target });
           continue;
         }
         // Unlock all entries that are within range but on the old version
@@ -181,32 +173,7 @@ export default async (opts: OptionValues) => {
     },
   });
 
-  await runParallelWorkers({
-    parallelismFactor: 4,
-    items: [...unlocked, ...outsideRange],
-    async worker({ name }) {
-      if (!moved.get(name)) {
-        let info = await fetchPackageInfo(name);
-
-        // TODO: To be removed
-        if (name === '@backstage/plugin-catalog-react') {
-          info.backstage = {
-            ...info.backstage,
-            moved: '@pagerduty/backstage-plugin',
-          };
-        }
-
-        if (info.backstage?.moved) {
-          info = await fetchPackageInfo(info.backstage.moved);
-          moved.set(name, {
-            name: info.name,
-            range: `^${info['dist-tags'].latest}`,
-            target: info['dist-tags'].latest,
-          });
-        }
-      }
-    },
-  });
+  console.log();
 
   // Write all discovered version bumps to package.json in this repo
   if (versionBumps.size === 0 && unlocked.length === 0) {
@@ -215,59 +182,25 @@ export default async (opts: OptionValues) => {
     console.log(chalk.yellow('Some packages are outdated, updating'));
     console.log();
 
-    if (unlocked.length > 0 || outsideRange.length > 0) {
+    if (unlocked.length > 0) {
       const removed = new Set<string>();
-
-      for (const unlockedPackage of unlocked) {
-        const movedPackage = moved.get(unlockedPackage.name);
-        const { name, range, target } = movedPackage
-          ? movedPackage
-          : unlockedPackage;
-
+      for (const { name, range, target } of unlocked) {
         // Don't bother removing lockfile entries if they're already on the correct version
         const existingEntry = lockfile.get(name)?.find(e => e.range === range);
-        if (existingEntry?.version === target && !movedPackage) {
+        if (existingEntry?.version === target) {
           continue;
         }
         const key = JSON.stringify({ name, range });
         if (!removed.has(key)) {
           removed.add(key);
-          if (movedPackage) {
-            console.log(
-              `${chalk.yellow('moving')} ${unlockedPackage.name}@${
-                unlockedPackage.range
-              } ~> ${chalk.yellow(`${name}@${range}`)}`,
-            );
-            lockfile.remove(unlockedPackage.name, unlockedPackage.range);
-          } else {
-            console.log(
-              `${chalk.magenta('unlocking')} ${name}@${chalk.yellow(
-                range,
-              )} ~> ${chalk.yellow(target)}`,
-            );
-            lockfile.remove(name, range);
-          }
+          console.log(
+            `${chalk.magenta('unlocking')} ${name}@${chalk.yellow(
+              range,
+            )} ~> ${chalk.yellow(target)}`,
+          );
+          lockfile.remove(name, range);
         }
       }
-
-      for (const outsideRangePackage of outsideRange) {
-        const movedPackage = moved.get(outsideRangePackage.name);
-        if (movedPackage) {
-          const { name, range } = movedPackage;
-          const key = JSON.stringify({ name, range });
-          if (!removed.has(key)) {
-            removed.add(key);
-            // TODO: Does this need special instructions as there might be custom bumping needed?
-            console.log(
-              `${chalk.yellow('moving')} ${movedPackage.name}@${
-                movedPackage.range
-              } ~> ${chalk.yellow(`${name}@${range}`)}`,
-            );
-            lockfile.remove(movedPackage.name, movedPackage.range);
-          }
-        }
-      }
-
       await lockfile.save(lockfilePath);
     }
 
@@ -280,29 +213,14 @@ export default async (opts: OptionValues) => {
         const pkgJson = await fs.readJson(pkgPath);
 
         for (const dep of deps) {
-          const movedDep = moved.get(dep.name);
-          if (movedDep) {
-            console.log(
-              `${chalk.yellow('bumping')} ${dep.name} in ${chalk.cyan(
-                name,
-              )} to ${chalk.yellow(`${movedDep.name}@${movedDep.range}`)}`,
-            );
-          } else {
-            console.log(
-              `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
-                name,
-              )} to ${chalk.yellow(dep.range)}`,
-            );
-          }
+          console.log(
+            `${chalk.cyan('bumping')} ${dep.name} in ${chalk.cyan(
+              name,
+            )} to ${chalk.yellow(dep.range)}`,
+          );
 
           for (const depType of DEP_TYPES) {
             if (depType in pkgJson && dep.name in pkgJson[depType]) {
-              if (movedDep) {
-                delete pkgJson[depType][dep.name];
-                pkgJson[depType][movedDep.name] = movedDep.range;
-                continue;
-              }
-
               const oldRange = pkgJson[depType][dep.name];
               pkgJson[depType][dep.name] = dep.range;
 
