@@ -16,7 +16,7 @@
 
 import type { Entity } from '@backstage/catalog-model';
 import { UrlReader } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { Logger } from 'winston';
 
 /**
  * A unique identifier of the tree blob, usually the commit SHA or etag from the target.
@@ -29,7 +29,7 @@ export type ETag = string;
  * @public
  */
 export type PreparerConfig = {
-  logger: LoggerService;
+  logger: Logger;
   reader: UrlReader;
 };
 
@@ -41,7 +41,7 @@ export type PreparerOptions = {
   /**
    * An instance of the logger
    */
-  logger?: LoggerService;
+  logger?: Logger;
   /**
    * see {@link ETag}
    */

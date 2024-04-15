@@ -13,17 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { Logger } from 'winston';
 import express from 'express';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Options for building publishers
  * @public
  */
 export type PublisherFactory = {
-  logger: LoggerService;
+  logger: Logger;
   discovery: PluginEndpointDiscovery;
 };
 

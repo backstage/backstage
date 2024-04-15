@@ -18,16 +18,16 @@ import { isChildPath } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { assertError, ForwardedError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import { SpawnOptionsWithoutStdio, spawn } from 'child_process';
 import fs from 'fs-extra';
 import gitUrlParse from 'git-url-parse';
 import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
 import path, { resolve as resolvePath } from 'path';
 import { PassThrough, Writable } from 'stream';
+import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 // TODO: Implement proper support for more generators.
 export function getGeneratorKey(entity: Entity): SupportedGeneratorKey {
@@ -296,7 +296,7 @@ export const patchIndexPreBuild = async ({
   docsDir = 'docs',
 }: {
   inputDir: string;
-  logger: LoggerService;
+  logger: Logger;
   docsDir?: string;
 }) => {
   const docsPath = path.join(inputDir, docsDir);
@@ -340,7 +340,7 @@ export const patchIndexPreBuild = async ({
  */
 export const createOrUpdateMetadata = async (
   techdocsMetadataPath: string,
-  logger: LoggerService,
+  logger: Logger,
 ): Promise<void> => {
   const techdocsMetadataDir = techdocsMetadataPath
     .split(path.sep)

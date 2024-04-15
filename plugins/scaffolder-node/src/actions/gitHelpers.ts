@@ -15,7 +15,7 @@
  */
 
 import { Git } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { Logger } from 'winston';
 
 /**
  * @public
@@ -27,7 +27,7 @@ export async function initRepoAndPush(input: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger: LoggerService;
+  logger: Logger;
   defaultBranch?: string;
   commitMessage?: string;
   gitAuthorInfo?: { name?: string; email?: string };
@@ -88,7 +88,7 @@ export async function commitAndPushRepo(input: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger: LoggerService;
+  logger: Logger;
   commitMessage: string;
   gitAuthorInfo?: { name?: string; email?: string };
   branch?: string;
@@ -145,7 +145,7 @@ export async function cloneRepo(options: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger?: LoggerService;
+  logger?: Logger | undefined;
   ref?: string | undefined;
   depth?: number | undefined;
   noCheckout?: boolean | undefined;
@@ -170,7 +170,7 @@ export async function createBranch(options: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger?: LoggerService;
+  logger?: Logger | undefined;
 }): Promise<void> {
   const { dir, ref, auth, logger } = options;
   const git = Git.fromAuth({
@@ -191,7 +191,7 @@ export async function addFiles(options: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger?: LoggerService | undefined;
+  logger?: Logger | undefined;
 }): Promise<void> {
   const { dir, filepath, auth, logger } = options;
   const git = Git.fromAuth({
@@ -211,7 +211,7 @@ export async function commitAndPushBranch(options: {
   // it has to be provided as password together with a username
   // which may be a fixed value defined by the provider.
   auth: { username: string; password: string } | { token: string };
-  logger?: LoggerService | undefined;
+  logger?: Logger | undefined;
   commitMessage: string;
   gitAuthorInfo?: { name?: string; email?: string };
   branch?: string;

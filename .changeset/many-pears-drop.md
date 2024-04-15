@@ -22,10 +22,8 @@
 '@backstage/plugin-azure-devops-backend': patch
 '@backstage/plugin-azure-sites-backend': patch
 '@backstage/plugin-search-backend-node': patch
-'@backstage/plugin-kubernetes-backend': patch
 '@backstage/plugin-lighthouse-backend': patch
 '@backstage/plugin-permission-backend': patch
-'@backstage/plugin-tech-insights-node': patch
 '@backstage/plugin-sonarqube-backend': patch
 '@backstage/backend-app-api': patch
 '@backstage/plugin-airbrake-backend': patch
@@ -36,7 +34,6 @@
 '@backstage/plugin-catalog-backend': patch
 '@backstage/plugin-explore-backend': patch
 '@backstage/plugin-jenkins-backend': patch
-'@backstage/plugin-scaffolder-node': patch
 '@backstage/backend-tasks': patch
 '@backstage/plugin-badges-backend': patch
 '@backstage/plugin-bazaar-backend': patch

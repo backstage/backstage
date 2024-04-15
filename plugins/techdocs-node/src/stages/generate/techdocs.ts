@@ -17,6 +17,7 @@
 import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import path from 'path';
+import { Logger } from 'winston';
 import {
   ScmIntegrationRegistry,
   ScmIntegrations,
@@ -42,7 +43,6 @@ import {
   GeneratorRunOptions,
 } from './types';
 import { ForwardedError } from '@backstage/errors';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Generates documentation files
@@ -54,7 +54,7 @@ export class TechdocsGenerator implements GeneratorBase {
    * and static so that techdocs-node consumers can use the same version.
    */
   public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.3';
-  private readonly logger: LoggerService;
+  private readonly logger: Logger;
   private readonly containerRunner?: ContainerRunner;
   private readonly options: GeneratorConfig;
   private readonly scmIntegrations: ScmIntegrationRegistry;
@@ -76,7 +76,7 @@ export class TechdocsGenerator implements GeneratorBase {
   }
 
   constructor(options: {
-    logger: LoggerService;
+    logger: Logger;
     containerRunner?: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
@@ -217,7 +217,7 @@ export class TechdocsGenerator implements GeneratorBase {
 
 export function readGeneratorConfig(
   config: Config,
-  logger: LoggerService,
+  logger: Logger,
 ): GeneratorConfig {
   const legacyGeneratorType = config.getOptionalString(
     'techdocs.generators.techdocs',

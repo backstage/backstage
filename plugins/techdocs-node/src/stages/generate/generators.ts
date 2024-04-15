@@ -17,6 +17,7 @@
 import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { Logger } from 'winston';
 import { getGeneratorKey } from './helpers';
 import { TechdocsGenerator } from './techdocs';
 import {
@@ -24,7 +25,6 @@ import {
   GeneratorBuilder,
   SupportedGeneratorKey,
 } from './types';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Collection of docs generators
@@ -41,7 +41,7 @@ export class Generators implements GeneratorBuilder {
   static async fromConfig(
     config: Config,
     options: {
-      logger: LoggerService;
+      logger: Logger;
       containerRunner: ContainerRunner;
       customGenerator?: TechdocsGenerator;
     },

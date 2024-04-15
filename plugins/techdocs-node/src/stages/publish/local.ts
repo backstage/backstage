@@ -19,8 +19,8 @@ import {
   resolveSafeChildPath,
 } from '@backstage/backend-common';
 import {
-  CompoundEntityRef,
   Entity,
+  CompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -29,6 +29,7 @@ import fs from 'fs-extra';
 import os from 'os';
 import createLimiter from 'p-limit';
 import path from 'path';
+import { Logger } from 'winston';
 import {
   PublisherBase,
   PublishRequest,
@@ -42,7 +43,6 @@ import {
   lowerCaseEntityTripletInStoragePath,
 } from './helpers';
 import { ForwardedError } from '@backstage/errors';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Local publisher which uses the local filesystem to store the generated static files. It uses by default a
@@ -51,12 +51,12 @@ import { LoggerService } from '@backstage/backend-plugin-api';
  */
 export class LocalPublish implements PublisherBase {
   private readonly legacyPathCasing: boolean;
-  private readonly logger: LoggerService;
+  private readonly logger: Logger;
   private readonly discovery: PluginEndpointDiscovery;
   private readonly staticDocsDir: string;
 
   constructor(options: {
-    logger: LoggerService;
+    logger: Logger;
     discovery: PluginEndpointDiscovery;
     legacyPathCasing: boolean;
     staticDocsDir: string;
@@ -69,7 +69,7 @@ export class LocalPublish implements PublisherBase {
 
   static fromConfig(
     config: Config,
-    logger: LoggerService,
+    logger: Logger,
     discovery: PluginEndpointDiscovery,
   ): PublisherBase {
     const legacyPathCasing =
@@ -299,7 +299,7 @@ export class LocalPublish implements PublisherBase {
           // Otherwise, copy or move the file.
           await new Promise<void>(resolve => {
             const migrate = removeOriginal ? fs.move : fs.copyFile;
-            this.logger.debug(`Migrating ${relativeFile}`);
+            this.logger.verbose(`Migrating ${relativeFile}`);
             migrate(file, newFile, err => {
               if (err) {
                 this.logger.warn(

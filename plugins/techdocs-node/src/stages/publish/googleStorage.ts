@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { assertError } from '@backstage/errors';
 import {
@@ -26,14 +26,15 @@ import express from 'express';
 import JSON5 from 'json5';
 import path from 'path';
 import { Readable } from 'stream';
+import { Logger } from 'winston';
 import {
-  bulkStorageOperation,
-  getCloudPathForLocalPath,
   getFileTreeRecursively,
   getHeadersForFileExtension,
-  getStaleFiles,
   lowerCaseEntityTriplet,
   lowerCaseEntityTripletInStoragePath,
+  bulkStorageOperation,
+  getCloudPathForLocalPath,
+  getStaleFiles,
   normalizeExternalStorageRootPath,
 } from './helpers';
 import { MigrateWriteStream } from './migrations';
@@ -44,20 +45,19 @@ import {
   ReadinessResponse,
   TechDocsMetadata,
 } from './types';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 export class GoogleGCSPublish implements PublisherBase {
   private readonly storageClient: Storage;
   private readonly bucketName: string;
   private readonly legacyPathCasing: boolean;
-  private readonly logger: LoggerService;
+  private readonly logger: Logger;
   private readonly bucketRootPath: string;
 
   constructor(options: {
     storageClient: Storage;
     bucketName: string;
     legacyPathCasing: boolean;
-    logger: LoggerService;
+    logger: Logger;
     bucketRootPath: string;
   }) {
     this.storageClient = options.storageClient;
@@ -67,7 +67,7 @@ export class GoogleGCSPublish implements PublisherBase {
     this.bucketRootPath = options.bucketRootPath;
   }
 
-  static fromConfig(config: Config, logger: LoggerService): PublisherBase {
+  static fromConfig(config: Config, logger: Logger): PublisherBase {
     let bucketName = '';
     try {
       bucketName = config.getString('techdocs.publisher.googleGcs.bucketName');

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
+import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import express from 'express';
 import fs from 'fs-extra';
@@ -22,7 +22,8 @@ import createLimiter from 'p-limit';
 import path from 'path';
 import { SwiftClient } from '@trendyol-js/openstack-swift-sdk';
 import { NotFound } from '@trendyol-js/openstack-swift-sdk/lib/types';
-import { Readable, Stream } from 'stream';
+import { Stream, Readable } from 'stream';
+import { Logger } from 'winston';
 import {
   getFileTreeRecursively,
   getHeadersForFileExtension,
@@ -36,7 +37,6 @@ import {
   TechDocsMetadata,
 } from './types';
 import { assertError, ForwardedError } from '@backstage/errors';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 const streamToBuffer = (stream: Stream | Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -61,19 +61,19 @@ const bufferToStream = (buffer: Buffer): Readable => {
 export class OpenStackSwiftPublish implements PublisherBase {
   private readonly storageClient: SwiftClient;
   private readonly containerName: string;
-  private readonly logger: LoggerService;
+  private readonly logger: Logger;
 
   constructor(options: {
     storageClient: SwiftClient;
     containerName: string;
-    logger: LoggerService;
+    logger: Logger;
   }) {
     this.storageClient = options.storageClient;
     this.containerName = options.containerName;
     this.logger = options.logger;
   }
 
-  static fromConfig(config: Config, logger: LoggerService): PublisherBase {
+  static fromConfig(config: Config, logger: Logger): PublisherBase {
     let containerName = '';
     try {
       containerName = config.getString(
@@ -326,7 +326,7 @@ export class OpenStackSwiftPublish implements PublisherBase {
           }
 
           try {
-            this.logger.debug(`Migrating ${file} to ${newPath}`);
+            this.logger.verbose(`Migrating ${file} to ${newPath}`);
             await this.storageClient.copy(
               this.containerName,
               file,
