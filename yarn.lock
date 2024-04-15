@@ -43127,9 +43127,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swagger-client@npm:^3.26.5":
-  version: 3.26.7
-  resolution: "swagger-client@npm:3.26.7"
+"swagger-client@npm:^3.26.8":
+  version: 3.26.8
+  resolution: "swagger-client@npm:3.26.8"
   dependencies:
     "@babel/runtime-corejs3": ^7.22.15
     "@swagger-api/apidom-core": ">=0.99.0 <1.0.0"
@@ -43146,13 +43146,13 @@ __metadata:
     node-fetch-commonjs: ^3.3.2
     qs: ^6.10.2
     traverse: ~0.6.6
-  checksum: 4f0e32859b7f045e3df59167bb2976e4daa918c1cd6e968e4f3bbc6241a2709475361b104cffa1311170da1b466b252d457d6b565afc6a6bd860b5129dcad624
+  checksum: d8cec7b8c89d3944fc373050d44a11a0ed328a8076915cc1faf7efc4107ae5f6bb4755a7aa0e2f68630f69f553870335c751ce644f3f1d25f4414415023cde2d
   languageName: node
   linkType: hard
 
 "swagger-ui-react@npm:^5.0.0":
-  version: 5.15.1
-  resolution: "swagger-ui-react@npm:5.15.1"
+  version: 5.15.2
+  resolution: "swagger-ui-react@npm:5.15.2"
   dependencies:
     "@babel/runtime-corejs3": ^7.24.4
     "@braintree/sanitize-url": =7.0.1
@@ -43183,7 +43183,7 @@ __metadata:
     reselect: ^5.1.0
     serialize-error: ^8.1.0
     sha.js: ^2.4.11
-    swagger-client: ^3.26.5
+    swagger-client: ^3.26.8
     url-parse: ^1.5.10
     xml: =1.0.1
     xml-but-prettier: ^1.0.1
@@ -43191,7 +43191,7 @@ __metadata:
   peerDependencies:
     react: ">=16.8.0 <19"
     react-dom: ">=16.8.0 <19"
-  checksum: f1819ac2d50675305ba606364380da1f8e5c78b6f8e4c8bd824766f14fb7c6e4013f2e9d7294147b7045e8676ed73145cf59b030545fe93d9d962dd3fad2d7d4
+  checksum: 51bf93d8dd79223de9449d63df6c4db13067d0a7ca15c924c7494c055f49d816103be510ef9c292d3d63e2f7b51ae58efba4c3261e2ee99cbeb8e12ca0752c0c
   languageName: node
   linkType: hard
 
