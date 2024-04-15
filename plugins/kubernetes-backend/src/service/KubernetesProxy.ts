@@ -215,7 +215,7 @@ export class KubernetesProxy {
             error,
           );
 
-          logger.error(wrappedError.message);
+          logger.error('Kubernetes proxy error', wrappedError);
 
           const body: ErrorResponseBody = {
             error: serializeError(wrappedError, {
