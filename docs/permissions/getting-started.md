@@ -32,31 +32,31 @@ The permissions framework uses a new `permission-backend` plugin to accept autho
 
 1. Add `@backstage/plugin-permission-backend` and `@backstage/plugin-permission-backend-module-allow-all-policy` to your backend dependencies, this will add the permission backend and a policy that allows all permissions:
 
-   ```bash
-   # From your Backstage root directory
-   yarn --cwd packages/backend add @backstage/plugin-permission-backend
-   ```
+```bash
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-permission-backend
+```
 
-   ```bash
-   # From your Backstage root directory
-   yarn --cwd packages/backend add @backstage/plugin-permission-backend-module-allow-all-policy
-   ```
+```bash
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-permission-backend-module-allow-all-policy
+```
 
 2. Add the following to `packages/backend/src/index.ts`. This adds the permission-backend router, and configures it with a policy which allows everything.
 
-   ```typescript title="packages/backend/src/index.ts"
-   import { createBackend } from '@backstage/backend-defaults';
-   const backend = createBackend();
-   // ...
-   /* highlight-add-next-line */
-   backend.add(import('@backstage/plugin-permission-backend/alpha'));
-   /* highlight-add-next-line */
-   backend.add(
-     import('@backstage/plugin-permission-backend-module-allow-all-policy'),
-   );
-   // ...
-   backend.start();
-   ```
+```typescript title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+const backend = createBackend();
+// ...
+/* highlight-add-next-line */
+backend.add(import('@backstage/plugin-permission-backend/alpha'));
+/* highlight-add-next-line */
+backend.add(
+  import('@backstage/plugin-permission-backend-module-allow-all-policy'),
+);
+// ...
+backend.start();
+```
 
 ### 2. Enable and test the permissions system
 
@@ -64,38 +64,36 @@ Now that the permission backend is running, it’s time to enable the permission
 
 1. Set the property `permission.enabled` to `true` in `app-config.yaml`.
 
-   ```yaml title="app-config.yaml"
-   permission:
-     enabled: true
-   ```
+```yaml title="app-config.yaml"
+permission:
+  enabled: true
+```
 
 2. Its now all wired up and working, great! But perhaps we don't want to simply allow everything, lets try and create our own policy, to do this you can create a new folder in `packages/backend/src` called `permissions` and create a new file called `policy.ts`, in that file we can add the following to create a policy that denies deleting entities from the catalog:
 
-   ```ts title="packages/backend/src/permissions/policy.ts"
-   import {
-     AuthorizeResult,
-     PolicyDecision,
-   } from '@backstage/plugin-permission-common';
-   import {
-     PermissionPolicy,
-     PolicyQuery,
-   } from '@backstage/plugin-permission-node';
-   ```
+```ts title="packages/backend/src/permissions/policy.ts"
+import {
+  AuthorizeResult,
+  PolicyDecision,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+} from '@backstage/plugin-permission-node';
 
 export class DenyCatalogDeletePolicy implements PermissionPolicy {
-async handle(request: PolicyQuery): Promise<PolicyDecision> {
-if (request.permission.name === 'catalog.entity.delete') {
-return {
-result: AuthorizeResult.DENY,
-};
-}
-
-      return { result: AuthorizeResult.ALLOW };
+  async handle(request: PolicyQuery): Promise<PolicyDecision> {
+    if (request.permission.name === 'catalog.entity.delete') {
+      return {
+        result: AuthorizeResult.DENY,
+      };
     }
 
+    return { result: AuthorizeResult.ALLOW };
+  }
 }
+```
 
-````
 3. We then need to use the permissions backend policy extension point to register our policy, to do this we can add the following to `packages/backend/src/index.ts`:
 
 ```ts title="packages/backend/src/index.ts"
@@ -105,23 +103,27 @@ const backend = createBackend();
 // ...
 backend.add(import('@backstage/plugin-permission-backend/alpha'));
 /* highlight-remove-next-line */
-backend.add(import('@backstage/plugin-permission-backend-module-allow-all-policy'));
- /* highlight-add-next-line */
- backend.add(createBackendModule({
-   pluginId: 'permission',
-   moduleId: 'deny-catalog-delete-policy',
-   register(reg){
-     reg.registerInit({
-       deps: { policy: policyExtensionPoint },
-       async init({ policy }) {
-         policy.setPolicy(new DenyCatalogDeletePolicy());
-       }
-     })
-   }
-}));
+backend.add(
+  import('@backstage/plugin-permission-backend-module-allow-all-policy'),
+);
+/* highlight-add-next-line */
+backend.add(
+  createBackendModule({
+    pluginId: 'permission',
+    moduleId: 'deny-catalog-delete-policy',
+    register(reg) {
+      reg.registerInit({
+        deps: { policy: policyExtensionPoint },
+        async init({ policy }) {
+          policy.setPolicy(new DenyCatalogDeletePolicy());
+        },
+      });
+    },
+  }),
+);
 // ...
 backend.start();
-````
+```
 
 4. Now that you’ve made this change, you should find that the unregister entity menu option on the catalog entity page is disabled.
 
