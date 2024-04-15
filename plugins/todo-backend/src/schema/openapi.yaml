@@ -104,6 +104,7 @@ paths:
         - name: orderBy
           in: query
           required: false
+          allowReserved: true
           schema:
             type: string
             pattern: '^(text|tag|author|viewUrl|repoFilePath)=(asc|desc)$'
@@ -121,6 +122,7 @@ paths:
         - name: offset
           in: query
           required: false
+          allowReserved: true
           schema:
             type: integer
             minimum: 0
@@ -128,6 +130,7 @@ paths:
         - name: limit
           in: query
           required: false
+          allowReserved: true
           schema:
             type: integer
             minimum: 1
