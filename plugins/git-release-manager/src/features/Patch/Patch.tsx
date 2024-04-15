@@ -15,8 +15,10 @@
  */
 
 import React from 'react';
-import { Typography, Box } from '@material-ui/core';
-import { Alert, AlertTitle } from '@material-ui/lab';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 
 import {
   GetBranchResult,
