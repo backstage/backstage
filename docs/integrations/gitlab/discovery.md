@@ -67,13 +67,18 @@ export default async function createPlugin(
   const builder = await CatalogBuilder.create(env);
   /* highlight-add-start */
   builder.addEntityProvider(
-    GitlabDiscoveryEntityProvider.fromConfig(env.config, {
+    ...GitlabDiscoveryEntityProvider.fromConfig(env.config, {
       logger: env.logger,
+      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      // optional: alternatively, use schedule
       scheduler: env.scheduler,
     }),
   );
   /* highlight-add-end */
-
   // ..
 }
 ```
@@ -108,6 +113,12 @@ export default async function createPlugin(
   /* highlight-add-start */
   const gitlabProvider = GitlabDiscoveryEntityProvider.fromConfig(env.config, {
     logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 30 },
+      timeout: { minutes: 3 },
+    }),
+    // optional: alternatively, use schedule
     scheduler: env.scheduler,
   });
   env.eventBroker.subscribe(gitlabProvider);
@@ -123,16 +134,18 @@ export default async function createPlugin(
 
 To use the discovery provider, you'll need a GitLab integration
 [set up](locations.md) with a `token`. Then you can add a provider config per group
-to the catalog configuration:
+to the catalog configuration.
 
-```yaml
+> > NOTE: if you are using the New Backend System, the `schedule` has to be setup in the config, as shown below.
+
+```yaml title="app-config.yaml"
 catalog:
   providers:
     gitlab:
       yourProviderId:
         host: gitlab-host # Identifies one of the hosts set up in the integrations
         branch: main # Optional. Used to discover on a specific branch
-        fallbackBranch: main # Optional. Fallback to be used if there is no default branch configured at the Gitlab repository. It is only used, if `branch` is undefined. Uses `master` as default
+        fallbackBranch: master # Optional. Fallback to be used if there is no default branch configured at the Gitlab repository. It is only used, if `branch` is undefined. Uses `master` as default
         skipForkedRepos: false # Optional. If the project is a fork, skip repository
         group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`

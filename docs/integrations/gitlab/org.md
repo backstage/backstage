@@ -68,20 +68,27 @@ Add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.ts`:
 /* highlight-add-next-line */
 import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
 
-const builder = await CatalogBuilder.create(env);
-/** ... other processors and/or providers ... */
-/* highlight-add-start */
-builder.addEntityProvider(
-  ...GitlabOrgDiscoveryEntityProvider.fromConfig(env.config, {
-    logger: env.logger,
-    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-    schedule: env.scheduler.createScheduledTaskRunner({
-      frequency: { minutes: 30 },
-      timeout: { minutes: 3 },
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /** ... other processors and/or providers ... */
+  /* highlight-add-start */
+  builder.addEntityProvider(
+    ...GitlabOrgDiscoveryEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      // optional: alternatively, use schedule
+      scheduler: env.scheduler,
     }),
-  }),
-);
-/* highlight-add-end */
+  );
+  /* highlight-add-end */
+  // ..
+}
 ```
 
 #### Installation with Events Support
@@ -116,6 +123,12 @@ export default async function createPlugin(
     env.config,
     {
       logger: env.logger,
+      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 30 },
+        timeout: { minutes: 3 },
+      }),
+      // optional: alternatively, use schedule
       scheduler: env.scheduler,
     },
   );
@@ -145,6 +158,8 @@ amount of data, this can take significant time and resources.
 The token used must have the `read_api` scope, and the Users and Groups fetched
 will be those visible to the account which provisioned the token.
 
+> > NOTE: if you are using the New Backend System, the `schedule` has to be setup in the config, as shown below.
+
 ```yaml
 catalog:
   providers:
@@ -153,7 +168,13 @@ catalog:
         host: gitlab.com
         orgEnabled: true
         group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
+        allowInherited: true # Allow groups to be ingested even if there are no direct members.
         groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
+        schedule: # optional; same options as in TaskScheduleDefinition
+          # supports cron, ISO duration, "human duration" as used in code
+          frequency: { minutes: 30 }
+          # supports ISO duration, "human duration" as used in code
+          timeout: { minutes: 3 }
 ```
 
 ### Groups
