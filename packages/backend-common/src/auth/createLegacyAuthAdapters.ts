@@ -80,27 +80,22 @@ class AuthCompat implements AuthService {
   }
 
   async authenticate(token: string): Promise<BackstageCredentials> {
-    // Defensively check whether it seems token-like first, just to support
-    // custom TokenManager implementations that don't emit JWTs specifically.
-    const payload =
-      token.split('.').length === 3 ? decodeJwt(token) : undefined;
+    // User Backstage token
+    const identity = await this.identity.getIdentity({
+      request: {
+        headers: { authorization: `Bearer ${token}` },
+      },
+    } as IdentityApiGetIdentityRequest);
 
-    if (payload?.aud === 'backstage') {
-      // User Backstage token
-      const identity = await this.identity.getIdentity({
-        request: {
-          headers: { authorization: `Bearer ${token}` },
-        },
-      } as IdentityApiGetIdentityRequest);
-
-      if (!identity) {
-        throw new AuthenticationError('Invalid user token');
-      }
-
+    if (identity) {
       return createCredentialsWithUserPrincipal(
         identity.identity.userEntityRef,
         token,
-        this.#getJwtExpiration(token),
+        // Defensively check whether it seems token-like first, just to support
+        // custom implementations that don't use JWTs specifically.
+        token.split('.').length === 3
+          ? this.#getJwtExpiration(token)
+          : undefined,
       );
     }
 

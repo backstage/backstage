@@ -122,7 +122,9 @@ describe('createLegacyAuthAdapters', () => {
         },
       },
       discovery: {} as any,
-      identity: mockServices.identity(),
+      identity: mockServices.identity.mock({
+        getIdentity: async () => undefined,
+      }),
     });
 
     const credentials = await httpAuth.credentials({
