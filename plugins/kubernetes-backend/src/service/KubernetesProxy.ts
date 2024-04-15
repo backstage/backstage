@@ -182,8 +182,9 @@ export class KubernetesProxy {
             )?.toString(),
           };
 
-          const authHeader = req.header(HEADER_KUBERNETES_AUTH);
-          if (authHeader) {
+          const authHeader =
+            req.headers[HEADER_KUBERNETES_AUTH.toLocaleLowerCase('en-US')];
+          if (typeof authHeader === 'string') {
             req.headers.authorization = authHeader;
           } else {
             // Map Backstage-Kubernetes-Authorization-X-X headers to a KubernetesRequestAuth object
