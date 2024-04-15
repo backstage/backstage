@@ -33,13 +33,21 @@ export default createBackendModule({
         searchEngineRegistry: searchEngineRegistryExtensionPoint,
         database: coreServices.database,
         config: coreServices.rootConfig,
+        logger: coreServices.logger,
       },
-      async init({ searchEngineRegistry, database, config }) {
-        searchEngineRegistry.setSearchEngine(
-          await PgSearchEngine.fromConfig(config, {
-            database: database,
-          }),
-        );
+      async init({ searchEngineRegistry, database, config, logger }) {
+        if (await PgSearchEngine.supported(database)) {
+          searchEngineRegistry.setSearchEngine(
+            await PgSearchEngine.fromConfig(config, {
+              database: database,
+            }),
+          );
+        } else {
+          logger.warn(
+            "Postgres search engine doesn't support provided database. Skipping search engine inititalization.",
+          );
+          return;
+        }
       },
     });
   },
