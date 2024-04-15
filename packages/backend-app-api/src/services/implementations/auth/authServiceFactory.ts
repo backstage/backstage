@@ -20,8 +20,9 @@ import {
 } from '@backstage/backend-plugin-api';
 import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { DefaultAuthService } from './DefaultAuthService';
-import { PluginTokenHandler } from './PluginTokenHandler';
-import { UserTokenHandler } from './UserTokenHandler';
+import { PluginTokenHandler } from './plugin/PluginTokenHandler';
+import { UserTokenHandler } from './user/UserTokenHandler';
+import { ExternalTokenHandler } from './external/ExternalTokenHandler';
 
 /** @public */
 export const authServiceFactory = createServiceFactory({
@@ -46,21 +47,34 @@ export const authServiceFactory = createServiceFactory({
       ),
     );
 
-    const publicKeyStore = await DatabaseKeyStore.create({ database, logger });
+    const publicKeyStore = await DatabaseKeyStore.create({
+      database,
+      logger,
+    });
+
+    const userTokens = UserTokenHandler.create({
+      discovery,
+    });
+    const pluginTokens = PluginTokenHandler.create({
+      ownPluginId: plugin.getId(),
+      keyDurationSeconds: 60 * 60,
+      logger,
+      publicKeyStore,
+      discovery,
+    });
+    const externalTokens = ExternalTokenHandler.create({
+      config,
+      logger,
+    });
 
     return new DefaultAuthService(
+      userTokens,
+      pluginTokens,
+      externalTokens,
       tokenManager,
-      new UserTokenHandler({ discovery }),
       plugin.getId(),
       disableDefaultAuthPolicy,
       publicKeyStore,
-      PluginTokenHandler.create({
-        ownPluginId: plugin.getId(),
-        keyDurationSeconds: 60 * 60,
-        logger,
-        publicKeyStore,
-        discovery,
-      }),
     );
   },
 });

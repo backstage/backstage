@@ -19,6 +19,7 @@ import * as jose from 'jose';
 import { getVoidLogger } from '../logging';
 import { ServerTokenManager } from './ServerTokenManager';
 import { TokenManager } from './types';
+import { DateTime } from 'luxon';
 
 const emptyConfig = new ConfigReader({});
 const configWithSecret = new ConfigReader({
@@ -231,6 +232,39 @@ describe('ServerTokenManager', () => {
       await expect(tokenManager.authenticate(token)).rejects.toThrow(
         'Invalid server token; caused by AuthenticationError: Server-to-server token had no exp claim',
       );
+    });
+
+    it('loads both old and new config', async () => {
+      const oldSecret = jose.base64url.encode('old');
+      const newSecret = jose.base64url.encode('new');
+
+      const tokenManager = ServerTokenManager.fromConfig(
+        new ConfigReader({
+          backend: {
+            auth: {
+              keys: [{ secret: oldSecret }],
+              externalAccess: [
+                { type: 'legacy', options: { secret: newSecret } },
+              ],
+            },
+          },
+        }),
+        { logger },
+      );
+
+      const oldToken = await new jose.SignJWT({})
+        .setProtectedHeader({ alg: 'HS256' })
+        .setSubject('backstage-server')
+        .setExpirationTime(DateTime.now().plus({ minutes: 1 }).toUnixInteger())
+        .sign(jose.base64url.decode(oldSecret));
+      const newToken = await new jose.SignJWT({})
+        .setProtectedHeader({ alg: 'HS256' })
+        .setSubject('backstage-server')
+        .setExpirationTime(DateTime.now().plus({ minutes: 1 }).toUnixInteger())
+        .sign(jose.base64url.decode(newSecret));
+
+      await expect(tokenManager.authenticate(oldToken)).resolves.not.toThrow();
+      await expect(tokenManager.authenticate(newToken)).resolves.not.toThrow();
     });
   });
 

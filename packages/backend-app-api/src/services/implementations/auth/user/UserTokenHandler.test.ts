@@ -69,7 +69,7 @@ describe('UserTokenHandler', () => {
   beforeEach(() => {
     jest.useRealTimers();
 
-    userTokenHandler = new UserTokenHandler({
+    userTokenHandler = UserTokenHandler.create({
       discovery: mockServices.discovery(),
     });
 

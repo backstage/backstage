@@ -26,8 +26,9 @@ import {
 import { AuthenticationError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { decodeJwt } from 'jose';
-import { PluginTokenHandler } from './PluginTokenHandler';
-import { UserTokenHandler } from './UserTokenHandler';
+import { ExternalTokenHandler } from './external/ExternalTokenHandler';
+import { PluginTokenHandler } from './plugin/PluginTokenHandler';
+import { UserTokenHandler } from './user/UserTokenHandler';
 import {
   createCredentialsWithNonePrincipal,
   createCredentialsWithServicePrincipal,
@@ -39,12 +40,13 @@ import { KeyStore } from './types';
 /** @internal */
 export class DefaultAuthService implements AuthService {
   constructor(
-    private readonly tokenManager: TokenManager,
     private readonly userTokenHandler: UserTokenHandler,
+    private readonly pluginTokenHandler: PluginTokenHandler,
+    private readonly externalTokenHandler: ExternalTokenHandler,
+    private readonly tokenManager: TokenManager,
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
     private readonly publicKeyStore: KeyStore,
-    private readonly pluginTokenHandler: PluginTokenHandler,
   ) {}
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
@@ -78,14 +80,12 @@ export class DefaultAuthService implements AuthService {
       );
     }
 
-    // Legacy service-to-service token
-    const { sub, aud } = decodeJwt(token);
-    if (sub === 'backstage-server' && !aud) {
-      await this.tokenManager.authenticate(token);
-      return createCredentialsWithServicePrincipal('external:backstage-plugin');
+    const externalResult = await this.externalTokenHandler.verifyToken(token);
+    if (externalResult) {
+      return createCredentialsWithServicePrincipal(externalResult.subject);
     }
 
-    throw new AuthenticationError('Unknown token');
+    throw new AuthenticationError('Illegal token');
   }
 
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(

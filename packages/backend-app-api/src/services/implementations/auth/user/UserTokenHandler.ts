@@ -24,7 +24,7 @@ import {
   jwtVerify,
   JWTVerifyOptions,
 } from 'jose';
-import { JwksClient } from './JwksClient';
+import { JwksClient } from '../JwksClient';
 
 /**
  * An identity client to interact with auth-backend and authenticate Backstage
@@ -33,16 +33,19 @@ import { JwksClient } from './JwksClient';
  * @internal
  */
 export class UserTokenHandler {
-  readonly #jwksClient: JwksClient;
-  readonly #algorithms?: string[];
-
-  constructor(options: { discovery: DiscoveryService }) {
-    this.#algorithms = ['ES256']; // TODO: configurable?
-    this.#jwksClient = new JwksClient(async () => {
+  static create(options: { discovery: DiscoveryService }): UserTokenHandler {
+    const algorithms = ['ES256']; // TODO: configurable?
+    const jwksClient = new JwksClient(async () => {
       const url = await options.discovery.getBaseUrl('auth');
       return new URL(`${url}/.well-known/jwks.json`);
     });
+    return new UserTokenHandler(algorithms, jwksClient);
   }
+
+  constructor(
+    private readonly algorithms: string[],
+    private readonly jwksClient: JwksClient,
+  ) {}
 
   async verifyToken(token: string) {
     const verifyOpts = this.#getTokenVerificationOptions(token);
@@ -50,12 +53,12 @@ export class UserTokenHandler {
       return undefined;
     }
 
-    await this.#jwksClient.refreshKeyStore(token);
+    await this.jwksClient.refreshKeyStore(token);
 
     // Verify a limited token, ensuring the necessarily claims are present and token type is correct
     const { payload } = await jwtVerify(
       token,
-      this.#jwksClient.getKey,
+      this.jwksClient.getKey,
       verifyOpts,
     ).catch(e => {
       throw new AuthenticationError('Invalid token', e);
@@ -76,7 +79,7 @@ export class UserTokenHandler {
 
       if (typ === tokenTypes.user.typParam) {
         return {
-          algorithms: this.#algorithms,
+          algorithms: this.algorithms,
           requiredClaims: ['iat', 'exp', 'sub'],
           typ: tokenTypes.user.typParam,
         };
@@ -84,7 +87,7 @@ export class UserTokenHandler {
 
       if (typ === tokenTypes.limitedUser.typParam) {
         return {
-          algorithms: this.#algorithms,
+          algorithms: this.algorithms,
           requiredClaims: ['iat', 'exp', 'sub'],
           typ: tokenTypes.limitedUser.typParam,
         };
@@ -93,7 +96,7 @@ export class UserTokenHandler {
       const { aud } = decodeJwt(token);
       if (aud === tokenTypes.user.audClaim) {
         return {
-          algorithms: this.#algorithms,
+          algorithms: this.algorithms,
           audience: tokenTypes.user.audClaim,
         };
       }

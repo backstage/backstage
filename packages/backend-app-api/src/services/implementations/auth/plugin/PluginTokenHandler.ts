@@ -25,11 +25,11 @@ import {
   decodeProtectedHeader,
 } from 'jose';
 import { v4 as uuid } from 'uuid';
-import { InternalKey, KeyStore } from './types';
+import { InternalKey, KeyStore } from '../types';
 import { AuthenticationError } from '@backstage/errors';
 import { jwtVerify } from 'jose';
 import { tokenTypes } from '@backstage/plugin-auth-node';
-import { JwksClient } from './JwksClient';
+import { JwksClient } from '../JwksClient';
 
 /**
  * The margin for how many times longer we make the public key available
