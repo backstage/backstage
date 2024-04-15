@@ -19,7 +19,10 @@ import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { EventSubscriber } from '@backstage/plugin-events-node';
+import {
+  DefaultEventsService,
+  EventsService,
+} from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
 import {
   GithubMultiOrgEntityProvider,
@@ -717,15 +720,16 @@ describe('GithubMultiOrgEntityProvider', () => {
   });
 
   describe('events', () => {
-    let onEvent: Function;
+    let events: EventsService;
 
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
       refresh: jest.fn(),
     };
 
-    beforeEach(() => {
+    beforeEach(async () => {
       const logger = getVoidLogger();
+      events = DefaultEventsService.create({ logger });
       const config = new ConfigReader({
         integrations: {
           github: [
@@ -745,29 +749,22 @@ describe('GithubMultiOrgEntityProvider', () => {
         getCredentials: mockGetCredentials,
       };
 
-      const mockEventBroker = {
-        publish: async () => {},
-        subscribe: (subscriber: EventSubscriber) => {
-          onEvent = subscriber.onEvent;
-        },
-      };
-
       const entityProvider = GithubMultiOrgEntityProvider.fromConfig(config, {
+        events,
         id: 'my-id',
         githubCredentialsProvider,
         githubUrl: 'https://github.com',
         logger,
         orgs: ['orgA', 'orgB'],
-        eventBroker: mockEventBroker,
       });
 
-      entityProvider.connect(entityProviderConnection);
+      await entityProvider.connect(entityProviderConnection);
     });
 
     afterEach(() => jest.resetAllMocks());
 
     it('should ignore events from non-applicable orgs', async () => {
-      await onEvent({
+      await events.publish({
         topic: 'github.organization',
         eventPayload: {
           action: 'member_added',
@@ -787,7 +784,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
       expect(entityProviderConnection.applyMutation).not.toHaveBeenCalled();
 
-      await onEvent({
+      await events.publish({
         topic: 'github.installation',
         eventPayload: {
           action: 'created',
@@ -901,7 +898,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
         (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-        await onEvent({
+        await events.publish({
           topic: 'github.installation',
           eventPayload: {
             action: 'created',
@@ -1033,7 +1030,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
         (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-        await onEvent({
+        await events.publish({
           topic: 'github.organization',
           eventPayload: {
             action: 'member_added',
@@ -1103,7 +1100,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
         (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-        await onEvent({
+        await events.publish({
           topic: 'github.organization',
           eventPayload: {
             action: 'member_removed',
@@ -1198,7 +1195,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
         (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-        await onEvent({
+        await events.publish({
           topic: 'github.organization',
           eventPayload: {
             action: 'member_removed',
@@ -1253,7 +1250,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
     describe('team', () => {
       it('should create a new group from a new team', async () => {
-        await onEvent({
+        await events.publish({
           topic: 'github.team',
           eventPayload: {
             action: 'created',
@@ -1312,7 +1309,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
 
       it('should remove a group from a deleted team', async () => {
-        await onEvent({
+        await events.publish({
           topic: 'github.team',
           eventPayload: {
             action: 'deleted',
@@ -1467,7 +1464,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
         (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-        await onEvent({
+        await events.publish({
           topic: 'github.team',
           eventPayload: {
             action: 'edited',
@@ -1676,7 +1673,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
         (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-        await onEvent({
+        await events.publish({
           topic: 'github.membership',
           eventPayload: {
             action: 'added',
@@ -1848,7 +1845,7 @@ describe('GithubMultiOrgEntityProvider', () => {
 
         (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-        await onEvent({
+        await events.publish({
           topic: 'github.membership',
           eventPayload: {
             action: 'removed',

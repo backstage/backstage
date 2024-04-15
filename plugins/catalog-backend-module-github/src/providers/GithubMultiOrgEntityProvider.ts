@@ -38,11 +38,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import {
-  EventBroker,
-  EventParams,
-  EventsService,
-} from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
 import {
   InstallationCreatedEvent,
@@ -157,13 +153,6 @@ export interface GithubMultiOrgEntityProviderOptions {
    * By default, groups will be namespaced according to their GitHub org.
    */
   teamTransformer?: TeamTransformer;
-
-  /**
-   * An EventBroker to subscribe this provider to GitHub events to trigger delta mutations
-   *
-   * @deprecated Use `events` instead.
-   */
-  eventBroker?: EventBroker;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -212,13 +201,6 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     });
 
     provider.schedule(options.schedule);
-
-    if (options.eventBroker) {
-      options.eventBroker.subscribe({
-        supportsEventTopics: provider.supportsEventTopics.bind(provider),
-        onEvent: provider.onEvent.bind(provider),
-      });
-    }
 
     return provider;
   }
@@ -334,10 +316,6 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     });
 
     markCommitComplete();
-  }
-
-  private supportsEventTopics(): string[] {
-    return EVENT_TOPICS;
   }
 
   private async onEvent(params: EventParams): Promise<void> {

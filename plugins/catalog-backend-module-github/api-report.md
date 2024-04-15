@@ -11,7 +11,6 @@ import { Config } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { EventBroker } from '@backstage/plugin-events-node';
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { EventSubscriber } from '@backstage/plugin-events-node';
@@ -166,8 +165,6 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
 // @public
 export interface GithubMultiOrgEntityProviderOptions {
-  // @deprecated
-  eventBroker?: EventBroker;
   events?: EventsService;
   githubCredentialsProvider?: GithubCredentialsProvider;
   githubUrl: string;
@@ -219,9 +216,7 @@ export class GitHubOrgEntityProvider extends GithubOrgEntityProvider {
 }
 
 // @public
-export class GithubOrgEntityProvider
-  implements EntityProvider, EventSubscriber
-{
+export class GithubOrgEntityProvider implements EntityProvider {
   constructor(options: {
     events?: EventsService;
     id: string;
@@ -241,11 +236,7 @@ export class GithubOrgEntityProvider
   ): GithubOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
-  // (undocumented)
-  onEvent(params: EventParams): Promise<void>;
   read(options?: { logger?: LoggerService }): Promise<void>;
-  // (undocumented)
-  supportsEventTopics(): string[];
 }
 
 // @public @deprecated (undocumented)
