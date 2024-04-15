@@ -19,13 +19,13 @@ import {
   loadBackendConfig,
 } from '@backstage/backend-common';
 import { Server } from 'http';
-import { Logger } from 'winston';
 import { createRouter } from './router';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 export async function startStandaloneServer(

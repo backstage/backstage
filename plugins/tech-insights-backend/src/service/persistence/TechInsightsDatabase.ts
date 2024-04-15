@@ -26,9 +26,9 @@ import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { rsort } from 'semver';
 import { groupBy, omit } from 'lodash';
 import { DateTime } from 'luxon';
-import { Logger } from 'winston';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { isMaxItems, isTtl } from '../fact/factRetrievers/utils';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type Transaction = Knex.Transaction;
 
@@ -55,7 +55,10 @@ type RawDbFactSchemaRow = {
 export class TechInsightsDatabase implements TechInsightsStore {
   private readonly CHUNK_SIZE = 50;
 
-  constructor(private readonly db: Knex, private readonly logger: Logger) {}
+  constructor(
+    private readonly db: Knex,
+    private readonly logger: LoggerService,
+  ) {}
 
   async getLatestSchemas(ids?: string[]): Promise<FactSchema[]> {
     const queryBuilder = this.db<RawDbFactSchemaRow>('fact_schemas');

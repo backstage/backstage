@@ -23,7 +23,6 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 
 import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
@@ -71,7 +70,7 @@ export default createBackendModule({
           schedule: scheduler.createScheduledTaskRunner(schedule),
           factory: ToolDocumentCollatorFactory.fromConfig(config, {
             discovery,
-            logger: loggerToWinstonLogger(logger),
+            logger,
             tokenManager,
           }),
         });

@@ -8,7 +8,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TokenManager } from '@backstage/backend-common';
 
@@ -23,7 +23,7 @@ export interface CreateLighthouseSchedulerOptions {
   // (undocumented)
   discovery: DiscoveryService;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
   scheduler?: PluginTaskScheduler;
   // (undocumented)

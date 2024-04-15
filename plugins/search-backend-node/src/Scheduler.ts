@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import { TaskFunction, TaskRunner } from '@backstage/backend-tasks';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type TaskEnvelope = {
   task: TaskFunction;
@@ -37,12 +37,12 @@ export type ScheduleTaskParameters = {
  * @public
  */
 export class Scheduler {
-  private logger: Logger;
+  private logger: LoggerService;
   private schedule: { [id: string]: TaskEnvelope };
   private abortControllers: AbortController[];
   private isRunning: boolean;
 
-  constructor(options: { logger: Logger }) {
+  constructor(options: { logger: LoggerService }) {
     this.logger = options.logger;
     this.schedule = {};
     this.abortControllers = [];

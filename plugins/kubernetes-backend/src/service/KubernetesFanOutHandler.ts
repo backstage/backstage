@@ -15,26 +15,25 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { Logger } from 'winston';
 import {
+  CustomResource,
+  FetchResponseWrapper,
   KubernetesFetcher,
   KubernetesObjectsProviderOptions,
   KubernetesServiceLocator,
   ObjectsByEntityRequest,
-  FetchResponseWrapper,
   ObjectToFetch,
-  CustomResource,
 } from '../types/types';
 import {
   ClientContainerStatus,
   ClientCurrentResourceUsage,
   ClientPodStatus,
   ClusterObjects,
+  CustomResourceMatcher,
   FetchResponse,
+  KubernetesRequestAuth,
   ObjectsByEntityResponse,
   PodFetchResponse,
-  KubernetesRequestAuth,
-  CustomResourceMatcher,
   PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
 import {
@@ -50,7 +49,10 @@ import {
   KubernetesObjectsByEntity,
   KubernetesObjectsProvider,
 } from '@backstage/plugin-kubernetes-node';
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import {
+  BackstageCredentials,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 /**
  *
@@ -193,7 +195,7 @@ const toClientSafePodMetrics = (
 type responseWithMetrics = [FetchResponseWrapper, PodStatusFetchResponse[]];
 
 export class KubernetesFanOutHandler implements KubernetesObjectsProvider {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly fetcher: KubernetesFetcher;
   private readonly serviceLocator: KubernetesServiceLocator;
   private readonly customResources: CustomResource[];

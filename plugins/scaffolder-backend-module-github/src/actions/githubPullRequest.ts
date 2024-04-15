@@ -26,12 +26,12 @@ import {
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
-import { InputError, CustomErrorBase } from '@backstage/errors';
+import { CustomErrorBase, InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from './helpers';
-import { Logger } from 'winston';
 import { examples } from './githubPullRequest.examples';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -372,7 +372,7 @@ export const createPublishGithubPullRequestAction = (
     reviewers: string[] | undefined,
     teamReviewers: string[] | undefined,
     client: Octokit,
-    logger: Logger,
+    logger: LoggerService,
   ) {
     try {
       const result = await client.rest.pulls.requestReviewers({

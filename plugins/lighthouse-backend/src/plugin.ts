@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 
@@ -50,12 +49,10 @@ export const lighthousePlugin = createBackendPlugin({
         discovery,
         auth,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
-
         await createScheduler({
           catalogClient,
           config,
-          logger: winstonLogger,
+          logger,
           scheduler,
           tokenManager,
           discovery,

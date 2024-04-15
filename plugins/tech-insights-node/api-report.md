@@ -13,7 +13,7 @@ import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { FactSchema } from '@backstage/plugin-tech-insights-common';
 import { HumanDuration } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { TokenManager } from '@backstage/backend-common';
 
@@ -65,7 +65,7 @@ export interface FactRetriever {
 export type FactRetrieverContext = {
   config: Config;
   discovery: PluginEndpointDiscovery;
-  logger: Logger;
+  logger: LoggerService;
   tokenManager: TokenManager;
   auth: AuthService;
   entityFilter?:

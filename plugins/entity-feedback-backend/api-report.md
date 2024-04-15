@@ -8,7 +8,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
@@ -32,6 +32,6 @@ export interface RouterOptions {
   // (undocumented)
   identity: IdentityApi;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
 }
 ```

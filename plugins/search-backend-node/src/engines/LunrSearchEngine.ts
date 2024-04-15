@@ -19,12 +19,12 @@ import {
   IndexableResultSet,
   SearchQuery,
 } from '@backstage/plugin-search-common';
-import { SearchEngine, QueryTranslator } from '../types';
+import { QueryTranslator, SearchEngine } from '../types';
 import { MissingIndexError } from '../errors';
 import lunr from 'lunr';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Type of translated query for the Lunr Search Engine.
@@ -54,11 +54,11 @@ export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
   protected docStore: Record<string, IndexableDocument>;
-  protected logger: Logger;
+  protected logger: LoggerService;
   protected highlightPreTag: string;
   protected highlightPostTag: string;
 
-  constructor(options: { logger: Logger }) {
+  constructor(options: { logger: LoggerService }) {
     this.logger = options.logger;
     this.docStore = {};
     const uuidTag = uuid();

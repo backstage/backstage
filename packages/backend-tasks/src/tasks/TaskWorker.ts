@@ -19,10 +19,10 @@ import { CronTime } from 'cron';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
-import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
+import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
 import { TaskFunction, TaskSettingsV2, taskSettingsV2Schema } from './types';
 import { delegateAbortController, nowPlus, sleep } from './util';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const DEFAULT_WORK_CHECK_FREQUENCY = Duration.fromObject({ seconds: 5 });
 
@@ -36,7 +36,7 @@ export class TaskWorker {
     private readonly taskId: string,
     private readonly fn: TaskFunction,
     private readonly knex: Knex,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly workCheckFrequency: Duration = DEFAULT_WORK_CHECK_FREQUENCY,
   ) {}
 

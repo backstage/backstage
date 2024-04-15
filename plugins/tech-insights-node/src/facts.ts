@@ -21,8 +21,7 @@ import {
   TokenManager,
 } from '@backstage/backend-common';
 import { FactSchema } from '@backstage/plugin-tech-insights-common';
-import { Logger } from 'winston';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * A container for facts. The shape of the fact records needs to correspond to the FactSchema with same `ref` value.
@@ -91,7 +90,7 @@ export type FlatTechInsightFact = TechInsightFact & {
 export type FactRetrieverContext = {
   config: Config;
   discovery: PluginEndpointDiscovery;
-  logger: Logger;
+  logger: LoggerService;
   tokenManager: TokenManager;
   auth: AuthService;
   entityFilter?:

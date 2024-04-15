@@ -17,7 +17,7 @@
 import { Config } from '@backstage/config';
 import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import * as k8sTypes from '@backstage/plugin-kubernetes-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  *
@@ -34,7 +34,7 @@ export type ServiceLocatorMethod =
  * @public
  */
 export interface KubernetesObjectsProviderOptions {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   fetcher: k8sTypes.KubernetesFetcher;
   serviceLocator: k8sTypes.KubernetesServiceLocator;

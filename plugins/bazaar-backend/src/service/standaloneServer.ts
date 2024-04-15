@@ -15,20 +15,20 @@
  */
 
 import {
-  DatabaseManager,
   createServiceBuilder,
+  DatabaseManager,
   loadBackendConfig,
 } from '@backstage/backend-common';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { Server } from 'http';
-import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 export async function startStandaloneServer(

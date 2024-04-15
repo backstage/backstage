@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
@@ -33,7 +32,7 @@ export const schedulerServiceFactory = createServiceFactory({
     return TaskScheduler.forPlugin({
       pluginId: plugin.getId(),
       databaseManager,
-      logger: loggerToWinstonLogger(logger),
+      logger,
     });
   },
 });

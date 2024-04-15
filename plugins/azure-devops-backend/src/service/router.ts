@@ -15,6 +15,11 @@
  */
 
 import {
+  azureDevOpsGitTagReadPermission,
+  azureDevOpsPermissions,
+  azureDevOpsPipelineReadPermission,
+  azureDevOpsPullRequestDashboardReadPermission,
+  azureDevOpsPullRequestReadPermission,
   DashboardPullRequest,
   PullRequestOptions,
   PullRequestStatus,
@@ -22,10 +27,9 @@ import {
 
 import { AzureDevOpsApi } from '../api';
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 import {
-  PullRequestsDashboardProvider,
   DEFAULT_TEAMS_LIMIT,
+  PullRequestsDashboardProvider,
 } from '../api/PullRequestsDashboardProvider';
 import Router from 'express-promise-router';
 import { errorHandler, UrlReader } from '@backstage/backend-common';
@@ -33,24 +37,18 @@ import express from 'express';
 import { InputError, NotAllowedError } from '@backstage/errors';
 import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
-  PermissionEvaluator,
   AuthorizeResult,
+  PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
-import {
-  azureDevOpsPullRequestReadPermission,
-  azureDevOpsPermissions,
-  azureDevOpsPullRequestDashboardReadPermission,
-  azureDevOpsGitTagReadPermission,
-  azureDevOpsPipelineReadPermission,
-} from '@backstage/plugin-azure-devops-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const DEFAULT_TOP = 10;
 
 /** @public */
 export interface RouterOptions {
   azureDevOpsApi?: AzureDevOpsApi;
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   reader: UrlReader;
   permissions: PermissionEvaluator;

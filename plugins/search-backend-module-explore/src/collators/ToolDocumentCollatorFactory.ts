@@ -15,11 +15,11 @@
  */
 
 import {
+  createLegacyAuthAdapters,
   PluginEndpointDiscovery,
   TokenManager,
-  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ExploreTool } from '@backstage/plugin-explore-common';
 import {
@@ -28,7 +28,6 @@ import {
 } from '@backstage/plugin-search-common';
 import fetch from 'node-fetch';
 import { Readable } from 'stream';
-import { Logger } from 'winston';
 
 /**
  * Extended IndexableDocument with explore tool specific properties
@@ -44,7 +43,7 @@ export interface ToolDocument extends IndexableDocument, ExploreTool {}
  */
 export type ToolDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
-  logger: Logger;
+  logger: LoggerService;
   tokenManager?: TokenManager;
   auth?: AuthService;
 };
@@ -58,7 +57,7 @@ export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'tools';
 
   private readonly discovery: PluginEndpointDiscovery;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly auth: AuthService;
 
   private constructor(options: ToolDocumentCollatorFactoryOptions) {

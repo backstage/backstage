@@ -16,16 +16,16 @@
 
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { Config } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { KafkaApi, KafkaJsApiImpl } from './KafkaApi';
 import _ from 'lodash';
 import { getClusterDetails } from '../config/ClusterReader';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
 }
 
@@ -35,7 +35,7 @@ export interface ClusterApi {
 }
 
 export const makeRouter = (
-  logger: Logger,
+  logger: LoggerService,
   kafkaApis: ClusterApi[],
 ): express.Router => {
   const router = Router();

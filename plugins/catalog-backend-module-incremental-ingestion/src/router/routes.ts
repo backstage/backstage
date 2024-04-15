@@ -17,14 +17,17 @@
 import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export class IncrementalProviderRouter {
   private manager: IncrementalIngestionDatabaseManager;
-  private logger: Logger;
+  private logger: LoggerService;
 
-  constructor(manager: IncrementalIngestionDatabaseManager, logger: Logger) {
+  constructor(
+    manager: IncrementalIngestionDatabaseManager,
+    logger: LoggerService,
+  ) {
     this.manager = manager;
     this.logger = logger;
   }

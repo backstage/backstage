@@ -18,7 +18,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 /**
  * Playlist backend plugin
@@ -40,7 +39,7 @@ export const playlistPlugin = createBackendPlugin({
       async init({ http, logger, database, identity, discovery, permissions }) {
         http.use(
           await createRouter({
-            logger: loggerToWinstonLogger(logger),
+            logger,
             database,
             identity,
             discovery,

@@ -22,7 +22,10 @@ import {
 } from '@backstage/integration';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
-import { EventParams } from '@backstage/plugin-events-node';
+import {
+  DefaultEventsService,
+  EventParams,
+} from '@backstage/plugin-events-node';
 import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
 import { withLocations } from '../lib/withLocations';
 
@@ -267,6 +270,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const logger = getVoidLogger();
+      const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
       };
@@ -281,6 +285,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const entityProvider = new GithubOrgEntityProvider({
+        events,
         id: 'my-id',
         githubCredentialsProvider,
         orgUrl: 'https://github.com/backstage',
@@ -288,7 +293,7 @@ describe('GithubOrgEntityProvider', () => {
         logger,
       });
 
-      entityProvider.connect(entityProviderConnection);
+      await entityProvider.connect(entityProviderConnection);
 
       const expectedEntity = {
         apiVersion: 'backstage.io/v1alpha1',
@@ -330,8 +335,7 @@ describe('GithubOrgEntityProvider', () => {
           },
         },
       };
-
-      await entityProvider.onEvent(event);
+      await events.publish(event);
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -353,6 +357,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const logger = getVoidLogger();
+      const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
       };
@@ -367,6 +372,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const entityProvider = new GithubOrgEntityProvider({
+        events,
         id: 'my-id',
         githubCredentialsProvider,
         orgUrl: 'https://github.com/backstage',
@@ -374,7 +380,7 @@ describe('GithubOrgEntityProvider', () => {
         logger,
       });
 
-      entityProvider.connect(entityProviderConnection);
+      await entityProvider.connect(entityProviderConnection);
 
       const expectedEntity = {
         apiVersion: 'backstage.io/v1alpha1',
@@ -416,8 +422,7 @@ describe('GithubOrgEntityProvider', () => {
           },
         },
       };
-
-      await entityProvider.onEvent(event);
+      await events.publish(event);
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -439,6 +444,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const logger = getVoidLogger();
+      const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
       };
@@ -453,6 +459,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const entityProvider = new GithubOrgEntityProvider({
+        events,
         id: 'my-id',
         githubCredentialsProvider,
         orgUrl: 'https://github.com/backstage',
@@ -508,7 +515,7 @@ describe('GithubOrgEntityProvider', () => {
         },
       };
 
-      await entityProvider.onEvent(event);
+      await events.publish(event);
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -530,6 +537,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const logger = getVoidLogger();
+      const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
       };
@@ -544,6 +552,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const entityProvider = new GithubOrgEntityProvider({
+        events,
         id: 'my-id',
         githubCredentialsProvider,
         orgUrl: 'https://github.com/backstage',
@@ -551,7 +560,7 @@ describe('GithubOrgEntityProvider', () => {
         logger,
       });
 
-      entityProvider.connect(entityProviderConnection);
+      await entityProvider.connect(entityProviderConnection);
 
       const expectedEntity = {
         apiVersion: 'backstage.io/v1alpha1',
@@ -600,7 +609,7 @@ describe('GithubOrgEntityProvider', () => {
         },
       };
 
-      await entityProvider.onEvent(event);
+      await events.publish(event);
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -622,6 +631,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const logger = getVoidLogger();
+      const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
       };
@@ -636,6 +646,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const entityProvider = new GithubOrgEntityProvider({
+        events,
         id: 'my-id',
         githubCredentialsProvider,
         orgUrl: 'https://github.com/backstage',
@@ -717,7 +728,7 @@ describe('GithubOrgEntityProvider', () => {
 
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
 
-      entityProvider.connect(entityProviderConnection);
+      await entityProvider.connect(entityProviderConnection);
 
       const event: EventParams = {
         topic: 'github.team',
@@ -744,7 +755,7 @@ describe('GithubOrgEntityProvider', () => {
         },
       };
 
-      await entityProvider.onEvent(event);
+      await events.publish(event);
       await new Promise(process.nextTick);
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
@@ -871,6 +882,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const logger = getVoidLogger();
+      const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
       };
@@ -885,6 +897,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const entityProvider = new GithubOrgEntityProvider({
+        events,
         id: 'my-id',
         githubCredentialsProvider,
         orgUrl: 'https://github.com/backstage',
@@ -965,7 +978,7 @@ describe('GithubOrgEntityProvider', () => {
         });
 
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
-      entityProvider.connect(entityProviderConnection);
+      await entityProvider.connect(entityProviderConnection);
 
       const event: EventParams = {
         topic: 'github.membership',
@@ -989,7 +1002,7 @@ describe('GithubOrgEntityProvider', () => {
         },
       };
 
-      await entityProvider.onEvent(event);
+      await events.publish(event);
       await new Promise(process.nextTick);
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
@@ -1117,6 +1130,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const logger = getVoidLogger();
+      const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
       };
@@ -1131,6 +1145,7 @@ describe('GithubOrgEntityProvider', () => {
       };
 
       const entityProvider = new GithubOrgEntityProvider({
+        events,
         id: 'my-id',
         githubCredentialsProvider,
         orgUrl: 'https://github.com/backstage',
@@ -1187,7 +1202,7 @@ describe('GithubOrgEntityProvider', () => {
         });
 
       (graphql.defaults as jest.Mock).mockReturnValue(mockClient);
-      entityProvider.connect(entityProviderConnection);
+      await entityProvider.connect(entityProviderConnection);
 
       const event: EventParams = {
         topic: 'github.membership',
@@ -1211,7 +1226,7 @@ describe('GithubOrgEntityProvider', () => {
         },
       };
 
-      await entityProvider.onEvent(event);
+      await events.publish(event);
       await new Promise(process.nextTick);
 
       expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);

@@ -34,7 +34,6 @@ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 import { createHash } from 'crypto';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 import { EntitiesCatalog } from '../catalog/types';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
@@ -54,8 +53,10 @@ import { DefaultEntitiesCatalog } from '../service/DefaultEntitiesCatalog';
 import { DefaultRefreshService } from '../service/DefaultRefreshService';
 import { RefreshOptions, RefreshService } from '../service/types';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
+import { mockServices } from '@backstage/backend-test-utils';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
-const voidLogger = getVoidLogger();
+const voidLogger = mockServices.logger.mock();
 
 type ProgressTrackerWithErrorReports = ProgressTracker & {
   reportError(unprocessedEntity: Entity, errors: Error[]): void;
@@ -198,7 +199,7 @@ class TestHarness {
 
   static async create(options?: {
     config?: JsonObject;
-    logger?: Logger;
+    logger?: LoggerService;
     db?: Knex;
     permissions?: PermissionEvaluator;
     processEntity?(

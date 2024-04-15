@@ -16,9 +16,9 @@
 
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
-import { Logger } from 'winston';
-import { DbTasksRow, DB_TASKS_TABLE } from '../database/tables';
+import { DB_TASKS_TABLE, DbTasksRow } from '../database/tables';
 import { sleep } from './util';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Makes sure to auto-expire and clean up things that time out or for other
@@ -27,12 +27,12 @@ import { sleep } from './util';
 export class PluginTaskSchedulerJanitor {
   private readonly knex: Knex;
   private readonly waitBetweenRuns: Duration;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
   constructor(options: {
     knex: Knex;
     waitBetweenRuns: Duration;
-    logger: Logger;
+    logger: LoggerService;
   }) {
     this.knex = options.knex;
     this.waitBetweenRuns = options.waitBetweenRuns;

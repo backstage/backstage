@@ -24,14 +24,14 @@ import {
 import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef, parseEntityRef } from '@backstage/catalog-model';
 import { Server } from 'http';
-import { Logger } from 'winston';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 export async function startStandaloneServer(

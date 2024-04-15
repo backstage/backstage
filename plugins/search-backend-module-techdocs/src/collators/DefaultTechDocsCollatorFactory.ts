@@ -15,14 +15,14 @@
  */
 
 import {
+  createLegacyAuthAdapters,
   PluginEndpointDiscovery,
   TokenManager,
-  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import {
+  CATALOG_FILTER_EXISTS,
   CatalogApi,
   CatalogClient,
-  CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
 import {
   Entity,
@@ -39,10 +39,13 @@ import unescape from 'lodash/unescape';
 import fetch from 'node-fetch';
 import pLimit from 'p-limit';
 import { Readable } from 'stream';
-import { Logger } from 'winston';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
 import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 interface MkSearchIndexDoc {
   title: string;
@@ -57,7 +60,7 @@ interface MkSearchIndexDoc {
  */
 export type TechDocsCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
-  logger: Logger;
+  logger: LoggerService;
   tokenManager: TokenManager;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
@@ -87,7 +90,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
 
   private discovery: PluginEndpointDiscovery;
   private locationTemplate: string;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly auth: AuthService;
   private readonly catalogClient: CatalogApi;
   private readonly parallelismLimit: number;

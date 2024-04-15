@@ -66,8 +66,7 @@
     "lodash": "^4.17.21",
     "minimatch": "^9.0.0",
     "node-fetch": "^2.6.7",
-    "uuid": "^9.0.0",
-    "winston": "^3.2.1"
+    "uuid": "^9.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

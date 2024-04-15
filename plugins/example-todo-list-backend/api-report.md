@@ -6,7 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -20,7 +20,7 @@ export interface RouterOptions {
   // (undocumented)
   identity: IdentityApi;
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
 }
 
 // (No @packageDocumentation comment for this package)

@@ -17,22 +17,22 @@
 import {
   createServiceBuilder,
   DatabaseManager,
+  HostDiscovery,
   loadBackendConfig,
   ServerTokenManager,
-  HostDiscovery,
   UrlReaders,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { Server } from 'http';
-import { Logger } from 'winston';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { CatalogBuilder } from './CatalogBuilder';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 // TODO(freben): Migrate to the next catalog when it's in place

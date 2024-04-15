@@ -7,7 +7,7 @@ import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { JsonValue } from '@backstage/types';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ResourceEntity } from '@backstage/catalog-model';
 import { TaskRunner } from '@backstage/backend-tasks';
@@ -29,7 +29,7 @@ export class PuppetDbEntityProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     deps: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
       transformer?: ResourceTransformer;
@@ -37,7 +37,7 @@ export class PuppetDbEntityProvider implements EntityProvider {
   ): PuppetDbEntityProvider[];
   // (undocumented)
   getProviderName(): string;
-  refresh(logger: Logger): Promise<void>;
+  refresh(logger: LoggerService): Promise<void>;
 }
 
 // @public

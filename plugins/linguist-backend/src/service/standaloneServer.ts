@@ -16,22 +16,22 @@
 
 import {
   createServiceBuilder,
-  loadBackendConfig,
-  HostDiscovery,
-  UrlReaders,
-  ServerTokenManager,
   DatabaseManager,
+  HostDiscovery,
+  loadBackendConfig,
+  ServerTokenManager,
+  UrlReaders,
 } from '@backstage/backend-common';
 import { Server } from 'http';
-import { Logger } from 'winston';
 import { createRouter } from './router';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 export async function startStandaloneServer(
