@@ -277,9 +277,8 @@ describe('TestDatabases', () => {
     );
 
     itIfDocker('obeys a provided connection string for mysql 8', async () => {
-      const { host, port, user, password, stop } = await startMysqlContainer(
-        'mysql:8',
-      );
+      const { host, port, user, password, stop } =
+        await startMysqlContainer('mysql:8');
 
       try {
         // Leave a mark

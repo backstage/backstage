@@ -79,10 +79,9 @@ async function detectPackages(
     }
 
     try {
-      const depPackageJson: BackstagePackageJson = require(require.resolve(
-        `${depName}/package.json`,
-        { paths: [targetPath] },
-      ));
+      const depPackageJson: BackstagePackageJson = require(
+        require.resolve(`${depName}/package.json`, { paths: [targetPath] }),
+      );
       if (
         ['frontend-plugin', 'frontend-plugin-module'].includes(
           depPackageJson.backstage?.role ?? '',

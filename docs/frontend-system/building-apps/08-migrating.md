@@ -247,18 +247,17 @@ Can be converted to the following extension:
 
 ```tsx
 const signInPage = createSignInPageExtension({
-  loader: async () => props =>
-    (
-      <SignInPage
-        {...props}
-        provider={{
-          id: 'github-auth-provider',
-          title: 'GitHub',
-          message: 'Sign in using GitHub',
-          apiRef: githubAuthApiRef,
-        }}
-      />
-    ),
+  loader: async () => props => (
+    <SignInPage
+      {...props}
+      provider={{
+        id: 'github-auth-provider',
+        title: 'GitHub',
+        message: 'Sign in using GitHub',
+        apiRef: githubAuthApiRef,
+      }}
+    />
+  ),
 });
 ```
 

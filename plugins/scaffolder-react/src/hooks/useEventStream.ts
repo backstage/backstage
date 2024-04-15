@@ -77,14 +77,20 @@ type ReducerAction =
 function reducer(draft: TaskStream, action: ReducerAction) {
   switch (action.type) {
     case 'INIT': {
-      draft.steps = action.data.spec.steps.reduce((current, next) => {
-        current[next.id] = { status: 'open', id: next.id };
-        return current;
-      }, {} as { [stepId in string]: ScaffolderStep });
-      draft.stepLogs = action.data.spec.steps.reduce((current, next) => {
-        current[next.id] = [];
-        return current;
-      }, {} as { [stepId in string]: string[] });
+      draft.steps = action.data.spec.steps.reduce(
+        (current, next) => {
+          current[next.id] = { status: 'open', id: next.id };
+          return current;
+        },
+        {} as { [stepId in string]: ScaffolderStep },
+      );
+      draft.stepLogs = action.data.spec.steps.reduce(
+        (current, next) => {
+          current[next.id] = [];
+          return current;
+        },
+        {} as { [stepId in string]: string[] },
+      );
       draft.loading = false;
       draft.error = undefined;
       draft.completed = false;

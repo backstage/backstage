@@ -77,8 +77,8 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     >(
       await Promise.all(
         items.map(async item => {
-          const presentation = await entityPresentationApi.forEntity(item)
-            .promise;
+          const presentation =
+            await entityPresentationApi.forEntity(item).promise;
           return [stringifyEntityRef(item), presentation] as [
             string,
             EntityRefPresentationSnapshot,

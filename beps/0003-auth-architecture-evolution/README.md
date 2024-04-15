@@ -290,7 +290,7 @@ export interface HttpAuthService {
   // Implementations should cache resolved credentials on the request object
   credentials<
     TAllowed extends
-      | keyof BackstageHttpAccessToPrincipalTypesMapping = 'unknown',
+      keyof BackstageHttpAccessToPrincipalTypesMapping = 'unknown',
   >(
     req: Request,
     options?: {
@@ -410,9 +410,8 @@ router.get('/read-data', (req, res) => {
     allowLimitedAccess: true,
   });
 
-  const { userEntityRef, ownershipEntityRefs } = await userInfo.getUserInfo(
-    credentials,
-  );
+  const { userEntityRef, ownershipEntityRefs } =
+    await userInfo.getUserInfo(credentials);
 
   console.log(`User ref=${userEntityRef} ownership=${ownershipEntityRefs}`);
   // ...

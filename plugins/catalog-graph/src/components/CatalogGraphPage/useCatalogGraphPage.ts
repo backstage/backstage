@@ -128,10 +128,11 @@ export function useCatalogGraphPage({
       ? query.direction
       : initialState?.direction ?? Direction.LEFT_RIGHT,
   );
-  const [curve, setCurve] = useState<'curveStepBefore' | 'curveMonotoneX'>(() =>
-    typeof query.curve === 'string'
-      ? query.curve
-      : initialState?.curve ?? 'curveMonotoneX',
+  const [curve, setCurve] = useState<'curveStepBefore' | 'curveMonotoneX'>(
+    () =>
+      typeof query.curve === 'string'
+        ? query.curve
+        : initialState?.curve ?? 'curveMonotoneX',
   );
   const [showFilters, setShowFilters] = useState<boolean>(() =>
     typeof query.showFilters === 'string'

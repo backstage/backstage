@@ -30,16 +30,12 @@ import { createConditionFactory } from './createConditionFactory';
  *
  * @public
  */
-export type Condition<TRule> = TRule extends PermissionRule<
-  any,
-  any,
-  infer TResourceType,
-  infer TParams
->
-  ? undefined extends TParams
-    ? () => PermissionCondition<TResourceType, TParams>
-    : (params: TParams) => PermissionCondition<TResourceType, TParams>
-  : never;
+export type Condition<TRule> =
+  TRule extends PermissionRule<any, any, infer TResourceType, infer TParams>
+    ? undefined extends TParams
+      ? () => PermissionCondition<TResourceType, TParams>
+      : (params: TParams) => PermissionCondition<TResourceType, TParams>
+    : never;
 
 /**
  * A utility type for mapping {@link PermissionRule}s to their corresponding

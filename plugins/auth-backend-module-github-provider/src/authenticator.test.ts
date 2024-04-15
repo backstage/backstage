@@ -110,7 +110,7 @@ describe('githubAuthenticator', () => {
           scope: 'user:read',
         },
         {
-          fetchProfile: async _input => ({ id: 'id' } as PassportProfile),
+          fetchProfile: async _input => ({ id: 'id' }) as PassportProfile,
         } as PassportOAuthAuthenticatorHelper,
       ),
     ).resolves.toEqual({

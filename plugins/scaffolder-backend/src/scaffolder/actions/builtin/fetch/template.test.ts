@@ -33,11 +33,10 @@ import {
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-type FetchTemplateInput = ReturnType<
-  typeof createFetchTemplateAction
-> extends TemplateAction<infer U>
-  ? U
-  : never;
+type FetchTemplateInput =
+  ReturnType<typeof createFetchTemplateAction> extends TemplateAction<infer U>
+    ? U
+    : never;
 
 const aBinaryFile = fs.readFileSync(
   resolvePackagePath(

@@ -34,9 +34,8 @@ describe('IncrementalIngestionDatabaseManager', () => {
       await knex.migrate.latest({ directory: migrationsDir });
 
       const manager = new IncrementalIngestionDatabaseManager({ client: knex });
-      const { ingestionId } = (await manager.createProviderIngestionRecord(
-        'myProvider',
-      ))!;
+      const { ingestionId } =
+        (await manager.createProviderIngestionRecord('myProvider'))!;
 
       const cursorId = uuid();
 

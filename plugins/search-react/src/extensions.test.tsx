@@ -72,12 +72,11 @@ const createExtension = (
 ) => {
   const {
     predicate,
-    component = async () => (props: { result?: SearchDocument }) =>
-      (
-        <>
-          <ListItemText primary="Default" secondary={props.result?.title} />
-        </>
-      ),
+    component = async () => (props: { result?: SearchDocument }) => (
+      <>
+        <ListItemText primary="Default" secondary={props.result?.title} />
+      </>
+    ),
   } = options;
   return plugin.provide(
     createSearchResultListItemExtension({
@@ -171,12 +170,11 @@ describe('extensions', () => {
     const DefaultSearchResultListItemExtension = createExtension(plugin);
     const ExploreSearchResultListItemExtension = createExtension(plugin, {
       predicate: (result: SearchResult) => result.type === 'explore',
-      component: async () => (props: { result?: SearchDocument }) =>
-        (
-          <>
-            <ListItemText primary="Explore" secondary={props.result?.title} />
-          </>
-        ),
+      component: async () => (props: { result?: SearchDocument }) => (
+        <>
+          <ListItemText primary="Explore" secondary={props.result?.title} />
+        </>
+      ),
     });
 
     await renderInTestApp(

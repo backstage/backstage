@@ -78,9 +78,8 @@ export const buildApiReports = async (paths: string[] = [], opts: Options) => {
     await generateTypeDeclarations(tsconfigFilePath);
   }
 
-  const { tsPackageDirs, cliPackageDirs } = await categorizePackageDirs(
-    selectedPackageDirs,
-  );
+  const { tsPackageDirs, cliPackageDirs } =
+    await categorizePackageDirs(selectedPackageDirs);
 
   if (tsPackageDirs.length > 0) {
     console.log('# Generating package API reports');

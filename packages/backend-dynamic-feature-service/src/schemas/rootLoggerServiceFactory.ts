@@ -46,9 +46,9 @@ export const dynamicPluginsRootLoggerServiceFactory = createServiceFactory({
     });
 
     const configSchema = await loadConfigSchema({
-      dependencies: (
-        await getPackages(process.cwd())
-      ).packages.map(p => p.packageJson.name),
+      dependencies: (await getPackages(process.cwd())).packages.map(
+        p => p.packageJson.name,
+      ),
     });
 
     const secretEnumerator = await createConfigSecretEnumerator({

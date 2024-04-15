@@ -66,9 +66,7 @@ const RenderErrorContext = ({
       <>
         <Typography>Tags</Typography>
         <ul>
-          {rowData.unprocessed_entity.metadata.tags?.map(t => (
-            <li>{t}</li>
-          ))}
+          {rowData.unprocessed_entity.metadata.tags?.map(t => <li>{t}</li>)}
         </ul>
       </>
     );

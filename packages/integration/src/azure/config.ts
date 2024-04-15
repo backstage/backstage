@@ -179,10 +179,13 @@ function asAzureDevOpsCredential(
       return {
         kind,
         organizations: credential.organizations,
-        ...requiredFields.reduce((acc, field) => {
-          acc[field] = credential[field];
-          return acc;
-        }, {} as Record<string, any>),
+        ...requiredFields.reduce(
+          (acc, field) => {
+            acc[field] = credential[field];
+            return acc;
+          },
+          {} as Record<string, any>,
+        ),
       } as AzureDevOpsCredential;
     }
   }
@@ -289,17 +292,20 @@ export function readAzureIntegrationConfig(
                 credential.organizations !== undefined &&
                 credential.organizations.length > 0,
             )
-            .reduce((acc, credential, index) => {
-              credential.organizations?.forEach(organization => {
-                if (!acc[organization]) {
-                  acc[organization] = [];
-                }
+            .reduce(
+              (acc, credential, index) => {
+                credential.organizations?.forEach(organization => {
+                  if (!acc[organization]) {
+                    acc[organization] = [];
+                  }
 
-                acc[organization].push(index + 1);
-              });
+                  acc[organization].push(index + 1);
+                });
 
-              return acc;
-            }, {} as Record<string, number[]>),
+                return acc;
+              },
+              {} as Record<string, number[]>,
+            ),
         )
           .filter(([_, indexes]) => indexes.length > 1)
           .reduce((acc, [org, indexes]) => {

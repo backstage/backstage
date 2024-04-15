@@ -80,7 +80,11 @@ export class SubRouteRefImpl<TParams extends AnyRouteRefParams>
   #params: string[];
   #parent: RouteRef;
 
-  constructor(readonly path: string, params: string[], parent: RouteRef) {
+  constructor(
+    readonly path: string,
+    params: string[],
+    parent: RouteRef,
+  ) {
     this.#params = params;
     this.#parent = parent;
   }

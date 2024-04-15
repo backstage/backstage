@@ -286,12 +286,12 @@ type Immutable<T> = T extends
   | undefined
   ? T
   : T extends Map<infer K, infer V>
-  ? ReadonlyMap<Immutable<K>, Immutable<V>>
-  : T extends Set<infer S>
-  ? ReadonlySet<Immutable<S>>
-  : {
-      readonly [P in keyof T]: Immutable<T[P]>;
-    };
+    ? ReadonlyMap<Immutable<K>, Immutable<V>>
+    : T extends Set<infer S>
+      ? ReadonlySet<Immutable<S>>
+      : {
+          readonly [P in keyof T]: Immutable<T[P]>;
+        };
 
 // @public (undocumented)
 type ImmutableContentObject = ImmutableObject<ContentObject>;
@@ -404,11 +404,10 @@ declare namespace internal {
 export { internal };
 
 // @public (undocumented)
-type LastOf<T> = UnionToIntersection<
-  T extends any ? () => T : never
-> extends () => infer R
-  ? R
-  : never;
+type LastOf<T> =
+  UnionToIntersection<T extends any ? () => T : never> extends () => infer R
+    ? R
+    : never;
 
 // @public (undocumented)
 type MapDiscriminatedUnion<T extends Record<K, string>, K extends keyof T> = {
@@ -461,13 +460,14 @@ type OptionalMap<
 type ParameterSchema<
   Doc extends RequiredDoc,
   Schema extends ImmutableParameterObject['schema'],
-> = SchemaRef<Doc, Schema> extends infer R
-  ? R extends ImmutableSchemaObject
-    ? R extends JSONSchema
-      ? FromSchema<R>
+> =
+  SchemaRef<Doc, Schema> extends infer R
+    ? R extends ImmutableSchemaObject
+      ? R extends JSONSchema
+        ? FromSchema<R>
+        : never
       : never
-    : never
-  : never;
+    : never;
 
 // @public (undocumented)
 type ParametersSchema<
@@ -591,9 +591,10 @@ type RequestBodySchema<
   Doc extends RequiredDoc,
   Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = RequestBody<Doc, Path, Method> extends ImmutableRequestBodyObject
-  ? ObjectWithContentSchema<Doc, RequestBody<Doc, Path, Method>>
-  : never;
+> =
+  RequestBody<Doc, Path, Method> extends ImmutableRequestBodyObject
+    ? ObjectWithContentSchema<Doc, RequestBody<Doc, Path, Method>>
+    : never;
 
 // @public
 type RequestBodyToJsonSchema<

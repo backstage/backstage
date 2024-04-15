@@ -49,7 +49,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: Helvetica Neue, sans-serif;
+  font-family:
+    Helvetica Neue,
+    sans-serif;
   color: $textColor;
 }
 
@@ -72,7 +74,9 @@ ul,
 ol,
 li,
 td {
-  font-family: Helvetica Neue, sans-serif;
+  font-family:
+    Helvetica Neue,
+    sans-serif;
   color: #e4e4e4;
 }
 
@@ -124,7 +128,9 @@ td {
 
 /* navigation */
 .navGroupCategoryTitle {
-  font-family: Helvetica Neue, sans-serif;
+  font-family:
+    Helvetica Neue,
+    sans-serif;
   font-weight: 500;
 }
 
@@ -227,7 +233,9 @@ td {
 }
 .navigationSlider .slidingNav ul li a {
   color: $textColor;
-  font-family: Helvetica Neue, sans-serif;
+  font-family:
+    Helvetica Neue,
+    sans-serif;
   font-size: 14px;
   letter-spacing: 1.5px;
   text-transform: uppercase;
@@ -310,12 +318,20 @@ td {
   background-color: #0e0e0e;
   border: none;
   font-size: 120%;
-  font-family: Helvetica Neue, sans-serif;
+  font-family:
+    Helvetica Neue,
+    sans-serif;
   border-radius: 0.25rem;
 }
 
 code {
-  font-family: IBM Plex Mono, Menlo, Monaco, Consolas, Courier New, monospace;
+  font-family:
+    IBM Plex Mono,
+    Menlo,
+    Monaco,
+    Consolas,
+    Courier New,
+    monospace;
   font-weight: 500;
   background-color: #272822;
 }
@@ -842,7 +858,9 @@ code {
   background-color: $primaryColor;
   color: #000;
   text-transform: uppercase;
-  font-family: Helvetica Neue, sans-serif;
+  font-family:
+    Helvetica Neue,
+    sans-serif;
   letter-spacing: 1.5px;
   font-style: normal;
   font-weight: bold;
@@ -1081,7 +1099,9 @@ code {
   margin: 36px 20px;
   border-radius: 4px;
   background-color: $primaryColor;
-  font-family: Helvetica Neue, sans-serif;
+  font-family:
+    Helvetica Neue,
+    sans-serif;
   color: #000;
   display: flex;
 }
@@ -1238,7 +1258,9 @@ h3.collapsible span.arrow {
   right: 0;
   position: fixed;
   color: rgb(0, 0, 0);
-  transition: transform 250ms ease-in-out, height 250ms ease-in-out;
+  transition:
+    transform 250ms ease-in-out,
+    height 250ms ease-in-out;
   display: flex;
   align-items: center;
   transform: translateY(-50%) translateX(500px);
@@ -1268,7 +1290,9 @@ h3.collapsible span.arrow {
   color: rgb(0, 0, 0);
   outline: 0;
   border: 0;
-  font-family: Helvetica Neue, sans-serif;
+  font-family:
+    Helvetica Neue,
+    sans-serif;
   max-height: 48px;
   max-width: 150px;
   font-size: 16px;

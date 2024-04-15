@@ -71,10 +71,11 @@ export type ResolvedExtensionInputs<
   [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
     ? Array<Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>>
     : false extends TInputs[InputName]['config']['optional']
-    ? Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>
-    : Expand<
-        ResolvedExtensionInput<TInputs[InputName]['extensionData']> | undefined
-      >;
+      ? Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>
+      : Expand<
+          | ResolvedExtensionInput<TInputs[InputName]['extensionData']>
+          | undefined
+        >;
 };
 
 /** @public */

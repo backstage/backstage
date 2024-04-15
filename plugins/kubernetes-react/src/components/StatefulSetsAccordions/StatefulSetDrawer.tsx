@@ -38,10 +38,13 @@ export const StatefulSetDrawer = ({
       renderObject={(statefulsetObj: V1StatefulSet) => {
         const conditions = (statefulsetObj.status?.conditions ?? [])
           .map(renderCondition)
-          .reduce((accum, next) => {
-            accum[next[0]] = next[1];
-            return accum;
-          }, {} as { [key: string]: React.ReactNode });
+          .reduce(
+            (accum, next) => {
+              accum[next[0]] = next[1];
+              return accum;
+            },
+            {} as { [key: string]: React.ReactNode },
+          );
 
         return {
           updateStrategy: statefulset.spec?.updateStrategy ?? '???',

@@ -24,7 +24,7 @@ import type {
 import type { AnyRouteRef, RouteFunc } from './types';
 
 const mockContext = {
-  getComponents: () => ({ Progress: () => null } as any),
+  getComponents: () => ({ Progress: () => null }) as any,
   getSystemIcon: jest.fn(),
   getSystemIcons: jest.fn(),
   getPlugins: jest.fn(),

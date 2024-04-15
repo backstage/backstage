@@ -373,9 +373,7 @@ describe('ServerTokenManager', () => {
       const noopTokenManager2 = ServerTokenManager.noop();
       await expect(
         noopTokenManager.authenticate(
-          (
-            await noopTokenManager2.getToken()
-          ).token,
+          (await noopTokenManager2.getToken()).token,
         ),
       ).resolves.not.toThrow();
     });

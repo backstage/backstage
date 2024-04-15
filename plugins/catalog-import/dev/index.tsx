@@ -182,7 +182,7 @@ createDevApp()
             entities: getEntities(location.target),
           };
         },
-      } as CatalogApi),
+      }) as CatalogApi,
   })
   .registerApi({
     api: catalogImportApiRef,
@@ -251,7 +251,7 @@ createDevApp()
             location: `${repositoryUrl}/blob/catalog-info.yaml`,
           };
         },
-      } as CatalogImportApi),
+      }) as CatalogImportApi,
   })
   .addPage({
     title: 'Catalog Import',

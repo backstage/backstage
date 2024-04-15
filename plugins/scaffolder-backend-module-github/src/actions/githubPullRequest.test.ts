@@ -32,11 +32,12 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 // Make sure root logger is initialized ahead of FS mock
 createRootLogger();
 
-type GithubPullRequestActionInput = ReturnType<
-  typeof createPublishGithubPullRequestAction
-> extends TemplateAction<infer U>
-  ? U
-  : never;
+type GithubPullRequestActionInput =
+  ReturnType<
+    typeof createPublishGithubPullRequestAction
+  > extends TemplateAction<infer U>
+    ? U
+    : never;
 
 describe('createPublishGithubPullRequestAction', () => {
   let instance: TemplateAction<GithubPullRequestActionInput>;

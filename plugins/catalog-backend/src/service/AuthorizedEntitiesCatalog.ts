@@ -159,9 +159,8 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
         requestFilter = request.filter;
       }
 
-      const response = await this.entitiesCatalog.queryEntities(
-        permissionedRequest,
-      );
+      const response =
+        await this.entitiesCatalog.queryEntities(permissionedRequest);
 
       const prevCursor: Cursor | undefined = response.pageInfo.prevCursor && {
         ...response.pageInfo.prevCursor,

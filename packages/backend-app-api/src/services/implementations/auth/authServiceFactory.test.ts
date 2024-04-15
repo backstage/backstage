@@ -347,9 +347,8 @@ describe('authServiceFactory', () => {
     if (!searchAuth.isPrincipal(credentials, 'user')) {
       throw new Error('not a user principal');
     }
-    const { token: limitedToken } = await searchAuth.getLimitedUserToken(
-      credentials,
-    );
+    const { token: limitedToken } =
+      await searchAuth.getLimitedUserToken(credentials);
 
     const { token: oboToken } = await searchAuth.getPluginRequestToken({
       onBehalfOf: credentials,

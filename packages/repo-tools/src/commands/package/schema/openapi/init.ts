@@ -49,8 +49,8 @@ capture:
     ${YAML_SCHEMA_PATH}:
         # 🔧 Runnable example with simple get requests.
         # Run with "PORT=3000 optic capture ${YAML_SCHEMA_PATH} --update interactive" in '${
-      cliPaths.targetDir
-    }'
+          cliPaths.targetDir
+        }'
         # You can change the server and the 'requests' section to experiment
         server:
             # This will not be used by 'backstage-repo-tools schema openapi test', but may be useful for interactive updates.

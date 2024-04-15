@@ -68,7 +68,10 @@ export interface CatalogUnprocessedEntitiesApi {
 export class CatalogUnprocessedEntitiesClient
   implements CatalogUnprocessedEntitiesApi
 {
-  constructor(public discovery: DiscoveryApi, public fetchApi: FetchApi) {}
+  constructor(
+    public discovery: DiscoveryApi,
+    public fetchApi: FetchApi,
+  ) {}
 
   private async fetch<T>(path: string, init?: RequestInit): Promise<T> {
     const url = await this.discovery.getBaseUrl('catalog');

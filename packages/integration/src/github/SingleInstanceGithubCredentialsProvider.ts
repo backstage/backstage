@@ -128,9 +128,8 @@ class GithubAppManager {
 
     // Go and grab an access token for the app scoped to a repository if provided, if not use the organisation installation.
     return this.cache.getOrCreateToken(owner, repo, async () => {
-      const { installationId, suspended } = await this.getInstallationData(
-        owner,
-      );
+      const { installationId, suspended } =
+        await this.getInstallationData(owner);
       if (suspended) {
         throw new Error(`The GitHub application for ${owner} is suspended`);
       }

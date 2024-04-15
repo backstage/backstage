@@ -485,9 +485,8 @@ export class PgConnector implements Connector {
       client,
     );
 
-    (
-      baseConnection as Knex.PgConnectionConfig
-    ).application_name ||= `backstage_plugin_${pluginId}`;
+    (baseConnection as Knex.PgConnectionConfig).application_name ||=
+      `backstage_plugin_${pluginId}`;
 
     return {
       // include base connection if client type has not been overridden

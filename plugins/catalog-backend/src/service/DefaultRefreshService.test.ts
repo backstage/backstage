@@ -192,9 +192,8 @@ describe('DefaultRefreshService', () => {
   it.each(databases.eachSupportedId())(
     'should refresh the parent location, %p',
     async databaseId => {
-      const { knex, processingDb, catalogDb } = await createDatabase(
-        databaseId,
-      );
+      const { knex, processingDb, catalogDb } =
+        await createDatabase(databaseId);
       const refreshService = new DefaultRefreshService({ database: catalogDb });
       const engine = await createPopulatedEngine({
         db: processingDb,
@@ -238,9 +237,8 @@ describe('DefaultRefreshService', () => {
   it.each(databases.eachSupportedId())(
     'should refresh the location further up the tree, %p',
     async databaseId => {
-      const { knex, processingDb, catalogDb } = await createDatabase(
-        databaseId,
-      );
+      const { knex, processingDb, catalogDb } =
+        await createDatabase(databaseId);
       const refreshService = new DefaultRefreshService({ database: catalogDb });
       const engine = await createPopulatedEngine({
         db: processingDb,
@@ -293,9 +291,8 @@ describe('DefaultRefreshService', () => {
     'should refresh even when parent has no changes',
     async databaseId => {
       let secondRound = false;
-      const { knex, processingDb, catalogDb } = await createDatabase(
-        databaseId,
-      );
+      const { knex, processingDb, catalogDb } =
+        await createDatabase(databaseId);
       const refreshService = new DefaultRefreshService({ database: catalogDb });
       const engine = await createPopulatedEngine({
         db: processingDb,

@@ -70,8 +70,8 @@ const getChecksLabel = (
   return failingChecks > 0
     ? `⚠️ **${failingChecks}**/**${totalChecks}** failed${exemptedChunk}`
     : totalChecks > 0
-    ? `✅ **${totalChecks}** passed${exemptedChunk}`
-    : `ℹ️ No automated checks have run`;
+      ? `✅ **${totalChecks}** passed${exemptedChunk}`
+      : `ℹ️ No automated checks have run`;
 };
 
 function getOperationsText(

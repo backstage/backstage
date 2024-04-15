@@ -133,8 +133,8 @@ export function createExternalRouteRef<
   keyof TParams extends never
     ? undefined
     : string extends TParamKeys
-    ? TParams
-    : { [param in TParamKeys]: string },
+      ? TParams
+      : { [param in TParamKeys]: string },
   TOptional
 > {
   return new ExternalRouteRefImpl(

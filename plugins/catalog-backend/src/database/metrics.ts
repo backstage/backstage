@@ -30,9 +30,8 @@ export function initDatabaseMetrics(knex: Knex) {
       help: 'Total amount of entities in the catalog. DEPRECATED: Please use opentelemetry metrics instead.',
       labelNames: ['kind'],
       async collect() {
-        const result = await knex<DbRefreshStateRow>('refresh_state').select(
-          'entity_ref',
-        );
+        const result =
+          await knex<DbRefreshStateRow>('refresh_state').select('entity_ref');
         const results = result
           .map(row => row.entity_ref.split(':')[0])
           .reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());
@@ -76,9 +75,8 @@ export function initDatabaseMetrics(knex: Knex) {
         description: 'Total amount of entities in the catalog',
       })
       .addCallback(async gauge => {
-        const result = await knex<DbRefreshStateRow>('refresh_state').select(
-          'entity_ref',
-        );
+        const result =
+          await knex<DbRefreshStateRow>('refresh_state').select('entity_ref');
         const results = result
           .map(row => parseEntityRef(row.entity_ref).kind)
           .reduce((acc, e) => acc.set(e, (acc.get(e) || 0) + 1), new Map());

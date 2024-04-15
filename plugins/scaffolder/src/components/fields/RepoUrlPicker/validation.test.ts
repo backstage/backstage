@@ -24,7 +24,7 @@ describe('RepoPicker Validation', () => {
   const fieldValidator = () =>
     ({
       addError: jest.fn(),
-    } as unknown as FieldValidation);
+    }) as unknown as FieldValidation;
 
   const config = new ConfigReader({
     integrations: {

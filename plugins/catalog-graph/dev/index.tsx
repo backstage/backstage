@@ -140,30 +140,33 @@ const entities = (
       ],
     ],
   ] as DataEntity[]
-).reduce((o, d) => {
-  const [kind, name, relations, spec] = d;
+).reduce(
+  (o, d) => {
+    const [kind, name, relations, spec] = d;
 
-  const entity: Entity = {
-    apiVersion: 'backstage.io/v1alpha1',
-    kind,
-    metadata: {
-      name,
-    },
-    spec: spec,
-    relations: relations.map(([type, k, n]) => ({
-      target: { kind: k, name: n, namespace: DEFAULT_NAMESPACE },
-      targetRef: stringifyEntityRef({
-        kind: k,
-        namespace: DEFAULT_NAMESPACE,
-        name: n,
-      }),
-      type,
-    })),
-  };
-  const entityRef = stringifyEntityRef(entity);
-  o[entityRef] = entity;
-  return o;
-}, {} as { [entityRef: string]: Entity });
+    const entity: Entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind,
+      metadata: {
+        name,
+      },
+      spec: spec,
+      relations: relations.map(([type, k, n]) => ({
+        target: { kind: k, name: n, namespace: DEFAULT_NAMESPACE },
+        targetRef: stringifyEntityRef({
+          kind: k,
+          namespace: DEFAULT_NAMESPACE,
+          name: n,
+        }),
+        type,
+      })),
+    };
+    const entityRef = stringifyEntityRef(entity);
+    o[entityRef] = entity;
+    return o;
+  },
+  {} as { [entityRef: string]: Entity },
+);
 
 createDevApp()
   .registerPlugin(catalogGraphPlugin)

@@ -336,9 +336,8 @@ describe.skip('GerritUrlReader', () => {
         }),
       );
 
-      const response = await gerritProcessorWithGitiles.readTree(
-        treeUrlGitiles,
-      );
+      const response =
+        await gerritProcessorWithGitiles.readTree(treeUrlGitiles);
 
       expect(response.etag).toBe(etag);
 

@@ -177,9 +177,8 @@ export class IncrementalIngestionEngine
         nextActionAt: record.next_action_at.valueOf() as number,
       };
     }
-    const result = await this.manager.createProviderIngestionRecord(
-      providerName,
-    );
+    const result =
+      await this.manager.createProviderIngestionRecord(providerName);
     if (result) {
       this.options.logger.info(
         `incremental-engine: Ingestion record created: '${result.ingestionId}'`,
@@ -353,9 +352,8 @@ export class IncrementalIngestionEngine
 
     if (result.type === 'delta') {
       if (result.added.length > 0) {
-        const ingestionRecord = await this.manager.getCurrentIngestionRecord(
-          providerName,
-        );
+        const ingestionRecord =
+          await this.manager.getCurrentIngestionRecord(providerName);
 
         if (!ingestionRecord) {
           logger.debug(

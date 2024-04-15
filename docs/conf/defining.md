@@ -23,7 +23,7 @@ Each package is searched for a schema at a single point of entry, a top-level
 inlined JSON schema, or a relative path to a schema file. Supported schema file
 formats are `.json` or `.d.ts`.
 
-```jsonc title="package.json"
+```json title="package.json"
 {
   // ...
   "files": [

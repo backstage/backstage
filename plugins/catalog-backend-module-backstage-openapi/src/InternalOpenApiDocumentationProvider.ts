@@ -94,7 +94,7 @@ const mergeSpecs = async ({
         ({
           oas: spec,
           // Weird typing differences between this package and the client package's openapi 3.
-        } as any),
+        }) as any,
     ),
   ]);
 

@@ -74,10 +74,10 @@ export type ToNewRouteRef<T extends RouteRef | SubRouteRef | ExternalRouteRef> =
   T extends RouteRef<infer IParams>
     ? RouteRef_2<IParams>
     : T extends SubRouteRef<infer IParams>
-    ? SubRouteRef_2<IParams>
-    : T extends ExternalRouteRef<infer IParams, infer IOptional>
-    ? ExternalRouteRef_2<IParams, IOptional>
-    : never;
+      ? SubRouteRef_2<IParams>
+      : T extends ExternalRouteRef<infer IParams, infer IOptional>
+        ? ExternalRouteRef_2<IParams, IOptional>
+        : never;
 
 // (No @packageDocumentation comment for this package)
 ```

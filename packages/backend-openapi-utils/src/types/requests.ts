@@ -61,9 +61,10 @@ export type RequestBodySchema<
   Doc extends RequiredDoc,
   Path extends DocPath<Doc>,
   Method extends DocPathMethod<Doc, Path>,
-> = RequestBody<Doc, Path, Method> extends ImmutableRequestBodyObject
-  ? ObjectWithContentSchema<Doc, RequestBody<Doc, Path, Method>>
-  : never;
+> =
+  RequestBody<Doc, Path, Method> extends ImmutableRequestBodyObject
+    ? ObjectWithContentSchema<Doc, RequestBody<Doc, Path, Method>>
+    : never;
 
 /**
  * Transform the OpenAPI request body schema to a typesafe JSON schema.

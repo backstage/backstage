@@ -44,7 +44,7 @@ jest.mock('react-router-dom', () => {
         pathname: '/the/pathname',
         search: '?the=search',
         hash: '#the-anchor',
-      } as Location),
+      }) as Location,
   };
 });
 

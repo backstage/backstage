@@ -576,7 +576,7 @@ For your productivity working with unit tests it's quite essential to have your 
 
 #### VS Code
 
-```jsonc
+```json
 {
   "jest.jestCommandLine": "node_modules/.bin/jest --config node_modules/@backstage/cli/config/jest.js",
   // In a large repo like the Backstage main repo you likely want to disable
@@ -591,7 +591,7 @@ For your productivity working with unit tests it's quite essential to have your 
 
 A complete launch configuration for VS Code debugging may look like this:
 
-```jsonc
+```json
 {
   "type": "node",
   "name": "vscode-jest-tests.v2",

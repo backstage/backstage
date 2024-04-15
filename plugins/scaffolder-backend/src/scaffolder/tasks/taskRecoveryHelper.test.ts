@@ -21,13 +21,13 @@ const toLogEvent = (stepId: string) =>
   ({
     type: 'log',
     body: { stepId },
-  } as unknown as SerializedTaskEvent);
+  }) as unknown as SerializedTaskEvent;
 
 const toRecoveredEvent = (recoverStrategy: string) =>
   ({
     type: 'recovered',
     body: { recoverStrategy },
-  } as unknown as SerializedTaskEvent);
+  }) as unknown as SerializedTaskEvent;
 
 describe('taskRecoveryHelper', () => {
   describe('compactEvents', () => {

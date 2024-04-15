@@ -69,9 +69,8 @@ describe('DatabaseKeyStore', () => {
     });
 
     it('should automatically exclude and remove expired keys when listing', async () => {
-      const { keyStore, knex, logger } = await createDatabaseKeyStore(
-        databaseId,
-      );
+      const { keyStore, knex, logger } =
+        await createDatabaseKeyStore(databaseId);
       const expiresAt = new Date(Date.now() + 3600_000);
 
       await expect(keyStore.listKeys()).resolves.toEqual({ keys: [] });

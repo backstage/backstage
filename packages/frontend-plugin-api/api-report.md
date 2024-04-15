@@ -579,10 +579,10 @@ export function createExternalRouteRef<
   keyof TParams extends never
     ? undefined
     : string extends TParamKeys
-    ? TParams
-    : {
-        [param in TParamKeys]: string;
-      },
+      ? TParams
+      : {
+          [param in TParamKeys]: string;
+        },
   TOptional
 >;
 
@@ -683,10 +683,10 @@ export function createRouteRef<
   keyof TParams extends never
     ? undefined
     : string extends TParamKeys
-    ? TParams
-    : {
-        [param in TParamKeys]: string;
-      }
+      ? TParams
+      : {
+          [param in TParamKeys]: string;
+        }
 >;
 
 // @public
@@ -1058,10 +1058,11 @@ export type ResolvedExtensionInputs<
   [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
     ? Array<Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>>
     : false extends TInputs[InputName]['config']['optional']
-    ? Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>
-    : Expand<
-        ResolvedExtensionInput<TInputs[InputName]['extensionData']> | undefined
-      >;
+      ? Expand<ResolvedExtensionInput<TInputs[InputName]['extensionData']>>
+      : Expand<
+          | ResolvedExtensionInput<TInputs[InputName]['extensionData']>
+          | undefined
+        >;
 };
 
 // @public

@@ -30,10 +30,9 @@ import {
  */
 export function createAuthProviderIntegration<
   TCreateOptions extends unknown[],
-  TResolvers extends
-    | {
-        [name in string]: (...args: any[]) => SignInResolver<any>;
-      },
+  TResolvers extends {
+    [name in string]: (...args: any[]) => SignInResolver<any>;
+  },
 >(config: {
   create: (...args: TCreateOptions) => AuthProviderFactory;
   resolvers?: TResolvers;

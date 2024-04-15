@@ -97,8 +97,8 @@ function findConflict(pkg, name, expectedType) {
     const oldDepsField = isDep
       ? depFields.dep
       : isDevDep
-      ? depFields.dev
-      : undefined;
+        ? depFields.dev
+        : undefined;
 
     return { oldDepsField, depsField };
   }
@@ -137,8 +137,8 @@ function addVersionQuery(name, flag, packages) {
       flag === '--dev'
         ? pkg.packageJson.devDependencies
         : flag === '--peer'
-        ? pkg.packageJson.peerDependencies
-        : pkg.packageJson.dependencies;
+          ? pkg.packageJson.peerDependencies
+          : pkg.packageJson.dependencies;
     const range = deps?.[name];
     if (range) {
       rangeCounts.set(range, (rangeCounts.get(range) ?? 0) + 1);

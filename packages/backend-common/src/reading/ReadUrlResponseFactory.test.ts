@@ -92,17 +92,15 @@ describe('ReadUrlResponseFactory', () => {
     });
 
     it('buffer returns expected data', async () => {
-      const response = await ReadUrlResponseFactory.fromNodeJSReadable(
-        readable,
-      );
+      const response =
+        await ReadUrlResponseFactory.fromNodeJSReadable(readable);
       const buffer = await response.buffer();
       expect(buffer.toString()).toEqual(expectedText);
     });
 
     it('stream returns expected data', async () => {
-      const response = await ReadUrlResponseFactory.fromNodeJSReadable(
-        readable,
-      );
+      const response =
+        await ReadUrlResponseFactory.fromNodeJSReadable(readable);
       const stream = response.stream!();
       const bufferFromStream = await getRawBody(stream);
       expect(bufferFromStream.toString()).toEqual(expectedText);

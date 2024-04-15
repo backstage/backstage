@@ -166,9 +166,8 @@ export class DefaultAuthService implements AuthService {
         // If the target plugin supports the new auth service we issue a service
         // on-behalf-of token rather than forwarding the user token
         if (targetSupportsNewAuth) {
-          const onBehalfOf = await this.userTokenHandler.createLimitedUserToken(
-            token,
-          );
+          const onBehalfOf =
+            await this.userTokenHandler.createLimitedUserToken(token);
           return this.pluginTokenHandler.issueToken({
             pluginId: this.pluginId,
             targetPluginId,

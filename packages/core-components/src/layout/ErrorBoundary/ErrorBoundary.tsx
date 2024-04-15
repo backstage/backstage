@@ -65,36 +65,34 @@ const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
 };
 
 /** @public */
-export const ErrorBoundary: ComponentClass<
-  ErrorBoundaryProps,
-  State
-> = class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
-  constructor(props: ErrorBoundaryProps) {
-    super(props);
-    this.state = {
-      error: undefined,
-      errorInfo: undefined,
-    };
-  }
-
-  componentDidCatch(error: Error, errorInfo: ErrorInfo) {
-    // eslint-disable-next-line no-console
-    console.error(`ErrorBoundary, error: ${error}`, { error, errorInfo });
-    this.setState({ error, errorInfo });
-  }
-
-  render() {
-    const { slackChannel, children } = this.props;
-    const { error } = this.state;
-
-    if (!error) {
-      return children;
+export const ErrorBoundary: ComponentClass<ErrorBoundaryProps, State> =
+  class ErrorBoundary extends Component<ErrorBoundaryProps, State> {
+    constructor(props: ErrorBoundaryProps) {
+      super(props);
+      this.state = {
+        error: undefined,
+        errorInfo: undefined,
+      };
     }
 
-    return (
-      <ErrorPanel title="Something Went Wrong" error={error}>
-        <SlackLink slackChannel={slackChannel} />
-      </ErrorPanel>
-    );
-  }
-};
+    componentDidCatch(error: Error, errorInfo: ErrorInfo) {
+      // eslint-disable-next-line no-console
+      console.error(`ErrorBoundary, error: ${error}`, { error, errorInfo });
+      this.setState({ error, errorInfo });
+    }
+
+    render() {
+      const { slackChannel, children } = this.props;
+      const { error } = this.state;
+
+      if (!error) {
+        return children;
+      }
+
+      return (
+        <ErrorPanel title="Something Went Wrong" error={error}>
+          <SlackLink slackChannel={slackChannel} />
+        </ErrorPanel>
+      );
+    }
+  };

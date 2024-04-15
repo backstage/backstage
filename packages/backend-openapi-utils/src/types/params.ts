@@ -94,13 +94,14 @@ export type DocParameters<
 export type ParameterSchema<
   Doc extends RequiredDoc,
   Schema extends ImmutableParameterObject['schema'],
-> = SchemaRef<Doc, Schema> extends infer R
-  ? R extends ImmutableSchemaObject
-    ? R extends JSONSchema
-      ? FromSchema<R>
+> =
+  SchemaRef<Doc, Schema> extends infer R
+    ? R extends ImmutableSchemaObject
+      ? R extends JSONSchema
+        ? FromSchema<R>
+        : never
       : never
-    : never
-  : never;
+    : never;
 
 /**
  * @public

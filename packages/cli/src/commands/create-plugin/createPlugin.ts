@@ -53,10 +53,13 @@ async function checkExists(destination: string) {
 const sortObjectByKeys = (obj: { [name in string]: string }) => {
   return Object.keys(obj)
     .sort()
-    .reduce((result, key: string) => {
-      result[key] = obj[key];
-      return result;
-    }, {} as { [name in string]: string });
+    .reduce(
+      (result, key: string) => {
+        result[key] = obj[key];
+        return result;
+      },
+      {} as { [name in string]: string },
+    );
 };
 
 export const capitalize = (str: string): string =>

@@ -28,7 +28,7 @@ describe('VisitsWebStorageApi.create()', () => {
     signOut: jest.fn(),
     getProfileInfo: jest.fn(),
     getBackstageIdentity: async () =>
-      ({ userEntityRef: 'user:default/guest' } as BackstageUserIdentity),
+      ({ userEntityRef: 'user:default/guest' }) as BackstageUserIdentity,
     getCredentials: jest.fn(),
   };
 

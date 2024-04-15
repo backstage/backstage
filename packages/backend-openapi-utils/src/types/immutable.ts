@@ -43,10 +43,10 @@ export type Immutable<T> = T extends
   | undefined
   ? T
   : T extends Map<infer K, infer V>
-  ? ReadonlyMap<Immutable<K>, Immutable<V>>
-  : T extends Set<infer S>
-  ? ReadonlySet<Immutable<S>>
-  : { readonly [P in keyof T]: Immutable<T[P]> };
+    ? ReadonlyMap<Immutable<K>, Immutable<V>>
+    : T extends Set<infer S>
+      ? ReadonlySet<Immutable<S>>
+      : { readonly [P in keyof T]: Immutable<T[P]> };
 
 /**
  * @public

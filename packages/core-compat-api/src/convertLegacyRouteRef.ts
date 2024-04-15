@@ -47,13 +47,14 @@ import { toInternalExternalRouteRef } from '../../frontend-plugin-api/src/routin
  */
 export type ToNewRouteRef<
   T extends LegacyRouteRef | LegacySubRouteRef | LegacyExternalRouteRef,
-> = T extends LegacyRouteRef<infer IParams>
-  ? RouteRef<IParams>
-  : T extends LegacySubRouteRef<infer IParams>
-  ? SubRouteRef<IParams>
-  : T extends LegacyExternalRouteRef<infer IParams, infer IOptional>
-  ? ExternalRouteRef<IParams, IOptional>
-  : never;
+> =
+  T extends LegacyRouteRef<infer IParams>
+    ? RouteRef<IParams>
+    : T extends LegacySubRouteRef<infer IParams>
+      ? SubRouteRef<IParams>
+      : T extends LegacyExternalRouteRef<infer IParams, infer IOptional>
+        ? ExternalRouteRef<IParams, IOptional>
+        : never;
 
 /**
  * Converts a collection of legacy route refs to the new system.

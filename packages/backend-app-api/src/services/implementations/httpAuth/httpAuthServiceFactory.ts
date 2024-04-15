@@ -203,9 +203,8 @@ class DefaultHttpAuthService implements HttpAuthService {
       return { expiresAt: existingExpiresAt };
     }
 
-    const { token, expiresAt } = await this.#auth.getLimitedUserToken(
-      credentials,
-    );
+    const { token, expiresAt } =
+      await this.#auth.getLimitedUserToken(credentials);
     if (!token) {
       throw new Error('User credentials is unexpectedly missing token');
     }

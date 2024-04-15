@@ -7530,6 +7530,7 @@ __metadata:
     "@microsoft/api-documenter": ^7.22.33
     "@microsoft/api-extractor": ^7.36.4
     "@openapitools/openapi-generator-cli": ^2.7.0
+    "@prettier/sync": ^0.5.2
     "@stoplight/spectral-core": ^1.18.0
     "@stoplight/spectral-formatters": ^1.1.0
     "@stoplight/spectral-functions": ^1.7.2
@@ -13347,6 +13348,17 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@prettier/sync@npm:^0.5.2":
+  version: 0.5.2
+  resolution: "@prettier/sync@npm:0.5.2"
+  dependencies:
+    make-synchronized: ^0.2.8
+  peerDependencies:
+    prettier: "*"
+  checksum: 172cdc62f4103b022f8e8d0a63839350d97bc51468ea476594bce651c2cda311e4810417f16a3c967941a8493a68468a5df27beea4c85eaeaa37e84be3acf399
+  languageName: node
+  linkType: hard
+
 "@protobufjs/aspromise@npm:^1.1.1, @protobufjs/aspromise@npm:^1.1.2":
   version: 1.1.2
   resolution: "@protobufjs/aspromise@npm:1.1.2"
@@ -15175,15 +15187,6 @@ __metadata:
     "@typescript-eslint/parser": ^5.13.0
     eslint: ">=8.x"
   checksum: 899166abb108f1f53867729a35fb711d89dc70d5fc0a725a80386adb85805149008f7226262619044680264c64c0a8a0e9703059f64d0b390650bcae86727ed6
-  languageName: node
-  linkType: hard
-
-"@spotify/prettier-config@npm:^15.0.0":
-  version: 15.0.0
-  resolution: "@spotify/prettier-config@npm:15.0.0"
-  peerDependencies:
-    prettier: 2.x
-  checksum: aa5ec5739427f9acdb9d62ae6c04f04a344898567239f7ee45c75c6205ebdffbc61747ea8de6e83baf0bc3785359967de4b7097a8723c4b4063ff57dc5cb6c44
   languageName: node
   linkType: hard
 
@@ -31914,6 +31917,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"make-synchronized@npm:^0.2.8":
+  version: 0.2.9
+  resolution: "make-synchronized@npm:0.2.9"
+  checksum: 11d8af618a860c5e5f3b9b5edea4b18e39d5065743900c7c47871eb39e4dc50aba39a03c4e53045778d6a1a6461d1a51719e30640511a7600a77d606820c70a6
+  languageName: node
+  linkType: hard
+
 "makeerror@npm:1.0.12":
   version: 1.0.12
   resolution: "makeerror@npm:1.0.12"
@@ -38799,7 +38809,6 @@ __metadata:
     "@octokit/rest": ^19.0.3
     "@playwright/test": ^1.32.3
     "@spotify/eslint-plugin": ^15.0.0
-    "@spotify/prettier-config": ^15.0.0
     "@techdocs/cli": "workspace:*"
     "@types/node": ^18.17.8
     "@types/webpack": ^5.28.0

@@ -54,7 +54,7 @@ The resulting log should now have more information available for debugging:
 
 In your `launch.json`, add a new entry with the following,
 
-```jsonc
+```json
 {
     "name": "Start Backend",
     "type": "node",

@@ -55,8 +55,7 @@ describe('createSearchResultListItemExtension', () => {
         predicate: result => result.type === 'techdocs',
         component:
           async ({ config }) =>
-          props =>
-            <TechDocsSearchResultItemComponent {...props} {...config} />,
+          props => <TechDocsSearchResultItemComponent {...props} {...config} />,
       });
 
     const ExploreSearchResultItemComponent = (

@@ -195,9 +195,8 @@ export class GkeEntityProvider implements EntityProvider {
         const request = {
           parent: parent,
         };
-        const [response] = await this.clusterManagerClient.listClusters(
-          request,
-        );
+        const [response] =
+          await this.clusterManagerClient.listClusters(request);
         return (
           response.clusters
             ?.filter(this.filterOutUndefinedCluster)

@@ -262,7 +262,7 @@
 - 5970928: Add feature flags to plugins and extension overrides.
 - e539735: Added `createSignInPageExtension`.
 - 73246ec: Added translation APIs as well as `createTranslationExtension`.
-- cb4197a: Forward ` node`` instead of  `extensionId` to resolved extension inputs.
+- cb4197a: Forward `node` instead of `extensionId` to resolved extension inputs.
 - f27ee7d: Migrate analytics api and context files.
 - 0cbb03b: Fixing regular expression ReDoS with zod packages. Upgrading to latest. ref: https://security.snyk.io/vuln/SNYK-JS-ZOD-5925617
 - f1183b7: Renamed the `component` option of `createComponentExtension` to `loader`.
@@ -297,7 +297,7 @@
 
 - b7adf24: Update alpha component ref type to be more specific than any, delete boot page component and use new plugin type for error boundary component extensions.
 - 73246ec: Added translation APIs as well as `createTranslationExtension`.
-- cb4197a: Forward ` node`` instead of  `extensionId` to resolved extension inputs.
+- cb4197a: Forward `node` instead of `extensionId` to resolved extension inputs.
 - Updated dependencies
   - @backstage/config@1.1.1
   - @backstage/core-components@0.13.9-next.2

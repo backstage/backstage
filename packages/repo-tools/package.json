@@ -53,6 +53,7 @@
     "@microsoft/api-documenter": "^7.22.33",
     "@microsoft/api-extractor": "^7.36.4",
     "@openapitools/openapi-generator-cli": "^2.7.0",
+    "@prettier/sync": "^0.5.2",
     "@stoplight/spectral-core": "^1.18.0",
     "@stoplight/spectral-formatters": "^1.1.0",
     "@stoplight/spectral-functions": "^1.7.2",

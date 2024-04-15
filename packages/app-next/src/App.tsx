@@ -92,8 +92,9 @@ const homePageExtension = createExtension({
 
 const signInPage = createSignInPageExtension({
   name: 'guest',
-  loader: async () => (props: SignInPageProps) =>
-    <SignInPage {...props} providers={['guest']} />,
+  loader: async () => (props: SignInPageProps) => (
+    <SignInPage {...props} providers={['guest']} />
+  ),
 });
 
 const scmAuthExtension = createApiExtension({

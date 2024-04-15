@@ -110,9 +110,11 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
     const features: BackendFeature[] = [];
 
     for (const name of dependencyNames) {
-      const depPkg = require(require.resolve(`${name}/package.json`, {
-        paths: [packageDir],
-      })) as BackstagePackageJson;
+      const depPkg = require(
+        require.resolve(`${name}/package.json`, {
+          paths: [packageDir],
+        }),
+      ) as BackstagePackageJson;
       if (
         !depPkg?.backstage?.role ||
         !DETECTED_PACKAGE_ROLES.includes(depPkg.backstage.role)

@@ -420,7 +420,7 @@
 - f27ee7d: Migrate analytics route tracker component.
 - b8cb780: Added `createSpecializedApp`, which is a synchronous version of `createApp` where config and features already need to be loaded.
 - c36e0b9: Renamed `AppRouteBinder` to `CreateAppRouteBinder`
-- cb4197a: Forward ` node`` instead of  `extensionId` to resolved extension inputs.
+- cb4197a: Forward `node` instead of `extensionId` to resolved extension inputs.
 - 8837a96: Updates to match the introduction of `ExtensionDefinition` and new extension ID naming patterns.
 - a5a0473: Updates to provide `node` to extension factories instead of `id` and `source`.
 - 5cdf2b3: Updated usage of `Extension` and `ExtensionDefinition` as they are now opaque.
@@ -462,7 +462,7 @@
 - aeb8008: Add support for translation extensions.
 - b7adf24: Use the new plugin type for error boundary components.
 - 8f5d6c1: Updates to match the new extension input wrapping.
-- cb4197a: Forward ` node`` instead of  `extensionId` to resolved extension inputs.
+- cb4197a: Forward `node` instead of `extensionId` to resolved extension inputs.
 - 8837a96: Updates to match the introduction of `ExtensionDefinition` and new extension ID naming patterns.
 - Updated dependencies
   - @backstage/frontend-plugin-api@0.4.0-next.2
