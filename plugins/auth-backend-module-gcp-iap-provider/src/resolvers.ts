@@ -46,4 +46,21 @@ export namespace gcpIapSignInResolvers {
       };
     },
   });
+
+  /**
+   * Looks up the user by matching their user ID to the `google.com/user-id` annotation.
+   */
+  export const idMatchingUserEntityAnnotation = createSignInResolverFactory({
+    create() {
+      return async (info: SignInInfo<GcpIapResult>, ctx) => {
+        const userId = info.result.iapToken.sub.split(':')[1];
+
+        return ctx.signInWithCatalogUser({
+          annotations: {
+            'google.com/user-id': userId,
+          },
+        });
+      };
+    },
+  });
 }
