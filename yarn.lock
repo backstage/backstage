@@ -4793,6 +4793,24 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:^, @backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:plugins/auth-backend-module-azure-easyauth-provider":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-auth-backend-module-azure-easyauth-provider@workspace:plugins/auth-backend-module-azure-easyauth-provider"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@types/passport": ^1.0.16
+    express: ^4.19.2
+    jose: ^5.0.0
+    passport: ^0.7.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:^, @backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:plugins/auth-backend-module-cloudflare-access-provider":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-auth-backend-module-cloudflare-access-provider@workspace:plugins/auth-backend-module-cloudflare-access-provider"
@@ -5047,6 +5065,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-backend-module-atlassian-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-aws-alb-provider": "workspace:^"
+    "@backstage/plugin-auth-backend-module-azure-easyauth-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-cloudflare-access-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-gcp-iap-provider": "workspace:^"
     "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
@@ -19420,7 +19439,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/passport@npm:*, @types/passport@npm:^1.0.11, @types/passport@npm:^1.0.3":
+"@types/passport@npm:*, @types/passport@npm:^1.0.11, @types/passport@npm:^1.0.16, @types/passport@npm:^1.0.3":
   version: 1.0.16
   resolution: "@types/passport@npm:1.0.16"
   dependencies:
@@ -27856,7 +27875,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"express@npm:^4.14.0, express@npm:^4.17.1, express@npm:^4.17.3, express@npm:^4.18.1, express@npm:^4.18.2":
+"express@npm:^4.14.0, express@npm:^4.17.1, express@npm:^4.17.3, express@npm:^4.18.1, express@npm:^4.18.2, express@npm:^4.19.2":
   version: 4.19.2
   resolution: "express@npm:4.19.2"
   dependencies:

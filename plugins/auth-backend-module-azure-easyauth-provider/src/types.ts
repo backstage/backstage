@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-export { easyAuth } from './provider';
-import { AzureEasyAuthResult } from '@backstage/plugin-auth-backend-module-azure-easyauth-provider';
+import { Profile } from 'passport';
 
-/**
- * @public
- * @deprecated import AzureEasyAuthResult from `@backstage/plugin-auth-backend-module-azure-easyauth-provider` instead
- */
-export type EasyAuthResult = AzureEasyAuthResult;
+/** @public */
+export type AzureEasyAuthResult = {
+  fullProfile: Profile;
+  accessToken?: string;
+};
