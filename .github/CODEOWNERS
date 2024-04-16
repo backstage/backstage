@@ -8,7 +8,7 @@
 yarn.lock                                         @backstage/maintainers @backstage-service
 */yarn.lock                                       @backstage/maintainers @backstage-service
 /.changeset/*.md
-/beps/0001-notifications-system                   @backstage/maintainers @backstage/
+/beps/0001-notifications-system                   @backstage/maintainers @backstage/notifications-maintainers
 /beps/0008-resolve-conflicts-component-registration      @backstage/maintainers @backstage/catalog-maintainers
 /docs/assets/search                               @backstage/discoverability-maintainers
 /docs/features/search                             @backstage/discoverability-maintainers
