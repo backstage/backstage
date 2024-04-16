@@ -208,7 +208,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: 'docs/releases/v1.25.0',
+          to: 'docs/releases/v1.26.0',
           label: 'Releases',
           position: 'left',
         },
