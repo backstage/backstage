@@ -58,15 +58,16 @@ function validateAppServiceConfiguration(env: NodeJS.ProcessEnv) {
   if (env.WEBSITE_SKU === undefined) {
     throw new Error('Backstage is not running on Azure App Services');
   }
-  if (env.WEBSITE_AUTH_ENABLED?.toLowerCase() !== 'true') {
+  if (env.WEBSITE_AUTH_ENABLED?.toLocaleLowerCase('en-US') !== 'true') {
     throw new Error('Azure App Services does not have authentication enabled');
   }
   if (
-    env.WEBSITE_AUTH_DEFAULT_PROVIDER?.toLowerCase() !== 'azureactivedirectory'
+    env.WEBSITE_AUTH_DEFAULT_PROVIDER?.toLocaleLowerCase('en-US') !==
+    'azureactivedirectory'
   ) {
     throw new Error('Authentication provider is not Entra ID');
   }
-  if (process.env.WEBSITE_AUTH_TOKEN_STORE?.toLowerCase() !== 'true') {
+  if (env.WEBSITE_AUTH_TOKEN_STORE?.toLocaleLowerCase('en-US') !== 'true') {
     throw new Error('Token Store is not enabled');
   }
 }
