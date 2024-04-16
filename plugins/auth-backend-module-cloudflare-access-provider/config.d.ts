@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-export { cfAccess } from './provider';
-export type {
-  CloudflareAccessClaims,
-  CloudflareAccessGroup,
-  CloudflareAccessResult,
-  CloudflareAccessIdentityProfile,
-} from './provider';
+import { HumanDuration } from '@backstage/types';
+
+export interface Config {
+  auth?: {
+    providers?: {
+      /** @visibility frontend */
+      cfaccess?: {
+        teamName: string;
+        /** @deepVisibility secret */
+        serviceTokens?: Array<{
+          token: string;
+          subject: string;
+        }>;
+      };
+      /**
+       * The backstage token expiration.
+       */
+      backstageTokenExpiration?: HumanDuration;
+    };
+  };
+}
