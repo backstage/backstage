@@ -77,7 +77,9 @@ export async function migrateMovedPackages(options?: { pattern?: string }) {
           );
         } catch (ex) {
           console.warn(
-            chalk.yellow`Could not find package.json for ${depName}@${depVersion} in ${pkgName} (${depType})`,
+            chalk.yellow(
+              `Could not find package.json for ${depName}@${depVersion} in ${pkgName} (${depType})`,
+            ),
           );
           continue;
         }
@@ -86,7 +88,9 @@ export async function migrateMovedPackages(options?: { pattern?: string }) {
 
         if (movedPackageName) {
           console.log(
-            chalk.yellow`Found a moved package ${depName}@${depVersion} -> ${movedPackageName} in ${pkgName} (${depType})`,
+            chalk.yellow(
+              `Found a moved package ${depName}@${depVersion} -> ${movedPackageName} in ${pkgName} (${depType})`,
+            ),
           );
 
           didPackageChange = true;

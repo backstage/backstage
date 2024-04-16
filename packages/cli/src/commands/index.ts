@@ -386,6 +386,7 @@ export function registerCommands(program: Command) {
       'main',
     )
     .option('--skip-install', 'Skips yarn install step')
+    .option('--skip-migrate', 'Skips migration of any moved packages')
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 

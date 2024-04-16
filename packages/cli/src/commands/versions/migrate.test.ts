@@ -20,8 +20,18 @@ import {
 import * as run from '../../lib/run';
 import migrate from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
-import { paths } from '../../lib/paths';
 import fs from 'fs-extra';
+import { expectLogsToMatch } from '../../lib/new/factories/common/testUtils';
+
+// Remove log coloring to simplify log matching
+jest.mock('chalk', () => ({
+  red: (str: string) => str,
+  blue: (str: string) => str,
+  cyan: (str: string) => str,
+  green: (str: string) => str,
+  magenta: (str: string) => str,
+  yellow: (str: string) => str,
+}));
 
 let mockDir: MockDirectory;
 jest.mock('@backstage/cli-common', () => ({
@@ -31,7 +41,6 @@ jest.mock('@backstage/cli-common', () => ({
       return mockDir.resolve(filename);
     },
     get targetDir() {
-      console.log('calling!');
       return mockDir.path;
     },
   }),
@@ -105,35 +114,23 @@ describe('versions:migrate', () => {
     });
 
     jest.spyOn(run, 'run').mockResolvedValue(undefined);
-    await migrate({});
 
-    const { log: logs } = await withLogCollector(['log'], async () => {});
-    // expectLogsToMatch(logs, [
-    //   'Checking for updates of @backstage/core',
-    //   'Checking for updates of @backstage/custom',
-    //   'Checking for updates of @backstage/custom-two',
-    //   'Checking for updates of @backstage/theme',
-    //   'Checking for updates of @backstage/core-api',
-    //   'Some packages are outdated, updating',
-    //   'Using default pattern glob @backstage?(-community)/*',
-    //   'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
-    //   'unlocking @backstage-community/custom@^1.0.1 ~> 1.1.0',
-    //   'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
-    //   'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
-    //   'bumping @backstage/core in a to ^1.0.6',
-    //   'bumping @backstage-community/custom in a to ^1.1.0',
-    //   'bumping @backstage-community/custom-two in a to ^2.0.0',
-    //   'bumping @backstage/core in b to ^1.0.6',
-    //   'bumping @backstage-community/custom in b to ^1.1.0',
-    //   'bumping @backstage-community/custom-two in b to ^2.0.0',
-    //   'bumping @backstage/theme in b to ^2.0.0',
-    //   'Running yarn install to install new versions',
-    //   '⚠️  The following packages may have breaking changes:',
-    //   '  @backstage-community/custom-two : 1.0.0 ~> 2.0.0',
-    //   '  @backstage/theme : 1.0.0 ~> 2.0.0',
-    //   '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
-    //   'Version bump complete!',
-    // ]);
+    const { warn, log: logs } = await withLogCollector(async () => {
+      await migrate({});
+    });
+
+    expectLogsToMatch(logs, [
+      'Found a moved package @backstage/custom@^1.0.1 -> @backstage-community/custom in a (dependencies)',
+      'Found a moved package @backstage/custom-two@^1.0.0 -> @backstage-community/custom-two in a (dependencies)',
+      'Found a moved package @backstage/custom@^1.1.0 -> @backstage-community/custom in b (dependencies)',
+      'Found a moved package @backstage/custom-two@^1.0.0 -> @backstage-community/custom-two in b (dependencies)',
+    ]);
+
+    expectLogsToMatch(warn, [
+      'Could not find package.json for @backstage/core@^1.0.5 in a (dependencies)',
+      'Could not find package.json for @backstage/core@^1.0.3 in b (dependencies)',
+      'Could not find package.json for @backstage/theme@^1.0.0 in b (dependencies)',
+    ]);
 
     expect(run.run).toHaveBeenCalledTimes(1);
     expect(run.run).toHaveBeenCalledWith(
