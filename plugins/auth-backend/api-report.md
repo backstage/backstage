@@ -80,7 +80,7 @@ export type AuthResponse<TProviderInfo> = ClientAuthResponse<TProviderInfo>;
 // @public @deprecated
 export type AwsAlbResult = AwsAlbResult_2;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BitbucketOAuthResult = {
   fullProfile: BitbucketPassportProfile;
   params: {
@@ -92,7 +92,7 @@ export type BitbucketOAuthResult = {
   refreshToken?: string;
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type BitbucketPassportProfile = Profile & {
   id?: string;
   displayName?: string;
@@ -424,8 +424,8 @@ export const providers: Readonly<{
         | undefined,
     ) => AuthProviderFactory_2;
     resolvers: Readonly<{
-      usernameMatchingUserEntityAnnotation(): SignInResolver_2<OAuthResult>;
-      userIdMatchingUserEntityAnnotation(): SignInResolver_2<OAuthResult>;
+      userIdMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
+      usernameMatchingUserEntityAnnotation: () => SignInResolver_2<OAuthResult>;
     }>;
   }>;
   bitbucketServer: Readonly<{
