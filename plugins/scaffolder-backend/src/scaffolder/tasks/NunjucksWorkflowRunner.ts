@@ -113,13 +113,10 @@ const createStepLogger = ({
   const taskLogger = WinstonLogger.create({
     level: process.env.LOG_LEVEL || 'info',
     format: winston.format.combine(
-      winston.format.colorize(),
-      winston.format.simple(),
+      winston.format.timestamp(),
+      winston.format.json(),
     ),
-    transports: [
-      new winston.transports.Console(),
-      new winston.transports.Stream({ stream: stepLogStream }),
-    ],
+    transports: [new winston.transports.Stream({ stream: stepLogStream })],
   });
 
   taskLogger.addRedactions(Object.values(task.secrets ?? {}));
@@ -262,7 +259,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const action: TemplateAction<JsonObject> =
         this.options.actionRegistry.get(step.action);
-      const { taskLogger, streamLogger } = createStepLogger({ task, step });
+
+      const { taskLogger, streamLogger } = createStepLogger({
+        task,
+        step,
+      });
 
       if (task.isDryRun) {
         const redactedSecrets = Object.fromEntries(
