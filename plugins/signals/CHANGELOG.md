@@ -1,5 +1,19 @@
 # @backstage/plugin-signals
 
+## 0.0.5
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- 9a41a7b: Migrate signals and notifications to the new backend in local development
+- f06458c: fixed typo in docs
+- Updated dependencies
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/theme@0.5.3
+  - @backstage/plugin-signals-react@0.0.3
+  - @backstage/types@1.1.1
+
 ## 0.0.5-next.1
 
 ### Patch Changes

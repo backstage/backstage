@@ -1,5 +1,20 @@
 # @backstage/plugin-entity-feedback-backend
 
+## 0.2.14
+
+### Patch Changes
+
+- d5a1fe1: Replaced winston logger with `LoggerService`
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-auth-node@0.4.12
+  - @backstage/catalog-client@1.6.4
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-entity-feedback-common@0.1.3
+
 ## 0.2.14-next.1
 
 ### Patch Changes

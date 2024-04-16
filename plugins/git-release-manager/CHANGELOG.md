@@ -1,5 +1,16 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.46
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/integration@1.10.0
+
 ## 0.3.46-next.0
 
 ### Patch Changes

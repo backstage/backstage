@@ -1,5 +1,27 @@
 # @backstage/plugin-azure-devops
 
+## 0.4.3
+
+### Patch Changes
+
+- 95b0573: `getAllTeams` now accepts an optional `limit` parameter which can be used to return more than the default limit of 100 teams from the Azure DevOps API
+
+  `pullRequestOptions` have been equipped with `teamsLimit` so that the property can be used with `getAllTeams`
+
+- 4d895b3: Fixed bug in EntityPageAzurePipeline component where build definition annotation used for viewing pipelines
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/plugin-azure-devops-common@0.4.1
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/core-compat-api@0.2.4
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/frontend-plugin-api@0.6.4
+  - @backstage/plugin-permission-react@0.4.22
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+
 ## 0.4.3-next.1
 
 ### Patch Changes

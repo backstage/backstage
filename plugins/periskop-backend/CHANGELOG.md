@@ -1,5 +1,15 @@
 # @backstage/plugin-periskop-backend
 
+## 0.2.15
+
+### Patch Changes
+
+- d5a1fe1: Replaced winston logger with `LoggerService`
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/config@1.2.0
+
 ## 0.2.15-next.1
 
 ### Patch Changes

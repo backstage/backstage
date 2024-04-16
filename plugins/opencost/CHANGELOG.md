@@ -1,5 +1,13 @@
 # @backstage/plugin-opencost
 
+## 0.2.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+
 ## 0.2.9-next.0
 
 ### Patch Changes

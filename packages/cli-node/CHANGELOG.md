@@ -1,5 +1,15 @@
 # @backstage/cli-node
 
+## 0.2.5
+
+### Patch Changes
+
+- ed9260f: Added `versions:migrate` command to help move packages to the new `@backstage-community` namespace
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.4
 
 ### Patch Changes

@@ -1,5 +1,32 @@
 # @backstage/plugin-scaffolder
 
+## 1.19.3
+
+### Patch Changes
+
+- 4f1f6ca: Use default value for `MyGroupsPicker` if provided
+- 605c971: Allow the task list search to work on the Scaffolder template title.
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- 87d2eb8: Updated dependency `json-schema-library` to `^9.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- 419e948: Don't show login prompt if token is set in the state
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/core-compat-api@0.2.4
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/frontend-plugin-api@0.6.4
+  - @backstage/plugin-permission-react@0.4.22
+  - @backstage/plugin-scaffolder-react@1.8.4
+  - @backstage/integration-react@1.1.26
+  - @backstage/catalog-client@1.6.4
+  - @backstage/integration@1.10.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-scaffolder-common@1.5.1
+
 ## 1.19.3-next.1
 
 ### Patch Changes

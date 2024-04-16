@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-playlist",
-  "version": "0.2.8-next.1",
+  "version": "0.2.8",
   "backstage": {
     "role": "frontend-plugin"
   },

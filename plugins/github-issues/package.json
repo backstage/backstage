@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-github-issues",
-  "version": "0.4.1-next.1",
+  "version": "0.4.1",
   "backstage": {
     "role": "frontend-plugin"
   },

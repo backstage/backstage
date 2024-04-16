@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-server
 
+## 0.1.7
+
+### Patch Changes
+
+- 4a15c86: Add examples for `publish:bitbucketServer` scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/integration@1.10.0
+  - @backstage/plugin-scaffolder-node@0.4.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.7-next.1
 
 ### Patch Changes
