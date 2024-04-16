@@ -19,7 +19,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
   }),
@@ -44,6 +44,7 @@ import { createApp } from '@backstage/app-defaults';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import LightIcon from '@material-ui/icons/WbSunny';
+import { myTheme } from './theme/myTheme';
 
 const app = createApp({
   apis: ...,
@@ -54,7 +55,7 @@ const app = createApp({
     variant: 'light',
     icon: <LightIcon />,
     Provider: ({ children }) => (
-      <UnifiedThemeProvider theme={myTheme} children={children} />
+      <ThemeProvider theme={myTheme} children={children} />
     ),
   }]
 })
