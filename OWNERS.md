@@ -160,7 +160,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 
 | Name                           | Organization              | GitHub                                                | Discord                        |
 | ------------------------------ | ------------------------- | ----------------------------------------------------- | ------------------------------ |
-| Adam Harvey                    | Cisco                     | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey_`                  |
+| Adam Harvey                    | Okta                      | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey_`                  |
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
 | Andre Wanlin                   | Spotify                   | [awanlin](https://github.com/awanlin)                 | `ahhhndre`                     |
 | Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
