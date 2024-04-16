@@ -17,7 +17,13 @@ import { PackageGraph } from '@backstage/cli-node';
 import { OptionValues } from 'commander';
 
 export default async (_: OptionValues) => {
-  console.log(
-    PackageGraph.fromPackages(await PackageGraph.listTargetPackages()),
+  const packageMap = PackageGraph.fromPackages(
+    await PackageGraph.listTargetPackages(),
   );
+
+  const packagesThatHaveMoved = new Map<string, string>();
+
+  for (const [name, pkg] of packageMap.entries()) {
+    console.log(name, pkg);
+  }
 };

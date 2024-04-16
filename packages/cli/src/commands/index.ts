@@ -395,6 +395,13 @@ export function registerCommands(program: Command) {
     .description('Check Backstage package versioning')
     .action(lazy(() => import('./versions/lint').then(m => m.default)));
 
+  program
+    .command('versions:migrate')
+    .description(
+      'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
+    )
+    .action(lazy(() => import('./versions/migrate').then(m => m.default)));
+
   // TODO(Rugvip): Deprecate in favor of package variant
   program
     .command('clean')

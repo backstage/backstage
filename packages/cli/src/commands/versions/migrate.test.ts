@@ -20,18 +20,21 @@ import {
 import * as run from '../../lib/run';
 import migrate from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
+import { paths } from '../../lib/paths';
 import fs from 'fs-extra';
 
 let mockDir: MockDirectory;
-jest.mock('../../lib/paths', () => ({
-  paths: {
+jest.mock('@backstage/cli-common', () => ({
+  ...jest.requireActual('@backstage/cli-common'),
+  findPaths: () => ({
     resolveTargetRoot(filename: string) {
       return mockDir.resolve(filename);
     },
     get targetDir() {
+      console.log('calling!');
       return mockDir.path;
     },
-  },
+  }),
 }));
 
 jest.mock('../../lib/run', () => {
@@ -49,10 +52,30 @@ jest.mock('../../lib/versioning/packages', () => {
   };
 });
 
+const REGISTRY_VERSIONS: { [name: string]: string } = {
+  '@backstage/core': '1.0.6',
+  '@backstage/core-api': '1.0.7',
+  '@backstage/theme': '2.0.0',
+  '@backstage-extra/custom': '1.1.0',
+  '@backstage-extra/custom-two': '2.0.0',
+  '@backstage/create-app': '1.0.0',
+};
+
 describe('versions:migrate', () => {
   mockDir = createMockDirectory();
 
-  beforeEach(() => {});
+  beforeEach(() => {
+    mockFetchPackageInfo.mockImplementation(async name => ({
+      name: name,
+      'dist-tags': {
+        latest: REGISTRY_VERSIONS[name],
+      },
+    }));
+  });
+
+  afterEach(() => {
+    jest.resetAllMocks();
+  });
 
   it('should bump to the moved version when the package is moved', async () => {
     mockDir.setContent({
@@ -87,10 +110,10 @@ describe('versions:migrate', () => {
     });
 
     jest.spyOn(run, 'run').mockResolvedValue(undefined);
+    console.log(paths);
+    await migrate({});
 
-    const { log: logs } = await withLogCollector(['log'], async () => {
-      await migrate({});
-    });
+    const { log: logs } = await withLogCollector(['log'], async () => {});
     // expectLogsToMatch(logs, [
     //   'Checking for updates of @backstage/core',
     //   'Checking for updates of @backstage/custom',
