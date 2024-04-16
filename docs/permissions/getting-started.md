@@ -106,7 +106,7 @@ backend.add(import('@backstage/plugin-permission-backend/alpha'));
 backend.add(
   import('@backstage/plugin-permission-backend-module-allow-all-policy'),
 );
-/* highlight-add-next-line */
+/* highlight-add-start */
 backend.add(
   createBackendModule({
     pluginId: 'permission',
@@ -121,6 +121,7 @@ backend.add(
     },
   }),
 );
+/* highlight-add-end */
 // ...
 backend.start();
 ```
