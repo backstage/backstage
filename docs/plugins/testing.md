@@ -28,7 +28,7 @@ To run both `MyComponent.test.tsx` and `MyControl.test.tsx` suite of tests:
 
 :::note Note
 
-if `console.logs` are not appearing, run only the individual test you are
+if `console.log`s are not appearing, run only the individual test you are
 working on.
 [This is a bug in Jest](https://github.com/facebook/jest/issues/2441).
 
