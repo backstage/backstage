@@ -22,7 +22,7 @@ import {
   Resolver,
 } from '@yarnpkg/core';
 import { PROTOCOL } from '../constants';
-import { inferBackstageVersion, inferPackageVersion } from '../util';
+import { getCurrentBackstageVersion, getPackageVersion } from '../util';
 
 export class BackstageResolver implements Resolver {
   static protocol = PROTOCOL;
@@ -35,7 +35,7 @@ export class BackstageResolver implements Resolver {
   bindDescriptor(descriptor: Descriptor): Descriptor {
     return structUtils.makeDescriptor(
       descriptor,
-      `${PROTOCOL}${inferBackstageVersion(descriptor)}`,
+      `${PROTOCOL}${getCurrentBackstageVersion()}`,
     );
   }
 
@@ -43,7 +43,7 @@ export class BackstageResolver implements Resolver {
     return [
       structUtils.makeLocator(
         descriptor,
-        `npm:${await inferPackageVersion(descriptor)}`,
+        `npm:${await getPackageVersion(descriptor)}`,
       ),
     ];
   }

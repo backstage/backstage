@@ -15,7 +15,7 @@
  */
 
 import { Descriptor, Workspace, structUtils } from '@yarnpkg/core';
-import { inferPackageVersion } from '../util';
+import { getCurrentBackstageVersion, getPackageVersion } from '../util';
 import { PROTOCOL } from '../constants';
 
 const getFinalDependencyType = (
@@ -43,21 +43,34 @@ export const beforeWorkspacePacking = async (
     'devDependencies',
     'peerDependencies',
   ] as const) {
+    const backstageVersion = getCurrentBackstageVersion();
+
     const entries = Array.from(
       workspace.manifest.getForScope(dependencyType).values(),
-    ).filter(descriptor => descriptor.range === `${PROTOCOL}^`);
+    ).filter(descriptor => descriptor.range.startsWith(PROTOCOL));
 
     for (const descriptor of entries) {
+      const ident = structUtils.stringifyIdent(descriptor);
+      const range = structUtils.parseRange(descriptor.range);
+
+      if (range.selector !== '^') {
+        throw new Error(
+          `Unexpected version range "${descriptor.range}" for dependency on "${ident}"`,
+        );
+      }
+
       const finalDependencyType = getFinalDependencyType(
         dependencyType,
         descriptor,
         workspace,
       );
-      const ident = structUtils.stringifyIdent(descriptor);
 
-      rawManifest[finalDependencyType][ident] = await inferPackageVersion(
-        descriptor,
-      );
+      rawManifest[finalDependencyType][ident] = `^${await getPackageVersion(
+        structUtils.makeDescriptor(
+          descriptor,
+          `${PROTOCOL}${backstageVersion}`,
+        ),
+      )}`;
     }
   }
 };

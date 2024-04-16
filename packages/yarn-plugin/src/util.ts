@@ -14,49 +14,40 @@
  * limitations under the License.
  */
 
-import { Descriptor, structUtils } from '@yarnpkg/core';
 import { npath, xfs } from '@yarnpkg/fslib';
 import { valid as semverValid } from 'semver';
 import { getManifestByVersion } from '@backstage/release-manifests';
+import { Descriptor, structUtils } from '@yarnpkg/core';
 import { PROTOCOL } from './constants';
 
-export const inferBackstageVersion = (descriptor: Descriptor) => {
+export const getCurrentBackstageVersion = () => {
+  const backstageJson = xfs.readJsonSync(
+    npath.toPortablePath('./backstage.json'),
+  );
+
+  const backstageVersion = semverValid(backstageJson.version);
+
+  if (backstageVersion === null) {
+    throw new Error('Valid version string not found in backstage.json');
+  }
+
+  return backstageVersion;
+};
+
+export const getPackageVersion = async (descriptor: Descriptor) => {
+  const ident = structUtils.stringifyIdent(descriptor);
   const range = structUtils.parseRange(descriptor.range);
 
   if (range.protocol !== PROTOCOL) {
-    throw new Error(
-      `inferBackstageVersion called with unexpected protocol ${range.protocol}`,
-    );
+    throw new Error(`Unexpected ${range.protocol} range when packing`);
   }
 
-  let selector = range.selector;
-
-  // For backstage:^ we look up the version from backstage.json
-  if (selector === `^`) {
-    const backstageJson = xfs.readJsonSync(
-      npath.toPortablePath('./backstage.json'),
-    );
-
-    selector = backstageJson.version;
+  if (!semverValid(range.selector)) {
+    throw new Error(`Missing backstage version in range ${descriptor.range}`);
   }
-
-  if (!semverValid(selector)) {
-    throw new Error(
-      `Invalid "backstage:" version string found for ${structUtils.stringifyIdent(
-        descriptor,
-      )}. Version must be either "backstage:*" or "backstage:<version>", where version is a single Backstage release version.`,
-    );
-  }
-
-  return selector;
-};
-
-export const inferPackageVersion = async (descriptor: Descriptor) => {
-  const ident = structUtils.stringifyIdent(descriptor);
-  const backstageVersion = inferBackstageVersion(descriptor);
 
   const manifest = await getManifestByVersion({
-    version: backstageVersion,
+    version: range.selector,
   });
 
   const manifestEntry = manifest.packages.find(
