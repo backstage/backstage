@@ -4,6 +4,16 @@ DockerHub images in general did not seem ideal for Backstage as the number of vu
 
 The `Dockerfile` in this directory uses a [`wolfi-base`](https://github.com/wolfi-dev) image from Chainguard Images. This improves the security of the application and reduces false positives in scanners.
 
+## Pinning Digest
+
+To reduce maintenance, the digest of the image has been removed from the `./Dockerfile` file. A complete example with the digest would be `cgr.dev/chainguard/wolfi-base:latest@sha256:3d6dece13cdb5546cd03b20e14f9af354bc1a56ab5a7b47dca3e6c1557211fcf` and it is suggested to update the `FROM` line in the `Dockerfile` to use a digest.
+
+Using the digest allows tools such as Dependabot or Renovate to know exactly which image digest is being utilized and allows for Pull Requests to be triggered when a new digest is available. It is suggested to setup Dependabot/Renovate or a similar tool to ensure the image is kept up to date so that vulnerability fixes that have been addressed are pulled in frequently.
+
+### Obtaining Digest
+
+To obtain the latest digest, perform a `docker pull` on the image to get the latest digest in the command output or use `crane digest <image>`.
+
 ## Considerations
 
 - `Wolfi` only releases the `latest` tag for public consumption however digests can be pinned.
