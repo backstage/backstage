@@ -1,5 +1,22 @@
 # @backstage/plugin-linguist-backend
 
+## 0.5.15
+
+### Patch Changes
+
+- d5a1fe1: Replaced winston logger with `LoggerService`
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/backend-tasks@0.5.22
+  - @backstage/catalog-client@1.6.4
+  - @backstage/plugin-catalog-node@1.11.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-linguist-common@0.1.2
+
 ## 0.5.15-next.1
 
 ### Patch Changes

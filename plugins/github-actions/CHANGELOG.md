@@ -1,5 +1,20 @@
 # @backstage/plugin-github-actions
 
+## 0.6.15
+
+### Patch Changes
+
+- 76320a7: Added the `no-top-level-material-ui-4-imports` ESLint rule to aid with the migration to Material UI v5
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/integration-react@1.1.26
+  - @backstage/integration@1.10.0
+  - @backstage/catalog-model@1.4.5
+
 ## 0.6.15-next.1
 
 ### Patch Changes

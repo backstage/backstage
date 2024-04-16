@@ -1,5 +1,14 @@
 # @backstage/plugin-home-react
 
+## 0.1.12
+
+### Patch Changes
+
+- 293347f: Added ESLint rule `no-top-level-material-ui-4-imports` in the `home-react` plugin to migrate the Material UI imports.
+- Updated dependencies
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+
 ## 0.1.12-next.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-bazaar",
-  "version": "0.2.26-next.1",
+  "version": "0.2.26",
   "backstage": {
     "role": "frontend-plugin"
   },

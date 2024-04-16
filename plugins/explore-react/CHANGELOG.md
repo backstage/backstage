@@ -1,5 +1,15 @@
 # @backstage/plugin-explore-react
 
+## 0.0.38
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/plugin-explore-common@0.0.2
+
 ## 0.0.37
 
 ### Patch Changes

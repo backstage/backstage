@@ -1,5 +1,30 @@
 # @backstage/cli
 
+## 0.26.3
+
+### Patch Changes
+
+- c884b9a: Fix the bundle public subpath configuration.
+- e3c213e: Add the deprecation plugin to the default linter setup, switched off.
+
+  This allows to disable deprecation warnings for `backstage-cli repo list-deprecations` with inline comments.
+
+- 4946f03: Updated dependency `webpack-dev-server` to `^5.0.0`.
+- 6b5ddbe: Fix the backend plugin to use correct plugin id
+- 4fecffc: When building the frontend app public assets are now also copied to the public dist directory when in use.
+- ed9260f: Added `versions:migrate` command to help move packages to the new `@backstage-community` namespace
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.7
+  - @backstage/config-loader@1.8.0
+  - @backstage/integration@1.10.0
+  - @backstage/cli-node@0.2.5
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.26.3-next.1
 
 ### Patch Changes

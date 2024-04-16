@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-fossa",
-  "version": "0.2.66-next.1",
+  "version": "0.2.66",
   "description": "A Backstage plugin that integrates towards FOSSA",
   "backstage": {
     "role": "frontend-plugin"

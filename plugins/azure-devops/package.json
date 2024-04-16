@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-azure-devops",
-  "version": "0.4.3-next.1",
+  "version": "0.4.3",
   "backstage": {
     "role": "frontend-plugin"
   },

@@ -1,5 +1,22 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.23
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- cdb5ffa: Added the `no-top-level-material-ui-4-imports` ESLint rule to aid with the migration to Material UI v5
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/theme@0.5.3
+  - @backstage/plugin-permission-react@0.4.22
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-azure-sites-common@0.1.3
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.1.23-next.1
 
 ### Patch Changes

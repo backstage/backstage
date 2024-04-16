@@ -1,5 +1,15 @@
 # @backstage/plugin-cicd-statistics
 
+## 0.1.36
+
+### Patch Changes
+
+- 72f0622: Added the `no-top-level-material-ui-4-imports` ESLint rule to aid with the migration to Material UI v5
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/catalog-model@1.4.5
+
 ## 0.1.36-next.1
 
 ### Patch Changes

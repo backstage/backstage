@@ -1,5 +1,16 @@
 # @backstage/plugin-sonarqube-backend
 
+## 0.2.19
+
+### Patch Changes
+
+- d5a1fe1: Replaced winston logger with `LoggerService`
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.2.19-next.1
 
 ### Patch Changes
