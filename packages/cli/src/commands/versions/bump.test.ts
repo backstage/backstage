@@ -58,16 +58,16 @@ jest.mock('ora', () => ({
 }));
 
 let mockDir: MockDirectory;
-
-jest.mock('../../lib/paths', () => ({
-  paths: {
+jest.mock('@backstage/cli-common', () => ({
+  ...jest.requireActual('@backstage/cli-common'),
+  findPaths: () => ({
     resolveTargetRoot(filename: string) {
       return mockDir.resolve(filename);
     },
     get targetDir() {
       return mockDir.path;
     },
-  },
+  }),
 }));
 
 jest.mock('../../lib/run', () => {
@@ -200,7 +200,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log'], async () => {
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
@@ -303,7 +303,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log'], async () => {
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
       await bump({
         pattern: null,
         release: 'main',
@@ -419,7 +419,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log'], async () => {
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
@@ -517,7 +517,7 @@ describe('bump', () => {
         (_, res, ctx) => res(ctx.status(404), ctx.json({})),
       ),
     );
-    const { log: logs } = await withLogCollector(['log'], async () => {
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
       await expect(
         bump({ pattern: null, release: '999.0.1' } as unknown as Command),
       ).rejects.toThrow('No release found for 999.0.1 version');
@@ -622,7 +622,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log'], async () => {
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
       await bump({ pattern: null, release: 'next' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
@@ -718,7 +718,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log'], async () => {
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
       await bump({
         pattern: '@{backstage,backstage-extra}/*',
         release: 'main',
@@ -837,7 +837,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log'], async () => {
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
@@ -952,7 +952,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log'], async () => {
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
