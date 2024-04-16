@@ -462,6 +462,7 @@ Weaveworks
 Webpack
 widget's
 winston
+Wolfi
 www
 WWW
 XCMetrics
