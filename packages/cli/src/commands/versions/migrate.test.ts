@@ -43,35 +43,8 @@ jest.mock('../../lib/run', () => {
   };
 });
 
-const mockFetchPackageInfo = jest.fn();
-jest.mock('../../lib/versioning/packages', () => {
-  const actual = jest.requireActual('../../lib/versioning/packages');
-  return {
-    ...actual,
-    fetchPackageInfo: (name: string) => mockFetchPackageInfo(name),
-  };
-});
-
-const REGISTRY_VERSIONS: { [name: string]: string } = {
-  '@backstage/core': '1.0.6',
-  '@backstage/core-api': '1.0.7',
-  '@backstage/theme': '2.0.0',
-  '@backstage-extra/custom': '1.1.0',
-  '@backstage-extra/custom-two': '2.0.0',
-  '@backstage/create-app': '1.0.0',
-};
-
 describe('versions:migrate', () => {
   mockDir = createMockDirectory();
-
-  beforeEach(() => {
-    mockFetchPackageInfo.mockImplementation(async name => ({
-      name: name,
-      'dist-tags': {
-        latest: REGISTRY_VERSIONS[name],
-      },
-    }));
-  });
 
   afterEach(() => {
     jest.resetAllMocks();
@@ -84,6 +57,28 @@ describe('versions:migrate', () => {
           packages: ['packages/*'],
         },
       }),
+      node_modules: {
+        '@backstage': {
+          custom: {
+            'package.json': JSON.stringify({
+              name: '@backstage-extra/custom',
+              version: '1.0.1',
+              backstage: {
+                moved: '@backstage-community/custom',
+              },
+            }),
+          },
+          'custom-two': {
+            'package.json': JSON.stringify({
+              name: '@backstage-extra/custom-two',
+              version: '1.0.0',
+              backstage: {
+                moved: '@backstage-community/custom-two',
+              },
+            }),
+          },
+        },
+      },
       packages: {
         a: {
           'package.json': JSON.stringify({
@@ -110,7 +105,6 @@ describe('versions:migrate', () => {
     });
 
     jest.spyOn(run, 'run').mockResolvedValue(undefined);
-    console.log(paths);
     await migrate({});
 
     const { log: logs } = await withLogCollector(['log'], async () => {});
@@ -141,10 +135,6 @@ describe('versions:migrate', () => {
     //   'Version bump complete!',
     // ]);
 
-    expect(mockFetchPackageInfo).toHaveBeenCalledTimes(5);
-    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
-    expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
-
     expect(run.run).toHaveBeenCalledTimes(1);
     expect(run.run).toHaveBeenCalledWith(
       'yarn',
@@ -155,12 +145,13 @@ describe('versions:migrate', () => {
     const packageA = await fs.readJson(
       mockDir.resolve('packages/a/package.json'),
     );
+
     expect(packageA).toEqual({
       name: 'a',
       dependencies: {
-        '@backstage-community/custom': '^1.1.0',
-        '@backstage-community/custom-two': '^2.0.0',
-        '@backstage/core': '^1.0.6',
+        '@backstage-community/custom': '^1.0.1',
+        '@backstage-community/custom-two': '^1.0.0',
+        '@backstage/core': '^1.0.5',
       },
     });
     const packageB = await fs.readJson(
@@ -170,9 +161,9 @@ describe('versions:migrate', () => {
       name: 'b',
       dependencies: {
         '@backstage-community/custom': '^1.1.0',
-        '@backstage-community/custom-two': '^2.0.0',
-        '@backstage/core': '^1.0.6',
-        '@backstage/theme': '^2.0.0',
+        '@backstage-community/custom-two': '^1.0.0',
+        '@backstage/core': '^1.0.3',
+        '@backstage/theme': '^1.0.0',
       },
     });
   });

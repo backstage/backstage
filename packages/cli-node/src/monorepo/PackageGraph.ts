@@ -45,6 +45,7 @@ export interface BackstagePackageJson {
 
   backstage?: {
     role?: PackageRole;
+    moved?: string;
   };
 
   exports?: JsonValue;
@@ -136,8 +137,8 @@ export class PackageGraph extends Map<string, PackageGraphNode> {
    * Lists all local packages in a monorepo.
    */
   static async listTargetPackages(): Promise<BackstagePackage[]> {
-    console.log(paths.targetDir);
     const { packages } = await getPackages(paths.targetDir);
+
     return packages as BackstagePackage[];
   }
 

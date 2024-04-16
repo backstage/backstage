@@ -397,6 +397,10 @@ export function registerCommands(program: Command) {
 
   program
     .command('versions:migrate')
+    .option(
+      '--pattern <glob>',
+      'Override glob for matching packages to upgrade',
+    )
     .description(
       'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
     )

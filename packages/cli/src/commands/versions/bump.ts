@@ -470,7 +470,7 @@ export async function bumpBackstageJsonVersion(version: string) {
   );
 }
 
-async function runYarnInstall() {
+export async function runYarnInstall() {
   const spinner = ora({
     prefixText: `Running ${chalk.blue('yarn install')} to install new versions`,
     spinner: 'arc',

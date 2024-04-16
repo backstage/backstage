@@ -13,17 +13,97 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PackageGraph } from '@backstage/cli-node';
+import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
+import chalk from 'chalk';
+import { resolve as resolvePath } from 'path';
 import { OptionValues } from 'commander';
+import { readJson, writeJson } from 'fs-extra';
+import { minimatch } from 'minimatch';
+import { runYarnInstall } from './bump';
 
-export default async (_: OptionValues) => {
-  const packageMap = PackageGraph.fromPackages(
-    await PackageGraph.listTargetPackages(),
-  );
+export default async (options: OptionValues) => {
+  const changed = await migrateMovedPackages({
+    pattern: options.pattern,
+  });
 
-  const packagesThatHaveMoved = new Map<string, string>();
-
-  for (const [name, pkg] of packageMap.entries()) {
-    console.log(name, pkg);
+  if (changed) {
+    await runYarnInstall();
   }
 };
+
+export async function migrateMovedPackages(options?: { pattern?: string }) {
+  const packages = await PackageGraph.listTargetPackages();
+
+  const thingsThatHaveMoved = new Map<
+    string,
+    {
+      dependencies: { [k: string]: string };
+      devDependencies: { [k: string]: string };
+      peerDependencies: { [k: string]: string };
+    }
+  >();
+
+  let didAnythingChange = false;
+
+  for (const pkg of packages) {
+    const pkgName = pkg.packageJson.name;
+    thingsThatHaveMoved.set(pkgName, {
+      dependencies: {},
+      devDependencies: {},
+      peerDependencies: {},
+    });
+
+    let didPackageChange = false;
+
+    for (const depType of [
+      'dependencies',
+      'devDependencies',
+      'peerDependencies',
+    ] as const) {
+      const depsObj = pkg.packageJson[depType];
+      if (!depsObj) {
+        continue;
+      }
+      for (const [depName, depVersion] of Object.entries(depsObj)) {
+        if (options?.pattern && !minimatch(depName, options.pattern)) {
+          continue;
+        }
+        let packageInfo: BackstagePackageJson;
+        try {
+          packageInfo = await readJson(
+            require.resolve(`${depName}/package.json`, {
+              paths: [pkg.dir],
+            }),
+          );
+        } catch (ex) {
+          console.warn(
+            chalk.yellow`Could not find package.json for ${depName}@${depVersion} in ${pkgName} (${depType})`,
+          );
+          continue;
+        }
+
+        const movedPackageName = packageInfo.backstage?.moved;
+
+        if (movedPackageName) {
+          console.log(
+            chalk.yellow`Found a moved package ${depName}@${depVersion} -> ${movedPackageName} in ${pkgName} (${depType})`,
+          );
+
+          didPackageChange = true;
+          didAnythingChange = true;
+
+          depsObj[movedPackageName] = depsObj[depName];
+          delete depsObj[depName];
+        }
+      }
+    }
+
+    if (didPackageChange) {
+      await writeJson(resolvePath(pkg.dir, 'package.json'), pkg.packageJson, {
+        spaces: 2,
+      });
+    }
+  }
+
+  return didAnythingChange;
+}
