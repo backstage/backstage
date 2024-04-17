@@ -465,6 +465,43 @@ describe('AzureDevOpsApi', () => {
     ]);
   });
 
+  it('should throw error when gitRepository is undefined', async () => {
+    const mockApi = {
+      getGitApi: jest.fn().mockReturnValue({}),
+      serverUrl: 'serverUrl',
+    };
+
+    (WebApi as unknown as jest.Mock).mockImplementation(() => mockApi);
+
+    const api = AzureDevOpsApi.fromConfig(mockConfig, {
+      logger: mockLogger,
+      urlReader: mockUrlReader,
+    });
+
+    const pullRequestOptions: PullRequestOptions = {
+      top: 10,
+      status: PullRequestStatus.Active,
+    };
+
+    api.getGitRepository = jest.fn().mockResolvedValue(undefined);
+
+    const temp = async () => {
+      try {
+        await api.getPullRequests('project', 'repo', pullRequestOptions);
+        return null;
+      } catch (error) {
+        return error;
+      }
+    };
+
+    const error = await temp();
+
+    expect(error).toHaveProperty(
+      'message',
+      'No repository found for Project "project" with Repository "repo" on host "undefined" under organization "undefined".',
+    );
+  });
+
   it('should get build definitions', async () => {
     const mockBuilds: Build[] = [
       {
