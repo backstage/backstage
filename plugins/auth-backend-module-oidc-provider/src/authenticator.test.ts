@@ -66,8 +66,6 @@ describe('oidcAuthenticator', () => {
     request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
   };
 
-  beforeAll(async () => {});
-
   beforeEach(() => {
     mswServer.use(
       rest.get(
