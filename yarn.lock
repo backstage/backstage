@@ -599,6 +599,55 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@aws-sdk/client-ses@npm:^3.556.0":
+  version: 3.556.0
+  resolution: "@aws-sdk/client-ses@npm:3.556.0"
+  dependencies:
+    "@aws-crypto/sha256-browser": 3.0.0
+    "@aws-crypto/sha256-js": 3.0.0
+    "@aws-sdk/client-sts": 3.556.0
+    "@aws-sdk/core": 3.556.0
+    "@aws-sdk/credential-provider-node": 3.556.0
+    "@aws-sdk/middleware-host-header": 3.535.0
+    "@aws-sdk/middleware-logger": 3.535.0
+    "@aws-sdk/middleware-recursion-detection": 3.535.0
+    "@aws-sdk/middleware-user-agent": 3.540.0
+    "@aws-sdk/region-config-resolver": 3.535.0
+    "@aws-sdk/types": 3.535.0
+    "@aws-sdk/util-endpoints": 3.540.0
+    "@aws-sdk/util-user-agent-browser": 3.535.0
+    "@aws-sdk/util-user-agent-node": 3.535.0
+    "@smithy/config-resolver": ^2.2.0
+    "@smithy/core": ^1.4.2
+    "@smithy/fetch-http-handler": ^2.5.0
+    "@smithy/hash-node": ^2.2.0
+    "@smithy/invalid-dependency": ^2.2.0
+    "@smithy/middleware-content-length": ^2.2.0
+    "@smithy/middleware-endpoint": ^2.5.1
+    "@smithy/middleware-retry": ^2.3.1
+    "@smithy/middleware-serde": ^2.3.0
+    "@smithy/middleware-stack": ^2.2.0
+    "@smithy/node-config-provider": ^2.3.0
+    "@smithy/node-http-handler": ^2.5.0
+    "@smithy/protocol-http": ^3.3.0
+    "@smithy/smithy-client": ^2.5.1
+    "@smithy/types": ^2.12.0
+    "@smithy/url-parser": ^2.2.0
+    "@smithy/util-base64": ^2.3.0
+    "@smithy/util-body-length-browser": ^2.2.0
+    "@smithy/util-body-length-node": ^2.3.0
+    "@smithy/util-defaults-mode-browser": ^2.2.1
+    "@smithy/util-defaults-mode-node": ^2.3.1
+    "@smithy/util-endpoints": ^1.2.0
+    "@smithy/util-middleware": ^2.2.0
+    "@smithy/util-retry": ^2.2.0
+    "@smithy/util-utf8": ^2.3.0
+    "@smithy/util-waiter": ^2.2.0
+    tslib: ^2.6.2
+  checksum: 913108e79061185faae51711b121df99da624f988f530af23c3e4270299be60771be83f507dc8ed4af4051765077ea038edab19e4d0d32e159c4e67faf5fc9f8
+  languageName: node
+  linkType: hard
+
 "@aws-sdk/client-sqs@npm:^3.350.0":
   version: 3.556.0
   resolution: "@aws-sdk/client-sqs@npm:3.556.0"
@@ -5979,6 +6028,28 @@ __metadata:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
+  languageName: unknown
+  linkType: soft
+
+"@backstage/plugin-notifications-backend-module-email@workspace:plugins/notifications-backend-module-email":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-notifications-backend-module-email@workspace:plugins/notifications-backend-module-email"
+  dependencies:
+    "@aws-sdk/client-ses": ^3.556.0
+    "@aws-sdk/credential-provider-node": ^3.350.0
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-notifications-common": "workspace:^"
+    "@backstage/plugin-notifications-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@types/nodemailer": ^6.4.14
+    lodash: ^4.17.21
+    nodemailer: ^6.9.13
   languageName: unknown
   linkType: soft
 
@@ -16061,6 +16132,15 @@ __metadata:
   dependencies:
     undici-types: ~5.26.4
   checksum: fa291495d6157a9d9393b4c3bdbf1ce12a8f661dc9da6a4fa19bcdb19af1c62bb8dbf7fb66ae135f29cd788b618e9845b83e9c47edcf39f0953a8561fdacd9a3
+  languageName: node
+  linkType: hard
+
+"@types/nodemailer@npm:^6.4.14":
+  version: 6.4.14
+  resolution: "@types/nodemailer@npm:6.4.14"
+  dependencies:
+    "@types/node": "*"
+  checksum: 5f61f01dd736b17f431d1e8b320322f86460604b45df947fc4bc8999d7c7719405e349f7abba86e4fb100a464a30b52615d00dac03d9cb37562ff04487ebd310
   languageName: node
   linkType: hard
 
@@ -32251,6 +32331,13 @@ __metadata:
     util: ^0.12.4
     vm-browserify: ^1.0.1
   checksum: fe491f0839319fd9bb95964c6f7da81fc7fde4c3ac9062aa367f19bc5a6060d0d9e423d3de4196cb51f8259d6aaf6cf380048c48a86eb3721c6223dd0dcc5bfd
+  languageName: node
+  linkType: hard
+
+"nodemailer@npm:^6.9.13":
+  version: 6.9.13
+  resolution: "nodemailer@npm:6.9.13"
+  checksum: 1b591ef480be2ff69480127cbff819e6593b1ef263b6f920e1a4e83e40280582daf7a14a809ef92f9828e2a70bdb3ce22b11924e209f2afe4975f9ff37e08e9d
   languageName: node
   linkType: hard
 
