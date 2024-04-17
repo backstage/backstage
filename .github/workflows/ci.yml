@@ -166,7 +166,7 @@ jobs:
         ports:
           - 5432/tcp
       postgres12:
-        image: postgres:12
+        image: postgres:16
         env:
           POSTGRES_PASSWORD: postgres
         options: >-
