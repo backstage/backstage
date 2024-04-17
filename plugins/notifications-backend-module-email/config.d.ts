@@ -61,6 +61,10 @@ export interface Config {
                * AWS account ID to use
                */
               accountId?: string;
+              /**
+               * AWS region to use
+               */
+              region?: string;
             }
           | {
               transport: 'sendmail';

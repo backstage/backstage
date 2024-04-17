@@ -88,6 +88,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
         credentialsManager: awsCredentialsManager,
         apiVersion: transportConfig.getOptionalString('apiVersion'),
         accountId: transportConfig.getOptionalString('accountId'),
+        region: transportConfig.getOptionalString('region'),
       });
     } else if (transport === 'sendmail') {
       this.transporter = createSendmailTransport({

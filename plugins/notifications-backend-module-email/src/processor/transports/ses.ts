@@ -25,8 +25,7 @@ export const createSesTransport = async (config: SesTransportConfig) => {
     {
       apiVersion: config.apiVersion ?? '2010-12-01',
       credentials: credentials.sdkCredentialProvider,
-      region: credentials.stsRegion,
-      accountId: credentials.accountId,
+      region: config.region,
     },
   ]);
   return createTransport({

@@ -55,6 +55,7 @@ export interface SesTransportConfig extends TransportConfig {
    */
   apiVersion?: string;
   accountId?: string;
+  region?: string;
   credentialsManager: AwsCredentialsManager;
 }
 
