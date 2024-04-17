@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { AwsCredentialsManager } from '@backstage/integration-aws-node';
+
 export interface TransportConfig {
   transport: 'smtp' | 'ses' | 'sendmail';
 }
@@ -52,19 +54,8 @@ export interface SesTransportConfig extends TransportConfig {
    * SES ApiVersion to use, defaults to 2010-12-01
    */
   apiVersion?: string;
-  /**
-   * SES region to use
-   */
-  region?: string;
-  /**
-   * AWS access key id
-   */
-  accessKeyId?: string;
-  /**
-   * AWS secret access key
-   * @visibility secret
-   */
-  secretAccessKey?: string;
+  accountId?: string;
+  credentialsManager: AwsCredentialsManager;
 }
 
 export interface SendmailTransportConfig extends TransportConfig {

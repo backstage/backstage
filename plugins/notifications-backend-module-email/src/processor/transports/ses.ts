@@ -15,25 +15,21 @@
  */
 import { SesTransportConfig } from '../../types';
 import { createTransport } from 'nodemailer';
-import * as aws from '@aws-sdk/client-ses';
-import { defaultProvider } from '@aws-sdk/credential-provider-node';
+import { SendRawEmailCommand, SES } from '@aws-sdk/client-ses';
 
-export const createSesTransport = (config: SesTransportConfig) => {
-  const ses = new aws.SES([
+export const createSesTransport = async (config: SesTransportConfig) => {
+  const credentials = await config.credentialsManager.getCredentialProvider({
+    accountId: config.accountId,
+  });
+  const ses = new SES([
     {
-      region: config.region,
       apiVersion: config.apiVersion ?? '2010-12-01',
-      defaultProvider,
-      credentials:
-        config.accessKeyId && config.secretAccessKey
-          ? {
-              accessKeyId: config.accessKeyId,
-              secretAccessKey: config.secretAccessKey,
-            }
-          : undefined,
+      credentials: credentials.sdkCredentialProvider,
+      region: credentials.stsRegion,
+      accountId: credentials.accountId,
     },
   ]);
   return createTransport({
-    SES: { ses, aws },
+    SES: { ses, aws: { SendRawEmailCommand } },
   });
 };

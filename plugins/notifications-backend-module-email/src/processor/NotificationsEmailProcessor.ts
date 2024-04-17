@@ -33,9 +33,10 @@ import { createSendmailTransport, createSmtpTransport } from './transports';
 import { createSesTransport } from './transports/ses';
 import { UserEntity } from '@backstage/catalog-model';
 import { compact } from 'lodash';
+import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 
 export class NotificationsEmailProcessor implements NotificationProcessor {
-  private readonly transportter: any;
+  private transporter: any;
   private readonly broadcastConfig?: Config;
   private readonly sender: string;
   private readonly format: string;
@@ -44,41 +45,11 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
 
   constructor(
     private readonly logger: LoggerService,
-    config: Config,
+    private readonly config: Config,
     private readonly catalog: CatalogClient,
     private readonly auth: AuthService,
     private readonly cache?: CacheService,
   ) {
-    const transportConfig = config.getConfig('notifications.email.transport');
-    const transport = transportConfig.getString('transport');
-    if (transport === 'smtp') {
-      this.transportter = createSmtpTransport({
-        transport: 'smtp',
-        hostname: transportConfig.getString('hostname'),
-        port: transportConfig.getNumber('port'),
-        secure: transportConfig.getOptionalBoolean('secure'),
-        requireTls: transportConfig.getOptionalBoolean('requireTls'),
-        username: transportConfig.getOptionalString('username'),
-        password: transportConfig.getOptionalString('password'),
-      });
-    } else if (transport === 'ses') {
-      this.transportter = createSesTransport({
-        transport: 'ses',
-        apiVersion: transportConfig.getOptionalString('apiVersion'),
-        region: transportConfig.getOptionalString('region'),
-        accessKeyId: transportConfig.getOptionalString('accessKeyId'),
-        secretAccessKey: transportConfig.getOptionalString('secretAccessKey'),
-      });
-    } else if (transport === 'sendmail') {
-      this.transportter = createSendmailTransport({
-        transport: 'sendmail',
-        path: transportConfig.getOptionalString('path'),
-        newline: transportConfig.getOptionalString('newline'),
-      });
-    } else {
-      throw new Error(`Unsupported transport: ${transport}`);
-    }
-
     this.broadcastConfig = config.getOptionalConfig(
       'notifications.email.broadcastConfig',
     );
@@ -88,6 +59,46 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     this.replyTo = config.getOptionalString('notifications.email.replyTo');
     this.cacheTtl =
       config.getOptionalNumber('notifications.email.cacheTtl') ?? 3_600_000;
+  }
+
+  private async getTransporter() {
+    if (this.transporter) {
+      return this.transporter;
+    }
+    const transportConfig = this.config.getConfig(
+      'notifications.email.transport',
+    );
+    const transport = transportConfig.getString('transport');
+    if (transport === 'smtp') {
+      this.transporter = createSmtpTransport({
+        transport: 'smtp',
+        hostname: transportConfig.getString('hostname'),
+        port: transportConfig.getNumber('port'),
+        secure: transportConfig.getOptionalBoolean('secure'),
+        requireTls: transportConfig.getOptionalBoolean('requireTls'),
+        username: transportConfig.getOptionalString('username'),
+        password: transportConfig.getOptionalString('password'),
+      });
+    } else if (transport === 'ses') {
+      const awsCredentialsManager = DefaultAwsCredentialsManager.fromConfig(
+        this.config,
+      );
+      this.transporter = await createSesTransport({
+        transport: 'ses',
+        credentialsManager: awsCredentialsManager,
+        apiVersion: transportConfig.getOptionalString('apiVersion'),
+        accountId: transportConfig.getOptionalString('accountId'),
+      });
+    } else if (transport === 'sendmail') {
+      this.transporter = createSendmailTransport({
+        transport: 'sendmail',
+        path: transportConfig.getOptionalString('path'),
+        newline: transportConfig.getOptionalString('newline'),
+      });
+    } else {
+      throw new Error(`Unsupported transport: ${transport}`);
+    }
+    return this.transporter;
   }
 
   getName(): string {
@@ -190,11 +201,20 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     notification: Notification,
     options: NotificationSendOptions,
   ): Promise<void> {
+    this.transporter = await this.getTransporter();
+
     let emails: string[] = [];
     try {
       emails = await this.getRecipientEmails(notification, options);
     } catch (e) {
       this.logger.error(`Failed to resolve recipient emails: ${e}`);
+      return;
+    }
+
+    if (emails.length === 0) {
+      this.logger.info(
+        `No email recipients found for notification: ${notification.id}, skipping`,
+      );
       return;
     }
 
@@ -220,7 +240,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
 
     for (const email of emails) {
       try {
-        await this.transportter.sendMail({ ...mailOptions, to: email });
+        await this.transporter.sendMail({ ...mailOptions, to: email });
       } catch (e) {
         this.logger.error(`Failed to send email to ${email}: ${e}`);
       }

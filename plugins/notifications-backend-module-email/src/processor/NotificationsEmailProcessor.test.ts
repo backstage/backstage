@@ -45,7 +45,7 @@ describe('NotificationsEmailProcessor', () => {
     jest.resetAllMocks();
   });
 
-  it('should create smtp transport', () => {
+  it('should create smtp transport', async () => {
     const processor = new NotificationsEmailProcessor(
       logger,
       new ConfigReader({
@@ -66,6 +66,20 @@ describe('NotificationsEmailProcessor', () => {
       auth,
     );
 
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: 'user:default/mock',
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        payload: { title: 'notification' },
+      },
+    );
+
     expect(processor).toBeInstanceOf(NotificationsEmailProcessor);
     expect(createTransport as jest.Mock).toHaveBeenCalledWith({
       host: 'localhost',
@@ -75,7 +89,7 @@ describe('NotificationsEmailProcessor', () => {
     });
   });
 
-  it('should create ses transport', () => {
+  it('should create ses transport', async () => {
     const processor = new NotificationsEmailProcessor(
       logger,
       new ConfigReader({
@@ -93,13 +107,27 @@ describe('NotificationsEmailProcessor', () => {
       auth,
     );
 
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: 'user:default/mock',
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        payload: { title: 'notification' },
+      },
+    );
+
     expect(processor).toBeInstanceOf(NotificationsEmailProcessor);
     expect(createTransport as jest.Mock).toHaveBeenCalledWith({
       SES: expect.anything(),
     });
   });
 
-  it('should create sendmail transport', () => {
+  it('should create sendmail transport', async () => {
     const processor = new NotificationsEmailProcessor(
       logger,
       new ConfigReader({
@@ -115,6 +143,20 @@ describe('NotificationsEmailProcessor', () => {
       }),
       mockCatalogClient as unknown as CatalogClient,
       auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: 'user:default/mock',
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        payload: { title: 'notification' },
+      },
     );
 
     expect(processor).toBeInstanceOf(NotificationsEmailProcessor);

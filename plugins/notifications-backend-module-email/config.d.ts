@@ -58,18 +58,9 @@ export interface Config {
                */
               apiVersion?: string;
               /**
-               * SES region to use
+               * AWS account ID to use
                */
-              region?: string;
-              /**
-               * AWS access key id
-               */
-              accessKeyId?: string;
-              /**
-               * AWS secret access key
-               * @visibility secret
-               */
-              secretAccessKey?: string;
+              accountId?: string;
             }
           | {
               transport: 'sendmail';
