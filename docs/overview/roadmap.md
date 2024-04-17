@@ -11,13 +11,13 @@ public roadmap, the result of ongoing collaboration between the core maintainers
 and the broader Backstage community.
 
 The Backstage roadmap lays out both [“what's next”](#whats-next) and ["future
-work"](#future-work). With "next" we mean features planned for release within
+work"](#future-work). ~~With "next" we mean features planned for release within
 the ongoing quarter from July through September 2022. With "future" we mean
-features on the radar, but not yet scheduled.
+features on the radar, but not yet scheduled.~~
 
 | [What's next](#whats-next)                                                                                                                                                                                                                                          | [Future work](#future-work)                                                                             |
 | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| [Backend Services (MVP)](#backend-services-mvp) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [Backstage Threat Model](#backstage-threat-model) <br/> [Software Catalog pagination](#software-catalog-pagination) <br/> [More SIGs](#more-sigs) | Ease of onboarding <br/> Composable Homepage 1.0 <br/> Creator experience <br/> GraphQL <br/> Telemetry |
+| [Backend Services (MVP)](#backend-services-mvp) Already completed <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [Backstage Threat Model](#backstage-threat-model) <br/> [Software Catalog pagination](#software-catalog-pagination) <br/> [More SIGs](#more-sigs) | Ease of onboarding <br/> Composable Homepage 1.0 <br/> Creator experience <br/> GraphQL <br/> Telemetry |
 
 The long-term roadmap (12 - 36 months) is not detailed in the public roadmap.
 Third-party contributions are also not currently included in the roadmap. Let us
@@ -38,6 +38,8 @@ backend services will help in decoupling the various modules (e.g. Catalog and
 Scaffolder) from the frontend experience.
 
 After the experimentation and design happened in the past quarter, soon we plan to release a first version to start providing the first benefits to adopters and developers.
+
+Completed!
 
 ### Backstage Security Audit
 
