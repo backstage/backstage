@@ -31,7 +31,7 @@ describe('PluginTokenHandler', () => {
     const addKeyMock = jest.fn();
     const handler = PluginTokenHandler.create({
       discovery: mockServices.discovery(),
-      keyDurationSeconds: 10,
+      keyDuration: { seconds: 10 },
       logger: mockServices.logger.mock(),
       ownPluginId: 'test',
       publicKeyStore: {
