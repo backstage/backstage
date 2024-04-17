@@ -22,6 +22,9 @@ Add feature
 backend.add(import('@backstage/plugin-explore-backend'));
 ```
 
+To integrate with the search plugin, you have to install
+[the explore module for the search-backend](../search-backend-module-explore).
+
 Config:
 
 ```yaml
