@@ -18,16 +18,15 @@ import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { InputError, assertError } from '@backstage/errors';
 import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-
-import { Octokit } from 'octokit';
 import { emitterEventNames } from '@octokit/webhooks';
-import { examples } from './githubWebhook.examples';
+import { assertError, InputError } from '@backstage/errors';
+import { Octokit } from 'octokit';
 import { getOctokitOptions } from './helpers';
+import { examples } from './githubWebhook.examples';
 
 /**
  * Creates new action that creates a webhook for a repository on GitHub.

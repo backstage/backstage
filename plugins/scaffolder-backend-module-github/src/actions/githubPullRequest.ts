@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-import { CustomErrorBase, InputError } from '@backstage/errors';
+import path from 'path';
 import {
   GithubCredentialsProvider,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import {
-  SerializedFile,
   createTemplateAction,
   parseRepoUrl,
+  SerializedFile,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
-
-import { Logger } from 'winston';
 import { Octokit } from 'octokit';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
-import { examples } from './githubPullRequest.examples';
-import { getOctokitOptions } from './helpers';
-import path from 'path';
+import { CustomErrorBase, InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-common';
+import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import { getOctokitOptions } from './helpers';
+import { examples } from './githubPullRequest.examples';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -321,6 +320,7 @@ export const createPublishGithubPullRequestAction = (
         ]),
       );
 
+      // If this is a dry run, log and return
       if (ctx.isDryRun) {
         ctx.logger.info(`Performing dry run of creating pull request`);
         ctx.output('targetBranchName', branchName);
