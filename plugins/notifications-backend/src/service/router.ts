@@ -94,6 +94,7 @@ export async function createRouter(
 
   const getUsersForEntityRef = async (
     entityRef: string | string[] | null,
+    excludeEntityRefs: string | string[],
   ): Promise<string[]> => {
     const { token } = await auth.getPluginRequestToken({
       onBehalfOf: await auth.getOwnServiceCredentials(),
@@ -114,13 +115,23 @@ export async function createRouter(
       },
       { token },
     );
+
+    const excluded = Array.isArray(excludeEntityRefs)
+      ? excludeEntityRefs
+      : [excludeEntityRefs];
+
     const mapEntity = async (entity: Entity | undefined): Promise<string[]> => {
       if (!entity) {
         return [];
       }
 
+      const currentEntityRef = stringifyEntityRef(entity);
+      if (excluded.includes(currentEntityRef)) {
+        return [];
+      }
+
       if (isUserEntity(entity)) {
-        return [stringifyEntityRef(entity)];
+        return [currentEntityRef];
       } else if (isGroupEntity(entity) && entity.relations) {
         const users = entity.relations
           .filter(relation => relation.type === RELATION_HAS_MEMBER)
@@ -162,6 +173,7 @@ export async function createRouter(
       const u = await mapEntity(entity);
       users.push(...u);
     }
+
     return users;
   };
 
@@ -482,7 +494,10 @@ export async function createRouter(
         const entityRef = recipients.entityRef;
 
         try {
-          users = await getUsersForEntityRef(entityRef);
+          users = await getUsersForEntityRef(
+            entityRef,
+            recipients.excludeEntityRef ?? [],
+          );
         } catch (e) {
           logger.error(`Failed to resolve notification receivers: ${e}`);
           throw new InputError('Failed to resolve notification receivers', e);
