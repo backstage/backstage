@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-import {
-  ActionContext,
-  TemplateAction,
-} from '@backstage/plugin-scaffolder-node';
+import { createRootLogger } from '@backstage/backend-common';
+import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-
-import { ConfigReader } from '@backstage/config';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { createMockDirectory } from '@backstage/backend-test-utils';
-import { createPublishGithubPullRequestAction } from './githubPullRequest';
-import { createRootLogger } from '@backstage/backend-common';
+import {
+  ActionContext,
+  TemplateAction,
+} from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
+import { createPublishGithubPullRequestAction } from './githubPullRequest';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 // Make sure root logger is initialized ahead of FS mock
 createRootLogger();

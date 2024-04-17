@@ -30,7 +30,6 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { when } from 'jest-when';
 import { createGithubRepoCreateAction } from './githubRepoCreate';
 import { entityRefToName } from './gitHelpers';
 

@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
+import { createGithubWebhookAction } from './githubWebhook';
 import {
+  ScmIntegrations,
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
-  ScmIntegrations,
 } from '@backstage/integration';
-
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { createGithubWebhookAction } from './githubWebhook';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 const mockOctokit = {
   rest: {

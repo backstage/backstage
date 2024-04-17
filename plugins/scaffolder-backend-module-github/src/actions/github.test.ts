@@ -41,7 +41,6 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { when } from 'jest-when';
 import { createPublishGithubAction } from './github';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import {

@@ -26,7 +26,7 @@ import {
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
-import { CustomErrorBase, InputError } from '@backstage/errors';
+import { InputError, CustomErrorBase } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from './helpers';
