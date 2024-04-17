@@ -38,7 +38,11 @@ In a typical Backstage setup, there is no boundary between plugins that run on t
 
 The `UrlReader` facility is of particular interest for a secure Backstage configuration. In particular the `backend.reading.allow` configuration lists the hosts that you trust the backend to be able to read content from on behalf of users. It is extremely important that this list does not, for example, allow access to instance metadata endpoints of cloud providers, or other endpoints that your Backstage instance may have access to which contain sensitive information. In general it is recommended to keep the list minimal and only allow reading from required endpoints. The same concerns apply to custom implementations of the `UrlReader` interface, if you need to implement these through code.
 
-Note that the `UrlReader` system operates with a service context and is not integrated with the Backstage permission system or other external access control mechanisms. This means users of your Backstage instance may be able to read external content which that individual should not have access to. For example, the `$text` placeholder in a `catalog-info.yaml` can be used to read contents from a source such as a GitHub repository that the user does not have direct access too. If this is a concern it is recommended to either disable or replace the resolvers in the catalog placeholder processor and similar features in any other plugin.
+:::note Note
+
+The `UrlReader` system operates with a service context and is not integrated with the Backstage permission system or other external access control mechanisms. This means users of your Backstage instance may be able to read external content which that individual should not have access to. For example, the `$text` placeholder in a `catalog-info.yaml` can be used to read contents from a source such as a GitHub repository that the user does not have direct access too. If this is a concern it is recommended to either disable or replace the resolvers in the catalog placeholder processor and similar features in any other plugin.
+
+:::
 
 ## Authentication
 
