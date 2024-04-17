@@ -30,6 +30,7 @@ import { authModuleOidcProvider } from './module';
 describe('authModuleOidcProvider', () => {
   let backstageServer: Server;
   let appUrl: string;
+  let nonce: string;
   let idToken: string;
   let publicKey: JWK;
 
@@ -56,22 +57,7 @@ describe('authModuleOidcProvider', () => {
     request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
   };
 
-  beforeAll(async () => {
-    const keyPair = await generateKeyPair('RS256');
-    const privateKey = await exportJWK(keyPair.privateKey);
-    publicKey = await exportJWK(keyPair.publicKey);
-    publicKey.alg = privateKey.alg = 'RS256';
-
-    idToken = await new SignJWT({
-      sub: 'test',
-      iss: 'https://oidc.test',
-      iat: Date.now(),
-      aud: 'clientId',
-      exp: Date.now() + 10000,
-    })
-      .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
-      .sign(keyPair.privateKey);
-  });
+  beforeAll(async () => {});
 
   beforeEach(async () => {
     jest.clearAllMocks();
@@ -85,6 +71,14 @@ describe('authModuleOidcProvider', () => {
             ctx.set('Content-Type', 'application/json'),
             ctx.json(issuerMetadata),
           ),
+      ),
+      rest.get(
+        'https://oidc.test/oauth2/authorize',
+        async (req, _res, _ctx) => {
+          nonce =
+            new URL(req.url).searchParams.get('nonce') ??
+            'nonceGeneratedByAuthServer';
+        },
       ),
       rest.get('https://oidc.test/oauth2/authorize', async (req, res, ctx) => {
         const callbackUrl = new URL(req.url.searchParams.get('redirect_uri')!);
@@ -103,6 +97,22 @@ describe('authModuleOidcProvider', () => {
         res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
       ),
       rest.post('https://oidc.test/oauth2/token', async (req, res, ctx) => {
+        const keyPair = await generateKeyPair('RS256');
+        const privateKey = await exportJWK(keyPair.privateKey);
+        publicKey = await exportJWK(keyPair.publicKey);
+        publicKey.alg = privateKey.alg = 'RS256';
+
+        idToken = await new SignJWT({
+          sub: 'test',
+          iss: 'https://oidc.test',
+          iat: Date.now(),
+          aud: 'clientId',
+          exp: Date.now() + 10000,
+          nonce,
+        })
+          .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
+          .sign(keyPair.privateKey);
+
         return res(
           req.headers.get('Authorization')
             ? ctx.json({
@@ -187,7 +197,8 @@ describe('authModuleOidcProvider', () => {
     const startUrl = new URL(startResponse.get('location'));
     expect(startUrl.origin).toBe('https://oidc.test');
     expect(startUrl.pathname).toBe('/oauth2/authorize');
-    expect(Object.fromEntries(startUrl.searchParams)).toEqual({
+    const expected = Object.fromEntries(startUrl.searchParams);
+    expect(expected).toEqual({
       response_type: 'code',
       scope: 'openid profile email',
       client_id: 'clientId',
@@ -196,6 +207,7 @@ describe('authModuleOidcProvider', () => {
       prompt: 'none',
       code_challenge: expect.any(String),
       code_challenge_method: `S256`,
+      nonce: expected.nonce,
     });
 
     expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({
