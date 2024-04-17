@@ -196,6 +196,7 @@ describe('authModuleOidcProvider', () => {
     expect(startUrl.origin).toBe('https://oidc.test');
     expect(startUrl.pathname).toBe('/oauth2/authorize');
     const expected = Object.fromEntries(startUrl.searchParams);
+    expect(expected.nonce).not.toBeNull();
     expect(expected).toEqual({
       response_type: 'code',
       scope: 'openid profile email',
