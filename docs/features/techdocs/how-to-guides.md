@@ -734,7 +734,7 @@ import {
   techdocsBuildsExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
 
-const techdocsCustomerBuildStrategy = createBackendModule({
+const techdocsCustomBuildStrategy = createBackendModule({
   pluginId: 'techdocs',
   moduleId: 'customBuildStrategy',
   register(env) {
@@ -760,7 +760,7 @@ const techdocsCustomerBuildStrategy = createBackendModule({
 
 /* highlight-add-start */
 backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
-backend.add(techdocsCustomerBuildStrategy());
+backend.add(techdocsCustomBuildStrategy());
 /* highlight-add-end */
 
 backend.start();
