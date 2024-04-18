@@ -1,8 +1,3 @@
-# Cost Insights Common
+# Deprecated
 
-Shared isomorphic code for the cost-insights plugin.
-
-## Links
-
-- [Frontend part of the plugin](https://github.com/backstage/backstage/tree/master/plugins/cost-insights)
-- [The Backstage homepage](https://backstage.io)
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-cost-insights-common` instead.
