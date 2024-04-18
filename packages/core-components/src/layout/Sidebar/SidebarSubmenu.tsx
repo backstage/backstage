@@ -81,7 +81,8 @@ const useStyles = makeStyles<
       fontSize: theme.typography.h5.fontSize,
       fontWeight: theme.typography.fontWeightMedium,
       color:
-        theme.palette.navigation.submenu?.color ?? theme.palette.common.white,
+        theme.palette.navigation.submenu?.color ??
+        theme.palette.navigation.color,
       padding: theme.spacing(2.5),
       [theme.breakpoints.down('xs')]: {
         display: 'none',
