@@ -14,15 +14,46 @@
  * limitations under the License.
  */
 
-import { npath, xfs } from '@yarnpkg/fslib';
+import { PortablePath, ppath, xfs } from '@yarnpkg/fslib';
 import { valid as semverValid } from 'semver';
 import { getManifestByVersion } from '@backstage/release-manifests';
 import { Descriptor, structUtils } from '@yarnpkg/core';
 import { PROTOCOL } from './constants';
 
+const isWorkspaceRoot = (dir: PortablePath) => {
+  const manifestPath = ppath.join(dir, 'package.json');
+
+  if (xfs.existsSync(manifestPath)) {
+    const manifest = xfs.readJsonSync(manifestPath);
+
+    if (manifest.workspaces) {
+      return true;
+    }
+  }
+
+  return false;
+};
+
+const findWorkspaceRoot = () => {
+  const cwd = ppath.cwd();
+  let currentDir = cwd;
+
+  while (!isWorkspaceRoot(currentDir)) {
+    const parentDir = ppath.dirname(currentDir);
+
+    if (parentDir === currentDir) {
+      throw new Error(`Workspace root not found from ${cwd}`);
+    }
+
+    currentDir = parentDir;
+  }
+
+  return currentDir;
+};
+
 export const getCurrentBackstageVersion = () => {
   const backstageJson = xfs.readJsonSync(
-    npath.toPortablePath('./backstage.json'),
+    ppath.join(findWorkspaceRoot(), 'backstage.json'),
   );
 
   const backstageVersion = semverValid(backstageJson.version);
