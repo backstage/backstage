@@ -38,11 +38,9 @@ export const NotificationsSidebarItem = (props?: {
   const {
     webNotificationsEnabled = false,
     titleCounterEnabled = true,
-    className,
     icon = NotificationsIcon,
     text = 'Notifications',
-    disableHighlight,
-    noTrack,
+    ...restProps
   } = props ?? { webNotificationsEnabled: false, titleCounterEnabled: true };
 
   const { loading, error, value, retry } = useNotificationsApi(api =>
@@ -107,13 +105,11 @@ export const NotificationsSidebarItem = (props?: {
   // TODO: Figure out if the count can be added to hasNotifications
   return (
     <SidebarItem
-      icon={icon}
       to={notificationsRoute()}
-      text={text}
-      disableHighlight={disableHighlight}
       hasNotifications={!error && !!unreadCount}
-      className={className}
-      noTrack={noTrack}
+      text={text}
+      icon={icon}
+      {...restProps}
     />
   );
 };
