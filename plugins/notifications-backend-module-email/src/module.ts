@@ -20,6 +20,10 @@ import {
 import { CatalogClient } from '@backstage/catalog-client';
 import { notificationsProcessingExtensionPoint } from '@backstage/plugin-notifications-node';
 import { NotificationsEmailProcessor } from './processor';
+import {
+  notificationsEmailTemplateExtensionPoint,
+  NotificationTemplateRenderer,
+} from './extensions';
 
 /**
  * @public
@@ -28,6 +32,16 @@ export const notificationsModuleEmail = createBackendModule({
   pluginId: 'notifications',
   moduleId: 'email',
   register(reg) {
+    let templateRenderer: NotificationTemplateRenderer | undefined;
+    reg.registerExtensionPoint(notificationsEmailTemplateExtensionPoint, {
+      setTemplateRenderer(renderer) {
+        if (templateRenderer) {
+          throw new Error(`Email template renderer was already registered`);
+        }
+        templateRenderer = renderer;
+      },
+    });
+
     reg.registerInit({
       deps: {
         config: coreServices.rootConfig,
@@ -49,6 +63,7 @@ export const notificationsModuleEmail = createBackendModule({
             catalogClient,
             auth,
             cache,
+            templateRenderer,
           ),
         );
       },

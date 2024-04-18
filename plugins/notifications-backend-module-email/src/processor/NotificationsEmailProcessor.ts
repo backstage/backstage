@@ -34,12 +34,12 @@ import { createSesTransport } from './transports/ses';
 import { UserEntity } from '@backstage/catalog-model';
 import { compact } from 'lodash';
 import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
+import { NotificationTemplateRenderer } from '../extensions';
 
 export class NotificationsEmailProcessor implements NotificationProcessor {
   private transporter: any;
   private readonly broadcastConfig?: Config;
   private readonly sender: string;
-  private readonly format: string;
   private readonly replyTo?: string;
   private readonly cacheTtl: number;
 
@@ -49,13 +49,12 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     private readonly catalog: CatalogClient,
     private readonly auth: AuthService,
     private readonly cache?: CacheService,
+    private readonly templateRenderer?: NotificationTemplateRenderer,
   ) {
     this.broadcastConfig = config.getOptionalConfig(
       'notifications.email.broadcastConfig',
     );
     this.sender = config.getString('notifications.email.sender');
-    this.format =
-      config.getOptionalString('notifications.email.format') ?? 'html';
     this.replyTo = config.getOptionalString('notifications.email.replyTo');
     this.cacheTtl =
       config.getOptionalNumber('notifications.email.cache.ttl') ?? 3_600_000;
@@ -198,6 +197,55 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     return await this.getUserEmail(notification.user);
   }
 
+  private async sendPlainEmail(notification: Notification, emails: string[]) {
+    const contentParts: string[] = [];
+    if (notification.payload.description) {
+      contentParts.push(`${notification.payload.description}`);
+    }
+    if (notification.payload.link) {
+      contentParts.push(`${notification.payload.link}`);
+    }
+
+    const mailOptions = {
+      from: this.sender,
+      subject: notification.payload.title,
+      html: `<p>${contentParts.join('<br/>')}</p>`,
+      text: contentParts.join('\n\n'),
+      replyTo: this.replyTo,
+    };
+
+    for (const email of emails) {
+      try {
+        await this.transporter.sendMail({ ...mailOptions, to: email });
+      } catch (e) {
+        this.logger.error(`Failed to send email to ${email}: ${e}`);
+      }
+    }
+  }
+
+  private async sendTemplateEmail(
+    notification: Notification,
+    emails: string[],
+  ) {
+    const mailOptions = {
+      from: this.sender,
+      subject:
+        this.templateRenderer?.getSubject?.(notification) ??
+        notification.payload.title,
+      html: this.templateRenderer?.getHtml?.(notification),
+      text: this.templateRenderer?.getText?.(notification),
+      replyTo: this.replyTo,
+    };
+
+    for (const email of emails) {
+      try {
+        await this.transporter.sendMail({ ...mailOptions, to: email });
+      } catch (e) {
+        this.logger.error(`Failed to send email to ${email}: ${e}`);
+      }
+    }
+  }
+
   async postProcess(
     notification: Notification,
     options: NotificationSendOptions,
@@ -219,32 +267,11 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return;
     }
 
-    // TODO: add template support for content either HTML or text
-    const contentParts: string[] = [];
-    if (notification.payload.description) {
-      contentParts.push(`${notification.payload.description}`);
-    }
-    if (notification.payload.link) {
-      contentParts.push(`${notification.payload.link}`);
+    if (!this.templateRenderer) {
+      await this.sendPlainEmail(notification, emails);
+      return;
     }
 
-    const mailOptions = {
-      from: this.sender,
-      subject: notification.payload.title,
-      html:
-        this.format === 'html'
-          ? `<p>${contentParts.join('<br/>')}</p>`
-          : undefined,
-      text: this.format === 'text' ? contentParts.join('\n\n') : undefined,
-      replyTo: this.replyTo,
-    };
-
-    for (const email of emails) {
-      try {
-        await this.transporter.sendMail({ ...mailOptions, to: email });
-      } catch (e) {
-        this.logger.error(`Failed to send email to ${email}: ${e}`);
-      }
-    }
+    await this.sendTemplateEmail(notification, emails);
   }
 }

@@ -82,10 +82,6 @@ export interface Config {
          */
         sender: string;
         /**
-         * Email format, defaults to HTML
-         */
-        format?: 'html' | 'text';
-        /**
          * Optional reply-to address
          */
         replyTo?: string;

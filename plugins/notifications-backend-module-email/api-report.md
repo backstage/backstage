@@ -4,8 +4,29 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
+
+// @public (undocumented)
+export interface NotificationsEmailTemplateExtensionPoint {
+  // (undocumented)
+  setTemplateRenderer(renderer: NotificationTemplateRenderer): void;
+}
+
+// @public (undocumented)
+export const notificationsEmailTemplateExtensionPoint: ExtensionPoint<NotificationsEmailTemplateExtensionPoint>;
 
 // @public (undocumented)
 const notificationsModuleEmail: () => BackendFeature;
 export default notificationsModuleEmail;
+
+// @public (undocumented)
+export interface NotificationTemplateRenderer {
+  // (undocumented)
+  getHtml?(notification: Notification_2): string;
+  // (undocumented)
+  getSubject?(notification: Notification_2): string;
+  // (undocumented)
+  getText?(notification: Notification_2): string;
+}
 ```

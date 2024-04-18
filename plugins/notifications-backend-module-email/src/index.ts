@@ -21,3 +21,4 @@
  */
 
 export { notificationsModuleEmail as default } from './module';
+export * from './extensions';

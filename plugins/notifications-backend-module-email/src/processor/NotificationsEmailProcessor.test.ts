@@ -213,7 +213,7 @@ describe('NotificationsEmailProcessor', () => {
       html: '<p></p>',
       replyTo: undefined,
       subject: 'notification',
-      text: undefined,
+      text: '',
       to: 'mock@backstage.io',
     });
   });
@@ -271,7 +271,7 @@ describe('NotificationsEmailProcessor', () => {
       html: '<p></p>',
       replyTo: undefined,
       subject: 'notification',
-      text: undefined,
+      text: '',
       to: 'mock@backstage.io',
     });
   });
@@ -330,7 +330,7 @@ describe('NotificationsEmailProcessor', () => {
       html: '<p></p>',
       replyTo: undefined,
       subject: 'notification',
-      text: undefined,
+      text: '',
       to: 'broadcast@backstage.io',
     });
   });
