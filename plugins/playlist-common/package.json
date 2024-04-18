@@ -3,7 +3,8 @@
   "version": "0.1.15",
   "description": "Common functionalities for the playlist plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "moved": "@backstage-community/plugin-playlist-common"
   },
   "publishConfig": {
     "access": "public",
@@ -37,5 +38,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-playlist-common instead."
 }
