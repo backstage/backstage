@@ -2,7 +2,8 @@
   "name": "@backstage/plugin-explore-backend",
   "version": "0.0.27",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-explore-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -51,5 +52,6 @@
     "@types/supertest": "^2.0.8",
     "supertest": "^6.2.4"
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-explore-backend instead."
 }
