@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-github-issues",
-  "version": "0.4.1-next.1",
+  "version": "0.4.1",
   "backstage": {
     "role": "frontend-plugin"
   },
@@ -50,7 +50,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0"
   },

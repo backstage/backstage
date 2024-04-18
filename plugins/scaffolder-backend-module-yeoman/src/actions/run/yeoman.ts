@@ -17,6 +17,7 @@
 import { JsonObject } from '@backstage/types';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { yeomanRun } from './yeomanRun';
+import { examples } from './yeoman.examples';
 
 /**
  * Creates a `run:yeoman` Scaffolder action.
@@ -35,6 +36,7 @@ export function createRunYeomanAction() {
   }>({
     id: 'run:yeoman',
     description: 'Runs Yeoman on an installed Yeoman generator',
+    examples,
     schema: {
       input: {
         type: 'object',

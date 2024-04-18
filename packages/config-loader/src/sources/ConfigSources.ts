@@ -74,6 +74,14 @@ export interface BaseConfigSourcesOptions {
   watch?: boolean;
   rootDir?: string;
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
+
+  /**
+   * A custom substitution function that overrides the default one.
+   *
+   * @remarks
+   * The substitution function handles syntax like `${MY_ENV_VAR}` in configuration values.
+   * The default substitution will read the value from the environment and trim whitespace.
+   */
   substitutionFunc?: SubstitutionFunc;
 }
 

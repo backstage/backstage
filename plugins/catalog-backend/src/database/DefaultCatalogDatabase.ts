@@ -16,16 +16,16 @@
 
 import { NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
-import type { Logger } from 'winston';
 import {
   CatalogDatabase,
   ListAncestorsOptions,
   ListAncestorsResult,
   RefreshOptions,
+  Transaction,
 } from './types';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
 import { rethrowError } from './conversion';
-import { Transaction } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const MAX_ANCESTOR_DEPTH = 32;
 
@@ -33,7 +33,7 @@ export class DefaultCatalogDatabase implements CatalogDatabase {
   constructor(
     private readonly options: {
       database: Knex;
-      logger: Logger;
+      logger: LoggerService;
     },
   ) {}
 

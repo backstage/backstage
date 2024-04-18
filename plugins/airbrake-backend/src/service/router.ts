@@ -17,10 +17,10 @@
 import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { AirbrakeConfig } from '../config';
 import { Options } from 'http-proxy-middleware/dist/types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * The router options that are needed when creating a router.
@@ -31,7 +31,7 @@ export interface RouterOptions {
   /**
    * A logger object
    */
-  logger: Logger;
+  logger: LoggerService;
 
   /**
    * The Airbrake config obtained from {@link extractAirbrakeConfig}

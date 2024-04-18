@@ -18,10 +18,17 @@ import React from 'react';
 import { Content, Header, Page } from '@backstage/core-components';
 import { ApolloExplorerBrowser } from '../ApolloExplorerBrowser';
 import { JSONObject } from '@apollo/explorer/src/helpers/types';
+import { ApiHolder } from '@backstage/core-plugin-api';
 
-type EndpointProps = {
+/**
+ * Export types to be used with {@link @backstage/apollo-explorer#ApolloExplorerPage}.
+ *
+ * @public
+ */
+export type EndpointProps = {
   title: string;
   graphRef: string;
+  authCallback?: AuthCallback;
   persistExplorerState?: boolean;
   initialState?: {
     document?: string;
@@ -35,6 +42,15 @@ type EndpointProps = {
   };
 };
 
+/**
+ * Export types to be used with {@link @backstage/apollo-explorer#ApolloExplorerPage}.
+ *
+ * @public
+ */
+export type AuthCallback = (options: {
+  apiHolder: ApiHolder;
+}) => Promise<{ token: string }>;
+
 type Props = {
   title?: string | undefined;
   subtitle?: string | undefined;
@@ -43,6 +59,7 @@ type Props = {
 
 export const ApolloExplorerPage = (props: Props) => {
   const { title, subtitle, endpoints } = props;
+
   return (
     <Page themeId="tool">
       <Header title={title ?? 'Apollo Explorer 👩‍🚀'} subtitle={subtitle ?? ''} />

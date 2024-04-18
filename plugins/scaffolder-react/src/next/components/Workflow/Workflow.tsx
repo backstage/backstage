@@ -22,7 +22,7 @@ import {
   Progress,
 } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { errorApiRef, useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { useTemplateParameterSchema } from '../../hooks/useTemplateParameterSchema';
 import { Stepper, type StepperProps } from '../Stepper/Stepper';

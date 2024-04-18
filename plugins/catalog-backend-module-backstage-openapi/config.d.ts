@@ -25,6 +25,10 @@ export interface Config {
          * A list of plugins, whose OpenAPI specs you want to collate in `InternalOpenApiDocumentationProvider`.
          */
         plugins: string[];
+        /**
+         * Properties to override on the final entity object.
+         */
+        entityOverrides?: object;
       };
     };
   };

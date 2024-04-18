@@ -1,5 +1,17 @@
 # @backstage/plugin-badges
 
+## 0.2.58
+
+### Patch Changes
+
+- 93c1d9c: Update README to fix invalid import command
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+
 ## 0.2.58-next.1
 
 ### Patch Changes

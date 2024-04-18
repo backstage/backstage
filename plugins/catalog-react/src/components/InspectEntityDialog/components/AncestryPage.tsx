@@ -27,7 +27,9 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import { useApi, useApp, useRouteRef } from '@backstage/core-plugin-api';
-import { Box, DialogContentText, makeStyles } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import { makeStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import React, { useLayoutEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';

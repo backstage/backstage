@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kafka-backend",
-  "version": "0.3.15-next.1",
+  "version": "0.3.15",
   "description": "A Backstage backend plugin that integrates towards Kafka",
   "backstage": {
     "role": "backend-plugin"
@@ -59,8 +59,7 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "kafkajs": "^2.0.0",
-    "lodash": "^4.17.21",
-    "winston": "^3.2.1"
+    "lodash": "^4.17.21"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

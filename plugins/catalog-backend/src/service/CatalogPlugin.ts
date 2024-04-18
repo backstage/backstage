@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { Entity, Validators } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
   CatalogAnalysisExtensionPoint,
   catalogAnalysisExtensionPoint,
-  CatalogProcessingExtensionPoint,
-  catalogProcessingExtensionPoint,
-  CatalogPermissionExtensionPoint,
-  catalogPermissionExtensionPoint,
   CatalogModelExtensionPoint,
   catalogModelExtensionPoint,
+  CatalogPermissionExtensionPoint,
+  catalogPermissionExtensionPoint,
+  CatalogProcessingExtensionPoint,
+  catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
@@ -36,7 +36,6 @@ import {
   PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { merge } from 'lodash';
 import { Permission } from '@backstage/plugin-permission-common';
 
@@ -221,14 +220,13 @@ export const catalogPlugin = createBackendPlugin({
         auth,
         httpAuth,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
           config,
           reader,
           permissions,
           database,
           scheduler,
-          logger: winstonLogger,
+          logger,
           discovery,
           auth,
           httpAuth,

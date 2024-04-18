@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.5.3
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+
 ## 0.5.2
 
 ### Patch Changes

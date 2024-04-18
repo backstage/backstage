@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-module-addons-contrib",
-  "version": "1.1.9-next.0",
+  "version": "1.1.9",
   "description": "Plugin module for contributed TechDocs Addons",
   "backstage": {
     "role": "frontend-plugin-module"
@@ -52,7 +52,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-techdocs-addons-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "@types/react": "^16.13.1 || ^17.0.0"

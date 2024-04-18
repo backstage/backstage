@@ -15,16 +15,14 @@
  */
 
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
-import {
-  Box,
-  DialogContentText,
-  List,
-  ListItem,
-  ListItemIcon,
-  ListItemSecondaryAction,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import groupBy from 'lodash/groupBy';
 import sortBy from 'lodash/sortBy';
 import React from 'react';

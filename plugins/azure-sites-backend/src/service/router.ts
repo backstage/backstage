@@ -20,29 +20,29 @@ import {
 } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 
 import { InputError, NotAllowedError, NotFoundError } from '@backstage/errors';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
+  AZURE_WEB_SITE_NAME_ANNOTATION,
   azureSitesActionPermission,
   azureSitesPermissions,
-  AZURE_WEB_SITE_NAME_ANNOTATION,
 } from '@backstage/plugin-azure-sites-common';
 import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-node';
 import { CatalogApi } from '@backstage/catalog-client';
 
 import { AzureSitesApi } from '../api';
 import {
-  DiscoveryService,
   AuthService,
+  DiscoveryService,
   HttpAuthService,
+  LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   azureSitesApi: AzureSitesApi;
   catalogApi: CatalogApi;
   permissions: PermissionsService;

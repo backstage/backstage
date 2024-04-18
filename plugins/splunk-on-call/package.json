@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-splunk-on-call",
-  "version": "0.4.23-next.1",
+  "version": "0.4.23",
   "description": "A Backstage plugin that integrates towards Splunk On-Call",
   "backstage": {
     "role": "frontend-plugin"
@@ -54,7 +54,7 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "@types/luxon": "^3.0.0"

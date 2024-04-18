@@ -69,3 +69,36 @@ That's it! You should now see an `Apollo Explorer` item in your sidebar, and if 
 Once you authenticate, your graph is ready to use 🚀
 
 ![Logged In](./docs/img/logged-in.png)
+
+### Authentication Tokens for Apollo Studio
+
+If you need to utilize an ApiRef to supply a token to Apollo, you may do so using an ApiHolder.
+
+In `packages/app/src/App.tsx` perform the following modifications from above. The import `ssoAuthApiRef` is used as an example and **does not exist**.
+
+```typescript
+import { ApolloExplorerPage, EndpointProps } from '@backstage/plugin-apollo-explorer';
+import { ssoAuthApiRef } from '@companyxyz/devkit';
+import { ApiHolder } from '@backstage/core-plugin-api';
+
+async function authCallback(options: { apiHolder: ApiHolder }): Promise<{token: string}> {
+  const sso = options.apiHolder.get<any>(ssoAuthApiRef)
+  return await sso.getToken()
+}
+
+const routes = (
+  <FlatRoutes>
+    {/* other routes... */}
+    <Route
+      path="/apollo-explorer"
+      element={
+        <ApolloExplorerPage
+          endpoints={[{
+            title: 'Github',
+            graphRef: 'my-github-graph-ref@current',
+            authCallback: authCallback
+          }]}
+        />
+      }
+    />
+```

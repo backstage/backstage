@@ -22,9 +22,9 @@ import {
   TechInsightFact,
   TechInsightsStore,
 } from '@backstage/plugin-tech-insights-node';
-import { Logger } from 'winston';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Duration } from 'luxon';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 function randomDailyCron() {
   const rand = (min: number, max: number) =>
@@ -72,7 +72,7 @@ export class DefaultFactRetrieverEngine implements FactRetrieverEngine {
     private readonly repository: TechInsightsStore,
     private readonly factRetrieverRegistry: FactRetrieverRegistry,
     private readonly factRetrieverContext: FactRetrieverContext,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly scheduler: PluginTaskScheduler,
     private readonly defaultCadence?: string,
     private readonly defaultTimeout?: Duration,

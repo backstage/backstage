@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-ilert",
-  "version": "0.2.23-next.1",
+  "version": "0.2.23",
   "description": "A Backstage plugin that integrates towards iLert",
   "backstage": {
     "role": "frontend-plugin"
@@ -52,7 +52,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0"
   },

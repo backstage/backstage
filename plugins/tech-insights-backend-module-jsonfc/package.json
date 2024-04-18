@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-tech-insights-backend-module-jsonfc",
-  "version": "0.1.49-next.1",
+  "version": "0.1.49",
   "backstage": {
     "role": "backend-plugin-module"
   },
@@ -47,8 +47,7 @@
     "ajv": "^8.10.0",
     "json-rules-engine": "^6.1.2",
     "lodash": "^4.17.21",
-    "luxon": "^3.0.0",
-    "winston": "^3.2.1"
+    "luxon": "^3.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

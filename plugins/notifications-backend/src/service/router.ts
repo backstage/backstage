@@ -28,6 +28,7 @@ import {
   isGroupEntity,
   isUserEntity,
   RELATION_HAS_MEMBER,
+  RELATION_OWNED_BY,
   RELATION_PARENT_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
@@ -103,17 +104,13 @@ export async function createRouter(
       return [];
     }
 
+    const fields = ['kind', 'metadata.name', 'metadata.namespace', 'relations'];
+
     const refs = Array.isArray(entityRef) ? entityRef : [entityRef];
     const entities = await catalogClient.getEntitiesByRefs(
       {
         entityRefs: refs,
-        fields: [
-          'kind',
-          'metadata.name',
-          'metadata.namespace',
-          'relations',
-          'spec.owner',
-        ],
+        fields,
       },
       { token },
     );
@@ -126,29 +123,17 @@ export async function createRouter(
         return [stringifyEntityRef(entity)];
       } else if (isGroupEntity(entity) && entity.relations) {
         const users = entity.relations
-          .filter(
-            relation =>
-              relation.type === RELATION_HAS_MEMBER && relation.targetRef,
-          )
+          .filter(relation => relation.type === RELATION_HAS_MEMBER)
           .map(r => r.targetRef);
 
         const childGroupRefs = entity.relations
-          .filter(
-            relation =>
-              relation.type === RELATION_PARENT_OF && relation.targetRef,
-          )
+          .filter(relation => relation.type === RELATION_PARENT_OF)
           .map(r => r.targetRef);
 
         const childGroups = await catalogClient.getEntitiesByRefs(
           {
             entityRefs: childGroupRefs,
-            fields: [
-              'kind',
-              'metadata.name',
-              'metadata.namespace',
-              'relations',
-              'spec.owner',
-            ],
+            fields,
           },
           { token },
         );
@@ -156,13 +141,16 @@ export async function createRouter(
           childGroups.items.map(mapEntity),
         );
         return [...users, ...childGroupUsers.flat(2)];
-      } else if (!isGroupEntity(entity) && entity.spec?.owner) {
-        const owner = await catalogClient.getEntityByRef(
-          entity.spec.owner as string,
-          { token },
-        );
-        if (owner) {
-          return mapEntity(owner);
+      } else if (entity.relations) {
+        const ownerRef = entity.relations.find(
+          relation => relation.type === RELATION_OWNED_BY,
+        )?.targetRef;
+
+        if (ownerRef) {
+          const owner = await catalogClient.getEntityByRef(ownerRef, { token });
+          if (owner) {
+            return mapEntity(owner);
+          }
         }
       }
 
@@ -274,9 +262,9 @@ export async function createRouter(
       }
       opts.createdAfter = new Date(sinceEpoch);
     }
-    if (req.query.minimal_severity) {
+    if (req.query.minimumSeverity) {
       opts.minimumSeverity = normalizeSeverity(
-        req.query.minimal_severity.toString(),
+        req.query.minimumSeverity.toString(),
       );
     }
 
@@ -470,7 +458,7 @@ export async function createRouter(
 
       if (!recipients || !title) {
         logger.error(`Invalid notification request received`);
-        throw new InputError();
+        throw new InputError(`Invalid notification request received`);
       }
 
       const origin = credentials.principal.subject;
@@ -496,8 +484,10 @@ export async function createRouter(
         try {
           users = await getUsersForEntityRef(entityRef);
         } catch (e) {
-          throw new InputError();
+          logger.error(`Failed to resolve notification receivers: ${e}`);
+          throw new InputError('Failed to resolve notification receivers', e);
         }
+
         const userNotifications = await sendUserNotifications(
           baseNotification,
           users,

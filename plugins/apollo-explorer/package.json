@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-apollo-explorer",
-  "version": "0.1.24-next.0",
+  "version": "0.2.0",
   "backstage": {
     "role": "frontend-plugin"
   },
@@ -36,13 +36,15 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@material-ui/core": "^4.12.2",
+    "@material-ui/lab": "^4.0.0-alpha.61",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-use": "^17.5.0",
     "use-deep-compare-effect": "^1.8.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0"
   },

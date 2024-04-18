@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-pagerduty",
-  "version": "0.7.6-next.1",
+  "version": "0.7.6",
   "description": "This plugin has been deprecated, consider using [@pagerduty/backstage-plugin](https://github.com/pagerduty/backstage-plugin) instead.",
   "backstage": {
     "role": "frontend-plugin"
@@ -56,7 +56,7 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0"
   },

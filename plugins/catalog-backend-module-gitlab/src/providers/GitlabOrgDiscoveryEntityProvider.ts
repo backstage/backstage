@@ -27,7 +27,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 import {
   GitLabClient,
@@ -38,14 +38,14 @@ import {
 import {
   GitLabGroup,
   GitLabUser,
+  GroupNameTransformer,
+  GroupTransformer as GroupEntitiesTransformer,
   PagedResponse,
   UserTransformer,
-  GroupTransformer as GroupEntitiesTransformer,
-  GroupNameTransformer,
 } from '../lib/types';
 import {
-  defaultGroupNameTransformer,
   defaultGroupEntitiesTransformer,
+  defaultGroupNameTransformer,
   defaultUserTransformer,
 } from '../lib/defaultTransformers';
 
@@ -66,7 +66,7 @@ type GroupResult = {
 export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private readonly config: GitlabProviderConfig;
   private readonly integration: GitLabIntegration;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
   private userTransformer: UserTransformer;
@@ -76,7 +76,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
       userTransformer?: UserTransformer;
@@ -136,7 +136,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private constructor(options: {
     config: GitlabProviderConfig;
     integration: GitLabIntegration;
-    logger: Logger;
+    logger: LoggerService;
     taskRunner: TaskRunner;
     userTransformer?: UserTransformer;
     groupEntitiesTransformer?: GroupEntitiesTransformer;
@@ -189,7 +189,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     };
   }
 
-  private async refresh(logger: Logger): Promise<void> {
+  private async refresh(logger: LoggerService): Promise<void> {
     if (!this.connection) {
       throw new Error(
         `Gitlab discovery connection not initialized for ${this.getProviderName()}`,

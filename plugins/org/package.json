@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-org",
-  "version": "0.6.24-next.1",
+  "version": "0.6.24",
   "description": "A Backstage plugin that helps you create entity pages for your organization",
   "backstage": {
     "role": "frontend-plugin"
@@ -73,7 +73,7 @@
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0"

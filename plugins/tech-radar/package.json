@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-tech-radar",
-  "version": "0.7.3-next.1",
+  "version": "0.7.3",
   "description": "A Backstage plugin that lets you display a Tech Radar for your organization",
   "backstage": {
     "role": "frontend-plugin"
@@ -65,7 +65,7 @@
     "@backstage/dev-utils": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0",

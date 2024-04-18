@@ -1,5 +1,19 @@
 # @backstage/plugin-apollo-explorer
 
+## 0.2.0
+
+### Minor Changes
+
+- c664b15: feat(apollo-explorer): allow callbacks using apiholder
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+
 ## 0.1.24-next.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-tech-insights-backend",
-  "version": "0.5.31-next.1",
+  "version": "0.5.31",
   "backstage": {
     "role": "backend-plugin"
   },
@@ -57,7 +57,6 @@
     "luxon": "^3.0.0",
     "semver": "^7.5.3",
     "uuid": "^9.0.0",
-    "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {

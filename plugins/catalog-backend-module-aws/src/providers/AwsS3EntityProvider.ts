@@ -31,12 +31,12 @@ import {
   S3,
 } from '@aws-sdk/client-s3';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 import { getEndpointFromInstructions } from '@aws-sdk/middleware-endpoint';
 import {
   AwsCredentialsManager,
   DefaultAwsCredentialsManager,
 } from '@backstage/integration-aws-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // TODO: event-based updates using S3 events (+ queue like SQS)?
 /**
@@ -47,7 +47,7 @@ import {
  * @public
  */
 export class AwsS3EntityProvider implements EntityProvider {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private s3?: S3;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
@@ -56,7 +56,7 @@ export class AwsS3EntityProvider implements EntityProvider {
   static fromConfig(
     configRoot: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -106,7 +106,7 @@ export class AwsS3EntityProvider implements EntityProvider {
     private readonly config: AwsS3Config,
     private readonly integration: AwsS3Integration,
     private readonly awsCredentialsManager: AwsCredentialsManager,
-    logger: Logger,
+    logger: LoggerService,
     taskRunner: TaskRunner,
   ) {
     this.logger = logger.child({
@@ -176,7 +176,7 @@ export class AwsS3EntityProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  async refresh(logger: Logger) {
+  async refresh(logger: LoggerService) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-code-climate",
-  "version": "0.1.34-next.1",
+  "version": "0.1.34",
   "backstage": {
     "role": "frontend-plugin"
   },
@@ -46,7 +46,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "@types/humanize-duration": "^3.27.1",

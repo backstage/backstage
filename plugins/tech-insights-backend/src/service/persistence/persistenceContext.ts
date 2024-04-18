@@ -18,9 +18,9 @@ import {
   PluginDatabaseManager,
   resolvePackagePath,
 } from '@backstage/backend-common';
-import { Logger } from 'winston';
 import { TechInsightsDatabase } from './TechInsightsDatabase';
 import { PersistenceContext } from '@backstage/plugin-tech-insights-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-tech-insights-backend',
@@ -33,7 +33,7 @@ const migrationsDir = resolvePackagePath(
  * @public
  */
 export type PersistenceContextOptions = {
-  logger: Logger;
+  logger: LoggerService;
 };
 
 const defaultOptions: PersistenceContextOptions = {

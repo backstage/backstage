@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-git-release-manager",
-  "version": "0.3.46-next.0",
+  "version": "0.3.46",
   "description": "A Backstage plugin that helps you manage releases in git",
   "backstage": {
     "role": "frontend-plugin"
@@ -51,7 +51,7 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "@types/recharts": "^1.8.15"

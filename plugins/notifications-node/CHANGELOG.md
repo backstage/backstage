@@ -1,5 +1,20 @@
 # @backstage/plugin-notifications-node
 
+## 0.1.3
+
+### Patch Changes
+
+- 0d99528: Notification processor functions are now renamed to `preProcess` and `postProcess`.
+  Additionally, processor name is now required to be returned by `getName`.
+  A new processor functionality `processOptions` was added to process options before sending the notification.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-notifications-common@0.0.3
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/catalog-client@1.6.4
+  - @backstage/plugin-signals-node@0.1.3
+  - @backstage/catalog-model@1.4.5
+
 ## 0.1.3-next.1
 
 ### Patch Changes

@@ -16,13 +16,13 @@
 
 import { assertError } from '@backstage/errors';
 import { Octokit } from 'octokit';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type BranchProtectionOptions = {
   client: Octokit;
   owner: string;
   repoName: string;
-  logger: Logger;
+  logger: LoggerService;
   requireCodeOwnerReviews: boolean;
   requiredStatusCheckContexts?: string[];
   bypassPullRequestAllowances?: {

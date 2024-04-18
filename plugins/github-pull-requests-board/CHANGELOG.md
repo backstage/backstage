@@ -1,5 +1,23 @@
 # @backstage/plugin-github-pull-requests-board
 
+## 0.2.0
+
+### Minor Changes
+
+- c6cafe6: Fixed bug in CardHeader not expecting commit status as an array as returned by GraphQL
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- 617faf0: Handle null values returned from GitHub for the statusCheckRollup value on the commit object
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/integration@1.10.0
+  - @backstage/catalog-model@1.4.5
+
 ## 0.1.28-next.1
 
 ### Patch Changes

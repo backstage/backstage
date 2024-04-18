@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -59,7 +58,7 @@ export const linguistPlugin = createBackendPlugin({
           await createRouterFromConfig({
             auth,
             httpAuth,
-            logger: loggerToWinstonLogger(logger),
+            logger,
             config,
             reader,
             database,

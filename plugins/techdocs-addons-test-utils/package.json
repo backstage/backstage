@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-addons-test-utils",
-  "version": "1.0.31-next.1",
+  "version": "1.0.31",
   "backstage": {
     "role": "web-library"
   },
@@ -50,7 +50,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0"
   },
   "peerDependencies": {

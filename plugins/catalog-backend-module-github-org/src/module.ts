@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
@@ -111,7 +110,7 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
               schedule: scheduler.createScheduledTaskRunner(
                 definition.schedule,
               ),
-              logger: loggerToWinstonLogger(logger),
+              logger,
               userTransformer,
               teamTransformer,
             }),

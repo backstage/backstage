@@ -24,7 +24,6 @@ import {
 } from '@backstage/plugin-tech-insights-node';
 
 import { CheckResult } from '@backstage/plugin-tech-insights-common';
-import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import {
   CompoundEntityRef,
@@ -33,6 +32,7 @@ import {
 } from '@backstage/catalog-model';
 import { errorHandler } from '@backstage/backend-common';
 import { serializeError } from '@backstage/errors';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -63,7 +63,7 @@ export interface RouterOptions<
   /**
    * Implementation of Winston logger
    */
-  logger: Logger;
+  logger: LoggerService;
 }
 
 /**

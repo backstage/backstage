@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { IconComponent, useApp } from '@backstage/core-plugin-api';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import DescriptionIcon from '@material-ui/icons/Description';
 import React from 'react';
 import { ScaffolderTaskOutput } from '../../../api';

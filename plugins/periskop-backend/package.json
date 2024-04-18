@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-periskop-backend",
-  "version": "0.2.15-next.1",
+  "version": "0.2.15",
   "backstage": {
     "role": "backend-plugin"
   },
@@ -52,7 +52,6 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "node-fetch": "^2.6.7",
-    "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {

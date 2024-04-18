@@ -36,9 +36,7 @@ function createDatabaseManager(
 jest.setTimeout(60_000);
 
 describe('StaticAssetsStore', () => {
-  const databases = TestDatabases.create({
-    ids: ['MYSQL_8', 'POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
-  });
+  const databases = TestDatabases.create();
 
   it.each(databases.eachSupportedId())(
     'should store and retrieve assets, %p',

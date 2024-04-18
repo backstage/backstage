@@ -22,8 +22,8 @@ import {
 } from '@backstage/plugin-azure-devops-common';
 
 import { AzureDevOpsApi } from './AzureDevOpsApi';
-import { Logger } from 'winston';
 import limiterFactory from 'p-limit';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export const DEFAULT_TEAMS_LIMIT = 100;
 
@@ -33,12 +33,12 @@ export class PullRequestsDashboardProvider {
   private teamMembers = new Map<string, TeamMember>();
 
   private constructor(
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly azureDevOpsApi: AzureDevOpsApi,
   ) {}
 
   public static async create(
-    logger: Logger,
+    logger: LoggerService,
     azureDevOpsApi: AzureDevOpsApi,
   ): Promise<PullRequestsDashboardProvider> {
     const provider = new PullRequestsDashboardProvider(logger, azureDevOpsApi);

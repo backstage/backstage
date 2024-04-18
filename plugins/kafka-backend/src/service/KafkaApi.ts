@@ -15,8 +15,8 @@
  */
 
 import { Kafka, SeekEntry } from 'kafkajs';
-import { Logger } from 'winston';
 import { SaslConfig, SslConfig } from '../types/types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export type PartitionOffset = {
   id: number;
@@ -33,7 +33,7 @@ export type Options = {
   brokers: string[];
   ssl?: SslConfig;
   sasl?: SaslConfig;
-  logger: Logger;
+  logger: LoggerService;
 };
 
 export interface KafkaApi {
@@ -43,7 +43,7 @@ export interface KafkaApi {
 
 export class KafkaJsApiImpl implements KafkaApi {
   private readonly kafka: Kafka;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
   constructor(options: Options) {
     options.logger.debug(

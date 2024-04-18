@@ -1,5 +1,21 @@
 # @backstage/plugin-azure-sites-backend
 
+## 0.3.4
+
+### Patch Changes
+
+- d5a1fe1: Replaced winston logger with `LoggerService`
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-permission-node@0.7.28
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/catalog-client@1.6.4
+  - @backstage/plugin-catalog-node@1.11.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-azure-sites-common@0.1.3
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.3.4-next.1
 
 ### Patch Changes

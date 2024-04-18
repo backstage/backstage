@@ -18,19 +18,18 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
+  LunrSearchEngine,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
   SearchEngine,
-  LunrSearchEngine,
 } from '@backstage/plugin-search-backend-node';
 import {
-  searchIndexServiceRef,
-  searchIndexRegistryExtensionPoint,
-  SearchIndexRegistryExtensionPoint,
   SearchEngineRegistryExtensionPoint,
   searchEngineRegistryExtensionPoint,
+  searchIndexRegistryExtensionPoint,
+  SearchIndexRegistryExtensionPoint,
+  searchIndexServiceRef,
 } from '@backstage/plugin-search-backend-node/alpha';
 
 import { createRouter } from './service/router';
@@ -114,7 +113,7 @@ export default createBackendPlugin({
         let searchEngine = searchEngineRegistry.getSearchEngine();
         if (!searchEngine) {
           searchEngine = new LunrSearchEngine({
-            logger: loggerToWinstonLogger(logger),
+            logger,
           });
         }
 
@@ -133,7 +132,7 @@ export default createBackendPlugin({
           permissions,
           auth,
           httpAuth,
-          logger: loggerToWinstonLogger(logger),
+          logger,
           engine: searchEngine,
           types: searchIndexService.getDocumentTypes(),
         });

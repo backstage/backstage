@@ -20,12 +20,12 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
 import { GithubEntityProvider } from './providers/GithubEntityProvider';
 import {
   GithubOrgEntityProvider,
   GithubOrgEntityProviderOptions,
 } from './providers/GithubOrgEntityProvider';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
@@ -57,7 +57,7 @@ export class GitHubEntityProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -80,7 +80,7 @@ export class GitHubEntityProvider implements EntityProvider {
     return this.delegate.getProviderName();
   }
 
-  refresh(logger: Logger): Promise<void> {
+  refresh(logger: LoggerService): Promise<void> {
     return this.delegate.refresh(logger);
   }
 }

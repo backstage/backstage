@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-stack-overflow",
-  "version": "0.1.29-next.1",
+  "version": "0.1.29",
   "backstage": {
     "role": "frontend-plugin"
   },
@@ -65,7 +65,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0",
     "msw": "^1.0.0"

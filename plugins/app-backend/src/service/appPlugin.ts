@@ -20,7 +20,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   configSchemaExtensionPoint,
   staticFallbackHandlerExtensionPoint,
@@ -72,10 +71,8 @@ export const appPlugin = createBackendPlugin({
         const appPackageName =
           config.getOptionalString('app.packageName') ?? 'app';
 
-        const winstonLogger = loggerToWinstonLogger(logger);
-
         const router = await createRouter({
-          logger: winstonLogger,
+          logger,
           config,
           database,
           auth,

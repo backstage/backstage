@@ -44,7 +44,7 @@ import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
 import { locationSpecToLocationEntity as locationSpecToLocationEntity_2 } from '@backstage/plugin-catalog-node';
 import { locationSpecToMetadataName as locationSpecToMetadataName_2 } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
@@ -192,7 +192,7 @@ export type CatalogCollatorEntityTransformer =
 
 // @public (undocumented)
 export type CatalogEnvironment = {
-  logger: Logger;
+  logger: LoggerService;
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
@@ -251,14 +251,14 @@ export type CatalogProcessorResult = CatalogProcessorResult_2;
 export class CodeOwnersProcessor implements CatalogProcessor_2 {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
     reader: UrlReader;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       reader: UrlReader;
     },
   ): CodeOwnersProcessor;
@@ -467,7 +467,7 @@ export function transformLegacyPolicyToProcessor(
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor_2 {
-  constructor(options: { reader: UrlReader; logger: Logger });
+  constructor(options: { reader: UrlReader; logger: LoggerService });
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)

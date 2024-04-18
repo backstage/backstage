@@ -20,3 +20,7 @@
  * @packageDocumentation
  */
 export { apolloExplorerPlugin, ApolloExplorerPage } from './plugin';
+export type {
+  EndpointProps,
+  AuthCallback,
+} from './components/ApolloExplorerPage';

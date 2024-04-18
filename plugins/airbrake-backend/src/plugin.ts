@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -40,7 +39,7 @@ export const airbrakePlugin = createBackendPlugin({
         httpRouter.use(
           await createRouter({
             airbrakeConfig: extractAirbrakeConfig(config),
-            logger: loggerToWinstonLogger(logger),
+            logger,
           }),
         );
         httpRouter.addAuthPolicy({

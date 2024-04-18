@@ -1,6 +1,6 @@
 {
   "name": "@backstage/dev-utils",
-  "version": "1.0.31-next.1",
+  "version": "1.0.31",
   "description": "Utilities for developing Backstage plugins.",
   "backstage": {
     "role": "web-library"
@@ -52,7 +52,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0",

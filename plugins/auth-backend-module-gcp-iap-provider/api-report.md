@@ -37,6 +37,10 @@ export namespace gcpIapSignInResolvers {
     GcpIapResult,
     unknown
   >;
+  const idMatchingUserEntityAnnotation: SignInResolverFactory<
+    GcpIapResult,
+    unknown
+  >;
 }
 
 // @public

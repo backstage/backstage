@@ -16,19 +16,19 @@
 import React, { ChangeEvent, useState } from 'react';
 
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import Drawer from '@material-ui/core/Drawer';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import Switch from '@material-ui/core/Switch';
+import Typography from '@material-ui/core/Typography';
+import Button from '@material-ui/core/Button';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import {
   createStyles,
-  Drawer,
   makeStyles,
   Theme,
-  Grid,
-  IconButton,
-  Switch,
-  Typography,
-  Button,
   withStyles,
-  FormControlLabel,
-} from '@material-ui/core';
+} from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import { ManifestYaml } from './ManifestYaml';
 

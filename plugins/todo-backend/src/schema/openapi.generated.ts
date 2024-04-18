@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,6 +162,7 @@ export const spec = {
             name: 'orderBy',
             in: 'query',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'string',
               pattern: '^(text|tag|author|viewUrl|repoFilePath)=(asc|desc)$',
@@ -188,6 +189,7 @@ export const spec = {
             name: 'offset',
             in: 'query',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'integer',
               minimum: 0,
@@ -198,6 +200,7 @@ export const spec = {
             name: 'limit',
             in: 'query',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'integer',
               minimum: 1,

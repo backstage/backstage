@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-jenkins-backend",
-  "version": "0.4.4-next.1",
+  "version": "0.4.4",
   "description": "A Backstage backend plugin that integrates towards Jenkins",
   "backstage": {
     "role": "backend-plugin"
@@ -48,7 +48,6 @@
     "express-promise-router": "^4.1.0",
     "jenkins": "^1.0.0",
     "node-fetch": "^2.6.7",
-    "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {

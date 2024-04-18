@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 import { ConfigReader } from '@backstage/config';
@@ -24,17 +23,18 @@ import {
   RouterOptions,
 } from './router';
 import { AirbrakeConfig, extractAirbrakeConfig } from '../config';
-import * as winston from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('createRouter', () => {
   let app: express.Express;
   let airbrakeConfig: AirbrakeConfig;
-  let voidLogger: winston.Logger;
+  let voidLogger: LoggerService;
 
   beforeEach(async () => {
     jest.resetAllMocks();
 
-    voidLogger = getVoidLogger();
+    voidLogger = mockServices.logger.mock();
     const config = new ConfigReader({
       airbrake: {
         apiKey: 'fakeApiKey',

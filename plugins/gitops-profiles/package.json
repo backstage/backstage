@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-gitops-profiles",
-  "version": "0.3.49-next.0",
+  "version": "0.3.49",
   "description": "A Backstage plugin that helps you manage GitOps profiles",
   "backstage": {
     "role": "frontend-plugin"
@@ -50,7 +50,7 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0"
   },

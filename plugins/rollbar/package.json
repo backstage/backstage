@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-rollbar",
-  "version": "0.4.34-next.1",
+  "version": "0.4.34",
   "description": "A Backstage plugin that integrates towards Rollbar",
   "backstage": {
     "role": "frontend-plugin"
@@ -53,7 +53,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0"
   },

@@ -15,16 +15,16 @@
  */
 
 import { Server } from 'http';
-import { Logger } from 'winston';
 import { createServiceBuilder } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { createRouter } from './router';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 export async function startStandaloneServer(

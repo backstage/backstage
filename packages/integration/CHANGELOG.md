@@ -1,5 +1,17 @@
 # @backstage/integration
 
+## 1.10.0
+
+### Minor Changes
+
+- 7b11422: Add AWS CodeCommit URL Reader/Integration
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.10.0-next.0
 
 ### Minor Changes

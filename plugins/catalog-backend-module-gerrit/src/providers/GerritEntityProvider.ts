@@ -32,23 +32,23 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 
 import { readGerritConfigs } from './config';
 import { GerritProjectQueryResult, GerritProviderConfig } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export class GerritEntityProvider implements EntityProvider {
   private readonly config: GerritProviderConfig;
   private readonly integration: GerritIntegration;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
 
   static fromConfig(
     configRoot: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -94,7 +94,7 @@ export class GerritEntityProvider implements EntityProvider {
   private constructor(
     config: GerritProviderConfig,
     integration: GerritIntegration,
-    logger: Logger,
+    logger: LoggerService,
     taskRunner: TaskRunner,
   ) {
     this.config = config;
@@ -139,7 +139,7 @@ export class GerritEntityProvider implements EntityProvider {
     };
   }
 
-  async refresh(logger: Logger): Promise<void> {
+  async refresh(logger: LoggerService): Promise<void> {
     if (!this.connection) {
       throw new Error('Gerrit discovery connection not initialized');
     }

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-code-coverage-backend",
-  "version": "0.2.31-next.1",
+  "version": "0.2.31",
   "description": "A Backstage backend plugin that helps you keep track of your code coverage",
   "backstage": {
     "role": "backend-plugin"
@@ -47,7 +47,6 @@
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",
     "uuid": "^9.0.0",
-    "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {

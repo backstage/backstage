@@ -19,9 +19,11 @@ import Divider from '@material-ui/core/Divider';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
-import { JSONObject } from '@apollo/explorer/src/helpers/types';
 import { ApolloExplorer } from '@apollo/explorer/react';
 import { Content } from '@backstage/core-components';
+import { HandleRequest } from '@apollo/explorer/src/helpers/postMessageRelayHelpers';
+import { EndpointProps } from '../ApolloExplorerPage';
+import { useApiHolder } from '@backstage/core-plugin-api';
 
 const useStyles = makeStyles(theme => ({
   tabs: {
@@ -38,29 +40,40 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
-export type ApolloEndpointProps = {
-  title: string;
-  graphRef: string;
-  persistExplorerState?: boolean;
-  initialState?: {
-    document?: string;
-    variables?: JSONObject;
-    headers?: Record<string, string>;
-    displayOptions: {
-      docsPanelState?: 'open' | 'closed';
-      showHeadersAndEnvVars?: boolean;
-      theme?: 'dark' | 'light';
-    };
-  };
+type Props = {
+  endpoints: EndpointProps[];
+  authCallback?: () => Promise<{ token: string }>;
 };
 
-type Props = {
-  endpoints: ApolloEndpointProps[];
+export const handleAuthRequest = ({
+  authCallback,
+}: {
+  authCallback: Props['authCallback'];
+}): HandleRequest => {
+  const handleRequest: HandleRequest = async (endpointUrl, options) =>
+    fetch(endpointUrl, {
+      ...options,
+      headers: {
+        ...options.headers,
+        ...(authCallback && {
+          Authorization: `Bearer ${(await authCallback()).token}`,
+        }),
+      },
+    });
+  return handleRequest;
 };
 
 export const ApolloExplorerBrowser = ({ endpoints }: Props) => {
   const classes = useStyles();
   const [tabIndex, setTabIndex] = useState(0);
+
+  const apiHolder = useApiHolder();
+
+  const getAuthCallback = (index: number) => {
+    const authCallback = endpoints[index].authCallback;
+    if (authCallback === undefined) return undefined;
+    return () => authCallback({ apiHolder });
+  };
 
   return (
     <div className={classes.root}>
@@ -79,6 +92,9 @@ export const ApolloExplorerBrowser = ({ endpoints }: Props) => {
         <ApolloExplorer
           className={classes.explorer}
           graphRef={endpoints[tabIndex].graphRef}
+          handleRequest={handleAuthRequest({
+            authCallback: getAuthCallback(tabIndex),
+          })}
           persistExplorerState={endpoints[tabIndex].persistExplorerState}
           initialState={endpoints[tabIndex].initialState}
         />

@@ -17,9 +17,9 @@
 import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { SonarqubeInfoProvider } from './sonarqubeInfoProvider';
 import { InputError } from '@backstage/errors';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Dependencies needed by the router
@@ -29,7 +29,7 @@ export interface RouterOptions {
   /**
    * Logger for logging purposes
    */
-  logger: Logger;
+  logger: LoggerService;
   /**
    * Info provider to be able to get all necessary information for the APIs
    */

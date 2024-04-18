@@ -16,16 +16,16 @@
 
 import { CacheClient, UrlReader } from '@backstage/backend-common';
 import { NotModifiedError, stringifyError } from '@backstage/errors';
-import { Logger } from 'winston';
 import express from 'express';
 import Router from 'express-promise-router';
 import { madrParser } from '../search/madrParser';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export type AdrRouterOptions = {
   reader: UrlReader;
   cacheClient: CacheClient;
-  logger: Logger;
+  logger: LoggerService;
 };
 
 /** @public */

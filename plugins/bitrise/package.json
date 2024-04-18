@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-bitrise",
-  "version": "0.1.61-next.1",
+  "version": "0.1.61",
   "description": "A Backstage plugin that integrates towards Bitrise",
   "backstage": {
     "role": "frontend-plugin"
@@ -52,7 +52,7 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0",

@@ -15,7 +15,7 @@ import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginCacheManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
@@ -29,7 +29,7 @@ export type AdrCollatorFactoryOptions = {
   config: Config;
   catalogClient?: CatalogApi;
   discovery: PluginEndpointDiscovery;
-  logger: Logger;
+  logger: LoggerService;
   parser?: AdrParser;
   reader: UrlReader;
   tokenManager: TokenManager;
@@ -54,7 +54,7 @@ export default adrPlugin;
 export type AdrRouterOptions = {
   reader: UrlReader;
   cacheClient: CacheClient;
-  logger: Logger;
+  logger: LoggerService;
 };
 
 // @public

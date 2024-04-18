@@ -9,7 +9,7 @@ import { ExploreTool } from '@backstage/plugin-explore-common';
 import express from 'express';
 import { GetExploreToolsRequest } from '@backstage/plugin-explore-common';
 import { GetExploreToolsResponse } from '@backstage/plugin-explore-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import type { ToolDocument as ToolDocument_2 } from '@backstage/plugin-search-backend-module-explore';
 import { ToolDocumentCollatorFactory as ToolDocumentCollatorFactory_2 } from '@backstage/plugin-search-backend-module-explore';
 import type { ToolDocumentCollatorFactoryOptions as ToolDocumentCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-explore';
@@ -29,7 +29,7 @@ export interface ExploreToolProvider {
 // @public (undocumented)
 export interface RouterOptions {
   // (undocumented)
-  logger: Logger;
+  logger: LoggerService;
   // (undocumented)
   toolProvider: ExploreToolProvider;
 }

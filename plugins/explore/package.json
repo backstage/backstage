@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-explore",
-  "version": "0.4.20-next.1",
+  "version": "0.4.20",
   "description": "A Backstage plugin for building an exploration page of your software ecosystem",
   "backstage": {
     "role": "frontend-plugin"
@@ -72,7 +72,7 @@
     "@backstage/dev-utils": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "msw": "^1.0.0"

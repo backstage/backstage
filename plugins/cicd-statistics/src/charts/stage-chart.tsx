@@ -30,13 +30,11 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 import Alert from '@material-ui/lab/Alert';
-import {
-  Accordion,
-  AccordionSummary,
-  AccordionDetails,
-  Grid,
-  Typography,
-} from '@material-ui/core';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { capitalize } from 'lodash';
 

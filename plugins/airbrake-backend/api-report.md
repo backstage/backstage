@@ -6,7 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import express from 'express';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // @public
 export interface AirbrakeConfig {
@@ -26,6 +26,6 @@ export function extractAirbrakeConfig(config: Config): AirbrakeConfig;
 // @public
 export interface RouterOptions {
   airbrakeConfig: AirbrakeConfig;
-  logger: Logger;
+  logger: LoggerService;
 }
 ```

@@ -26,7 +26,13 @@ import { makeProfileInfo, provisionKeyCache } from './helpers';
 jest.mock('crypto');
 const cryptoMock = crypto as jest.Mocked<any>;
 
-describe('helpers', () => {
+describe.each([
+  ['eu-west-1', 'https://public-keys.auth.elb.eu-west-1.amazonaws.com/kid'],
+  [
+    'us-gov-west-1',
+    'https://s3-us-gov-west-1.amazonaws.com/aws-elb-public-keys-prod-us-gov-west-1/kid',
+  ],
+])('helpers', (region, url) => {
   const server = setupServer();
   setupRequestMockHandlers(server);
 
@@ -37,7 +43,7 @@ describe('helpers', () => {
     jest.clearAllMocks();
     server.use(
       http.get(
-        'https://public-keys.auth.elb.eu-west-1.amazonaws.com/kid',
+        url,
         () =>
           new HttpResponse(
             `-----BEGIN PUBLIC KEY-----
@@ -51,12 +57,12 @@ yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
   });
 
   it('should create a key', () => {
-    const getKey = provisionKeyCache('eu-west-1', nodeCache);
+    const getKey = provisionKeyCache(region, nodeCache);
     expect(getKey).toBeDefined();
   });
 
   it('should return a key from cache', async () => {
-    const getKey = provisionKeyCache('eu-west-1', nodeCache);
+    const getKey = provisionKeyCache(region, nodeCache);
 
     cryptoMock.createPublicKey.mockReturnValueOnce('key');
     nodeCache.get = jest.fn().mockReturnValue('key');
@@ -67,7 +73,7 @@ yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
   });
 
   it('should update cache if key is not found', async () => {
-    const getKey = provisionKeyCache('eu-west-1', nodeCache);
+    const getKey = provisionKeyCache(region, nodeCache);
 
     nodeCache.get = jest.fn().mockReturnValue(undefined);
     jest.spyOn(nodeCache, 'set');
@@ -80,7 +86,7 @@ yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
   });
 
   it('should throw error if key is not found', async () => {
-    const getKey = provisionKeyCache('eu-west-1', nodeCache);
+    const getKey = provisionKeyCache(region, nodeCache);
 
     nodeCache.get = jest.fn().mockReturnValue(undefined);
     cryptoMock.createPublicKey.mockReturnValue(undefined);
@@ -91,7 +97,7 @@ yOlxJ2VW88mLAQGJ7HPAvOdylxZsItMnzCuqNzZvie8m/NJsOjhDncVkrw==
   });
 
   it('should throw if key is not present in request header', async () => {
-    const getKey = provisionKeyCache('eu-west-1', nodeCache);
+    const getKey = provisionKeyCache(region, nodeCache);
 
     nodeCache.get = jest.fn().mockReturnValue(undefined);
 

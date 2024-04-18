@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-explore-backend",
-  "version": "0.0.27-next.1",
+  "version": "0.0.27",
   "backstage": {
     "role": "backend-plugin"
   },
@@ -43,7 +43,6 @@
     "express-promise-router": "^4.1.0",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.7",
-    "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {

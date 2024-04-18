@@ -17,10 +17,10 @@
 import { errorHandler } from '@backstage/backend-common';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Logger } from 'winston';
 import { add, getAll, update } from './todos';
 import { InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Dependencies of the todo-list router
@@ -28,7 +28,7 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
  * @public
  */
 export interface RouterOptions {
-  logger: Logger;
+  logger: LoggerService;
   identity: IdentityApi;
 }
 

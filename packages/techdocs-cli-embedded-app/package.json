@@ -1,6 +1,6 @@
 {
   "name": "techdocs-cli-embedded-app",
-  "version": "0.2.95-next.1",
+  "version": "0.2.95",
   "private": true,
   "backstage": {
     "role": "frontend"
@@ -36,7 +36,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0",

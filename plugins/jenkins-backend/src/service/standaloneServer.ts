@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import { HostDiscovery, createServiceBuilder } from '@backstage/backend-common';
+import { createServiceBuilder, HostDiscovery } from '@backstage/backend-common';
 import { Server } from 'http';
-import { Logger } from 'winston';
 import { createRouter } from './router';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { JenkinsInfo } from './jenkinsInfoProvider';
 import { Config } from '@backstage/config';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
 }
 

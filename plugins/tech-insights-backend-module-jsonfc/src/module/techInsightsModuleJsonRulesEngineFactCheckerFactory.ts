@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
@@ -40,9 +39,8 @@ export const techInsightsModuleJsonRulesEngineFactCheckerFactory =
           techInsights: techInsightsFactCheckerFactoryExtensionPoint,
         },
         async init({ config, logger, techInsights }) {
-          const winstonLogger = loggerToWinstonLogger(logger);
           const factory = JsonRulesEngineFactCheckerFactory.fromConfig(config, {
-            logger: winstonLogger,
+            logger,
           });
           techInsights.setFactCheckerFactory(factory);
         },
