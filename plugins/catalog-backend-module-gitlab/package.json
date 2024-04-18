@@ -1,45 +1,58 @@
-/*
- * Copyright 2024 The Backstage Authors
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 {
-  "name": "@backstage/plugin-catalog-backend-module-gitlab",
-  "version": "0.3.11-next.2",
+  "dependencies": {
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/backend-tasks": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/integration": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "lodash": "^4.17.21",
+    "node-fetch": "^2.6.7",
+    "uuid": "^9.0.0"
+  },
   "description": "A Backstage catalog backend module that helps integrate towards GitLab",
-  "version": "0.3.15",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
-  "publishConfig": {
-    "access": "public"
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "@types/lodash": "^4.14.151",
+    "@types/uuid": "^9.0.0",
+    "luxon": "^3.0.0",
+    "msw": "^1.0.0"
   },
-  "keywords": [
-    "backstage"
-  ],
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/catalog-backend-module-gitlab"
-  },
-  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "files": [
+    "config.d.ts",
+    "dist"
+  ],
+  "homepage": "https://backstage.io",
+  "keywords": [
+    "backstage"
+  ],
+  "license": "Apache-2.0",
   "main": "src/index.ts",
+  "name": "@backstage/plugin-catalog-backend-module-gitlab",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "directory": "plugins/catalog-backend-module-gitlab",
+    "type": "git",
+    "url": "https://github.com/backstage/backstage"
+  },
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "postpack": "backstage-cli package postpack",
+    "prepack": "backstage-cli package prepack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
@@ -51,42 +64,5 @@
       ]
     }
   },
-  "files": [
-    "config.d.ts",
-    "dist"
-  ],
-  "scripts": {
-    "build": "backstage-cli package build",
-    "clean": "backstage-cli package clean",
-    "lint": "backstage-cli package lint",
-    "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack",
-    "start": "backstage-cli package start",
-    "test": "backstage-cli package test"
-  },
-  "dependencies": {
-    "@backstage/backend-common": "workspace:^",
-    "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/backend-tasks": "workspace:^",
-    "@backstage/catalog-model": "workspace:^",
-    "@backstage/config": "workspace:^",
-    "@backstage/integration": "workspace:^",
-    "@backstage/plugin-catalog-common": "workspace:^",
-    "@backstage/plugin-catalog-node": "workspace:^",
-    "@backstage/plugin-events-node": "workspace:^",
-    "@gitbeaker/rest": "^39.34.3",
-    "lodash": "^4.17.21",
-    "node-fetch": "^2.6.7",
-    "uuid": "^9.0.0"
-  },
-  "devDependencies": {
-    "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^",
-    "@backstage/plugin-events-backend-test-utils": "workspace:^",
-    "@types/lodash": "^4.14.151",
-    "@types/uuid": "^9.0.0",
-    "luxon": "^3.0.0",
-    "msw": "^1.0.0"
-  },
-  "configSchema": "config.d.ts"
+  "version": "0.3.14"
 }
