@@ -1,17 +1,15 @@
 {
   "name": "@backstage/plugin-code-coverage",
-  "description": "A Backstage plugin that helps you keep track of your code coverage",
   "version": "0.2.27",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "description": "A Backstage plugin that helps you keep track of your code coverage",
+  "backstage": {
+    "role": "frontend-plugin",
+    "moved": "@backstage-community/plugin-code-coverage"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.esm.js",
     "types": "dist/index.d.ts"
-  },
-  "backstage": {
-    "role": "frontend-plugin"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -19,15 +17,21 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/code-coverage"
   },
+  "license": "Apache-2.0",
   "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
-    "start": "backstage-cli package start",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -44,11 +48,6 @@
     "react-use": "^17.2.4",
     "recharts": "^2.5.0"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
@@ -59,7 +58,10 @@
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "@types/recharts": "^1.8.15"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-code-coverage instead."
 }
