@@ -3,7 +3,8 @@
   "version": "0.4.19",
   "description": "A Backstage plugin that integrates towards Lighthouse",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "moved": "@backstage-community/plugin-lighthouse"
   },
   "publishConfig": {
     "access": "public",
@@ -78,5 +79,6 @@
         }
       }
     }
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-lighthouse instead."
 }
