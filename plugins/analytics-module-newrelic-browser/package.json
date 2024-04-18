@@ -2,7 +2,8 @@
   "name": "@backstage/plugin-analytics-module-newrelic-browser",
   "version": "0.1.4",
   "backstage": {
-    "role": "frontend-plugin-module"
+    "role": "frontend-plugin-module",
+    "moved": "@backstage-community/plugin-analytics-module-newrelic-browser"
   },
   "publishConfig": {
     "access": "public",
@@ -47,5 +48,6 @@
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0"
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-analytics-module-newrelic-browser instead."
 }
