@@ -38,13 +38,9 @@ export const beforeWorkspacePacking = async (
   workspace: Workspace,
   rawManifest: any,
 ) => {
-  for (const dependencyType of [
-    'dependencies',
-    'devDependencies',
-    'peerDependencies',
-  ] as const) {
-    const backstageVersion = getCurrentBackstageVersion();
+  const backstageVersion = getCurrentBackstageVersion();
 
+  for (const dependencyType of ['dependencies', 'devDependencies'] as const) {
     const entries = Array.from(
       workspace.manifest.getForScope(dependencyType).values(),
     ).filter(descriptor => descriptor.range.startsWith(PROTOCOL));
