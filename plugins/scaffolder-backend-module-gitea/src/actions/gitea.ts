@@ -96,10 +96,11 @@ const createGiteaProject = async (
   options: {
     projectName: string;
     owner?: string;
+    repoVisibility?: string;
     description: string;
   },
 ): Promise<void> => {
-  const { projectName, description, owner } = options;
+  const { projectName, description, owner, repoVisibility } = options;
 
   /*
     Several options exist to create a repository using either the user or organisation
@@ -112,12 +113,23 @@ const createGiteaProject = async (
     This is the default scenario that we support currently
   */
   let response: Response;
+  let visibility: boolean;
+
+  if (repoVisibility === 'private') {
+    visibility = true;
+  } else if (repoVisibility === 'public') {
+    visibility = false;
+  } else {
+    // Provide a default value if repoVisibility is neither "private" nor "public"
+    visibility = false;
+  }
 
   const postOptions: RequestInit = {
     method: 'POST',
     body: JSON.stringify({
       name: projectName,
       description,
+      private: visibility,
     }),
     headers: {
       ...getGiteaRequestOptions(config).headers,
@@ -202,6 +214,7 @@ export function createPublishGiteaAction(options: {
     repoUrl: string;
     description: string;
     defaultBranch?: string;
+    repoVisibility?: 'private' | 'public';
     gitCommitMessage?: string;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
@@ -228,6 +241,12 @@ export function createPublishGiteaAction(options: {
             title: 'Default Branch',
             type: 'string',
             description: `Sets the default branch on the repository. The default value is 'main'`,
+          },
+          repoVisibility: {
+            title: 'Repository Visibility',
+            description: `Sets the visibility of the repository. The default value is 'public'.`,
+            type: 'string',
+            enum: ['private', 'public'],
           },
           gitCommitMessage: {
             title: 'Git Commit Message',
@@ -274,6 +293,7 @@ export function createPublishGiteaAction(options: {
         repoUrl,
         description,
         defaultBranch = 'main',
+        repoVisibility = 'public',
         gitAuthorName,
         gitAuthorEmail,
         gitCommitMessage = 'initial commit',
@@ -301,6 +321,7 @@ export function createPublishGiteaAction(options: {
 
       await createGiteaProject(integrationConfig.config, {
         description,
+        repoVisibility,
         owner: owner,
         projectName: repo,
       });
