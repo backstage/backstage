@@ -3,7 +3,8 @@
   "version": "0.0.2",
   "description": "Common functionalities for the explore plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "moved": "@backstage-community/plugin-explore-common"
   },
   "publishConfig": {
     "access": "public",
@@ -36,5 +37,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-explore-common instead."
 }
