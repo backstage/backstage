@@ -2,7 +2,8 @@
   "name": "@backstage/plugin-playlist",
   "version": "0.2.8",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "moved": "@backstage-community/plugin-playlist"
   },
   "publishConfig": {
     "access": "public",
@@ -70,5 +71,6 @@
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-playlist instead."
 }
