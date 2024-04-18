@@ -1,5 +1,13 @@
 # example-backend
 
+## 0.2.98
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-todo-backend@0.3.17
+  - example-app@0.2.97
+
 ## 0.2.97
 
 ### Patch Changes
