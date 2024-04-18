@@ -58,7 +58,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       config.getOptionalString('notifications.email.format') ?? 'html';
     this.replyTo = config.getOptionalString('notifications.email.replyTo');
     this.cacheTtl =
-      config.getOptionalNumber('notifications.email.cacheTtl') ?? 3_600_000;
+      config.getOptionalNumber('notifications.email.cache.ttl') ?? 3_600_000;
   }
 
   private async getTransporter() {

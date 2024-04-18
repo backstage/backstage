@@ -20,7 +20,9 @@ notifications:
       sender: 'sender@mycompany.com'
       replyTo: 'no-reply@mycompany.com'
       broadcastConfig:
-        receiver: 'user'
+        receiver: 'users'
+      cache:
+        ttl: 60000
 ```
 
 See `config.d.ts` for more options for configuration.

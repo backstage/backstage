@@ -105,10 +105,12 @@ export interface Config {
            */
           receiverEmails?: string[];
         };
-        /**
-         * Email cache TTL, defaults to 1 hour
-         */
-        cacheTtl?: number;
+        cache?: {
+          /**
+           * Email cache TTL, defaults to 1 hour
+           */
+          ttl?: number;
+        };
       };
     };
   };
