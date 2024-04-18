@@ -3,7 +3,8 @@
   "version": "0.2.21",
   "description": "Deprecated, consider using @backstage/plugin-search-backend-module-stack-overflow-collator instead",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-stack-overflow-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -46,5 +47,6 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-stack-overflow-backend instead."
 }
