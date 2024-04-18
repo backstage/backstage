@@ -2,7 +2,8 @@
   "name": "@backstage/plugin-azure-devops-common",
   "version": "0.4.1",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "moved": "@backstage-community/plugin-azure-devops-common"
   },
   "publishConfig": {
     "access": "public",
@@ -40,5 +41,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-azure-devops-common instead."
 }
