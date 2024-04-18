@@ -17,7 +17,7 @@ import React, { useEffect } from 'react';
 import { useNotificationsApi } from '../../hooks';
 import { SidebarItem } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { IconComponent, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
 import { NotificationSignal } from '@backstage/plugin-notifications-common';
@@ -29,9 +29,21 @@ import { notificationsApiRef } from '../../api';
 export const NotificationsSidebarItem = (props?: {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
+  className?: string;
+  icon?: IconComponent;
+  text?: string;
+  disableHighlight?: boolean;
+  noTrack?: boolean;
 }) => {
-  const { webNotificationsEnabled = false, titleCounterEnabled = true } =
-    props ?? { webNotificationsEnabled: false, titleCounterEnabled: true };
+  const {
+    webNotificationsEnabled = false,
+    titleCounterEnabled = true,
+    className,
+    icon = NotificationsIcon,
+    text = 'Notifications',
+    disableHighlight,
+    noTrack,
+  } = props ?? { webNotificationsEnabled: false, titleCounterEnabled: true };
 
   const { loading, error, value, retry } = useNotificationsApi(api =>
     api.getStatus(),
@@ -95,10 +107,13 @@ export const NotificationsSidebarItem = (props?: {
   // TODO: Figure out if the count can be added to hasNotifications
   return (
     <SidebarItem
-      icon={NotificationsIcon}
+      icon={icon}
       to={notificationsRoute()}
-      text="Notifications"
+      text={text}
+      disableHighlight={disableHighlight}
       hasNotifications={!error && !!unreadCount}
+      className={className}
+      noTrack={noTrack}
     />
   );
 };
