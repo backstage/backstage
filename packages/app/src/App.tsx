@@ -76,6 +76,7 @@ import {
   LightBox,
   ReportIssue,
   TextSize,
+  TextSizeContent,
 } from '@backstage/plugin-techdocs-module-addons-contrib';
 import {
   SettingsLayout,
@@ -212,6 +213,7 @@ const routes = (
         <ExpandableNavigation />
         <ReportIssue />
         <TextSize />
+        <TextSizeContent />
         <LightBox />
       </TechDocsAddons>
     </Route>

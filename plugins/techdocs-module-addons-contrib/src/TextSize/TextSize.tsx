@@ -38,7 +38,12 @@ import {
 import AddIcon from '@material-ui/icons/Add';
 import RemoveIcon from '@material-ui/icons/Remove';
 
-import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
+import {
+  useShadowRootElements,
+  useShadowDomStylesLoading,
+  useShadowRoot,
+} from '@backstage/plugin-techdocs-react';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const boxShadow =
   '0 3px 1px rgba(0,0,0,0.1),0 4px 8px rgba(0,0,0,0.13),0 0 0 1px rgba(0,0,0,0.02)';
@@ -137,6 +142,34 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+export const TextSizeContentAddon = () => {
+  const theme = useTheme();
+  const [body] = useShadowRootElements(['body']);
+
+  const initialValue = localStorage?.getItem(settings.key);
+  const value = initialValue
+    ? parseInt(initialValue, 10)
+    : settings.defaultValue;
+
+  const updateFontSize = useCallback(() => {
+    if (!body) return;
+    const htmlFontSize =
+      (
+        theme.typography as Theme['typography'] & {
+          htmlFontSize?: number;
+        }
+      )?.htmlFontSize ?? 16;
+    body.style.setProperty(
+      '--md-typeset-font-size',
+      `${htmlFontSize * (value / 100)}px`,
+    );
+  }, [value, body, theme]);
+
+  useEffect(() => {
+    updateFontSize();
+  }, [updateFontSize]);
+  return null;
+};
 export const TextSizeAddon = () => {
   const classes = useStyles();
   const theme = useTheme();
@@ -177,8 +210,7 @@ export const TextSizeAddon = () => {
     },
     [index, values, handleChangeCommitted],
   );
-
-  useEffect(() => {
+  const updateFontSize = useCallback(() => {
     if (!body) return;
     const htmlFontSize =
       (
@@ -190,7 +222,11 @@ export const TextSizeAddon = () => {
       '--md-typeset-font-size',
       `${htmlFontSize * (value / 100)}px`,
     );
-  }, [body, value, theme]);
+  }, [value, body, theme]);
+
+  useEffect(() => {
+    updateFontSize();
+  }, [updateFontSize]);
 
   return (
     <MenuItem className={classes.menuItem} button disableRipple>

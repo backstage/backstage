@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-techdocs-react';
 import { ExpandableNavigationAddon } from './ExpandableNavigation';
 import { ReportIssueAddon, ReportIssueProps } from './ReportIssue';
-import { TextSizeAddon } from './TextSize';
+import { TextSizeAddon, TextSizeContentAddon } from './TextSize';
 import { LightBoxAddon } from './LigthBox';
 
 /**
@@ -202,6 +202,19 @@ export const TextSize = techdocsModuleAddonsContribPlugin.provide(
     name: 'TextSize',
     location: TechDocsAddonLocations.Settings,
     component: TextSizeAddon,
+  }),
+);
+
+/**
+ * This TechDocs addon sets the selected text size to the whole content on page load. It works best with the <TextSize /> addon.
+ * @public
+ */
+
+export const TextSizeContent = techdocsModuleAddonsContribPlugin.provide(
+  createTechDocsAddonExtension({
+    name: 'TextSizeContent',
+    location: TechDocsAddonLocations.Content,
+    component: TextSizeContentAddon,
   }),
 );
 

@@ -25,6 +25,7 @@ export {
   ExpandableNavigation,
   ReportIssue,
   TextSize,
+  TextSizeContent,
   LightBox,
 } from './plugin';
 export type {
