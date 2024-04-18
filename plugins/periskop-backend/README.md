@@ -1,5 +1,3 @@
-# periskop-backend
+# Deprecated
 
-Simple plugin that proxies requests to the Periskop server APIs.
-
-To be used with the [Periskop plugin](../periskop/README.md).
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-periskop-backend` instead.
