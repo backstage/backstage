@@ -2,7 +2,8 @@
   "name": "@backstage/plugin-org-react",
   "version": "0.1.23",
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "moved": "@backstage-community/plugin-org-react"
   },
   "publishConfig": {
     "access": "public",
@@ -59,5 +60,6 @@
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-org-react instead."
 }
