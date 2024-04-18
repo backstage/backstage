@@ -125,6 +125,14 @@ PostgreSQL needs a persistent volume to store data; we'll create one along with
 a `PersistentVolumeClaim`. In this case, we're claiming the whole volume - but
 claims can ask for only part of a volume as well.
 
+To ensure the `PersistentVolume` correctly, you must first create the `/mnt/data` 
+directory on the Minikube node.
+
+```sh
+minikube ssh 
+sudo mkdir -p /mnt/data
+```
+
 ```yaml
 # kubernetes/postgres-storage.yaml
 apiVersion: v1
