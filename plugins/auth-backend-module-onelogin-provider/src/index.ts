@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-declare module 'passport-onelogin-oauth' {
-  export class Strategy {
-    constructor(options: any, verify: any);
-  }
-}
+
+/**
+ * The onelogin-provider backend module for the auth plugin.
+ *
+ * @packageDocumentation
+ */
+
+export { oneLoginAuthenticator } from './authenticator';
+export { authModuleOneLoginProvider as default } from './module';
+export { oneLoginSignInResolvers } from './resolvers';
