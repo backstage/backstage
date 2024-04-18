@@ -1,5 +1,11 @@
 # @backstage/plugin-todo-backend
 
+## 0.3.17
+
+### Patch Changes
+
+- 89856da: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+
 ## 0.3.16
 
 ### Patch Changes

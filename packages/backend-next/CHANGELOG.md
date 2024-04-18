@@ -1,5 +1,12 @@
 # example-backend-next
 
+## 0.0.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-todo-backend@0.3.17
+
 ## 0.0.25
 
 ### Patch Changes

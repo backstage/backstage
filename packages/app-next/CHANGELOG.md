@@ -1,5 +1,12 @@
 # example-app-next
 
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-todo@0.2.39
+
 ## 0.0.10
 
 ### Patch Changes

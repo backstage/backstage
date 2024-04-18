@@ -1,5 +1,12 @@
 # example-app
 
+## 0.2.97
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-todo@0.2.39
+
 ## 0.2.96
 
 ### Patch Changes
