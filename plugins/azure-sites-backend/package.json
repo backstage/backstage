@@ -1,35 +1,39 @@
 {
   "name": "@backstage/plugin-azure-sites-backend",
   "version": "0.3.4",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-azure-sites-backend"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
-  "backstage": {
-    "role": "backend-plugin"
-  },
+  "keywords": [
+    "backstage",
+    "azure"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/azure-sites-backend"
   },
-  "keywords": [
-    "backstage",
-    "azure"
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
   ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@azure/arm-appservice": "^14.0.0",
@@ -53,7 +57,5 @@
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8"
   },
-  "files": [
-    "dist"
-  ]
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-azure-sites-backend instead."
 }
