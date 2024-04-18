@@ -36,6 +36,7 @@
     "semver": "^7.6.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@yarnpkg/builder": "^4.0.0",
     "nodemon": "^3.0.1"
