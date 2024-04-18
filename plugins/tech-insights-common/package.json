@@ -2,7 +2,8 @@
   "name": "@backstage/plugin-tech-insights-common",
   "version": "0.2.12",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "moved": "@backstage-community/plugin-tech-insights-common"
   },
   "publishConfig": {
     "access": "public",
@@ -42,5 +43,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-tech-insights-common instead."
 }

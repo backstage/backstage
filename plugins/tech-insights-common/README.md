@@ -1,3 +1,3 @@
-# Tech Insights Common
+# Deprecated
 
-Common types and functionalities for tech insights shared in an isomorphic manner between BE and FE implementations.
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-tech-insights-common` instead.
