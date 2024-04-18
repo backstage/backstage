@@ -2,7 +2,8 @@
   "name": "@backstage/plugin-periskop-backend",
   "version": "0.2.15",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-periskop-backend"
   },
   "publishConfig": {
     "access": "public"
@@ -58,5 +59,6 @@
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.6"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-periskop-backend instead."
 }
