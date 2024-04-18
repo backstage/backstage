@@ -41,7 +41,9 @@ const useStyles = makeStyles(
       },
       display: 'flex',
       alignItems: 'center',
-      color: theme.palette.navigation.color,
+      color:
+        theme.palette.navigation.submenu?.color ??
+        theme.palette.navigation.color,
       padding: theme.spacing(2.5),
       cursor: 'pointer',
       position: 'relative',
