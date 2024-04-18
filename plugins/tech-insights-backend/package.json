@@ -2,7 +2,8 @@
   "name": "@backstage/plugin-tech-insights-backend",
   "version": "0.5.31",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-tech-insights-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -67,5 +68,6 @@
     "supertest": "^6.1.3",
     "wait-for-expect": "^3.0.2"
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-tech-insights-backend instead."
 }
