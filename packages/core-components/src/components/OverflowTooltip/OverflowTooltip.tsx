@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -19,6 +20,7 @@ import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
 import React, { useState } from 'react';
 import TextTruncate, { TextTruncateProps } from 'react-text-truncate';
 import { useIsMounted } from '@react-hookz/web';
+import Typography from '@material-ui/core/Typography';
 
 type Props = {
   text: TextTruncateProps['text'];
@@ -35,33 +37,35 @@ const useStyles = makeStyles(
     container: {
       overflow: 'visible !important',
     },
+    typo: {
+      // width: 200,
+      display: 'inline-block',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+      textOverflow: 'ellipsis',
+    },
   },
   { name: 'BackstageOverflowTooltip' },
 );
 
 export function OverflowTooltip(props: Props) {
-  const [hover, setHover] = useState(false);
-  const isMounted = useIsMounted();
+  // const [hover, setHover] = useState(false);
+  // const isMounted = useIsMounted();
   const classes = useStyles();
-
-  const handleToggled = (truncated: boolean) => {
-    if (isMounted()) {
-      setHover(truncated);
-    }
-  };
+  console.log(classes);
+  // const handleToggled = (truncated: boolean) => {
+  //   if (isMounted()) {
+  //     setHover(truncated);
+  //   }
+  // };
 
   return (
     <Tooltip
       title={props.title ?? (props.text || '')}
       placement={props.placement}
-      disableHoverListener={!hover}
+      // disableHoverListener={!hover}
     >
-      <TextTruncate
-        text={props.text}
-        line={props.line}
-        onToggled={handleToggled}
-        containerClassName={classes.container}
-      />
+      <Typography className={classes.typo}>{props.text}</Typography>
     </Tooltip>
   );
 }
