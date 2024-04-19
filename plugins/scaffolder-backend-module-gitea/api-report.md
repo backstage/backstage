@@ -18,6 +18,7 @@ export function createPublishGiteaAction(options: {
     repoUrl: string;
     description: string;
     defaultBranch?: string | undefined;
+    repoVisibility?: 'private' | 'public' | undefined;
     gitCommitMessage?: string | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
