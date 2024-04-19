@@ -1,5 +1,18 @@
 # @backstage/plugin-jenkins
 
+## 0.9.10
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/plugin-jenkins-common@0.1.26
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-react@1.11.3
+
 ## 0.9.9
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-playlist-common
 
+## 0.1.16
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.1.15
 
 ### Patch Changes

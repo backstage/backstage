@@ -1,5 +1,13 @@
 # @backstage/plugin-stack-overflow-backend
 
+## 0.2.22
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-stack-overflow-collator@0.1.10
+
 ## 0.2.21
 
 ### Patch Changes

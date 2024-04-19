@@ -1,5 +1,20 @@
 # @backstage/plugin-azure-sites
 
+## 0.1.24
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/plugin-azure-sites-common@0.1.4
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/theme@0.5.3
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-react@0.4.22
+
 ## 0.1.23
 
 ### Patch Changes

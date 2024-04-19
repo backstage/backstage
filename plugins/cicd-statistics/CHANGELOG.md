@@ -1,5 +1,15 @@
 # @backstage/plugin-cicd-statistics
 
+## 0.1.37
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/plugin-catalog-react@1.11.3
+
 ## 0.1.36
 
 ### Patch Changes

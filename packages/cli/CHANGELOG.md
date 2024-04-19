@@ -1,5 +1,22 @@
 # @backstage/cli
 
+## 0.26.4
+
+### Patch Changes
+
+- ee1ab19: Add support for `versions:migrate` to do code changes. Can be skipped with `--no-code-changes`
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.5
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.7
+  - @backstage/integration@1.10.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.26.3
 
 ### Patch Changes

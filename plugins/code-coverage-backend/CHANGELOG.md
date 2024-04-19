@@ -1,5 +1,19 @@
 # @backstage/plugin-code-coverage-backend
 
+## 0.2.32
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/catalog-client@1.6.4
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0
+
 ## 0.2.31
 
 ### Patch Changes

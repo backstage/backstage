@@ -1,5 +1,16 @@
 # @backstage/plugin-circleci
 
+## 0.3.35
+
+### Patch Changes
+
+- c2112f2: This package has been deprecated in favour of the [Circle-CI](https://github.com/CircleCI-Public/backstage-plugin) plugin. Please migrate to that plugin instead.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/plugin-catalog-react@1.11.3
+
 ## 0.3.34
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-octopus-deploy
 
+## 0.2.17
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/plugin-scaffolder-react@1.8.4
+
 ## 0.2.16
 
 ### Patch Changes

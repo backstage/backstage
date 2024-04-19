@@ -1,5 +1,13 @@
 # @backstage/plugin-tech-insights-common
 
+## 0.2.13
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/types@1.1.1
+
 ## 0.2.12
 
 ### Patch Changes

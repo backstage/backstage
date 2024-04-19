@@ -1,5 +1,15 @@
 # @backstage/plugin-git-release-manager
 
+## 0.3.47
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/integration@1.10.0
+
 ## 0.3.46
 
 ### Patch Changes
