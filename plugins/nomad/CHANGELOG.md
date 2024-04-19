@@ -1,5 +1,11 @@
 # @backstage/plugin-nomad
 
+## 0.1.16
+
+### Patch Changes
+
+- 3905997: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+
 ## 0.1.15
 
 ### Patch Changes
