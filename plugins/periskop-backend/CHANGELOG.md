@@ -1,5 +1,15 @@
 # @backstage/plugin-periskop-backend
 
+## 0.2.16
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/config@1.2.0
+
 ## 0.2.15
 
 ### Patch Changes

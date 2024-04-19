@@ -1,3 +1,3 @@
-# Jenkins Common
+# Deprecated
 
-Shared isomorphic code for the Jenkins plugin.
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-jenkins-common` instead.

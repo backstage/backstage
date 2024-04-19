@@ -1,3 +1,3 @@
-# Tech Insights Node
+# Deprecated
 
-Common types and functionalities for tech insights backend implementations to be shared between tech-insights-backend and individual implementations of FactRetrievers, FactCheckers and their persistence options.
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-tech-insights-node` instead.

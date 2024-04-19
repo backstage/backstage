@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-cost-insights-common",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Common functionalities for the cost-insights plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "moved": "@backstage-community/plugin-cost-insights-common"
   },
   "publishConfig": {
     "access": "public",
@@ -37,5 +38,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-cost-insights-common instead."
 }

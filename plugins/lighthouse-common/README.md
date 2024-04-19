@@ -1,3 +1,3 @@
-# @backstage/plugin-lighthouse-common
+# Deprecated
 
-Common types and functionalities for lighthouse, to be shared between lighthouse and lighthouse-backend.
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-lighthouse-common` instead.

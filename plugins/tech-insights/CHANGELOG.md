@@ -1,5 +1,19 @@
 # @backstage/plugin-tech-insights
 
+## 0.3.27
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/plugin-tech-insights-common@0.2.13
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-react@1.11.3
+
 ## 0.3.26
 
 ### Patch Changes

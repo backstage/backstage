@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-vault-node",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "description": "Node.js library for the vault plugin",
   "backstage": {
-    "role": "node-library"
+    "role": "node-library",
+    "moved": "@backstage-community/plugin-vault-node"
   },
   "publishConfig": {
     "access": "public",
@@ -34,5 +35,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-vault-node instead."
 }

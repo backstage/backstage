@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-code-coverage-backend",
-  "version": "0.2.31",
+  "version": "0.2.32",
   "description": "A Backstage backend plugin that helps you keep track of your code coverage",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-code-coverage-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -56,5 +57,6 @@
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.6",
     "xml2js": "^0.6.0"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-code-coverage-backend instead."
 }

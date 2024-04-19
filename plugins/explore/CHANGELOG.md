@@ -1,5 +1,22 @@
 # @backstage/plugin-explore
 
+## 0.4.21
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/plugin-explore-common@0.0.3
+  - @backstage/plugin-explore-react@0.0.39
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.4
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/plugin-search-react@1.7.10
+
 ## 0.4.20
 
 ### Patch Changes

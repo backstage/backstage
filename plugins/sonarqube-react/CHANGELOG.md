@@ -1,5 +1,14 @@
 # @backstage/plugin-sonarqube-react
 
+## 0.1.16
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/core-plugin-api@1.9.2
+
 ## 0.1.15
 
 ### Patch Changes

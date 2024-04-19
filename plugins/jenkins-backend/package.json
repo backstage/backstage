@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-jenkins-backend",
-  "version": "0.4.4",
+  "version": "0.4.5",
   "description": "A Backstage backend plugin that integrates towards Jenkins",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-jenkins-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -56,5 +57,6 @@
     "@types/jenkins": "^1.0.0",
     "@types/supertest": "^2.0.8"
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-jenkins-backend instead."
 }

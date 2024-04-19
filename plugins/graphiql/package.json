@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-graphiql",
-  "version": "0.3.7",
+  "version": "0.3.8",
   "description": "Backstage plugin for browsing GraphQL APIs",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "moved": "@backstage-community/plugin-graphiql"
   },
   "publishConfig": {
     "access": "public"
@@ -74,6 +75,7 @@
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-graphiql instead.",
   "experimentalInstallationRecipe": {
     "type": "frontend-plugin",
     "steps": [

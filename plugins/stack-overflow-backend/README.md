@@ -1,3 +1,3 @@
-# Stack Overflow Backend
+# Deprecated
 
-Deprecated, consider using `@backstage/plugin-search-backend-module-stack-overflow-collator` instead.
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-stack-overflow-backend` instead.

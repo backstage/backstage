@@ -1,8 +1,9 @@
 {
   "name": "@backstage/plugin-jenkins-common",
-  "version": "0.1.25",
+  "version": "0.1.26",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "moved": "@backstage-community/plugin-jenkins-common"
   },
   "publishConfig": {
     "access": "public",
@@ -37,5 +38,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-jenkins-common instead."
 }

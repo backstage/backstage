@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-vault-backend",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "A Backstage backend plugin that integrates towards Vault",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-vault-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -62,5 +63,6 @@
     "msw": "^1.0.0",
     "supertest": "^6.1.6"
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-vault-backend instead."
 }

@@ -1,5 +1,15 @@
 # @backstage/plugin-adr-common
 
+## 0.2.23
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/integration@1.10.0
+  - @backstage/plugin-search-common@1.2.11
+
 ## 0.2.22
 
 ### Patch Changes

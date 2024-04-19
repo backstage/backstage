@@ -1,5 +1,19 @@
 # @backstage/plugin-tech-insights-backend-module-jsonfc
 
+## 0.1.50
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/plugin-tech-insights-common@0.2.13
+  - @backstage/plugin-tech-insights-node@0.6.1
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.1.49
 
 ### Patch Changes

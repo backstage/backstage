@@ -1,8 +1,9 @@
 {
   "name": "@backstage/plugin-tech-insights-node",
-  "version": "0.6.0",
+  "version": "0.6.1",
   "backstage": {
-    "role": "node-library"
+    "role": "node-library",
+    "moved": "@backstage-community/plugin-tech-insights-node"
   },
   "publishConfig": {
     "access": "public",
@@ -45,5 +46,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-tech-insights-node instead."
 }

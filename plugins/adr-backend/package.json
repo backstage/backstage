@@ -1,16 +1,14 @@
 {
   "name": "@backstage/plugin-adr-backend",
-  "version": "0.4.14",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "version": "0.4.15",
+  "backstage": {
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-adr-backend"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
-  },
-  "backstage": {
-    "role": "backend-plugin"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -18,14 +16,20 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/adr-backend"
   },
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -50,7 +54,5 @@
     "@types/supertest": "^2.0.8",
     "supertest": "^6.1.3"
   },
-  "files": [
-    "dist"
-  ]
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-adr-backend instead."
 }

@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-cicd-statistics",
-  "version": "0.1.36",
+  "version": "0.1.37",
   "description": "A frontend plugin visualizing CI/CD pipeline statistics (build time)",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "moved": "@backstage-community/plugin-cicd-statistics"
   },
   "publishConfig": {
     "access": "public",
@@ -60,5 +61,6 @@
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-cicd-statistics instead."
 }

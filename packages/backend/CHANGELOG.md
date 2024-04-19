@@ -1,5 +1,65 @@
 # example-backend
 
+## 0.2.99
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-adr-backend@0.4.15
+  - @backstage/plugin-azure-devops-backend@0.6.5
+  - @backstage/plugin-azure-sites-common@0.1.4
+  - @backstage/plugin-badges-backend@0.4.1
+  - @backstage/plugin-code-coverage-backend@0.2.32
+  - @backstage/plugin-entity-feedback-backend@0.2.15
+  - @backstage/plugin-explore-backend@0.0.28
+  - @backstage/plugin-jenkins-backend@0.4.5
+  - @backstage/plugin-kafka-backend@0.3.16
+  - @backstage/plugin-lighthouse-backend@0.4.11
+  - @backstage/plugin-playlist-backend@0.3.22
+  - @backstage/plugin-rollbar-backend@0.1.63
+  - @backstage/plugin-tech-insights-backend@0.5.32
+  - @backstage/plugin-tech-insights-backend-module-jsonfc@0.1.50
+  - @backstage/plugin-tech-insights-node@0.6.1
+  - example-app@0.2.98
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-tasks@0.5.22
+  - @backstage/catalog-client@1.6.4
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.10.0
+  - @backstage/plugin-app-backend@0.3.65
+  - @backstage/plugin-auth-backend@0.22.4
+  - @backstage/plugin-auth-node@0.4.12
+  - @backstage/plugin-catalog-backend@1.21.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.15
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.4
+  - @backstage/plugin-catalog-node@1.11.1
+  - @backstage/plugin-devtools-backend@0.3.3
+  - @backstage/plugin-events-backend@0.3.4
+  - @backstage/plugin-events-node@0.3.3
+  - @backstage/plugin-kubernetes-backend@0.17.0
+  - @backstage/plugin-linguist-backend@0.5.15
+  - @backstage/plugin-nomad-backend@0.1.19
+  - @backstage/plugin-permission-backend@0.5.41
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-node@0.7.28
+  - @backstage/plugin-proxy-backend@0.4.15
+  - @backstage/plugin-scaffolder-backend@1.22.4
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.2.18
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.3
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.34
+  - @backstage/plugin-search-backend@1.5.7
+  - @backstage/plugin-search-backend-module-catalog@0.1.22
+  - @backstage/plugin-search-backend-module-elasticsearch@1.4.0
+  - @backstage/plugin-search-backend-module-explore@0.1.22
+  - @backstage/plugin-search-backend-module-pg@0.5.26
+  - @backstage/plugin-search-backend-module-techdocs@0.1.22
+  - @backstage/plugin-search-backend-node@1.2.21
+  - @backstage/plugin-signals-backend@0.1.3
+  - @backstage/plugin-signals-node@0.1.3
+  - @backstage/plugin-techdocs-backend@1.10.4
+  - @backstage/plugin-todo-backend@0.3.17
+
 ## 0.2.98
 
 ### Patch Changes

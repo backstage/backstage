@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-adr-common",
-  "version": "0.2.22",
+  "version": "0.2.23",
   "description": "Common functionalities for the adr plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "moved": "@backstage-community/plugin-adr-common"
   },
   "publishConfig": {
     "access": "public",
@@ -41,5 +42,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-adr-common instead."
 }

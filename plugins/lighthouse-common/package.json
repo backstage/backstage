@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-lighthouse-common",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "description": "Common functionalities for lighthouse, to be shared between lighthouse and lighthouse-backend plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "moved": "@backstage-community/plugin-lighthouse-common"
   },
   "publishConfig": {
     "access": "public",
@@ -43,5 +44,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-lighthouse-common instead."
 }

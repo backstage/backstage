@@ -1,5 +1,14 @@
 # @backstage/plugin-opencost
 
+## 0.2.10
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+
 ## 0.2.9
 
 ### Patch Changes

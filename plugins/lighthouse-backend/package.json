@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-lighthouse-backend",
-  "version": "0.4.10",
+  "version": "0.4.11",
   "description": "Backend functionalities for lighthouse",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-lighthouse-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -53,5 +54,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^"
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-lighthouse-backend instead."
 }

@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-explore",
-  "version": "0.4.20",
+  "version": "0.4.21",
   "description": "A Backstage plugin for building an exploration page of your software ecosystem",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "moved": "@backstage-community/plugin-explore"
   },
   "publishConfig": {
     "access": "public"
@@ -81,5 +82,6 @@
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-explore instead."
 }

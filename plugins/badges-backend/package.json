@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-badges-backend",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "A Backstage backend plugin that generates README badges for your entities",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-badges-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -60,5 +61,6 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-badges-backend instead."
 }

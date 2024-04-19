@@ -1,5 +1,21 @@
 # @backstage/plugin-lighthouse-backend
 
+## 0.4.11
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/plugin-lighthouse-common@0.1.6
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/backend-tasks@0.5.22
+  - @backstage/catalog-client@1.6.4
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.11.1
+
 ## 0.4.10
 
 ### Patch Changes

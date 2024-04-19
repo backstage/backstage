@@ -1,5 +1,19 @@
 # @backstage/plugin-cost-insights
 
+## 0.12.24
+
+### Patch Changes
+
+- c2112f2: These packages have been migrated to the [backstage/community-plugins](https://github.com/backstage/community-plugins) repository.
+- Updated dependencies
+  - @backstage/plugin-cost-insights-common@0.1.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/theme@0.5.3
+  - @backstage/plugin-catalog-react@1.11.3
+
 ## 0.12.23
 
 ### Patch Changes
