@@ -278,7 +278,7 @@ const myCustomFont = {
     local('My-Custom-Font'),
     url(${MyCustomFont}) format('woff2'),
   `,
-},
+};
 
 const myAwesomeFont = {
   fontFamily: 'My-Awesome-Font',
