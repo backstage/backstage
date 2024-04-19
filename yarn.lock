@@ -3729,6 +3729,7 @@ __metadata:
     react-dev-utils: ^12.0.0-next.60
     react-refresh: ^0.14.0
     recursive-readdir: ^2.2.2
+    replace-in-file: ^7.1.0
     rollup: ^4.0.0
     rollup-plugin-dts: ^6.1.0
     rollup-plugin-esbuild: ^6.1.1
@@ -29082,7 +29083,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^8.0.0, glob@npm:^8.0.1, glob@npm:^8.0.3":
+"glob@npm:^8.0.0, glob@npm:^8.0.1, glob@npm:^8.0.3, glob@npm:^8.1.0":
   version: 8.1.0
   resolution: "glob@npm:8.1.0"
   dependencies:
@@ -40429,6 +40430,19 @@ __metadata:
   version: 1.0.1
   resolution: "replace-ext@npm:1.0.1"
   checksum: 4994ea1aaa3d32d152a8d98ff638988812c4fa35ba55485630008fe6f49e3384a8a710878e6fd7304b42b38d1b64c1cd070e78ece411f327735581a79dd88571
+  languageName: node
+  linkType: hard
+
+"replace-in-file@npm:^7.1.0":
+  version: 7.1.0
+  resolution: "replace-in-file@npm:7.1.0"
+  dependencies:
+    chalk: ^4.1.2
+    glob: ^8.1.0
+    yargs: ^17.7.2
+  bin:
+    replace-in-file: bin/cli.js
+  checksum: 2ed61bd0cf0752b18775b52342ad36f4ee6c806f7eca0b0d085c23bafe0cb4828e4ec8f59058bde6b67d2ed5ac51e1681284f586089b58b966e2489712830db0
   languageName: node
   linkType: hard
 

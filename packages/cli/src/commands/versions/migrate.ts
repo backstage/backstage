@@ -15,15 +15,33 @@
  */
 import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 import chalk from 'chalk';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, join } from 'path';
 import { OptionValues } from 'commander';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
 import { runYarnInstall } from './bump';
+import replace from 'replace-in-file';
+
+declare module 'replace-in-file' {
+  export default function (config: {
+    files: string | string[];
+    processor: (content: string, file: string) => string;
+    ignore?: string | string[];
+    allowEmptyPaths?: boolean;
+  }): Promise<
+    {
+      file: string;
+      hasChanged: boolean;
+      numMatches?: number;
+      numReplacements?: number;
+    }[]
+  >;
+}
 
 export default async (options: OptionValues) => {
   const changed = await migrateMovedPackages({
     pattern: options.pattern,
+    skipCodeChanges: options.skipCodeChanges,
   });
 
   if (changed) {
@@ -31,29 +49,20 @@ export default async (options: OptionValues) => {
   }
 };
 
-export async function migrateMovedPackages(options?: { pattern?: string }) {
+export async function migrateMovedPackages(options?: {
+  pattern?: string;
+  skipCodeChanges?: boolean;
+}) {
+  console.log(
+    'Checking for moved packages to the @backstage-community namespace...',
+  );
   const packages = await PackageGraph.listTargetPackages();
-
-  const thingsThatHaveMoved = new Map<
-    string,
-    {
-      dependencies: { [k: string]: string };
-      devDependencies: { [k: string]: string };
-      peerDependencies: { [k: string]: string };
-    }
-  >();
-
   let didAnythingChange = false;
 
   for (const pkg of packages) {
     const pkgName = pkg.packageJson.name;
-    thingsThatHaveMoved.set(pkgName, {
-      dependencies: {},
-      devDependencies: {},
-      peerDependencies: {},
-    });
-
     let didPackageChange = false;
+    const movedPackages = new Map<string, string>();
 
     for (const depType of [
       'dependencies',
@@ -87,6 +96,7 @@ export async function migrateMovedPackages(options?: { pattern?: string }) {
         const movedPackageName = packageInfo.backstage?.moved;
 
         if (movedPackageName) {
+          movedPackages.set(depName, movedPackageName);
           console.log(
             chalk.yellow(
               `Found a moved package ${depName}@${depVersion} -> ${movedPackageName} in ${pkgName} (${depType})`,
@@ -106,6 +116,33 @@ export async function migrateMovedPackages(options?: { pattern?: string }) {
       await writeJson(resolvePath(pkg.dir, 'package.json'), pkg.packageJson, {
         spaces: 2,
       });
+
+      if (!options?.skipCodeChanges) {
+        // Replace all occurrences of the old package names in the code.
+        const files = await replace({
+          files: join(pkg.dir, '**', '*.{ts,tsx,js,jsx}'),
+          ignore: ['/node_modules/', '/yarn.lock/'],
+          allowEmptyPaths: true,
+          processor: content => {
+            return Array.from(movedPackages.entries()).reduce(
+              (newContent, [oldName, newName]) => {
+                return newContent
+                  .replace(new RegExp(`'${oldName}'`, 'g'), `'${newName}'`)
+                  .replace(new RegExp(`"${oldName}"`, 'g'), `"${newName}"`);
+              },
+              content,
+            );
+          },
+        });
+
+        if (files.length > 0) {
+          console.log(
+            chalk.green(
+              `Updated ${files.length} files in ${pkgName} to use the new package names`,
+            ),
+          );
+        }
+      }
     }
   }
 
