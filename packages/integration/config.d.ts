@@ -345,5 +345,29 @@ export interface Config {
        */
       password?: string;
     }>;
+    /** Integration configuration for Harness Code */
+    harness?: Array<{
+      /**
+       * The hostname of the given Harness Code instance
+       * @visibility frontend
+       */
+      host: string;
+      /**
+       * The base url for the Gitea instance.
+       * @visibility frontend
+       */
+      baseUrl?: string;
+
+      /**
+       * The username to use for authenticated requests.
+       * @visibility secret
+       */
+      username?: string;
+      /**
+       * Harness Code token used to authenticate requests. This can be either a generated access token.
+       * @visibility secret
+       */
+      token?: string;
+    }>;
   };
 }

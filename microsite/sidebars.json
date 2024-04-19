@@ -239,6 +239,11 @@
         "items": ["integrations/gitea/locations"]
       },
       {
+        "type": "subcategory",
+        "label": "Harness",
+        "ids": ["integrations/harness/locations"]
+      },
+      {
         "type": "category",
         "label": "Google GCS",
         "items": ["integrations/google-cloud-storage/locations"]
