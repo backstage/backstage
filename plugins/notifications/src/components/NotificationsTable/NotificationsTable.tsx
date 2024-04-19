@@ -21,6 +21,7 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import CheckBox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { Notification } from '@backstage/plugin-notifications-common';
 
 import { notificationsApiRef } from '../../api';
@@ -37,6 +38,16 @@ import { SelectAll } from './SelectAll';
 import { BulkActions } from './BulkActions';
 
 const ThrottleDelayMs = 1000;
+
+const useStyles = makeStyles({
+  description: {
+    maxHeight: '5rem',
+    overflow: 'scroll',
+  },
+  severityItem: {
+    alignContent: 'center',
+  },
+});
 
 /** @public */
 export type NotificationsTableProps = Pick<
@@ -62,6 +73,7 @@ export const NotificationsTable = ({
   pageSize,
   totalCount,
 }: NotificationsTableProps) => {
+  const classes = useStyles();
   const notificationsApi = useApi(notificationsApiRef);
   const [selectedNotifications, setSelectedNotifications] = React.useState(
     new Set<Notification['id']>(),
@@ -155,10 +167,10 @@ export const NotificationsTable = ({
           // Compact content
           return (
             <Grid container>
-              <Grid item>
+              <Grid item className={classes.severityItem}>
                 <SeverityIcon severity={notification.payload?.severity} />
               </Grid>
-              <Grid item>
+              <Grid item xs={11}>
                 <Box>
                   <Typography variant="subtitle2">
                     {notification.payload.link ? (
@@ -169,7 +181,7 @@ export const NotificationsTable = ({
                       notification.payload.title
                     )}
                   </Typography>
-                  <Typography variant="body2">
+                  <Typography variant="body2" className={classes.description}>
                     {notification.payload.description}
                   </Typography>
                   <Typography variant="caption">
@@ -211,11 +223,13 @@ export const NotificationsTable = ({
       },
     ],
     [
+      selectedNotifications,
+      notifications,
       onSwitchReadStatus,
       onSwitchSavedStatus,
-      selectedNotifications,
       onNotificationsSelectChange,
-      notifications,
+      classes.severityItem,
+      classes.description,
     ],
   );
 
