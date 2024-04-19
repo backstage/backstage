@@ -81,7 +81,7 @@ const checkGiteaOrg = async (
     );
   } catch (e) {
     throw new Error(
-      `Unable to get the Organization: ${owner}; Error cause: ${e.cause.message}`,
+      `Unable to get the Organization: ${owner}; Error cause: ${e.message}, code: ${e.cause.code}`,
     );
   }
   if (response.status !== 200) {
