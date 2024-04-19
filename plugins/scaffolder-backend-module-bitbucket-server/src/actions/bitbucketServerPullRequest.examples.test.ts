@@ -250,7 +250,11 @@ describe('publish:bitbucketServer:pull-request', () => {
       rest.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
-          const requestBody = req.body;
+          const requestBody = req.body as {
+            title: string;
+            fromRef: { displayId: string };
+            description: string;
+          };
           expect(requestBody.title).toBe('My pull request');
           expect(requestBody.fromRef.displayId).toBe('my-feature-branch');
           expect(requestBody.description).toBe(
@@ -292,7 +296,11 @@ describe('publish:bitbucketServer:pull-request', () => {
       rest.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
-          const requestBody = req.body;
+          const requestBody = req.body as {
+            title: string;
+            toRef: { displayId: string };
+            description: string;
+          };
           expect(requestBody.title).toBe('My pull request');
           expect(requestBody.toRef.displayId).toBe('development');
           expect(requestBody.description).toBe(
@@ -376,7 +384,12 @@ describe('publish:bitbucketServer:pull-request', () => {
       rest.post(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos/repo/pull-requests',
         (req, res, ctx) => {
-          const requestBody = req.body;
+          const requestBody = req.body as {
+            title: string;
+            toRef: { displayId: string };
+            fromRef: { displayId: string };
+            description: string;
+          };
           expect(requestBody.title).toBe('My pull request');
           expect(requestBody.fromRef.displayId).toBe('my-feature-branch');
           expect(requestBody.toRef.displayId).toBe('development');
