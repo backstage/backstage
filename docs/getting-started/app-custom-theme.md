@@ -19,7 +19,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
   }),
@@ -73,7 +73,7 @@ import {
   shapes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: {
       ...palettes.light,
@@ -158,7 +158,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
     typography: {
@@ -210,7 +210,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
     typography: {
@@ -248,10 +248,11 @@ const myCustomFont = {
     local('My-Custom-Font'),
     url(${MyCustomFont}) format('woff2'),
   `,
-},
+};
 
 export const myTheme = createUnifiedTheme({
   fontFamily: 'My-Custom-Font',
+  palette: palettes.light,
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -288,7 +289,7 @@ const myAwesomeFont = {
     local('My-Awesome-Font'),
     url(${myAwesomeFont}) format('woff2'),
   `,
-},
+};
 
 export const myTheme = createUnifiedTheme({
   fontFamily: 'My-Custom-Font',
@@ -314,7 +315,7 @@ export const myTheme = createUnifiedTheme({
     },
     defaultPageTheme: 'home',
   }),
-};
+});
 ```
 
 ## Overriding Backstage and Material UI components styles
@@ -345,7 +346,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
   }),
