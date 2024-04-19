@@ -226,11 +226,9 @@ describe('versions:migrate', () => {
 
     jest.spyOn(run, 'run').mockResolvedValue(undefined);
 
-    const s = await withLogCollector(async () => {
+    await withLogCollector(async () => {
       await migrate({});
     });
-
-    console.log(s);
 
     expect(run.run).toHaveBeenCalledTimes(1);
     expect(run.run).toHaveBeenCalledWith(
@@ -255,6 +253,93 @@ describe('versions:migrate', () => {
 
     expect(indexTestA).toEqual(
       "import { myThing } from '@backstage-community/custom-two';",
+    );
+  });
+
+  it('should replaces the occurences of changed packages, and is careful', async () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      node_modules: {
+        '@backstage': {
+          custom: {
+            'package.json': JSON.stringify({
+              name: '@backstage-extra/custom',
+              version: '1.0.1',
+              backstage: {
+                moved: '@backstage-community/custom',
+              },
+            }),
+          },
+          'custom-two': {
+            'package.json': JSON.stringify({
+              name: '@backstage-extra/custom-two',
+              version: '1.0.0',
+            }),
+          },
+        },
+      },
+      packages: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage/core': '^1.0.5',
+              '@backstage/custom': '^1.0.1',
+              '@backstage/custom-two': '^1.0.0',
+            },
+          }),
+          src: {
+            'index.ts': "import { myThing } from '@backstage/custom';",
+            'index.test.ts': "import { myThing } from '@backstage/custom-two';",
+          },
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            dependencies: {
+              '@backstage/core': '^1.0.3',
+              '@backstage/theme': '^1.0.0',
+              '@backstage/custom': '^1.1.0',
+              '@backstage/custom-two': '^1.0.0',
+            },
+          }),
+        },
+      },
+    });
+
+    jest.spyOn(run, 'run').mockResolvedValue(undefined);
+
+    await withLogCollector(async () => {
+      await migrate({});
+    });
+
+    expect(run.run).toHaveBeenCalledTimes(1);
+    expect(run.run).toHaveBeenCalledWith(
+      'yarn',
+      ['install'],
+      expect.any(Object),
+    );
+
+    const indexA = await fs.readFile(
+      mockDir.resolve('packages/a/src/index.ts'),
+      'utf-8',
+    );
+
+    expect(indexA).toEqual(
+      "import { myThing } from '@backstage-community/custom';",
+    );
+
+    const indexTestA = await fs.readFile(
+      mockDir.resolve('packages/a/src/index.test.ts'),
+      'utf-8',
+    );
+
+    expect(indexTestA).toEqual(
+      "import { myThing } from '@backstage/custom-two';",
     );
   });
 });

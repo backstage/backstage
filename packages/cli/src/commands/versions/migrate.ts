@@ -120,15 +120,15 @@ export async function migrateMovedPackages(options?: {
       if (!options?.skipCodeChanges) {
         // Replace all occurrences of the old package names in the code.
         const files = await replace({
-          files: join(pkg.dir, '**', '*.{ts,tsx,js,jsx}'),
-          ignore: ['/node_modules/', '/yarn.lock/'],
+          files: join(pkg.dir, 'src', '**'),
           allowEmptyPaths: true,
           processor: content => {
             return Array.from(movedPackages.entries()).reduce(
               (newContent, [oldName, newName]) => {
                 return newContent
+                  .replace(new RegExp(`"${oldName}"`, 'g'), `"${newName}"`)
                   .replace(new RegExp(`'${oldName}'`, 'g'), `'${newName}'`)
-                  .replace(new RegExp(`"${oldName}"`, 'g'), `"${newName}"`);
+                  .replace(new RegExp(`${oldName}/`, 'g'), `${newName}/`);
               },
               content,
             );
