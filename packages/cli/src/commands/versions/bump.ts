@@ -266,9 +266,12 @@ export default async (opts: OptionValues) => {
     }
 
     if (!opts.skipMigrate) {
+      console.log();
+
       const changed = await migrateMovedPackages({
         pattern: opts.pattern,
       });
+
       if (changed && !opts.skipInstall) {
         await runYarnInstall();
       }
