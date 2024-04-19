@@ -1,5 +1,15 @@
 # example-app
 
+## 0.2.99
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-pagerduty@0.7.7
+  - @backstage/plugin-nomad@0.1.16
+  - @backstage/plugin-linguist@0.1.20
+  - @backstage/plugin-linguist-common@0.1.3
+
 ## 0.2.98
 
 ### Patch Changes

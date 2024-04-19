@@ -1,9 +1,10 @@
 {
   "name": "@backstage/plugin-linguist-common",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Common functionalities for the linguist plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "moved": "@backstage-community/plugin-linguist-common"
   },
   "publishConfig": {
     "access": "public",
@@ -34,5 +35,6 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-linguist-common instead."
 }

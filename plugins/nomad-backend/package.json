@@ -1,8 +1,9 @@
 {
   "name": "@backstage/plugin-nomad-backend",
-  "version": "0.1.19",
+  "version": "0.1.20",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "moved": "@backstage-community/plugin-nomad-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -45,5 +46,6 @@
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "supertest": "^6.2.4"
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-nomad-backend instead."
 }

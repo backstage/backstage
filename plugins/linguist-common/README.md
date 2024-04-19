@@ -1,3 +1,3 @@
-# Linguist Common
+# Deprecated
 
-Common types, permissions, and constants for the Linguist plugin.
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-linguist-common` instead.

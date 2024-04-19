@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-pagerduty",
-  "version": "0.7.6",
+  "version": "0.7.7",
   "description": "This plugin has been deprecated, consider using [@pagerduty/backstage-plugin](https://github.com/pagerduty/backstage-plugin) instead.",
   "backstage": {
     "role": "frontend-plugin"
@@ -65,5 +65,6 @@
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This plugin has been deprecated, consider using [@pagerduty/backstage-plugin](https://github.com/pagerduty/backstage-plugin) instead."
 }

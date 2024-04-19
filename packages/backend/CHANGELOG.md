@@ -1,5 +1,14 @@
 # example-backend
 
+## 0.2.100
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-nomad-backend@0.1.20
+  - @backstage/plugin-linguist-backend@0.5.16
+  - example-app@0.2.99
+
 ## 0.2.99
 
 ### Patch Changes

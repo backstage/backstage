@@ -1,5 +1,14 @@
 # example-app-next
 
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-pagerduty@0.7.7
+  - @backstage/plugin-linguist@0.1.20
+  - @backstage/plugin-linguist-common@0.1.3
+
 ## 0.0.12
 
 ### Patch Changes

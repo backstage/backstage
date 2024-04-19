@@ -1,5 +1,13 @@
 # example-backend-next
 
+## 0.0.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-nomad-backend@0.1.20
+  - @backstage/plugin-linguist-backend@0.5.16
+
 ## 0.0.27
 
 ### Patch Changes

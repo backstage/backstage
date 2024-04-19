@@ -1,5 +1,11 @@
 # @backstage/plugin-pagerduty
 
+## 0.7.7
+
+### Patch Changes
+
+- 3905997: This plugin has been deprecated, consider using [@pagerduty/backstage-plugin](https://github.com/pagerduty/backstage-plugin) instead
+
 ## 0.7.6
 
 ### Patch Changes
