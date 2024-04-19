@@ -2,7 +2,8 @@
   "name": "@backstage/plugin-nomad",
   "version": "0.1.15",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "moved": "@backstage-community/plugin-nomad"
   },
   "publishConfig": {
     "access": "public",
@@ -78,5 +79,6 @@
         ]
       }
     }
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-nomad instead."
 }
