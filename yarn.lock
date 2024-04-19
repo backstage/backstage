@@ -4276,6 +4276,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
     "@testing-library/user-event": ^14.0.0
+    "@types/highlightjs": ^10.1.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@types/swagger-ui-react": ^4.18.0
     graphiql: 3.1.1
@@ -4335,7 +4336,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-app-visualizer@workspace:plugins/app-visualizer":
+"@backstage/plugin-app-visualizer@workspace:^, @backstage/plugin-app-visualizer@workspace:plugins/app-visualizer":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-app-visualizer@workspace:plugins/app-visualizer"
   dependencies:
@@ -5463,6 +5464,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
     "@testing-library/user-event": ^14.0.0
+    "@types/pluralize": ^0.0.33
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     dataloader: ^2.0.0
     expiry-map: ^2.0.0
@@ -5550,7 +5552,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-devtools@workspace:plugins/devtools":
+"@backstage/plugin-devtools@workspace:^, @backstage/plugin-devtools@workspace:plugins/devtools":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-devtools@workspace:plugins/devtools"
   dependencies:
@@ -6423,7 +6425,6 @@ __metadata:
     "@octokit/webhooks": ^10.0.0
     "@types/libsodium-wrappers": ^0.7.10
     fs-extra: ^11.2.0
-    jest-when: ^3.1.0
     jsonschema: ^1.2.6
     libsodium-wrappers: ^0.7.11
     octokit: ^3.0.0
@@ -15579,6 +15580,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/highlightjs@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "@types/highlightjs@npm:10.1.0"
+  dependencies:
+    highlight.js: ^10.1.0
+  checksum: 454606bd5ba7425a845abce0bc3aa5fa0575e1047c97a4b7930d76dfced4fcc1985270ec88632cf45cdb0e266f589c362bb1591573bea730eacd08d3cf169747
+  languageName: node
+  linkType: hard
+
 "@types/hoist-non-react-statics@npm:^3.3.0":
   version: 3.3.1
   resolution: "@types/hoist-non-react-statics@npm:3.3.1"
@@ -16139,6 +16149,13 @@ __metadata:
   version: 0.4.4
   resolution: "@types/ping@npm:0.4.4"
   checksum: 48233c0c8a82d25bf91c6102201be295406a9831119f7797660dfcd73d6831971753b61aaefe3981c898a2d7a8f097dee04fe50dea166f91ab138d241bb584d8
+  languageName: node
+  linkType: hard
+
+"@types/pluralize@npm:^0.0.33":
+  version: 0.0.33
+  resolution: "@types/pluralize@npm:0.0.33"
+  checksum: 282d42dc0187e5e0912f9f36ee0f5615bfd273a08d40afe5bf5881cb28daf1977abe10564543032aa0f42352ebba739ff3d86bf5562ac4691c6d1761fcc7cf39
   languageName: node
   linkType: hard
 
@@ -23732,11 +23749,14 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/core-app-api": "workspace:^"
+    "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/integration-react": "workspace:^"
     "@backstage/plugin-api-docs": "workspace:^"
+    "@backstage/plugin-app-visualizer": "workspace:^"
     "@backstage/plugin-auth-react": "workspace:^"
     "@backstage/plugin-catalog": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
@@ -23816,6 +23836,7 @@ __metadata:
     "@backstage/plugin-catalog-import": "workspace:^"
     "@backstage/plugin-catalog-react": "workspace:^"
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^"
+    "@backstage/plugin-devtools": "workspace:^"
     "@backstage/plugin-home": "workspace:^"
     "@backstage/plugin-kubernetes": "workspace:^"
     "@backstage/plugin-kubernetes-cluster": "workspace:^"
@@ -26080,7 +26101,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"highlight.js@npm:^10.4.1, highlight.js@npm:^10.7.2, highlight.js@npm:~10.7.0":
+"highlight.js@npm:^10.1.0, highlight.js@npm:^10.4.1, highlight.js@npm:^10.7.2, highlight.js@npm:~10.7.0":
   version: 10.7.3
   resolution: "highlight.js@npm:10.7.3"
   checksum: defeafcd546b535d710d8efb8e650af9e3b369ef53e28c3dc7893eacfe263200bba4c5fcf43524ae66d5c0c296b1af0870523ceae3e3104d24b7abf6374a4fea

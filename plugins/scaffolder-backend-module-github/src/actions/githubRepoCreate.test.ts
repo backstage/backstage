@@ -30,7 +30,6 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { when } from 'jest-when';
 import { createGithubRepoCreateAction } from './githubRepoCreate';
 import { entityRefToName } from './gitHelpers';
 
@@ -478,15 +477,9 @@ describe('github:repo:create', () => {
       },
     });
 
-    when(mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg)
-      .calledWith({
-        org: 'owner',
-        owner: 'owner',
-        repo: 'repo',
-        team_slug: 'robot-1',
-        permission: 'pull',
-      })
-      .mockRejectedValueOnce(new Error('Something bad happened') as never);
+    mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mockRejectedValueOnce(
+      new Error('Something bad happened'),
+    );
 
     await action.handler({
       ...mockContext,
