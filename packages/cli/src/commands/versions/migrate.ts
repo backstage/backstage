@@ -15,7 +15,7 @@
  */
 import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 import chalk from 'chalk';
-import { resolve as resolvePath, join } from 'path';
+import { resolve as resolvePath, join as joinPath } from 'path';
 import { OptionValues } from 'commander';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';
@@ -120,7 +120,7 @@ export async function migrateMovedPackages(options?: {
       if (!options?.skipCodeChanges) {
         // Replace all occurrences of the old package names in the code.
         const files = await replace({
-          files: join(pkg.dir, 'src', '**'),
+          files: joinPath(pkg.dir, 'src', '**'),
           allowEmptyPaths: true,
           processor: content => {
             return Array.from(movedPackages.entries()).reduce(
