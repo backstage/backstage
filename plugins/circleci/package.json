@@ -59,5 +59,6 @@
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  }
+  },
+  "deprecated": "This package has been moved to the to the https://github.com/CircleCI-Public/backstage-plugin repository. You should migrate to using that instead."
 }
