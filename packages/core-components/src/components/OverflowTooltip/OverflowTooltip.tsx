@@ -21,7 +21,7 @@ import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
 type Props = {
-  text: string;
+  text?: string | undefined;
   title?: TooltipProps['title'];
   placement?: TooltipProps['placement'];
 };
@@ -34,6 +34,7 @@ const useStyles = makeStyles(
       overflow: 'visible !important',
     },
     typo: {
+      maxWidth: 200,
       display: 'inline-block',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
