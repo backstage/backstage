@@ -8,3 +8,5 @@ area:scaffolder:
   - '/scaffolder/i'
 area:permission:
   - '/permission/i'
+bep:
+  - '/\bbep\b/i'

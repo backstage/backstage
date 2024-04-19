@@ -31,6 +31,10 @@ area:techdocs:
           - plugins/techdocs/**/*
           - plugins/techdocs-*/**/*
           - packages/techdocs-*/**/*
+bep:
+  - changed-files:
+      - any-glob-to-any-file:
+          - beps/**/*
 auth:
   - changed-files:
       - any-glob-to-any-file:
