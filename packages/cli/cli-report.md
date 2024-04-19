@@ -622,5 +622,6 @@ Usage: backstage-cli versions:migrate [options]
 
 Options:
   --pattern <glob>
+  --skip-code-changes
   -h, --help
 ```
