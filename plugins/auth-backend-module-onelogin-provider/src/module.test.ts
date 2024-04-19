@@ -65,6 +65,7 @@ describe('authModuleOneLoginProvider', () => {
     expect(startUrl.pathname).toBe('/oidc/2/auth');
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
       response_type: 'code',
+      scope: 'openid email profile',
       client_id: 'my-client-id',
       redirect_uri: `http://localhost:${server.port()}/api/auth/onelogin/handler/frame`,
       state: expect.any(String),
