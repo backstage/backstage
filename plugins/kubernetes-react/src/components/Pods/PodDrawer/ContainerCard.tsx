@@ -48,6 +48,8 @@ const getContainerHealthChecks = (
     'no restarts': containerStatus.restartCount === 0,
     'readiness probe set':
       containerSpec && containerSpec?.readinessProbe !== undefined,
+    'liveness probe set':
+      containerSpec && containerSpec?.livenessProbe !== undefined,
   };
 };
 
