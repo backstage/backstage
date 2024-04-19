@@ -13344,14 +13344,14 @@ __metadata:
   linkType: hard
 
 "@newrelic/browser-agent@npm:^1.236.0":
-  version: 1.252.1
-  resolution: "@newrelic/browser-agent@npm:1.252.1"
+  version: 1.257.0
+  resolution: "@newrelic/browser-agent@npm:1.257.0"
   dependencies:
     core-js: ^3.26.0
     fflate: ^0.7.4
-    rrweb: 2.0.0-alpha.11
+    rrweb: 2.0.0-alpha.12
     web-vitals: ^3.1.0
-  checksum: 19570311115a926fd99dd24036f71fc304834c6cc379ebcbef874288d6d9a0e3abd77c81df99110bbc395a2d68c4ceb926940913aac7ae4c6bfa9d5e7dfec875
+  checksum: fc6e914aa8690cbbf316a0d6d4b3b729b0ed1f3701cfefe8d3eb86c5dc814321a5868b55f88689f38bde5469c5d42f6f2c9f990199b19d182c8b9c15b8e34b27
   languageName: node
   linkType: hard
 
@@ -15858,12 +15858,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rrweb/types@npm:^2.0.0-alpha.11":
-  version: 2.0.0-alpha.11
-  resolution: "@rrweb/types@npm:2.0.0-alpha.11"
+"@rrweb/types@npm:^2.0.0-alpha.12":
+  version: 2.0.0-alpha.13
+  resolution: "@rrweb/types@npm:2.0.0-alpha.13"
   dependencies:
-    rrweb-snapshot: ^2.0.0-alpha.11
-  checksum: 63c815597daacb7f6978c973c53e6e8f10301c0224ce675792c2c8a2cdf059845aefef92b2ee259837813081796398e3432195fdd8cb72c437ab77a20c50b2c7
+    rrweb-snapshot: ^2.0.0-alpha.13
+  checksum: 01d1ac7abe99840fe2d581aeefb86729f3dc343b34083950a386925d286e88695a3ef88837bc324fa08fa148b68b03006a8b2efe1b5af70a729c00e51cf36f02
   languageName: node
   linkType: hard
 
@@ -41025,35 +41025,35 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"rrdom@npm:^2.0.0-alpha.11":
-  version: 2.0.0-alpha.11
-  resolution: "rrdom@npm:2.0.0-alpha.11"
+"rrdom@npm:^2.0.0-alpha.12":
+  version: 2.0.0-alpha.13
+  resolution: "rrdom@npm:2.0.0-alpha.13"
   dependencies:
-    rrweb-snapshot: ^2.0.0-alpha.11
-  checksum: cfc8f18698902224bd4b666586497b2682d3d11e30946c2b9fe374b8209d977c0d6c4157231a2a4bfed12761a79db1cbc9a139741a9b3d7c943536cd9eb3bb50
+    rrweb-snapshot: ^2.0.0-alpha.13
+  checksum: ea5692d8d3e164bbcd441dcc15a616b61c99492f3d7417aac53b32336766b4386133f302f4dd2f321e92e6278b11e5f6f2e406f1b88fceafbaea0e8f0e8c15bd
   languageName: node
   linkType: hard
 
-"rrweb-snapshot@npm:^2.0.0-alpha.11":
-  version: 2.0.0-alpha.11
-  resolution: "rrweb-snapshot@npm:2.0.0-alpha.11"
-  checksum: 8b5e40ebe17d61546f9c93b4cc266156be0fc28b7452e4fea6ea4c24a35a857c021e15503d218f10d3fc8c478c793450f1f2ebf9c751c1d7a24e25322b9d1677
+"rrweb-snapshot@npm:^2.0.0-alpha.12, rrweb-snapshot@npm:^2.0.0-alpha.13":
+  version: 2.0.0-alpha.13
+  resolution: "rrweb-snapshot@npm:2.0.0-alpha.13"
+  checksum: 27fec50080b46b3b0187beadab0a9250b9ebb0aba7a93c0b3b1db1019cf75211640fda5df327047f247413449f02f225ee60c8a28ba347fd2826d276519a437f
   languageName: node
   linkType: hard
 
-"rrweb@npm:2.0.0-alpha.11":
-  version: 2.0.0-alpha.11
-  resolution: "rrweb@npm:2.0.0-alpha.11"
+"rrweb@npm:2.0.0-alpha.12":
+  version: 2.0.0-alpha.12
+  resolution: "rrweb@npm:2.0.0-alpha.12"
   dependencies:
-    "@rrweb/types": ^2.0.0-alpha.11
+    "@rrweb/types": ^2.0.0-alpha.12
     "@types/css-font-loading-module": 0.0.7
     "@xstate/fsm": ^1.4.0
     base64-arraybuffer: ^1.0.1
     fflate: ^0.4.4
     mitt: ^3.0.0
-    rrdom: ^2.0.0-alpha.11
-    rrweb-snapshot: ^2.0.0-alpha.11
-  checksum: f601d1b96f3a3622551b5f12f08d53cee272ebc23a61ed722a8687b2b8cb89ff6f7813a44eaa905afcaadd3e37e6055201474de0bd010720f45ecaaf2a0b4d01
+    rrdom: ^2.0.0-alpha.12
+    rrweb-snapshot: ^2.0.0-alpha.12
+  checksum: 8432fac86c9ee886db5325bafed3619bac8004a755b67abf50dd45fafffdf3a3b9a0077b9ea1c27a2fa3da212a2405e5abe2637aedc41b01f85fc4900c884005
   languageName: node
   linkType: hard
 
