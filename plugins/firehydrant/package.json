@@ -3,7 +3,8 @@
   "version": "0.2.18",
   "description": "A Backstage plugin that integrates towards FireHydrant",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "moved": "@backstage-community/plugin-firehydrant"
   },
   "publishConfig": {
     "access": "public",
@@ -72,5 +73,6 @@
         }
       }
     }
-  }
+  },
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-firehydrant instead."
 }

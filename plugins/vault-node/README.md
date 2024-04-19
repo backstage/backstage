@@ -1,3 +1,3 @@
-# @backstage/plugin-vault-node
+# Deprecated
 
-Houses types and utilities for building the vault modules
+This package has been moved to the [backstage-community/plugins](https://github.com/backstage/community-plugins) repository. Migrate to using `@backstage-community/plugin-vault-node` instead.

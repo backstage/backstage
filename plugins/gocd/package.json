@@ -3,7 +3,8 @@
   "version": "0.1.40",
   "description": "A Backstage plugin that integrates towards GoCD",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "moved": "@backstage-community/plugin-gocd"
   },
   "publishConfig": {
     "access": "public",
@@ -65,5 +66,6 @@
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
-  "configSchema": "config.d.ts"
+  "configSchema": "config.d.ts",
+  "deprecated": "This package has been moved to the backstage/community-plugins repository. You should migrate to using @backstage-community/plugin-gocd instead."
 }
