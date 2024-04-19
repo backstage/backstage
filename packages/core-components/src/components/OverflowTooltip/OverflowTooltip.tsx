@@ -17,15 +17,11 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
-import React, { useState } from 'react';
-import TextTruncate, { TextTruncateProps } from 'react-text-truncate';
-import { useIsMounted } from '@react-hookz/web';
+import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
 type Props = {
-  text: TextTruncateProps['text'];
-  line?: TextTruncateProps['line'];
-  element?: TextTruncateProps['element'];
+  text: string;
   title?: TooltipProps['title'];
   placement?: TooltipProps['placement'];
 };
@@ -38,7 +34,6 @@ const useStyles = makeStyles(
       overflow: 'visible !important',
     },
     typo: {
-      // width: 200,
       display: 'inline-block',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
@@ -49,21 +44,12 @@ const useStyles = makeStyles(
 );
 
 export function OverflowTooltip(props: Props) {
-  // const [hover, setHover] = useState(false);
-  // const isMounted = useIsMounted();
   const classes = useStyles();
-  console.log(classes);
-  // const handleToggled = (truncated: boolean) => {
-  //   if (isMounted()) {
-  //     setHover(truncated);
-  //   }
-  // };
 
   return (
     <Tooltip
       title={props.title ?? (props.text || '')}
       placement={props.placement}
-      // disableHoverListener={!hover}
     >
       <Typography className={classes.typo}>{props.text}</Typography>
     </Tooltip>
