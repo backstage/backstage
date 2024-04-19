@@ -17,7 +17,11 @@
 import { Entity } from '@backstage/catalog-model';
 import { AlertApi, alertApiRef } from '@backstage/core-plugin-api';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
-import { EntityProvider } from '@backstage/plugin-catalog-react';
+import {
+  CatalogApi,
+  EntityProvider,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   PermissionApi,
@@ -30,6 +34,7 @@ import { SWRConfig } from 'swr';
 import { PlaylistApi, playlistApiRef } from '../../api';
 import { playlistRouteRef, rootRouteRef } from '../../routes';
 import { EntityPlaylistDialog } from './EntityPlaylistDialog';
+import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 
 const navigateMock = jest.fn();
 jest.mock('react-router-dom', () => ({
@@ -48,6 +53,7 @@ jest.mock('../PlaylistEditDialog', () => ({
 }));
 
 describe('EntityPlaylistDialog', () => {
+  let entities: Entity[];
   const samplePlaylists = [
     {
       id: 'id1',
@@ -75,6 +81,14 @@ describe('EntityPlaylistDialog', () => {
     createPlaylist: jest.fn().mockImplementation(async () => '123'),
     getAllPlaylists: jest.fn().mockImplementation(async () => samplePlaylists),
   };
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getLocationById: jest.fn(),
+    getEntityByName: jest.fn(),
+    getEntities: jest.fn(async () => ({ items: entities })),
+    addLocation: jest.fn(),
+    getLocationByRef: jest.fn(),
+    removeEntityByUid: jest.fn(),
+  } as any;
   const mockAuthorize = jest
     .fn()
     .mockImplementation(async () => ({ result: AuthorizeResult.ALLOW }));
@@ -95,6 +109,10 @@ describe('EntityPlaylistDialog', () => {
             [alertApiRef, alertApi],
             [permissionApiRef, permissionApi],
             [playlistApiRef, playlistApi],
+            [
+              entityPresentationApiRef,
+              DefaultEntityPresentationApi.create({ catalogApi }),
+            ],
           ]}
         >
           <EntityProvider entity={mockEntity}>

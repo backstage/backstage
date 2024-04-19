@@ -18,7 +18,7 @@ import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
 import { ResponseErrorPanel } from '@backstage/core-components';
 import { alertApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
-  humanizeEntityRef,
+  entityPresentationApiRef,
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
 import { usePermission } from '@backstage/plugin-permission-react';
@@ -85,6 +85,7 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
   const { entity } = useAsyncEntity();
   const alertApi = useApi(alertApiRef);
   const playlistApi = useApi(playlistApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const playlistRoute = useRouteRef(playlistRouteRef);
   const [search, setSearch] = useState('');
   const [openEditDialog, setOpenEditDialog] = useState(false);
@@ -256,10 +257,12 @@ export const EntityPlaylistDialog = (props: EntityPlaylistDialogProps) => {
                     >
                       <ListItemText
                         primary={list.name}
-                        secondary={`by ${humanizeEntityRef(
-                          parseEntityRef(list.owner),
-                          { defaultKind: 'group' },
-                        )} · ${list.entities} entities ${
+                        secondary={`by ${
+                          entityPresentationApi.forEntity(
+                            stringifyEntityRef(parseEntityRef(list.owner)),
+                            { defaultKind: 'group' },
+                          ).snapshot.primaryTitle
+                        } · ${list.entities} entities ${
                           !list.public ? '· Private' : ''
                         }`}
                       />
