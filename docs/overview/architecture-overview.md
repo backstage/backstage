@@ -61,9 +61,9 @@ The CircleCI plugin is available on `/circleci`.
 
 Each plugin is a client side application which mounts itself on the UI. Plugins
 are written in TypeScript or JavaScript. They each live in their own directory
-in `backstage/plugins`. For example, the source code for the lighthouse plugin
+in the `plugins` folder. For example, the source code for the catalog plugin
 is available at
-[backstage/plugins/lighthouse](https://github.com/backstage/backstage/tree/master/plugins/lighthouse).
+[plugins/catalog](https://github.com/backstage/backstage/tree/master/plugins/catalog).
 
 ### Installing plugins
 
