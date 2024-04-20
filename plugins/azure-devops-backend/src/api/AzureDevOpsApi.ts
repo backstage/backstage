@@ -231,11 +231,6 @@ export class AzureDevOpsApi {
       host,
       org,
     );
-    if (!gitRepository) {
-      throw new Error(
-        `No repository found for Project "${projectName}" with Repository "${repoName}" on host "${host}" under organization "${org}".`,
-      );
-    }
     const buildList = await this.getBuildList(
       projectName,
       gitRepository.id as string,
@@ -267,11 +262,6 @@ export class AzureDevOpsApi {
       host,
       org,
     );
-    if (!gitRepository) {
-      throw new Error(
-        `No repository found for Project "${projectName}" with Repository "${repoName}" on host "${host}" under organization "${org}".`,
-      );
-    }
     const webApi = await this.getWebApi(host, org);
     const client = await webApi.getGitApi();
     const tagRefs: GitRef[] = await client.getRefs(
@@ -314,11 +304,6 @@ export class AzureDevOpsApi {
       host,
       org,
     );
-    if (!gitRepository) {
-      throw new Error(
-        `No repository found for Project "${projectName}" with Repository "${repoName}" on host "${host}" under organization "${org}".`,
-      );
-    }
     const webApi = await this.getWebApi(host, org);
     const client = await webApi.getGitApi();
     const searchCriteria: GitPullRequestSearchCriteria = {
@@ -529,11 +514,6 @@ export class AzureDevOpsApi {
         host,
         org,
       );
-      if (!gitRepository) {
-        throw new Error(
-          `No repository found for Project "${projectName}" with Repository "${repoName}" on host "${host}" under organization "${org}".`,
-        );
-      }
       repoId = gitRepository.id;
     }
 
