@@ -76,9 +76,8 @@ describe('EntityPage Test', () => {
       expect(rendered.getByText('ExampleComponent')).toBeInTheDocument();
 
       await expect(
-        rendered.findByText('No Workflow Data'),
+        rendered.findByText('No CI/CD available for this entity'),
       ).resolves.toBeInTheDocument();
-      expect(rendered.getByText('Create new Workflow')).toBeInTheDocument();
     });
   });
 });
