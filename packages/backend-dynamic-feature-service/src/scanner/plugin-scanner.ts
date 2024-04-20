@@ -136,6 +136,11 @@ export class PluginScanner {
       withFileTypes: true,
     })) {
       const pluginDir = dirEnt;
+
+      if (pluginDir.name === 'lost+found') {
+        this.logger.debug(`skipping '${pluginDir.name}' system directory`);
+        continue;
+      }
       const pluginHome = path.normalize(
         path.resolve(dynamicPluginsLocation, pluginDir.name),
       );

@@ -402,6 +402,10 @@ export function registerCommands(program: Command) {
       '--pattern <glob>',
       'Override glob for matching packages to upgrade',
     )
+    .option(
+      '--skip-code-changes',
+      'Skip code changes and only update package.json files',
+    )
     .description(
       'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
     )

@@ -636,6 +636,24 @@ Please add '${mockDir.resolve(
           ],
         },
       },
+      {
+        name: 'lost+found directory should be ignored',
+        fileSystem: {
+          backstageRoot: {
+            'dist-dynamic': {
+              'lost+found': {},
+            },
+          },
+        },
+        expectedPluginPackages: [],
+        expectedLogs: {
+          debugs: [
+            {
+              message: `skipping 'lost+found' system directory`,
+            },
+          ],
+        },
+      },
     ])('$name', async (tc: TestCase): Promise<void> => {
       const logger = new MockedLogger();
       const backstageRoot = mockDir.resolve('backstageRoot');

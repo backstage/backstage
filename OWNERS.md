@@ -118,6 +118,16 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 | Philipp Hugenroth    | Spotify      | [tudi2d](https://github.com/tudi2d)         | `tudi2d`     |
 | Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
 
+### Events
+
+Team: @backstage/events-maintainers
+
+Scope: The Events plugin and library, along with events modules in the main repository
+
+| Name               | Organization              | GitHub                                        | Discord       |
+| ------------------ | ------------------------- | --------------------------------------------- | ------------- |
+| Patrick Jungermann | Bonial International GmbH | [pjungermann](https://github.com/pjungermann) | `pjungermann` |
+
 ### Notifications
 
 Team: @backstage/notifications-maintainers
