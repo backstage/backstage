@@ -162,7 +162,7 @@ export class UnprocessedEntitiesModule {
         return res.json(
           await this.unprocessed({
             reason: 'failed',
-            owner: req.query.owner?.toString(),
+            owner: typeof req.query.owner === 'string' ? req.query.owner : undefined,
           }),
         );
       })
@@ -170,7 +170,7 @@ export class UnprocessedEntitiesModule {
         return res.json(
           await this.unprocessed({
             reason: 'pending',
-            owner: req.query.owner?.toString(),
+            owner: typeof req.query.owner === 'string' ? req.query.owner : undefined
           }),
         );
       })
