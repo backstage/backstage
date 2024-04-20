@@ -477,8 +477,12 @@ describe('github:repo:create', () => {
       },
     });
 
-    mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mockRejectedValueOnce(
-      new Error('Something bad happened'),
+    mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mockImplementation(
+      async opts => {
+        if (opts.team_slug === 'robot-1') {
+          throw Error('Something bad happened');
+        }
+      },
     );
 
     await action.handler({
