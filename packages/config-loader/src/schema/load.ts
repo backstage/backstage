@@ -37,6 +37,7 @@ export type LoadConfigSchemaOptions =
       | {
           dependencies: string[];
           packagePaths?: string[];
+          workspaceDirectory?: string;
         }
       | {
           serialized: JsonObject;
@@ -68,11 +69,11 @@ export async function loadConfigSchema(
   options: LoadConfigSchemaOptions,
 ): Promise<ConfigSchema> {
   let schemas: ConfigSchemaPackageEntry[];
-
   if ('dependencies' in options) {
     schemas = await collectConfigSchemas(
       options.dependencies,
       options.packagePaths ?? [],
+      options.workspaceDirectory,
     );
   } else {
     const { serialized } = options;

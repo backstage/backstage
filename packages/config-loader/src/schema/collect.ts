@@ -43,12 +43,13 @@ const req =
 export async function collectConfigSchemas(
   packageNames: string[],
   packagePaths: string[],
+  workspaceDirectory?: string,
 ): Promise<ConfigSchemaPackageEntry[]> {
   const schemas = new Array<ConfigSchemaPackageEntry>();
   const tsSchemaPaths = new Array<string>();
   const visitedPackageVersions = new Map<string, Set<string>>(); // pkgName: [versions...]
 
-  const currentDir = await fs.realpath(process.cwd());
+  const currentDir = await fs.realpath(workspaceDirectory ?? process.cwd());
 
   async function processItem(item: Item) {
     let pkgPath = item.packagePath;
