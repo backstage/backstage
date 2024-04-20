@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren, FunctionComponent } from 'react';
-import { Grid, Box } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 
 type Props = {
   fullscreen: boolean;

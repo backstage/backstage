@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React, { useState } from 'react';
-import { Grid, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import PeopleIcon from '@material-ui/icons/People';
 import { Progress, InfoCard } from '@backstage/core-components';
 

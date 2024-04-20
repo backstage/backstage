@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import React, { FunctionComponent } from 'react';
-import { Typography, Box, Tooltip, Chip } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import Tooltip from '@material-ui/core/Tooltip';
+import Chip from '@material-ui/core/Chip';
 import { getElapsedTime } from '../../utils/functions';
 import { UserHeader } from '../UserHeader';
 import { DraftPrIcon } from '../icons/DraftPr';

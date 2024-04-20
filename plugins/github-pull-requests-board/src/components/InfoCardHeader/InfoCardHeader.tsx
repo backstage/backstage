@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 import React, { PropsWithChildren, FunctionComponent } from 'react';
-import { Typography, Box, IconButton } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
+import IconButton from '@material-ui/core/IconButton';
 import RefreshIcon from '@material-ui/icons/Refresh';
 
 type Props = {

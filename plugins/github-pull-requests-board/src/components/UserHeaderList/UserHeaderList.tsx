@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import React, { FunctionComponent } from 'react';
-import { Typography, Box } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Box from '@material-ui/core/Box';
 import { filterSameUser } from '../../utils/functions';
 
 import { UserHeader } from '../UserHeader';
