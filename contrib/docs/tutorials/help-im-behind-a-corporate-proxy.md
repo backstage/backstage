@@ -24,38 +24,105 @@ There are however some ways to get this to work without too much effort.
 
 1. Go to the entry file for the backend (typically `packages/backend/src/index.ts`), and add the following at the top:
 
-   ```ts
-   import 'global-agent/bootstrap';
-   import { setGlobalDispatcher, ProxyAgent } from 'undici';
+````ts
+import 'global-agent/bootstrap';
+import { setGlobalDispatcher, ProxyAgent } from 'undici';
 
-   const proxyEnv =
-     process.env.GLOBAL_AGENT_HTTP_PROXY ||
-     process.env.GLOBAL_AGENT_HTTPS_PROXY;
+/**
+ * Checks if a given URL matches the list of domain wildcards and specific domains.
+ *
+ * @param {string} origin - The URL to check for exclusion.
+ * @param {string[]} domainList - An array of domain wildcards and specific domains to exclude.
+ * @returns {boolean} - Returns true if the URL matches the list, false otherwise.
+ *
+ * @example
+ * ```typescript
+ * const domainList = ['localhost', '127.0.0.1', '*.my-corp.com'];
+ * const origin = 'https://github.my-corp.com';
+ *
+ * const matched = isDomainMatch(origin, list);
+ * console.log(matched); // Output: true
+ * ```
+ */
+function isDomainMatch(origin: string, domainList: string[]): boolean {
+  if (!origin) return false;
+  const hostname = new URL(origin).hostname;
 
-   if (proxyEnv) {
-     const proxyUrl = new URL(proxyEnv);
-     setGlobalDispatcher(
-       new ProxyAgent({
-         uri: proxyUrl.protocol + proxyUrl.host,
-         token:
-           proxyUrl.username && proxyUrl.password
-             ? `Basic ${Buffer.from(
-                 `${proxyUrl.username}:${proxyUrl.password}`,
-               ).toString('base64')}`
-             : undefined,
-       }),
-     );
-   }
-   ```
+  for (const entry of domainList) {
+    if (entry.startsWith('*')) {
+      const domain = entry.slice(1);
+      if (hostname.endsWith(domain)) {
+        return true;
+      }
+    } else {
+      if (hostname === entry) {
+        return true;
+      }
+    }
+  }
 
-   The first import automatically bootstraps `global-agent`, which addresses `node-fetch` proxying. The lines of code below that peeks into the same environment variables as `global-agent` uses, and also leverages them to set up the `undici` package which affects native `fetch`. Does that seem weird? Yes, we think so too. But in the current state of the Node.js ecosystem, that's how it works.
+  return false;
+}
 
-   This code is kept brief for illustrative purposes. You may want to adjust it slightly if you need support for [no-proxy excludes](https://gist.github.com/zicklag/1bb50db6c5138de347c224fda14286da) or only do proxying in local development etc. Also see [the `global-agent` docs](https://github.com/gajus/global-agent) for information about its configuration options.
+/** Set up global network proxy */
+function setGlobalNetworkProxy() {
+  const proxyEnv =
+    process.env.GLOBAL_AGENT_HTTP_PROXY || process.env.GLOBAL_AGENT_HTTPS_PROXY;
+
+  if (proxyEnv) {
+    const proxyUrl = new URL(proxyEnv);
+
+    // Collect the list of domains that we should not use a proxy for
+    const noProxyList =
+      (process.env.GLOBAL_AGENT_NO_PROXY &&
+        process.env.GLOBAL_AGENT_NO_PROXY.split(',')) ||
+      [];
+
+    // Create a default agent that will be used for no_proxy origins
+    const defaultAgent = new Agent();
+
+    // Create an interceptor that will use the appropriate agent
+    // based on the origin and the no_proxy environment variable.
+    const noProxyInterceptor = (
+      dispatch: Dispatcher['dispatch'],
+    ): Dispatcher['dispatch'] => {
+      return (opts, handler) =>
+        isDomainMatch(opts.origin?.toString() || '', noProxyList)
+          ? defaultAgent.dispatch(opts, handler)
+          : dispatch(opts, handler);
+    };
+
+    // Create a proxy agent that will send all requests through
+    // the configured proxy, unless the noProxyInterceptor bypasses it.
+    setGlobalDispatcher(
+      new ProxyAgent({
+        uri: proxyUrl.protocol + proxyUrl.host,
+        token:
+          proxyUrl.username && proxyUrl.password
+            ? `Basic ${Buffer.from(
+                `${proxyUrl.username}:${proxyUrl.password}`,
+              ).toString('base64')}`
+            : undefined,
+      }).compose(noProxyInterceptor),
+    );
+  }
+}
+
+setGlobalNetworkProxy();
+````
+
+The first import automatically bootstraps `global-agent`, which addresses `node-fetch` proxying. The lines of code below that peeks into the same environment variables as `global-agent` uses, and also leverages them to set up the `undici` package which affects native `fetch`. Does that seem weird? Yes, we think so too. But in the current state of the Node.js ecosystem, that's how it works.
+
+`GLOBAL_AGENT_NO_PROXY` environment variable is parsed for the comma-separated list of domains and domain wildcards which should bypass the proxy.
+
+See [the `global-agent` docs](https://github.com/gajus/global-agent) for information about its configuration options.
 
 1. Start the backend with the correct environment variables set. For example:
 
    ```sh
    export GLOBAL_AGENT_HTTP_PROXY=http://username:password@proxy.example.net:8888
+   # Skip proxy for these hosts/domains
+   export GLOBAL_AGENT_NO_PROXY=localhost,127.0.0.1,*.my-corp.com
    yarn start
    ```
 
