@@ -24,41 +24,40 @@ This approach is equally beneficial if you conceive an idea for a potentially im
 
 Should your plugin complement the Software Catalog rather than exist as a standalone entity (for instance, as an additional tab or a card within an "Overview" tab), you'll find comprehensive guidance on achieving this integration [here](integrating-plugin-into-software-catalog.md).
 
-## Coming Soon: Table of Contents for "Backstage Integration Essentials: A Complete Guide to Plugin Development"
+## Modular Guides for Plugin Development
 
-- **Guide Overview**
-  - Purpose and Scope
-  - Target Audience Insights
-  - Navigation Tips
-- **Foundation of Plugin Development**
-  - Preparing Your Development Environment
-  - [Architectural Overview of Backstage](https://backstage.io/docs/overview/architecture-overview/)
-  - Building Your First Plugin: A Detailed Walkthrough
-- **Plugin Architecture Deep Dive**
-  - Exploring Frontend Components
-  - Backend Services Uncovered
-  - Facilitating Frontend-Backend Communication
-- **Advanced Integration Techniques**
-  - Proxy Integration for External APIs
-  - Implementing Authentication and Authorization
-  - External Systems and Database Integration
-- **Deployment and Operational Excellence**
-  - Strategies for Effective Deployment
-  - Monitoring, Logging, and Performance Tuning
-- **Adhering to Best Practices**
-  - Code Organization and Modularity
-  - Security Protocols
-  - Engaging with the Backstage Community
-- **Troubleshooting and Support**
-  - Addressing Common Challenges
-  - Debugging Strategies
-  - Leveraging Community Support
+- **Plugins 101: Building Your First Plugin**
+  - Introduction to plugins and their roles within Backstage.
+  - Step-by-step instructions on setting up your development environment and building your first plugin.
+  - Configuration essentials.
+
+- **Plugins 102: Choosing Between a Module and a Plugin**
+  - Understanding when to create a module instead of a new plugin.
+  - Guidelines on extending existing plugins.
+
+- **Plugins 201: Preparing Your Plugin for Production**
+  - Best practices for ensuring code quality, integrating APIs, and handling databases.
+  - Performance tuning and monitoring your plugin.
+
+- **Plugins 202: Maintaining Your Plugin**
+  - How to publish and manage your plugin’s versions.
+  - Security updates and alignment with the main Backstage project.
+
+- **Plugins 301: Advanced Plugin Development**
+  - Integrating advanced functionalities like the permissions API and the discovery API.
+  - Using URL readers, SCM integrations, and the proxy API.
+
+## Additional Resources and Further Reading
+
 - **Real-world Implementations and Lessons**
-  - Case Studies
-  - Community-Sourced Best Practices
-- **Resource Compendium**
-  - Glossary of Key Terms: Expand your understanding of Backstage-related terminology by referring to the [official Backstage Glossary](https://backstage.io/docs/references/glossary).
-  - Recommended Reading and Tools
-- **Certification and Learning Pathways**
+  - Case studies and examples from the community.
+  - Best practices derived from mature implementations.
 
-Stay tuned for in-depth exploration and guidance on each of these topics.
+- **Resource Compendium**
+  - [Backstage Glossary](https://backstage.io/docs/references/glossary) of key terms.
+  - Recommended readings and tools for advanced developers.
+
+- **Certification and Learning Pathways**
+  - Pathways to deepen your understanding and expertise in plugin development for Backstage.
+
+Stay tuned for detailed exploration and guidance in each of these modules.
