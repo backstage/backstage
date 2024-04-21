@@ -13,22 +13,72 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useNotificationsApi } from '../../hooks';
 import { SidebarItem } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Notifications';
 import { IconComponent, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
-import { NotificationSignal } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  NotificationSignal,
+} from '@backstage/plugin-notifications-common';
 import { useWebNotifications } from '../../hooks/useWebNotifications';
 import { useTitleCounter } from '../../hooks/useTitleCounter';
 import { notificationsApiRef } from '../../api';
+import {
+  closeSnackbar,
+  enqueueSnackbar,
+  MaterialDesignContent,
+  OptionsWithExtraProps,
+  SnackbarKey,
+  SnackbarProvider,
+  VariantType,
+} from 'notistack';
+import { SeverityIcon } from '../NotificationsTable/SeverityIcon';
+import { useNavigate } from 'react-router-dom';
+import OpenInNew from '@material-ui/icons/OpenInNew';
+import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
+import IconButton from '@material-ui/core/IconButton';
+import { styled } from '@material-ui/core/styles';
+
+const StyledMaterialDesignContent = styled(MaterialDesignContent)(
+  ({ theme }) => ({
+    '&.notistack-MuiContent-low': {
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.text.primary,
+    },
+    '&.notistack-MuiContent-normal': {
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.text.primary,
+    },
+    '&.notistack-MuiContent-high': {
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.text.primary,
+    },
+    '&.notistack-MuiContent-critical': {
+      backgroundColor: theme.palette.background.default,
+      color: theme.palette.text.primary,
+    },
+  }),
+);
+
+declare module 'notistack' {
+  interface VariantOverrides {
+    // Custom variants for the snackbar
+    low: true;
+    normal: true;
+    high: true;
+    critical: true;
+  }
+}
 
 /** @public */
 export const NotificationsSidebarItem = (props?: {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
+  snackbarEnabled?: boolean;
   className?: string;
   icon?: IconComponent;
   text?: string;
@@ -38,14 +88,20 @@ export const NotificationsSidebarItem = (props?: {
   const {
     webNotificationsEnabled = false,
     titleCounterEnabled = true,
+    snackbarEnabled = true,
     icon = NotificationsIcon,
     text = 'Notifications',
     ...restProps
-  } = props ?? { webNotificationsEnabled: false, titleCounterEnabled: true };
+  } = props ?? {
+    webNotificationsEnabled: false,
+    titleCounterEnabled: true,
+    snackbarEnabled: true,
+  };
 
   const { loading, error, value, retry } = useNotificationsApi(api =>
     api.getStatus(),
   );
+  const navigate = useNavigate();
   const notificationsApi = useApi(notificationsApiRef);
   const [unreadCount, setUnreadCount] = React.useState(0);
   const notificationsRoute = useRouteRef(rootRouteRef);
@@ -55,6 +111,40 @@ export const NotificationsSidebarItem = (props?: {
   const [refresh, setRefresh] = React.useState(false);
   const { setNotificationCount } = useTitleCounter();
 
+  const getSnackbarProperties = useCallback(
+    (notification: Notification) => {
+      const action = (snackBarId: SnackbarKey) => (
+        <>
+          <IconButton
+            onClick={() => {
+              if (notification.payload.link) {
+                window.open(notification.payload.link, '_blank');
+              }
+              navigate(notificationsRoute());
+              closeSnackbar(snackBarId);
+            }}
+          >
+            <OpenInNew fontSize="small" />
+          </IconButton>
+          <IconButton
+            onClick={() => {
+              notificationsApi.updateNotifications({
+                ids: [notification.id],
+                read: true,
+              });
+              closeSnackbar(snackBarId);
+            }}
+          >
+            <MarkAsReadIcon fontSize="small" />
+          </IconButton>
+        </>
+      );
+
+      return { action };
+    },
+    [notificationsRoute, navigate, notificationsApi],
+  );
+
   useEffect(() => {
     if (refresh) {
       retry();
@@ -63,8 +153,11 @@ export const NotificationsSidebarItem = (props?: {
   }, [refresh, retry]);
 
   useEffect(() => {
-    const handleWebNotification = (signal: NotificationSignal) => {
-      if (!webNotificationsEnabled || signal.action !== 'new_notification') {
+    const handleNotificationSignal = (signal: NotificationSignal) => {
+      if (
+        (!webNotificationsEnabled && !snackbarEnabled) ||
+        signal.action !== 'new_notification'
+      ) {
         return;
       }
 
@@ -74,24 +167,40 @@ export const NotificationsSidebarItem = (props?: {
           if (!notification) {
             return;
           }
-          sendWebNotification({
-            id: notification.id,
-            title: notification.payload.title,
-            description: notification.payload.description ?? '',
-            link: notification.payload.link,
-          });
+          if (webNotificationsEnabled) {
+            sendWebNotification({
+              id: notification.id,
+              title: notification.payload.title,
+              description: notification.payload.description ?? '',
+              link: notification.payload.link,
+            });
+          }
+          if (snackbarEnabled) {
+            const { action } = getSnackbarProperties(notification);
+            const snackBarText =
+              notification.payload.title.length > 50
+                ? `${notification.payload.title.substring(0, 50)}...`
+                : notification.payload.title;
+            enqueueSnackbar(snackBarText, {
+              variant: notification.payload.severity,
+              anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
+              action,
+            } as OptionsWithExtraProps<VariantType>);
+          }
         });
     };
 
     if (lastSignal && lastSignal.action) {
-      handleWebNotification(lastSignal);
+      handleNotificationSignal(lastSignal);
       setRefresh(true);
     }
   }, [
     lastSignal,
     sendWebNotification,
     webNotificationsEnabled,
+    snackbarEnabled,
     notificationsApi,
+    getSnackbarProperties,
   ]);
 
   useEffect(() => {
@@ -108,12 +217,30 @@ export const NotificationsSidebarItem = (props?: {
 
   // TODO: Figure out if the count can be added to hasNotifications
   return (
-    <SidebarItem
-      to={notificationsRoute()}
-      hasNotifications={!error && !!unreadCount}
-      text={text}
-      icon={icon}
-      {...restProps}
-    />
+    <>
+      {snackbarEnabled && (
+        <SnackbarProvider
+          iconVariant={{
+            normal: <SeverityIcon severity="normal" />,
+            critical: <SeverityIcon severity="critical" />,
+            high: <SeverityIcon severity="high" />,
+            low: <SeverityIcon severity="low" />,
+          }}
+          Components={{
+            normal: StyledMaterialDesignContent,
+            critical: StyledMaterialDesignContent,
+            high: StyledMaterialDesignContent,
+            low: StyledMaterialDesignContent,
+          }}
+        />
+      )}
+      <SidebarItem
+        to={notificationsRoute()}
+        hasNotifications={!error && !!unreadCount}
+        text={text}
+        icon={icon}
+        {...restProps}
+      />
+    </>
   );
 };

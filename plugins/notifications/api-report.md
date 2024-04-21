@@ -100,6 +100,7 @@ export const notificationsPlugin: BackstagePlugin<
 export const NotificationsSidebarItem: (props?: {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
+  snackbarEnabled?: boolean;
   className?: string;
   icon?: IconComponent;
   text?: string;
