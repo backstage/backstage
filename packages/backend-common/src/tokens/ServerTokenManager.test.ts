@@ -301,6 +301,20 @@ describe('ServerTokenManager', () => {
           ),
         ).toThrow();
       });
+
+      it('should throw errors when disabled', async () => {
+        const manager = ServerTokenManager.fromConfig(new ConfigReader({}), {
+          logger,
+          allowDisabledTokenManager: true,
+        });
+
+        await expect(manager.getToken()).rejects.toThrow(
+          'Unable to generate legacy token',
+        );
+        await expect(manager.authenticate('nah')).rejects.toThrow(
+          'Unable to authenticate legacy token',
+        );
+      });
     });
 
     describe('NODE_ENV === development', () => {

@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { ConfigReader } from '@backstage/config';
 import { tokenManagerServiceFactory } from './tokenManagerServiceFactory';
+import { ServiceFactoryTester } from '@backstage/backend-test-utils';
 
 describe('tokenManagerFactory', () => {
-  it('should create managers that can share tokens in development', async () => {
-    (process.env as { NODE_ENV?: string }).NODE_ENV = 'development';
+  it('should create a disabled manager without configuration', async () => {
+    const tokenManager = await ServiceFactoryTester.from(
+      tokenManagerServiceFactory,
+    ).get();
 
-    const factory = tokenManagerServiceFactory() as any;
-    const deps = {
-      config: new ConfigReader({}),
-      logger: { warn() {} } as unknown as LoggerService,
-    };
-
-    const ctx = await factory.createRootContext?.(deps);
-    const manager1 = await factory.factory!(deps, ctx);
-    const manager2 = await factory.factory!(deps, ctx);
-
-    const { token } = await manager1.getToken();
-    await expect(manager2.authenticate(token)).resolves.toBeUndefined();
+    await expect(tokenManager.authenticate('abc')).rejects.toThrow(
+      'no legacy keys are configured',
+    );
+    await expect(tokenManager.getToken()).rejects.toThrow(
+      'no legacy keys are configured',
+    );
   });
 });

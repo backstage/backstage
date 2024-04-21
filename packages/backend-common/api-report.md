@@ -772,7 +772,7 @@ export class ServerTokenManager implements TokenManager {
   static fromConfig(
     config: Config,
     options: ServerTokenManagerOptions,
-  ): ServerTokenManager;
+  ): TokenManager;
   // (undocumented)
   getToken(): Promise<{
     token: string;
@@ -782,6 +782,7 @@ export class ServerTokenManager implements TokenManager {
 
 // @public
 export interface ServerTokenManagerOptions {
+  allowDisabledTokenManager?: boolean;
   logger: LoggerService;
 }
 
