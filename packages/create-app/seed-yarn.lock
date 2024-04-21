@@ -16,3 +16,8 @@
 // package: the name of the package, e.g. @testing-library/react
 // query: the version query to pin the version for, e.g. ^14.0.0
 // version: the version to pin to, must be in range of the query, e.g. 14.11.0
+
+nwsapi@^2.2.0, nwsapi@^2.2.2:
+  version "2.2.7"
+  resolved "https://registry.yarnpkg.com/nwsapi/-/nwsapi-2.2.7.tgz#738e0707d3128cb750dddcfe90e4610482df0f30"
+  integrity sha512-ub5E4+FBPKwAZx0UwIQOjYWGHTEq5sPqHQNRN8Z9e4A7u3Tj1weLJsL59yH9vmvqEtBHaOmT6cYQKIZOxp35FQ==
