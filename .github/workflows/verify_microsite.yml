@@ -1,6 +1,5 @@
 name: Microsite
 on:
-  # NOTE: If you change these you must update verify_microsite-noop.yml as well
   pull_request:
     paths:
       - '.github/workflows/verify_microsite.yml'
@@ -15,51 +14,57 @@ permissions:
 jobs:
   build-microsite:
     runs-on: ubuntu-latest
-
     env:
       CI: true
       NODE_OPTIONS: --max-old-space-size=8192
       DOCUSAURUS_SSR_CONCURRENCY: 5
 
-    name: Microsite
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        uses: step-security/harden-runner@v2.7.0
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@v2
 
-      - name: use node.js 18.x
-        uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
         with:
           node-version: 18.x
 
-        # Skip caching of microsite dependencies, it keeps the global cache size
-        # smaller, which make Windows builds a lot faster for the rest of the project.
-      - name: top-level install
-        run: yarn install --immutable
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'  # Specify the version you need
 
-      - name: yarn install
+      - name: Upgrade pip
+        run: python -m pip install --upgrade pip
+
+      - name: Create and activate virtual environment
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+
+      - name: Install MkDocs dependencies
+        run: pip install mkdocs mkdocs-techdocs-core
+
+      - name: Install Yarn dependencies
         run: yarn install --immutable
         working-directory: microsite
 
-      - name: build API reference
+      - name: Build API reference
         run: yarn build:api-docs
-
-      - name: Install MkDocs dependencies
-        run: pip3 install mkdocs mkdocs-techdocs-core
 
       - name: Build MkDocs for TechDocs
         run: mkdocs build --strict
 
-      - name: verify yarn dependency duplicates
+      - name: Verify yarn dependency duplicates
         run: node scripts/verify-lockfile-duplicates.js
 
-      - name: prettier
+      - name: Check formatting with Prettier
         run: yarn prettier:check
         working-directory: microsite
 
-      - name: build microsite
+      - name: Build microsite
         run: yarn build
         working-directory: microsite
