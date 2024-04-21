@@ -54,9 +54,7 @@ export async function command(opts: OptionValues) {
     );
   }
 
-  const checkablePackages = packages.filter(
-    e => e.packageJson.scripts?.['check:api'],
-  );
+  const checkablePackages = packages.filter(e => e.packageJson.scripts?.diff);
 
   try {
     const outputs = {
@@ -70,7 +68,7 @@ export async function command(opts: OptionValues) {
       const sinceCommands = since ? ['--since', since] : [];
       const { stdout } = await exec(
         'yarn',
-        ['check:api', '--ignore', '--json', ...sinceCommands],
+        ['diff', '--ignore', '--json', ...sinceCommands],
         {
           cwd: pkg.dir,
         },
@@ -81,12 +79,10 @@ export async function command(opts: OptionValues) {
       outputs.noop.push(...(result.noop ?? []));
     }
 
-    for (const pkg of packages.filter(
-      e => !e.packageJson.scripts?.['check:api'],
-    )) {
+    for (const pkg of packages.filter(e => !e.packageJson.scripts?.diff)) {
       outputs.warning?.push({
         apiName: `${pkg.dir}/`,
-        warning: 'No check:api script found in package.json',
+        warning: 'No diff script found in package.json',
       });
     }
 

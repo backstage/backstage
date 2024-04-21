@@ -80,12 +80,12 @@ function registerPackageCommand(program: Command) {
     );
 
   openApiCommand
-    .command('check')
+    .command('diff')
     .option('--ignore', 'Ignore linting failures and only log the results.')
     .option('--json', 'Output the results as JSON')
-    .option('--since <ref>', 'Check the API against a specific ref')
+    .option('--since <ref>', 'Diff the API against a specific ref')
     .action(
-      lazy(() => import('./package/schema/openapi/check').then(m => m.command)),
+      lazy(() => import('./package/schema/openapi/diff').then(m => m.command)),
     );
 }
 
@@ -144,17 +144,17 @@ function registerRepoCommand(program: Command) {
     );
 
   openApiCommand
-    .command('check')
+    .command('diff')
     .description(
-      'Check the repository against a specific ref, will run all package `check:api` scripts.',
+      'Diff the repository against a specific ref, will run all package `diff` scripts.',
     )
     .option(
       '--since <ref>',
-      'Check the API against a specific ref',
+      'Diff the API against a specific ref',
       'origin/master',
     )
     .action(
-      lazy(() => import('./repo/schema/openapi/check').then(m => m.command)),
+      lazy(() => import('./repo/schema/openapi/diff').then(m => m.command)),
     );
 }
 
