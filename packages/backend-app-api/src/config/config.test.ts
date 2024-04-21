@@ -71,9 +71,6 @@ describe('createConfigSecretEnumerator', () => {
   it('should find schema in a local package', async () => {
     mockDir.setContent({
       a: {
-        src: {
-          index: 'console.log("Hello, world!");',
-        },
         'package.json': JSON.stringify({
           name: 'a',
           dependencies: {
@@ -86,7 +83,7 @@ describe('createConfigSecretEnumerator', () => {
           c: {
             'package.json': JSON.stringify({
               name: 'c',
-              version: '2',
+              version: '1',
               configSchema: {
                 ...mockSchema,
                 title: 'c2',
@@ -102,7 +99,7 @@ describe('createConfigSecretEnumerator', () => {
           b: {
             'package.json': JSON.stringify({
               name: 'b',
-              version: '2',
+              version: '1',
               configSchema: {
                 ...mockSchema,
                 title: 'b2',
@@ -167,18 +164,13 @@ describe('createConfigSecretEnumerator', () => {
           },
         }),
       },
-      'package.json': JSON.stringify({
-        name: 'root',
-        workspaces: {
-          packages: ['a', 'b', 'c'],
-        },
-      }),
     });
     process.argv[1] = '';
-    process.chdir(path.join(mockDir.path, 'a', 'src'));
+    process.chdir(mockDir.path);
 
     const enumerate = await createConfigSecretEnumerator({
       logger,
+      dir: path.resolve(mockDir.path, 'a'),
     });
     const secrets = enumerate(
       mockServices.rootConfig({
@@ -294,12 +286,6 @@ describe('createConfigSecretEnumerator', () => {
           },
         }),
       },
-      'package.json': JSON.stringify({
-        name: 'root',
-        workspaces: {
-          packages: ['a', 'b', 'c'],
-        },
-      }),
     });
     process.argv[1] = 'a/src/index';
     process.chdir(mockDir.path);
