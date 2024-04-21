@@ -24,26 +24,29 @@ This approach is equally beneficial if you conceive an idea for a potentially im
 
 Should your plugin complement the Software Catalog rather than exist as a standalone entity (for instance, as an additional tab or a card within an "Overview" tab), you'll find comprehensive guidance on achieving this integration [here](integrating-plugin-into-software-catalog.md).
 
-## Modular Guides for Plugin Development
+## Guides for Plugin Development
 
-- **Plugins 101: Building Your First Plugin**
+### For Beginners: Building Your First Plugin
+This section is designed for those new to plugin development. It covers the basics and provides a foundation for more advanced topics.
+
+- **Plugin Basics**
+  - What is a plugin and how does it fit into the Backstage ecosystem?
   - Introduction to plugins and their roles within Backstage.
+
+- **Building Your First Plugin**
   - Step-by-step instructions on setting up your development environment and building your first plugin.
   - Configuration essentials.
 
-- **Plugins 102: Choosing Between a Module and a Plugin**
+### For Advanced Users: Enhancing and Maintaining Your Plugins
+This section caters to experienced developers looking to refine their skills or find specific advanced information quickly.
+
+- **Choosing Between a Module and a Plugin**
   - Understanding when to create a module instead of a new plugin.
   - Guidelines on extending existing plugins.
 
-- **Plugins 201: Preparing Your Plugin for Production**
+- **Advanced Plugin Development**
   - Best practices for ensuring code quality, integrating APIs, and handling databases.
-  - Performance tuning and monitoring your plugin.
-
-- **Plugins 202: Maintaining Your Plugin**
-  - How to publish and manage your plugin’s versions.
-  - Security updates and alignment with the main Backstage project.
-
-- **Plugins 301: Advanced Plugin Development**
+  - How to publish and manage your plugin’s versions, perform security updates, and align with the main Backstage project.
   - Integrating advanced functionalities like the permissions API and the discovery API.
   - Using URL readers, SCM integrations, and the proxy API.
 
