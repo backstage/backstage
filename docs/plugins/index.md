@@ -27,6 +27,7 @@ Should your plugin complement the Software Catalog rather than exist as a standa
 ## Guides for Plugin Development
 
 ### For Beginners: Building Your First Plugin
+
 This section is designed for those new to plugin development. It covers the basics and provides a foundation for more advanced topics.
 
 - **Plugins 101: Building Your First Plugin**
@@ -35,6 +36,7 @@ This section is designed for those new to plugin development. It covers the basi
   - Engaging with the community and stakeholders to propel your project.
 
 ### For Intermediate Users: Scaling Your Plugin
+
 This section helps developers prepare their plugins for broader adoption, emphasizing best practices in monitoring, logging, and performance.
 
 - **Plugins 201: Bringing Your Plugin to Production**
@@ -42,8 +44,9 @@ This section helps developers prepare their plugins for broader adoption, emphas
   - Best practices for monitoring and logging.
   - Understand plugin ownership and maintain an inner source mentality.
 
-### For Advanced Users: Mastering Plugin Development
-This is for those ready to tackle complex challenges and enhance their plugins with advanced features.
+### For Advanced Users: Deep Dive into Plugin Development
+
+This is for those ready to explore complex challenges and enhance their plugins with advanced features.
 
 - **Plugins 301: Advanced Topics in Plugin Development**
   - Enabling resource-level authorization and interfacing with external services, SCMs, or databases.
@@ -53,14 +56,16 @@ This is for those ready to tackle complex challenges and enhance their plugins w
 ## Additional Resources and Further Reading
 
 - **Real-world Implementations and Lessons**
+
   - Case studies and examples from the community.
   - Best practices derived from mature implementations.
 
 - **Resource Compendium**
+
   - [Backstage Glossary](https://backstage.io/docs/references/glossary) of key terms.
   - Recommended readings and tools for advanced developers.
 
 - **Certification and Learning Pathways**
   - Pathways to deepen your understanding and expertise in plugin development for Backstage.
 
-Stay tuned for detailed exploration and guidance in each of these modules.
+Stay tuned for detailed exploration and guidance in each of these modules. We're excited to accompany you on your plugin development journey!
