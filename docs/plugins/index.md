@@ -32,7 +32,7 @@ Should your plugin complement the Software Catalog rather than exist as a standa
   - Navigation Tips
 - **Foundation of Plugin Development**
   - Preparing Your Development Environment
-  - Architectural Overview of Backstage
+  - [Architectural Overview of Backstage](https://backstage.io/docs/overview/architecture-overview/)
   - Building Your First Plugin: A Detailed Walkthrough
 - **Plugin Architecture Deep Dive**
   - Exploring Frontend Components
@@ -62,4 +62,3 @@ Should your plugin complement the Software Catalog rather than exist as a standa
 - **Certification and Learning Pathways**
 
 Stay tuned for in-depth exploration and guidance on each of these topics.
-
