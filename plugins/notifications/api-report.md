@@ -175,8 +175,9 @@ export function useTitleCounter(): {
 };
 
 // @public (undocumented)
-export function useWebNotifications(): {
+export function useWebNotifications(enabled: boolean): {
   sendWebNotification: (options: {
+    id: string;
     title: string;
     description: string;
     link?: string;
