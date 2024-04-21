@@ -20,9 +20,11 @@ import {
   notificationsPlugin,
   NotificationsSidebarItem,
 } from '../src';
+import { signalsPlugin } from '@backstage/plugin-signals';
 
 createDevApp()
   .registerPlugin(notificationsPlugin)
+  .registerPlugin(signalsPlugin)
   .addPage({
     element: (
       <NotificationsPage

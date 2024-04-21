@@ -96,11 +96,14 @@ export const NotificationsSidebarItem = (props?: {
   useEffect(() => {
     if (!loading && !error && value) {
       setUnreadCount(value.unread);
-      if (titleCounterEnabled) {
-        setNotificationCount(value.unread);
-      }
     }
-  }, [loading, error, value, titleCounterEnabled, setNotificationCount]);
+  }, [loading, error, value]);
+
+  useEffect(() => {
+    if (titleCounterEnabled) {
+      setNotificationCount(unreadCount);
+    }
+  }, [titleCounterEnabled, unreadCount, setNotificationCount]);
 
   // TODO: Figure out if the count can be added to hasNotifications
   return (
