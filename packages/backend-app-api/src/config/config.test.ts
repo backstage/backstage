@@ -22,11 +22,9 @@ import { createMockDirectory } from '@backstage/backend-test-utils';
 
 // cwd must be restored
 const origDir = process.cwd();
-afterAll(() => {
-  process.chdir(origDir);
-});
 const argv = process.argv;
 afterAll(() => {
+  process.chdir(origDir);
   process.argv = argv;
 });
 
@@ -49,15 +47,19 @@ describe('createConfigSecretEnumerator', () => {
 
   const logger = mockServices.logger.mock();
 
+  beforeEach(() => {
+    process.chdir(__dirname);
+    process.argv = ['node', 'src/index'];
+  });
+
   afterEach(() => {
     mockDir.clear();
   });
   it('should enumerate secrets', async () => {
     const enumerate = await createConfigSecretEnumerator({
       logger,
-      dir: path.resolve('../../packages/backend'),
+      dir: path.resolve('../../../../packages/backend'),
     });
-    process.chdir(__dirname);
     const secrets = enumerate(
       mockServices.rootConfig({
         data: {
@@ -68,128 +70,6 @@ describe('createConfigSecretEnumerator', () => {
     expect(Array.from(secrets)).toEqual(['my-secret-password']);
   }, 20_000); // Bit higher timeout since we're loading all config schemas in the repo
 
-  it('should find schema in a local package', async () => {
-    mockDir.setContent({
-      a: {
-        'package.json': JSON.stringify({
-          name: 'a',
-          dependencies: {
-            b: '1',
-            c: '1',
-          },
-          configSchema: mockSchema,
-        }),
-        node_modules: {
-          c: {
-            'package.json': JSON.stringify({
-              name: 'c',
-              version: '1',
-              configSchema: {
-                ...mockSchema,
-                title: 'c2',
-                properties: {
-                  'secret-c': {
-                    type: 'string',
-                    visibility: 'secret',
-                  },
-                },
-              },
-            }),
-          },
-          b: {
-            'package.json': JSON.stringify({
-              name: 'b',
-              version: '1',
-              configSchema: {
-                ...mockSchema,
-                title: 'b2',
-                properties: {
-                  'secret-b': { type: 'string', visibility: 'secret' },
-                },
-              },
-            }),
-          },
-        },
-      },
-      b: {
-        'package.json': JSON.stringify({
-          name: 'b',
-          version: '1',
-          dependencies: {
-            c: '2',
-          },
-          configSchema: {
-            ...mockSchema,
-            title: 'b',
-            properties: {
-              'secret-b': {
-                type: 'string',
-                visibility: 'secret',
-              },
-            },
-          },
-        }),
-        node_modules: {
-          c: {
-            'package.json': JSON.stringify({
-              name: 'c',
-              version: '2',
-              configSchema: {
-                ...mockSchema,
-                title: 'c2',
-                properties: {
-                  'secret-c': {
-                    type: 'string',
-                    visibility: 'secret',
-                  },
-                },
-              },
-            }),
-          },
-        },
-      },
-      c: {
-        'package.json': JSON.stringify({
-          name: 'c',
-          version: '1',
-          configSchema: {
-            ...mockSchema,
-            title: 'c1',
-            properties: {
-              'property-c': {
-                type: 'string',
-                visibility: 'frontend',
-              },
-            },
-          },
-        }),
-      },
-    });
-    process.argv[1] = '';
-    process.chdir(mockDir.path);
-
-    const enumerate = await createConfigSecretEnumerator({
-      logger,
-      dir: path.resolve(mockDir.path, 'a'),
-    });
-    const secrets = enumerate(
-      mockServices.rootConfig({
-        data: {
-          secret: 'my-secret-password',
-          'property-c': 'not-secret',
-          'secret-b': 'secret-b',
-          'secret-c': 'secret-c',
-        },
-      }),
-    );
-
-    expect(Array.from(secrets)).toEqual([
-      'my-secret-password',
-      'secret-b',
-      'secret-c',
-    ]);
-  });
-
   it('should find schema from process arguments', async () => {
     mockDir.setContent({
       a: {
@@ -199,7 +79,6 @@ describe('createConfigSecretEnumerator', () => {
             b: '1',
             c: '1',
           },
-          configSchema: mockSchema,
         }),
         node_modules: {
           c: {
@@ -287,7 +166,7 @@ describe('createConfigSecretEnumerator', () => {
         }),
       },
     });
-    process.argv[1] = 'a/src/index';
+    process.argv = ['node', 'a/src/index'];
     process.chdir(mockDir.path);
 
     const enumerate = await createConfigSecretEnumerator({
@@ -304,11 +183,70 @@ describe('createConfigSecretEnumerator', () => {
       }),
     );
 
-    expect(Array.from(secrets)).toEqual([
-      'my-secret-password',
-      'secret-b',
-      'secret-c',
-    ]);
+    expect(Array.from(secrets)).toEqual(['secret-b', 'secret-c']);
+  });
+
+  it('should find schema in a local package', async () => {
+    mockDir.setContent({
+      a: {
+        'package.json': JSON.stringify({
+          name: 'a',
+          dependencies: {
+            b: '1',
+            c: '1',
+          },
+        }),
+        node_modules: {
+          c: {
+            'package.json': JSON.stringify({
+              name: 'c',
+              version: '2',
+              configSchema: {
+                ...mockSchema,
+                title: 'c2',
+                properties: {
+                  'secret-c': {
+                    type: 'string',
+                    visibility: 'secret',
+                  },
+                },
+              },
+            }),
+          },
+          b: {
+            'package.json': JSON.stringify({
+              name: 'b',
+              version: '2',
+              configSchema: {
+                ...mockSchema,
+                title: 'b2',
+                properties: {
+                  'secret-b': { type: 'string', visibility: 'secret' },
+                },
+              },
+            }),
+          },
+        },
+      },
+    });
+
+    process.chdir(path.join(mockDir.path, 'a'));
+    process.argv = ['node', 'src/index'];
+
+    const enumerate = await createConfigSecretEnumerator({
+      logger,
+    });
+    const secrets = enumerate(
+      mockServices.rootConfig({
+        data: {
+          'property-c': 'not-secret',
+          'secret-b': 'secret-b',
+          'secret-c': 'secret-c',
+        },
+      }),
+    );
+
+    expect(Array.from(secrets)).toEqual(['secret-b', 'secret-c']);
   });
 
   it('should enumerate secrets with explicit schema', async () => {

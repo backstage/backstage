@@ -69,6 +69,7 @@ export async function collectConfigSchemas(
           },
         );
       } catch {
+        console.log('unable to load', name, parentPath);
         // We can somewhat safely ignore packages that don't export package.json,
         // as they are likely not part of the Backstage ecosystem anyway.
       }
