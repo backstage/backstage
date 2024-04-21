@@ -25,7 +25,8 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@v2
+      - name: Checkout code
+        uses: actions/checkout@v2
 
       - name: Setup Node.js
         uses: actions/setup-node@v2
@@ -35,7 +36,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v2
         with:
-          python-version: '3.8'  # Specify the version you need
+          python-version: '3.8'  # This ensures the specified Python version is used
 
       - name: Upgrade pip
         run: python -m pip install --upgrade pip
@@ -54,12 +55,14 @@ jobs:
 
       - name: Build API reference
         run: yarn build:api-docs
+        working-directory: microsite
 
       - name: Build MkDocs for TechDocs
         run: mkdocs build --strict
 
       - name: Verify yarn dependency duplicates
         run: node scripts/verify-lockfile-duplicates.js
+        working-directory: microsite
 
       - name: Check formatting with Prettier
         run: yarn prettier:check
