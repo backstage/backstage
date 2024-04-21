@@ -4,7 +4,7 @@ title: Introduction to Plugins
 description: Learn about integrating various infrastructure and software development tools into Backstage through plugins.
 ---
 
-Backstage orchestrates a cohesive single-page application by seamlessly integrating a diverse set of plugins.
+Backstage orchestrates a cohesive single-page application by seamlessly integrating various plugins.
 
 Our vision for the plugin ecosystem champions flexibility, empowering you to incorporate a broad spectrum of infrastructure and software development tools into Backstage as plugins. Adherence to stringent [design guidelines](../dls/design.md) guarantees a consistent and intuitive user experience across the entire plugin landscape.
 
@@ -29,26 +29,26 @@ Should your plugin complement the Software Catalog rather than exist as a standa
 ### For Beginners: Building Your First Plugin
 This section is designed for those new to plugin development. It covers the basics and provides a foundation for more advanced topics.
 
-- **Plugin Basics**
-  - What is a plugin and how does it fit into the Backstage ecosystem?
-  - Introduction to plugins and their roles within Backstage.
+- **Plugins 101: Building Your First Plugin**
+  - Why build plugins? Introduction to the value and impact of plugins within Backstage.
+  - Detailed guidance on starting and iterating on a plugin development project.
+  - Engaging with the community and stakeholders to propel your project.
 
-- **Building Your First Plugin**
-  - Step-by-step instructions on setting up your development environment and building your first plugin.
-  - Configuration essentials.
+### For Intermediate Users: Scaling Your Plugin
+This section helps developers prepare their plugins for broader adoption, emphasizing best practices in monitoring, logging, and performance.
 
-### For Advanced Users: Enhancing and Maintaining Your Plugins
-This section caters to experienced developers looking to refine their skills or find specific advanced information quickly.
+- **Plugins 201: Bringing Your Plugin to Production**
+  - Strategies for scaling your plugin for greater adoption.
+  - Best practices for monitoring and logging.
+  - Understand plugin ownership and maintain an inner source mentality.
 
-- **Choosing Between a Module and a Plugin**
-  - Understanding when to create a module instead of a new plugin.
-  - Guidelines on extending existing plugins.
+### For Advanced Users: Mastering Plugin Development
+This is for those ready to tackle complex challenges and enhance their plugins with advanced features.
 
-- **Advanced Plugin Development**
-  - Best practices for ensuring code quality, integrating APIs, and handling databases.
-  - How to publish and manage your plugin’s versions, perform security updates, and align with the main Backstage project.
-  - Integrating advanced functionalities like the permissions API and the discovery API.
-  - Using URL readers, SCM integrations, and the proxy API.
+- **Plugins 301: Advanced Topics in Plugin Development**
+  - Enabling resource-level authorization and interfacing with external services, SCMs, or databases.
+  - In-depth exploration of fostering an inner source mentality and understanding adoption dynamics.
+  - Decision-making frameworks: choosing between developing a new plugin or utilizing an existing open-source solution.
 
 ## Additional Resources and Further Reading
 
