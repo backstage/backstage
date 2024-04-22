@@ -654,6 +654,8 @@ how to use them in the Scaffolder templates. It's important to mention that Back
 native filters from the Nunjucks library. For a complete list of these native filters and their usage,
 refer to the [Nunjucks documentation](https://mozilla.github.io/nunjucks/templating.html#builtin-filters).
 
+To create your own custom filters, look to the section [Custom Filters](#custom-filters) hereafter.
+
 ### parseRepoUrl
 
 The `parseRepoUrl` filter parse a repository URL into
@@ -738,3 +740,26 @@ The `projectSlug` filter generates a project slug from a repository URL
 
 - **Input**: `github.com?repo=backstage&org=backstage`
 - **Output**: `backstage/backstage`
+
+## Custom Filters
+
+Whenever it is needed to extend the built-in filters with yours `${{ parameters.name | my-filter1 | my-filter2 | etc }}`, then you have the option to add them using the property `addTemplateFilters` of the type `RouterOptions` that you typically define
+
+```ts title="plugins/scaffolder-backend/src/service/router.ts"
+export interface RouterOptions {
+  ...
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
+}
+```
+
+The `addTemplateFilters` function accepts the filters as a JSON array of records where each record starts
+with the name of the filter, get as input a list of `JSON value` arguments and will return a JsonValue.
+
+```ts title="plugins/scaffolder-node/stc/types.ts"
+export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
+```
+
+OR
+
+function of the `ScaffolderTemplatingExtensionPoint` interface
+addTemplateFilters(filters: Record<string, TemplateFilter>): void;
