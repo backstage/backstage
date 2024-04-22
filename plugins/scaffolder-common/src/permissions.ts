@@ -50,6 +50,18 @@ export const actionExecutePermission = createPermission({
 });
 
 /**
+ * This permission is used to authorize actions that involve access the action registry
+ *
+ * @alpha
+ */
+export const actionReadPermission = createPermission({
+  name: 'scaffolder.action.read',
+  attributes: {
+    action: 'read',
+  },
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
+});
+/**
  * This permission is used to authorize actions that involve reading
  * one or more parameters from a template.
  *
@@ -123,9 +135,7 @@ export const taskCreatePermission = createPermission({
  */
 export const taskCancelPermission = createPermission({
   name: 'scaffolder.task.cancel',
-  attributes: {
-    action: 'update',
-  },
+  attributes: {},
   resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
 });
 
@@ -152,7 +162,10 @@ export const scaffolderTemplatePermissions = [
  * List of the scaffolder permissions that are associated with scaffolder actions.
  * @alpha
  */
-export const scaffolderActionPermissions = [actionExecutePermission];
+export const scaffolderActionPermissions = [
+  actionExecutePermission,
+  actionReadPermission,
+];
 
 /**
  * List of the scaffolder permissions that are associated with scaffolder tasks.

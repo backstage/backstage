@@ -30,7 +30,12 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
+import {
+  InputError,
+  NotAllowedError,
+  NotFoundError,
+  stringifyError,
+} from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
@@ -43,10 +48,16 @@ import {
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
   scaffolderActionPermissions,
   scaffolderTemplatePermissions,
+  taskCancelPermission,
+  taskCreatePermission,
+  taskReadPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
+  scaffolderTaskPermissions,
+  actionReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -68,7 +79,10 @@ import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
   createPermissionIntegrationRouter,
@@ -90,6 +104,11 @@ import {
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 
+type ScaffolderPermissionRuleInput =
+  | TemplatePermissionRuleInput
+  | ActionPermissionRuleInput
+  | TaskPermissionRuleInput;
+
 /**
  *
  * @public
@@ -103,7 +122,7 @@ export type TemplatePermissionRuleInput<
   TParams
 >;
 function isTemplatePermissionRuleInput(
-  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
+  permissionRule: ScaffolderPermissionRuleInput,
 ): permissionRule is TemplatePermissionRuleInput {
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
 }
@@ -121,11 +140,28 @@ export type ActionPermissionRuleInput<
   TParams
 >;
 function isActionPermissionRuleInput(
-  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
+  permissionRule: ScaffolderPermissionRuleInput,
 ): permissionRule is ActionPermissionRuleInput {
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
 }
 
+/**
+ *
+ * @public
+ */
+export type TaskPermissionRuleInput<
+  TParams extends PermissionRuleParams = PermissionRuleParams,
+> = PermissionRule<
+  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
+  {},
+  typeof RESOURCE_TYPE_SCAFFOLDER_TASK,
+  TParams
+>;
+function isTaskPermissionRuleInput(
+  permissionRule: ScaffolderPermissionRuleInput,
+): permissionRule is TaskPermissionRuleInput {
+  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TASK;
+}
 /**
  * RouterOptions
  *
@@ -154,9 +190,7 @@ export interface RouterOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionsService;
-  permissionRules?: Array<
-    TemplatePermissionRuleInput | ActionPermissionRuleInput
-  >;
+  permissionRules?: Array<ScaffolderPermissionRuleInput>;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
@@ -384,12 +418,14 @@ export async function createRouter(
   const actionRules: ActionPermissionRuleInput[] = Object.values(
     scaffolderActionRules,
   );
+  const taskRules: TaskPermissionRuleInput[] = [];
 
   if (permissionRules) {
     templateRules.push(
       ...permissionRules.filter(isTemplatePermissionRuleInput),
     );
     actionRules.push(...permissionRules.filter(isActionPermissionRuleInput));
+    taskRules.push(...permissionRules.filter(isTaskPermissionRuleInput));
   }
 
   const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
@@ -405,6 +441,11 @@ export async function createRouter(
         resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
         permissions: scaffolderActionPermissions,
         rules: actionRules,
+      },
+      {
+        resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+        permissions: scaffolderTaskPermissions,
+        rules: taskRules,
       },
     ],
   });
@@ -445,7 +486,21 @@ export async function createRouter(
         });
       },
     )
-    .get('/v2/actions', async (_req, res) => {
+    .get('/v2/actions', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+
+      if (permissions) {
+        const authorizationResponse = (
+          await permissions?.authorizeConditional(
+            [{ permission: actionReadPermission }],
+            { credentials: credentials },
+          )
+        )[0];
+
+        if (authorizationResponse.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError();
+        }
+      }
       const actionsList = actionRegistry.list().map(action => {
         return {
           id: action.id,
@@ -463,6 +518,19 @@ export async function createRouter(
       });
 
       const credentials = await httpAuth.credentials(req);
+      if (permissions) {
+        const authorizationResponse = (
+          await permissions?.authorizeConditional(
+            [{ permission: taskCreatePermission }],
+            { credentials: credentials },
+          )
+        )[0];
+
+        if (authorizationResponse.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError();
+        }
+      }
+
       const { token } = await auth.getPluginRequestToken({
         onBehalfOf: credentials,
         targetPluginId: 'catalog',
@@ -539,6 +607,21 @@ export async function createRouter(
       res.status(201).json({ id: result.taskId });
     })
     .get('/v2/tasks', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+
+      if (permissions) {
+        const authorizationResponse = (
+          await permissions?.authorizeConditional(
+            [{ permission: taskReadPermission }],
+            { credentials: credentials },
+          )
+        )[0];
+
+        if (authorizationResponse.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError();
+        }
+      }
+
       const [userEntityRef] = [req.query.createdBy].flat();
 
       if (
@@ -561,6 +644,21 @@ export async function createRouter(
       res.status(200).json(tasks);
     })
     .get('/v2/tasks/:taskId', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+
+      if (permissions) {
+        const authorizationResponse = (
+          await permissions?.authorizeConditional(
+            [{ permission: taskReadPermission }],
+            { credentials: credentials },
+          )
+        )[0];
+
+        if (authorizationResponse.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError();
+        }
+      }
+
       const { taskId } = req.params;
       const task = await taskBroker.get(taskId);
       if (!task) {
@@ -571,11 +669,43 @@ export async function createRouter(
       res.status(200).json(task);
     })
     .post('/v2/tasks/:taskId/cancel', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+
+      if (permissions) {
+        const authorizationResponses = await permissions?.authorizeConditional(
+          [
+            { permission: taskCancelPermission },
+            { permission: taskReadPermission },
+          ],
+          { credentials: credentials },
+        );
+        // Requires both read and cancel permissions
+        for (const response of authorizationResponses) {
+          if (response.result === AuthorizeResult.DENY) {
+            throw new NotAllowedError();
+          }
+        }
+      }
+
       const { taskId } = req.params;
       await taskBroker.cancel?.(taskId);
       res.status(200).json({ status: 'cancelled' });
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+
+      if (permissions) {
+        const authorizationResponse = (
+          await permissions?.authorizeConditional(
+            [{ permission: taskReadPermission }],
+            { credentials: credentials },
+          )
+        )[0];
+
+        if (authorizationResponse.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError();
+        }
+      }
       const { taskId } = req.params;
       const after =
         req.query.after !== undefined ? Number(req.query.after) : undefined;
@@ -624,6 +754,20 @@ export async function createRouter(
       });
     })
     .get('/v2/tasks/:taskId/events', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+
+      if (permissions) {
+        const authorizationResponse = (
+          await permissions?.authorizeConditional(
+            [{ permission: taskReadPermission }],
+            { credentials: credentials },
+          )
+        )[0];
+
+        if (authorizationResponse.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError();
+        }
+      }
       const { taskId } = req.params;
       const after = Number(req.query.after) || undefined;
 
@@ -654,6 +798,21 @@ export async function createRouter(
       });
     })
     .post('/v2/dry-run', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+
+      if (permissions) {
+        const authorizationResponse = (
+          await permissions?.authorizeConditional(
+            [{ permission: taskCreatePermission }],
+            { credentials: credentials },
+          )
+        )[0];
+
+        if (authorizationResponse.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError();
+        }
+      }
+
       const bodySchema = z.object({
         template: z.unknown(),
         values: z.record(z.unknown()),
@@ -670,8 +829,6 @@ export async function createRouter(
       if (!(await templateEntityV1beta3Validator.check(template))) {
         throw new InputError('Input template is not a template');
       }
-
-      const credentials = await httpAuth.credentials(req);
 
       const { token } = await auth.getPluginRequestToken({
         onBehalfOf: credentials,
