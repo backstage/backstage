@@ -51,16 +51,14 @@ describe('readHarnessConfig', () => {
     const output = readHarnessConfig(
       buildConfig({
         host: 'a.com',
-        baseUrl: 'https://a.com/route/api',
-        username: 'u',
         token: 'p',
+        apiKey: 'a',
       }),
     );
     expect(output).toEqual({
       host: 'a.com',
-      baseUrl: 'https://a.com/route/api',
-      username: 'u',
       token: 'p',
+      apiKey: 'a',
     });
   });
 
@@ -72,8 +70,6 @@ describe('readHarnessConfig', () => {
     );
     expect(output).toEqual({
       host: 'a.com',
-      baseUrl: 'https://a.com',
-      username: undefined,
       token: undefined,
     });
   });
@@ -95,14 +91,11 @@ describe('readHarnessConfig', () => {
       readHarnessConfig(
         await buildFrontendConfig({
           host: 'a.com',
-          baseUrl: 'https://a.com/route',
-          username: 'u',
           token: 'p',
         }),
       ),
     ).toEqual({
       host: 'a.com',
-      baseUrl: 'https://a.com/route',
     });
   });
 });

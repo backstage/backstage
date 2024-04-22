@@ -552,7 +552,7 @@ export type GiteaIntegrationConfig = {
   host: string;
   baseUrl?: string;
   username?: string;
-  token?: string;
+  password?: string;
 };
 
 // @public
@@ -711,8 +711,7 @@ export class HarnessIntegration implements ScmIntegration {
 // @public
 export type HarnessIntegrationConfig = {
   host: string;
-  baseUrl?: string;
-  username?: string;
+  apiKey?: string;
   token?: string;
 };
 

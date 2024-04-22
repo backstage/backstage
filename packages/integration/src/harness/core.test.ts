@@ -76,20 +76,16 @@ describe('Harness code core', () => {
       ).toBeUndefined();
     });
 
-    it('adds basic auth when username and token are specified', () => {
+    it('adds basic auth when apikey and token are specified', () => {
       const authRequest: HarnessIntegrationConfig = {
         host: 'gerrit.com',
-        username: 'username',
         token: 'P',
+        apiKey: 'a',
       };
 
-      const basicAuthentication = `basic ${Buffer.from(
-        `${authRequest.username}:${authRequest.token}`,
-      ).toString('base64')}`;
-
       expect(
-        (getHarnessRequestOptions(authRequest).headers as any).Authorization,
-      ).toEqual(basicAuthentication);
+        (getHarnessRequestOptions(authRequest).headers as any)['x-api-key'],
+      ).toEqual('a');
     });
   });
 });

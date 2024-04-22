@@ -25,8 +25,6 @@ describe('HarnessIntegration', () => {
           harness: [
             {
               host: 'app.harness.io',
-              username: 'git',
-              baseUrl: 'https://app.harness.io/route',
               token: '1234',
             },
           ],
@@ -35,9 +33,6 @@ describe('HarnessIntegration', () => {
     });
     expect(integrations.list().length).toBe(1);
     expect(integrations.list()[0].config.host).toBe('app.harness.io');
-    expect(integrations.list()[0].config.baseUrl).toBe(
-      'https://app.harness.io/route',
-    );
   });
 
   it('returns the basics', () => {

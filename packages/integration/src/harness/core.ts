@@ -34,7 +34,7 @@ export function getHarnessEditContentsUrl(
   url: string,
 ) {
   try {
-    const baseUrl = config.baseUrl ?? `https://${config.host}`;
+    const baseUrl = `https://${config.host}`;
     const [
       _blank,
       _ng,
@@ -61,9 +61,8 @@ export function getHarnessEditContentsUrl(
 }
 
 /**
- * Given a URL pointing to a file, returns an api URL
- * for fetching the contents of the data.
- *
+ * Given a file path URL,
+ * it returns an API URL which returns the contents of the file.
  * @remarks
  *
  * Converts
@@ -79,7 +78,7 @@ export function getHarnessFileContentsUrl(
   url: string,
 ) {
   try {
-    const baseUrl = config.baseUrl ?? `https://${config.host}`;
+    const baseUrl = `https://${config.host}`;
     const [
       _blank,
       _ng,
@@ -115,16 +114,14 @@ export function getHarnessRequestOptions(config: HarnessIntegrationConfig): {
   headers?: Record<string, string>;
 } {
   const headers: Record<string, string> = {};
-  const { username, token } = config;
+  const { token, apiKey } = config;
 
   if (!token) {
     return headers;
   }
 
-  if (username) {
-    headers.Authorization = `basic ${Buffer.from(
-      `${username}:${token}`,
-    ).toString('base64')}`;
+  if (apiKey) {
+    headers['x-api-key'] = apiKey;
   } else {
     headers.Authorization = `Bearer ${token}`;
   }

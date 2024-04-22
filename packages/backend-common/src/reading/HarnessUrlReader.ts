@@ -118,7 +118,7 @@ export class HarnessUrlReader implements UrlReader {
   toString() {
     const { host } = this.integration.config;
     return `harness{host=${host},authed=${Boolean(
-      this.integration.config.token,
+      this.integration.config.token || this.integration.config.apiKey,
     )}}`;
   }
 }

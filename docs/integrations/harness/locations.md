@@ -20,14 +20,14 @@ integrations:
   harness:
     - host: app.harness.io
       token: ${HARNESS_CODE_BEARER_TOKEN}
+      apiKey: ${HARNESS_CODE_APIKEY}
 ```
 
-Directly under the `harnessCode` key is a list of provider configurations, where you
-can list the Gitea instances you want to be able to fetch
-data from. Each entry is a structure with up to four elements:
+Directly under the `harness` key is a list of provider configurations, where you
+can list the Harness instances you want to be able to fetch
+
+check out https://developer.harness.io/docs/platform/automation/api/add-and-manage-api-keys/ for more information
 
 - `host`: The host of the Harness Code instance that you want to match on.
-- `baseUrl` (optional): Needed if the Harness Code instance is not reachable at
-  the base of the `host` option (e.g. `https://app.harness.io`). This is the address that you would open in a browser.
-- `username` (optional): The gitea username to use in API requests.
 - `token` (optional): The password or api token to authenticate with.
+- `apiKey` (optional): The apiKey to authenticate with.

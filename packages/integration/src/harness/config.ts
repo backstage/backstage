@@ -15,11 +15,10 @@
  */
 
 import { Config } from '@backstage/config';
-import { trimEnd } from 'lodash';
 import { isValidHost } from '../helpers';
 
 /**
- * The configuration for a single Gitea integration.
+ * The configuration for a single Harness integration.
  *
  * @public
  */
@@ -29,22 +28,13 @@ export type HarnessIntegrationConfig = {
    */
   host: string;
   /**
-   * The optional base URL of the Harness code instance. It is assumed that https
-   * is used and that the base path is "/" on the host. If that is not the
-   * case set the complete base url to the Harness code instance, e.g.
-   * "https://harnesscode.website.com/". This is the url that you would open
-   * in a browser.
-   */
-  baseUrl?: string;
-  /**
-   * The username to use for requests to harness code.
-   */
-  username?: string;
-
-  /**
    * The password or http token to use for authentication.
    */
   token?: string;
+  /**
+   * The API key to use for authentication.
+   */
+  apiKey?: string;
 };
 
 /**
@@ -55,24 +45,20 @@ export type HarnessIntegrationConfig = {
 export function readHarnessConfig(config: Config): HarnessIntegrationConfig {
   const host = config.getString('host');
   let baseUrl = config.getOptionalString('baseUrl');
-  const username = config.getOptionalString('username');
   const token = config.getOptionalString('token');
+  const apiKey = config.getOptionalString('apiKey');
+
   if (!isValidHost(host)) {
     throw new Error(
       `Invalid Harness Code integration config, '${host}' is not a valid host`,
     );
   }
 
-  if (baseUrl) {
-    baseUrl = trimEnd(baseUrl, '/');
-  } else {
-    baseUrl = `https://${host}`;
-  }
+  baseUrl = `https://${host}`;
 
   return {
     host,
-    baseUrl,
-    username,
+    apiKey,
     token,
   };
 }
