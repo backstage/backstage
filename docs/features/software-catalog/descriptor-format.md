@@ -1276,7 +1276,7 @@ which the domain is a part, e.g. `audio`. This field is optional.
 
 | [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
-| [`Domain`](#kind-domain)                | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
+| [`Domain`](#kind-domain) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
 ## Kind: Location
 
