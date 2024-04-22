@@ -743,23 +743,74 @@ The `projectSlug` filter generates a project slug from a repository URL
 
 ## Custom Filters
 
-Whenever it is needed to extend the built-in filters with yours `${{ parameters.name | my-filter1 | my-filter2 | etc }}`, then you have the option to add them using the property `addTemplateFilters` of the type `RouterOptions` that you typically define
+Whenever it is needed to extend the built-in filters with yours `${{ parameters.name | my-filter1 | my-filter2 | etc }}`, then you can add them
+using the property `addTemplateFilters` that you typically define using the `createRouter()` function of the `Scaffolder plugin`
 
-```ts title="plugins/scaffolder-backend/src/service/router.ts"
-export interface RouterOptions {
+```ts title="packages/backend/src/plugins/scaffolder.ts"
+export default async function createPlugin({
+  logger,
+  config,
+}: PluginEnvironment): Promise<Router> {
   ...
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-}
+  return await createRouter({
+    logger,
+    config,
+
+    additionalTemplateFilters: {
+        <YOUR_FILTERS>
+    }
+  });
 ```
 
-The `addTemplateFilters` function accepts the filters as a JSON array of records where each record starts
-with the name of the filter, get as input a list of `JSON value` arguments and will return a JsonValue.
+The `addTemplateFilters` property accepts a `Record`
 
-```ts title="plugins/scaffolder-node/stc/types.ts"
+```ts title="plugins/scaffolder-backend/src/service/Router.ts"
+  additionalTemplateFilters?: Record<string, TemplateFilter>;
+```
+
+where the first parameter is the name of the filter and the second `TemplateFilter` receives a list of `JSON value` arguments. The `templateFilter()` function should return a JsonValue (Json array, object or primitive).
+
+```ts title="plugins/scaffolder-node/src/types.ts"
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 ```
 
-OR
+From a practical coding point of view, you will translate that into the following snippet code
 
-function of the `ScaffolderTemplatingExtensionPoint` interface
-addTemplateFilters(filters: Record<string, TemplateFilter>): void;
+```ts title="packages/backend/src/plugins/scaffolder.ts"
+...
+  return await createRouter({
+    logger: env.logger,
+    config: env.config,
+    additionalTemplateFilters: {
+      base64: (...args: JsonValue[]) => btoa(args.join("")),
+      betterFilter: (...args: JsonValue[]) => { return `This is a much better string than "${args}", don't you think?` }
+    },
+});
+```
+
+And within your template, you will be able to use the filters like this
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: test
+  title: Test
+spec:
+  owner: user:guest
+  type: service
+
+  parameters:
+    - title: Test custom filters
+      properties:
+        userName:
+          title: Name of the user
+          type: string
+
+  steps:
+    - id: debug
+      name: debug
+      action: debug:log
+      input:
+        message: ${{ parameters.userName | betterFilter | base64 }}
+```
