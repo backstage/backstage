@@ -178,7 +178,7 @@ async init({ myDependency }) {
 
 And then you're free to call it and pass it into your router as needed.
 
-Backstage provides a bunch of `coreServices` out of box, see the more in depth docs [here](https://backstage.io/docs/backend-system/core-services/index).
+Backstage provides a bunch of `coreServices` out of box, see the more in depth docs [here](../backend-system/core-services/01-index.md).
 
 ## Making Use of a Database
 
@@ -231,17 +231,23 @@ The Backstage backend also offers a core service to access the user's identity. 
 
 ```ts title="plugins/carmen-backend/src/plugin.ts"
 deps: {
-  // highlight-next-line
-  identity: coreServices.identity,
+  // highlight-start
+  httpAuth: coreServices.httpAuth,
+  userInfo: coreServices.userInfo
+  // highlight-end
 },
 async init({
-  // highlight-next-line
-  identity,
+  // highlight-start
+  httpAuth,
+  userInfo,
+  // highlight-end
 }) {
   httpRouter.use(
     await createRouter({
-      // highlight-next-line
-      identity,
+      // highlight-start
+      httpAuth,
+      userInfo,
+      // highlight-end
       logger,
     }),
   );
@@ -251,14 +257,32 @@ async init({
 The plugin can then extract the identity from the request.
 
 ```ts
+export interface RouterOptions {
+  logger: LoggerService;
+  // highlight-start
+  userInfo: UserInfoService;
+  httpAuth: HttpAuthService;
+  // highlight-end
+}
+
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   // ...
-  const { identity } = options;
+  const { userInfo, httpAuth } = options;
 
-  router.post('/example', async (req, res) => {
-    const userIdentity = await identity.getIdentity({ request: req });
+  router.post('/me', async (request, response) => {
+    const credentials = await httpAuth.credentials(request)
+    const userInfo = await userInfo.getUserInfo(credentials);
+    response.json(
+      {
+        // The catalog entity ref of the user.
+        userEntityRef: userInfo.userEntityRef,
+
+        // The list of entities that this user or any teams this user is a part of owns.
+        ownershipEntityRefs: userInfo.ownershipEntityRefs
+      },
+    );
     ...
   });
 ```
