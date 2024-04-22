@@ -233,13 +233,15 @@ The Backstage backend also offers a core service to access the user's identity. 
 deps: {
   // highlight-start
   httpAuth: coreServices.httpAuth,
-  userInfo: coreServices.userInfo
+  userInfo: coreServices.userInfo,
+  auth: coreServices.auth,
   // highlight-end
 },
 async init({
   // highlight-start
   httpAuth,
   userInfo,
+  auth,
   // highlight-end
 }) {
   httpRouter.use(
@@ -247,6 +249,7 @@ async init({
       // highlight-start
       httpAuth,
       userInfo,
+      auth,
       // highlight-end
       logger,
     }),
@@ -262,6 +265,7 @@ export interface RouterOptions {
   // highlight-start
   userInfo: UserInfoService;
   httpAuth: HttpAuthService;
+  auth: AuthService;
   // highlight-end
 }
 
@@ -269,7 +273,7 @@ export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   // ...
-  const { userInfo, httpAuth } = options;
+  const { userInfo, httpAuth, auth } = options;
 
   router.post('/me', async (request, response) => {
     if (!auth.isPrincipal(credentials, 'user')) {
