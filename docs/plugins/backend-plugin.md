@@ -274,7 +274,7 @@ export async function createRouter(
   router.post('/me', async (request, response) => {
     if (!auth.isPrincipal(credentials, 'user')) {
       // Block requests that aren't from the user, this can include services or external callers.
-      response.status(401);
+      return response.status(401);
     }
     const credentials = await httpAuth.credentials(request)
     const userInfo = await userInfo.getUserInfo(credentials);
