@@ -40,7 +40,7 @@ self-signed certificate `gitea cert --host localhost -ca` trusted by a CA author
 When done, you can create a template which:
 
 - Declare the `RepoUrlPicker` within the `spec/parameters` section to select the gitea host and to provide the name of the repository
-- Add an enum list allowing the user to define the visibility about the repository to be created: `public` or `private`. If this field is omitted, `public` is then used by the action.
+- Add an `enum` list allowing the user to define the visibility about the repository to be created: `public` or `private`. If this field is omitted, `public` is then used by the action.
 - Include in a step the action: `publish:gitea`
 
 **Warning**: The list of the `allowedOwners` of the `repoUrlPicker` must match the list of the `organizations` which are available on the gitea host !
