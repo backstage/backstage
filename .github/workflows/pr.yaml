@@ -12,7 +12,7 @@ on:
 
 jobs:
   sync:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     # Avoid running on issue comments
     if: github.repository == 'backstage/backstage' && ( github.event.pull_request || github.event.issue.pull_request )

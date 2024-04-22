@@ -14,7 +14,7 @@ jobs:
   # This step only runs yarn install to make sure that an exact match is available
   # in the cache. The two following verify and tests jobs then always install from cache.
   install:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     strategy:
       fail-fast: false
@@ -48,7 +48,7 @@ jobs:
   # The verify jobs runs all the verification that doesn't require a
   # diff towards master, since it takes some time to fetch that.
   verify:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     needs: install
 
@@ -143,7 +143,7 @@ jobs:
   # The test job runs all tests as well as any verification step that
   # requires a diff towards master.
   test:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     needs: install
 

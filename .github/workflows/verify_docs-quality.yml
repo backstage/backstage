@@ -8,7 +8,7 @@ on:
 
 jobs:
   check-all-files:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     steps:
       - name: Harden Runner

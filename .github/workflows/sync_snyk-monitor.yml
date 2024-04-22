@@ -22,7 +22,7 @@ jobs:
     permissions:
       contents: read # for actions/checkout to fetch code
       security-events: write # for github/codeql-action/upload-sarif to upload SARIF results
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0

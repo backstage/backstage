@@ -20,7 +20,7 @@ jobs:
       NODE_OPTIONS: --max-old-space-size=4096
       UFFIZZI_URL: https://app.uffizzi.com
     name: Build PR image
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     if: ${{ github.event_name != 'pull_request' || github.event.action != 'closed' }}
     outputs:
       tags: ${{ steps.meta.outputs.tags }}
@@ -79,7 +79,7 @@ jobs:
 
   render-kustomize:
     name: Render Kustomize Manifests
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     needs:
       - build-backstage
     steps:
@@ -112,7 +112,7 @@ jobs:
 
   delete-preview:
     name: Call for Preview Deletion
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     if: ${{ github.event.action == 'closed' }}
     steps:
       - name: Harden Runner

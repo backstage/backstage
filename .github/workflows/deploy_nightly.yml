@@ -7,7 +7,7 @@ jobs:
   build:
     if: github.repository == 'backstage/backstage' # prevent running on forks
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     env:
       CI: true

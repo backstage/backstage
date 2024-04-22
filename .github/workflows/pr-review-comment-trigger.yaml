@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   trigger:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     # The "PR Review Comment" workflow will check the success status of this workflow and only mark
     # the PR for re-review if this workflow was successful, which is when the author leaves a review comment.

@@ -11,7 +11,7 @@ jobs:
   deploy-microsite-and-storybook:
     permissions:
       contents: write # for JamesIves/github-pages-deploy-action to push changes in repo
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     env:
       CI: true

@@ -7,7 +7,7 @@ on:
 
 jobs:
   generate-changeset:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     if: github.actor == 'renovate[bot]' && github.repository == 'backstage/backstage'
     steps:
       - name: Harden Runner

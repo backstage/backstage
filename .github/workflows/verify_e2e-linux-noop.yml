@@ -20,7 +20,7 @@ permissions:
 
 jobs:
   noop:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     strategy:
       matrix:

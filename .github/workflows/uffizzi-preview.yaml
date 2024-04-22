@@ -10,7 +10,7 @@ on:
 jobs:
   cache-manifests-file:
     name: Cache Manifests File
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     permissions:
       # "If you specify the access for any of these scopes, all of those that are not specified are set to none."
@@ -99,7 +99,7 @@ jobs:
       contents: read
       pull-requests: write
       id-token: write
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4
@@ -206,7 +206,7 @@ jobs:
     needs:
       - cache-manifests-file
     if: ${{ needs.cache-manifests-file.outputs.action == 'closed' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     steps:
       - name: Checkout
         uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4

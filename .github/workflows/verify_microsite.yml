@@ -14,7 +14,7 @@ permissions:
 
 jobs:
   build-microsite:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     env:
       CI: true

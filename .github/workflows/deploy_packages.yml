@@ -11,7 +11,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     outputs:
       needs_release: ${{ steps.release_check.outputs.needs_release }}
@@ -132,7 +132,7 @@ jobs:
 
     if: needs.build.outputs.needs_release == 'true' || inputs.force_release == true
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
 
     strategy:
       matrix:

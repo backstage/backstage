@@ -23,7 +23,7 @@ permissions:
 jobs:
   noop:
     name: Accessibility
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-latest-16-cores
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
