@@ -4,7 +4,7 @@ author: Dynatrace
 authorUrl: https://github.com/dynatrace
 category: Monitoring
 description: View problem and synthetic information for services in your software catalog.
-documentation: https://github.com/backstage/backstage/tree/master/plugins/dynatrace
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/dynatrace/plugins/dynatrace
 iconUrl: /img/dynatrace.svg
 npmPackageName: '@backstage/plugin-dynatrace'
 tags:
