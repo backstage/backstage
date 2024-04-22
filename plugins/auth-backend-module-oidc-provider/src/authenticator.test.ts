@@ -32,6 +32,7 @@ import express from 'express';
 describe('oidcAuthenticator', () => {
   let implementation: any;
   let oauthState: OAuthState;
+  let nonce: string;
   let idToken: string;
   let publicKey: JWK;
   const revokedTokenMap: Record<string, boolean> = {};
@@ -65,23 +66,6 @@ describe('oidcAuthenticator', () => {
     request_object_signing_alg_values_supported: ['RS256', 'RS512', 'HS256'],
   };
 
-  beforeAll(async () => {
-    const keyPair = await generateKeyPair('RS256');
-    const privateKey = await exportJWK(keyPair.privateKey);
-    publicKey = await exportJWK(keyPair.publicKey);
-    publicKey.alg = privateKey.alg = 'RS256';
-
-    idToken = await new SignJWT({
-      sub: 'test',
-      iss: 'https://oidc.test',
-      iat: Date.now(),
-      aud: 'clientId',
-      exp: Date.now() + 10000,
-    })
-      .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
-      .sign(keyPair.privateKey);
-  });
-
   beforeEach(() => {
     mswServer.use(
       rest.get(
@@ -96,6 +80,14 @@ describe('oidcAuthenticator', () => {
       rest.get('https://oidc.test/jwks.json', async (_req, res, ctx) =>
         res(ctx.status(200), ctx.json({ keys: [{ ...publicKey }] })),
       ),
+      rest.get(
+        'https://oidc.test/oauth2/authorize',
+        async (req, _res, _ctx) => {
+          nonce =
+            new URL(req.url).searchParams.get('nonce') ??
+            'nonceGeneratedByAuthServer';
+        },
+      ),
       rest.post('https://oidc.test/oauth2/token', async (req, res, ctx) => {
         const formBody = new URLSearchParams(await req.text());
         if (
@@ -104,6 +96,23 @@ describe('oidcAuthenticator', () => {
         ) {
           return res(ctx.json({}));
         }
+
+        const keyPair = await generateKeyPair('RS256');
+        const privateKey = await exportJWK(keyPair.privateKey);
+        publicKey = await exportJWK(keyPair.publicKey);
+        publicKey.alg = privateKey.alg = 'RS256';
+
+        idToken = await new SignJWT({
+          sub: 'test',
+          iss: 'https://oidc.test',
+          iat: Date.now(),
+          aud: 'clientId',
+          exp: Date.now() + 10000,
+          nonce,
+        })
+          .setProtectedHeader({ alg: privateKey.alg, kid: privateKey.kid })
+          .sign(keyPair.privateKey);
+
         return res(
           req.headers.get('Authorization')
             ? ctx.json({
@@ -196,6 +205,15 @@ describe('oidcAuthenticator', () => {
       const { searchParams } = new URL(startResponse.url);
 
       expect(searchParams.get('response_type')).toBe('code');
+    });
+
+    it('passes a nonce', async () => {
+      const startResponse = await oidcAuthenticator.start(
+        startRequest,
+        implementation,
+      );
+      const { searchParams } = new URL(startResponse.url);
+      expect(searchParams.get('nonce')).not.toBeNull();
     });
 
     it('passes client ID from config', async () => {
