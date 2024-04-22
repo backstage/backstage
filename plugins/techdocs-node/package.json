@@ -75,7 +75,7 @@
     "@types/js-yaml": "^4.0.0",
     "@types/mime-types": "^2.1.0",
     "@types/recursive-readdir": "^2.2.0",
-    "@types/supertest": "^2.0.8",
+    "@types/supertest": "^6.0.0",
     "aws-sdk-client-mock": "^4.0.0",
     "supertest": "^6.1.3"
   }

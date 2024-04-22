@@ -105,7 +105,7 @@
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "@types/fs-extra": "^11.0.0",
     "@types/nunjucks": "^3.1.4",
-    "@types/supertest": "^2.0.8",
+    "@types/supertest": "^6.0.0",
     "@types/zen-observable": "^0.8.0",
     "esbuild": "^0.20.0",
     "strip-ansi": "^7.1.0",

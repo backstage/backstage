@@ -50,7 +50,7 @@
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^",
     "@backstage/plugin-events-backend": "workspace:^",
-    "@types/supertest": "^2.0.8",
+    "@types/supertest": "^6.0.0",
     "msw": "^1.0.0",
     "supertest": "^6.2.4"
   },

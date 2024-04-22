@@ -127,7 +127,7 @@
     "@types/fs-extra": "^11.0.0",
     "@types/http-errors": "^2.0.0",
     "@types/pg": "^8.6.6",
-    "@types/supertest": "^2.0.8",
+    "@types/supertest": "^6.0.0",
     "@types/tar": "^6.1.1",
     "@types/webpack-env": "^1.15.2",
     "@types/yauzl": "^2.10.0",

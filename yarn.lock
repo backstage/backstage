@@ -3327,7 +3327,7 @@ __metadata:
     "@types/http-errors": ^2.0.0
     "@types/luxon": ^3.0.0
     "@types/pg": ^8.6.6
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     "@types/tar": ^6.1.1
     "@types/webpack-env": ^1.15.2
     "@types/yauzl": ^2.10.0
@@ -3502,7 +3502,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     better-sqlite3: ^9.0.0
     cookie: ^0.6.0
     express: ^4.17.1
@@ -4308,7 +4308,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     fs-extra: ^11.2.0
@@ -5218,7 +5218,7 @@ __metadata:
     "@types/git-url-parse": ^9.0.0
     "@types/glob": ^8.0.0
     "@types/lodash": ^4.14.151
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     "@types/uuid": ^9.0.0
     better-sqlite3: ^9.0.0
     codeowners-utils: ^1.0.2
@@ -5526,7 +5526,7 @@ __metadata:
     "@manypkg/get-packages": ^1.1.3
     "@types/express": "*"
     "@types/ping": ^0.4.1
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     "@types/yarnpkg__lockfile": ^1.1.4
     "@yarnpkg/lockfile": ^1.1.0
     "@yarnpkg/parsers": ^3.0.0-rc.4
@@ -5984,7 +5984,7 @@ __metadata:
     "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-signals-node": "workspace:^"
     "@types/express": ^4.17.6
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^3.0.0
@@ -6153,7 +6153,7 @@ __metadata:
     "@backstage/plugin-permission-node": "workspace:^"
     "@types/express": "*"
     "@types/lodash": ^4.14.151
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     dataloader: ^2.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -6194,7 +6194,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
     "@types/express": ^4.17.6
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     msw: ^1.0.0
@@ -6236,7 +6236,7 @@ __metadata:
     "@backstage/config-loader": "workspace:^"
     "@types/express": ^4.17.6
     "@types/http-proxy-middleware": ^1.0.0
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     "@types/uuid": ^9.0.0
     "@types/yup": ^0.32.0
     express: ^4.17.1
@@ -6547,7 +6547,7 @@ __metadata:
     "@types/fs-extra": ^11.0.0
     "@types/luxon": ^3.0.0
     "@types/nunjucks": ^3.1.4
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     "@types/zen-observable": ^0.8.0
     esbuild: ^0.20.0
     express: ^4.17.1
@@ -6907,7 +6907,7 @@ __metadata:
     "@backstage/repo-tools": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     dataloader: ^2.0.0
     express: ^4.17.1
     lodash: ^4.17.21
@@ -7015,7 +7015,7 @@ __metadata:
     "@backstage/plugin-signals-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": "*"
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
@@ -7206,7 +7206,7 @@ __metadata:
     "@types/js-yaml": ^4.0.0
     "@types/mime-types": ^2.1.0
     "@types/recursive-readdir": ^2.2.0
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     aws-sdk-client-mock: ^4.0.0
     express: ^4.17.1
     fs-extra: ^11.2.0
@@ -7313,7 +7313,7 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
     knex: ^3.0.0
@@ -9215,7 +9215,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@types/express": ^4.17.6
-    "@types/supertest": ^2.0.8
+    "@types/supertest": ^6.0.0
     "@types/uuid": ^9.0.0
     express: ^4.17.1
     express-promise-router: ^4.1.0
@@ -15288,10 +15288,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cookiejar@npm:*":
-  version: 2.1.1
-  resolution: "@types/cookiejar@npm:2.1.1"
-  checksum: 7b2967a3344e8e646e79e1dc09ef30a70c4ceeb348364c4eb75b56e2f2e695605fbddd40a50f468b2b5932d2ffb58694ba550f0f52d074c972023910c77de2f6
+"@types/cookiejar@npm:^2.1.5":
+  version: 2.1.5
+  resolution: "@types/cookiejar@npm:2.1.5"
+  checksum: 04d5990e87b6387532d15a87d9ec9b2eb783039291193863751dcfd7fc723a3b3aa30ce4c06b03975cba58632e933772f1ff031af23eaa3ac7f94e71afa6e073
   languageName: node
   linkType: hard
 
@@ -15855,6 +15855,13 @@ __metadata:
   version: 1.0.2
   resolution: "@types/mdurl@npm:1.0.2"
   checksum: 79c7e523b377f53cf1f5a240fe23d0c6cae856667692bd21bf1d064eafe5ccc40ae39a2aa0a9a51e8c94d1307228c8f6b121e847124591a9a828c3baf65e86e2
+  languageName: node
+  linkType: hard
+
+"@types/methods@npm:^1.1.4":
+  version: 1.1.4
+  resolution: "@types/methods@npm:1.1.4"
+  checksum: ad2a7178486f2fd167750f3eb920ab032a947ff2e26f55c86670a6038632d790b46f52e5b6ead5823f1e53fc68028f1e9ddd15cfead7903e04517c88debd72b1
   languageName: node
   linkType: hard
 
@@ -16541,22 +16548,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/superagent@npm:*":
-  version: 4.1.7
-  resolution: "@types/superagent@npm:4.1.7"
+"@types/superagent@npm:^8.1.0":
+  version: 8.1.6
+  resolution: "@types/superagent@npm:8.1.6"
   dependencies:
-    "@types/cookiejar": "*"
+    "@types/cookiejar": ^2.1.5
+    "@types/methods": ^1.1.4
     "@types/node": "*"
-  checksum: 090a9fd148d82550a8feda89df4a9f3051ff2e253b02cf5f84e01c23f6e5225c0bf814d600167449c5bd090a02e42449dfbe8fa089fc24b7c10e397d814e37b9
+  checksum: 240ea5a58bb3c9e53f0dbe1ccd1bfe046e084fffdb4eaf44f0bf846fb98dad98ce03d057fdfb555bfa06afbb76a0e5877fe639750b798edac594bc7e19833934
   languageName: node
   linkType: hard
 
-"@types/supertest@npm:^2.0.8":
-  version: 2.0.16
-  resolution: "@types/supertest@npm:2.0.16"
+"@types/supertest@npm:^6.0.0":
+  version: 6.0.2
+  resolution: "@types/supertest@npm:6.0.2"
   dependencies:
-    "@types/superagent": "*"
-  checksum: 2fc998ea698e0467cdbe3bea0ebce2027ea3a45a13e51a6cecb0435f44b486faecf99c34d8702d2d7fe033e6e09fdd2b374af52ecc8d0c69a1deec66b8c0dd52
+    "@types/methods": ^1.1.4
+    "@types/superagent": ^8.1.0
+  checksum: 1eafa472665757a6fd984439d11f388ae0480c6d243a6884066c474c4e0357de5373316488da503b1690c3163e075ca8c64c0c4853b3bb7deb09e05d1b64e556
   languageName: node
   linkType: hard
 
