@@ -2,4 +2,4 @@
 '@backstage/backend-common': patch
 ---
 
-This patch adds HarnessURLReader to the available classes. It currently only reads single files via Harness codes public repo api.
+This patch adds HarnessURLReader. It only supports readUrl for now. readTree and search will be implemented next.
