@@ -768,7 +768,7 @@ The `addTemplateFilters` property accepts a `Record`
   additionalTemplateFilters?: Record<string, TemplateFilter>;
 ```
 
-where the first parameter is the name of the filter and the second `TemplateFilter` receives a list of `JSON value` arguments. The `templateFilter()` function should return a JsonValue (Json array, object or primitive).
+where the first parameter is the name of the filter and the second `TemplateFilter` receives a list of `JSON value` arguments. The `templateFilter()` function must return a JsonValue (Json array, object or primitive).
 
 ```ts title="plugins/scaffolder-node/src/types.ts"
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
