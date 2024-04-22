@@ -234,14 +234,12 @@ deps: {
   // highlight-start
   httpAuth: coreServices.httpAuth,
   userInfo: coreServices.userInfo,
-  auth: coreServices.auth,
   // highlight-end
 },
 async init({
   // highlight-start
   httpAuth,
   userInfo,
-  auth,
   // highlight-end
 }) {
   httpRouter.use(
@@ -249,7 +247,6 @@ async init({
       // highlight-start
       httpAuth,
       userInfo,
-      auth,
       // highlight-end
       logger,
     }),
@@ -265,32 +262,32 @@ export interface RouterOptions {
   // highlight-start
   userInfo: UserInfoService;
   httpAuth: HttpAuthService;
-  auth: AuthService;
   // highlight-end
 }
 
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  // ...
-  const { userInfo, httpAuth, auth } = options;
+  const { userInfo, httpAuth } = options;
 
-  router.post('/me', async (request, response) => {
-    if (!auth.isPrincipal(credentials, 'user')) {
-      // Block requests that aren't from the user, this can include services or external callers.
-      return response.status(401);
-    }
-    const credentials = await httpAuth.credentials(request)
+  router.post('/me', async (req, res) => {
+    const credentials = await httpAuth.credentials(req, {
+      // This rejects request from non-users. Only use this if your plugin needs to access the
+      // user identity, most of the time it's enough to just call `httpAuth.credentials(req)`
+      allow: ['user'],
+    });
+
     const userInfo = await userInfo.getUserInfo(credentials);
-    response.json(
-      {
-        // The catalog entity ref of the user.
-        userEntityRef: userInfo.userEntityRef,
 
-        // The list of entities that this user or any teams this user is a part of owns.
-        ownershipEntityRefs: userInfo.ownershipEntityRefs
-      },
-    );
-    ...
+    res.json({
+      // The catalog entity ref of the user.
+      userEntityRef: userInfo.userEntityRef,
+
+      // The list of entities that this user or any teams this user is a part of owns.
+      ownershipEntityRefs: userInfo.ownershipEntityRefs,
+    });
   });
+
+  // ...
+}
 ```
