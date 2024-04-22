@@ -385,8 +385,8 @@
 
   ref:
 
-  https://docs.gitlab.com/ee/user/enterprise_user/#get-users-email-addresses-through-the-api
-  https://docs.gitlab.com/ee/api/members.html#limitations
+  <https://docs.gitlab.com/ee/user/enterprise_user/#get-users-email-addresses-through-the-api>
+  <https://docs.gitlab.com/ee/api/members.html#limitations>
 
 - 890e3b5ad4: Make sure to include the error message when ingestion fails
 - 0b55f773a7: Removed some unused dependencies
@@ -417,8 +417,8 @@
 
   ref:
 
-  https://docs.gitlab.com/ee/user/enterprise_user/#get-users-email-addresses-through-the-api
-  https://docs.gitlab.com/ee/api/members.html#limitations
+  <https://docs.gitlab.com/ee/user/enterprise_user/#get-users-email-addresses-through-the-api>
+  <https://docs.gitlab.com/ee/api/members.html#limitations>
 
 - 0b55f773a7: Removed some unused dependencies
 - Updated dependencies
@@ -1211,7 +1211,7 @@
 - 81cedb5033: `GitlabDiscoveryEntityProvider`: Add option to configure schedule via `app-config.yaml` instead of in code.
 
   Please find how to configure the schedule at the config at
-  https://backstage.io/docs/integrations/gitlab/discovery
+  <https://backstage.io/docs/integrations/gitlab/discovery>
 
 - 4c9f7847e4: Updated dependency `msw` to `^0.48.0` while moving it to be a dev dependency.
 - Updated dependencies
@@ -1250,7 +1250,7 @@
 - 81cedb5033: `GitlabDiscoveryEntityProvider`: Add option to configure schedule via `app-config.yaml` instead of in code.
 
   Please find how to configure the schedule at the config at
-  https://backstage.io/docs/integrations/gitlab/discovery
+  <https://backstage.io/docs/integrations/gitlab/discovery>
 
 - Updated dependencies
   - @backstage/backend-common@0.16.0-next.0
