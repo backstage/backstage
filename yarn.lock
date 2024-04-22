@@ -3224,7 +3224,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^18.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -3850,7 +3850,7 @@ __metadata:
     "@oriflame/backstage-plugin-score-card": ^0.8.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^18.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
@@ -4206,7 +4206,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^18.0.0
     msw: ^1.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -4346,7 +4346,7 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^18.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -5388,7 +5388,7 @@ __metadata:
     lodash: ^4.17.21
     material-ui-popup-state: ^1.9.3
     qs: ^6.9.4
-    react-test-renderer: ^16.13.1
+    react-test-renderer: ^18.0.0
     react-use: ^17.2.4
     yaml: ^2.0.0
     zen-observable: ^0.10.0
@@ -5710,7 +5710,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@rjsf/utils": 5.18.2
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^18.0.0
     "@types/react-grid-layout": ^1.3.2
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -6046,13 +6046,13 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^18.0.0
     lodash: ^4.17.21
     msw: ^1.0.0
     react-relative-time: ^0.0.9
     react-use: ^17.2.4
   peerDependencies:
-    react: ^16.13.1 || ^17.0.0
+    react: ^18.0.0
     react-router-dom: 6.0.0-beta.0 || ^6.3.0
   languageName: unknown
   linkType: soft
@@ -7059,7 +7059,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
   peerDependencies:
-    react: ^16.13.1 || ^17.0.0
+    react: ^18.0.0
   languageName: unknown
   linkType: soft
 
@@ -7087,7 +7087,7 @@ __metadata:
     react-use: ^17.2.4
     uuid: ^9.0.0
   peerDependencies:
-    react: ^16.13.1 || ^17.0.0
+    react: ^18.0.0
   languageName: unknown
   linkType: soft
 
@@ -7168,7 +7168,7 @@ __metadata:
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^18.0.0
     git-url-parse: ^14.0.0
     photoswipe: ^5.3.7
   peerDependencies:
@@ -7465,7 +7465,7 @@ __metadata:
     "@mui/styles": ^5.14.18
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^18.0.0
   peerDependencies:
     "@material-ui/core": ^4.12.2
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7492,7 +7492,7 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^18.0.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
     react-dom: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -9246,7 +9246,7 @@ __metadata:
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
-    "@types/react": ^16.13.1 || ^17.0.0
+    "@types/react": ^18.0.0
     react-use: ^17.2.4
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -35613,7 +35613,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-is@npm:^16.12.0, react-is@npm:^16.13.1, react-is@npm:^16.7.0, react-is@npm:^16.8.0, react-is@npm:^16.8.6":
+"react-is@npm:^16.12.0 || ^17.0.0 || ^18.0.0, react-is@npm:^18.0.0, react-is@npm:^18.2.0":
+  version: 18.2.0
+  resolution: "react-is@npm:18.2.0"
+  checksum: e72d0ba81b5922759e4aff17e0252bd29988f9642ed817f56b25a3e217e13eea8a7f2322af99a06edb779da12d5d636e9fda473d620df9a3da0df2a74141d53e
+  languageName: node
+  linkType: hard
+
+"react-is@npm:^16.12.0, react-is@npm:^16.13.1, react-is@npm:^16.7.0, react-is@npm:^16.8.0":
   version: 16.13.1
   resolution: "react-is@npm:16.13.1"
   checksum: f7a19ac3496de32ca9ae12aa030f00f14a3d45374f1ceca0af707c831b2a6098ef0d6bdae51bd437b0a306d7f01d4677fcc8de7c0d331eb47ad0f46130e53c5f
@@ -35624,13 +35631,6 @@ __metadata:
   version: 17.0.2
   resolution: "react-is@npm:17.0.2"
   checksum: 9d6d111d8990dc98bc5402c1266a808b0459b5d54830bbea24c12d908b536df7883f268a7868cfaedde3dd9d4e0d574db456f84d2e6df9c4526f99bb4b5344d8
-  languageName: node
-  linkType: hard
-
-"react-is@npm:^18.0.0, react-is@npm:^18.2.0":
-  version: 18.2.0
-  resolution: "react-is@npm:18.2.0"
-  checksum: e72d0ba81b5922759e4aff17e0252bd29988f9642ed817f56b25a3e217e13eea8a7f2322af99a06edb779da12d5d636e9fda473d620df9a3da0df2a74141d53e
   languageName: node
   linkType: hard
 
@@ -35862,6 +35862,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-shallow-renderer@npm:^16.15.0":
+  version: 16.15.0
+  resolution: "react-shallow-renderer@npm:16.15.0"
+  dependencies:
+    object-assign: ^4.1.1
+    react-is: ^16.12.0 || ^17.0.0 || ^18.0.0
+  peerDependencies:
+    react: ^16.0.0 || ^17.0.0 || ^18.0.0
+  checksum: 6052c7e3e9627485120ebd8257f128aad8f56386fe8d42374b7743eac1be457c33506d153c7886b4e32923c0c352d402ab805ef9ca02dbcd8393b2bdeb6e5af8
+  languageName: node
+  linkType: hard
+
 "react-side-effect@npm:^2.1.0":
   version: 2.1.0
   resolution: "react-side-effect@npm:2.1.0"
@@ -35915,17 +35927,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-test-renderer@npm:^16.13.1":
-  version: 16.14.0
-  resolution: "react-test-renderer@npm:16.14.0"
+"react-test-renderer@npm:^18.0.0":
+  version: 18.2.0
+  resolution: "react-test-renderer@npm:18.2.0"
   dependencies:
-    object-assign: ^4.1.1
-    prop-types: ^15.6.2
-    react-is: ^16.8.6
-    scheduler: ^0.19.1
+    react-is: ^18.2.0
+    react-shallow-renderer: ^16.15.0
+    scheduler: ^0.23.0
   peerDependencies:
-    react: ^16.14.0
-  checksum: 96eb8a2566e67ebd246ef6e1b36d8c8498c68ebfdb94ca8399c19b4e3b73368caf0ffbe44767593e3499f2f58b4b5e57ba0565a47628048d2ab01b23a422724e
+    react: ^18.2.0
+  checksum: 6b6980ced93fa2b72662d5e4ab3b4896833586940047ce52ca9aca801e5432adf05fcbe28289b0af3ce6a2a7c590974e25dcc8aa43d0de658bfe8bbcd686f958
   languageName: node
   linkType: hard
 
