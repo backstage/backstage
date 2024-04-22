@@ -113,15 +113,15 @@ const createGiteaProject = async (
     This is the default scenario that we support currently
   */
   let response: Response;
-  let visibility: boolean;
+  let isPrivate: boolean;
 
   if (repoVisibility === 'private') {
-    visibility = true;
+    isPrivate = true;
   } else if (repoVisibility === 'public') {
-    visibility = false;
+    isPrivate = false;
   } else {
     // Provide a default value if repoVisibility is neither "private" nor "public"
-    visibility = false;
+    isPrivate = false;
   }
 
   const postOptions: RequestInit = {
@@ -129,7 +129,7 @@ const createGiteaProject = async (
     body: JSON.stringify({
       name: projectName,
       description,
-      private: visibility,
+      private: isPrivate,
     }),
     headers: {
       ...getGiteaRequestOptions(config).headers,
