@@ -21,6 +21,8 @@ import {
   NotificationsSidebarItem,
 } from '../src';
 import { signalsPlugin } from '@backstage/plugin-signals';
+import { SidebarItem } from '@backstage/core-components';
+import AddAlert from '@material-ui/icons/AddAlert';
 
 createDevApp()
   .registerPlugin(notificationsPlugin)
@@ -35,4 +37,15 @@ createDevApp()
     path: '/notifications',
   })
   .addSidebarItem(<NotificationsSidebarItem webNotificationsEnabled />)
+  .addSidebarItem(
+    <SidebarItem
+      icon={AddAlert}
+      text="Random notification"
+      onClick={() => {
+        fetch('http://localhost:7007/api/notifications-debug/', {
+          method: 'POST',
+        });
+      }}
+    />,
+  )
   .render();
