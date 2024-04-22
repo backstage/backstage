@@ -25,6 +25,8 @@ import chalk from 'chalk';
 import ora from 'ora';
 import semver from 'semver';
 import { OptionValues } from 'commander';
+import yaml from 'js-yaml';
+import z from 'zod';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
 import { run } from '../../lib/run';
@@ -76,6 +78,14 @@ type PkgVersionInfo = {
 export default async (opts: OptionValues) => {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
+  const hasYarnPlugin = await getHasYarnPlugin();
+
+  if (hasYarnPlugin) {
+    console.log(
+      `Backstage yarn plugin detected, will use backstage: version ranges where possible...`,
+    );
+  }
+
   let pattern = opts.pattern;
 
   if (!pattern) {
@@ -177,12 +187,27 @@ export default async (opts: OptionValues) => {
           for (const depType of DEP_TYPES) {
             if (depType in pkgJson && dep.name in pkgJson[depType]) {
               const oldRange = pkgJson[depType][dep.name];
-              pkgJson[depType][dep.name] = dep.range;
+
+              // backstage:^ are written to the lockfile as
+              // backstage:<backstage-version>, so that updates to
+              // backstage.json can be detected during yarn install. In order to
+              // locate the corresponding lockfile entry for "backstage:^"
+              // versions, we need to perform the same transformation.
+              const oldLockfileRange = await asLockfileVersion(oldRange);
+
+              // Don't use backstage:^ versions for peerDependencies; they only
+              // support npm and workspace: versions.
+              const useBackstageRange =
+                hasYarnPlugin && depType !== 'peerDependencies';
+
+              const newRange = useBackstageRange ? 'backstage:^' : dep.range;
+
+              pkgJson[depType][dep.name] = newRange;
 
               // Check if the update was at least a pre-v1 minor or post-v1 major release
               const lockfileEntry = lockfile
                 .get(dep.name)
-                ?.find(entry => entry.range === oldRange);
+                ?.find(entry => entry.range === oldLockfileRange);
               if (lockfileEntry) {
                 const from = lockfileEntry.version;
                 const to = dep.target;
@@ -354,16 +379,23 @@ export function createVersionFinder(options: {
   };
 }
 
-export async function bumpBackstageJsonVersion(version: string) {
-  const backstageJsonPath = paths.resolveTargetRoot(BACKSTAGE_JSON);
-  const backstageJson = await fs.readJSON(backstageJsonPath).catch(e => {
+function getBackstageJsonPath() {
+  return paths.resolveTargetRoot(BACKSTAGE_JSON);
+}
+
+async function getBackstageJson() {
+  const backstageJsonPath = getBackstageJsonPath();
+  return fs.readJSON(backstageJsonPath).catch(e => {
     if (e.code === 'ENOENT') {
       // gracefully continue in case the file doesn't exist
       return;
     }
     throw e;
   });
+}
 
+export async function bumpBackstageJsonVersion(version: string) {
+  const backstageJson = await getBackstageJson();
   const prevVersion = backstageJson?.version;
 
   if (prevVersion === version) {
@@ -394,12 +426,59 @@ export async function bumpBackstageJsonVersion(version: string) {
   }
 
   await fs.writeJson(
-    backstageJsonPath,
+    getBackstageJsonPath(),
     { ...backstageJson, version },
     {
       spaces: 2,
       encoding: 'utf8',
     },
+  );
+}
+
+async function asLockfileVersion(version: string) {
+  if (version === 'backstage:^') {
+    return `backstage:${(await getBackstageJson())?.version}`;
+  }
+
+  return version;
+}
+
+const yarnRcSchema = z.object({
+  plugins: z
+    .array(
+      z.object({
+        path: z.string(),
+      }),
+    )
+    .optional(),
+});
+
+async function getHasYarnPlugin() {
+  const yarnRcPath = paths.resolveTargetRoot('.yarnrc.yml');
+  const yarnRcContent = await fs.readFile(yarnRcPath, 'utf-8').catch(e => {
+    if (e.code === 'ENOENT') {
+      // gracefully continue in case the file doesn't exist
+      return '';
+    }
+    throw e;
+  });
+
+  if (!yarnRcContent) {
+    return false;
+  }
+
+  const parseResult = yarnRcSchema.safeParse(yaml.load(yarnRcContent));
+
+  if (!parseResult.success) {
+    throw new Error(
+      `Unexpected content in .yarnrc.yml: ${parseResult.error.toString()}`,
+    );
+  }
+
+  const yarnRc = parseResult.data;
+
+  return yarnRc.plugins?.some(
+    plugin => plugin.path === '.yarn/plugins/@yarnpkg/plugin-backstage.cjs',
   );
 }
 
