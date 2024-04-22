@@ -90,10 +90,7 @@ export interface AzurePrResult {
   };
 }
 
-const apiVersions = {
-  V7_2p_1: '7.2-preview.1',
-  V7_2p_2: '7.2-preview.2',
-};
+const apiVersions = '6.0';
 
 export interface RepoApiClientOptions {
   project: string;
@@ -171,14 +168,14 @@ export class RepoApiClient {
   }
 
   async getRepository(repositoryName: string): Promise<AzureRepo> {
-    return this.get(`/${repositoryName}`, apiVersions.V7_2p_1);
+    return this.get(`/${repositoryName}`, apiVersions);
   }
 
   async getDefaultBranch(repo: AzureRepo): Promise<AzureRef> {
     const filter = repo.defaultBranch.replace('refs/', '');
     const result: RefQueryResult = await this.get(
       `/${repo.name}/refs`,
-      apiVersions.V7_2p_2,
+      apiVersions,
       { filter },
     );
     if (!result.value?.length) {
@@ -221,7 +218,7 @@ export class RepoApiClient {
     };
     const result = await this.post<AzurePushResult>(
       `/${repoName}/pushes`,
-      apiVersions.V7_2p_2,
+      apiVersions,
       push,
     );
     return result.refUpdates[0];
@@ -242,7 +239,7 @@ export class RepoApiClient {
 
     return await this.post<AzurePrResult>(
       `/${repoName}/pullrequests`,
-      apiVersions.V7_2p_2,
+      apiVersions,
       payload,
     );
   }
