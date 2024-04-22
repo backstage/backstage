@@ -814,3 +814,44 @@ spec:
       input:
         message: ${{ parameters.userName | betterFilter | base64 }}
 ```
+
+### Register Custom Filters with the New Backend System
+
+To register the custom filters using the new Backend System, you will have to create a [backend module](../../backend-system/architecture/06-modules.md) calling following extension point: `scaffolderTemplatingExtensionPoint`.
+
+Here is a very simplified example of how to do that:
+
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-start */
+import { scaffolderTemplatingExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+/* highlight-add-end */
+
+/* highlight-add-start */
+const scaffolderModuleCustomFilters = createBackendModule({
+  pluginId: 'scaffolder', // name of the plugin that the module is targeting
+  moduleId: 'custom-filters',
+  register(env) {
+    env.registerInit({
+      deps: {
+        scaffolder: scaffolderTemplatingExtensionPoint,
+        // ... and other dependencies as needed
+      },
+      async init({ scaffolder /* ..., other dependencies */ }) {
+        scaffolder.addTemplateFilters({
+          base64: (...args: JsonValue[]) => btoa(args.join('')),
+          betterFilter: (...args: JsonValue[]) => {
+            return `This is a much better string than "${args}", don't you think?`;
+          },
+        });
+      },
+    });
+  },
+});
+/* highlight-add-end */
+
+const backend = createBackend();
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+/* highlight-add-next-line */
+backend.add(scaffolderModuleCustomFilters());
+```
