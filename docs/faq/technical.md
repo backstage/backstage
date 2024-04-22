@@ -195,10 +195,9 @@ ambition will be to keep Backstage modular.
 ### How can I get involved?
 
 Jump right in! Come help us fix some of the
-[early bugs and good first issues](https://github.com/backstage/backstage/contribute)
-or reach [a new milestone](https://github.com/backstage/backstage/milestones).
-Or write an open source plugin for Backstage, like this
-[Lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse).
+[early bugs and good first issues](https://github.com/backstage/backstage/contribute).
+Or write an open source plugin for Backstage in our
+[community plugins repository](https://github.com/backstage/community-plugins).
 See all the ways you can
 [contribute here](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md).
 We'd love to have you as part of the community.
