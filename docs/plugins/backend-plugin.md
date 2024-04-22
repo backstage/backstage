@@ -227,7 +227,7 @@ database..
 
 ## Making Use of the User's Identity
 
-The Backstage backend also offers a core service to access the user's identity. You can access it through the `coreServices.identity` dependency.
+The Backstage backend also offers a core service to access the user's identity. You can access it through the `coreServices.httpAuth` and `coreServices.userInfo` dependencies.
 
 ```ts title="plugins/carmen-backend/src/plugin.ts"
 deps: {
@@ -272,6 +272,10 @@ export async function createRouter(
   const { userInfo, httpAuth } = options;
 
   router.post('/me', async (request, response) => {
+    if (!auth.isPrincipal(credentials, 'user')) {
+      // Block requests that aren't from the user, this can include services or external callers.
+      response.status(401);
+    }
     const credentials = await httpAuth.credentials(request)
     const userInfo = await userInfo.getUserInfo(credentials);
     response.json(
