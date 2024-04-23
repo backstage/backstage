@@ -4,4 +4,4 @@ This package is an example of a Backstage application using the [new frontend](.
 
 To play with it, open a terminal and run the command: `yarn start`
 
-**Note**: Don't forget to open a second terminal and to launch the backend or [backend-next](../../docs/backend-system/index.md) application using `yarn start` too command !
+**NOTE:** Don't forget to open a second terminal and to launch the backend or [backend-next](../../docs/backend-system/index.md) there, using `yarn start`! The frontend requires a backend to connect to.
