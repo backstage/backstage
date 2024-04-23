@@ -186,7 +186,6 @@ export type LoadConfigSchemaOptions = (
   | {
       dependencies: string[];
       packagePaths?: string[];
-      workspaceDirectory?: string;
     }
   | {
       serialized: JsonObject;
