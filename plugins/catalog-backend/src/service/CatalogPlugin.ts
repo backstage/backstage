@@ -201,7 +201,7 @@ export const catalogPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
-        lifecycle: coreServices.lifecycle,
+        lifecycle: coreServices.rootLifecycle,
         scheduler: coreServices.scheduler,
         discovery: coreServices.discovery,
         auth: coreServices.auth,
@@ -253,7 +253,9 @@ export const catalogPlugin = createBackendPlugin({
 
         const { processingEngine, router } = await builder.build();
 
-        await processingEngine.start();
+        lifecycle.addStartupHook(async () => {
+          await processingEngine.start();
+        });
         lifecycle.addShutdownHook(() => processingEngine.stop());
         httpRouter.use(router);
       },
