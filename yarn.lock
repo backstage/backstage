@@ -6212,6 +6212,7 @@ __metadata:
     "@testing-library/user-event": ^14.0.0
     "@types/react": ^16.13.1 || ^17.0.0
     lodash: ^4.17.21
+    material-ui-confirm: ^3.0.12
     msw: ^1.0.0
     notistack: ^3.0.1
     react-relative-time: ^0.0.9
@@ -30545,6 +30546,17 @@ __metadata:
   dependencies:
     escape-string-regexp: ^4.0.0
   checksum: 8bee1a7ab7609c2c21d9c9254b6785fa708eadf289032b556d57a34e98fcd4c537659a004dafee6ce80ab157099e645c199dc52678dff1e7fb0a6684e0da4dbe
+  languageName: node
+  linkType: hard
+
+"material-ui-confirm@npm:^3.0.12":
+  version: 3.0.12
+  resolution: "material-ui-confirm@npm:3.0.12"
+  peerDependencies:
+    "@mui/material": ">= 5.0.0"
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+  checksum: de1092fdc4ab8104fbfdb5034921aeb2a5db5854ad5e31fb24dc4c204c6fb5b66a33ad377abf7adda390c432aefe96a2188ef1b8a3b9c1a80a9a28af63833458
   languageName: node
   linkType: hard
 
