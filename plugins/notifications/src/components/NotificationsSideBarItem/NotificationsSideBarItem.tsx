@@ -15,9 +15,14 @@
  */
 import React, { useCallback, useEffect } from 'react';
 import { useNotificationsApi } from '../../hooks';
-import { SidebarItem } from '@backstage/core-components';
+import { Link, SidebarItem } from '@backstage/core-components';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { IconComponent, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  alertApiRef,
+  IconComponent,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import { rootRouteRef } from '../../routes';
 import { useSignal } from '@backstage/plugin-signals-react';
 import {
@@ -37,7 +42,6 @@ import {
   VariantType,
 } from 'notistack';
 import { SeverityIcon } from '../NotificationsTable/SeverityIcon';
-import { useNavigate } from 'react-router-dom';
 import OpenInNew from '@material-ui/icons/OpenInNew';
 import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
 import IconButton from '@material-ui/core/IconButton';
@@ -101,8 +105,8 @@ export const NotificationsSidebarItem = (props?: {
   const { loading, error, value, retry } = useNotificationsApi(api =>
     api.getStatus(),
   );
-  const navigate = useNavigate();
   const notificationsApi = useApi(notificationsApiRef);
+  const alertApi = useApi(alertApiRef);
   const [unreadCount, setUnreadCount] = React.useState(0);
   const notificationsRoute = useRouteRef(rootRouteRef);
   // TODO: Do we want to add long polling in case signals are not available
@@ -116,11 +120,9 @@ export const NotificationsSidebarItem = (props?: {
       const action = (snackBarId: SnackbarKey) => (
         <>
           <IconButton
+            component={Link}
+            to={notification.payload.link ?? notificationsRoute()}
             onClick={() => {
-              if (notification.payload.link) {
-                window.open(notification.payload.link, '_blank');
-              }
-              navigate(notificationsRoute());
               closeSnackbar(snackBarId);
             }}
           >
@@ -128,11 +130,20 @@ export const NotificationsSidebarItem = (props?: {
           </IconButton>
           <IconButton
             onClick={() => {
-              notificationsApi.updateNotifications({
-                ids: [notification.id],
-                read: true,
-              });
-              closeSnackbar(snackBarId);
+              notificationsApi
+                .updateNotifications({
+                  ids: [notification.id],
+                  read: true,
+                })
+                .then(() => {
+                  closeSnackbar(snackBarId);
+                })
+                .catch(() => {
+                  alertApi.post({
+                    message: 'Failed to mark notification as read',
+                    severity: 'error',
+                  });
+                });
             }}
           >
             <MarkAsReadIcon fontSize="small" />
@@ -142,7 +153,7 @@ export const NotificationsSidebarItem = (props?: {
 
       return { action };
     },
-    [notificationsRoute, navigate, notificationsApi],
+    [notificationsRoute, notificationsApi, alertApi],
   );
 
   useEffect(() => {
@@ -187,6 +198,12 @@ export const NotificationsSidebarItem = (props?: {
               action,
             } as OptionsWithExtraProps<VariantType>);
           }
+        })
+        .catch(() => {
+          alertApi.post({
+            message: 'Failed to fetch notification',
+            severity: 'error',
+          });
         });
     };
 
@@ -200,6 +217,7 @@ export const NotificationsSidebarItem = (props?: {
     webNotificationsEnabled,
     snackbarEnabled,
     notificationsApi,
+    alertApi,
     getSnackbarProperties,
   ]);
 
