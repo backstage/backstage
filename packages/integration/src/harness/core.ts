@@ -122,7 +122,7 @@ export function getHarnessRequestOptions(config: HarnessIntegrationConfig): {
 
   if (apiKey) {
     headers['x-api-key'] = apiKey;
-  } else {
+  } else if (token) {
     headers.Authorization = `Bearer ${token}`;
   }
 

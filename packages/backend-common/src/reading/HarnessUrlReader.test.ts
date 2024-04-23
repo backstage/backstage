@@ -60,7 +60,7 @@ const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
 describe('HarnessUrlReader', () => {
   const worker = setupServer();
   setupRequestMockHandlers(worker);
-
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'bypass' }));
   afterAll(() => {
     jest.clearAllMocks();
   });
