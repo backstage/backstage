@@ -37,7 +37,26 @@ import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 
 const ThrottleDelayMs = 2000;
 
-export const NotificationsPage = () => {
+/** @public */
+export type NotificationsPageProps = {
+  title?: string;
+  themeId?: string;
+  subtitle?: string;
+  tooltip?: string;
+  type?: string;
+  typeLink?: string;
+};
+
+export const NotificationsPage = (props?: NotificationsPageProps) => {
+  const {
+    title = 'Notifications',
+    themeId = 'tool',
+    subtitle,
+    tooltip,
+    type,
+    typeLink,
+  } = props ?? {};
+
   const [refresh, setRefresh] = React.useState(false);
   const { lastSignal } = useSignal('notifications');
   const [unreadOnly, setUnreadOnly] = React.useState<boolean | undefined>(true);
@@ -113,7 +132,14 @@ export const NotificationsPage = () => {
   }
 
   return (
-    <PageWithHeader title="Notifications" themeId="tool">
+    <PageWithHeader
+      title={title}
+      themeId={themeId}
+      tooltip={tooltip}
+      subtitle={subtitle}
+      type={type}
+      typeLink={typeLink}
+    >
       <Content>
         <Grid container>
           <Grid item xs={2}>

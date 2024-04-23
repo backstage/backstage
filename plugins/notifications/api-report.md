@@ -74,7 +74,19 @@ export class NotificationsClient implements NotificationsApi {
 }
 
 // @public (undocumented)
-export const NotificationsPage: () => JSX_2.Element;
+export const NotificationsPage: (
+  props?: NotificationsPageProps | undefined,
+) => JSX_2.Element;
+
+// @public (undocumented)
+export type NotificationsPageProps = {
+  title?: string;
+  themeId?: string;
+  subtitle?: string;
+  tooltip?: string;
+  type?: string;
+  typeLink?: string;
+};
 
 // @public (undocumented)
 export const notificationsPlugin: BackstagePlugin<
