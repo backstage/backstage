@@ -113,7 +113,7 @@ export interface EntityRefPresentation {
   /* The `promise` property in the `EntityRefPresentation` interface is defining a property named
   `promise` that holds a promise. This promise resolves to an array of
   `EntityRefPresentationSnapshot` objects. */
-  promise: Promise<EntityRefPresentationSnapshot[]>;
+  promise?: Promise<EntityRefPresentationSnapshot[]>;
 }
 
 /**

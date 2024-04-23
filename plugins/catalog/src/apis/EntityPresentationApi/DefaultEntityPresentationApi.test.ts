@@ -35,7 +35,7 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
-      promise: new Promise((resolve, reject) => resolve({})),
+      promise: new Promise(resolve => resolve({})),
     });
 
     expect(
@@ -49,7 +49,7 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
-      promise: new Promise((resolve, reject) => resolve({})),
+      promise: new Promise(resolve => resolve({})),
     });
 
     expect(
@@ -65,7 +65,7 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
-      promise: new Promise((resolve, reject) => resolve({})),
+      promise: new Promise(resolve => resolve({})),
     });
 
     const entity: Entity = {
@@ -88,7 +88,7 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
-      promise: new Promise((resolve, reject) => resolve({})),
+      promise: new Promise(resolve => resolve({})),
     });
   });
 
@@ -192,8 +192,8 @@ describe('DefaultEntityPresentationApi', () => {
 
     const snapshots = await promise;
 
-    expect(snapshots.length).toEqual(1); // Only one snapshot expected
-    expect(snapshots[0]).toEqual(entitySnapshot); // Snapshot should match the simulated one
+    expect(snapshots?.length).toEqual(1); // Only one snapshot expected
+    expect(snapshots?.[0]).toEqual(entitySnapshot); // Snapshot should match the simulated one
   });
 });
 
