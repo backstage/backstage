@@ -181,9 +181,11 @@ export const NotificationsTable = ({
                       notification.payload.title
                     )}
                   </Typography>
-                  <Typography variant="body2" className={classes.description}>
-                    {notification.payload.description}
-                  </Typography>
+                  {notification.payload.description ? (
+                    <Typography variant="body2" className={classes.description}>
+                      {notification.payload.description}
+                    </Typography>
+                  ) : null}
                   <Typography variant="caption">
                     {notification.origin && (
                       <>{notification.origin}&nbsp;&bull;&nbsp;</>
