@@ -112,6 +112,7 @@ export const NotificationsSidebarItem: (props?: {
 export const NotificationsTable: ({
   isLoading,
   notifications,
+  isUnread,
   onUpdate,
   setContainsText,
   onPageChange,
@@ -127,6 +128,7 @@ export type NotificationsTableProps = Pick<
   'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
 > & {
   isLoading?: boolean;
+  isUnread: boolean;
   notifications?: Notification_2[];
   onUpdate: () => void;
   setContainsText: (search: string) => void;
