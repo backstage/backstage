@@ -39,6 +39,7 @@ describe('DevAppBuilder', () => {
     };
 
     const DevApp = createDevApp()
+      .addSignInProvider('guest')
       .addRootChild(<MyComponent key="test-key" />)
       .build();
 

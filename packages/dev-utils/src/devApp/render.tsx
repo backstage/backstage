@@ -15,9 +15,10 @@
  */
 
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
+import { AppComponents, AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
+  IdentityProviders,
   OAuthRequestDialog,
   Sidebar,
   SidebarDivider,
@@ -26,7 +27,6 @@ import {
   SidebarSpace,
   SidebarSpacer,
   SignInPage,
-  SignInProviderConfig,
 } from '@backstage/core-components';
 import {
   AnyApiFactory,
@@ -97,7 +97,7 @@ export class DevAppBuilder {
   private readonly rootChildren = new Array<ReactNode>();
   private readonly routes = new Array<JSX.Element>();
   private readonly sidebarItems = new Array<JSX.Element>();
-  private readonly signInProviders = new Array<SignInProviderConfig>();
+  private readonly signInProviders: IdentityProviders = [];
 
   private defaultPage?: string;
   private themes?: Array<AppTheme>;
@@ -188,7 +188,7 @@ export class DevAppBuilder {
   /**
    * Adds new sign in provider for the dev app
    */
-  addSignInProvider(provider: SignInProviderConfig) {
+  addSignInProvider(provider: IdentityProviders[number]) {
     this.signInProviders.push(provider);
     return this;
   }
@@ -212,22 +212,25 @@ export class DevAppBuilder {
       );
     }
 
+    const components: Partial<AppComponents> = {};
+    if (this.signInProviders.length) {
+      components.SignInPage = props => {
+        return (
+          <SignInPage
+            {...props}
+            providers={this.signInProviders}
+            title="Select a sign-in method"
+            align="center"
+          />
+        );
+      };
+    }
+
     const app = createApp({
       apis,
       plugins: this.plugins,
       themes: this.themes,
-      components: {
-        SignInPage: props => {
-          return (
-            <SignInPage
-              {...props}
-              providers={['guest', ...this.signInProviders]}
-              title="Select a sign-in method"
-              align="center"
-            />
-          );
-        },
-      },
+      components,
       bindRoutes: ({ bind }) => {
         for (const plugin of this.plugins ?? []) {
           const targets: Record<string, RouteRef<any>> = {};

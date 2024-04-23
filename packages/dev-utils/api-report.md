@@ -12,10 +12,10 @@ import { ComponentType } from 'react';
 import { Entity } from '@backstage/catalog-model';
 import { GridProps } from '@material-ui/core/Grid';
 import { IconComponent } from '@backstage/core-plugin-api';
+import { IdentityProviders } from '@backstage/core-components';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
-import { SignInProviderConfig } from '@backstage/core-components';
 
 // @public
 export function createDevApp(): DevAppBuilder;
@@ -25,7 +25,7 @@ export class DevAppBuilder {
   addPage(opts: DevAppPageOptions): DevAppBuilder;
   addRootChild(node: ReactNode): DevAppBuilder;
   addSidebarItem(sidebarItem: JSX.Element): DevAppBuilder;
-  addSignInProvider(provider: SignInProviderConfig): this;
+  addSignInProvider(provider: IdentityProviders[number]): this;
   addThemes(themes: AppTheme[]): this;
   build(): ComponentType<PropsWithChildren<{}>>;
   registerApi<
