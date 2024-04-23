@@ -6057,6 +6057,7 @@ __metadata:
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-notifications-common": "workspace:^"
+    "@backstage/plugin-signals": "workspace:^"
     "@backstage/plugin-signals-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"

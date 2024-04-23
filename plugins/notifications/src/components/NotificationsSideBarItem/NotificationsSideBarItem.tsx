@@ -51,7 +51,7 @@ export const NotificationsSidebarItem = (props?: {
   const notificationsRoute = useRouteRef(rootRouteRef);
   // TODO: Do we want to add long polling in case signals are not available
   const { lastSignal } = useSignal<NotificationSignal>('notifications');
-  const { sendWebNotification } = useWebNotifications();
+  const { sendWebNotification } = useWebNotifications(webNotificationsEnabled);
   const [refresh, setRefresh] = React.useState(false);
   const { setNotificationCount } = useTitleCounter();
 
@@ -75,6 +75,7 @@ export const NotificationsSidebarItem = (props?: {
             return;
           }
           sendWebNotification({
+            id: notification.id,
             title: notification.payload.title,
             description: notification.payload.description ?? '',
             link: notification.payload.link,
