@@ -16,7 +16,6 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { Logger } from 'winston';
 import { AppConfig, Config } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import {
@@ -24,12 +23,13 @@ import {
   loadConfigSchema,
   readEnvConfig,
 } from '@backstage/config-loader';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type InjectOptions = {
   appConfigs: AppConfig[];
   // Directory of the static JS files to search for file to inject
   staticDir: string;
-  logger: Logger;
+  logger: LoggerService;
 };
 
 /**

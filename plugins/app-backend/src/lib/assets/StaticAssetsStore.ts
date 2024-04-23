@@ -19,10 +19,10 @@ import {
   resolvePackagePath,
 } from '@backstage/backend-common';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 import { DateTime } from 'luxon';
 import partition from 'lodash/partition';
 import { StaticAsset, StaticAssetInput, StaticAssetProvider } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-app-backend',
@@ -39,7 +39,7 @@ interface StaticAssetRow {
 /** @internal */
 export interface StaticAssetsStoreOptions {
   database: PluginDatabaseManager;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 /**
@@ -49,8 +49,8 @@ export interface StaticAssetsStoreOptions {
  */
 export class StaticAssetsStore implements StaticAssetProvider {
   #db: Knex;
-  #logger: Logger;
-  #namespace: string | null;
+  #logger: LoggerService;
+  #namespace: string;
 
   static async create(options: StaticAssetsStoreOptions) {
     const { database } = options;
@@ -65,10 +65,10 @@ export class StaticAssetsStore implements StaticAssetProvider {
     return new StaticAssetsStore(client, options.logger);
   }
 
-  private constructor(client: Knex, logger: Logger, namespace?: string) {
+  private constructor(client: Knex, logger: LoggerService, namespace?: string) {
     this.#db = client;
     this.#logger = logger;
-    this.#namespace = namespace ?? null;
+    this.#namespace = namespace ?? 'default';
   }
 
   /**
@@ -120,7 +120,7 @@ export class StaticAssetsStore implements StaticAssetProvider {
           content: await asset.content(),
           namespace: this.#namespace,
         })
-        .onConflict('path')
+        .onConflict(['namespace', 'path'])
         .ignore();
     }
   }

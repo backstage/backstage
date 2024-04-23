@@ -182,15 +182,6 @@ export interface Config {
         iss?: string;
         region: string;
       };
-      /** @visibility frontend */
-      cfaccess?: {
-        teamName: string;
-        /** @deepVisibility secret */
-        serviceTokens?: Array<{
-          token: string;
-          subject: string;
-        }>;
-      };
       /**
        * The backstage token expiration.
        */

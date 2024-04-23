@@ -4,7 +4,7 @@ author: CodeScene
 authorUrl: https://codescene.com/
 category: Quality
 description: CodeScene is a multi-purpose tool bridging code, business and people. See hidden risks and social patterns in your code. Prioritize and reduce technical debt.
-documentation: https://github.com/backstage/backstage/tree/master/plugins/codescene
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/codescene/plugins/codescene
 iconUrl: /img/codescene_logo.svg
-npmPackageName: '@backstage/plugin-codescene'
+npmPackageName: '@backstage-community/plugin-codescene'
 addedDate: '2022-04-12'

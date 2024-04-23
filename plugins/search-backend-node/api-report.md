@@ -12,7 +12,7 @@ import { DocumentDecoratorFactory } from '@backstage/plugin-search-common';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { default as lunr_2 } from 'lunr';
 import { Permission } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
@@ -68,7 +68,7 @@ export class IndexBuilder {
 // @public
 export type IndexBuilderOptions = {
   searchEngine: SearchEngine;
-  logger: Logger;
+  logger: LoggerService;
 };
 
 // @public
@@ -76,7 +76,7 @@ export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
 
 // @public
 export class LunrSearchEngine implements SearchEngine {
-  constructor(options: { logger: Logger });
+  constructor(options: { logger: LoggerService });
   // (undocumented)
   protected docStore: Record<string, IndexableDocument>;
   // (undocumented)
@@ -86,7 +86,7 @@ export class LunrSearchEngine implements SearchEngine {
   // (undocumented)
   protected highlightPreTag: string;
   // (undocumented)
-  protected logger: Logger;
+  protected logger: LoggerService;
   // (undocumented)
   protected lunrIndices: Record<string, lunr_2.Index>;
   // (undocumented)
@@ -139,7 +139,7 @@ export type NewlineDelimitedJsonCollatorFactoryOptions = {
   type: string;
   searchPattern: string;
   reader: UrlReader;
-  logger: Logger;
+  logger: LoggerService;
   visibilityPermission?: Permission;
 };
 
@@ -168,7 +168,7 @@ export interface RegisterDecoratorParameters {
 
 // @public
 export class Scheduler {
-  constructor(options: { logger: Logger });
+  constructor(options: { logger: LoggerService });
   addToSchedule(options: ScheduleTaskParameters): void;
   start(): void;
   stop(): void;

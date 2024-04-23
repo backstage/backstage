@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.3.0
+
+### Minor Changes
+
+- fae9638: Add examples for `run:yeoman` scaffolder action.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-scaffolder-node@0.4.3
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.3
+  - @backstage/types@1.1.1
+
 ## 0.2.38-next.1
 
 ### Patch Changes

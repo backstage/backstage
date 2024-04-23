@@ -15,7 +15,7 @@
  */
 
 import React, { ComponentType, PropsWithChildren } from 'react';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 
 import { TestApiProvider } from '@backstage/test-utils';
 

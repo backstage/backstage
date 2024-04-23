@@ -15,7 +15,9 @@
  */
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { Box, Theme, Tooltip, makeStyles } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Tooltip from '@material-ui/core/Tooltip';
+import { Theme, makeStyles } from '@material-ui/core/styles';
 import React from 'react';
 import { useEntityPresentation } from '../../apis';
 

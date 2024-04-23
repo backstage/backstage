@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.9
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.3.4
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/core-components@0.14.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-kubernetes-common@0.7.5
+
 ## 0.11.9-next.1
 
 ### Patch Changes

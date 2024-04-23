@@ -16,7 +16,7 @@
 import React from 'react';
 import { fireEvent, render } from '@testing-library/react';
 import { CardHeader } from './CardHeader';
-import { ThemeProvider } from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core/styles';
 import { lightTheme } from '@backstage/theme';
 import {
   MockStorageApi,

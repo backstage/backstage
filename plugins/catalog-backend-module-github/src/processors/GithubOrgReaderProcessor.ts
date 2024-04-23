@@ -29,7 +29,6 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
-import { Logger } from 'winston';
 import {
   assignGroupsToUsers,
   buildOrgHierarchy,
@@ -38,6 +37,7 @@ import {
   parseGithubOrgUrl,
 } from '../lib';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type GraphQL = typeof graphql;
 
@@ -52,13 +52,13 @@ type GraphQL = typeof graphql;
  */
 export class GithubOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       githubCredentialsProvider?: GithubCredentialsProvider;
     },
   ) {
@@ -72,7 +72,7 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
 
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
     githubCredentialsProvider?: GithubCredentialsProvider;
   }) {
     this.integrations = options.integrations;

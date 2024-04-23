@@ -20,8 +20,8 @@ import {
   EmptyState,
   LogViewer,
 } from '@backstage/core-components';
-import { Paper } from '@material-ui/core';
-import { Skeleton } from '@material-ui/lab';
+import Paper from '@material-ui/core/Paper';
+import Skeleton from '@material-ui/lab/Skeleton';
 
 import { ContainerScope } from './types';
 import { usePodLogs } from './usePodLogs';

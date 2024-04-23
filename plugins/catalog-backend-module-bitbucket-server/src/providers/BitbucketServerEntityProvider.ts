@@ -26,7 +26,6 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
 import * as uuid from 'uuid';
 import { BitbucketServerClient, paginated } from '../lib';
 import {
@@ -37,6 +36,7 @@ import {
   BitbucketServerLocationParser,
   defaultBitbucketServerLocationParser,
 } from './BitbucketServerLocationParser';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Discovers catalog files located in Bitbucket Server.
@@ -50,14 +50,14 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   private readonly integration: BitbucketServerIntegration;
   private readonly config: BitbucketServerEntityProviderConfig;
   private readonly parser: BitbucketServerLocationParser;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
 
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       parser?: BitbucketServerLocationParser;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
@@ -102,7 +102,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   private constructor(
     config: BitbucketServerEntityProviderConfig,
     integration: BitbucketServerIntegration,
-    logger: Logger,
+    logger: LoggerService,
     taskRunner: TaskRunner,
     parser?: BitbucketServerLocationParser,
   ) {
@@ -151,7 +151,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  async refresh(logger: Logger) {
+  async refresh(logger: LoggerService) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -199,6 +199,9 @@ export class BitbucketServerEntityProvider implements EntityProvider {
           this.config?.filters?.repoSlug &&
           !this.config.filters.repoSlug.test(repository.slug)
         ) {
+          continue;
+        }
+        if (this.config?.filters?.skipArchivedRepos && repository.archived) {
           continue;
         }
         for await (const entity of this.parser({

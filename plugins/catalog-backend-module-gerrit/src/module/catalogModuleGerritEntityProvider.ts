@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
@@ -37,9 +36,8 @@ export const catalogModuleGerritEntityProvider = createBackendModule({
         scheduler: coreServices.scheduler,
       },
       async init({ catalog, config, logger, scheduler }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         const providers = GerritEntityProvider.fromConfig(config, {
-          logger: winstonLogger,
+          logger,
           scheduler,
         });
 

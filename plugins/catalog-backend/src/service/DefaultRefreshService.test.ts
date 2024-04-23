@@ -14,17 +14,16 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
+  mockCredentials,
+  mockServices,
   TestDatabaseId,
   TestDatabases,
-  mockCredentials,
 } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { createHash } from 'crypto';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
@@ -38,16 +37,17 @@ import { EntityProcessingRequest } from '../processing/types';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { ConfigReader } from '@backstage/config';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 jest.setTimeout(60_000);
 
 describe('DefaultRefreshService', () => {
-  const defaultLogger = getVoidLogger();
+  const defaultLogger = mockServices.logger.mock();
   const databases = TestDatabases.create();
 
   async function createDatabase(
     databaseId: TestDatabaseId,
-    logger: Logger = defaultLogger,
+    logger: LoggerService = defaultLogger,
   ) {
     const knex = await databases.init(databaseId);
     await applyDatabaseMigrations(knex);

@@ -27,8 +27,8 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { Logger } from 'winston';
 import { codeSearch } from '../lib';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Extracts repositories out of an Azure DevOps org.
@@ -49,9 +49,9 @@ import { codeSearch } from '../lib';
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly credentialsProvider: AzureDevOpsCredentialsProvider;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static fromConfig(config: Config, options: { logger: LoggerService }) {
     const integrations = ScmIntegrations.fromConfig(config);
 
     return new AzureDevOpsDiscoveryProcessor({
@@ -62,7 +62,7 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
 
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;

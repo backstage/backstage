@@ -30,7 +30,7 @@ export async function serveBackend(options: BackendServeOptions) {
   // not include dependencies in node_modules. So we set it here at runtime as well.
   (process.env as { NODE_ENV: string }).NODE_ENV = 'development';
 
-  const compiler = webpack(config, (err: Error | undefined) => {
+  const compiler = webpack(config, (err: Error | null) => {
     if (err) {
       console.error(err);
     } else console.log('Build succeeded');

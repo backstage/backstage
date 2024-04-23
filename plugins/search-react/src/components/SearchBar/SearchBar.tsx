@@ -19,7 +19,9 @@ import {
   configApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import { IconButton, InputAdornment, TextField } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import { TextFieldProps } from '@material-ui/core/TextField';
 import SearchIcon from '@material-ui/icons/Search';

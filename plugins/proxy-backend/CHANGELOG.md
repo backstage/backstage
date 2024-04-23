@@ -1,5 +1,16 @@
 # @backstage/plugin-proxy-backend
 
+## 0.4.15
+
+### Patch Changes
+
+- e5a2ccc: Updated dependency `@types/http-proxy-middleware` to `^1.0.0`.
+- 43ca784: Updated dependency `@types/yup` to `^0.32.0`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/config@1.2.0
+
 ## 0.4.15-next.1
 
 ### Patch Changes

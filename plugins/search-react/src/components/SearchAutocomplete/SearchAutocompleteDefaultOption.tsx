@@ -15,11 +15,10 @@
  */
 
 import React, { ReactNode } from 'react';
-import {
-  ListItemIcon,
-  ListItemText,
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText, {
   ListItemTextProps,
-} from '@material-ui/core';
+} from '@material-ui/core/ListItemText';
 
 /**
  * Props for {@link SearchAutocompleteDefaultOption}.

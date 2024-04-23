@@ -36,6 +36,7 @@ class WebpackPluginFailBuildOnWarning {
     'AssetsOverSizeLimitWarning',
     'EntrypointsOverSizeLimitWarning',
     'NoAsyncChunksWarning',
+    'ModuleDependencyWarning', // @testing-library/react added support for React 19 which throws a warning https://github.com/testing-library/react-testing-library/pull/1294/files
   ]);
 
   /* Entry point for the Webpack plugin. */

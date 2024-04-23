@@ -1,6 +1,6 @@
 {
   "name": "@internal/plugin-todo-list-backend",
-  "version": "1.0.26-next.1",
+  "version": "1.0.26",
   "backstage": {
     "role": "backend-plugin"
   },
@@ -41,7 +41,6 @@
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "uuid": "^9.0.0",
-    "winston": "^3.2.1",
     "yn": "^4.0.0"
   },
   "devDependencies": {

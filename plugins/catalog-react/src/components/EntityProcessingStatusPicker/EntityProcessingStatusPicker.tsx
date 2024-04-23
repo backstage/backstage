@@ -15,20 +15,18 @@
  */
 
 import { EntityErrorFilter, EntityOrphanFilter } from '../../filters';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  makeStyles,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import React, { useState } from 'react';
 import { useEntityList } from '../../hooks';
-import { Autocomplete } from '@material-ui/lab';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 
 /** @public */
 export type CatalogReactEntityProcessingStatusPickerClassKey = 'input';

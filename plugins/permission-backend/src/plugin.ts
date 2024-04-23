@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -68,7 +67,6 @@ export const permissionPlugin = createBackendPlugin({
         httpAuth,
         userInfo,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         if (!policies.policy) {
           throw new Error(
             'No policy module installed! Please install a policy module. If you want to allow all requests, use @backstage/plugin-permission-backend-module-allow-all-policy permissionModuleAllowAllPolicy',
@@ -79,7 +77,7 @@ export const permissionPlugin = createBackendPlugin({
           await createRouter({
             config,
             discovery,
-            logger: winstonLogger,
+            logger,
             policy: policies.policy,
             auth,
             httpAuth,

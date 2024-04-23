@@ -61,9 +61,6 @@ import { version as pluginCatalogBackend } from '../../../../plugins/catalog-bac
 import { version as pluginCatalogBackendModuleScaffolderEntityModel } from '../../../../plugins/catalog-backend-module-scaffolder-entity-model/package.json';
 import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph/package.json';
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
-import { version as pluginExplore } from '../../../../plugins/explore/package.json';
-import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
-import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
 import { version as pluginOrg } from '../../../../plugins/org/package.json';
 import { version as pluginPermissionBackend } from '../../../../plugins/permission-backend/package.json';
 import { version as pluginPermissionBackendModulePolicyAllowAll } from '../../../../plugins/permission-backend-module-policy-allow-all/package.json';
@@ -71,7 +68,6 @@ import { version as pluginPermissionCommon } from '../../../../plugins/permissio
 import { version as pluginPermissionReact } from '../../../../plugins/permission-react/package.json';
 import { version as pluginPermissionNode } from '../../../../plugins/permission-node/package.json';
 import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
-import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
 import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
 import { version as pluginScaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
 import { version as pluginSearch } from '../../../../plugins/search/package.json';
@@ -81,7 +77,6 @@ import { version as pluginSearchBackendModuleCatalog } from '../../../../plugins
 import { version as pluginSearchBackendModulePg } from '../../../../plugins/search-backend-module-pg/package.json';
 import { version as pluginSearchBackendModuleTechdocs } from '../../../../plugins/search-backend-module-techdocs/package.json';
 import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
-import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
 import { version as pluginTechdocsReact } from '../../../../plugins/techdocs-react/package.json';
 import { version as pluginTechdocsModuleAddonsContrib } from '../../../../plugins/techdocs-module-addons-contrib/package.json';
@@ -120,9 +115,6 @@ export const packageVersions = {
     pluginCatalogBackendModuleScaffolderEntityModel,
   '@backstage/plugin-catalog-graph': pluginCatalogGraph,
   '@backstage/plugin-catalog-import': pluginCatalogImport,
-  '@backstage/plugin-explore': pluginExplore,
-  '@backstage/plugin-github-actions': pluginGithubActions,
-  '@backstage/plugin-lighthouse': pluginLighthouse,
   '@backstage/plugin-org': pluginOrg,
   '@backstage/plugin-permission-backend': pluginPermissionBackend,
   '@backstage/plugin-permission-backend-module-allow-all-policy':
@@ -131,7 +123,6 @@ export const packageVersions = {
   '@backstage/plugin-permission-node': pluginPermissionNode,
   '@backstage/plugin-permission-react': pluginPermissionReact,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
-  '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
   '@backstage/plugin-search': pluginSearch,
@@ -143,7 +134,6 @@ export const packageVersions = {
   '@backstage/plugin-search-backend-module-techdocs':
     pluginSearchBackendModuleTechdocs,
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
-  '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-react': pluginTechdocsReact,
   '@backstage/plugin-techdocs-module-addons-contrib':

@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.31
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.19.0
+  - @backstage/plugin-techdocs-react@1.2.3
+  - @backstage/plugin-search-react@1.7.10
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/core-app-api@1.12.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/test-utils@1.5.4
+  - @backstage/plugin-techdocs@1.10.4
+  - @backstage/integration-react@1.1.26
+
 ## 1.0.31-next.1
 
 ### Patch Changes

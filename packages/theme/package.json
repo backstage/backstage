@@ -1,6 +1,6 @@
 {
   "name": "@backstage/theme",
-  "version": "0.5.2",
+  "version": "0.5.3",
   "description": "material-ui theme for use with Backstage.",
   "backstage": {
     "role": "web-library"
@@ -44,7 +44,7 @@
     "@backstage/cli": "workspace:^",
     "@mui/styles": "^5.14.18",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^15.0.0",
     "@types/react": "^16.13.1 || ^17.0.0"
   },
   "peerDependencies": {

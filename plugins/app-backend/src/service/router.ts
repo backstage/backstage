@@ -25,12 +25,11 @@ import express from 'express';
 import Router from 'express-promise-router';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { Logger } from 'winston';
 import { injectConfig, readConfigs } from '../lib/config';
 import {
-  StaticAssetsStore,
-  findStaticAssets,
   createStaticAssetMiddleware,
+  findStaticAssets,
+  StaticAssetsStore,
 } from '../lib/assets';
 import {
   CACHE_CONTROL_MAX_CACHE,
@@ -38,7 +37,11 @@ import {
   CACHE_CONTROL_REVALIDATE_CACHE,
 } from '../lib/headers';
 import { ConfigSchema } from '@backstage/config-loader';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { AuthenticationError } from '@backstage/errors';
 
 // express uses mime v1 while we only have types for mime v2
@@ -47,7 +50,7 @@ type Mime = { lookup(arg0: string): string };
 /** @public */
 export interface RouterOptions {
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
 
@@ -215,7 +218,6 @@ export async function createRouter(
 
     publicRouter.use(
       await createEntryPointRouter({
-        appMode: 'public',
         logger: logger.child({ entry: 'public' }),
         rootDir: publicDistDir,
         assetStore: assetStore?.withNamespace('public'),
@@ -228,7 +230,6 @@ export async function createRouter(
 
   router.use(
     await createEntryPointRouter({
-      appMode: enablePublicEntryPoint ? 'protected' : 'public',
       logger: logger.child({ entry: 'main' }),
       rootDir: appDistDir,
       assetStore,
@@ -240,49 +241,23 @@ export async function createRouter(
   return router;
 }
 
-async function injectAppMode(options: {
-  appMode: 'public' | 'protected';
-  rootDir: string;
-}) {
-  const { appMode, rootDir } = options;
-  const content = await fs.readFile(resolvePath(rootDir, 'index.html'), 'utf8');
-
-  const metaTag = `<meta name="backstage-app-mode" content="${appMode}">`;
-
-  let newContent;
-  if (content.includes('backstage-app-mode')) {
-    newContent = content.replace(
-      /<meta name="backstage-app-mode" content="[^"]+">/,
-      metaTag,
-    );
-  } else {
-    newContent = content.replace(/<head>/, `<head>${metaTag}`);
-  }
-
-  await fs.writeFile(resolvePath(rootDir, 'index.html'), newContent, 'utf8');
-}
-
 async function createEntryPointRouter({
   logger,
   rootDir,
   assetStore,
   staticFallbackHandler,
-  appMode,
   appConfigs,
 }: {
-  logger: Logger;
+  logger: LoggerService;
   rootDir: string;
   assetStore?: StaticAssetsStore;
   staticFallbackHandler?: express.Handler;
-  appMode: 'public' | 'protected';
   appConfigs?: AppConfig[];
 }) {
   const staticDir = resolvePath(rootDir, 'static');
 
   const injectedConfigPath =
     appConfigs && (await injectConfig({ appConfigs, logger, staticDir }));
-
-  await injectAppMode({ appMode, rootDir });
 
   const router = Router();
 

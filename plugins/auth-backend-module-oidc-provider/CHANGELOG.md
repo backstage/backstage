@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.1.8
+
+### Patch Changes
+
+- 28eb473: Support revoke refresh token to oidc logout function
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-auth-backend@0.22.4
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-auth-node@0.4.12
+
 ## 0.1.8-next.1
 
 ### Patch Changes

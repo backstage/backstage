@@ -42,7 +42,7 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
 
       - name: Configure Git
         run: |
@@ -78,7 +78,7 @@ jobs:
         uses: browser-actions/setup-chrome@803ef6dfb4fdf22089c9563225d95e4a515820a0 # latest
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
+        uses: backstage/actions/yarn-install@af61233abb88019335b07ab855873d991f43d25a # v0.6.7
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

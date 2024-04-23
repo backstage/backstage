@@ -26,27 +26,11 @@ package.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
-And then add the entity provider to your catalog builder:
+And then update your backend by adding the following line:
 
-```ts title="packages/backend/src/plugins/catalog.ts"
-/* highlight-add-next-line */
-import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  /* highlight-add-start */
-  builder.addEntityProvider(
-    GithubEntityProvider.fromConfig(env.config, {
-      logger: env.logger,
-      scheduler: env.scheduler,
-    }),
-  );
-  /* highlight-add-end */
-
-  // ..
-}
+```ts title="packages/backend/src/index.ts"
+// github discovery
+backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
 ```
 
 ## Installation with Events Support
@@ -115,7 +99,7 @@ You can check the official docs to [configure your webhook](https://docs.github.
 ## Configuration
 
 To use the discovery provider, you'll need a GitHub integration
-[set up](locations.md) with either a [Personal Access Token](../../getting-started/config/authentication.md) or [GitHub Apps](./github-apps.md).
+[set up](locations.md) with either a [Personal Access Token](../../getting-started/config/authentication.md) or [GitHub Apps](./github-apps.md). For Personal Access Tokens you should pay attention to the [required scopes](https://backstage.io/docs/integrations/github/locations/#token-scopes), where you will need at least the `repo` scope for reading components. For GitHub Apps you will need to grant it the [required permissions](https://backstage.io/docs/integrations/github/github-apps#app-permissions) instead, where you will need at least the `Contents: Read-only` permissions for reading components.
 
 Then you can add a `github` config to the catalog providers configuration:
 

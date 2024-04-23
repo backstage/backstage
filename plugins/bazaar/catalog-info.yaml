@@ -1,9 +1,0 @@
-apiVersion: backstage.io/v1alpha1
-kind: Component
-metadata:
-  name: backstage-plugin-bazaar
-  title: '@backstage/plugin-bazaar'
-spec:
-  lifecycle: experimental
-  type: backstage-frontend-plugin
-  owner: maintainers

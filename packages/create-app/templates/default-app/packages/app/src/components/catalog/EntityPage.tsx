@@ -29,10 +29,6 @@ import {
   EntityRelationWarning,
 } from '@backstage/plugin-catalog';
 import {
-  isGithubActionsAvailable,
-  EntityGithubActionsContent,
-} from '@backstage/plugin-github-actions';
-import {
   EntityUserProfileCard,
   EntityGroupProfileCard,
   EntityMembersListCard,
@@ -70,9 +66,13 @@ const cicdContent = (
   // This is an example of how you can implement your company's logic in entity page.
   // You can for example enforce that all components of type 'service' should use GitHubActions
   <EntitySwitch>
-    <EntitySwitch.Case if={isGithubActionsAvailable}>
-      <EntityGithubActionsContent />
-    </EntitySwitch.Case>
+    {/*
+      Here you can add support for different CI/CD services, for example
+      using @backstage-community/plugin-github-actions as follows:
+      <EntitySwitch.Case if={isGithubActionsAvailable}>
+        <EntityGithubActionsContent />
+      </EntitySwitch.Case>
+     */}
 
     <EntitySwitch.Case>
       <EmptyState

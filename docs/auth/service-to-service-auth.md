@@ -2,168 +2,167 @@
 id: service-to-service-auth
 title: Service to Service Auth
 # prettier-ignore
-description: This section describes how to use service to service authentication, both internally within Backstage plugins and towards external services.
+description: This section describes service to service authentication works, both internally within Backstage plugins and when external callers want to make requests.
 ---
 
-This article describes the steps needed to introduce _service-to-service auth_ (formerly _backend-to-backend_ auth).
-This allows plugin backends to determine whether a given request originates from
-a legitimate Backstage plugin (or other external caller), by requiring a special
-type of service-to-service token which is signed with a shared secret.
+:::info
+This documentation is written for [the new backend
+system](../backend-system/index.md) which is the default since Backstage
+[version 1.24](../releases/v1.24.0.md). If you are still on the old backend
+system, you may want to read [its own article](./service-to-service-auth--old.md)
+instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
+:::
 
-When enabling this protection on your Backstage backend plugins, for example the
-catalog, other callers in the ecosystem such as the search indexer and
-scaffolder would need to present a valid token to the catalog to be able to
-request its contents.
+This article describes how _service-to-service auth_ works in Backstage, both
+between Backstage backend plugins and for external callers who want to make
+requests to them. This is in contrast to _user and user-to-service auth_ which
+use different flows.
 
-## Setup
+Each section describes one distinct type of auth flow.
 
-In a newly created Backstage app, the backend is setup up to not require any
-auth at all. This means that generated service-to-service tokens are empty, and
-that incoming requests are not validated. If you want to enable
-service-to-service auth, the first step is to switch out the following line in
-your backend setup at `packages/backend/src/index.ts`:
+## Standard Plugin-to-Plugin Auth
 
-```ts title="packages/backend/src/index.ts"
-/* highlight-remove-next-line */
-const tokenManager = ServerTokenManager.noop();
-/* highlight-add-next-line */
-const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
+Backstage plugins that use the new backend system and handle credentials using
+the `auth` and `httpAuth` service APIs are secure by default, without requiring
+any configuration. They generate self-signed tokens automatically for making
+requests to other Backstage backend plugins, and the receivers use the caller's
+public key set endpoint to be able to perform verification.
+
+This flow has only one configuration option to set in your app-config:
+`backend.auth.dangerouslyDisableDefaultAuthPolicy`, which can be set to `true`
+if you for some reason need to completely disable both the issuing and
+verification of tokens between backend plugins. This makes your backends
+insecure and callable by anyone without auth, so only use this as a last resort
+and when your deployment is behind a secure ingress like a VPN.
+
+External callers cannot leverage this flow; it's only used internally by backend
+plugins calling other backend plugins.
+
+## Static Tokens
+
+This access method consists of random static tokens that can be handed out to
+external callers who want to make requests to Backstage backend plugins. This is
+useful for the most basic callers such as command line scripts, web hooks and
+similar.
+
+You configure this access method by adding one or more entries of type `static`
+to the `backend.auth.externalAccess` app-config key:
+
+```yaml title="in e.g. app-config.production.yaml"
+backend:
+  auth:
+    externalAccess:
+      - type: static
+        options:
+          token: ${CICD_TOKEN}
+          subject: cicd-system-completion-events
+      - type: static
+        options:
+          token: ${ADMIN_CURL_TOKEN}
+          subject: admin-curl-access
 ```
 
-By switching from the no-op `ServiceTokenManager` to one created from config,
-you enable service-to-service auth for any plugin that implements it. The local
-development setup will generally not be impacted by this, as temporary keys are
-generated under the hood. But for the production setup, this means you must now
-provide a shared secret that enables your backend plugins to communicate with
-each other.
+The tokens can be any string without whitespace, but for security reasons should
+be sufficiently long so as not to be easy to guess by brute force. You can for
+example generate them on the command line:
 
-Backstage service-to-service tokens are currently always signed with a single
-secret key. It needs to be shared across all backend plugins and services that
-ones wishes to communicate across. The key can be any base64 encoded secret.
-The following command can be used to generate such a key in a terminal:
-
-```bash
+```shell
 node -p 'require("crypto").randomBytes(24).toString("base64")'
 ```
 
-Then place it in the backend configuration, either as a direct value or
-injected as an env variable.
+The subjects must be strings without whitespace. They are used for identifying
+each caller, and become part of the credentials object that request recipient
+plugins get.
+
+Callers pass along the tokens verbatim with requests in the `Authorization`
+header:
 
 ```yaml
-# commonly in your app-config.production.yaml
+Authorization: Bearer eZv5o+fW3KnR3kVabMW4ZcDNLPl8nmMW
+```
+
+## Legacy Tokens
+
+Plugins and backends that are _not_ on the new backend system use a legacy token
+flow, where shared static secrets in your app-config are used for signing and
+verification. If you are on the new backend system and are not using legacy
+plugins using the compatibility wrapper, you can skip this section.
+
+### Configuration (legacy)
+
+In local development, there is no need to configure anything for this auth
+method. But in production, you must configure at least one legacy type external
+access method:
+
+```yaml title="in e.g. app-config.production.yaml"
 backend:
   auth:
-    keys:
-      - secret: <the string returned by the above crypto command>
-    # - secret: ${BACKEND_SECRET} - if you want to use an env variable instead
+    externalAccess:
+      - type: legacy
+        options:
+          secret: my-secret-key-catalog
+          subject: legacy-catalog
+      - type: legacy
+        options:
+          secret: my-secret-key-scaffolder
+          subject: legacy-scaffolder
 ```
 
-**NOTE**: For ease of development, we auto-generate a key for you if you haven't
-configured a secret in dev mode. You _must set your own secret_ in order for
-service-to-service auth to work in production; the `ServiceTokenManager` will
-throw an exception in production if it has no keys to work with, which will lead
-to the backend failing to start up.
+The old style keys config is also supported as an alternative, but please
+consider using the new style above instead:
 
-## Usage in Backend Plugins
-
-There are a few steps if you want to make use of the service-to-service auth in
-your own backend plugin. First you need to add the `TokenManager` dependency to
-the `createRouter` options. Typically as `tokenManager: TokenManager`. Along
-with this you'll need to ask users to start providing this new dependency in
-their backend setup code.
-
-Once the `TokenManager` is available, you use the `.getToken()` method to generate
-a new token for any outgoing requests towards other Backstage backend plugins.
-This method should be called for every request that you make; do not store the
-token for later use. The `TokenManager` implementations should already cache
-tokens as needed. The returned token should then be added as a `Bearer` token
-for the upstream request, for example:
-
-```ts
-const { token } = await this.tokenManager.getToken();
-
-const response = await fetch(pluginBackendApiUrl, {
-  method: 'GET',
-  headers: {
-    ...headers,
-    Authorization: `Bearer ${token}`,
-  },
-});
-```
-
-To authenticate an incoming request you use the `.authenticate(token)` method.
-At the time of writing this method doesn't return anything, it will simply
-throw if the token is invalid.
-
-```ts
-await tokenManager.authenticate(token); // throws if token is invalid
-```
-
-## Usage in External Callers
-
-If you have enabled server-to-server auth, you may be interested in generating
-tokens in code that is external to Backstage itself. External callers may even
-be written in other languages than Node.js. This section explains how to generate
-a valid token yourself.
-
-The token must be a JWT with a `HS256` signature, using the raw base64 decoded
-value of the configured key as the secret. It must also have the following payload:
-
-- `sub`: "backstage-server" (only this value supported currently)
-- `exp`: one hour from the time it was generated, in epoch seconds
-
-> NOTE: The JWT must encode the `alg` header as a protected header, such as with
-> [setProtectedHeader](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#setprotectedheader).
-
-## Granular Access Control
-
-We plan to build out the service-to-service auth to be much more powerful in the
-future, but before that is done there are a few tricks you can use with the
-current system to harden your deployments. This section assumes that you have
-already split your backend plugins into more than one backend deployment, in
-order to scale or isolate them.
-
-The backend auth configuration has support for providing multiple keys, for
-example:
-
-```yaml
-backend:
-  auth:
-    keys:
-      - secret: my-secret-key-1
-      - secret: my-secret-key-2
-      - secret: my-secret-key-3
-```
-
-The first key will be used for signing requests, while all of the keys will be
-used for validation. This means that you can set up an asymmetric configuration
-where some backend deployments do not have access to each other.
-
-For example, consider the case where we have split up the catalog, scaffolder,
-and search plugin into three separate backend deployments. We can use the
-following configurations to allow both the scaffolder and search plugin to speak
-to the
-catalog, but not the other way around, and to not allow any communication between
-the scaffolder and search plugins.
-
-```yaml
-# catalog config
+```yaml title="in e.g. app-config.production.yaml"
 backend:
   auth:
     keys:
       - secret: my-secret-key-catalog
       - secret: my-secret-key-scaffolder
-      - secret: my-secret-key-search
+```
 
-# scaffolder config
-backend:
-  auth:
-    keys:
-      - secret: my-secret-key-scaffolder
+The secrets must be any base64-encoded random data, but for security reasons
+should be sufficiently long so as not to be easy to guess by brute force. You
+can for example generate them on the command line:
 
-# search config
-backend:
-  auth:
-    keys:
-      - secret: my-secret-key-search
+```shell
+node -p 'require("crypto").randomBytes(24).toString("base64")'
+```
+
+The subjects must be strings without whitespace. They are used for identifying
+each caller, and become part of the credentials object that request recipient
+plugins get.
+
+In both of the examples we showed two secrets being specified, but the minimum
+is one. The order is significant: the first one is always used for signing of
+outgoing requests to other backend plugins, while all of the keys are used for
+verification. This is useful if you want to be able to have unique keys per
+deployment if you are using split deployments of Backstage. Then each deployment
+lists its own signing secret at the top, and only adds the secrets for those
+other deployments that it wants to permit to call it.
+
+For most organizations, we recommend leaving it at just one key and
+[migrating](../backend-system/building-backends/08-migrating.md) to the new
+backend system as soon as possible instead of experimenting with multiple legacy
+secrets.
+
+### External Callers (legacy)
+
+For legacy Backstage backend plugins, the above configuration is enough. But
+external callers who wish to make requests using this flow must generate tokens
+according to the following rules.
+
+The token must be a JWT with a `HS256` signature, using the raw base64 decoded
+value of the configured key as the secret. It must also have the following
+payload:
+
+- `sub`: the exact string "backstage-server"
+- `exp`: one hour from the time it was generated, in epoch seconds
+
+> NOTE: The JWT must encode the `alg` header as a protected header, such as with
+> [setProtectedHeader](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#setprotectedheader).
+
+The caller then passes along the JWT token with requests in the `Authorization`
+header:
+
+```yaml
+Authorization: Bearer eZv5o+fW3KnR3kVabMW4ZcDNLPl8nmMW
 ```

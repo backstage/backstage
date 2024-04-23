@@ -1,5 +1,18 @@
 # @backstage/plugin-permission-node
 
+## 0.7.28
+
+### Patch Changes
+
+- 29fa05b: Fixed an issue causing `ServerPermissionClient` to generate an invalid token for authorizing permissions against the permission backend.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-auth-node@0.4.12
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.7.28-next.1
 
 ### Patch Changes

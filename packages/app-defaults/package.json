@@ -1,6 +1,6 @@
 {
   "name": "@backstage/app-defaults",
-  "version": "1.5.4-next.1",
+  "version": "1.5.4",
   "description": "Provides the default wiring of a Backstage App",
   "backstage": {
     "role": "web-library"
@@ -48,7 +48,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^15.0.0",
     "@types/react": "^16.13.1 || ^17.0.0"
   },
   "peerDependencies": {

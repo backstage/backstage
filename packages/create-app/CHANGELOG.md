@@ -1,5 +1,15 @@
 # @backstage/create-app
 
+## 0.5.14
+
+### Patch Changes
+
+- 366cf07: Bumped create-app version.
+- 036b9b3: Bumped create-app version.
+- 2e1218c: Fix docs reference
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.5.14-next.1
 
 ### Patch Changes
@@ -922,7 +932,7 @@
 ### Patch Changes
 
 - f1c3cdfb2d: Bumped create-app version.
-- df21bbd4ad: The [Analytics API](https://backstage.io/docs/plugins/analytics) is the recommended way to track usage in Backstage; an optionally installable [Google Analytics module](https://github.com/backstage/backstage/tree/master/plugins/analytics-module-ga#installation) has superseded the old app.googleAnalyticsTrackingId config and its corresponding script tags in packages/app/public/index.html.
+- df21bbd4ad: The [Analytics API](https://backstage.io/docs/plugins/analytics) is the recommended way to track usage in Backstage; an optionally installable [Google Analytics module](https://github.com/backstage/community-plugins/tree/main/workspaces/analytics/plugins/analytics-module-ga#installation) has superseded the old app.googleAnalyticsTrackingId config and its corresponding script tags in packages/app/public/index.html.
 
   For an existing installation where you want to remove the redundant app.googleAnalyticsTrackingId, you should make the following adjustment to `packages/app/public/index.html`:
 

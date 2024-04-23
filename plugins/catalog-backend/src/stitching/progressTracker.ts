@@ -18,12 +18,12 @@ import { stringifyError } from '@backstage/errors';
 import { metrics } from '@opentelemetry/api';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
-import { Logger } from 'winston';
 import { DbRefreshStateRow } from '../database/tables';
 import { createCounterMetric } from '../util/metrics';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // Helps wrap the timing and logging behaviors
-export function progressTracker(knex: Knex, logger: Logger) {
+export function progressTracker(knex: Knex, logger: LoggerService) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promStitchedEntities = createCounterMetric({
     name: 'catalog_stitched_entities_count',

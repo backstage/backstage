@@ -23,11 +23,12 @@ import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError } from '@backstage/errors';
+import { AuthenticationError, ForwardedError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { decodeJwt } from 'jose';
-import { PluginTokenHandler } from './PluginTokenHandler';
-import { UserTokenHandler } from './UserTokenHandler';
+import { ExternalTokenHandler } from './external/ExternalTokenHandler';
+import { PluginTokenHandler } from './plugin/PluginTokenHandler';
+import { UserTokenHandler } from './user/UserTokenHandler';
 import {
   createCredentialsWithNonePrincipal,
   createCredentialsWithServicePrincipal,
@@ -39,12 +40,13 @@ import { KeyStore } from './types';
 /** @internal */
 export class DefaultAuthService implements AuthService {
   constructor(
-    private readonly tokenManager: TokenManager,
     private readonly userTokenHandler: UserTokenHandler,
+    private readonly pluginTokenHandler: PluginTokenHandler,
+    private readonly externalTokenHandler: ExternalTokenHandler,
+    private readonly tokenManager: TokenManager,
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
     private readonly publicKeyStore: KeyStore,
-    private readonly pluginTokenHandler: PluginTokenHandler,
   ) {}
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
@@ -78,14 +80,12 @@ export class DefaultAuthService implements AuthService {
       );
     }
 
-    // Legacy service-to-service token
-    const { sub, aud } = decodeJwt(token);
-    if (sub === 'backstage-server' && !aud) {
-      await this.tokenManager.authenticate(token);
-      return createCredentialsWithServicePrincipal('external:backstage-plugin');
+    const externalResult = await this.externalTokenHandler.verifyToken(token);
+    if (externalResult) {
+      return createCredentialsWithServicePrincipal(externalResult.subject);
     }
 
-    throw new AuthenticationError('Unknown token');
+    throw new AuthenticationError('Illegal token');
   }
 
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
@@ -151,7 +151,13 @@ export class DefaultAuthService implements AuthService {
           });
         }
         // If the target plugin does not support the new auth service, fall back to using old token format
-        return this.tokenManager.getToken();
+        return this.tokenManager.getToken().catch(error => {
+          throw new ForwardedError(
+            `Unable to generate legacy token for communication with the '${targetPluginId}' plugin. ` +
+              `You will typically encounter this error when attempting to call a plugin that does not exist, or is deployed with an old version of Backstage`,
+            error,
+          );
+        });
       case 'user': {
         const { token } = internalForward;
         if (!token) {

@@ -23,7 +23,6 @@ import { assertError, serializeError, stringifyError } from '@backstage/errors';
 import { Hash } from 'crypto';
 import stableStringify from 'fast-json-stable-stringify';
 import { Knex } from 'knex';
-import { Logger } from 'winston';
 import { metrics, trace } from '@opentelemetry/api';
 import { ProcessingDatabase, RefreshStateItem } from '../database/types';
 import { createCounterMetric, createSummaryMetric } from '../util/metrics';
@@ -40,6 +39,7 @@ import {
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const CACHE_TTL = 5;
 
@@ -56,7 +56,7 @@ export type ProgressTracker = ReturnType<typeof progressTracker>;
 export class DefaultCatalogProcessingEngine {
   private readonly config: Config;
   private readonly scheduler?: PluginTaskScheduler;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly knex: Knex;
   private readonly processingDatabase: ProcessingDatabase;
   private readonly orchestrator: CatalogProcessingOrchestrator;
@@ -76,7 +76,7 @@ export class DefaultCatalogProcessingEngine {
   constructor(options: {
     config: Config;
     scheduler?: PluginTaskScheduler;
-    logger: Logger;
+    logger: LoggerService;
     knex: Knex;
     processingDatabase: ProcessingDatabase;
     orchestrator: CatalogProcessingOrchestrator;
@@ -437,7 +437,7 @@ function progressTracker() {
     },
   );
 
-  function processStart(item: RefreshStateItem, logger: Logger) {
+  function processStart(item: RefreshStateItem, logger: LoggerService) {
     const startTime = process.hrtime();
     const endOverallTimer = promProcessingDuration.startTimer();
     const endProcessorsTimer = promProcessorsDuration.startTimer();

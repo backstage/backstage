@@ -15,7 +15,9 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { IconButton, Tooltip, withStyles } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles } from '@material-ui/core/styles';
 import Star from '@material-ui/icons/Star';
 import StarBorder from '@material-ui/icons/StarBorder';
 import React, { ComponentProps } from 'react';

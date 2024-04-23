@@ -36,7 +36,6 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
-import { Logger } from 'winston';
 import {
   assignGroupsToUsers,
   buildOrgHierarchy,
@@ -50,6 +49,7 @@ import {
   UserTransformer,
 } from '../lib';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Extracts teams and users out of a multiple GitHub orgs namespaced per org.
@@ -61,13 +61,13 @@ import { areGroupEntities, areUserEntities } from '../lib/guards';
 export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly orgs: GithubMultiOrgConfig;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly githubCredentialsProvider: GithubCredentialsProvider;
 
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
@@ -86,7 +86,7 @@ export class GithubMultiOrgReaderProcessor implements CatalogProcessor {
   constructor(
     private options: {
       integrations: ScmIntegrationRegistry;
-      logger: Logger;
+      logger: LoggerService;
       orgs: GithubMultiOrgConfig;
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;

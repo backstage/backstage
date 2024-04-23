@@ -1,6 +1,6 @@
 {
   "name": "@internal/plugin-todo-list",
-  "version": "1.0.26-next.0",
+  "version": "1.0.26",
   "backstage": {
     "role": "frontend-plugin"
   },
@@ -41,9 +41,9 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^15.0.0",
     "@types/react": "^16.13.1 || ^17.0.0"
   },
   "peerDependencies": {
