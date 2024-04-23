@@ -44721,6 +44721,7 @@ __metadata:
     "@yarnpkg/builder": ^4.0.0
     "@yarnpkg/core": ^4.0.3
     "@yarnpkg/fslib": ^3.0.2
+    chalk: ^4.0.0
     nodemon: ^3.0.1
     semver: ^7.6.0
   languageName: unknown
