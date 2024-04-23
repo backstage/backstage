@@ -50,7 +50,11 @@ import { createOpenApiRouter } from '../schema/openapi';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Options used by {@link createRouter}.
