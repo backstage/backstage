@@ -35,6 +35,7 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
+      promise: new Promise((resolve, reject) => resolve({})),
     });
 
     expect(
@@ -48,6 +49,7 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
+      promise: new Promise((resolve, reject) => resolve({})),
     });
 
     expect(
@@ -63,6 +65,7 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
+      promise: new Promise((resolve, reject) => resolve({})),
     });
 
     const entity: Entity = {
@@ -85,6 +88,7 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
+      promise: new Promise((resolve, reject) => resolve({})),
     });
   });
 
@@ -149,6 +153,47 @@ describe('DefaultEntityPresentationApi', () => {
         entityRefs: ['component:default/test'],
       }),
     );
+  });
+
+  it('returns the correct snapshots via promise', async () => {
+    const catalogApi = {
+      getEntitiesByRefs: jest.fn(),
+    };
+    const api = DefaultEntityPresentationApi.create({
+      catalogApi: catalogApi as Partial<CatalogApi> as any,
+    });
+
+    catalogApi.getEntitiesByRefs.mockResolvedValueOnce({
+      items: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'test',
+            namespace: 'default',
+            etag: 'something',
+          },
+          spec: {
+            type: 'service',
+          },
+        },
+      ],
+    });
+
+    const entityRef = 'component:default/test';
+    const entitySnapshot = {
+      entityRef: entityRef,
+      primaryTitle: 'test',
+      secondaryTitle: 'component:default/test | service',
+      Icon: expect.anything(),
+    };
+
+    const promise = api.forEntity(entityRef).promise;
+
+    const snapshots = await promise;
+
+    expect(snapshots.length).toEqual(1); // Only one snapshot expected
+    expect(snapshots[0]).toEqual(entitySnapshot); // Snapshot should match the simulated one
   });
 });
 
