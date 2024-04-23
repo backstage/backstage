@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
@@ -87,6 +88,11 @@ export const notificationsPlugin: BackstagePlugin<
 export const NotificationsSidebarItem: (props?: {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
+  className?: string;
+  icon?: IconComponent;
+  text?: string;
+  disableHighlight?: boolean;
+  noTrack?: boolean;
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
