@@ -8488,16 +8488,6 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-todo-common@workspace:plugins/todo-common":
-  version: 0.0.0-use.local
-  resolution: "@backstage/plugin-todo-common@workspace:plugins/todo-common"
-  dependencies:
-    "@backstage/cli": "workspace:^"
-    cross-fetch: ^4.0.0
-    uri-template: ^2.0.0
-  languageName: unknown
-  linkType: soft
-
 "@backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend"
