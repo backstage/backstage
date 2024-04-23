@@ -164,7 +164,7 @@ Share your experiences, comments, or suggestions with us:
 [on discord](https://discord.gg/backstage-687207715902193673), file issues for any
 [feature](https://github.com/backstage/backstage/issues/new?labels=help+wanted&template=feature_template.md)
 or
-[plugin suggestions](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME),
+[plugin suggestions](https://github.com/backstage/community-plugins/issues/new/choose),
 or
 [bugs](https://github.com/backstage/backstage/issues/new?labels=bug&template=bug_template.md)
 you have, and feel free to
