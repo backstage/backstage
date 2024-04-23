@@ -98,14 +98,6 @@ const handlers = [
       );
     },
   ),
-  rest.post('/api/login', (req, res, ctx) => {
-    const { username } = req.body;
-
-    if (username === 'admin') {
-      return res(ctx.status(200), ctx.json({ token: 'fake-token' }));
-    }
-    return res(ctx.status(403), ctx.json({ message: 'Access Denied' }));
-  }),
 ];
 
 describe('HarnessUrlReader', () => {
