@@ -93,12 +93,16 @@ export function getHarnessFileContentsUrl(
       _repos,
       repoName,
       _files,
-      ref,
+      _ref,
       _branch,
       ...path
     ] = url.replace(baseUrl, '').split('/');
+    const urlParts = url.replace(baseUrl, '').split('/');
+    const refAndPath = urlParts.slice(13);
+    const refIndex = refAndPath.findIndex(item => item === '~');
+    const refString = refAndPath.slice(0, refIndex);
     const pathWithoutSlash = path.join('/').replace(/^\//, '');
-    return `${baseUrl}/gateway/code/api/v1/repos/${accountId}/${orgName}/${projectName}/${repoName}/+/content/${pathWithoutSlash}?routingId=${accountId}&include_commit=false&ref=${ref}`;
+    return `${baseUrl}/gateway/code/api/v1/repos/${accountId}/${orgName}/${projectName}/${repoName}/+/content/${pathWithoutSlash}?routingId=${accountId}&include_commit=false&ref=${refString}`;
   } catch (e) {
     throw new Error(`Incorrect URL: ${url}, ${e}`);
   }

@@ -25,7 +25,6 @@ import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
 import getRawBody from 'raw-body';
 import { HarnessUrlReader } from './HarnessUrlReader';
-import { NotFoundError } from '@backstage/errors';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -44,6 +43,7 @@ const harnessProcessor = new HarnessUrlReader(
     readHarnessConfig(
       new ConfigReader({
         host: 'app.harness.io',
+        token: 'p',
       }),
     ),
   ),
@@ -56,9 +56,60 @@ const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     treeResponseFactory,
   });
 };
+const responseBuffer = Buffer.from('Apache License');
+const harnessApiResponse = (content: any) => {
+  return JSON.stringify({
+    content: {
+      data: Buffer.from(content).toString('base64'),
+      encoding: 'base64',
+    },
+  });
+};
+
+const handlers = [
+  rest.get(
+    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/all-apis.yaml',
+    (req, res, ctx) => {
+      return res(ctx.status(500), ctx.json({ message: 'Error!!!' }));
+    },
+  ),
+  rest.get(
+    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/404error.yaml',
+    (req, res, ctx) => {
+      return res(ctx.status(404), ctx.json({ message: 'File not found.' }));
+    },
+  ),
+  rest.get(
+    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/stream.TXT',
+    (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.body(harnessApiResponse(responseBuffer.toString())),
+      );
+    },
+  ),
+
+  rest.get(
+    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/buffer.TXT',
+    (req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.body(harnessApiResponse(responseBuffer.toString())),
+      );
+    },
+  ),
+  rest.post('/api/login', (req, res, ctx) => {
+    const { username } = req.body;
+
+    if (username === 'admin') {
+      return res(ctx.status(200), ctx.json({ token: 'fake-token' }));
+    }
+    return res(ctx.status(403), ctx.json({ message: 'Access Denied' }));
+  }),
+];
 
 describe('HarnessUrlReader', () => {
-  const worker = setupServer();
+  const worker = setupServer(...handlers);
   setupRequestMockHandlers(worker);
   beforeAll(() => worker.listen({ onUnhandledRequest: 'bypass' }));
   afterAll(() => {
@@ -107,97 +158,40 @@ describe('HarnessUrlReader', () => {
     });
   });
 
-  describe('readUrl', () => {
-    const responseBuffer = Buffer.from('Apache License');
-    const harnessApiResponse = (content: any) => {
-      return JSON.stringify({
-        encoding: 'base64',
-        content: Buffer.from(content).toString('base64'),
-      });
-    };
-
-    it.skip('should be able to read file contents as buffer', async () => {
-      worker.use(
-        rest.get(
-          'https://app.harness.io/api/v1/repos/owner/project/contents/LICENSE',
-          (req, res, ctx) => {
-            // Test utils prefers matching URL directly but it is part of Gitea's API
-            if (req.url.searchParams.get('ref') === 'branch2') {
-              return res(
-                ctx.status(200),
-                ctx.body(harnessApiResponse(responseBuffer.toString())),
-              );
-            }
-
-            return res(ctx.status(500));
-          },
-        ),
-      );
-
+  describe('readUrl part 1', () => {
+    it('should be able to read file contents as buffer', async () => {
       const result = await harnessProcessor.readUrl(
-        'https://app.harness.io/owner/project/src/branch/branch2/LICENSE',
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/buffer.TXT',
       );
       const buffer = await result.buffer();
       expect(buffer.toString()).toBe(responseBuffer.toString());
     });
 
-    it.skip('should be able to read file contents as stream', async () => {
-      worker.use(
-        rest.get(
-          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/LICENSE.txt',
-          (req, res, ctx) => {
-            if (req.url.searchParams.get('ref') === 'refMain') {
-              return res(
-                ctx.status(200),
-                ctx.body(harnessApiResponse(responseBuffer.toString())),
-              );
-            }
-
-            return res(ctx.status(500));
-          },
-        ),
-      );
-
+    it('should be able to read file contents as stream', async () => {
       const result = await harnessProcessor.readUrl(
-        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/LICENSE.TXT',
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/stream.TXT',
       );
       const fromStream = await getRawBody(result.stream!());
       expect(fromStream.toString()).toBe(responseBuffer.toString());
     });
 
-    it.skip('should raise NotFoundError on 404.', async () => {
-      worker.use(
-        rest.get(
-          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml',
-          (_, res, ctx) => {
-            return res(ctx.status(404, 'File not found.'));
-          },
-        ),
-      );
-
+    it('should raise NotFoundError on 404.', async () => {
       await expect(
         harnessProcessor.readUrl(
-          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml',
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/404error.yaml',
         ),
-      ).rejects.toThrow(NotFoundError);
+      ).rejects.toThrow(
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/404error.yaml x https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/content/404error.yaml?routingId=accountId&include_commit=false&ref=refMain, 404 Not Found',
+      );
     });
 
-    it.skip('should throw an error on non 404 errors.', async () => {
-      worker.use(
-        rest.get(
-          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml',
-          (_, res, ctx) => {
-            return res(ctx.status(500, 'Error!!!'));
-          },
-        ),
-      );
-
+    it('should throw an error on non 404 errors.', async () => {
       await expect(
         harnessProcessor.readUrl(
           'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml',
         ),
       ).rejects.toThrow(
-        'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/content/all-apis.yaml?routingId=accountId&include_commit=false&ref=refMain, 500 Error!!!',
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml x https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/content/all-apis.yaml?routingId=accountId&include_commit=false&ref=refMain, 500 Internal Server Error',
       );
     });
   });
