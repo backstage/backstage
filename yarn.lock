@@ -6592,6 +6592,7 @@ __metadata:
     uuid: ^9.0.0
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
+    winston-transport: ^4.7.0
     yaml: ^2.0.0
     zen-observable: ^0.10.0
     zod: ^3.22.4
