@@ -39,7 +39,7 @@ import { compact } from 'lodash';
 import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { NotificationTemplateRenderer } from '../extensions';
 import Mail from 'nodemailer/lib/mailer';
-import pLimit from 'p-limit';
+import pThrottle from 'p-throttle';
 
 export class NotificationsEmailProcessor implements NotificationProcessor {
   private transporter: any;
@@ -49,6 +49,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly replyTo?: string;
   private readonly cacheTtl: number;
   private readonly concurrencyLimit: number;
+  private readonly throttleInterval: number;
 
   constructor(
     private readonly logger: LoggerService,
@@ -68,6 +69,11 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     this.replyTo = emailProcessorConfig.getOptionalString('replyTo');
     this.concurrencyLimit =
       emailProcessorConfig.getOptionalNumber('concurrencyLimit') ?? 2;
+    const throttleConfig =
+      emailProcessorConfig.getOptionalConfig('throttleInterval');
+    this.throttleInterval = throttleConfig
+      ? durationToMilliseconds(readDurationFromConfig(throttleConfig))
+      : 100;
     const cacheConfig = emailProcessorConfig.getOptionalConfig('cache.ttl');
     this.cacheTtl = cacheConfig
       ? durationToMilliseconds(readDurationFromConfig(cacheConfig))
@@ -198,11 +204,14 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   }
 
   private async sendMails(options: Mail.Options, emails: string[]) {
-    const limit = pLimit(this.concurrencyLimit);
+    const throttle = pThrottle({
+      limit: this.concurrencyLimit,
+      interval: this.throttleInterval,
+    });
+
+    const throttled = throttle((opts: Mail.Options) => this.sendMail(opts));
     await Promise.all(
-      emails.map(email =>
-        limit(() => this.sendMail({ ...options, to: email })),
-      ),
+      emails.map(email => throttled({ ...options, to: email })),
     );
   }
 

@@ -92,6 +92,10 @@ export interface Config {
          */
         concurrencyLimit?: number;
         /**
+         * Throttle duration between email sending, defaults to 100ms
+         */
+        throttleInterval?: HumanDuration;
+        /**
          * Configuration for broadcast notifications
          */
         broadcastConfig?: {

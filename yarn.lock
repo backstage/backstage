@@ -6051,7 +6051,7 @@ __metadata:
     "@types/nodemailer": ^6.4.14
     lodash: ^4.17.21
     nodemailer: ^6.9.13
-    p-limit: ^3.1.0
+    p-throttle: ^6.1.0
   languageName: unknown
   linkType: soft
 
@@ -33252,6 +33252,13 @@ __metadata:
     is-network-error: ^1.0.0
     retry: ^0.13.1
   checksum: 6003573c559ee812329c9c3ede7ba12a783fdc8dd70602116646e850c920b4597dc502fe001c3f9526fca4e93275045db7a27341c458e51db179c1374a01ac44
+  languageName: node
+  linkType: hard
+
+"p-throttle@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "p-throttle@npm:6.1.0"
+  checksum: c1947cca8844564c3d86f8c09067add5e7398b87898cb1f1aea5c48d2c211590d039a316d28a4b0d95364ffa0213c01dff6bf71175c468eab0e381f77715dbdb
   languageName: node
   linkType: hard
 
