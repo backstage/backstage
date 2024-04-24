@@ -1,13 +1,5 @@
 # @backstage/plugin-dynatrace
 
-## 10.0.5
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/core-components@0.14.5
-  - @backstage/plugin-catalog-react@1.11.4
-
 ## 10.0.4
 
 ### Patch Changes

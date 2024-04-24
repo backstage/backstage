@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-adr-backend",
-  "version": "0.4.16",
+  "version": "0.4.15",
   "backstage": {
     "role": "backend-plugin",
     "moved": "@backstage-community/plugin-adr-backend"

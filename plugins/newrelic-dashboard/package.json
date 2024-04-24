@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-newrelic-dashboard",
-  "version": "0.3.11",
+  "version": "0.3.10",
   "backstage": {
     "role": "frontend-plugin",
     "moved": "@backstage-community/plugin-newrelic-dashboard"

@@ -1,16 +1,5 @@
 # @backstage/plugin-app-backend
 
-## 0.3.66
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/backend-common@0.21.8
-  - @backstage/plugin-auth-node@0.4.13
-  - @backstage/config-loader@1.8.0
-  - @backstage/backend-plugin-api@0.6.18
-  - @backstage/plugin-app-node@0.1.18
-
 ## 0.3.65
 
 ### Patch Changes

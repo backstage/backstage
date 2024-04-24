@@ -1,13 +1,5 @@
 # @backstage/plugin-nomad
 
-## 0.1.17
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/core-components@0.14.5
-  - @backstage/plugin-catalog-react@1.11.4
-
 ## 0.1.16
 
 ### Patch Changes

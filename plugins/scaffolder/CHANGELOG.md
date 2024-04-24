@@ -1,17 +1,5 @@
 # @backstage/plugin-scaffolder
 
-## 1.19.4
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/core-components@0.14.5
-  - @backstage/frontend-plugin-api@0.6.5
-  - @backstage/integration-react@1.1.26
-  - @backstage/plugin-catalog-react@1.11.4
-  - @backstage/plugin-scaffolder-react@1.8.5
-  - @backstage/core-compat-api@0.2.5
-
 ## 1.19.3
 
 ### Patch Changes

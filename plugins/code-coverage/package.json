@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-code-coverage",
-  "version": "0.2.29",
+  "version": "0.2.28",
   "description": "A Backstage plugin that helps you keep track of your code coverage",
   "backstage": {
     "role": "frontend-plugin",
