@@ -61,9 +61,9 @@ export interface CodeSnippetProps {
    */
   highlightColor?: string;
   /**
-   * Style mode - choose any hightlighter style from {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/ | react-syntax-highlighter}
+   * Style - choose any hightlighter style from {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/ | react-syntax-highlighter}
    */
-  styleMode?: { [key: string]: React.CSSProperties } | undefined;
+  style?: { [key: string]: React.CSSProperties } | undefined;
   /**
    * Array of line numbers to highlight
    */
@@ -94,14 +94,22 @@ export function CodeSnippet(props: CodeSnippetProps) {
     language,
     showLineNumbers = false,
     highlightedNumbers,
+    style,
     customStyle,
     scrollToLine,
     highlightColor,
     showCopyCodeButton = false,
   } = props;
   const theme = useTheme();
-  const mode = theme.palette.type === 'dark' ? lioshi : docco;
-  let highlightColorValue: string;
+
+  let mode;
+  if (style) {
+    mode = style;
+  } else {
+    mode = theme.palette.type === 'dark' ? lioshi : docco;
+  }
+
+  let highlightColorValue;
   if (highlightColor) {
     highlightColorValue = highlightColor;
   } else {
