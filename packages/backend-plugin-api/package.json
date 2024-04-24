@@ -20,6 +20,7 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
+    "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./alpha": "./src/alpha.ts",
     "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
@@ -28,6 +29,9 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
+      "scheduler": [
+        "src/entrypoints/scheduler/index.ts"
+      ],
       "alpha": [
         "src/alpha.ts"
       ],
@@ -61,7 +65,8 @@
     "@backstage/types": "workspace:^",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
-    "knex": "^3.0.0"
+    "knex": "^3.0.0",
+    "luxon": "^3.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

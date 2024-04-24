@@ -36,7 +36,7 @@ import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
-import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerService } from '@backstage/backend-plugin-api/scheduler';
 import type { Server } from 'node:http';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';

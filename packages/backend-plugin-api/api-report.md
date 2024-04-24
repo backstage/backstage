@@ -15,12 +15,12 @@ import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
+import { SchedulerService as SchedulerService_2 } from '@backstage/backend-plugin-api/scheduler';
 
 // @public (undocumented)
 export interface AuthService {
@@ -202,7 +202,7 @@ export namespace coreServices {
   const rootHttpRouter: ServiceRef<RootHttpRouterService, 'root'>;
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root'>;
-  const scheduler: ServiceRef<SchedulerService, 'plugin'>;
+  const scheduler: ServiceRef<SchedulerService_2, 'plugin'>;
   const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
   const identity: ServiceRef<IdentityService, 'plugin'>;
@@ -536,8 +536,8 @@ export interface RootServiceFactoryConfig<
   service: ServiceRef<TService, 'root'>;
 }
 
-// @public (undocumented)
-export interface SchedulerService extends PluginTaskScheduler {}
+// @public @deprecated (undocumented)
+export type SchedulerService = SchedulerService_2;
 
 // @public
 export type SearchOptions = {
