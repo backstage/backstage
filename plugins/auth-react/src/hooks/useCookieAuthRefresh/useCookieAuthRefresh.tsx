@@ -24,6 +24,7 @@ import { useAsync, useMountEffect } from '@react-hookz/web';
 import { ResponseError } from '@backstage/errors';
 
 const COOKIE_PATH = '/.backstage/auth/v1/cookie';
+const ONE_YEAR_MS = 365 * 24 * 3600_000;
 
 /**
  * @public
@@ -54,6 +55,14 @@ export function useCookieAuthRefresh(options: {
       credentials: 'include',
     });
     if (!response.ok) {
+      // If we get a 404 from the cookie endpoint we assume that it does not
+      // exist and cookie auth is not needed. For all active tabs we don't
+      // schedule another refresh for the forseeable future, but new tabs will
+      // still check if cookie auth has been added to the deployment.
+      // TODO(Rugvip): Once the legacy backend system is no longer supported we should remove this check
+      if (response.status === 404) {
+        return { expiresAt: new Date(Date.now() + ONE_YEAR_MS) };
+      }
       throw await ResponseError.fromResponse(response);
     }
     const data = await response.json();
