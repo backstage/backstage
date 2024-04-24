@@ -36,7 +36,7 @@ import {
 import { Readable } from 'stream';
 
 /**
- * Implements a {@link UrlReader} for the Harness code v1 api.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for the Harness code v1 api.
  *
  * @public
  */
