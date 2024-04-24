@@ -520,9 +520,7 @@ export function getHarnessFileContentsUrl(
 ): string;
 
 // @public
-export function getHarnessRequestOptions(
-  config: HarnessIntegrationConfig,
-): {
+export function getHarnessRequestOptions(config: HarnessIntegrationConfig): {
   headers?: Record<string, string>;
 };
 
@@ -711,8 +709,8 @@ export class HarnessIntegration implements ScmIntegration {
 // @public
 export type HarnessIntegrationConfig = {
   host: string;
-  apiKey?: string;
   token?: string;
+  apiKey?: string;
 };
 
 // @public
@@ -883,9 +881,7 @@ export function readGoogleGcsIntegrationConfig(
 ): GoogleGcsIntegrationConfig;
 
 // @public
-export function readHarnessConfig(
-  config: Config,
-): HarnessIntegrationConfig;
+export function readHarnessConfig(config: Config): HarnessIntegrationConfig;
 
 // @public @deprecated (undocumented)
 export const replaceGitHubUrlType: typeof replaceGithubUrlType;
