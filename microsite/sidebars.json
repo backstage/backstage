@@ -239,9 +239,9 @@
         "items": ["integrations/gitea/locations"]
       },
       {
-        "type": "subcategory",
+        "type": "category",
         "label": "Harness",
-        "ids": ["integrations/harness/locations"]
+        "items": ["integrations/harness/locations"]
       },
       {
         "type": "category",
