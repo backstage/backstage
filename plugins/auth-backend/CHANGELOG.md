@@ -1,5 +1,29 @@
 # @backstage/plugin-auth-backend
 
+## 0.22.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.8
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.10
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.9
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.10
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.1.1
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.1.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.15
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.15
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.13
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.15
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.11
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.1.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.13
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.15
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.11
+  - @backstage/plugin-catalog-node@1.11.2
+  - @backstage/backend-plugin-api@0.6.18
+
 ## 0.22.4
 
 ### Patch Changes

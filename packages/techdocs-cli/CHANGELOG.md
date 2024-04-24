@@ -1,5 +1,14 @@
 # @techdocs/cli
 
+## 1.8.10
+
+### Patch Changes
+
+- 15768bc: Fix cookie endpoint mock for `serve`
+- Updated dependencies
+  - @backstage/backend-common@0.21.8
+  - @backstage/plugin-techdocs-node@1.12.4
+
 ## 1.8.9
 
 ### Patch Changes

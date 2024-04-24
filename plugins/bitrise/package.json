@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-bitrise",
-  "version": "0.1.62",
+  "version": "0.1.63",
   "description": "A Backstage plugin that integrates towards Bitrise",
   "backstage": {
     "role": "frontend-plugin",

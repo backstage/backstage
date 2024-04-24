@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-playlist-backend",
-  "version": "0.3.22",
+  "version": "0.3.23",
   "backstage": {
     "role": "backend-plugin",
     "moved": "@backstage-community/plugin-playlist-backend"

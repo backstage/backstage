@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-github-pull-requests-board",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "A Backstage plugin that allows you to see all open Pull Requests for all the repositories owned by your team",
   "backstage": {
     "role": "frontend-plugin",

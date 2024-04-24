@@ -1,5 +1,51 @@
 # example-backend-next
 
+## 0.0.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-module-catalog@0.1.23
+  - @backstage/plugin-search-backend-module-explore@0.1.23
+  - @backstage/backend-defaults@0.2.18
+  - @backstage/plugin-app-backend@0.3.66
+  - @backstage/plugin-kubernetes-backend@0.17.1
+  - @backstage/plugin-catalog-backend@1.21.2
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-adr-backend@0.4.16
+  - @backstage/plugin-auth-backend@0.22.5
+  - @backstage/plugin-auth-backend-module-guest-provider@0.1.4
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/plugin-azure-devops-backend@0.6.6
+  - @backstage/plugin-badges-backend@0.4.2
+  - @backstage/plugin-catalog-backend-module-openapi@0.1.36
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.5
+  - @backstage/plugin-devtools-backend@0.3.4
+  - @backstage/plugin-entity-feedback-backend@0.2.16
+  - @backstage/plugin-jenkins-backend@0.4.6
+  - @backstage/plugin-lighthouse-backend@0.4.12
+  - @backstage/plugin-linguist-backend@0.5.17
+  - @backstage/plugin-nomad-backend@0.1.21
+  - @backstage/plugin-notifications-backend@0.2.1
+  - @backstage/plugin-permission-backend@0.5.42
+  - @backstage/plugin-permission-node@0.7.29
+  - @backstage/plugin-playlist-backend@0.3.23
+  - @backstage/plugin-proxy-backend@0.4.16
+  - @backstage/plugin-scaffolder-backend@1.22.5
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.8
+  - @backstage/plugin-search-backend@1.5.8
+  - @backstage/plugin-search-backend-module-techdocs@0.1.23
+  - @backstage/plugin-search-backend-node@1.2.22
+  - @backstage/plugin-signals-backend@0.1.4
+  - @backstage/plugin-sonarqube-backend@0.2.21
+  - @backstage/plugin-techdocs-backend@1.10.5
+  - @backstage/plugin-todo-backend@0.3.18
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.15
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.16
+  - @backstage/plugin-permission-backend-module-allow-all-policy@0.1.15
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-catalog-backend-module-backstage-openapi@0.2.1
+
 ## 0.0.28
 
 ### Patch Changes

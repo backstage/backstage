@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-home-react",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "A Backstage plugin that contains react components helps you build a home page",
   "backstage": {
     "role": "web-library"

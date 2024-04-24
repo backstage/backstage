@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-codescene",
-  "version": "0.1.27",
+  "version": "0.1.28",
   "backstage": {
     "role": "frontend-plugin",
     "moved": "@backstage-community/plugin-codescene"

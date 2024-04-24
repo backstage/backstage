@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-tech-insights-backend-module-jsonfc",
-  "version": "0.1.50",
+  "version": "0.1.51",
   "backstage": {
     "role": "backend-plugin-module",
     "moved": "@backstage-community/plugin-tech-insights-backend-module-jsonfc"

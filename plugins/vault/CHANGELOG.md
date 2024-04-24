@@ -1,5 +1,13 @@
 # @backstage/plugin-vault
 
+## 0.1.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.5
+  - @backstage/plugin-catalog-react@1.11.4
+
 ## 0.1.30
 
 ### Patch Changes

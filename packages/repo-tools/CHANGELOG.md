@@ -1,5 +1,14 @@
 # @backstage/repo-tools
 
+## 0.8.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.8
+  - @backstage/cli-node@0.2.5
+  - @backstage/config-loader@1.8.0
+
 ## 0.8.0
 
 ### Minor Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kafka",
-  "version": "0.3.35",
+  "version": "0.3.36",
   "description": "A Backstage plugin that integrates towards Kafka",
   "backstage": {
     "role": "frontend-plugin",

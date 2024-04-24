@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-microsoft-calendar",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "backstage": {
     "role": "frontend-plugin",
     "moved": "@backstage-community/plugin-microsoft-calendar"

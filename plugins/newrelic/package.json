@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-newrelic",
-  "version": "0.3.50",
+  "version": "0.3.51",
   "description": "A Backstage plugin that integrates towards New Relic",
   "backstage": {
     "role": "frontend-plugin",

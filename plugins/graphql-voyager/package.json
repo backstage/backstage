@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-graphql-voyager",
-  "version": "0.1.17",
+  "version": "0.1.18",
   "description": "Backstage plugin for GraphQL Voyager",
   "backstage": {
     "role": "frontend-plugin",

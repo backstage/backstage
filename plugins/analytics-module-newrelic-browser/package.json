@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-analytics-module-newrelic-browser",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "backstage": {
     "role": "frontend-plugin-module",
     "moved": "@backstage-community/plugin-analytics-module-newrelic-browser"

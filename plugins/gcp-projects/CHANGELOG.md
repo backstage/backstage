@@ -1,5 +1,12 @@
 # @backstage/plugin-gcp-projects
 
+## 0.3.52
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.5
+
 ## 0.3.51
 
 ### Patch Changes

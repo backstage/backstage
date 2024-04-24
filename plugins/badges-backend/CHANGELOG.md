@@ -1,5 +1,14 @@
 # @backstage/plugin-badges-backend
 
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.8
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/backend-plugin-api@0.6.18
+
 ## 0.4.1
 
 ### Patch Changes

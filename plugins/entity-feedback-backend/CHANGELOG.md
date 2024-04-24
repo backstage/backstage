@@ -1,5 +1,14 @@
 # @backstage/plugin-entity-feedback-backend
 
+## 0.2.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.8
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/backend-plugin-api@0.6.18
+
 ## 0.2.15
 
 ### Patch Changes

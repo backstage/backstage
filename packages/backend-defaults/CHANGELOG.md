@@ -1,5 +1,13 @@
 # @backstage/backend-defaults
 
+## 0.2.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.1
+  - @backstage/backend-common@0.21.8
+
 ## 0.2.17
 
 ### Patch Changes

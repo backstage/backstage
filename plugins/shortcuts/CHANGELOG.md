@@ -1,5 +1,12 @@
 # @backstage/plugin-shortcuts
 
+## 0.3.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.5
+
 ## 0.3.24
 
 ### Patch Changes

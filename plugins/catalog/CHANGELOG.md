@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog
 
+## 1.19.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.5
+  - @backstage/frontend-plugin-api@0.6.5
+  - @backstage/integration-react@1.1.26
+  - @backstage/plugin-catalog-react@1.11.4
+  - @backstage/plugin-search-react@1.7.11
+  - @backstage/core-compat-api@0.2.5
+
 ## 1.19.0
 
 ### Minor Changes
