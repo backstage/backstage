@@ -531,6 +531,8 @@ export class GitlabUrlReader implements UrlReader {
   toString(): string;
 }
 
+// Warning: (ae-unresolved-link) The @link reference could not be resolved: This type of declaration is not supported yet by the resolver
+//
 // @public
 export class HarnessUrlReader implements UrlReader {
   constructor(integration: HarnessIntegration);
@@ -547,13 +549,6 @@ export class HarnessUrlReader implements UrlReader {
   // (undocumented)
   toString(): string;
 }
-
-// @public
-export type HarnessIntegrationConfig = {
-  host: string;
-  apiKey?: string;
-  token?: string;
-};
 
 // @public
 export const HostDiscovery: typeof HostDiscovery_2;
