@@ -181,9 +181,11 @@ parameters:
 
 ## Use parameters as condition in steps
 
+Conditions use Javascript equality operators.
+
 ```yaml
 - name: Only development environments
-  if: ${{ parameters.environment === "staging" and parameters.environment === "development" }}
+  if: ${{ parameters.environment === "staging" or parameters.environment === "development" }}
   action: debug:log
   input:
     message: 'development step'
@@ -193,6 +195,12 @@ parameters:
   action: debug:log
   input:
     message: 'production step'
+
+- name: Non-production environments
+  if: ${{ parameters.environment !== "prod" and parameters.environment !== "production" }}
+  action: debug:log
+  input:
+    message: 'non-production step'
 ```
 
 ## Use parameters as conditional for fields
@@ -218,9 +226,14 @@ parameters:
                 lastName:
                   title: Last Name
                   type: string
+              # You can use additional fields of parameters within conditional parameters such as required.
+              required:
+                - lastName
 ```
 
 ## Conditionally set parameters
+
+The `if` keyword within the parameter uses [nunjucks templating](https://mozilla.github.io/nunjucks/templating.html#if). The `not` keyword is unavailable; instead, use javascript equality.
 
 ```yaml
 spec:
@@ -237,4 +250,9 @@ spec:
       action: fetch:template
       input:
         url: ${{ parameters.path if parameters.path else '/root' }}
+    - id: fetch_not_example
+      name: Fetch template not example
+      action: fetch:template
+      input:
+        url: ${{ '/root' if parameters.path !== true else parameters.path }}
 ```
