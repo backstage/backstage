@@ -15,8 +15,8 @@
  */
 
 import Box from '@material-ui/core/Box';
-import {useTheme} from '@material-ui/core/styles';
-import React, {useEffect, useRef} from 'react';
+import { useTheme } from '@material-ui/core/styles';
+import React, { useEffect, useRef } from 'react';
 import type {} from 'react-syntax-highlighter';
 import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
 import lioshi from 'react-syntax-highlighter/dist/esm/styles/hljs/lioshi';
@@ -123,10 +123,9 @@ export function CodeSnippet(props: CodeSnippetProps) {
     }
     // wrapped in setTimeout to ensure that the line number ref is created
     setTimeout(() => {
-      lineNumberRef.current?.current?.scrollIntoView({behavior: 'smooth'});
+      lineNumberRef.current?.current?.scrollIntoView({ behavior: 'smooth' });
     }, 200);
   }, [scrollToLine]);
-
 
   return (
     <Box position="relative">
@@ -136,21 +135,23 @@ export function CodeSnippet(props: CodeSnippetProps) {
         style={mode}
         showLineNumbers={showLineNumbers}
         wrapLines
-        lineNumberStyle={{color: theme.palette.textVerySubtle}}
+        lineNumberStyle={{ color: theme.palette.textVerySubtle }}
         lineProps={(lineNumber: number) => {
-          const ref = (lineNumber === scrollToLine) ? lineNumberRef.current = React.createRef() : undefined;
+          const ref =
+            lineNumber === scrollToLine
+              ? (lineNumberRef.current = React.createRef())
+              : undefined;
           return highlightedNumbers?.includes(lineNumber)
             ? {
-              ref,
-              style: {
-                backgroundColor: highlightColorValue,
-              },
-            }
+                ref,
+                style: {
+                  backgroundColor: highlightColorValue,
+                },
+              }
             : {
-              ref,
-            }
-        }
-        }
+                ref,
+              };
+        }}
       >
         {text}
       </LightAsync>
