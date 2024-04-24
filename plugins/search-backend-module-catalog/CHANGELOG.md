@@ -5,12 +5,6 @@
 ### Patch Changes
 
 - 9d6543c: Fix wiring of the module exported at the `/alpha` path, which was causing authentication failures.
-- Updated dependencies
-  - @backstage/backend-common@0.21.8
-  - @backstage/backend-tasks@0.5.23
-  - @backstage/plugin-search-backend-node@1.2.22
-  - @backstage/plugin-catalog-node@1.11.2
-  - @backstage/backend-plugin-api@0.6.18
 
 ## 0.1.22
 

@@ -5,8 +5,6 @@
 ### Patch Changes
 
 - efa0e83: When using `CookieAuthRefreshProvider` or `useCookieAuthRefresh`, a 404 response from the cookie endpoint will now be treated as if cookie auth is disabled and is not needed.
-- Updated dependencies
-  - @backstage/core-components@0.14.5
 
 ## 0.1.0
 

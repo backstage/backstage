@@ -5,11 +5,6 @@
 ### Patch Changes
 
 - da02d13: Migrate search collator to use the new auth services.
-- Updated dependencies
-  - @backstage/backend-common@0.21.8
-  - @backstage/backend-tasks@0.5.23
-  - @backstage/plugin-search-backend-node@1.2.22
-  - @backstage/backend-plugin-api@0.6.18
 
 ## 0.1.22
 
