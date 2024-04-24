@@ -23,7 +23,7 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { durationToMilliseconds, JsonArray } from '@backstage/types';
+import { durationToMilliseconds } from '@backstage/types';
 import {
   CATALOG_FILTER_EXISTS,
   CatalogClient,
@@ -150,7 +150,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
         ),
       ]);
 
-      await this.cache?.set('user-emails:all', ret as JsonArray, {
+      await this.cache?.set('user-emails:all', ret, {
         ttl: this.cacheTtl,
       });
       return ret;
@@ -160,9 +160,9 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   }
 
   private async getUserEmail(entityRef: string): Promise<string[]> {
-    const cached = await this.cache?.get<string>(`user-emails:${entityRef}`);
+    const cached = await this.cache?.get<string[]>(`user-emails:${entityRef}`);
     if (cached) {
-      return [cached];
+      return cached;
     }
 
     const { token } = await this.auth.getPluginRequestToken({
@@ -178,7 +178,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       }
     }
 
-    await this.cache?.set(`user-emails:${entityRef}`, ret[0], {
+    await this.cache?.set(`user-emails:${entityRef}`, ret, {
       ttl: this.cacheTtl,
     });
 
