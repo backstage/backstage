@@ -41,8 +41,7 @@
   },
   "files": [
     "dist",
-    "config.d.ts",
-    "alpha"
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",

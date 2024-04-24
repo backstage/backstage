@@ -34,8 +34,7 @@
   },
   "files": [
     "dist",
-    "migrations",
-    "alpha"
+    "migrations"
   ],
   "scripts": {
     "build": "backstage-cli package build",
