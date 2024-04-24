@@ -470,6 +470,37 @@ This can be particularly useful if you have processors setup in the Catalog to w
 
 You also have access to `user.entity.metadata.annotations` too, so if you have some other additional information stored in there, you reference those too.
 
+### Saving API definitions
+
+Sometimes it's useful to save the definition of a provided API in the newly generated component. To select the API you can use the 'EntityPicker' field.
+
+```yaml
+properties:
+  apiRef:
+    title: API
+    description: The API to consume
+    type: string
+    ui:field: EntityPicker
+    ui:options:
+      catalogFilter:
+        kind:
+          - API
+        spec.type: grpc
+```
+
+The example above only lists APIs of type `grpc`, but any type can be used, or even no type at all. In the later case all APIs, regardless of their kind will be listed.
+The definition of the selected API can then be save to the project workspace, using the `fetch:api` action.
+
+```yaml
+- id: fetchApi
+  name: Fetch the API
+  action: fetch:api
+  input:
+    values:
+      targetPath: proto/${{ parameters.component_id }}.proto
+      apiRef: ${{ parameters.apiRef }}
+```
+
 ### The Owner Picker
 
 When the scaffolder needs to add new components to the catalog, it needs to have
