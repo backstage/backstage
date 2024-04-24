@@ -20,7 +20,6 @@
 
 /**
  * Options for requesting a refresh of entities in the catalog.
- * @public
  */
 export interface RefreshEntityRequest {
   authorizationToken?: string;

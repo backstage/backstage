@@ -20,7 +20,6 @@
 
 /**
  * A link to external information that is related to the entity.
- * @public
  */
 export interface EntityLink {
   /**

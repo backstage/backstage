@@ -20,9 +20,6 @@
 import { EntitiesQueryResponsePageInfo } from '../models/EntitiesQueryResponsePageInfo.model';
 import { Entity } from '../models/Entity.model';
 
-/**
- * @public
- */
 export interface EntitiesQueryResponse {
   /**
    * The list of entities paginated by a specific filter.

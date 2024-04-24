@@ -20,7 +20,6 @@
 
 /**
  * Holds the entity location information.
- * @public
  */
 export interface LocationSpec {
   target: string;

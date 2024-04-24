@@ -21,9 +21,6 @@ import { ErrorError } from '../models/ErrorError.model';
 import { ErrorRequest } from '../models/ErrorRequest.model';
 import { ErrorResponse } from '../models/ErrorResponse.model';
 
-/**
- * @public
- */
 export interface ModelError {
   [key: string]: any;
 

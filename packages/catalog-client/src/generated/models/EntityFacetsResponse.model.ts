@@ -19,9 +19,6 @@
 // ******************************************************************
 import { EntityFacet } from '../models/EntityFacet.model';
 
-/**
- * @public
- */
 export interface EntityFacetsResponse {
   facets: { [key: string]: Array<EntityFacet> };
 }

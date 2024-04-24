@@ -22,7 +22,6 @@ import { EntityRelation } from '../models/EntityRelation.model';
 
 /**
  * The parts of the format that's common to all versions/kinds of entity.
- * @public
  */
 export interface NullableEntity {
   /**

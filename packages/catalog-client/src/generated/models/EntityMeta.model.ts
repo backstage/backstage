@@ -21,7 +21,6 @@ import { EntityLink } from '../models/EntityLink.model';
 
 /**
  * Metadata fields common to all versions/kinds of entity.
- * @public
  */
 export interface EntityMeta {
   [key: string]: any;

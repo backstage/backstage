@@ -20,9 +20,6 @@
 import { Entity } from '../models/Entity.model';
 import { Location } from '../models/Location.model';
 
-/**
- * @public
- */
 export interface CreateLocation201Response {
   exists?: boolean;
   entities: Array<Entity>;

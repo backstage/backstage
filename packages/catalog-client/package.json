@@ -25,24 +25,8 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "dist",
-    "alpha"
+    "dist"
   ],
-  "exports": {
-    ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
-    "./package.json": "./package.json"
-  },
-  "typesVersions": {
-    "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
-      "package.json": [
-        "package.json"
-      ]
-    }
-  },
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",

@@ -19,9 +19,6 @@
 // ******************************************************************
 import { LocationInput } from '../models/LocationInput.model';
 
-/**
- * @public
- */
 export interface AnalyzeLocationRequest {
   catalogFileName?: string;
   location: LocationInput;

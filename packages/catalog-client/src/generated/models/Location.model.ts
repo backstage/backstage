@@ -20,7 +20,6 @@
 
 /**
  * Entity location for a specific entity.
- * @public
  */
 export interface Location {
   target: string;
