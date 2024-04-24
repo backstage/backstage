@@ -36,14 +36,14 @@ async function runOpenApiGeneratorCommand({
   additionalProperties?: Record<string, string | undefined>;
 }) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
-  const resolvedQueryClientDirectory = cliPaths.resolveTargetRoot(
+  const resolvedOutputPath = cliPaths.resolveTargetRoot(
     outputPath,
     OUTPUT_PATH,
   );
-  await fs.mkdirp(resolvedQueryClientDirectory);
+  await fs.mkdirp(resolvedOutputPath);
 
   await fs.writeFile(
-    resolve(resolvedQueryClientDirectory, '.openapi-generator-ignore'),
+    resolve(resolvedOutputPath, '.openapi-generator-ignore'),
     OPENAPI_IGNORE_FILES.join('\n'),
   );
 
@@ -68,7 +68,7 @@ async function runOpenApiGeneratorCommand({
       '-i',
       resolvedOpenapiPath,
       '-o',
-      resolvedQueryClientDirectory,
+      resolvedOutputPath,
       '-g',
       'typescript',
       '-c',
@@ -89,20 +89,16 @@ async function runOpenApiGeneratorCommand({
     },
   );
 
-  await exec(
-    `yarn backstage-cli package lint --fix ${resolvedQueryClientDirectory}`,
-  );
+  await exec(`yarn backstage-cli package lint --fix ${resolvedOutputPath}`);
 
   const prettier = cliPaths.resolveTargetRoot('node_modules/.bin/prettier');
   if (prettier) {
-    await exec(`${prettier} --write ${resolvedQueryClientDirectory}`);
+    await exec(`${prettier} --write ${resolvedOutputPath}`);
   }
 
-  fs.removeSync(
-    resolve(resolvedQueryClientDirectory, '.openapi-generator-ignore'),
-  );
+  fs.removeSync(resolve(resolvedOutputPath, '.openapi-generator-ignore'));
 
-  fs.rmSync(resolve(resolvedQueryClientDirectory, '.openapi-generator'), {
+  fs.rmSync(resolve(resolvedOutputPath, '.openapi-generator'), {
     recursive: true,
     force: true,
   });
@@ -116,6 +112,8 @@ async function generateReactQueryClient({
   reactQuery: {
     outputPackage: string;
     apiRefNamespace: string | undefined;
+    apiRefName: string | undefined;
+    apiRefImport: string | undefined;
     clientImport: string | undefined;
   };
 }) {
@@ -128,6 +126,8 @@ async function generateReactQueryClient({
           ? '.'
           : reactQuery.clientImport,
       apiRefNamespace: reactQuery.apiRefNamespace || 'core',
+      apiRefName: reactQuery.apiRefName,
+      apiRefImport: reactQuery.apiRefImport,
       ...additionalProperties,
     },
   });
@@ -146,6 +146,8 @@ export async function command({
     enabled: enableReactQuery,
     outputPackage: queryOutputPackage,
     apiRefNamespace,
+    apiRefName,
+    apiRefImport,
     clientImport,
   },
 }: {
@@ -155,10 +157,20 @@ export async function command({
     enabled: boolean;
     clientImport?: string;
     apiRefNamespace?: string;
+    apiRefName?: string;
+    apiRefImport?: string;
   };
 }): Promise<void> {
+  if (apiRefNamespace && apiRefName) {
+    throw new Error('You can only specify one of apiRefNamespace or apiRef');
+  }
+
   try {
     await generate(outputPackage);
+
+    console.log(
+      chalk.green(`Generated client in ${outputPackage}/${OUTPUT_PATH}`),
+    );
     if (enableReactQuery) {
       await generateReactQueryClient({
         client: {
@@ -167,22 +179,19 @@ export async function command({
         reactQuery: {
           outputPackage: queryOutputPackage || outputPackage,
           apiRefNamespace,
+          apiRefName,
+          apiRefImport,
           clientImport,
         },
       });
       console.log(
         chalk.green(
-          `Generated client in ${
+          `Generated react query client in ${
             queryOutputPackage || outputPackage
           }/${OUTPUT_PATH}`,
         ),
       );
     }
-    console.log(
-      chalk.green(
-        `Generated react query client in ${outputPackage}/${OUTPUT_PATH}`,
-      ),
-    );
   } catch (err) {
     console.log();
     console.log(chalk.red(`Client generation failed:`));

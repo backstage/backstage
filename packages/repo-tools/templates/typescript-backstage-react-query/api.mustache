@@ -19,7 +19,7 @@ import {
 } from '@tanstack/react-query';
 import {createApiFactory, createApiRef, discoveryApiRef, fetchApiRef, useApi} from '@backstage/core-plugin-api'
 
-{{^apiRef}}
+{{^apiRefName}}
 /**
  * @public
  */
@@ -39,7 +39,7 @@ export const default{{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Api =
     factory: ({ discoveryApi, fetchApi }) =>
         new {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client({ discoveryApi, fetchApi }),
 });
-{{/apiRef}}
+{{/apiRefName}}
 
 {{#operations}}
 /**
@@ -66,7 +66,7 @@ export function useQuery_{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}
         unknown,
     >
 ){
-    const {{appName}}Api = useApi({{apiRef}}{{^apiRef}}{{appName}}ApiRef{{/apiRef}});
+    const {{appName}}Api = useApi({{apiRefName}}{{^apiRefName}}{{appName}}ApiRef{{/apiRefName}});
     return useQuery<
         {{{returnType}}} {{^returnType}}void{{/returnType}}, 
         unknown,
@@ -89,7 +89,7 @@ export function useMutation_{{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalca
         {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}
     >
 ){
-    const {{appName}}Api = useApi({{apiRef}}{{^apiRef}}{{appName}}ApiRef{{/apiRef}});
+    const {{appName}}Api = useApi({{apiRefName}}{{^apiRefName}}{{appName}}ApiRef{{/apiRefName}});
     return useMutation<Awaited<ReturnType<typeof {{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client.prototype.{{nickname}}>>, unknown, {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}>({
         mutationFn: (data: {{#lambda.pascalcase}}{{nickname}}{{/lambda.pascalcase}}) => {
             return {{appName}}Api.{{nickname}}(data);

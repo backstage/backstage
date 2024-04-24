@@ -39,8 +39,8 @@ import type {
   EntityFacetsResponse,
   GetLocations200ResponseInner,
   Location,
-} from '@backstage/catalog-client/alpha';
-import { CatalogClient } from '@backstage/catalog-client/alpha';
+} from '@backstage/catalog-common/client';
+import { CatalogClient } from '@backstage/catalog-common/client';
 import {
   UseMutationOptions,
   UseQueryOptions,
