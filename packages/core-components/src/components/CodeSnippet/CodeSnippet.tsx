@@ -102,14 +102,14 @@ export function CodeSnippet(props: CodeSnippetProps) {
   } = props;
   const theme = useTheme();
 
-  let mode;
+  let mode: typeof style;
   if (style) {
     mode = style;
   } else {
     mode = theme.palette.type === 'dark' ? lioshi : docco;
   }
 
-  let highlightColorValue;
+  let highlightColorValue: string;
   if (highlightColor) {
     highlightColorValue = highlightColor;
   } else {
