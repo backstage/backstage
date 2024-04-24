@@ -29,6 +29,13 @@ import { resolve as resolvePath, dirname } from 'path';
 import fs from 'fs-extra';
 import { BackstagePackageJson } from '@backstage/cli-node';
 
+const DETECTED_PACKAGE_ROLES = [
+  'node-library',
+  'backend',
+  'backend-plugin',
+  'backend-plugin-module',
+];
+
 /** @internal */
 async function findClosestPackageDir(
   searchDir: string,
@@ -106,8 +113,11 @@ class PackageDiscoveryService implements FeatureDiscoveryService {
       const depPkg = require(require.resolve(`${name}/package.json`, {
         paths: [packageDir],
       })) as BackstagePackageJson;
-      if (!depPkg?.backstage || depPkg?.backstage?.role === 'cli') {
-        continue; // Not a backstage package, ignore
+      if (
+        !depPkg?.backstage?.role ||
+        !DETECTED_PACKAGE_ROLES.includes(depPkg.backstage.role)
+      ) {
+        continue; // Not a backstage backend package, ignore
       }
 
       const exportedModulePaths = [

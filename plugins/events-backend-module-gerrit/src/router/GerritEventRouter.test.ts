@@ -14,37 +14,44 @@
  * limitations under the License.
  */
 
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
+import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { GerritEventRouter } from './GerritEventRouter';
 
 describe('GerritEventRouter', () => {
-  const eventRouter = new GerritEventRouter();
+  const events = new TestEventsService();
+  const eventRouter = new GerritEventRouter({ events: events });
   const topic = 'gerrit';
   const eventPayload = { type: 'test-type', test: 'payload' };
   const metadata = {};
 
-  it('no $.type', () => {
-    const eventBroker = new TestEventBroker();
-    eventRouter.setEventBroker(eventBroker);
+  beforeEach(() => {
+    events.reset();
+  });
 
+  it('subscribed to topic', () => {
+    eventRouter.subscribe();
+
+    expect(events.subscribed).toHaveLength(1);
+    expect(events.subscribed[0].id).toEqual('GerritEventRouter');
+    expect(events.subscribed[0].topics).toEqual([topic]);
+  });
+
+  it('no $.type', () => {
     eventRouter.onEvent({
       topic,
       eventPayload: { invalid: 'payload' },
       metadata,
     });
 
-    expect(eventBroker.published).toEqual([]);
+    expect(events.published).toEqual([]);
   });
 
   it('with $.type', () => {
-    const eventBroker = new TestEventBroker();
-    eventRouter.setEventBroker(eventBroker);
-
     eventRouter.onEvent({ topic, eventPayload, metadata });
 
-    expect(eventBroker.published.length).toBe(1);
-    expect(eventBroker.published[0].topic).toEqual('gerrit.test-type');
-    expect(eventBroker.published[0].eventPayload).toEqual(eventPayload);
-    expect(eventBroker.published[0].metadata).toEqual(metadata);
+    expect(events.published.length).toBe(1);
+    expect(events.published[0].topic).toEqual('gerrit.test-type');
+    expect(events.published[0].eventPayload).toEqual(eventPayload);
+    expect(events.published[0].metadata).toEqual(metadata);
   });
 });

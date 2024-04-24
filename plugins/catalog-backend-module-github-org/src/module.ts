@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendModule,
@@ -31,6 +30,7 @@ import {
   UserTransformer,
 } from '@backstage/plugin-catalog-backend-module-github';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /**
  * Interface for {@link githubOrgEntityProviderTransformsExtensionPoint}.
@@ -95,20 +95,22 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
       deps: {
         catalog: catalogProcessingExtensionPoint,
         config: coreServices.rootConfig,
+        events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },
-      async init({ catalog, config, logger, scheduler }) {
+      async init({ catalog, config, events, logger, scheduler }) {
         for (const definition of readDefinitionsFromConfig(config)) {
           catalog.addEntityProvider(
             GithubMultiOrgEntityProvider.fromConfig(config, {
               id: definition.id,
               githubUrl: definition.githubUrl,
               orgs: definition.orgs,
+              events,
               schedule: scheduler.createScheduledTaskRunner(
                 definition.schedule,
               ),
-              logger: loggerToWinstonLogger(logger),
+              logger,
               userTransformer,
               teamTransformer,
             }),

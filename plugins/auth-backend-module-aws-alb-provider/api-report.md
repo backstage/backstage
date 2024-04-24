@@ -13,7 +13,9 @@ import { ProxyAuthenticator } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
-export const authModuleAwsAlbProvider: () => BackendFeature;
+const authModuleAwsAlbProvider: () => BackendFeature;
+export { authModuleAwsAlbProvider };
+export default authModuleAwsAlbProvider;
 
 // @public (undocumented)
 export const awsAlbAuthenticator: ProxyAuthenticator<
@@ -21,7 +23,11 @@ export const awsAlbAuthenticator: ProxyAuthenticator<
     issuer: string;
     getKey: (header: JWTHeaderParameters) => Promise<KeyObject>;
   },
-  AwsAlbResult
+  AwsAlbResult,
+  {
+    accessToken: string;
+    expiresInSeconds: number;
+  }
 >;
 
 // @public

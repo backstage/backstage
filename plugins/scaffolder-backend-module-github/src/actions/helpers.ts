@@ -23,7 +23,6 @@ import {
 } from '@backstage/integration';
 import { OctokitOptions } from '@octokit/core/dist-types/types';
 import { Octokit } from 'octokit';
-import { Logger } from 'winston';
 
 import {
   getRepoSourceDirectory,
@@ -36,9 +35,15 @@ import {
   enableBranchProtectionOnDefaultRepoBranch,
   entityRefToName,
 } from './gitHelpers';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const DEFAULT_TIMEOUT_MS = 60_000;
 
+/**
+ * Helper for generating octokit configuration options for given repoUrl.
+ * If no token is provided, it will attempt to get a token from the credentials provider.
+ * @public
+ */
 export async function getOctokitOptions(options: {
   integrations: ScmIntegrationRegistry;
   credentialsProvider?: GithubCredentialsProvider;
@@ -143,7 +148,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         includeClaimKeys?: string[];
       }
     | undefined,
-  logger: Logger,
+  logger: LoggerService,
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
   const user = await client.rest.users.getByUsername({

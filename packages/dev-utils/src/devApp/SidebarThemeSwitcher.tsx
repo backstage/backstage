@@ -15,10 +15,13 @@
  */
 import { SidebarItem } from '@backstage/core-components';
 import { appThemeApiRef, useApi } from '@backstage/core-plugin-api';
-import { ListItemIcon, ListItemText, Menu, MenuItem } from '@material-ui/core';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
 import AutoIcon from '@material-ui/icons/BrightnessAuto';
 import React, { cloneElement, useCallback, useState } from 'react';
-import useObservable from 'react-use/lib/useObservable';
+import useObservable from 'react-use/esm/useObservable';
 
 type ThemeIconProps = {
   active?: boolean;

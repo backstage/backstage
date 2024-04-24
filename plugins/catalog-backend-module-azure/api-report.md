@@ -9,7 +9,7 @@ import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { TaskRunner } from '@backstage/backend-tasks';
@@ -18,13 +18,13 @@ import { TaskRunner } from '@backstage/backend-tasks';
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
     },
   ): AzureDevOpsDiscoveryProcessor;
   // (undocumented)
@@ -45,7 +45,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
   static fromConfig(
     configRoot: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -53,6 +53,6 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
-  refresh(logger: Logger): Promise<void>;
+  refresh(logger: LoggerService): Promise<void>;
 }
 ```

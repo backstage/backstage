@@ -29,10 +29,10 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { readAzureDevOpsConfigs } from './config';
-import { Logger } from 'winston';
 import { AzureDevOpsConfig } from './types';
 import * as uuid from 'uuid';
 import { codeSearch, CodeSearchResultItem } from '../lib';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Provider which discovers catalog files within an Azure DevOps repositories.
@@ -42,14 +42,14 @@ import { codeSearch, CodeSearchResultItem } from '../lib';
  * @public
  */
 export class AzureDevOpsEntityProvider implements EntityProvider {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
 
   static fromConfig(
     configRoot: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -98,7 +98,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     private readonly config: AzureDevOpsConfig,
     private readonly integration: AzureIntegration,
     private readonly credentialsProvider: AzureDevOpsCredentialsProvider,
-    logger: Logger,
+    logger: LoggerService,
     taskRunner: TaskRunner,
   ) {
     this.logger = logger.child({
@@ -144,7 +144,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  async refresh(logger: Logger) {
+  async refresh(logger: LoggerService) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -158,6 +158,7 @@ export class AzureDevOpsEntityProvider implements EntityProvider {
       this.config.project,
       this.config.repository,
       this.config.path,
+      this.config.branch || '',
     );
 
     logger.info(`Discovered ${files.length} catalog files`);

@@ -16,14 +16,74 @@
 
 // @ts-check
 
+/**
+ * @typedef {object} FixerValues
+ * @property {string} value
+ * @property {string} [alias]
+ * @property {string} [componentValue]
+ * @property {string} [componentAlias]
+ * @property {boolean} emitComponent
+ * @property {boolean} emitProp
+ */
+
 const KNOWN_STYLES = [
-  'makeStyles',
-  'withStyles',
-  'createStyles',
-  'styled',
-  'useTheme',
+  // TODO: add exports from colorManipulator and transitions
+  'createTheme',
+  'unstable_createMuiStrictModeTheme',
+  'createMuiTheme',
+  'ThemeOptions',
   'Theme',
+  'Direction',
+  'PaletteColorOptions',
+  'SimplePaletteColorOptions',
+  'createStyles',
+  'TypographyStyle',
+  'TypographyVariant',
+  'makeStyles',
+  'responsiveFontSizes',
+  'ComponentsPropsList',
+  'useTheme',
+  'withStyles',
+  'WithStyles',
+  'StyleRules',
+  'StyleRulesCallback',
+  'StyledComponentProps',
+  'withTheme',
+  'WithTheme',
+  'styled',
+  'ComponentCreator',
+  'StyledProps',
+  'createGenerateClassName',
+  'jssPreset',
+  'ServerStyleSheets',
+  'StylesProvider',
+  'MuiThemeProvider',
+  'ThemeProvider',
+  'ThemeProviderProps',
 ];
+
+/**
+ * filter function to keep only ImportSpecifier nodes
+ * @param {import('estree').ImportSpecifier | import('estree').ImportDefaultSpecifier| import('estree').ImportNamespaceSpecifier} specifier
+ * @returns {specifier is import('estree').ImportSpecifier}
+ */
+function importSpecifiersFilter(specifier) {
+  return specifier.type === 'ImportSpecifier';
+}
+
+/**
+ * Gets the value of the named import depending on if it has an alias or not
+ * @param {FixerValues} values
+ * @returns {string}
+ * @example
+ * `import { ${getNamedImportValue({ value: 'SvgIcon', alias: 'Icon' })} } from 'x'` // import { Icon as SvgIcon } from 'x'
+ * `import { ${getNamedImportValue({ value: 'SvgIcon' })} } from 'x'` // import { SvgIcon } from 'x'
+ */
+function getNamedImportValue(values) {
+  return values.alias
+    ? `${values.value} as ${values.alias}`
+    : `${values.value}`;
+}
 
 /** @type {import('eslint').Rule.RuleModule} */
 module.exports = {
@@ -68,77 +128,83 @@ module.exports = {
           const replacements = [];
           const styles = [];
 
-          const specifiers = node.specifiers.filter(
-            s => s.type === 'ImportSpecifier',
+          const specifiers = node.specifiers.filter(importSpecifiersFilter);
+
+          const specifiersMap = specifiers.map(
+            /**
+             * transform ImportSpecifier to FixerValues to have a simpler object to work with
+             * @returns {FixerValues}
+             */
+            s => {
+              const value = s.imported.name;
+              const alias = s.local.name === value ? undefined : s.local.name;
+
+              const propsMatch = /^([A-Z]\w+)Props$/.exec(value);
+
+              const emitProp = propsMatch !== null;
+              const emitComponent = !emitProp;
+              const emitComponentAndProp =
+                emitProp &&
+                specifiers.find(s => s.imported.name === propsMatch[1])?.local
+                  .name;
+
+              return {
+                emitComponent: emitComponent || Boolean(emitComponentAndProp),
+                emitProp,
+                value,
+                componentValue: propsMatch ? propsMatch[1] : undefined,
+                componentAlias: emitComponentAndProp
+                  ? emitComponentAndProp
+                  : undefined,
+                alias,
+              };
+            },
           );
 
-          const specifiersMap = specifiers.map(s => {
-            const propsMatch = /^([A-Z]\w+)Props$/.exec(s.local.name);
-
-            return {
-              emitComponent: !(propsMatch !== null),
-              emitProp: propsMatch !== null,
-              value: s.local.name,
-              propValue: propsMatch ? propsMatch[1] : undefined,
-            };
-          });
+          // Filter out duplicates where we have both component and component+prop
+          const filteredMap = specifiersMap.filter(
+            f => !specifiersMap.some(s => f.value === s.componentValue),
+          );
 
           // We have 3 cases:
           // 1 - Just Prop: import { TabProps } from '@material-ui/core';
           // 2 - Just Component: import { Box } from '@material-ui/core';
           // 3 - Component and Prop: import { SvgIcon, SvgIconProps } from '@material-ui/core';
 
-          const components = specifiersMap
-            .filter(f => {
-              return f.emitComponent;
-            })
-            .map(m => m.value);
-          const props = specifiersMap
-            .filter(f => {
-              return f.emitProp;
-            })
-            .map(m => m.value);
-
-          if (
-            specifiersMap.some(s => s.emitProp) &&
-            !specifiersMap.some(s => s.emitComponent)
-          ) {
-            // 1 - Just Prop
-            const propValue = specifiersMap
-              .filter(f => {
-                return f.emitProp;
-              })
-              .map(m => m.propValue);
-            replacements.push(
-              `import { ${props.join(', ')} } from '@material-ui/core/${
-                propValue[0]
-              }';`,
-            );
-          } else if (
-            !specifiersMap.some(s => s.emitProp) &&
-            specifiersMap.some(s => s.emitComponent)
-          ) {
-            // 2 - Just Component
-            for (const specifier of specifiers) {
-              if (KNOWN_STYLES.includes(specifier.local.name)) {
-                styles.push(specifier.local.name);
+          for (const specifier of filteredMap) {
+            // Just Component
+            if (specifier.emitComponent && !specifier.emitProp) {
+              if (KNOWN_STYLES.includes(specifier.value)) {
+                styles.push(getNamedImportValue(specifier));
               } else {
-                const replacement = `import ${specifier.local.name} from '${node.source.value}/${specifier.local.name}';`;
+                const replacement = `import ${
+                  specifier.alias ?? specifier.value
+                } from '${node.source.value}/${specifier.value}';`;
                 replacements.push(replacement);
               }
             }
-          } else if (
-            specifiersMap.some(s => s.emitProp) &&
-            specifiersMap.some(s => s.emitComponent)
-          ) {
-            // 3 - Component and Prop
-            replacements.push(
-              `import ${components[0]}, { ${props.join(
-                ', ',
-              )} } from '@material-ui/core/${components[0]}';`,
-            );
+
+            // Just Prop
+            if (specifier.emitProp && !specifier.emitComponent) {
+              const replacement = `import { ${getNamedImportValue(
+                specifier,
+              )} } from '@material-ui/core/${specifier.componentValue}';`;
+              replacements.push(replacement);
+            }
+
+            // Component and Prop
+            if (specifier.emitComponent && specifier.emitProp) {
+              replacements.push(
+                `import ${
+                  specifier.componentAlias ?? specifier.componentValue
+                }, { ${getNamedImportValue(
+                  specifier,
+                )} } from '@material-ui/core/${specifier.componentValue}';`,
+              );
+            }
           }
 
+          // if we imports that should be moved to styles we added them here
           if (styles.length > 0) {
             const stylesReplacement = `import { ${styles.join(
               ', ',

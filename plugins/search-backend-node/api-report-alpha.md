@@ -7,7 +7,7 @@ import { DocumentTypeInfo } from '@backstage/plugin-search-common';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { RegisterCollatorParameters } from '@backstage/plugin-search-backend-node';
 import { RegisterDecoratorParameters } from '@backstage/plugin-search-backend-node';
-import { SearchEngine } from '@backstage/plugin-search-common';
+import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @alpha
@@ -34,6 +34,7 @@ export const searchIndexRegistryExtensionPoint: ExtensionPoint<SearchIndexRegist
 export interface SearchIndexService {
   getDocumentTypes(): Record<string, DocumentTypeInfo>;
   start(options: SearchIndexServiceStartOptions): Promise<void>;
+  stop(): Promise<void>;
 }
 
 // @alpha

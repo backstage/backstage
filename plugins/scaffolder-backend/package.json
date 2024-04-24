@@ -1,18 +1,30 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
+  "version": "1.22.5-next.0",
   "description": "The Backstage backend plugin that helps you create new things",
-  "version": "1.21.0-next.3",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
+  "backstage": {
+    "role": "backend-plugin"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/scaffolder-backend"
+  },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -23,27 +35,21 @@
       ]
     }
   },
-  "backstage": {
-    "role": "backend-plugin"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/scaffolder-backend"
-  },
-  "keywords": [
-    "backstage"
+  "files": [
+    "dist",
+    "migrations",
+    "config.d.ts",
+    "assets"
   ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
+    "build:assets": "node scripts/build-nunjucks.js",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "build:assets": "node scripts/build-nunjucks.js"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -64,6 +70,7 @@
     "@backstage/plugin-scaffolder-backend-module-bitbucket-cloud": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-bitbucket-server": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-gerrit": "workspace:^",
+    "@backstage/plugin-scaffolder-backend-module-gitea": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-github": "workspace:^",
     "@backstage/plugin-scaffolder-backend-module-gitlab": "workspace:^",
     "@backstage/plugin-scaffolder-common": "workspace:^",
@@ -80,13 +87,15 @@
     "jsonschema": "^1.2.6",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
+    "logform": "^2.3.2",
     "luxon": "^3.0.0",
     "nunjucks": "^3.2.3",
     "p-limit": "^3.1.0",
     "p-queue": "^6.6.2",
     "prom-client": "^15.0.0",
-    "uuid": "^8.2.0",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1",
+    "winston-transport": "^4.7.0",
     "yaml": "^2.0.0",
     "zen-observable": "^0.10.0",
     "zod": "^3.22.4"
@@ -94,6 +103,7 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "@types/fs-extra": "^11.0.0",
     "@types/nunjucks": "^3.1.4",
     "@types/supertest": "^2.0.8",
@@ -103,11 +113,5 @@
     "supertest": "^6.1.3",
     "wait-for-expect": "^3.0.2"
   },
-  "files": [
-    "dist",
-    "migrations",
-    "config.d.ts",
-    "assets"
-  ],
   "configSchema": "config.d.ts"
 }

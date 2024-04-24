@@ -1,5 +1,281 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-cloud
 
+## 0.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-catalog-common@1.0.23-next.0
+  - @backstage/plugin-catalog-node@1.11.2-next.0
+  - @backstage/backend-tasks@0.5.23-next.0
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.10.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.18
+  - @backstage/plugin-events-node@0.3.4-next.0
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/backend-tasks@0.5.22
+  - @backstage/catalog-client@1.6.4
+  - @backstage/integration@1.10.0
+  - @backstage/plugin-events-node@0.3.3
+  - @backstage/plugin-catalog-node@1.11.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.18
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 0.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/backend-tasks@0.5.22-next.1
+  - @backstage/plugin-events-node@0.3.3-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.18-next.0
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-catalog-node@1.11.1-next.1
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/backend-tasks@0.5.22-next.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.18-next.0
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-catalog-node@1.11.1-next.0
+  - @backstage/plugin-events-node@0.3.3-next.0
+
+## 0.2.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/backend-tasks@0.5.21
+  - @backstage/plugin-events-node@0.3.2
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.17
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 0.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.10.0
+  - @backstage/catalog-client@1.6.2
+  - @backstage/backend-common@0.21.5
+  - @backstage/backend-tasks@0.5.20
+  - @backstage/plugin-events-node@0.3.1
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.9.1
+  - @backstage/plugin-bitbucket-cloud-common@0.2.17
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 9e527c9: BREAKING CHANGE: Migrates the `BitbucketCloudEntityProvider` to use the `EventsService`; fix new backend system support.
+
+  `BitbucketCloudEntityProvider.fromConfig` accepts `events: EventsService` as optional argument to its `options`.
+  With provided `events`, the event-based updates/refresh will be available.
+  However, the `EventSubscriber` interface was removed including its `supportsEventTopics()` and `onEvent(params)`.
+
+  The event subscription happens on `connect(connection)` if the `events` is available.
+
+  **Migration:**
+
+  ```diff
+    const bitbucketCloudProvider = BitbucketCloudEntityProvider.fromConfig(
+      env.config,
+      {
+        catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
+  +     events: env.events,
+        logger: env.logger,
+        scheduler: env.scheduler,
+        tokenManager: env.tokenManager,
+      },
+    );
+  - env.eventBroker.subscribe(bitbucketCloudProvider);
+  ```
+
+  **New Backend System:**
+
+  Before this change, using this module with the new backend system was broken.
+  Now, you can add the catalog module for Bitbucket Cloud incl. event support backend.
+  Event support will always be enabled.
+  However, no updates/refresh will happen without receiving events.
+
+  ```ts
+  backend.add(
+    import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
+  );
+  ```
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0
+  - @backstage/backend-common@0.21.4
+  - @backstage/integration@1.9.1
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/catalog-client@1.6.1
+  - @backstage/backend-tasks@0.5.19
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-bitbucket-cloud-common@0.2.17
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 0.2.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.9.1-next.2
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-bitbucket-cloud-common@0.2.17-next.2
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/backend-tasks@0.5.19-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-events-node@0.3.0-next.2
+
+## 0.2.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/backend-tasks@0.5.19-next.1
+  - @backstage/integration@1.9.1-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.17-next.1
+  - @backstage/plugin-catalog-common@1.0.22-next.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+  - @backstage/plugin-events-node@0.3.0-next.1
+
+## 0.2.0-next.0
+
+### Minor Changes
+
+- 9e527c9: BREAKING CHANGE: Migrates the `BitbucketCloudEntityProvider` to use the `EventsService`; fix new backend system support.
+
+  `BitbucketCloudEntityProvider.fromConfig` accepts `events: EventsService` as optional argument to its `options`.
+  With provided `events`, the event-based updates/refresh will be available.
+  However, the `EventSubscriber` interface was removed including its `supportsEventTopics()` and `onEvent(params)`.
+
+  The event subscription happens on `connect(connection)` if the `events` is available.
+
+  **Migration:**
+
+  ```diff
+    const bitbucketCloudProvider = BitbucketCloudEntityProvider.fromConfig(
+      env.config,
+      {
+        catalogApi: new CatalogClient({ discoveryApi: env.discovery }),
+  +     events: env.events,
+        logger: env.logger,
+        scheduler: env.scheduler,
+        tokenManager: env.tokenManager,
+      },
+    );
+  - env.eventBroker.subscribe(bitbucketCloudProvider);
+  ```
+
+  **New Backend System:**
+
+  Before this change, using this module with the new backend system was broken.
+  Now, you can add the catalog module for Bitbucket Cloud incl. event support backend.
+  Event support will always be enabled.
+  However, no updates/refresh will happen without receiving events.
+
+  ```ts
+  backend.add(
+    import('@backstage/plugin-catalog-backend-module-bitbucket-cloud/alpha'),
+  );
+  ```
+
+### Patch Changes
+
+- 0fb419b: Updated dependency `uuid` to `^9.0.0`.
+  Updated dependency `@types/uuid` to `^9.0.0`.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.0-next.0
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/backend-tasks@0.5.18-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration@1.9.1-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.17-next.0
+  - @backstage/plugin-catalog-common@1.0.22-next.0
+
+## 0.1.25
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/backend-tasks@0.5.15
+  - @backstage/catalog-model@1.4.4
+  - @backstage/integration@1.9.0
+  - @backstage/catalog-client@1.6.0
+  - @backstage/plugin-bitbucket-cloud-common@0.2.16
+  - @backstage/plugin-catalog-node@1.7.0
+  - @backstage/config@1.1.1
+  - @backstage/plugin-catalog-common@1.0.21
+  - @backstage/plugin-events-node@0.2.19
+
 ## 0.1.25-next.3
 
 ### Patch Changes

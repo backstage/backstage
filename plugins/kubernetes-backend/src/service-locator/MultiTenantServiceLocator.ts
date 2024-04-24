@@ -34,8 +34,10 @@ export class MultiTenantServiceLocator implements KubernetesServiceLocator {
   // As this implementation always returns all clusters serviceId is ignored here
   getClustersByEntity(
     _entity: Entity,
-    _requestContext: ServiceLocatorRequestContext,
+    requestContext: ServiceLocatorRequestContext,
   ): Promise<{ clusters: ClusterDetails[] }> {
-    return this.clusterSupplier.getClusters().then(clusters => ({ clusters }));
+    return this.clusterSupplier
+      .getClusters({ credentials: requestContext.credentials })
+      .then(clusters => ({ clusters }));
   }
 }

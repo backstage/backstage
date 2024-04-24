@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import ora from 'ora';
 import semver from 'semver';
-import minimatch from 'minimatch';
+import { minimatch } from 'minimatch';
 import { OptionValues } from 'commander';
 import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'path';
@@ -40,6 +40,7 @@ import {
 } from '@backstage/release-manifests';
 import 'global-agent/bootstrap';
 import { PackageGraph } from '@backstage/cli-node';
+import { migrateMovedPackages } from './migrate';
 
 const DEP_TYPES = [
   'dependencies',
@@ -264,6 +265,18 @@ export default async (opts: OptionValues) => {
       console.log(chalk.yellow(`Skipping yarn install`));
     }
 
+    if (!opts.skipMigrate) {
+      console.log();
+
+      const changed = await migrateMovedPackages({
+        pattern: opts.pattern,
+      });
+
+      if (changed && !opts.skipInstall) {
+        await runYarnInstall();
+      }
+    }
+
     if (breakingUpdates.size > 0) {
       console.log();
       console.log(
@@ -470,7 +483,7 @@ export async function bumpBackstageJsonVersion(version: string) {
   );
 }
 
-async function runYarnInstall() {
+export async function runYarnInstall() {
   const spinner = ora({
     prefixText: `Running ${chalk.blue('yarn install')} to install new versions`,
     spinner: 'arc',

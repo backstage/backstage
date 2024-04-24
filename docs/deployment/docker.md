@@ -16,7 +16,7 @@ are stateless, so for a production deployment you will want to set up and
 connect to an external PostgreSQL instance where the backend plugins can store
 their state, rather than using SQLite.
 
-This section assumes that an [app](https://backstage.io/docs/getting-started/create-an-app)
+This section assumes that an [app](https://backstage.io/docs/getting-started/)
 has already been created with `@backstage/create-app`, in which the frontend is
 bundled and served from the backend. This is done using the
 `@backstage/plugin-app-backend` plugin, which also injects the frontend
@@ -338,3 +338,15 @@ Here's an example of these flags in use:
 ```sh
 docker image build . -f packages/backend/Dockerfile --tag backstage --progress=plain --no-cache
 ```
+
+## Community Contributed Dockerfile Alternatives
+
+The `Dockerfile` mentioned above located in `packages/backend` is maintained by the maintainers of Backstage, however there are also community contributed Dockerfile alternatives located in `contrib/docker`. The `Dockerfile`s in `contrib/docker` are not maintained by the maintainers of Backstage and are not necessarily updated when the `Dockerfile` located in `packages/backend` is updated.
+
+### Minimal Hardened Image
+
+A contributed `Dockerfile` exists within the directory of `contrib/docker/minimal-harded-image` which uses the [`wolfi-base`](https://github.com/wolfi-dev) image to reduce vulnerabilities. When this was contributed, this alternative `Dockerfile` reduced 98.2% of vulnerabilities in the built Backstage docker image when compared with the image built from `packages/backend/Dockerfile`.
+
+To reduce maintenance, the digest of the image has been removed from the `contrib/docker/minimal-harded-image/Dockerfile` file. A complete example with the digest would be `cgr.dev/chainguard/wolfi-base:latest@sha256:3d6dece13cdb5546cd03b20e14f9af354bc1a56ab5a7b47dca3e6c1557211fcf` and it is suggested to update the `FROM` line in the `Dockerfile` to use a digest. Please do a docker pull on the image to get the latest digest. Using the digest allows tools such as Dependabot or Renovate to know exactly which image digest is being utilized and allows for Pull Requests to be triggered when a new digest is available.
+
+It is suggested to setup Dependabot/Renovate or a similar tool to ensure the image is kept up to date so that vulnerability fixes that have been addressed are pulled in frequently.

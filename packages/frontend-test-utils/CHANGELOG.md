@@ -1,5 +1,118 @@
 # @backstage/frontend-test-utils
 
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.5-next.0
+  - @backstage/frontend-plugin-api@0.6.5-next.0
+  - @backstage/test-utils@1.5.5-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.6
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.4
+  - @backstage/frontend-plugin-api@0.6.4
+  - @backstage/test-utils@1.5.4
+  - @backstage/types@1.1.1
+
+## 0.1.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.4-next.1
+  - @backstage/frontend-plugin-api@0.6.4-next.1
+  - @backstage/test-utils@1.5.4-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.4-next.0
+  - @backstage/frontend-plugin-api@0.6.4-next.0
+  - @backstage/test-utils@1.5.3
+  - @backstage/types@1.1.1
+
+## 0.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.3
+  - @backstage/frontend-plugin-api@0.6.3
+  - @backstage/test-utils@1.5.3
+  - @backstage/types@1.1.1
+
+## 0.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.2
+  - @backstage/frontend-plugin-api@0.6.2
+  - @backstage/test-utils@1.5.2
+  - @backstage/types@1.1.1
+
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.1
+  - @backstage/frontend-plugin-api@0.6.1
+  - @backstage/test-utils@1.5.1
+  - @backstage/types@1.1.1
+
+## 0.1.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.1-next.2
+  - @backstage/frontend-plugin-api@0.6.1-next.2
+  - @backstage/test-utils@1.5.1-next.1
+  - @backstage/types@1.1.1
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.1-next.1
+  - @backstage/test-utils@1.5.1-next.1
+  - @backstage/frontend-plugin-api@0.6.1-next.1
+  - @backstage/types@1.1.1
+
+## 0.1.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.6.1-next.0
+  - @backstage/test-utils@1.5.1-next.0
+  - @backstage/frontend-plugin-api@0.6.1-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.2
+
+### Patch Changes
+
+- bc621aa: Updates to use the new `RouteResolutionsApi`.
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.0
+  - @backstage/frontend-app-api@0.6.0
+  - @backstage/test-utils@1.5.0
+  - @backstage/types@1.1.1
+
 ## 0.1.2-next.3
 
 ### Patch Changes

@@ -16,6 +16,7 @@
 import {
   PluginEndpointDiscovery,
   PluginCacheManager,
+  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
@@ -37,6 +38,7 @@ import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -56,6 +58,8 @@ export type OutOfTheBoxDeploymentOptions = {
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
+  httpAuth?: HttpAuthService;
+  auth?: AuthService;
 };
 
 /**
@@ -73,6 +77,8 @@ export type RecommendedDeploymentOptions = {
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogClient;
+  httpAuth?: HttpAuthService;
+  auth?: AuthService;
 };
 
 /**
@@ -106,6 +112,9 @@ export async function createRouter(
 ): Promise<express.Router> {
   const router = Router();
   const { publisher, config, logger, discovery } = options;
+
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
+
   const catalogClient =
     options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
   const docsBuildStrategy =
@@ -140,7 +149,13 @@ export async function createRouter(
   router.get('/metadata/techdocs/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
-    const token = getBearerToken(req.headers.authorization);
+
+    const credentials = await httpAuth.credentials(req);
+
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog',
+    });
 
     // Verify that the related entity exists and the current user has permission to view it.
     const entity = await entityLoader.load(entityName, token);
@@ -173,7 +188,13 @@ export async function createRouter(
   router.get('/metadata/entity/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
     const entityName = { kind, namespace, name };
-    const token = getBearerToken(req.headers.authorization);
+
+    const credentials = await httpAuth.credentials(req);
+
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog',
+    });
 
     const entity = await entityLoader.load(entityName, token);
 
@@ -205,7 +226,13 @@ export async function createRouter(
   // If a build is required, responds with a success when finished
   router.get('/sync/:namespace/:kind/:name', async (req, res) => {
     const { kind, namespace, name } = req.params;
-    const token = getBearerToken(req.headers.authorization);
+
+    const credentials = await httpAuth.credentials(req);
+
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: credentials,
+      targetPluginId: 'catalog',
+    });
 
     const entity = await entityLoader.load({ kind, namespace, name }, token);
 
@@ -264,7 +291,15 @@ export async function createRouter(
       async (req, _res, next) => {
         const { kind, namespace, name } = req.params;
         const entityName = { kind, namespace, name };
-        const token = getBearerToken(req.headers.authorization);
+
+        const credentials = await httpAuth.credentials(req, {
+          allowLimitedAccess: true,
+        });
+
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: credentials,
+          targetPluginId: 'catalog',
+        });
 
         const entity = await entityLoader.load(entityName, token);
 
@@ -288,10 +323,6 @@ export async function createRouter(
   router.use('/static/docs', publisher.docsRouter());
 
   return router;
-}
-
-function getBearerToken(header?: string): string | undefined {
-  return header?.match(/(?:Bearer)\s+(\S+)/i)?.[1];
 }
 
 /**

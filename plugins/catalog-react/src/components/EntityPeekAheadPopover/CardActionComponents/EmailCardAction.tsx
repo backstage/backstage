@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import EmailIcon from '@material-ui/icons/Email';
 import React from 'react';
 import { Link } from '@backstage/core-components';

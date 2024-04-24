@@ -156,7 +156,11 @@ Backstage as _the_ platform:
 Again, any feedback is appreciated. Please use the Edit button at the bottom of the
 page to make a suggestion.
 
-_**Note!** It might be tempting to try to optimize Backstage usage and
+:::note Note
+
+It might be tempting to try to optimize Backstage usage and
 "engagement". Even though you want to consolidate all your tooling and technical
 documentation in Backstage, it is important to remember that time spent in
-Backstage is time not spent writing code_ 🙃
+Backstage is time not spent writing code 🙃
+
+:::

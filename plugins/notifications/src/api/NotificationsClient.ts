@@ -15,6 +15,7 @@
  */
 import {
   GetNotificationsOptions,
+  GetNotificationsResponse,
   NotificationsApi,
   UpdateNotificationsOptions,
 } from './NotificationsApi';
@@ -40,24 +41,38 @@ export class NotificationsClient implements NotificationsApi {
 
   async getNotifications(
     options?: GetNotificationsOptions,
-  ): Promise<Notification[]> {
+  ): Promise<GetNotificationsResponse> {
     const queryString = new URLSearchParams();
-    if (options?.type) {
-      queryString.append('type', options.type);
-    }
     if (options?.limit !== undefined) {
       queryString.append('limit', options.limit.toString(10));
     }
     if (options?.offset !== undefined) {
       queryString.append('offset', options.offset.toString(10));
     }
+    if (options?.sort !== undefined) {
+      queryString.append(
+        'orderField',
+        `${options.sort},${options?.sortOrder ?? 'desc'}`,
+      );
+    }
     if (options?.search) {
       queryString.append('search', options.search);
     }
-
+    if (options?.read !== undefined) {
+      queryString.append('read', options.read ? 'true' : 'false');
+    }
+    if (options?.saved !== undefined) {
+      queryString.append('saved', options.saved ? 'true' : 'false');
+    }
+    if (options?.createdAfter !== undefined) {
+      queryString.append('createdAfter', options.createdAfter.toISOString());
+    }
+    if (options?.minimumSeverity !== undefined) {
+      queryString.append('minimumSeverity', options.minimumSeverity);
+    }
     const urlSegment = `?${queryString}`;
 
-    return await this.request<Notification[]>(urlSegment);
+    return await this.request<GetNotificationsResponse>(urlSegment);
   }
 
   async getNotification(id: string): Promise<Notification> {

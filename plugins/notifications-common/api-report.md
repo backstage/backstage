@@ -12,11 +12,10 @@ export type NewNotificationSignal = {
 // @public (undocumented)
 type Notification_2 = {
   id: string;
-  user: string;
+  user: string | null;
   created: Date;
   saved?: Date;
   read?: Date;
-  done?: Date;
   updated?: Date;
   origin: string;
   payload: NotificationPayload;
@@ -27,8 +26,8 @@ export { Notification_2 as Notification };
 export type NotificationPayload = {
   title: string;
   description?: string;
-  link: string;
-  severity: NotificationSeverity;
+  link?: string;
+  severity?: NotificationSeverity;
   topic?: string;
   scope?: string;
   icon?: string;
@@ -39,6 +38,9 @@ export type NotificationReadSignal = {
   action: 'notification_read' | 'notification_unread';
   notification_ids: string[];
 };
+
+// @public
+export const notificationSeverities: NotificationSeverity[];
 
 // @public (undocumented)
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
@@ -51,7 +53,4 @@ export type NotificationStatus = {
   unread: number;
   read: number;
 };
-
-// @public (undocumented)
-export type NotificationType = 'undone' | 'done' | 'saved';
 ```

@@ -14,22 +14,25 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
-import { Logger } from 'winston';
+import {
+  mockServices,
+  TestDatabaseId,
+  TestDatabases,
+} from '@backstage/backend-test-utils';
 import { DefaultCatalogDatabase } from './DefaultCatalogDatabase';
 import { applyDatabaseMigrations } from './migrations';
 import { DbRefreshStateReferencesRow, DbRefreshStateRow } from './tables';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 jest.setTimeout(60_000);
 
 describe('DefaultCatalogDatabase', () => {
-  const defaultLogger = getVoidLogger();
+  const defaultLogger = mockServices.logger.mock();
   const databases = TestDatabases.create();
 
   async function createDatabase(
     databaseId: TestDatabaseId,
-    logger: Logger = defaultLogger,
+    logger: LoggerService = defaultLogger,
   ) {
     const knex = await databases.init(databaseId);
     await applyDatabaseMigrations(knex);

@@ -29,6 +29,7 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
   EventBroker,
+  EventsService,
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
 
@@ -64,6 +65,7 @@ export type LegacyPluginEnvironment = {
   scheduler: PluginTaskScheduler;
   identity: IdentityApi;
   eventBroker: EventBroker;
+  events: EventsService;
   pluginProvider: BackendPluginProvider;
 };
 

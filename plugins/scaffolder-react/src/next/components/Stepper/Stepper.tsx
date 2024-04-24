@@ -15,14 +15,12 @@
  */
 import { useAnalytics, useApiHolder } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
-import {
-  Stepper as MuiStepper,
-  Step as MuiStep,
-  StepLabel as MuiStepLabel,
-  Button,
-  makeStyles,
-  LinearProgress,
-} from '@material-ui/core';
+import MuiStepper from '@material-ui/core/Stepper';
+import MuiStep from '@material-ui/core/Step';
+import MuiStepLabel from '@material-ui/core/StepLabel';
+import Button from '@material-ui/core/Button';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { makeStyles } from '@material-ui/core/styles';
 import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
 import React, {
@@ -75,6 +73,11 @@ const useStyles = makeStyles(theme => ({
 export type StepperProps = {
   manifest: TemplateParameterSchema;
   extensions: FieldExtensionOptions<any, any>[];
+  /**
+   * @deprecated This was only ever used for analytics tracking purposes, which
+   * is now handled in the `<Workflow />` component. Passing it in will have no
+   * effect.
+   */
   templateName?: string;
   formProps?: FormProps;
   initialState?: Record<string, JsonValue>;
@@ -147,10 +150,7 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleCreate = useCallback(() => {
     props.onCreate(formState);
-    const name =
-      typeof formState.name === 'string' ? formState.name : undefined;
-    analytics.captureEvent('create', name ?? props.templateName ?? 'unknown');
-  }, [props, formState, analytics]);
+  }, [props, formState]);
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
 

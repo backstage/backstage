@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { makeStyles, Avatar, Theme } from '@material-ui/core';
+import Avatar from '@material-ui/core/Avatar';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import { useUserProfile } from '../useUserProfileInfo';
 import { sidebarConfig } from '@backstage/core-components';
 

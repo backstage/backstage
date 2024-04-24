@@ -11,6 +11,7 @@ import { AnalyzeLocationGenerateEntity as AnalyzeLocationGenerateEntity_2 } from
 import { AnalyzeLocationRequest as AnalyzeLocationRequest_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse as AnalyzeLocationResponse_2 } from '@backstage/plugin-catalog-common';
 import { AnalyzeOptions as AnalyzeOptions_2 } from '@backstage/plugin-catalog-node';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogCollatorEntityTransformer as CatalogCollatorEntityTransformer_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { CatalogEntityDocument } from '@backstage/plugin-catalog-common';
@@ -28,6 +29,7 @@ import { Config } from '@backstage/config';
 import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DeferredEntity as DeferredEntity_2 } from '@backstage/plugin-catalog-node';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { EntitiesSearchFilter as EntitiesSearchFilter_2 } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { EntityFilter as EntityFilter_2 } from '@backstage/plugin-catalog-node';
@@ -38,15 +40,16 @@ import { EntityProviderMutation as EntityProviderMutation_2 } from '@backstage/p
 import { EntityRelationSpec as EntityRelationSpec_2 } from '@backstage/plugin-catalog-node';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
 import { locationSpecToLocationEntity as locationSpecToLocationEntity_2 } from '@backstage/plugin-catalog-node';
 import { locationSpecToMetadataName as locationSpecToMetadataName_2 } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAuthorizer } from '@backstage/plugin-permission-common';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PlaceholderResolver as PlaceholderResolver_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverParams as PlaceholderResolverParams_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverRead as PlaceholderResolverRead_2 } from '@backstage/plugin-catalog-node';
@@ -129,6 +132,9 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor_2 {
 // @public (undocumented)
 export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';
 
+// @public (undocumented)
+export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
+
 // @public
 export class CatalogBuilder {
   addEntityPolicy(
@@ -145,6 +151,7 @@ export class CatalogBuilder {
       CatalogPermissionRuleInput | Array<CatalogPermissionRuleInput>
     >
   ): this;
+  addPermissions(...permissions: Array<Permission | Array<Permission>>): this;
   addProcessor(
     ...processors: Array<CatalogProcessor_2 | Array<CatalogProcessor_2>>
   ): CatalogBuilder;
@@ -185,12 +192,15 @@ export type CatalogCollatorEntityTransformer =
 
 // @public (undocumented)
 export type CatalogEnvironment = {
-  logger: Logger;
+  logger: LoggerService;
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
-  permissions: PermissionEvaluator | PermissionAuthorizer;
+  permissions: PermissionsService | PermissionAuthorizer;
   scheduler?: PluginTaskScheduler;
+  discovery?: DiscoveryService;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
 };
 
 // @public
@@ -241,14 +251,14 @@ export type CatalogProcessorResult = CatalogProcessorResult_2;
 export class CodeOwnersProcessor implements CatalogProcessor_2 {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
     reader: UrlReader;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       reader: UrlReader;
     },
   ): CodeOwnersProcessor;
@@ -450,9 +460,14 @@ export const processingResult: Readonly<{
 // @public @deprecated (undocumented)
 export type ScmLocationAnalyzer = ScmLocationAnalyzer_2;
 
+// @public
+export function transformLegacyPolicyToProcessor(
+  policy: EntityPolicy,
+): CatalogProcessor_2;
+
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor_2 {
-  constructor(options: { reader: UrlReader; logger: Logger });
+  constructor(options: { reader: UrlReader; logger: LoggerService });
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)

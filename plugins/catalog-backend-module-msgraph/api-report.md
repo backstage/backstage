@@ -10,7 +10,7 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Response as Response_2 } from 'node-fetch';
@@ -113,6 +113,7 @@ export class MicrosoftGraphClient {
   requestRaw(
     url: string,
     headers?: Record<string, string>,
+    retryCount?: number,
   ): Promise<Response_2>;
 }
 
@@ -121,7 +122,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
   constructor(options: {
     id: string;
     provider: MicrosoftGraphProviderConfig;
-    logger: Logger;
+    logger: LoggerService;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
@@ -135,14 +136,14 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
   ): MicrosoftGraphOrgEntityProvider[];
   // (undocumented)
   getProviderName(): string;
-  read(options?: { logger?: Logger }): Promise<void>;
+  read(options?: { logger?: LoggerService }): Promise<void>;
 }
 
 // @public @deprecated
 export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
   groupTransformer?: GroupTransformer;
   id: string;
-  logger: Logger;
+  logger: LoggerService;
   organizationTransformer?: OrganizationTransformer;
   schedule: 'manual' | TaskRunner;
   target: string;
@@ -153,7 +154,7 @@ export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
 export type MicrosoftGraphOrgEntityProviderOptions =
   | MicrosoftGraphOrgEntityProviderLegacyOptions
   | {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: 'manual' | TaskRunner;
       scheduler?: PluginTaskScheduler;
       userTransformer?: UserTransformer | Record<string, UserTransformer>;
@@ -167,7 +168,7 @@ export type MicrosoftGraphOrgEntityProviderOptions =
 export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     providers: MicrosoftGraphProviderConfig[];
-    logger: Logger;
+    logger: LoggerService;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
@@ -176,7 +177,7 @@ export class MicrosoftGraphOrgReaderProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
       organizationTransformer?: OrganizationTransformer;
@@ -210,6 +211,7 @@ export type MicrosoftGraphProviderConfig = {
   groupSearch?: string;
   groupSelect?: string[];
   queryMode?: 'basic' | 'advanced';
+  loadUserPhotos?: boolean;
   schedule?: TaskScheduleDefinition;
 };
 
@@ -244,6 +246,7 @@ export function readMicrosoftGraphOrg(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
     groupExpand?: string;
@@ -254,7 +257,7 @@ export function readMicrosoftGraphOrg(
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
-    logger: Logger;
+    logger: LoggerService;
   },
 ): Promise<{
   users: UserEntity[];

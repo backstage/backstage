@@ -101,6 +101,9 @@ All loaded configuration files are merged together using the following rules:
   contents.
 - Objects are merged together deeply, meaning that if any of the included
   configs contain a value for a given path, it will be found.
+- A `null` value in a config file will be treated as an explicit absence of
+  configuration. This means that the reading will not fall back to a lower priority
+  config, but it will still be treated as if the configuration was not present.
 
 The priority of the configurations is determined by the following rules, in
 order:
@@ -195,6 +198,18 @@ configuration value will evaluate to `undefined`.
 
 The substitution syntax can be escaped using `$${...}`, which will be resolved
 as `${...}`.
+
+Parameter substitution syntax (e.g. `${MY_VAR:-default-value}`) is also
+supported to provide a default or fallback value for a given environment
+variable if it is unset, or is declared but has no value. For example:
+
+```yaml
+app:
+  baseUrl: https://${HOST:-localhost:3000}
+```
+
+In the above example, when `HOST` is unset or has no value, it will be
+substituted with `localhost:3000`.
 
 ## Combining Includes and Environment Variable Substitution
 

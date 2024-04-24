@@ -32,12 +32,11 @@ import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import yaml from 'yaml';
 import { sep } from 'path';
 import { examples } from './bitbucket.examples';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('publish:bitbucket', () => {
   const config = new ConfigReader({
@@ -61,17 +60,12 @@ describe('publish:bitbucket', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createPublishBitbucketAction({ integrations, config });
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'bitbucket.org?workspace=workspace&project=project&repo=repo',
       repoVisibility: 'private' as const,
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
   const server = setupServer();
   setupRequestMockHandlers(server);
 
@@ -116,7 +110,7 @@ describe('publish:bitbucket', () => {
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
-      gitAuthorInfo: {},
+      gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 
@@ -157,7 +151,7 @@ describe('publish:bitbucket', () => {
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',
-      gitAuthorInfo: {},
+      gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 
@@ -195,9 +189,9 @@ describe('publish:bitbucket', () => {
       remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
       auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
-      defaultBranch: 'main',
+      defaultBranch: 'master',
       commitMessage: 'initial commit',
-      gitAuthorInfo: {},
+      gitAuthorInfo: { email: undefined, name: undefined },
     });
   });
 
@@ -235,9 +229,12 @@ describe('publish:bitbucket', () => {
       remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
       auth: { username: 'x-token-auth', password: 'your-auth-token' },
       logger: mockContext.logger,
-      defaultBranch: 'main',
+      defaultBranch: 'master',
       commitMessage: 'initial commit',
-      gitAuthorInfo: {},
+      gitAuthorInfo: {
+        email: undefined,
+        name: undefined,
+      },
     });
   });
 
@@ -274,9 +271,9 @@ describe('publish:bitbucket', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
-      auth: { username: 'x-token-auth', password: 'your-auth-token' },
+      auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
-      defaultBranch: 'main',
+      defaultBranch: 'master',
       commitMessage: 'Initial commit with custom message',
       gitAuthorInfo: { email: undefined, name: undefined },
     });
@@ -315,10 +312,10 @@ describe('publish:bitbucket', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://bitbucket.org/workspace/cloneurl',
-      auth: { username: 'x-token-auth', password: 'your-auth-token' },
+      auth: { username: 'x-token-auth', password: 'tokenlols' },
       logger: mockContext.logger,
-      defaultBranch: 'main',
-      commitMessage: 'Initial commit with custom message',
+      defaultBranch: 'master',
+      commitMessage: 'initial commit',
       gitAuthorInfo: { email: 'your.email@example.com', name: 'Your Name' },
     });
   });

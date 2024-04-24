@@ -18,22 +18,21 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
+  LunrSearchEngine,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
-  LunrSearchEngine,
+  SearchEngine,
 } from '@backstage/plugin-search-backend-node';
 import {
-  searchIndexServiceRef,
-  searchIndexRegistryExtensionPoint,
-  SearchIndexRegistryExtensionPoint,
   SearchEngineRegistryExtensionPoint,
   searchEngineRegistryExtensionPoint,
+  searchIndexRegistryExtensionPoint,
+  SearchIndexRegistryExtensionPoint,
+  searchIndexServiceRef,
 } from '@backstage/plugin-search-backend-node/alpha';
 
 import { createRouter } from './service/router';
-import { SearchEngine } from '@backstage/plugin-search-common';
 
 class SearchIndexRegistry implements SearchIndexRegistryExtensionPoint {
   private collators: RegisterCollatorParameters[] = [];
@@ -94,31 +93,54 @@ export default createBackendPlugin({
       deps: {
         logger: coreServices.logger,
         config: coreServices.rootConfig,
+        discovery: coreServices.discovery,
         permissions: coreServices.permissions,
+        auth: coreServices.auth,
         http: coreServices.httpRouter,
+        httpAuth: coreServices.httpAuth,
+        lifecycle: coreServices.rootLifecycle,
         searchIndexService: searchIndexServiceRef,
       },
-      async init({ config, logger, permissions, http, searchIndexService }) {
+      async init({
+        config,
+        logger,
+        discovery,
+        permissions,
+        auth,
+        http,
+        httpAuth,
+        lifecycle,
+        searchIndexService,
+      }) {
         let searchEngine = searchEngineRegistry.getSearchEngine();
         if (!searchEngine) {
           searchEngine = new LunrSearchEngine({
-            logger: loggerToWinstonLogger(logger),
+            logger,
           });
         }
 
         const collators = searchIndexRegistry.getCollators();
         const decorators = searchIndexRegistry.getDecorators();
 
-        await searchIndexService.start({
-          searchEngine,
-          collators,
-          decorators,
+        lifecycle.addStartupHook(async () => {
+          await searchIndexService.start({
+            searchEngine: searchEngine!,
+            collators,
+            decorators,
+          });
+        });
+
+        lifecycle.addShutdownHook(async () => {
+          await searchIndexService.stop();
         });
 
         const router = await createRouter({
           config,
+          discovery,
           permissions,
-          logger: loggerToWinstonLogger(logger),
+          auth,
+          httpAuth,
+          logger,
           engine: searchEngine,
           types: searchIndexService.getDocumentTypes(),
         });

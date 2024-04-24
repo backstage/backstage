@@ -15,4 +15,10 @@
  */
 
 export { easyAuth } from './provider';
-export type { EasyAuthResult } from './provider';
+import { AzureEasyAuthResult } from '@backstage/plugin-auth-backend-module-azure-easyauth-provider';
+
+/**
+ * @public
+ * @deprecated import AzureEasyAuthResult from `@backstage/plugin-auth-backend-module-azure-easyauth-provider` instead
+ */
+export type EasyAuthResult = AzureEasyAuthResult;

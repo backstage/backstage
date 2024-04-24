@@ -44,8 +44,6 @@ export type ServiceRef<
    */
   T: TService;
 
-  toString(): string;
-
   $$type: '@backstage/ServiceRef';
 };
 
@@ -63,6 +61,7 @@ export interface InternalServiceFactory<
   TScope extends 'plugin' | 'root' = 'plugin' | 'root',
 > extends ServiceFactory<TService, TScope> {
   version: 'v1';
+  initialization?: 'always' | 'lazy';
   deps: { [key in string]: ServiceRef<unknown> };
   createRootContext?(deps: { [key in string]: unknown }): Promise<unknown>;
   factory(
@@ -140,6 +139,17 @@ export interface RootServiceFactoryConfig<
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
 > {
+  /**
+   * The initialization strategy for the service factory. This service is root scoped and will use `always` by default.
+   *
+   * @remarks
+   *
+   * - `always` - The service will always be initialized regardless if it is used or not.
+   * - `lazy` - The service will only be initialized if it is depended on by a different service or feature.
+   *
+   * Service factories for root scoped services use `always` as the default, while plugin scoped services use `lazy`.
+   */
+  initialization?: 'always' | 'lazy';
   service: ServiceRef<TService, 'root'>;
   deps: TDeps;
   factory(deps: ServiceRefsToInstances<TDeps, 'root'>): TImpl | Promise<TImpl>;
@@ -152,6 +162,17 @@ export interface PluginServiceFactoryConfig<
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
 > {
+  /**
+   * The initialization strategy for the service factory. This service is plugin scoped and will use `lazy` by default.
+   *
+   * @remarks
+   *
+   * - `always` - The service will always be initialized regardless if it is used or not.
+   * - `lazy` - The service will only be initialized if it is depended on by a different service or feature.
+   *
+   * Service factories for root scoped services use `always` as the default, while plugin scoped services use `lazy`.
+   */
+  initialization?: 'always' | 'lazy';
   service: ServiceRef<TService, 'plugin'>;
   deps: TDeps;
   createRootContext?(
@@ -251,6 +272,7 @@ export function createServiceFactory<
         $$type: '@backstage/BackendFeature',
         version: 'v1',
         service: c.service,
+        initialization: c.initialization,
         deps: c.deps,
         factory: async (deps: TDeps) => c.factory(deps),
       };
@@ -265,6 +287,7 @@ export function createServiceFactory<
       $$type: '@backstage/BackendFeature',
       version: 'v1',
       service: c.service,
+      initialization: c.initialization,
       ...('createRootContext' in c
         ? {
             createRootContext: async (deps: TDeps) =>

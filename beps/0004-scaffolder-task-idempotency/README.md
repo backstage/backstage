@@ -5,6 +5,7 @@ authors:
   - 'bnechyporenko@bol.com'
   - 'benjaminl@spotify.com'
 owners:
+  - '@backstage/scaffolder-maintainers'
 project-areas:
   - scaffolder
 creation-date: 2024-01-31
@@ -15,8 +16,9 @@ creation-date: 2024-01-31
 
 When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions focused. If you disagree with what is already in a document, open a new PR with suggested changes.
 -->
+<!-- Your short, descriptive title -->
 
-# BEP: <!-- Your short, descriptive title -->
+# BEP: Scaffolder Retries and Idempotency
 
 <!-- Before merging the initial BEP PR, create a feature issue and update the below link. You can wait with this step until the BEP is ready to be merged. -->
 
@@ -39,7 +41,7 @@ It has to be crafted to a solution when action can be re-run multiple times and 
 
 ## Motivation
 
-The aim is to make task engine more reliable in terms of system crash or redeployment. If the task engine is in process of executing
+The aim is to make the task engine more reliable in terms of system crash or redeployment. If the task engine is in process of executing
 tasks and system stops, after restart task engine will restore all such tasks and continue their execution.  
 Another purpose is to make it possible to manually retry the task from the last failed step.
 
@@ -81,12 +83,11 @@ We believe that idempotency is the best way to do it. Idempotency allows to reru
 
 ### Serialization of workspace
 
-We believe that a serialization of workspace is a way to achieve re-running the task on a non-sticky way.
-That means that the task can be restored and retried on a different scaffolder node.
+We believe that serialization of workspaces is the way to achieve re-running the task in a non-sticky way. This means that the task can be restored and retried on a different scaffolder task worker. This serialization can be stored in the database, or perhaps additional modules could be installed to provide additional options for storing this serialized workspace data since it may be large in some cases.
 
 ### Secrets
 
-Secrets will be stored for a longer period of time in the database and wiped out once the task going into a complete state (successfully finished or archived).
+Secrets will be stored for a longer period of time in the database and wiped out once the task goes into a completed state (successfully finished or archived). Depending on the life of the task, it's possible that these secrets could expire. The refresh of these tokens is out of scope for now, but perhaps could be achieved by notifying the user that they need to go back to a task page to re-trigger the task.
 
 ## Design Details
 
@@ -153,7 +154,7 @@ export function createGithubRepoCreateAction(options: {
         username: owner,
       });
 
-      await ctx.checkpoint('v1.task.checkpoint.repo.creation', async () => {
+      await ctx.checkpoint('repo.creation', async () => {
         const repoCreationPromise =
           user.data.type === 'Organization'
             ? client.rest.repos.createInOrg({
@@ -168,19 +169,16 @@ export function createGithubRepoCreateAction(options: {
       });
 
       if (secrets) {
-        await ctx.checkpoint(
-          'v1.task.checkpoint.repo.create.variables',
-          async () => {
-            for (const [key, value] of Object.entries(repoVariables ?? {})) {
-              await client.rest.actions.createRepoVariable({
-                owner,
-                repo,
-                name: key,
-                value: value,
-              });
-            }
-          },
-        );
+        await ctx.checkpoint('repo.create.variables', async () => {
+          for (const [key, value] of Object.entries(repoVariables ?? {})) {
+            await client.rest.actions.createRepoVariable({
+              owner,
+              repo,
+              name: key,
+              value: value,
+            });
+          }
+        });
       }
 
       ctx.output('remoteUrl', newRepo.clone_url);
@@ -191,7 +189,7 @@ export function createGithubRepoCreateAction(options: {
 
 #### Task context store
 
-Implement the similar API to CatalogProcessorCache allowing to store markers or keys to enable users to write idempotent actions.
+Implement the similar API to `CatalogProcessorCache` allowing to store markers or keys to enable users to write idempotent actions.
 This context persists across retries.
 
 ```typescript
@@ -204,7 +202,7 @@ Checkpoints will allow action authors to create actions where code paths are ign
 This will be provided on a context object and action of author provide a key and a callback.
 
 ```typescript
-await ctx.checkpoint('v1.task.checkpoint.repo.creation', async () => {
+await ctx.checkpoint('repo.creation', async () => {
   const { repoUrl } = await client.rest.Repository.create({});
   return { repoUrl };
 });
@@ -215,7 +213,7 @@ It's going look like:
 
 ```json
 {
-  "v1.task.checkpoint.repo.creation": {
+  "repo.creation": {
     "status": "success",
     "result": {
       "repoUrl": "https://github.com/backstage/backstage.git"
@@ -223,6 +221,52 @@ It's going look like:
   }
 }
 ```
+
+or a failed attempt as:
+
+```json
+{
+  "repo.creation": {
+    "status": "failed",
+    "reason": "Namespace is not valid"
+  }
+}
+```
+
+`DatabaseTaskStore` will provide two extra methods `saveTaskState` and `getTaskState`. The type of state in API will be
+represented as `JsonObject`.
+
+Task state will be stored in the extra column `state` in the table `tasks` with the next structure:
+
+```json
+{
+  "state": {
+    "checkpoints": {
+      "repo.creation": {
+        "status": "success",
+        "result": {
+          "repoUrl": "https://github.com/backstage/backstage.git"
+        }
+      },
+      "repo.add.member": {
+        "status": "success",
+        "result": {
+          "id": "2345"
+        }
+      }
+    }
+  }
+}
+```
+
+#### Workspace Persistence
+
+The workspace will be serialized and stored in the database by default. This serialization should occur at the end of a step, and after each checkpoint. It will be possible to provide additional modules to extend the workspace serialization to other providers, such as GCS or S3 instead of the database.
+This would be useful for larger workspaces, instead of taking up space in the database, we can store these directory structures in a more appropriate place.
+
+The workspace will need to be zipped up into a binary like a `tar` or `zip` and be stored as a binary in the remote store. This is going to be better for performance than iterating through each file path and storing the contents along with the permissions.
+
+There could be an impact to the speed of task recovery as it downloads the workspace, but this is an accepted risk and a tradeoff for the benefits of having the workspace stored in a remote store.
 
 ## Release Plan
 
@@ -232,11 +276,17 @@ This section should describe the rollout process for any new features. It must t
 If there is any particular feedback to be gathered during the rollout, this should be described here as well.
 -->
 
+We're going to release this behind `EXPERIMENTAL_` flags in the template schema to enable this on a per template level. And once we're happy with the implementation and after heavy testing, we can consider this being opt in at the plugin level, before being rolled out to all templates and the scaffolder plugin entirely.
+
+There could also be the option to have this behind a `scaffolder.backstage.io/v1beta4` `apiVersion` if the `EXPERIMENTAL_` options are not enough, or causing too much of a headache.
+
 ## Dependencies
 
 <!--
 List any dependencies that this work has on other BEPs or features.
 -->
+
+None present. However this BEP does unblock things like longer running tasks and [Gated Workflows](https://github.com/backstage/backstage/issues/16622)
 
 ## Alternatives
 

@@ -22,7 +22,7 @@ To create a plugin, follow the steps outlined [here](create-a-plugin.md).
 
 If you start developing a plugin that you aim to release as open source, we
 suggest that you create a
-[new Issue](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME).
+[new Issue in the community plugins repo](https://github.com/backstage/community-plugins/issues/new/choose).
 This helps the community know what plugins are in development.
 
 You can also use this process if you have an idea for a good plugin but you hope

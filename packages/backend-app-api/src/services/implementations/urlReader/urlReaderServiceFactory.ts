@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger, UrlReaders } from '@backstage/backend-common';
+import { UrlReaders } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
@@ -30,7 +30,7 @@ export const urlReaderServiceFactory = createServiceFactory({
   async factory({ config, logger }) {
     return UrlReaders.default({
       config,
-      logger: loggerToWinstonLogger(logger),
+      logger,
     });
   },
 });

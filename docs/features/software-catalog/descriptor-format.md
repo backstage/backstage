@@ -659,6 +659,8 @@ metadata:
   name: v1beta2-demo
   title: Test Action template
   description: scaffolder v1beta2 template demo
+  annotations:
+    backstage.io/time-saved: PT4H
 spec:
   owner: backstage/techdocs-core
   type: service
@@ -735,6 +737,16 @@ A list of strings that can be associated with the template, e.g.
 
 This list will also be used in the frontend to display to the user so you can
 potentially search and group templates by these tags.
+
+### `metadata.annotations.[backstage.io/time-saved]` [optional]
+
+An ISO 8601 duration representing the approximate amount of time saved when
+someone uses this template (e.g. `PT8H` to mean "8 hours saved" or `PT15M` to
+mean "15 minutes saved").
+
+Can be used in combination with the `backstage.io/source-template` annotation,
+or analytics data, to calculate how much time has been saved through the use
+of the Scaffolder plugin.
 
 ### `spec.type` [required]
 
@@ -955,6 +967,14 @@ some form, that the group may wish to be used for contacting them. The picture
 is expected to be a URL pointing to an image that's representative of the group,
 and that a browser could fetch and render on a group page or similar.
 
+The fields of a profile are:
+
+| Field                    | Type   | Description                                                    |
+| ------------------------ | ------ | -------------------------------------------------------------- |
+| `displayName` (optional) | String | A human-readable name for the group.                           |
+| `email` (optional)       | String | An email the group may wish to be used for contacting them.    |
+| `picture` (optional)     | String | A URL pointing to an image that's representative of the group. |
+
 ### `spec.parent` [optional]
 
 The immediate parent group in the hierarchy, if any. Not all groups must have a
@@ -1039,6 +1059,14 @@ fields of this structure are also optional. The email would be a primary email
 of some form, that the user may wish to be used for contacting them. The picture
 is expected to be a URL pointing to an image that's representative of the user,
 and that a browser could fetch and render on a profile page or similar.
+
+The fields of a profile are:
+
+| Field                    | Type   | Description                                                   |
+| ------------------------ | ------ | ------------------------------------------------------------- |
+| `displayName` (optional) | String | A human-readable name for the user.                           |
+| `email` (optional)       | String | An email the user may wish to be used for contacting them.    |
+| `picture` (optional)     | String | A URL pointing to an image that's representative of the user. |
 
 ### `spec.memberOf` [required]
 
@@ -1237,6 +1265,7 @@ metadata:
   description: Everything about artists
 spec:
   owner: artist-relations-team
+  subdomainOf: audio-domain
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -1264,6 +1293,15 @@ but there will always be one ultimate owner.
 | [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
 | ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
 | [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
+
+### `spec.subdomainOf` [optional]
+
+An [entity reference](references.md#string-references) to another domain of
+which the domain is a part, e.g. `audio`. This field is optional.
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
+| --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`Domain`](#kind-domain) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
 ## Kind: Location
 

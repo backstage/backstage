@@ -14,47 +14,28 @@
  * limitations under the License.
  */
 
-import express from 'express';
-import passport, { Profile as PassportProfile } from 'passport';
-import { Strategy as BitbucketStrategy } from 'passport-bitbucket-oauth2';
 import {
-  encodeState,
-  OAuthAdapter,
-  OAuthEnvironmentHandler,
-  OAuthHandlers,
-  OAuthProviderOptions,
-  OAuthRefreshRequest,
-  OAuthResponse,
-  OAuthResult,
-  OAuthStartRequest,
-} from '../../lib/oauth';
+  bitbucketAuthenticator,
+  bitbucketSignInResolvers,
+} from '@backstage/plugin-auth-backend-module-bitbucket-provider';
 import {
-  executeFetchUserProfileStrategy,
-  executeFrameHandlerStrategy,
-  executeRedirectStrategy,
-  executeRefreshTokenStrategy,
-  makeProfileInfo,
-  PassportDoneCallback,
-} from '../../lib/passport';
-import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import {
-  AuthHandler,
-  OAuthStartResponse,
   SignInResolver,
-  AuthResolverContext,
-} from '../types';
+  createOAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
+import { Profile as PassportProfile } from 'passport';
+import {
+  adaptLegacyOAuthHandler,
+  adaptLegacyOAuthSignInResolver,
+  adaptOAuthSignInResolverToLegacy,
+} from '../../lib/legacy';
+import { OAuthResult } from '../../lib/oauth';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
+import { AuthHandler } from '../types';
 
-type PrivateInfo = {
-  refreshToken: string;
-};
-
-type Options = OAuthProviderOptions & {
-  signInResolver?: SignInResolver<OAuthResult>;
-  authHandler: AuthHandler<BitbucketOAuthResult>;
-  resolverContext: AuthResolverContext;
-};
-
-/** @public */
+/**
+ * @public
+ * @deprecated The Bitbucket auth provider was extracted to `@backstage/plugin-auth-backend-module-bitbucket-provider`.
+ */
 export type BitbucketOAuthResult = {
   fullProfile: BitbucketPassportProfile;
   params: {
@@ -66,7 +47,10 @@ export type BitbucketOAuthResult = {
   refreshToken?: string;
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated The Bitbucket auth provider was extracted to `@backstage/plugin-auth-backend-module-bitbucket-provider`.
+ */
 export type BitbucketPassportProfile = PassportProfile & {
   id?: string;
   displayName?: string;
@@ -81,119 +65,8 @@ export type BitbucketPassportProfile = PassportProfile & {
   };
 };
 
-export class BitbucketAuthProvider implements OAuthHandlers {
-  private readonly _strategy: BitbucketStrategy;
-  private readonly signInResolver?: SignInResolver<OAuthResult>;
-  private readonly authHandler: AuthHandler<OAuthResult>;
-  private readonly resolverContext: AuthResolverContext;
-
-  constructor(options: Options) {
-    this.signInResolver = options.signInResolver;
-    this.authHandler = options.authHandler;
-    this.resolverContext = options.resolverContext;
-    this._strategy = new BitbucketStrategy(
-      {
-        clientID: options.clientId,
-        clientSecret: options.clientSecret,
-        callbackURL: options.callbackUrl,
-        passReqToCallback: false,
-      },
-      (
-        accessToken: any,
-        refreshToken: any,
-        params: any,
-        fullProfile: passport.Profile,
-        done: PassportDoneCallback<OAuthResult, PrivateInfo>,
-      ) => {
-        done(
-          undefined,
-          {
-            fullProfile,
-            params,
-            accessToken,
-            refreshToken,
-          },
-          {
-            refreshToken,
-          },
-        );
-      },
-    );
-  }
-
-  async start(req: OAuthStartRequest): Promise<OAuthStartResponse> {
-    return await executeRedirectStrategy(req, this._strategy, {
-      accessType: 'offline',
-      prompt: 'consent',
-      scope: req.scope,
-      state: encodeState(req.state),
-    });
-  }
-
-  async handler(req: express.Request) {
-    const { result, privateInfo } = await executeFrameHandlerStrategy<
-      OAuthResult,
-      PrivateInfo
-    >(req, this._strategy);
-
-    return {
-      response: await this.handleResult(result),
-      refreshToken: privateInfo.refreshToken,
-    };
-  }
-
-  async refresh(req: OAuthRefreshRequest) {
-    const { accessToken, refreshToken, params } =
-      await executeRefreshTokenStrategy(
-        this._strategy,
-        req.refreshToken,
-        req.scope,
-      );
-    const fullProfile = await executeFetchUserProfileStrategy(
-      this._strategy,
-      accessToken,
-    );
-    return {
-      response: await this.handleResult({
-        fullProfile,
-        params,
-        accessToken,
-      }),
-      refreshToken,
-    };
-  }
-
-  private async handleResult(result: BitbucketOAuthResult) {
-    result.fullProfile.avatarUrl =
-      result.fullProfile._json!.links!.avatar!.href;
-    const { profile } = await this.authHandler(result, this.resolverContext);
-
-    const response: OAuthResponse = {
-      providerInfo: {
-        idToken: result.params.id_token,
-        accessToken: result.accessToken,
-        scope: result.params.scope,
-        expiresInSeconds: result.params.expires_in,
-      },
-      profile,
-    };
-
-    if (this.signInResolver) {
-      response.backstageIdentity = await this.signInResolver(
-        {
-          result,
-          profile,
-        },
-        this.resolverContext,
-      );
-    }
-
-    return response;
-  }
-}
-
 /**
- * Auth provider integration for BitBucket auth
+ * Auth provider integration for Bitbucket auth
  *
  * @public
  */
@@ -209,79 +82,19 @@ export const bitbucket = createAuthProviderIntegration({
      * Configure sign-in for this provider, without it the provider can not be used to sign users in.
      */
     signIn?: {
-      /**
-       * Maps an auth result to a Backstage identity for the user.
-       */
       resolver: SignInResolver<OAuthResult>;
     };
   }) {
-    return ({ providerId, globalConfig, config, resolverContext }) =>
-      OAuthEnvironmentHandler.mapConfig(config, envConfig => {
-        const clientId = envConfig.getString('clientId');
-        const clientSecret = envConfig.getString('clientSecret');
-        const customCallbackUrl = envConfig.getOptionalString('callbackUrl');
-        const callbackUrl =
-          customCallbackUrl ||
-          `${globalConfig.baseUrl}/${providerId}/handler/frame`;
-
-        const authHandler: AuthHandler<BitbucketOAuthResult> =
-          options?.authHandler
-            ? options.authHandler
-            : async ({ fullProfile, params }) => ({
-                profile: makeProfileInfo(fullProfile, params.id_token),
-              });
-
-        const provider = new BitbucketAuthProvider({
-          clientId,
-          clientSecret,
-          callbackUrl,
-          signInResolver: options?.signIn?.resolver,
-          authHandler,
-          resolverContext,
-        });
-
-        return OAuthAdapter.fromConfig(globalConfig, provider, {
-          providerId,
-          callbackUrl,
-        });
-      });
+    return createOAuthProviderFactory({
+      authenticator: bitbucketAuthenticator,
+      profileTransform: adaptLegacyOAuthHandler(options?.authHandler),
+      signInResolver: adaptLegacyOAuthSignInResolver(options?.signIn?.resolver),
+    });
   },
-  resolvers: {
-    /**
-     * Looks up the user by matching their username to the `bitbucket.org/username` annotation.
-     */
-    usernameMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
-      return async (info, ctx) => {
-        const { result } = info;
-
-        if (!result.fullProfile.username) {
-          throw new Error('Bitbucket profile contained no Username');
-        }
-
-        return ctx.signInWithCatalogUser({
-          annotations: {
-            'bitbucket.org/username': result.fullProfile.username,
-          },
-        });
-      };
-    },
-    /**
-     * Looks up the user by matching their user ID to the `bitbucket.org/user-id` annotation.
-     */
-    userIdMatchingUserEntityAnnotation(): SignInResolver<OAuthResult> {
-      return async (info, ctx) => {
-        const { result } = info;
-
-        if (!result.fullProfile.id) {
-          throw new Error('Bitbucket profile contained no User ID');
-        }
-
-        return ctx.signInWithCatalogUser({
-          annotations: {
-            'bitbucket.org/user-id': result.fullProfile.id,
-          },
-        });
-      };
-    },
-  },
+  resolvers: adaptOAuthSignInResolverToLegacy({
+    userIdMatchingUserEntityAnnotation:
+      bitbucketSignInResolvers.userIdMatchingUserEntityAnnotation(),
+    usernameMatchingUserEntityAnnotation:
+      bitbucketSignInResolvers.usernameMatchingUserEntityAnnotation(),
+  }),
 });

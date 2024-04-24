@@ -1,5 +1,45 @@
 # @backstage/cli-node
 
+## 0.2.5
+
+### Patch Changes
+
+- ed9260f: Added `versions:migrate` command to help move packages to the new `@backstage-community` namespace
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.2.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+
+## 0.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/types@1.1.1
+
+## 0.2.3
+
+### Patch Changes
+
+- d557d47: Added `repository` field to `BackstagePackageJson` type.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.3
+  - @backstage/types@1.1.1
+
 ## 0.2.3-next.0
 
 ### Patch Changes

@@ -18,8 +18,11 @@ import {
   AwsAlbResult,
   awsAlbAuthenticator,
 } from '@backstage/plugin-auth-backend-module-aws-alb-provider';
-import { createProxyAuthProviderFactory } from '@backstage/plugin-auth-node';
-import { AuthHandler, SignInResolver } from '../types';
+import {
+  SignInResolver,
+  createProxyAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
+import { AuthHandler } from '../types';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 /**

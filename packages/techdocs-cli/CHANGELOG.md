@@ -1,5 +1,134 @@
 # @techdocs/cli
 
+## 1.8.10-next.0
+
+### Patch Changes
+
+- 1a0e009: Fix cookie endpoint mock for `serve`
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/plugin-techdocs-node@1.12.4-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+
+## 1.8.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-techdocs-node@1.12.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+
+## 1.8.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/plugin-techdocs-node@1.12.3-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+
+## 1.8.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.12.3-next.0
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+
+## 1.8.8
+
+### Patch Changes
+
+- 8caf2f7: Fix how the cli server mocks the new auth cookie endpoint.
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/plugin-techdocs-node@1.12.2
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+
+## 1.8.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/plugin-techdocs-node@1.12.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+
+## 1.8.6
+
+### Patch Changes
+
+- 1bd4596: Removed the `ts-node` dev dependency.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/plugin-techdocs-node@1.12.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+
+## 1.8.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.12.0-next.2
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0-next.1
+
+## 1.8.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/plugin-techdocs-node@1.11.6-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/cli-common@0.1.13
+
+## 1.8.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-techdocs-node@1.11.5-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/cli-common@0.1.13
+
+## 1.8.2
+
+### Patch Changes
+
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- d2e3ab9: Updated dependency `dockerode` to `^4.0.0`.
+- 6ba64c4: Updated dependency `commander` to `^12.0.0`.
+- d8d243c: fix: mkdocs parameter casing
+- Updated dependencies
+  - @backstage/backend-common@0.21.0
+  - @backstage/catalog-model@1.4.4
+  - @backstage/plugin-techdocs-node@1.11.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.1.1
+
 ## 1.8.2-next.3
 
 ### Patch Changes

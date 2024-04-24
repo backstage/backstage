@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import {
   AccessToken,
   DefaultAzureCredential,
   TokenCredential,
 } from '@azure/identity';
 import {
-  AuthMetadata,
   AuthenticationStrategy,
+  AuthMetadata,
   KubernetesCredential,
 } from '@backstage/plugin-kubernetes-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const aksScope = '6dae42f8-4368-4678-94ff-3960e28e3630/.default'; // This scope is the same for all Azure Managed Kubernetes
 
@@ -37,7 +37,7 @@ export class AzureIdentityStrategy implements AuthenticationStrategy {
   private newTokenPromise: Promise<string> | undefined;
 
   constructor(
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
     private readonly tokenCredential: TokenCredential = new DefaultAzureCredential(),
   ) {}
 

@@ -19,7 +19,7 @@ import {
   EntityRefLink,
   EntityRefLinks,
 } from '@backstage/plugin-catalog-react';
-import { Chip } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
 import { CatalogTableRow } from './types';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
@@ -86,6 +86,21 @@ export const columnFactories = Object.freeze({
     return {
       title: 'Targets',
       field: 'entity.spec.targets',
+      customFilterAndSearch: (query, row) => {
+        let targets: JsonArray = [];
+        if (
+          row.entity?.spec?.targets &&
+          Array.isArray(row.entity?.spec?.targets)
+        ) {
+          targets = row.entity?.spec?.targets;
+        } else if (row.entity?.spec?.target) {
+          targets = [row.entity?.spec?.target];
+        }
+        return targets
+          .join(', ')
+          .toLocaleUpperCase('en-US')
+          .includes(query.toLocaleUpperCase('en-US'));
+      },
       render: ({ entity }) => (
         <>
           {(entity?.spec?.targets || entity?.spec?.target) && (
@@ -169,11 +184,22 @@ export const columnFactories = Object.freeze({
     key: string,
     options?: { title?: string; defaultValue?: string },
   ): TableColumn<CatalogTableRow> {
+    function formatContent(keyLabel: string, entity: Entity): string {
+      const labels: Record<string, string> | undefined =
+        entity.metadata?.labels;
+      return (labels && labels[keyLabel]) || '';
+    }
+
     return {
       title: options?.title || 'Label',
       field: 'entity.metadata.labels',
       cellStyle: {
         padding: '0px 16px 0px 20px',
+      },
+      customSort({ entity: entity1 }, { entity: entity2 }) {
+        return formatContent(key, entity1).localeCompare(
+          formatContent(key, entity2),
+        );
       },
       render: ({ entity }: { entity: Entity }) => {
         const labels: Record<string, string> | undefined =

@@ -15,13 +15,14 @@
  */
 
 import {
+  createLegacyAuthAdapters,
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
 import {
+  CATALOG_FILTER_EXISTS,
   CatalogApi,
   CatalogClient,
-  CATALOG_FILTER_EXISTS,
 } from '@backstage/catalog-client';
 import {
   Entity,
@@ -38,9 +39,13 @@ import unescape from 'lodash/unescape';
 import fetch from 'node-fetch';
 import pLimit from 'p-limit';
 import { Readable } from 'stream';
-import { Logger } from 'winston';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
 import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 interface MkSearchIndexDoc {
   title: string;
@@ -55,8 +60,10 @@ interface MkSearchIndexDoc {
  */
 export type TechDocsCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
-  logger: Logger;
+  logger: LoggerService;
   tokenManager: TokenManager;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
   locationTemplate?: string;
   catalogClient?: CatalogApi;
   parallelismLimit?: number;
@@ -83,9 +90,9 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
 
   private discovery: PluginEndpointDiscovery;
   private locationTemplate: string;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
+  private readonly auth: AuthService;
   private readonly catalogClient: CatalogApi;
-  private readonly tokenManager: TokenManager;
   private readonly parallelismLimit: number;
   private readonly legacyPathCasing: boolean;
   private entityTransformer: TechDocsCollatorEntityTransformer;
@@ -100,9 +107,14 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
       new CatalogClient({ discoveryApi: options.discovery });
     this.parallelismLimit = options.parallelismLimit ?? 10;
     this.legacyPathCasing = options.legacyPathCasing ?? false;
-    this.tokenManager = options.tokenManager;
     this.entityTransformer =
       options.entityTransformer ?? defaultTechDocsCollatorEntityTransformer;
+
+    this.auth = createLegacyAuthAdapters({
+      auth: options.auth,
+      discovery: options.discovery,
+      tokenManager: options.tokenManager,
+    }).auth;
   }
 
   static fromConfig(config: Config, options: TechDocsCollatorFactoryOptions) {
@@ -131,7 +143,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   private async *execute(): AsyncGenerator<TechDocsDocument, void, undefined> {
     const limit = pLimit(this.parallelismLimit);
     const techDocsBaseUrl = await this.discovery.getBaseUrl('techdocs');
-    const { token } = await this.tokenManager.getToken();
+
     let entitiesRetrieved = 0;
     let moreEntitiesToGet = true;
 
@@ -141,6 +153,11 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
     // parallelism limit to simplify configuration.
     const batchSize = this.parallelismLimit * 50;
     while (moreEntitiesToGet) {
+      const { token: catalogToken } = await this.auth.getPluginRequestToken({
+        onBehalfOf: await this.auth.getOwnServiceCredentials(),
+        targetPluginId: 'catalog',
+      });
+
       const entities = (
         await this.catalogClient.getEntities(
           {
@@ -151,7 +168,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
             limit: batchSize,
             offset: entitiesRetrieved,
           },
-          { token },
+          { token: catalogToken },
         )
       ).items;
 
@@ -174,6 +191,12 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
               );
 
             try {
+              const { token: techdocsToken } =
+                await this.auth.getPluginRequestToken({
+                  onBehalfOf: await this.auth.getOwnServiceCredentials(),
+                  targetPluginId: 'techdocs',
+                });
+
               const searchIndexResponse = await fetch(
                 DefaultTechDocsCollatorFactory.constructDocsIndexUrl(
                   techDocsBaseUrl,
@@ -181,7 +204,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
                 ),
                 {
                   headers: {
-                    Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${techdocsToken}`,
                   },
                 },
               );

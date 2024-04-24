@@ -17,23 +17,29 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
-import { Logger } from 'winston';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { AuthenticationStrategy } from '../auth/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
 import { GkeClusterLocator } from './GkeClusterLocator';
 import { CatalogClusterLocator } from './CatalogClusterLocator';
 import { LocalKubectlProxyClusterLocator } from './LocalKubectlProxyLocator';
+import {
+  AuthService,
+  BackstageCredentials,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   constructor(
     readonly clusterSuppliers: KubernetesClustersSupplier[],
-    readonly logger: Logger,
+    readonly logger: LoggerService,
   ) {}
 
-  async getClusters(): Promise<ClusterDetails[]> {
+  async getClusters(options: {
+    credentials: BackstageCredentials;
+  }): Promise<ClusterDetails[]> {
     const clusters = await Promise.all(
-      this.clusterSuppliers.map(supplier => supplier.getClusters()),
+      this.clusterSuppliers.map(supplier => supplier.getClusters(options)),
     )
       .then(res => {
         return res.flat();
@@ -65,8 +71,9 @@ export const getCombinedClusterSupplier = (
   rootConfig: Config,
   catalogClient: CatalogApi,
   authStrategy: AuthenticationStrategy,
-  logger: Logger,
+  logger: LoggerService,
   refreshInterval: Duration | undefined = undefined,
+  auth: AuthService,
 ): KubernetesClustersSupplier => {
   const clusterSuppliers = rootConfig
     .getConfigArray('kubernetes.clusterLocatorMethods')
@@ -74,7 +81,7 @@ export const getCombinedClusterSupplier = (
       const type = clusterLocatorMethod.getString('type');
       switch (type) {
         case 'catalog':
-          return CatalogClusterLocator.fromConfig(catalogClient);
+          return CatalogClusterLocator.fromConfig(catalogClient, auth);
         case 'localKubectlProxy':
           return new LocalKubectlProxyClusterLocator();
         case 'config':

@@ -311,15 +311,20 @@ describe('MemberTab Test', () => {
           },
         },
       );
+
+      // Should show only direct users on initial load
+      const displayedMemberNamesBefore = screen.queryAllByTestId('user-link');
+      expect(displayedMemberNamesBefore).toHaveLength(2);
+
       // Click the toggle switch
       await userEvent.click(screen.getByRole('checkbox'));
-      const displayedMemberNames = screen.queryAllByTestId('user-link');
+      const displayedMemberNamesAfter = screen.queryAllByTestId('user-link');
       const duplicatedUserText = screen.getByText('Duplicated User');
       const groupAUserOneText = screen.getByText('Group A User One');
       const groupBUserOneText = screen.getByText('Group B User One');
       const groupDUserOneText = screen.getByText('Group D User One');
       const groupEUserOneText = screen.getByText('Group E User One');
-      expect(displayedMemberNames).toHaveLength(5);
+      expect(displayedMemberNamesAfter).toHaveLength(5);
       expect(duplicatedUserText).toBeInTheDocument();
       expect(groupAUserOneText).toBeInTheDocument();
       expect(groupBUserOneText).toBeInTheDocument();
@@ -338,5 +343,78 @@ describe('MemberTab Test', () => {
         Node.DOCUMENT_POSITION_FOLLOWING,
       );
     });
+  });
+
+  it('Can default to show aggregated members with the aggregate members toggle', async () => {
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockedCatalogApiSupportingGroups],
+          [starredEntitiesApiRef, mockedStarredEntitiesApi],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <EntityProvider entity={groupA}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="Title">
+              <MembersListCard
+                showAggregateMembersToggle
+                relationsType="aggregated"
+              />
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    // Should show aggregated users on initial load
+    const displayedMemberNamesBefore = screen.queryAllByTestId('user-link');
+    expect(displayedMemberNamesBefore).toHaveLength(5);
+
+    // Click the toggle switch
+    await userEvent.click(screen.getByRole('checkbox'));
+
+    // Should now show only direct users
+    const displayedMemberNamesAfter = screen.queryAllByTestId('user-link');
+    expect(displayedMemberNamesAfter).toHaveLength(2);
+  });
+
+  it('Can show aggregated members without the aggregate members toggle', async () => {
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, mockedCatalogApiSupportingGroups],
+          [starredEntitiesApiRef, mockedStarredEntitiesApi],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <EntityProvider entity={groupA}>
+          <EntityLayout>
+            <EntityLayout.Route path="/" title="Title">
+              <MembersListCard relationsType="aggregated" />
+            </EntityLayout.Route>
+          </EntityLayout>
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    // aggregated relations checkbox should not be rendered
+    expect(screen.queryByRole('checkbox')).toBeNull();
+
+    // Should show all descendant users on load
+    const displayedMemberNames = screen.queryAllByTestId('user-link');
+    expect(displayedMemberNames).toHaveLength(5);
   });
 });

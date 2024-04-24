@@ -298,6 +298,12 @@ export class BuiltinKindsEntityProcessor implements CatalogProcessor {
         RELATION_OWNED_BY,
         RELATION_OWNER_OF,
       );
+      doEmit(
+        domain.spec.subdomainOf,
+        { defaultKind: 'Domain', defaultNamespace: selfRef.namespace },
+        RELATION_PART_OF,
+        RELATION_HAS_PART,
+      );
     }
 
     return entity;

@@ -17,22 +17,32 @@
 import React from 'react';
 import capitalize from 'lodash/capitalize';
 import { Progress } from '@backstage/core-components';
-import {
-  Box,
-  Checkbox,
-  FormControlLabel,
-  TextField,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Checkbox from '@material-ui/core/Checkbox';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import TextField from '@material-ui/core/TextField';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { Autocomplete } from '@material-ui/lab';
+import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useEntityTypeFilter } from '@backstage/plugin-catalog-react';
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 
 const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+/** @alpha */
+export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
+
+const useStyles = makeStyles(
+  {
+    root: {},
+    label: {},
+  },
+  { name: 'ScaffolderReactTemplateCategoryPicker' },
+);
 
 /**
  * The Category Picker that is rendered on the left side for picking
@@ -40,6 +50,7 @@ const checkedIcon = <CheckBoxIcon fontSize="small" />;
  * @alpha
  */
 export const TemplateCategoryPicker = () => {
+  const classes = useStyles();
   const alertApi = useApi(alertApiRef);
   const { error, loading, availableTypes, selectedTypes, setSelectedTypes } =
     useEntityTypeFilter();
@@ -57,8 +68,9 @@ export const TemplateCategoryPicker = () => {
   if (!availableTypes) return null;
 
   return (
-    <Box pb={1} pt={1}>
+    <Box className={classes.root} pb={1} pt={1}>
       <Typography
+        className={classes.label}
         variant="button"
         component="label"
         htmlFor="categories-picker"

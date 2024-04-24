@@ -16,20 +16,29 @@
 
 import {
   Notification,
+  NotificationSeverity,
   NotificationStatus,
-  NotificationType,
 } from '@backstage/plugin-notifications-common';
 
+/** @internal */
+export type EntityOrder = {
+  field: string;
+  order: 'asc' | 'desc';
+};
+
+// TODO: reuse the common part of the type with front-end
 /** @internal */
 export type NotificationGetOptions = {
   user: string;
   ids?: string[];
-  type?: NotificationType;
   offset?: number;
   limit?: number;
   search?: string;
-  sort?: 'created' | 'read' | 'updated' | null;
-  sortOrder?: 'asc' | 'desc';
+  orderField?: EntityOrder[];
+  read?: boolean;
+  saved?: boolean;
+  createdAfter?: Date;
+  minimumSeverity?: NotificationSeverity;
 };
 
 /** @internal */
@@ -40,11 +49,19 @@ export type NotificationModifyOptions = {
 /** @internal */
 export interface NotificationsStore {
   getNotifications(options: NotificationGetOptions): Promise<Notification[]>;
+  getNotificationsCount(options: NotificationGetOptions): Promise<number>;
 
   saveNotification(notification: Notification): Promise<void>;
 
+  saveBroadcast(notification: Notification): Promise<void>;
+
   getExistingScopeNotification(options: {
     user: string;
+    scope: string;
+    origin: string;
+  }): Promise<Notification | null>;
+
+  getExistingScopeBroadcast(options: {
     scope: string;
     origin: string;
   }): Promise<Notification | null>;
@@ -61,10 +78,6 @@ export interface NotificationsStore {
   markRead(options: NotificationModifyOptions): Promise<void>;
 
   markUnread(options: NotificationModifyOptions): Promise<void>;
-
-  markDone(options: NotificationModifyOptions): Promise<void>;
-
-  markUndone(options: NotificationModifyOptions): Promise<void>;
 
   markSaved(options: NotificationModifyOptions): Promise<void>;
 

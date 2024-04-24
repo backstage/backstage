@@ -40,40 +40,26 @@ import { Config } from '@backstage/config';
 import healthcheck from './plugins/healthcheck';
 import { metricsHandler, metricsInit } from './metrics';
 import auth from './plugins/auth';
-import azureDevOps from './plugins/azure-devops';
 import catalog from './plugins/catalog';
-import codeCoverage from './plugins/codecoverage';
-import entityFeedback from './plugins/entityFeedback';
 import events from './plugins/events';
-import explore from './plugins/explore';
 import kubernetes from './plugins/kubernetes';
-import kafka from './plugins/kafka';
-import rollbar from './plugins/rollbar';
 import scaffolder from './plugins/scaffolder';
 import proxy from './plugins/proxy';
 import search from './plugins/search';
 import techdocs from './plugins/techdocs';
-import techInsights from './plugins/techInsights';
-import todo from './plugins/todo';
 import app from './plugins/app';
-import badges from './plugins/badges';
-import jenkins from './plugins/jenkins';
 import permission from './plugins/permission';
-import playlist from './plugins/playlist';
-import adr from './plugins/adr';
-import lighthouse from './plugins/lighthouse';
-import linguist from './plugins/linguist';
-import devTools from './plugins/devtools';
-import nomad from './plugins/nomad';
 import signals from './plugins/signals';
+import devtools from './plugins/devtools';
 import { PluginEnvironment } from './types';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
 import { DefaultEventBroker } from '@backstage/plugin-events-backend';
+import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
 import { MeterProvider } from '@opentelemetry/sdk-metrics';
 import { metrics } from '@opentelemetry/api';
-import { DefaultSignalService } from '@backstage/plugin-signals-node';
+import { DefaultSignalsService } from '@backstage/plugin-signals-node';
 
 // Expose opentelemetry metrics using a Prometheus exporter on
 // http://localhost:9464/metrics . See prometheus.yml in packages/backend for
@@ -99,9 +85,13 @@ function makeCreateEnv(config: Config) {
     discovery,
   });
 
-  const eventBroker = new DefaultEventBroker(root.child({ type: 'plugin' }));
-  const signalService = DefaultSignalService.create({
-    eventBroker,
+  const eventsService = DefaultEventsService.create({ logger: root });
+  const eventBroker = new DefaultEventBroker(
+    root.child({ type: 'plugin' }),
+    eventsService,
+  );
+  const signalsService = DefaultSignalsService.create({
+    events: eventsService,
   });
 
   root.info(`Created UrlReader ${reader}`);
@@ -119,12 +109,13 @@ function makeCreateEnv(config: Config) {
       config,
       reader,
       eventBroker,
+      events: eventsService,
       discovery,
       tokenManager,
       permissions,
       scheduler,
       identity,
-      signalService,
+      signals: signalsService,
     };
   };
 }
@@ -147,68 +138,31 @@ async function main() {
 
   const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
   const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
-  const codeCoverageEnv = useHotMemoize(module, () =>
-    createEnv('code-coverage'),
-  );
   const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
   const authEnv = useHotMemoize(module, () => createEnv('auth'));
-  const azureDevOpsEnv = useHotMemoize(module, () => createEnv('azure-devops'));
   const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
-  const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
   const searchEnv = useHotMemoize(module, () => createEnv('search'));
   const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
-  const todoEnv = useHotMemoize(module, () => createEnv('todo'));
   const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
-  const kafkaEnv = useHotMemoize(module, () => createEnv('kafka'));
   const appEnv = useHotMemoize(module, () => createEnv('app'));
-  const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
-  const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
-  const adrEnv = useHotMemoize(module, () => createEnv('adr'));
-  const techInsightsEnv = useHotMemoize(module, () =>
-    createEnv('tech-insights'),
-  );
   const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
-  const playlistEnv = useHotMemoize(module, () => createEnv('playlist'));
-  const entityFeedbackEnv = useHotMemoize(module, () =>
-    createEnv('entityFeedback'),
-  );
   const eventsEnv = useHotMemoize(module, () => createEnv('events'));
-  const exploreEnv = useHotMemoize(module, () => createEnv('explore'));
-  const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
-  const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));
   const devToolsEnv = useHotMemoize(module, () => createEnv('devtools'));
-  const nomadEnv = useHotMemoize(module, () => createEnv('nomad'));
   const signalsEnv = useHotMemoize(module, () => createEnv('signals'));
 
   const apiRouter = Router();
   apiRouter.use('/catalog', await catalog(catalogEnv));
-  apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
   apiRouter.use('/events', await events(eventsEnv));
-  apiRouter.use('/rollbar', await rollbar(rollbarEnv));
   apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
-  apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
   apiRouter.use('/auth', await auth(authEnv));
-  apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
   apiRouter.use('/search', await search(searchEnv));
   apiRouter.use('/techdocs', await techdocs(techdocsEnv));
-  apiRouter.use('/todo', await todo(todoEnv));
   apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
-  apiRouter.use('/kafka', await kafka(kafkaEnv));
   apiRouter.use('/proxy', await proxy(proxyEnv));
-  apiRouter.use('/badges', await badges(badgesEnv));
-  apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
   apiRouter.use('/permission', await permission(permissionEnv));
-  apiRouter.use('/playlist', await playlist(playlistEnv));
-  apiRouter.use('/explore', await explore(exploreEnv));
-  apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
-  apiRouter.use('/adr', await adr(adrEnv));
-  apiRouter.use('/linguist', await linguist(linguistEnv));
-  apiRouter.use('/devtools', await devTools(devToolsEnv));
-  apiRouter.use('/nomad', await nomad(nomadEnv));
+  apiRouter.use('/devtools', await devtools(devToolsEnv));
   apiRouter.use('/signals', await signals(signalsEnv));
   apiRouter.use(notFoundHandler());
-
-  await lighthouse(lighthouseEnv);
 
   const service = createServiceBuilder(module)
     .loadConfig(config)

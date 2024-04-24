@@ -242,4 +242,31 @@ describe('StorageTaskBroker', () => {
     const promise = broker.list({ createdBy: 'user:default/foo' });
     await expect(promise).resolves.toEqual({ tasks: [task] });
   });
+
+  it('should handle checkpoints in task state', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+
+    await broker.dispatch({
+      spec: { steps: [] } as unknown as TaskSpec,
+      createdBy: 'user:default/foo',
+    });
+
+    const taskA = await broker.claim();
+    await taskA.updateCheckpoint?.({
+      key: 'repo.create',
+      status: 'success',
+      value: 'https://github.com/backstage/backstage.git',
+    });
+
+    expect(await taskA.getTaskState?.()).toEqual({
+      state: {
+        checkpoints: {
+          'repo.create': {
+            status: 'success',
+            value: 'https://github.com/backstage/backstage.git',
+          },
+        },
+      },
+    });
+  });
 });

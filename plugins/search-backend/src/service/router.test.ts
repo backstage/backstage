@@ -14,16 +14,22 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import {
+  PluginEndpointDiscovery,
+  getVoidLogger,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { IndexBuilder } from '@backstage/plugin-search-backend-node';
-import { SearchEngine } from '@backstage/plugin-search-common';
+import {
+  IndexBuilder,
+  SearchEngine,
+} from '@backstage/plugin-search-backend-node';
 import express from 'express';
 import request from 'supertest';
 import { createRouter } from './router';
 import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 const mockPermissionEvaluator: PermissionEvaluator = {
   authorize: () => {
@@ -37,6 +43,16 @@ const mockPermissionEvaluator: PermissionEvaluator = {
 describe('createRouter', () => {
   let app: express.Express | Server;
   let mockSearchEngine: jest.Mocked<SearchEngine>;
+
+  const mockBaseUrl = 'http://backstage:9191/api/proxy';
+  const discovery: PluginEndpointDiscovery = {
+    async getBaseUrl() {
+      return mockBaseUrl;
+    },
+    async getExternalBaseUrl() {
+      return mockBaseUrl;
+    },
+  };
 
   beforeAll(async () => {
     const logger = getVoidLogger();
@@ -65,7 +81,10 @@ describe('createRouter', () => {
         search: { maxPageLimit: 200, maxTermLength: 20 },
       }),
       permissions: mockPermissionEvaluator,
+      discovery,
       logger,
+      auth: mockServices.auth(),
+      httpAuth: mockServices.httpAuth(),
     });
     app = wrapInOpenApiTestServer(express().use(router));
   });
@@ -80,7 +99,6 @@ describe('createRouter', () => {
       mockSearchEngine.query.mockRejectedValueOnce(error);
 
       const response = await request(app).get('/query');
-      console.log((response as any).text);
 
       expect(response.status).toEqual(500);
       expect(response.body).toMatchObject(
@@ -108,6 +126,8 @@ describe('createRouter', () => {
       'types[0]=first-type&types[1]=second-type',
       'filters[prop]=value',
       'pageCursor=foo',
+      // https://github.com/backstage/backstage/issues/23973
+      'term=foo+bar',
     ])('accepts valid query string "%s"', async queryString => {
       const response = await request(app).get(`/query?${queryString}`);
 
@@ -227,7 +247,11 @@ describe('createRouter', () => {
         unknownKey2: 'unknownValue1',
       };
       const secondArg = {
-        token: undefined,
+        credentials: mockCredentials.user(),
+        token: mockCredentials.service.token({
+          onBehalfOf: mockCredentials.user(),
+          targetPluginId: 'search',
+        }),
       };
       expect(response.status).toEqual(200);
       expect(mockSearchEngine.query).toHaveBeenCalledWith(firstArg, secondArg);
@@ -251,6 +275,7 @@ describe('createRouter', () => {
           types: indexBuilder.getDocumentTypes(),
           config: new ConfigReader({ permissions: { enabled: false } }),
           permissions: mockPermissionEvaluator,
+          discovery,
           logger,
         });
         app = express().use(router);

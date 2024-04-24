@@ -15,7 +15,7 @@
  */
 
 import { entityRouteRef } from '../../../routes';
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
 import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';

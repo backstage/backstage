@@ -15,13 +15,24 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import { notificationsPlugin } from '../src/plugin';
+import {
+  NotificationsPage,
+  notificationsPlugin,
+  NotificationsSidebarItem,
+} from '../src';
+import { signalsPlugin } from '@backstage/plugin-signals';
 
 createDevApp()
   .registerPlugin(notificationsPlugin)
+  .registerPlugin(signalsPlugin)
   .addPage({
-    element: <div />,
-    title: 'Root Page',
+    element: (
+      <NotificationsPage
+        title="Notifications (debug)"
+        subtitle="Notifications local development environment to showcase notification capabilities"
+      />
+    ),
     path: '/notifications',
   })
+  .addSidebarItem(<NotificationsSidebarItem webNotificationsEnabled />)
   .render();

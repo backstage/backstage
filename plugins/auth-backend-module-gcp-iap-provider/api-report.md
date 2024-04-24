@@ -20,6 +20,9 @@ export const gcpIapAuthenticator: ProxyAuthenticator<
   },
   {
     iapToken: GcpIapTokenInfo;
+  },
+  {
+    iapToken: GcpIapTokenInfo;
   }
 >;
 
@@ -31,6 +34,10 @@ export type GcpIapResult = {
 // @public
 export namespace gcpIapSignInResolvers {
   const emailMatchingUserEntityAnnotation: SignInResolverFactory<
+    GcpIapResult,
+    unknown
+  >;
+  const idMatchingUserEntityAnnotation: SignInResolverFactory<
     GcpIapResult,
     unknown
   >;

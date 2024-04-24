@@ -26,30 +26,34 @@ package.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
-And then add the entity provider to your catalog builder:
+And then update your backend by adding the following line:
 
-```ts title="packages/backend/src/plugins/catalog.ts"
-/* highlight-add-next-line */
-import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  /* highlight-add-start */
-  builder.addEntityProvider(
-    GithubEntityProvider.fromConfig(env.config, {
-      logger: env.logger,
-      scheduler: env.scheduler,
-    }),
-  );
-  /* highlight-add-end */
-
-  // ..
-}
+```ts title="packages/backend/src/index.ts"
+// github discovery
+backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
 ```
 
 ## Installation with Events Support
+
+_For the legacy backend system, please read the sub-section below._
+
+The catalog module for GitHub comes with events support enabled.
+This will make it subscribe to its relevant topics (`github.push`)
+and expects these events to be published via the `EventsService`.
+
+Additionally, you should install the
+[event router by `events-backend-module-github`](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md)
+which will route received events from the generic topic `github` to more specific ones
+based on the event type (e.g., `github.push`).
+
+In order to receive Webhook events by GitHub, you have to decide how you want them
+to be ingested into Backstage and published to its `EventsService`.
+You can decide between the following options (extensible):
+
+- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
+- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+
+### Legacy Backend System
 
 Please follow the installation instructions at
 
@@ -78,10 +82,10 @@ export default async function createPlugin(
   builder.addProcessor(new ScaffolderEntitiesProcessor());
   /* highlight-add-start */
   const githubProvider = GithubEntityProvider.fromConfig(env.config, {
+    events: env.events,
     logger: env.logger,
     scheduler: env.scheduler,
   });
-  env.eventBroker.subscribe(githubProvider);
   builder.addEntityProvider(githubProvider);
   /* highlight-add-end */
   const { processingEngine, router } = await builder.build();
@@ -95,7 +99,7 @@ You can check the official docs to [configure your webhook](https://docs.github.
 ## Configuration
 
 To use the discovery provider, you'll need a GitHub integration
-[set up](locations.md) with either a [Personal Access Token](../../getting-started/configuration.md#setting-up-a-github-integration) or [GitHub Apps](./github-apps.md).
+[set up](locations.md) with either a [Personal Access Token](../../getting-started/config/authentication.md) or [GitHub Apps](./github-apps.md). For Personal Access Tokens you should pay attention to the [required scopes](https://backstage.io/docs/integrations/github/locations/#token-scopes), where you will need at least the `repo` scope for reading components. For GitHub Apps you will need to grant it the [required permissions](https://backstage.io/docs/integrations/github/github-apps#app-permissions) instead, where you will need at least the `Contents: Read-only` permissions for reading components.
 
 Then you can add a `github` config to the catalog providers configuration:
 
@@ -294,7 +298,7 @@ export default async function createPlugin(
 ## Configuration
 
 To use the discovery processor, you'll need a GitHub integration
-[set up](locations.md) with either a [Personal Access Token](../../getting-started/configuration.md#setting-up-a-github-integration) or [GitHub Apps](./github-apps.md).
+[set up](locations.md) with either a [Personal Access Token](../../getting-started/config/authentication.md) or [GitHub Apps](./github-apps.md).
 
 Then you can add a location target to the catalog configuration:
 

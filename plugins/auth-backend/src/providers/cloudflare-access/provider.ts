@@ -13,56 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  AuthHandler,
-  AuthProviderRouteHandlers,
-  AuthResolverContext,
-  AuthResponse,
-  SignInResolver,
-} from '../types';
-import fetch, { Headers } from 'node-fetch';
-import express from 'express';
-import * as _ from 'lodash';
-import { jwtVerify, createRemoteJWKSet } from 'jose';
-import {
-  AuthenticationError,
-  ResponseError,
-  ForwardedError,
-} from '@backstage/errors';
+
 import { CacheClient } from '@backstage/backend-common';
+import {
+  cloudflareAccessSignInResolvers,
+  createCloudflareAccessAuthenticator,
+} from '@backstage/plugin-auth-backend-module-cloudflare-access-provider';
+import {
+  SignInResolver,
+  createProxyAuthProviderFactory,
+} from '@backstage/plugin-auth-node';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
-import { prepareBackstageIdentityResponse } from '../prepareBackstageIdentityResponse';
-import { commonByEmailResolver } from '../resolvers';
-
-// JWT Web Token definitions are in the URL below
-// https://developers.cloudflare.com/cloudflare-one/identity/users/validating-json/
-export const CF_JWT_HEADER = 'cf-access-jwt-assertion';
-export const CF_AUTH_IDENTITY = 'cf-access-authenticated-user-email';
-const COOKIE_AUTH_NAME = 'CF_Authorization';
-const CACHE_PREFIX = 'providers/cloudflare-access/profile-v1';
-
-/**
- * Default cache TTL
- *
- * @public
- */
-export const CF_DEFAULT_CACHE_TTL = 3600;
-
-/** @public */
-export type Options = {
-  /**
-   * Access team name
-   *
-   * When you configure Access, the public certificates are available at this
-   * URL, where your-team-name is your team name:
-   * https://<your-team-name>.cloudflareaccess.com/cdn-cgi/access/certs
-   */
-  teamName: string;
-  authHandler: AuthHandler<CloudflareAccessResult>;
-  signInResolver: SignInResolver<CloudflareAccessResult>;
-  resolverContext: AuthResolverContext;
-  cache?: CacheClient;
-};
+import { AuthHandler } from '../types';
 
 /**
  * CloudflareAccessClaims
@@ -71,6 +33,7 @@ export type Options = {
  * enrich user profile for sign-in user entity
  *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-backend-module-cloudflare-access-provider` instead
  */
 export type CloudflareAccessClaims = {
   /**
@@ -114,6 +77,7 @@ export type CloudflareAccessClaims = {
  * CloudflareAccessGroup
  *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-backend-module-cloudflare-access-provider` instead
  */
 export type CloudflareAccessGroup = {
   /**
@@ -137,6 +101,7 @@ export type CloudflareAccessGroup = {
  * enrich user profile for sign-in user entity
  *
  * @public
+ * @deprecated import from `@backstage/plugin-auth-backend-module-cloudflare-access-provider` instead
  */
 export type CloudflareAccessIdentityProfile = {
   id: string;
@@ -147,6 +112,7 @@ export type CloudflareAccessIdentityProfile = {
 
 /**
  * @public
+ * @deprecated import from `@backstage/plugin-auth-backend-module-cloudflare-access-provider` instead
  */
 export type CloudflareAccessResult = {
   claims: CloudflareAccessClaims;
@@ -154,170 +120,6 @@ export type CloudflareAccessResult = {
   expiresInSeconds?: number;
   token: string;
 };
-
-/**
- * @public
- */
-export type CloudflareAccessProviderInfo = {
-  /**
-   * Expiry of the access token in seconds.
-   */
-  expiresInSeconds?: number;
-  /**
-   * Cloudflare access identity profile with cloudflare access groups
-   */
-  cfAccessIdentityProfile?: CloudflareAccessIdentityProfile;
-  /**
-   * Cloudflare access claims
-   */
-  claims: CloudflareAccessClaims;
-};
-
-export type CloudflareAccessResponse =
-  AuthResponse<CloudflareAccessProviderInfo>;
-
-export class CloudflareAccessAuthProvider implements AuthProviderRouteHandlers {
-  private readonly teamName: string;
-  private readonly resolverContext: AuthResolverContext;
-  private readonly authHandler: AuthHandler<CloudflareAccessResult>;
-  private readonly signInResolver: SignInResolver<CloudflareAccessResult>;
-  private readonly jwtKeySet: any;
-  private readonly cache?: CacheClient;
-
-  constructor(options: Options) {
-    this.teamName = options.teamName;
-    this.authHandler = options.authHandler;
-    this.signInResolver = options.signInResolver;
-    this.resolverContext = options.resolverContext;
-    this.jwtKeySet = createRemoteJWKSet(
-      new URL(
-        `https://${this.teamName}.cloudflareaccess.com/cdn-cgi/access/certs`,
-      ),
-    );
-    this.cache = options.cache;
-  }
-
-  frameHandler(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  async refresh(req: express.Request, res: express.Response): Promise<void> {
-    // ProxiedSignInPage calls `/refresh` implicitly each time the backstage
-    // app is refreshed on the browser.
-    // User authentication is then checked here.
-    const result = await this.getResult(req);
-    const response = await this.handleResult(result);
-    res.json(response);
-  }
-
-  start(): Promise<void> {
-    return Promise.resolve();
-  }
-
-  private async getIdentityProfile(
-    jwt: string,
-  ): Promise<CloudflareAccessIdentityProfile> {
-    const headers = new Headers();
-    // set both headers just the way inbound responses are set
-    headers.set(CF_JWT_HEADER, jwt);
-    headers.set('cookie', `${COOKIE_AUTH_NAME}=${jwt}`);
-    try {
-      const res = await fetch(
-        `https://${this.teamName}.cloudflareaccess.com/cdn-cgi/access/get-identity`,
-        { headers },
-      );
-      if (!res.ok) {
-        throw await ResponseError.fromResponse(res);
-      }
-      const cfIdentity = await res.json();
-      return cfIdentity as unknown as CloudflareAccessIdentityProfile;
-    } catch (err) {
-      throw new ForwardedError('getIdentityProfile failed', err);
-    }
-  }
-
-  private async getResult(
-    req: express.Request,
-  ): Promise<CloudflareAccessResult> {
-    // JWTs generated by Access are available in a request header as
-    // Cf-Access-Jwt-Assertion and as cookies as CF_Authorization.
-    let jwt = req.header(CF_JWT_HEADER);
-    if (!jwt) {
-      jwt = req.cookies.CF_Authorization;
-    }
-    if (!jwt) {
-      // Only throw if both are not provided by Cloudflare Access since either
-      // can be used.
-      throw new AuthenticationError(
-        `Missing ${CF_JWT_HEADER} from Cloudflare Access`,
-      );
-    }
-
-    // Cloudflare signs the JWT using the RSA Signature with SHA-256 (RS256).
-    // RS256 follows an asymmetric algorithm; a private key signs the JWTs and
-    // a separate public key verifies the signature.
-    const verifyResult = await jwtVerify(jwt, this.jwtKeySet, {
-      issuer: `https://${this.teamName}.cloudflareaccess.com`,
-    });
-    const sub = verifyResult.payload.sub;
-    const cfAccessResultStr = await this.cache?.get(`${CACHE_PREFIX}/${sub}`);
-    if (typeof cfAccessResultStr === 'string') {
-      const result = JSON.parse(cfAccessResultStr) as CloudflareAccessResult;
-      return {
-        ...result,
-        token: jwt,
-      };
-    }
-    const claims = verifyResult.payload as CloudflareAccessClaims;
-    // Builds a passport profile from JWT claims first
-    try {
-      // If we successfully fetch the get-identity endpoint,
-      // We supplement the passport profile with richer user identity
-      // information here.
-      const cfIdentity = await this.getIdentityProfile(jwt);
-      // Stores a stringified JSON object in cfaccess provider cache only when
-      // we complete all steps
-      const cfAccessResult = {
-        claims,
-        cfIdentity,
-        expiresInSeconds: claims.exp - claims.iat,
-      };
-      this.cache?.set(`${CACHE_PREFIX}/${sub}`, JSON.stringify(cfAccessResult));
-      return {
-        ...cfAccessResult,
-        token: jwt,
-      };
-    } catch (err) {
-      throw new ForwardedError(
-        'Failed to populate access identity information',
-        err,
-      );
-    }
-  }
-
-  private async handleResult(
-    result: CloudflareAccessResult,
-  ): Promise<CloudflareAccessResponse> {
-    const { profile } = await this.authHandler(result, this.resolverContext);
-    const backstageIdentity = await this.signInResolver(
-      {
-        result,
-        profile,
-      },
-      this.resolverContext,
-    );
-
-    return {
-      providerInfo: {
-        expiresInSeconds: result.expiresInSeconds,
-        claims: result.claims,
-        cfAccessIdentityProfile: result.cfIdentity,
-      },
-      backstageIdentity: prepareBackstageIdentityResponse(backstageIdentity),
-      profile,
-    };
-  }
-}
 
 /**
  * Auth provider integration for Cloudflare Access auth
@@ -341,46 +143,21 @@ export const cfAccess = createAuthProviderIntegration({
        */
       resolver: SignInResolver<CloudflareAccessResult>;
     };
+
     /**
      * CacheClient object that was configured for the Backstage backend,
      * should be provided via the backend auth plugin.
      */
     cache?: CacheClient;
   }) {
-    return ({ config, resolverContext }) => {
-      const teamName = config.getString('teamName');
-
-      if (!options.signIn.resolver) {
-        throw new Error(
-          'SignInResolver is required to use this authentication provider',
-        );
-      }
-
-      const authHandler: AuthHandler<CloudflareAccessResult> =
-        options?.authHandler
-          ? options.authHandler
-          : async ({ claims, cfIdentity }) => {
-              return {
-                profile: {
-                  email: claims.email,
-                  displayName: cfIdentity.name,
-                },
-              };
-            };
-
-      return new CloudflareAccessAuthProvider({
-        teamName,
-        signInResolver: options?.signIn.resolver,
-        authHandler,
-        resolverContext,
-        ...(options.cache && { cache: options.cache }),
-      });
-    };
+    return createProxyAuthProviderFactory({
+      authenticator: createCloudflareAccessAuthenticator({
+        cache: options.cache,
+      }),
+      profileTransform: options?.authHandler,
+      signInResolver: options?.signIn?.resolver,
+      signInResolverFactories: cloudflareAccessSignInResolvers,
+    });
   },
-  resolvers: {
-    /**
-     * Looks up the user by matching their email to the entity email.
-     */
-    emailMatchingUserEntityProfileEmail: () => commonByEmailResolver,
-  },
+  resolvers: cloudflareAccessSignInResolvers,
 });

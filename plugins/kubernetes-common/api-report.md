@@ -275,6 +275,8 @@ export interface GroupedResponses extends DeploymentResources {
   // (undocumented)
   customResources: any[];
   // (undocumented)
+  daemonSets: V1DaemonSet[];
+  // (undocumented)
   ingresses: V1Ingress[];
   // (undocumented)
   jobs: V1Job[];

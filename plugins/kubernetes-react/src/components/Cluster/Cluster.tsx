@@ -15,13 +15,11 @@
  */
 
 import React from 'react';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Grid,
-  Typography,
-} from '@material-ui/core';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import {
   ClientPodStatus,
   ClusterObjects,
@@ -34,6 +32,7 @@ import { IngressesAccordions } from '../IngressesAccordions';
 import { ServicesAccordions } from '../ServicesAccordions';
 import { CronJobsAccordions } from '../CronJobsAccordions';
 import { CustomResources } from '../CustomResources';
+import { DaemonSetsAccordions } from '../DaemonSetsAccordions';
 import {
   ClusterContext,
   GroupedResponsesContext,
@@ -149,6 +148,11 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                   {groupedResponses.deployments.length > 0 ? (
                     <Grid item>
                       <DeploymentsAccordions />
+                    </Grid>
+                  ) : undefined}
+                  {groupedResponses.daemonSets.length > 0 ? (
+                    <Grid item>
+                      <DaemonSetsAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.statefulsets.length > 0 ? (

@@ -16,7 +16,7 @@
 
 import React, { lazy } from 'react';
 
-import { ListItemProps } from '@material-ui/core';
+import { ListItemProps } from '@material-ui/core/ListItem';
 
 import {
   ExtensionBoundary,

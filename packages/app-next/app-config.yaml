@@ -10,7 +10,7 @@ app:
 
   extensions:
     # - apis.plugin.graphiql.browse.gitlab: true
-    - graphiql-endpoint:graphiql/gitlab: true
+    # - graphiql-endpoint:graphiql/gitlab: true
 
     # Entity page cards
     - entity-card:catalog/about
@@ -18,11 +18,10 @@ app:
     - entity-card:catalog/links:
         config:
           filter: kind:component has:links
-    - entity-card:linguist/languages
+    # - entity-card:linguist/languages
     - entity-card:catalog-graph/relations:
         config:
           height: 300
-    - entity-card:azure-devops/readme
     - entity-card:api-docs/has-apis
     - entity-card:api-docs/consumed-apis
     - entity-card:api-docs/provided-apis

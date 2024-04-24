@@ -16,10 +16,7 @@
 
 import { getVoidLogger } from '@backstage/backend-common';
 import lunr from 'lunr';
-import {
-  IndexableDocument,
-  SearchEngine,
-} from '@backstage/plugin-search-common';
+import { IndexableDocument } from '@backstage/plugin-search-common';
 import {
   ConcreteLunrQuery,
   LunrSearchEngine,
@@ -28,6 +25,7 @@ import {
   parseHighlightFields,
 } from './LunrSearchEngine';
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
+import { SearchEngine } from '../types';
 import { TestPipeline } from '../test-utils';
 
 /**

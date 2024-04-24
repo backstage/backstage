@@ -14,4 +14,8 @@
  * limitations under the License.
  */
 
-export {};
+import { TestDatabases } from '@backstage/backend-test-utils';
+
+TestDatabases.setDefaults({
+  ids: ['MYSQL_8', 'POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
+});

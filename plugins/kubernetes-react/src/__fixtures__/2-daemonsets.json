@@ -1,0 +1,581 @@
+{
+  "daemonSets": [
+    {
+      "apiVersion": "apps/v1",
+      "kind": "DaemonSet",
+      "metadata": {
+        "annotations": {
+          "deprecated.daemonset.template.generation": "1",
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"DaemonSet\",\"metadata\":{\"annotations\":{},\"labels\":{\"backstage.io/kubernetes-id\":\"dice-roller\",\"k8s-app\":\"fluentd-logging\"},\"name\":\"fluentd-elasticsearch\",\"namespace\":\"default\"},\"spec\":{\"selector\":{\"matchLabels\":{\"name\":\"fluentd-elasticsearch\"}},\"template\":{\"metadata\":{\"labels\":{\"name\":\"fluentd-elasticsearch\"}},\"spec\":{\"containers\":[{\"image\":\"quay.io/fluentd_elasticsearch/fluentd:v2.5.2\",\"name\":\"fluentd-elasticsearch\",\"resources\":{\"limits\":{\"memory\":\"200Mi\"},\"requests\":{\"cpu\":\"100m\",\"memory\":\"200Mi\"}}}],\"terminationGracePeriodSeconds\":30}}}}\n"
+        },
+        "creationTimestamp": "2024-02-14T21:00:28Z",
+        "generation": 1,
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "k8s-app": "fluentd-logging"
+        },
+        "name": "fluentd-elasticsearch",
+        "namespace": "default",
+        "resourceVersion": "1769498",
+        "uid": "2ba243f3-a733-4b63-9db9-c9b8ce303a23"
+      },
+      "spec": {
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "name": "fluentd-elasticsearch"
+          }
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "name": "fluentd-elasticsearch"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "quay.io/fluentd_elasticsearch/fluentd:v2.5.2",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "fluentd-elasticsearch",
+                "resources": {
+                  "limits": {
+                    "memory": "200Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "200Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "terminationGracePeriodSeconds": 30
+          }
+        },
+        "updateStrategy": {
+          "rollingUpdate": {
+            "maxSurge": 0,
+            "maxUnavailable": 1
+          },
+          "type": "RollingUpdate"
+        }
+      },
+      "status": {
+        "currentNumberScheduled": 1,
+        "desiredNumberScheduled": 1,
+        "numberAvailable": 1,
+        "numberMisscheduled": 0,
+        "numberReady": 1,
+        "observedGeneration": 1,
+        "updatedNumberScheduled": 1
+      }
+    },
+    {
+      "apiVersion": "apps/v1",
+      "kind": "DaemonSet",
+      "metadata": {
+        "annotations": {
+          "deprecated.daemonset.template.generation": "1",
+          "kubectl.kubernetes.io/last-applied-configuration": "{\"apiVersion\":\"apps/v1\",\"kind\":\"DaemonSet\",\"metadata\":{\"annotations\":{},\"labels\":{\"backstage.io/kubernetes-id\":\"dice-roller\",\"k8s-app\":\"fluentd-logging\"},\"name\":\"fluentd-elasticsearch2\",\"namespace\":\"default\"},\"spec\":{\"selector\":{\"matchLabels\":{\"name\":\"fluentd-elasticsearch2\"}},\"template\":{\"metadata\":{\"labels\":{\"backstage.io/kubernetes-id\":\"dice-roller\",\"name\":\"fluentd-elasticsearch2\"}},\"spec\":{\"containers\":[{\"image\":\"quay.io/fluentd_elasticsearch/fluentd:v2.5.2\",\"name\":\"fluentd-elasticsearch\",\"resources\":{\"limits\":{\"memory\":\"200Mi\"},\"requests\":{\"cpu\":\"100m\",\"memory\":\"200Mi\"}}}],\"terminationGracePeriodSeconds\":30}}}}\n"
+        },
+        "creationTimestamp": "2024-02-16T18:11:26Z",
+        "generation": 1,
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "k8s-app": "fluentd-logging"
+        },
+        "name": "fluentd-elasticsearch2",
+        "namespace": "default",
+        "resourceVersion": "1981736",
+        "uid": "b923d035-e9a4-4a40-9472-f0f3468f30df"
+      },
+      "spec": {
+        "revisionHistoryLimit": 10,
+        "selector": {
+          "matchLabels": {
+            "name": "fluentd-elasticsearch2"
+          }
+        },
+        "template": {
+          "metadata": {
+            "creationTimestamp": null,
+            "labels": {
+              "backstage.io/kubernetes-id": "dice-roller",
+              "name": "fluentd-elasticsearch2"
+            }
+          },
+          "spec": {
+            "containers": [
+              {
+                "image": "quay.io/fluentd_elasticsearch/fluentd:v2.5.2",
+                "imagePullPolicy": "IfNotPresent",
+                "name": "fluentd-elasticsearch",
+                "resources": {
+                  "limits": {
+                    "memory": "200Mi"
+                  },
+                  "requests": {
+                    "cpu": "100m",
+                    "memory": "200Mi"
+                  }
+                },
+                "terminationMessagePath": "/dev/termination-log",
+                "terminationMessagePolicy": "File"
+              }
+            ],
+            "dnsPolicy": "ClusterFirst",
+            "restartPolicy": "Always",
+            "schedulerName": "default-scheduler",
+            "securityContext": {},
+            "terminationGracePeriodSeconds": 30
+          }
+        },
+        "updateStrategy": {
+          "rollingUpdate": {
+            "maxSurge": 0,
+            "maxUnavailable": 1
+          },
+          "type": "RollingUpdate"
+        }
+      },
+      "status": {
+        "currentNumberScheduled": 1,
+        "desiredNumberScheduled": 1,
+        "numberAvailable": 1,
+        "numberMisscheduled": 0,
+        "numberReady": 1,
+        "observedGeneration": 1,
+        "updatedNumberScheduled": 1
+      }
+    }
+  ],
+  "pods": [
+    {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "creationTimestamp": "2024-02-16T16:35:06Z",
+        "generateName": "fluentd-elasticsearch-",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "controller-revision-hash": "86978587c8",
+          "name": "fluentd-elasticsearch",
+          "pod-template-generation": "2"
+        },
+        "name": "fluentd-elasticsearch-mmkpf",
+        "namespace": "default",
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "DaemonSet",
+            "name": "fluentd-elasticsearch",
+            "uid": "2ba243f3-a733-4b63-9db9-c9b8ce303a23"
+          }
+        ],
+        "resourceVersion": "1970744",
+        "uid": "fc9f9070-1a3c-4e09-9cd6-8803a4ebfb0a"
+      },
+      "spec": {
+        "affinity": {
+          "nodeAffinity": {
+            "requiredDuringSchedulingIgnoredDuringExecution": {
+              "nodeSelectorTerms": [
+                {
+                  "matchFields": [
+                    {
+                      "key": "metadata.name",
+                      "operator": "In",
+                      "values": ["ucp-control-plane"]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "containers": [
+          {
+            "image": "quay.io/fluentd_elasticsearch/fluentd:v2.5.2",
+            "imagePullPolicy": "IfNotPresent",
+            "name": "fluentd-elasticsearch",
+            "resources": {
+              "limits": {
+                "memory": "200Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "200Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                "name": "kube-api-access-8cwbv",
+                "readOnly": true
+              }
+            ]
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": true,
+        "nodeName": "ucp-control-plane",
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 30,
+        "tolerations": [
+          {
+            "effect": "NoExecute",
+            "key": "node.kubernetes.io/not-ready",
+            "operator": "Exists"
+          },
+          {
+            "effect": "NoExecute",
+            "key": "node.kubernetes.io/unreachable",
+            "operator": "Exists"
+          },
+          {
+            "effect": "NoSchedule",
+            "key": "node.kubernetes.io/disk-pressure",
+            "operator": "Exists"
+          },
+          {
+            "effect": "NoSchedule",
+            "key": "node.kubernetes.io/memory-pressure",
+            "operator": "Exists"
+          },
+          {
+            "effect": "NoSchedule",
+            "key": "node.kubernetes.io/pid-pressure",
+            "operator": "Exists"
+          },
+          {
+            "effect": "NoSchedule",
+            "key": "node.kubernetes.io/unschedulable",
+            "operator": "Exists"
+          }
+        ],
+        "volumes": [
+          {
+            "name": "kube-api-access-8cwbv",
+            "projected": {
+              "defaultMode": 420,
+              "sources": [
+                {
+                  "serviceAccountToken": {
+                    "expirationSeconds": 3607,
+                    "path": "token"
+                  }
+                },
+                {
+                  "configMap": {
+                    "items": [
+                      {
+                        "key": "ca.crt",
+                        "path": "ca.crt"
+                      }
+                    ],
+                    "name": "kube-root-ca.crt"
+                  }
+                },
+                {
+                  "downwardAPI": {
+                    "items": [
+                      {
+                        "fieldRef": {
+                          "apiVersion": "v1",
+                          "fieldPath": "metadata.namespace"
+                        },
+                        "path": "namespace"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "conditions": [
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2024-02-16T16:35:06Z",
+            "status": "True",
+            "type": "Initialized"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2024-02-16T16:35:08Z",
+            "status": "True",
+            "type": "Ready"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2024-02-16T16:35:08Z",
+            "status": "True",
+            "type": "ContainersReady"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2024-02-16T16:35:06Z",
+            "status": "True",
+            "type": "PodScheduled"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "containerID": "containerd://958e4ec14b6a3557724fabeaac9c8f8fe2ea797337a4397e700209f6e482e898",
+            "image": "quay.io/fluentd_elasticsearch/fluentd:v2.5.2",
+            "imageID": "sha256:a5bf47027e067e0376708cae10750ea154b13356dfc0209610f5ea0bc7c16fe0",
+            "lastState": {},
+            "name": "fluentd-elasticsearch",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2024-02-16T16:35:07Z"
+              }
+            }
+          }
+        ],
+        "hostIP": "172.19.0.3",
+        "phase": "Running",
+        "podIP": "10.244.0.215",
+        "podIPs": [
+          {
+            "ip": "10.244.0.215"
+          }
+        ],
+        "qosClass": "Burstable",
+        "startTime": "2024-02-16T16:35:06Z"
+      }
+    },
+    {
+      "apiVersion": "v1",
+      "kind": "Pod",
+      "metadata": {
+        "creationTimestamp": "2024-02-16T18:11:26Z",
+        "generateName": "fluentd-elasticsearch2-",
+        "labels": {
+          "backstage.io/kubernetes-id": "dice-roller",
+          "controller-revision-hash": "5979b599f6",
+          "name": "fluentd-elasticsearch2",
+          "pod-template-generation": "1"
+        },
+        "name": "fluentd-elasticsearch2-7hwwg",
+        "namespace": "default",
+        "ownerReferences": [
+          {
+            "apiVersion": "apps/v1",
+            "blockOwnerDeletion": true,
+            "controller": true,
+            "kind": "DaemonSet",
+            "name": "fluentd-elasticsearch2",
+            "uid": "b923d035-e9a4-4a40-9472-f0f3468f30df"
+          }
+        ],
+        "resourceVersion": "1981735",
+        "uid": "1b829903-2c3a-453f-a8f2-b6603eec0bbe"
+      },
+      "spec": {
+        "affinity": {
+          "nodeAffinity": {
+            "requiredDuringSchedulingIgnoredDuringExecution": {
+              "nodeSelectorTerms": [
+                {
+                  "matchFields": [
+                    {
+                      "key": "metadata.name",
+                      "operator": "In",
+                      "values": ["ucp-control-plane"]
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        },
+        "containers": [
+          {
+            "image": "quay.io/fluentd_elasticsearch/fluentd:v2.5.2",
+            "imagePullPolicy": "IfNotPresent",
+            "name": "fluentd-elasticsearch",
+            "resources": {
+              "limits": {
+                "memory": "200Mi"
+              },
+              "requests": {
+                "cpu": "100m",
+                "memory": "200Mi"
+              }
+            },
+            "terminationMessagePath": "/dev/termination-log",
+            "terminationMessagePolicy": "File",
+            "volumeMounts": [
+              {
+                "mountPath": "/var/run/secrets/kubernetes.io/serviceaccount",
+                "name": "kube-api-access-rpkbp",
+                "readOnly": true
+              }
+            ]
+          }
+        ],
+        "dnsPolicy": "ClusterFirst",
+        "enableServiceLinks": true,
+        "nodeName": "ucp-control-plane",
+        "preemptionPolicy": "PreemptLowerPriority",
+        "priority": 0,
+        "restartPolicy": "Always",
+        "schedulerName": "default-scheduler",
+        "securityContext": {},
+        "serviceAccount": "default",
+        "serviceAccountName": "default",
+        "terminationGracePeriodSeconds": 30,
+        "tolerations": [
+          {
+            "effect": "NoExecute",
+            "key": "node.kubernetes.io/not-ready",
+            "operator": "Exists"
+          },
+          {
+            "effect": "NoExecute",
+            "key": "node.kubernetes.io/unreachable",
+            "operator": "Exists"
+          },
+          {
+            "effect": "NoSchedule",
+            "key": "node.kubernetes.io/disk-pressure",
+            "operator": "Exists"
+          },
+          {
+            "effect": "NoSchedule",
+            "key": "node.kubernetes.io/memory-pressure",
+            "operator": "Exists"
+          },
+          {
+            "effect": "NoSchedule",
+            "key": "node.kubernetes.io/pid-pressure",
+            "operator": "Exists"
+          },
+          {
+            "effect": "NoSchedule",
+            "key": "node.kubernetes.io/unschedulable",
+            "operator": "Exists"
+          }
+        ],
+        "volumes": [
+          {
+            "name": "kube-api-access-rpkbp",
+            "projected": {
+              "defaultMode": 420,
+              "sources": [
+                {
+                  "serviceAccountToken": {
+                    "expirationSeconds": 3607,
+                    "path": "token"
+                  }
+                },
+                {
+                  "configMap": {
+                    "items": [
+                      {
+                        "key": "ca.crt",
+                        "path": "ca.crt"
+                      }
+                    ],
+                    "name": "kube-root-ca.crt"
+                  }
+                },
+                {
+                  "downwardAPI": {
+                    "items": [
+                      {
+                        "fieldRef": {
+                          "apiVersion": "v1",
+                          "fieldPath": "metadata.namespace"
+                        },
+                        "path": "namespace"
+                      }
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "status": {
+        "conditions": [
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2024-02-16T18:11:27Z",
+            "status": "True",
+            "type": "Initialized"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2024-02-16T18:11:28Z",
+            "status": "True",
+            "type": "Ready"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2024-02-16T18:11:28Z",
+            "status": "True",
+            "type": "ContainersReady"
+          },
+          {
+            "lastProbeTime": null,
+            "lastTransitionTime": "2024-02-16T18:11:27Z",
+            "status": "True",
+            "type": "PodScheduled"
+          }
+        ],
+        "containerStatuses": [
+          {
+            "containerID": "containerd://3372cb5a300c87e5b1530b32fea7af35dce92470fc7c1cea47c714fac283feb9",
+            "image": "quay.io/fluentd_elasticsearch/fluentd:v2.5.2",
+            "imageID": "sha256:a5bf47027e067e0376708cae10750ea154b13356dfc0209610f5ea0bc7c16fe0",
+            "lastState": {},
+            "name": "fluentd-elasticsearch",
+            "ready": true,
+            "restartCount": 0,
+            "started": true,
+            "state": {
+              "running": {
+                "startedAt": "2024-02-16T18:11:28Z"
+              }
+            }
+          }
+        ],
+        "hostIP": "172.19.0.3",
+        "phase": "Running",
+        "podIP": "10.244.0.88",
+        "podIPs": [
+          {
+            "ip": "10.244.0.88"
+          }
+        ],
+        "qosClass": "Burstable",
+        "startTime": "2024-02-16T18:11:27Z"
+      }
+    }
+  ]
+}

@@ -9,19 +9,32 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { NotificationStatus } from '@backstage/plugin-notifications-common';
-import { NotificationType } from '@backstage/plugin-notifications-common';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
+import { TableProps } from '@backstage/core-components';
 
 // @public (undocumented)
 export type GetNotificationsOptions = {
-  type?: NotificationType;
   offset?: number;
   limit?: number;
   search?: string;
+  read?: boolean;
+  saved?: boolean;
+  createdAfter?: Date;
+  sort?: 'created' | 'topic' | 'origin';
+  sortOrder?: 'asc' | 'desc';
+  minimumSeverity?: NotificationSeverity;
+};
+
+// @public (undocumented)
+export type GetNotificationsResponse = {
+  notifications: Notification_2[];
+  totalCount: number;
 };
 
 // @public (undocumented)
@@ -31,7 +44,7 @@ export interface NotificationsApi {
   // (undocumented)
   getNotifications(
     options?: GetNotificationsOptions,
-  ): Promise<Notification_2[]>;
+  ): Promise<GetNotificationsResponse>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
@@ -51,7 +64,7 @@ export class NotificationsClient implements NotificationsApi {
   // (undocumented)
   getNotifications(
     options?: GetNotificationsOptions,
-  ): Promise<Notification_2[]>;
+  ): Promise<GetNotificationsResponse>;
   // (undocumented)
   getStatus(): Promise<NotificationStatus>;
   // (undocumented)
@@ -61,7 +74,19 @@ export class NotificationsClient implements NotificationsApi {
 }
 
 // @public (undocumented)
-export const NotificationsPage: () => JSX_2.Element;
+export const NotificationsPage: (
+  props?: NotificationsPageProps | undefined,
+) => JSX_2.Element;
+
+// @public (undocumented)
+export type NotificationsPageProps = {
+  title?: string;
+  themeId?: string;
+  subtitle?: string;
+  tooltip?: string;
+  type?: string;
+  typeLink?: string;
+};
 
 // @public (undocumented)
 export const notificationsPlugin: BackstagePlugin<
@@ -75,19 +100,42 @@ export const notificationsPlugin: BackstagePlugin<
 export const NotificationsSidebarItem: (props?: {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
+  snackbarEnabled?: boolean;
+  className?: string;
+  icon?: IconComponent;
+  text?: string;
+  disableHighlight?: boolean;
+  noTrack?: boolean;
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
-export const NotificationsTable: (props: {
-  onUpdate: () => void;
-  type: NotificationType;
+export const NotificationsTable: ({
+  isLoading,
+  notifications,
+  onUpdate,
+  setContainsText,
+  onPageChange,
+  onRowsPerPageChange,
+  page,
+  pageSize,
+  totalCount,
+}: NotificationsTableProps) => React_2.JSX.Element;
+
+// @public (undocumented)
+export type NotificationsTableProps = Pick<
+  TableProps,
+  'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
+> & {
+  isLoading?: boolean;
   notifications?: Notification_2[];
-}) => React_2.JSX.Element;
+  onUpdate: () => void;
+  setContainsText: (search: string) => void;
+  pageSize: number;
+};
 
 // @public (undocumented)
 export type UpdateNotificationsOptions = {
   ids: string[];
-  done?: boolean;
   read?: boolean;
   saved?: boolean;
 };
@@ -128,8 +176,9 @@ export function useTitleCounter(): {
 };
 
 // @public (undocumented)
-export function useWebNotifications(): {
+export function useWebNotifications(enabled: boolean): {
   sendWebNotification: (options: {
+    id: string;
     title: string;
     description: string;
     link?: string;

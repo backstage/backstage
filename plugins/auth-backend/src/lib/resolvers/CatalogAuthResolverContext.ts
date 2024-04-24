@@ -24,10 +24,19 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { TokenIssuer, TokenParams } from '../../identity/types';
-import { AuthResolverContext } from '../../providers';
-import { AuthResolverCatalogUserQuery } from '../../providers/types';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import { TokenIssuer } from '../../identity/types';
+import {
+  AuthOwnershipResolver,
+  AuthResolverCatalogUserQuery,
+  AuthResolverContext,
+  TokenParams,
+} from '@backstage/plugin-auth-node';
 import { CatalogIdentityClient } from '../catalog';
 
 /**
@@ -58,17 +67,26 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     catalogApi: CatalogApi;
     tokenIssuer: TokenIssuer;
     tokenManager: TokenManager;
+    discovery: DiscoveryService;
+    auth: AuthService;
+    httpAuth: HttpAuthService;
+    ownershipResolver?: AuthOwnershipResolver;
   }): CatalogAuthResolverContext {
     const catalogIdentityClient = new CatalogIdentityClient({
       catalogApi: options.catalogApi,
       tokenManager: options.tokenManager,
+      discovery: options.discovery,
+      auth: options.auth,
+      httpAuth: options.httpAuth,
     });
+
     return new CatalogAuthResolverContext(
       options.logger,
       options.tokenIssuer,
       catalogIdentityClient,
       options.catalogApi,
-      options.tokenManager,
+      options.auth,
+      options.ownershipResolver,
     );
   }
 
@@ -77,7 +95,8 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     public readonly tokenIssuer: TokenIssuer,
     public readonly catalogIdentityClient: CatalogIdentityClient,
     private readonly catalogApi: CatalogApi,
-    private readonly tokenManager: TokenManager,
+    private readonly auth: AuthService,
+    private readonly ownershipResolver?: AuthOwnershipResolver,
   ) {}
 
   async issueToken(params: TokenParams) {
@@ -87,7 +106,10 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
 
   async findCatalogUser(query: AuthResolverCatalogUserQuery) {
     let result: Entity[] | Entity | undefined = undefined;
-    const { token } = await this.tokenManager.getToken();
+    const { token } = await this.auth.getPluginRequestToken({
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
+      targetPluginId: 'catalog',
+    });
 
     if ('entityRef' in query) {
       const entityRef = parseEntityRef(query.entityRef, {
@@ -105,8 +127,21 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
       const res = await this.catalogApi.getEntities({ filter }, { token });
       result = res.items;
     } else if ('filter' in query) {
+      const filter = [query.filter].flat().map(value => {
+        if (
+          !Object.keys(value).some(
+            key => key.toLocaleLowerCase('en-US') === 'kind',
+          )
+        ) {
+          return {
+            ...value,
+            kind: 'user',
+          };
+        }
+        return value;
+      });
       const res = await this.catalogApi.getEntities(
-        { filter: query.filter },
+        { filter: filter },
         { token },
       );
       result = res.items;
@@ -129,12 +164,19 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
 
   async signInWithCatalogUser(query: AuthResolverCatalogUserQuery) {
     const { entity } = await this.findCatalogUser(query);
-    const ownershipRefs = getDefaultOwnershipEntityRefs(entity);
+    let ent: string[];
+    if (this.ownershipResolver) {
+      const { ownershipEntityRefs } =
+        await this.ownershipResolver.resolveOwnershipEntityRefs(entity);
+      ent = ownershipEntityRefs;
+    } else {
+      ent = getDefaultOwnershipEntityRefs(entity);
+    }
 
     const token = await this.tokenIssuer.issueToken({
       claims: {
         sub: stringifyEntityRef(entity),
-        ent: ownershipRefs,
+        ent,
       },
     });
     return { token };

@@ -55,7 +55,7 @@ export default async function createPlugin(
     database: env.database,
     catalogClient: catalogClient,
     reader: env.reader,
-    identity: env.identity,
+    discovery: env.discovery,
     scheduler: env.scheduler,
     permissions: env.permissions,
     actions,

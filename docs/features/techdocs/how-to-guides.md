@@ -721,6 +721,53 @@ and publish the documentation for them. If the value of the `company.com/techdoc
 annotation is anything other than `'local'`, the user is responsible for publishing
 documentation to the appropriate location in the TechDocs external storage.
 
+### Hybrid build strategy using the New Backend System
+
+To setup a hybrid build strategy using the New Backend System you'll follow the same steps as above but for Step 4 you will need to do the following:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  DocsBuildStrategy,
+  techdocsBuildsExtensionPoint,
+} from '@backstage/plugin-techdocs-node';
+
+const techdocsCustomBuildStrategy = createBackendModule({
+  pluginId: 'techdocs',
+  moduleId: 'customBuildStrategy',
+  register(env) {
+    env.registerInit({
+      deps: {
+        techdocs: techdocsBuildsExtensionPoint,
+      },
+      async init({ techdocs }) {
+        const docsBuildStrategy: DocsBuildStrategy = {
+          shouldBuild: async params =>
+            params.entity.metadata?.annotations?.[
+              'demo.backstage.io/techdocs-builder'
+            ] === 'local',
+        };
+
+        techdocs.setBuildStrategy(docsBuildStrategy);
+      },
+    });
+  },
+});
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+backend.add(techdocsCustomBuildStrategy());
+/* highlight-add-end */
+
+backend.start();
+```
+
+> Note: You may need to add the `@backstage/plugin-techdocs-node` package to your backend `package.json` if it's not been imported already.
+
 ## How to use other mkdocs plugins?
 
 The default plugin [mkdocs-techdocs-core](https://github.com/backstage/mkdocs-techdocs-core) provides a set of plugins that can be viewed as the minimum required plugins to enable TechDocs. Your organization might have needs beyond the core set though, here is the recommended way to enable other plugins.

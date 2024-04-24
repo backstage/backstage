@@ -81,6 +81,9 @@ import {
   createPublishGitlabMergeRequestAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
+import { createPublishGiteaAction } from '@backstage/plugin-scaffolder-backend-module-gitea';
+import { AuthService } from '@backstage/backend-plugin-api';
+
 /**
  * The options passed to {@link createBuiltinActions}
  * @public
@@ -98,6 +101,10 @@ export interface CreateBuiltInActionsOptions {
    * The {@link @backstage/catalog-client#CatalogApi} that will be used in the default actions.
    */
   catalogClient: CatalogApi;
+  /**
+   * The {@link @backstage/backend-plugin-api#AuthService} that will be used in the default actions.
+   */
+  auth?: AuthService;
   /**
    * The {@link @backstage/config#Config} that will be used in the default actions.
    */
@@ -127,6 +134,7 @@ export const createBuiltinActions = (
     reader,
     integrations,
     catalogClient,
+    auth,
     config,
     additionalTemplateFilters,
     additionalTemplateGlobals,
@@ -155,6 +163,10 @@ export const createBuiltinActions = (
       config,
     }),
     createPublishGerritReviewAction({
+      integrations,
+      config,
+    }),
+    createPublishGiteaAction({
       integrations,
       config,
     }),
@@ -199,8 +211,8 @@ export const createBuiltinActions = (
     }),
     createDebugLogAction(),
     createWaitAction(),
-    createCatalogRegisterAction({ catalogClient, integrations }),
-    createFetchCatalogEntityAction({ catalogClient }),
+    createCatalogRegisterAction({ catalogClient, integrations, auth }),
+    createFetchCatalogEntityAction({ catalogClient, auth }),
     createCatalogWriteAction(),
     createFilesystemDeleteAction(),
     createFilesystemRenameAction(),

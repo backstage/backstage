@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import { render, screen } from '@testing-library/react';
 import { renderHook } from '@testing-library/react';
 import React from 'react';

@@ -23,7 +23,7 @@ import {
   createNavItemExtension,
   createNavLogoExtension,
 } from '@backstage/frontend-plugin-api';
-import { makeStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   Sidebar,
   useSidebarOpenState,

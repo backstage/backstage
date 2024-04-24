@@ -43,6 +43,7 @@ import {
   serializeError,
 } from '@backstage/errors';
 import { NotImplementedError } from '@backstage/errors';
+import { applyInternalErrorFilter } from './applyInternalErrorFilter';
 
 /**
  * Options used to create a {@link MiddlewareFactory}.
@@ -209,7 +210,14 @@ export class MiddlewareFactory {
       type: 'errorHandler',
     });
 
-    return (error: Error, req: Request, res: Response, next: NextFunction) => {
+    return (
+      rawError: Error,
+      req: Request,
+      res: Response,
+      next: NextFunction,
+    ) => {
+      const error = applyInternalErrorFilter(rawError, logger);
+
       const statusCode = getStatusCode(error);
       if (options.logAllErrors || statusCode >= 500) {
         logger.error(`Request failed with status ${statusCode}`, error);

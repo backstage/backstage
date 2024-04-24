@@ -15,7 +15,6 @@
  */
 
 import { useHotCleanup } from '@backstage/backend-common';
-import { DefaultAdrCollatorFactory } from '@backstage/plugin-adr-backend';
 import { DefaultCatalogCollatorFactory } from '@backstage/plugin-search-backend-module-catalog';
 import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
 import { createRouter } from '@backstage/plugin-search-backend';
@@ -23,9 +22,9 @@ import { ElasticSearchSearchEngine } from '@backstage/plugin-search-backend-modu
 import { PgSearchEngine } from '@backstage/plugin-search-backend-module-pg';
 import {
   IndexBuilder,
+  SearchEngine,
   LunrSearchEngine,
 } from '@backstage/plugin-search-backend-node';
-import { SearchEngine } from '@backstage/plugin-search-common';
 import { DefaultTechDocsCollatorFactory } from '@backstage/plugin-search-backend-module-techdocs';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
@@ -72,18 +71,6 @@ export default async function createPlugin(
   // particular collator gathers entities from the software catalog.
   indexBuilder.addCollator({
     schedule,
-    factory: DefaultAdrCollatorFactory.fromConfig({
-      cache: env.cache,
-      config: env.config,
-      discovery: env.discovery,
-      logger: env.logger,
-      reader: env.reader,
-      tokenManager: env.tokenManager,
-    }),
-  });
-
-  indexBuilder.addCollator({
-    schedule,
     factory: DefaultCatalogCollatorFactory.fromConfig(env.config, {
       discovery: env.discovery,
       tokenManager: env.tokenManager,
@@ -117,6 +104,7 @@ export default async function createPlugin(
   return await createRouter({
     engine: indexBuilder.getSearchEngine(),
     types: indexBuilder.getDocumentTypes(),
+    discovery: env.discovery,
     permissions: env.permissions,
     config: env.config,
     logger: env.logger,

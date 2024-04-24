@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
+import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { TestEventBroker } from '@backstage/plugin-events-backend-test-utils';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsModuleAwsSqsConsumingEventPublisher } from './eventsModuleAwsSqsConsumingEventPublisher';
-import { AwsSqsConsumingEventPublisher } from '../publisher/AwsSqsConsumingEventPublisher';
 
 describe('eventsModuleAwsSqsConsumingEventPublisher', () => {
   it('should be correctly wired and set up', async () => {
-    let addedPublishers: AwsSqsConsumingEventPublisher[] | undefined;
-    const extensionPoint = {
-      addPublishers: (publishers: any) => {
-        addedPublishers = publishers;
+    const events = new TestEventsService();
+    const eventsServiceFactory = createServiceFactory({
+      service: eventsServiceRef,
+      deps: {},
+      async factory({}) {
+        return events;
       },
-    };
+    });
 
     const scheduler = mockServices.scheduler.mock();
 
     await startTestBackend({
-      extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       features: [
+        eventsServiceFactory(),
         eventsModuleAwsSqsConsumingEventPublisher(),
         mockServices.rootConfig.factory({
           data: {
@@ -64,14 +66,6 @@ describe('eventsModuleAwsSqsConsumingEventPublisher', () => {
         scheduler.factory,
       ],
     });
-
-    expect(addedPublishers).not.toBeUndefined();
-    expect(addedPublishers!.length).toEqual(2);
-
-    const eventBroker = new TestEventBroker();
-    await Promise.all(
-      addedPublishers!.map(publisher => publisher.setEventBroker(eventBroker)),
-    );
 
     // publisher.connect(..) was causing the polling for events to be scheduled
     expect(scheduler.scheduleTask).toHaveBeenCalledWith(

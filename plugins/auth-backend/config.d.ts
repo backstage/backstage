@@ -182,10 +182,6 @@ export interface Config {
         iss?: string;
         region: string;
       };
-      /** @visibility frontend */
-      cfaccess?: {
-        teamName: string;
-      };
       /**
        * The backstage token expiration.
        */

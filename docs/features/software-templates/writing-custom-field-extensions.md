@@ -30,7 +30,8 @@ As an example, we will create a component that validates whether a string is in 
 ```tsx
 //packages/app/src/scaffolder/ValidateKebabCase/ValidateKebabCaseExtension.tsx
 import React from 'react';
-import { FieldProps, FieldValidation } from '@rjsf/core';
+import { FieldExtensionComponentProps } from '@backstage/plugin-scaffolder-react';
+import type { FieldValidation } from '@rjsf/utils';
 import FormControl from '@material-ui/core/FormControl';
 /*
  This is the actual component that will get rendered in the form
@@ -40,7 +41,7 @@ export const ValidateKebabCase = ({
   rawErrors,
   required,
   formData,
-}: FieldProps<string>) => {
+}: FieldExtensionComponentProps<string>) => {
   return (
     <FormControl
       margin="normal"

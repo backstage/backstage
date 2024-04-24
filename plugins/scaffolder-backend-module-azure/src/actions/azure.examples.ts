@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Initializes a git repository of the content in the workspace, and publishes it to Azure.',
+      'Initializes a git repository with the content in the workspace, and publishes it to Azure DevOps with the default configuration.',
     example: yaml.stringify({
       steps: [
         {
@@ -36,7 +36,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Add a description.',
+    description: 'Initializes an Azure DevOps repository with a description.',
     example: yaml.stringify({
       steps: [
         {
@@ -53,7 +53,8 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Change the default branch.',
+    description:
+      'Initializes an Azure DevOps repository with a default branch, if not set defaults to master',
     example: yaml.stringify({
       steps: [
         {
@@ -63,7 +64,6 @@ export const examples: TemplateExample[] = [
           input: {
             repoUrl:
               'dev.azure.com?organization=organization&owner=project&repo=repo',
-            description: 'Initialize a git repository',
             defaultBranch: 'main',
           },
         },

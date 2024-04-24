@@ -5,6 +5,7 @@
 ```ts
 import { Config } from '@backstage/config';
 import { EventParams } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { RequestValidator } from '@backstage/plugin-events-node';
 import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 
@@ -15,8 +16,10 @@ export function createGithubSignatureValidator(
 
 // @public
 export class GithubEventRouter extends SubTopicEventRouter {
-  constructor();
+  constructor(options: { events: EventsService });
   // (undocumented)
   protected determineSubTopic(params: EventParams): string | undefined;
+  // (undocumented)
+  protected getSubscriberId(): string;
 }
 ```

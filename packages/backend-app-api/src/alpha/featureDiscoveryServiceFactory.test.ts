@@ -280,7 +280,7 @@ describe('featureDiscoveryServiceFactory', () => {
                   'detected-module',
                   'detected-plugin-with-alpha',
                 ],
-                exclude: ['detected-plugin'],
+                exclude: ['detected-module'],
               },
             },
           },
@@ -288,9 +288,9 @@ describe('featureDiscoveryServiceFactory', () => {
       ],
     });
 
-    expect(mock.warn).not.toHaveBeenCalledWith('detected-plugin');
+    expect(mock.warn).toHaveBeenCalledWith('detected-plugin');
     expect(mock.warn).not.toHaveBeenCalledWith('detected-library');
-    expect(mock.warn).toHaveBeenCalledWith('detected-module');
+    expect(mock.warn).not.toHaveBeenCalledWith('detected-module');
     expect(mock.warn).toHaveBeenCalledWith('detected-plugin-with-alpha');
   });
 

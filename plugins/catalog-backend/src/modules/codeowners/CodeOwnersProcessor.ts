@@ -21,10 +21,10 @@ import {
   ScmIntegrationRegistry,
   ScmIntegrations,
 } from '@backstage/integration';
-import { Logger } from 'winston';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { findCodeOwnerByTarget } from './lib';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const ALLOWED_KINDS = ['API', 'Component', 'Domain', 'Resource', 'System'];
 const ALLOWED_LOCATION_TYPES = ['url'];
@@ -32,12 +32,12 @@ const ALLOWED_LOCATION_TYPES = ['url'];
 /** @public */
 export class CodeOwnersProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly reader: UrlReader;
 
   static fromConfig(
     config: Config,
-    options: { logger: Logger; reader: UrlReader },
+    options: { logger: LoggerService; reader: UrlReader },
   ) {
     const integrations = ScmIntegrations.fromConfig(config);
 
@@ -49,7 +49,7 @@ export class CodeOwnersProcessor implements CatalogProcessor {
 
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
     reader: UrlReader;
   }) {
     this.integrations = options.integrations;

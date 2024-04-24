@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-components",
   "description": "Core components used by Backstage plugins and apps",
-  "version": "0.14.0-next.2",
+  "version": "0.14.5-next.0",
   "publishConfig": {
     "access": "public"
   },
@@ -22,11 +22,15 @@
   "types": "src/index.ts",
   "exports": {
     ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
     "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
   },
   "typesVersions": {
     "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
       "testUtils": [
         "src/testUtils.ts"
       ],
@@ -74,7 +78,7 @@
     "rc-progress": "3.5.1",
     "react-helmet": "6.1.0",
     "react-hook-form": "^7.12.2",
-    "react-idle-timer": "5.6.2",
+    "react-idle-timer": "5.7.2",
     "react-markdown": "^8.0.0",
     "react-sparklines": "^1.7.0",
     "react-syntax-highlighter": "^15.4.5",
@@ -96,9 +100,9 @@
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/ansi-regex": "^5.0.0",
     "@types/classnames": "^2.2.9",

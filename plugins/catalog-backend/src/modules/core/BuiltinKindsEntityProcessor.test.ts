@@ -418,12 +418,13 @@ describe('BuiltinKindsEntityProcessor', () => {
         metadata: { name: 'n' },
         spec: {
           owner: 'o',
+          subdomainOf: 'p',
         },
       };
 
       await processor.postProcessEntity(entity, location, emit);
 
-      expect(emit).toHaveBeenCalledTimes(2);
+      expect(emit).toHaveBeenCalledTimes(4);
       expect(emit).toHaveBeenCalledWith({
         type: 'relation',
         relation: {
@@ -438,6 +439,22 @@ describe('BuiltinKindsEntityProcessor', () => {
           source: { kind: 'Domain', namespace: 'default', name: 'n' },
           type: 'ownedBy',
           target: { kind: 'Group', namespace: 'default', name: 'o' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Domain', namespace: 'default', name: 'n' },
+          type: 'partOf',
+          target: { kind: 'Domain', namespace: 'default', name: 'p' },
+        },
+      });
+      expect(emit).toHaveBeenCalledWith({
+        type: 'relation',
+        relation: {
+          source: { kind: 'Domain', namespace: 'default', name: 'p' },
+          type: 'hasPart',
+          target: { kind: 'Domain', namespace: 'default', name: 'n' },
         },
       });
     });

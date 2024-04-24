@@ -20,7 +20,6 @@ import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';
 import { v4 as uuid } from 'uuid';
-import type { Logger } from 'winston';
 import { rethrowError } from './conversion';
 import { deleteWithEagerPruningOfChildren } from './operations/provider/deleteWithEagerPruningOfChildren';
 import { refreshByRefreshKeys } from './operations/provider/refreshByRefreshKeys';
@@ -35,6 +34,7 @@ import {
   Transaction,
 } from './types';
 import { generateStableHash } from './util';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause
@@ -46,7 +46,7 @@ export class DefaultProviderDatabase implements ProviderDatabase {
   constructor(
     private readonly options: {
       database: Knex;
-      logger: Logger;
+      logger: LoggerService;
     },
   ) {}
 

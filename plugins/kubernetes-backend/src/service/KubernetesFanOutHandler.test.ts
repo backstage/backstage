@@ -35,6 +35,7 @@ import {
 } from '@backstage/plugin-kubernetes-common';
 import { Config, ConfigReader } from '@backstage/config';
 import { Entity } from '@backstage/catalog-model';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 
 describe('KubernetesFanOutHandler', () => {
   const fetchObjectsForService = jest.fn();
@@ -60,6 +61,14 @@ describe('KubernetesFanOutHandler', () => {
       requestTotal: '1001',
     },
     pod: {},
+  };
+
+  const mockCredentials: BackstageCredentials = {
+    $$type: '@backstage/BackstageCredentials',
+    principal: {
+      userEntityRef: 'user:default/guest',
+      type: 'user',
+    },
   };
 
   const entity = {
@@ -372,10 +381,13 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {},
-      });
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(getClustersByEntity).toHaveBeenCalledTimes(1);
       expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
@@ -410,10 +422,13 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {},
-      });
+      await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
       expect(
@@ -442,10 +457,13 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {},
-      });
+      await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(fetchObjectsForService).toHaveBeenCalledTimes(2);
       expect(fetchObjectsForService).toHaveBeenCalledWith(
@@ -497,10 +515,13 @@ describe('KubernetesFanOutHandler', () => {
         },
       ]);
 
-      await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {},
-      });
+      await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(fetchObjectsForService).toHaveBeenCalledTimes(2);
       expect(fetchObjectsForService).toHaveBeenCalledWith(
@@ -559,10 +580,13 @@ describe('KubernetesFanOutHandler', () => {
         },
       ]);
 
-      await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {},
-      });
+      await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(fetchObjectsForService).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -600,10 +624,13 @@ describe('KubernetesFanOutHandler', () => {
         },
       ]);
 
-      await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {},
-      });
+      await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(fetchObjectsForService).toHaveBeenCalledWith(
         expect.objectContaining({
@@ -665,10 +692,13 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {},
-      });
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(getClustersByEntity).toHaveBeenCalledTimes(1);
       expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
@@ -744,10 +774,13 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {},
-      });
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(getClustersByEntity).toHaveBeenCalledTimes(1);
       expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
@@ -779,12 +812,15 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {
-          google: 'google_token_123',
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {
+            google: 'google_token_123',
+          },
         },
-      });
+        { credentials: mockCredentials },
+      );
 
       expect(getClustersByEntity).toHaveBeenCalledTimes(1);
       expect(fetchObjectsForService).toHaveBeenCalledTimes(2);
@@ -836,12 +872,15 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {
-          google: 'google_token_123',
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {
+            google: 'google_token_123',
+          },
         },
-      });
+        { credentials: mockCredentials },
+      );
 
       expect(getClustersByEntity).toHaveBeenCalledTimes(1);
       expect(fetchObjectsForService).toHaveBeenCalledTimes(3);
@@ -897,12 +936,15 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {
-          google: 'google_token_123',
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {
+            google: 'google_token_123',
+          },
         },
-      });
+        { credentials: mockCredentials },
+      );
 
       expect(getClustersByEntity).toHaveBeenCalledTimes(1);
       expect(fetchObjectsForService).toHaveBeenCalledTimes(4);
@@ -1015,12 +1057,15 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      const result = await sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {
-          google: 'google_token_123',
+      const result = await sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {
+            google: 'google_token_123',
+          },
         },
-      });
+        { credentials: mockCredentials },
+      );
 
       expect(getClustersByEntity).toHaveBeenCalledTimes(1);
       expect(fetchObjectsForService).toHaveBeenCalledTimes(2);
@@ -1069,10 +1114,13 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      const result = sut.getKubernetesObjectsByEntity({
-        entity,
-        auth: {},
-      });
+      const result = sut.getKubernetesObjectsByEntity(
+        {
+          entity,
+          auth: {},
+        },
+        { credentials: mockCredentials },
+      );
       await expect(result).rejects.toThrow(nonFetchError);
     });
 
@@ -1155,10 +1203,13 @@ describe('KubernetesFanOutHandler', () => {
         });
 
         const result =
-          await kubernetesFanOutHandler.getKubernetesObjectsByEntity({
-            entity,
-            auth: {},
-          });
+          await kubernetesFanOutHandler.getKubernetesObjectsByEntity(
+            {
+              entity,
+              auth: {},
+            },
+            { credentials: mockCredentials },
+          );
 
         const expected: ObjectsByEntityResponse = {
           items: [
@@ -1200,17 +1251,20 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      await sut.getCustomResourcesByEntity({
-        entity,
-        auth: {},
-        customResources: [
-          {
-            group: 'parameter-crd.example.com',
-            apiVersion: 'v1alpha1',
-            plural: 'parameter-crd',
-          },
-        ],
-      });
+      await sut.getCustomResourcesByEntity(
+        {
+          entity,
+          auth: {},
+          customResources: [
+            {
+              group: 'parameter-crd.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'parameter-crd',
+            },
+          ],
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(fetchObjectsForService).toHaveBeenCalledTimes(1);
       expect(fetchObjectsForService).toHaveBeenCalledWith(
@@ -1262,17 +1316,20 @@ describe('KubernetesFanOutHandler', () => {
         },
       ]);
 
-      await sut.getCustomResourcesByEntity({
-        entity,
-        auth: {},
-        customResources: [
-          {
-            group: 'parameter-crd.example.com',
-            apiVersion: 'v1alpha1',
-            plural: 'parameter-crd',
-          },
-        ],
-      });
+      await sut.getCustomResourcesByEntity(
+        {
+          entity,
+          auth: {},
+          customResources: [
+            {
+              group: 'parameter-crd.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'parameter-crd',
+            },
+          ],
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(fetchObjectsForService).toHaveBeenCalledTimes(2);
       expect(fetchObjectsForService).toHaveBeenCalledWith(
@@ -1329,17 +1386,20 @@ describe('KubernetesFanOutHandler', () => {
 
       sut = getKubernetesFanOutHandler([]);
 
-      await sut.getCustomResourcesByEntity({
-        entity,
-        auth: {},
-        customResources: [
-          {
-            group: 'parameter-crd.example.com',
-            apiVersion: 'v1alpha1',
-            plural: 'parameter-crd',
-          },
-        ],
-      });
+      await sut.getCustomResourcesByEntity(
+        {
+          entity,
+          auth: {},
+          customResources: [
+            {
+              group: 'parameter-crd.example.com',
+              apiVersion: 'v1alpha1',
+              plural: 'parameter-crd',
+            },
+          ],
+        },
+        { credentials: mockCredentials },
+      );
 
       expect(fetchObjectsForService).toHaveBeenCalledWith(
         expect.objectContaining({

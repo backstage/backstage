@@ -26,6 +26,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { runner } from '../../../../lib/runner';
 import { oas } from '@stoplight/spectral-rulesets';
+import { truthy } from '@stoplight/spectral-functions';
 import { DiagnosticSeverity } from '@stoplight/types';
 import { pretty } from '@stoplight/spectral-formatters';
 import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
@@ -47,6 +48,16 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
   const backstageRuleset = new Ruleset(
     {
       extends: [oas, ruleset],
+      rules: {
+        'allow-reserved-in-params': {
+          given: '$.paths..parameters[*]',
+          then: {
+            field: 'allowReserved',
+            function: truthy,
+          },
+          severity: 'error',
+        },
+      },
       overrides: [
         {
           files: ['*'],
@@ -63,8 +74,8 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
     } as RulesetDefinition,
     { source: openapiPath },
   );
-
   spectral.setRuleset(backstageRuleset);
+
   // we lint our document using the ruleset we passed to the Spectral object
   const result = await spectral.run(document);
   const errors = result.filter(e => e.severity === DiagnosticSeverity.Error);

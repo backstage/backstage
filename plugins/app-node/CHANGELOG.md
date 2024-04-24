@@ -1,5 +1,97 @@
 # @backstage/plugin-app-node
 
+## 0.1.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/config-loader@1.8.0
+
+## 0.1.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-plugin-api@0.6.17
+
+## 0.1.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/config-loader@1.8.0-next.0
+
+## 0.1.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+
+## 0.1.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/config-loader@1.7.0
+
+## 0.1.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/config-loader@1.7.0
+
+## 0.1.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/config-loader@1.7.0
+
+## 0.1.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config-loader@1.7.0-next.1
+
+## 0.1.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+
+## 0.1.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/config-loader@1.6.3-next.0
+
+## 0.1.10
+
+### Patch Changes
+
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 6bb6f3e: Updated dependency `fs-extra` to `^11.2.0`.
+  Updated dependency `@types/fs-extra` to `^11.0.0`.
+- 54ad8e1: Allow the `app-backend` plugin to use a global configuration schema provided externally through an extension.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/config-loader@1.6.2
+
 ## 0.1.10-next.3
 
 ### Patch Changes

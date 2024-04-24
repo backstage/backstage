@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
-import { signalService } from '@backstage/plugin-signals-node';
+import { signalsServiceRef } from '@backstage/plugin-signals-node';
 import {
   NotificationProcessor,
   notificationsProcessingExtensionPoint,
@@ -58,34 +59,41 @@ export const notificationsPlugin = createBackendPlugin({
 
     env.registerInit({
       deps: {
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
+        userInfo: coreServices.userInfo,
         httpRouter: coreServices.httpRouter,
         logger: coreServices.logger,
-        identity: coreServices.identity,
         database: coreServices.database,
-        tokenManager: coreServices.tokenManager,
         discovery: coreServices.discovery,
-        signals: signalService,
+        signals: signalsServiceRef,
       },
       async init({
+        auth,
+        httpAuth,
+        userInfo,
         httpRouter,
         logger,
-        identity,
         database,
-        tokenManager,
         discovery,
         signals,
       }) {
         httpRouter.use(
           await createRouter({
+            auth,
+            httpAuth,
+            userInfo,
             logger,
-            identity,
             database,
-            tokenManager,
             discovery,
-            signalService: signals,
+            signals,
             processors: processingExtensions.processors,
           }),
         );
+        httpRouter.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

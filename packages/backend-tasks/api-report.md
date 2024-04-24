@@ -8,7 +8,7 @@ import { Duration } from 'luxon';
 import { HumanDuration as HumanDuration_2 } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import { LegacyRootDatabaseService } from '@backstage/backend-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @public @deprecated
@@ -83,20 +83,23 @@ export interface TaskScheduleDefinitionConfig {
 
 // @public
 export class TaskScheduler {
-  constructor(databaseManager: LegacyRootDatabaseService, logger: Logger);
+  constructor(
+    databaseManager: LegacyRootDatabaseService,
+    logger: LoggerService,
+  );
   forPlugin(pluginId: string): PluginTaskScheduler;
   // (undocumented)
   static forPlugin(opts: {
     pluginId: string;
     databaseManager: PluginDatabaseManager;
-    logger: Logger;
+    logger: LoggerService;
   }): PluginTaskScheduler;
   // (undocumented)
   static fromConfig(
     config: Config,
     options?: {
       databaseManager?: LegacyRootDatabaseService;
-      logger?: Logger;
+      logger?: LoggerService;
     },
   ): TaskScheduler;
 }

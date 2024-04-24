@@ -20,9 +20,8 @@ jest.mock('fs-extra');
 
 const fsMock = fs as jest.Mocked<typeof fs>;
 
-import { PassThrough } from 'stream';
 import os from 'os';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { createCatalogWriteAction } from './write';
 import { resolve as resolvePath } from 'path';
@@ -31,16 +30,12 @@ import * as yaml from 'yaml';
 describe('catalog:write', () => {
   const action = createCatalogWriteAction();
 
-  const mockContext = {
-    workspacePath: os.tmpdir(),
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
-
   beforeEach(() => {
     jest.resetAllMocks();
+  });
+
+  const mockContext = createMockActionContext({
+    workspacePath: os.tmpdir(),
   });
 
   it('should write the catalog-info.yml in the workspace', async () => {
@@ -97,6 +92,36 @@ describe('catalog:write', () => {
     expect(fsMock.writeFile).toHaveBeenCalledWith(
       resolvePath(mockContext.workspacePath, 'some-dir/entity-info.yaml'),
       yaml.stringify(entity),
+    );
+  });
+
+  it('should add backstage.io/source-template if provided', async () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'n',
+        namespace: 'ns',
+        annotations: {},
+      },
+      spec: {},
+    };
+
+    await action.handler({
+      ...mockContext,
+      templateInfo: { entityRef: 'template:default/test-skeleton' },
+      input: { entity },
+    });
+
+    const expectedEntity = JSON.parse(JSON.stringify(entity));
+    expectedEntity.metadata.annotations = {
+      'backstage.io/source-template': 'template:default/test-skeleton',
+    };
+
+    expect(fsMock.writeFile).toHaveBeenCalledTimes(1);
+    expect(fsMock.writeFile).toHaveBeenCalledWith(
+      resolvePath(mockContext.workspacePath, 'catalog-info.yaml'),
+      yaml.stringify(expectedEntity),
     );
   });
 });

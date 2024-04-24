@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
+import crypto from 'crypto';
 import {
+  custom,
+  CustomHttpOptionsProvider,
   Issuer,
   ClientAuthMethod,
   TokenSet,
@@ -29,6 +32,14 @@ import {
   PassportOAuthAuthenticatorHelper,
   PassportOAuthPrivateInfo,
 } from '@backstage/plugin-auth-node';
+
+const HTTP_OPTION_TIMEOUT = 10000;
+const httpOptionsProvider: CustomHttpOptionsProvider = (_url, options) => {
+  return {
+    ...options,
+    timeout: HTTP_OPTION_TIMEOUT,
+  };
+};
 
 /**
  * authentication result for the OIDC which includes the token set and user
@@ -66,7 +77,11 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     const initializedScope = config.getOptionalString('scope');
     const initializedPrompt = config.getOptionalString('prompt');
 
+    Issuer[custom.http_options] = httpOptionsProvider;
     const promise = Issuer.discover(metadataUrl).then(issuer => {
+      issuer[custom.http_options] = httpOptionsProvider;
+      issuer.Client[custom.http_options] = httpOptionsProvider;
+
       const client = new issuer.Client({
         access_type: 'offline', // this option must be passed to provider to receive a refresh token
         client_id: clientId,
@@ -78,6 +93,7 @@ export const oidcAuthenticator = createOAuthAuthenticator({
         id_token_signed_response_alg: tokenSignedResponseAlg || 'RS256',
         scope: initializedScope || '',
       });
+      client[custom.http_options] = httpOptionsProvider;
 
       const strategy = new OidcStrategy(
         {
@@ -116,6 +132,7 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     const options: Record<string, string> = {
       scope: input.scope || initializedScope || 'openid profile email',
       state: input.state,
+      nonce: crypto.randomBytes(16).toString('base64'),
     };
     const prompt = initializedPrompt || 'none';
     if (prompt !== 'auto') {
@@ -181,5 +198,13 @@ export const oidcAuthenticator = createOAuthAuthenticator({
         },
       });
     });
+  },
+
+  async logout(input, ctx) {
+    const { client } = await ctx.promise;
+
+    if (input.refreshToken) {
+      await client.revoke(input.refreshToken);
+    }
   },
 });

@@ -237,6 +237,10 @@ describe('CatalogClient', () => {
 
     it('handles ordering properly', async () => {
       expect.assertions(2);
+      const sortedEntities = [
+        { apiVersion: '1', kind: 'Component', metadata: { name: 'b' } },
+        { apiVersion: '1', kind: 'Component', metadata: { name: 'a' } },
+      ];
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
@@ -245,7 +249,7 @@ describe('CatalogClient', () => {
             'asc:kind',
             'desc:metadata.name',
           ]);
-          return res(ctx.json([]));
+          return res(ctx.json(sortedEntities));
         }),
       );
 
@@ -259,7 +263,7 @@ describe('CatalogClient', () => {
         { token },
       );
 
-      expect(response.items).toEqual([]);
+      expect(response.items).toEqual(sortedEntities);
     });
   });
 
@@ -275,6 +279,7 @@ describe('CatalogClient', () => {
       };
       server.use(
         rest.post(`${mockBaseUrl}/entities/by-refs`, async (req, res, ctx) => {
+          expect(req.url.search).toBe('?filter=kind%3DAPI%2Ckind%3DComponent');
           await expect(req.json()).resolves.toEqual({
             entityRefs: ['k:n/a', 'k:n/b'],
             fields: ['a', 'b'],
@@ -284,7 +289,13 @@ describe('CatalogClient', () => {
       );
 
       const response = await client.getEntitiesByRefs(
-        { entityRefs: ['k:n/a', 'k:n/b'], fields: ['a', 'b'] },
+        {
+          entityRefs: ['k:n/a', 'k:n/b'],
+          fields: ['a', 'b'],
+          filter: {
+            kind: ['API', 'Component'],
+          },
+        },
         { token },
       );
 
@@ -761,7 +772,7 @@ describe('CatalogClient', () => {
           },
           'url:http://example.com',
         ),
-      ).rejects.toThrow(/Request failed with 500 Error/);
+      ).rejects.toThrow(/Request failed with 500 Internal Server Error/);
     });
   });
 });

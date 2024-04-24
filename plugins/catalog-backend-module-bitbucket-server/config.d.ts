@@ -46,6 +46,10 @@ export interface Config {
                * @visibility frontend
                */
               projectKey?: string;
+              /**
+               * (Optional) Skip archived repositories
+               */
+              skipArchivedRepos?: boolean;
             };
             /**
              * (Optional) TaskScheduleDefinition for the refresh.
@@ -74,6 +78,10 @@ export interface Config {
                  * @visibility frontend
                  */
                 projectKey?: string;
+                /**
+                 * (Optional) Skip archived repositories
+                 */
+                skipArchivedRepos?: boolean;
               };
               /**
                * (Optional) TaskScheduleDefinition for the refresh.

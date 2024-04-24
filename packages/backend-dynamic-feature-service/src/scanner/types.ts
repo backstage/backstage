@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackstagePackageJson } from '@backstage/cli-node';
+import { BackstagePackageJson, PackageRole } from '@backstage/cli-node';
 
 /**
  * @public
@@ -30,5 +30,7 @@ export interface ScannedPluginPackage {
 export type ScannedPluginManifest = BackstagePackageJson &
   Required<Pick<BackstagePackageJson, 'main'>> &
   Required<Pick<BackstagePackageJson, 'backstage'>> & {
-    backstage: Required<BackstagePackageJson['backstage']>;
+    backstage: {
+      role: PackageRole;
+    };
   };

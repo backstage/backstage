@@ -22,7 +22,9 @@ import {
   TableColumn,
 } from '@backstage/core-components';
 import { INode } from 'kubernetes-models/v1';
-import { Grid, Typography, makeStyles } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { useKubernetesClusterError } from '../KubernetesClusterErrorContext/KubernetesClusterErrorContext';
 import { KubernetesDrawer } from '@backstage/plugin-kubernetes-react';
 

@@ -19,7 +19,6 @@ import {
   createBackendModule,
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import {
   GroupTransformer,
@@ -130,7 +129,7 @@ export const catalogModuleMicrosoftGraphOrgEntityProvider = createBackendModule(
         async init({ catalog, config, logger, scheduler }) {
           catalog.addEntityProvider(
             MicrosoftGraphOrgEntityProvider.fromConfig(config, {
-              logger: loggerToWinstonLogger(logger),
+              logger,
               scheduler,
               userTransformer: userTransformer,
               groupTransformer: groupTransformer,

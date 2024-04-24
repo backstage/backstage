@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { applyConfigTransforms } from './apply';
+import { applyConfigTransforms, createConfigTransformer } from './apply';
 
 describe('applyConfigTransforms', () => {
-  it('should apply not transforms to input', async () => {
+  it('should apply no transforms to input', async () => {
     const data = applyConfigTransforms(
       {
         app: {
@@ -35,7 +35,8 @@ describe('applyConfigTransforms', () => {
       app: {
         title: 'Test',
         x: 1,
-        y: [true],
+        y: [null, true],
+        z: null,
       },
     });
   });
@@ -77,8 +78,38 @@ describe('applyConfigTransforms', () => {
       app: {
         title: ['T', 'e', 's', 't'],
         x: 2,
-        y: [true],
+        y: [null, true],
+        z: null,
       },
+    });
+  });
+});
+
+describe('createConfigTransformer', () => {
+  const origEnv = process.env;
+  process.env = {
+    ...process.env,
+    SECRET: 'my-secret',
+    PADDED_SECRET: ' \nmy-space \t',
+  };
+
+  afterAll(() => {
+    process.env = origEnv;
+  });
+
+  it('should substitute environment variables', async () => {
+    const transformer = createConfigTransformer({});
+
+    await expect(
+      transformer({
+        testAlone: '${SECRET}',
+        testMiddle: 'hello ${SECRET}!',
+        testSpace: 'hello ${PADDED_SECRET}!',
+      }),
+    ).resolves.toEqual({
+      testAlone: 'my-secret',
+      testMiddle: 'hello my-secret!',
+      testSpace: 'hello my-space!',
     });
   });
 });

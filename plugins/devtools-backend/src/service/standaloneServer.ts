@@ -15,21 +15,21 @@
  */
 
 import {
-  ServerTokenManager,
-  HostDiscovery,
   createServiceBuilder,
+  HostDiscovery,
   loadBackendConfig,
+  ServerTokenManager,
 } from '@backstage/backend-common';
 
-import { Logger } from 'winston';
 import { Server } from 'http';
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 import { createRouter } from './router';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface ServerOptions {
   port: number;
   enableCors: boolean;
-  logger: Logger;
+  logger: LoggerService;
 }
 
 export async function startStandaloneServer(
@@ -50,6 +50,7 @@ export async function startStandaloneServer(
     logger,
     config,
     permissions,
+    discovery,
   });
 
   let service = createServiceBuilder(module)

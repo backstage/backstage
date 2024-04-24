@@ -1,5 +1,125 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.1.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/plugin-kubernetes-common@0.7.6-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.11
+
+### Patch Changes
+
+- f5cec55: Fixing issue where `BackstageCredentials` were not properly forwarded for all calls
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+
+## 0.1.11-next.1
+
+### Patch Changes
+
+- f5cec55: Fixing issue where `BackstageCredentials` were not properly forwarded for all calls
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+
+## 0.1.8
+
+### Patch Changes
+
+- 69d0217: Accept auth credentials to get kubernetes clusters
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+
+## 0.1.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5-next.1
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- 69d0217: Accept auth credentials to get kubernetes clusters
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5-next.1
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-kubernetes-common@0.7.5-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.4
+
+### Patch Changes
+
+- a775596: Enabled a way to include custom auth metadata info on the clusters endpoint. If you want to implement a Kubernetes auth strategy which requires surfacing custom auth metadata to the frontend, use the new presentAuthMetadata method on the AuthenticationStrategy interface.
+- 8472188: Added or fixed the `repository` field in `package.json`.
+- 043cf88: The `ClusterDetails` type now has a `title` field, which should be a
+  human-readable name.
+- cceed8a: Introduced `PinnipedHelper` class to enable authentication to Kubernetes clusters through Pinniped
+- f180cba: Enabling authentication to kubernetes clusters with mTLS x509 client certs
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.7.4
+  - @backstage/backend-plugin-api@0.6.10
+  - @backstage/catalog-model@1.4.4
+  - @backstage/types@1.1.1
+
 ## 0.1.4-next.3
 
 ### Patch Changes

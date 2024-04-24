@@ -11,6 +11,10 @@ area:discoverability: # search + home
           - plugins/search-*/**/*
           - packages/search-*/**/*
           - plugins/home/**/*
+area:events:
+  - changed-files:
+      - any-glob-to-any-file:
+          - plugins/events-*/**/*
 area:kubernetes:
   - changed-files:
       - any-glob-to-any-file:
@@ -31,6 +35,10 @@ area:techdocs:
           - plugins/techdocs/**/*
           - plugins/techdocs-*/**/*
           - packages/techdocs-*/**/*
+bep:
+  - changed-files:
+      - any-glob-to-any-file:
+          - beps/**/*
 auth:
   - changed-files:
       - any-glob-to-any-file:

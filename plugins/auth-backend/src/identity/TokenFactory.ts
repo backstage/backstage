@@ -13,17 +13,101 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { parseEntityRef } from '@backstage/catalog-model';
 import { AuthenticationError } from '@backstage/errors';
-import { exportJWK, generateKeyPair, importJWK, JWK, SignJWT } from 'jose';
+import {
+  exportJWK,
+  generateKeyPair,
+  importJWK,
+  JWK,
+  SignJWT,
+  GeneralSign,
+  KeyLike,
+} from 'jose';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { LoggerService } from '@backstage/backend-plugin-api';
-
-import { AnyJWK, KeyStore, TokenIssuer, TokenParams } from './types';
+import { TokenParams, tokenTypes } from '@backstage/plugin-auth-node';
+import { AnyJWK, KeyStore, TokenIssuer } from './types';
+import { JsonValue } from '@backstage/types';
 
 const MS_IN_S = 1000;
 const MAX_TOKEN_LENGTH = 32768; // At 64 bytes per entity ref this still leaves room for about 500 entities
+
+/**
+ * The payload contents of a valid Backstage JWT token
+ *
+ * @internal
+ */
+interface BackstageTokenPayload {
+  /**
+   * The issuer of the token, currently the discovery URL of the auth backend
+   */
+  iss: string;
+
+  /**
+   * The entity ref of the user
+   */
+  sub: string;
+
+  /**
+   * The entity refs that the user claims ownership througg
+   */
+  ent: string[];
+
+  /**
+   * A hard coded audience string
+   */
+  aud: typeof tokenTypes.user.audClaim;
+
+  /**
+   * Standard expiry in epoch seconds
+   */
+  exp: number;
+
+  /**
+   * Standard issue time in epoch seconds
+   */
+  iat: number;
+
+  /**
+   * A separate user identity proof that the auth service can convert to a limited user token
+   */
+  uip: string;
+
+  /**
+   * Any other custom claims that the adopter may have added
+   */
+  [claim: string]: JsonValue;
+}
+
+/**
+ * The payload contents of a valid Backstage user identity claim token
+ *
+ * @internal
+ */
+interface BackstageUserIdentityProofPayload {
+  /**
+   * The entity ref of the user
+   */
+  sub: string;
+
+  /**
+   * The ownership entity refs of the user
+   */
+  ent?: string[];
+
+  /**
+   * Standard expiry in epoch seconds
+   */
+  exp: number;
+
+  /**
+   * Standard issue time in epoch seconds
+   */
+  iat: number;
+}
 
 type Options = {
   logger: LoggerService;
@@ -78,13 +162,13 @@ export class TokenFactory implements TokenIssuer {
     const key = await this.getKey();
 
     const iss = this.issuer;
-    const { sub, ent, ...additionalClaims } = params.claims;
-    const aud = 'backstage';
+    const { sub, ent = [sub], ...additionalClaims } = params.claims;
+    const aud = tokenTypes.user.audClaim;
     const iat = Math.floor(Date.now() / MS_IN_S);
     const exp = iat + this.keyDurationSeconds;
 
-    // Validate that the subject claim is a valid EntityRef
     try {
+      // The subject must be a valid entity ref
       parseEntityRef(sub);
     } catch (error) {
       throw new Error(
@@ -92,21 +176,42 @@ export class TokenFactory implements TokenIssuer {
       );
     }
 
-    this.logger.info(`Issuing token for ${sub}, with entities ${ent ?? []}`);
-
     if (!key.alg) {
       throw new AuthenticationError('No algorithm was provided in the key');
     }
 
-    const claims = { ...additionalClaims, iss, sub, ent, aud, iat, exp };
+    this.logger.info(`Issuing token for ${sub}, with entities ${ent}`);
+
+    const signingKey = await importJWK(key);
+
+    const uip = await this.createUserIdentityClaim({
+      header: {
+        typ: tokenTypes.limitedUser.typParam,
+        alg: key.alg,
+        kid: key.kid,
+      },
+      payload: { sub, ent, iat, exp },
+      key: signingKey,
+    });
+
+    const claims: BackstageTokenPayload = {
+      ...additionalClaims,
+      iss,
+      sub,
+      ent,
+      aud,
+      iat,
+      exp,
+      uip,
+    };
+
     const token = await new SignJWT(claims)
-      .setProtectedHeader({ alg: key.alg, kid: key.kid })
-      .setIssuer(iss)
-      .setAudience(aud)
-      .setSubject(sub)
-      .setIssuedAt(iat)
-      .setExpirationTime(exp)
-      .sign(await importJWK(key));
+      .setProtectedHeader({
+        typ: tokenTypes.user.typParam,
+        alg: key.alg,
+        kid: key.kid,
+      })
+      .sign(signingKey);
 
     if (token.length > MAX_TOKEN_LENGTH) {
       throw new Error(
@@ -208,5 +313,48 @@ export class TokenFactory implements TokenIssuer {
     }
 
     return promise;
+  }
+
+  // Creates a string claim that can be used as part of reconstructing a limited
+  // user token. The output of this function is only the signature part of a
+  // JWS.
+  private async createUserIdentityClaim(options: {
+    header: {
+      typ: string;
+      alg: string;
+      kid?: string;
+    };
+    payload: BackstageUserIdentityProofPayload;
+    key: KeyLike | Uint8Array;
+  }): Promise<string> {
+    // NOTE: We reconstruct the header and payload structures carefully to
+    // perfectly guarantee ordering. The reason for this is that we store only
+    // the signature part of these to reduce duplication within the Backstage
+    // token. Anyone who wants to make an actual JWT based on all this must be
+    // able to do the EXACT reconstruction of the header and payload parts, to
+    // then append the signature.
+
+    const header = {
+      typ: options.header.typ,
+      alg: options.header.alg,
+      ...(options.header.kid ? { kid: options.header.kid } : {}),
+    };
+
+    const payload = {
+      sub: options.payload.sub,
+      ent: options.payload.ent,
+      iat: options.payload.iat,
+      exp: options.payload.exp,
+    };
+
+    const jws = await new GeneralSign(
+      new TextEncoder().encode(JSON.stringify(payload)),
+    )
+      .addSignature(options.key)
+      .setProtectedHeader(header)
+      .done()
+      .sign();
+
+    return jws.signatures[0].signature;
   }
 }

@@ -27,8 +27,8 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { Logger } from 'winston';
 import { codeSearch } from '../lib';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Extracts repositories out of an Azure DevOps org.
@@ -49,9 +49,9 @@ import { codeSearch } from '../lib';
 export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
   private readonly integrations: ScmIntegrationRegistry;
   private readonly credentialsProvider: AzureDevOpsCredentialsProvider;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
-  static fromConfig(config: Config, options: { logger: Logger }) {
+  static fromConfig(config: Config, options: { logger: LoggerService }) {
     const integrations = ScmIntegrations.fromConfig(config);
 
     return new AzureDevOpsDiscoveryProcessor({
@@ -62,7 +62,7 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
 
   constructor(options: {
     integrations: ScmIntegrationRegistry;
-    logger: Logger;
+    logger: LoggerService;
   }) {
     this.integrations = options.integrations;
     this.logger = options.logger;
@@ -92,7 +92,7 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
       );
     }
 
-    const { baseUrl, org, project, repo, catalogPath } = parseUrl(
+    const { baseUrl, org, project, repo, catalogPath, branch } = parseUrl(
       location.target,
     );
     this.logger.info(
@@ -106,6 +106,7 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
       project,
       repo,
       catalogPath,
+      branch,
     );
 
     this.logger.debug(
@@ -113,10 +114,16 @@ export class AzureDevOpsDiscoveryProcessor implements CatalogProcessor {
     );
 
     for (const file of files) {
+      let target = `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`;
+
+      if (branch) {
+        target += `&version=GB${branch}`;
+      }
+
       emit(
         processingResult.location({
           type: 'url',
-          target: `${baseUrl}/${org}/${project}/_git/${file.repository.name}?path=${file.path}`,
+          target,
           // Not all locations may actually exist, since the user defined them as a wildcard pattern.
           // Thus, we emit them as optional and let the downstream processor find them while not outputting
           // an error if it couldn't.
@@ -138,11 +145,18 @@ export function parseUrl(urlString: string): {
   project: string;
   repo: string;
   catalogPath: string;
+  branch: string;
 } {
   const url = new URL(urlString);
   const path = url.pathname.slice(1).split('/');
 
   const catalogPath = url.searchParams.get('path') || '/catalog-info.yaml';
+  let branch = url.searchParams.get('version') || '';
+
+  if (branch.startsWith('GB')) {
+    // DevOps prefixes branch names with 'GB' in URLs
+    branch = branch.slice(2);
+  }
 
   if (path.length === 2 && path[0].length && path[1].length) {
     return {
@@ -151,6 +165,7 @@ export function parseUrl(urlString: string): {
       project: decodeURIComponent(path[1]),
       repo: '',
       catalogPath,
+      branch,
     };
   } else if (
     path.length === 4 &&
@@ -165,6 +180,7 @@ export function parseUrl(urlString: string): {
       project: decodeURIComponent(path[1]),
       repo: decodeURIComponent(path[3]),
       catalogPath,
+      branch,
     };
   }
 

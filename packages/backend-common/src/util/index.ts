@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-export type { ContainerRunner, RunContainerOptions } from './ContainerRunner';
+export type {
+  ContainerRunner,
+  RunContainerOptions,
+  PullOptions,
+} from './ContainerRunner';
 export { DockerContainerRunner } from './DockerContainerRunner';
 export type {
   KubernetesContainerRunnerOptions,

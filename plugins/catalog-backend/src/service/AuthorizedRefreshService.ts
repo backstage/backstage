@@ -16,16 +16,14 @@
 
 import { NotAllowedError } from '@backstage/errors';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
-import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { RefreshOptions, RefreshService } from './types';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 
 export class AuthorizedRefreshService implements RefreshService {
   constructor(
     private readonly service: RefreshService,
-    private readonly permissionApi: PermissionEvaluator,
+    private readonly permissionApi: PermissionsService,
   ) {}
 
   async refresh(options: RefreshOptions) {
@@ -37,7 +35,7 @@ export class AuthorizedRefreshService implements RefreshService {
             resourceRef: options.entityRef,
           },
         ],
-        { token: options.authorizationToken },
+        { credentials: options.credentials },
       )
     )[0];
     if (authorizeDecision.result !== AuthorizeResult.ALLOW) {

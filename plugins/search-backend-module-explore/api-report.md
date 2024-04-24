@@ -5,11 +5,12 @@
 ```ts
 /// <reference types="node" />
 
+import { AuthService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
-import { ExploreTool } from '@backstage/plugin-explore-common';
+import { ExploreTool } from '@backstage-community/plugin-explore-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
 import { TokenManager } from '@backstage/backend-common';
@@ -35,7 +36,8 @@ export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
 // @public
 export type ToolDocumentCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
-  logger: Logger;
+  logger: LoggerService;
   tokenManager?: TokenManager;
+  auth?: AuthService;
 };
 ```

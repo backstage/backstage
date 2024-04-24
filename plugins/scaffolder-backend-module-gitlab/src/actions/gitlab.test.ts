@@ -29,9 +29,8 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 import { createPublishGitlabAction } from './gitlab';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
-import { PassThrough } from 'stream';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 const mockGitlabClient = {
   Namespaces: {
@@ -83,7 +82,8 @@ describe('publish:gitlab', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   const action = createPublishGitlabAction({ integrations, config });
-  const mockContext = {
+
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
       repoVisibility: 'private' as const,
@@ -91,13 +91,8 @@ describe('publish:gitlab', () => {
         ci_config_path: '.gitlab-ci.yml',
       },
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
-  const mockContextWithSettings = {
+  });
+  const mockContextWithSettings = createMockActionContext({
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
       repoVisibility: 'private' as const,
@@ -108,13 +103,8 @@ describe('publish:gitlab', () => {
         topics: ['topic1', 'topic2'],
       },
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
-  const mockContextWithBranches = {
+  });
+  const mockContextWithBranches = createMockActionContext({
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
       repoVisibility: 'private' as const,
@@ -135,13 +125,8 @@ describe('publish:gitlab', () => {
         },
       ],
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
-  const mockContextWithVariables = {
+  });
+  const mockContextWithVariables = createMockActionContext({
     input: {
       repoUrl: 'gitlab.com?repo=repo&owner=owner',
       repoVisibility: 'private' as const,
@@ -155,12 +140,7 @@ describe('publish:gitlab', () => {
         },
       ],
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();

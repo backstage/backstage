@@ -32,17 +32,16 @@ import {
   executeRefreshTokenStrategy,
   makeProfileInfo,
 } from '../../lib/passport';
-import {
-  AuthHandler,
-  AuthResolverContext,
-  OAuthStartResponse,
-  SignInResolver,
-} from '../types';
+import { AuthHandler, OAuthStartResponse } from '../types';
 import express from 'express';
 import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { Profile as PassportProfile } from 'passport';
 import { commonByEmailResolver } from '../resolvers';
 import fetch from 'node-fetch';
+import {
+  AuthResolverContext,
+  SignInResolver,
+} from '@backstage/plugin-auth-node';
 
 type PrivateInfo = {
   refreshToken: string;

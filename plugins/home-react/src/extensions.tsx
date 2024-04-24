@@ -15,7 +15,7 @@
  */
 
 import React, { Suspense } from 'react';
-import { IconButton } from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { InfoCard } from '@backstage/core-components';
 import { SettingsModal } from './components';

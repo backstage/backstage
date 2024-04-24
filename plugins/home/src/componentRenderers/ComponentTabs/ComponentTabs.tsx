@@ -15,7 +15,8 @@
  */
 
 import React from 'react';
-import { Tabs, Tab } from '@material-ui/core';
+import Tabs from '@material-ui/core/Tabs';
+import Tab from '@material-ui/core/Tab';
 import { InfoCard } from '@backstage/core-components';
 
 type TabType = {

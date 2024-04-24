@@ -24,7 +24,7 @@ prismTheme.plain.backgroundColor = '#232323';
 /** @type {import('@docusaurus/types').Config} */
 module.exports = {
   title: 'Backstage Software Catalog and Developer Platform',
-  tagline: 'An open platform for building developer portals',
+  tagline: 'An open source framework for building developer portals',
   url: 'https://backstage.io',
   baseUrl: '/',
   organizationName: 'Spotify',
@@ -70,10 +70,10 @@ module.exports = {
   ],
   markdown: {
     preprocessor({ fileContent }) {
-      // Replace all HTML comments with emtpy strings as these are not supported by MDXv2.
+      // Replace all HTML comments with empty strings as these are not supported by MDXv2.
       return fileContent.replace(/<!--.*?-->/gs, '');
     },
-    format: 'md',
+    format: 'detect',
   },
   webpack: {
     jsLoader: isServer => ({
@@ -95,6 +95,7 @@ module.exports = {
   plugins: [
     'docusaurus-plugin-sass',
     () => ({
+      name: 'yaml-loader',
       configureWebpack() {
         return {
           module: {
@@ -152,7 +153,24 @@ module.exports = {
             from: '/docs/overview/glossary',
             to: '/docs/references/glossary',
           },
+          {
+            from: '/docs/getting-started/create-an-app',
+            to: '/docs/getting-started/',
+          },
+          {
+            from: '/docs/getting-started/configuration',
+            to: '/docs/getting-started/#next-steps',
+          },
         ],
+      },
+    ],
+    [
+      'docusaurus-pushfeedback',
+      {
+        project: 'q8w1i6cair',
+        hideIcon: true,
+        customFont: true,
+        buttonStyle: 'dark',
       },
     ],
   ],
@@ -190,7 +208,7 @@ module.exports = {
             position: 'left',
           },
           {
-            to: 'docs/releases/v1.22.0',
+            to: 'docs/releases/v1.26.0',
             label: 'Releases',
             position: 'left',
           },
