@@ -1,20 +1,30 @@
 {
   "name": "@backstage/backend-plugin-api",
-  "description": "Core API used by Backstage backend plugins",
   "version": "0.6.18-next.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "publishConfig": {
-    "access": "public"
-  },
+  "description": "Core API used by Backstage backend plugins",
   "backstage": {
     "role": "node-library"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/backend-plugin-api"
+  },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -25,24 +35,17 @@
       ]
     }
   },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "packages/backend-plugin-api"
-  },
-  "keywords": [
-    "backstage"
+  "files": [
+    "dist"
   ],
-  "license": "Apache-2.0",
   "scripts": {
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-tasks": "workspace:^",
@@ -56,9 +59,5 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"
-  },
-  "files": [
-    "dist",
-    "alpha"
-  ]
+  }
 }
