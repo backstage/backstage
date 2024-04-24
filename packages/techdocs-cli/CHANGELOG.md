@@ -1,5 +1,11 @@
 # @techdocs/cli
 
+## 1.8.10
+
+### Patch Changes
+
+- 15768bc: Fix cookie endpoint mock for `serve`
+
 ## 1.8.9
 
 ### Patch Changes

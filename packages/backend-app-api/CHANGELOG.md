@@ -1,5 +1,11 @@
 # @backstage/backend-app-api
 
+## 0.7.1
+
+### Patch Changes
+
+- 3554ebe: Move the JWKS registration outside of the lifecycle middleware
+
 ## 0.7.0
 
 ### Minor Changes

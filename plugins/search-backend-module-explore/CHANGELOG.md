@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.1.23
+
+### Patch Changes
+
+- da02d13: Migrate search collator to use the new auth services.
+
 ## 0.1.22
 
 ### Patch Changes

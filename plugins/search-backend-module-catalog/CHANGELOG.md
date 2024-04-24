@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-module-catalog
 
+## 0.1.23
+
+### Patch Changes
+
+- 9d6543c: Fix wiring of the module exported at the `/alpha` path, which was causing authentication failures.
+
 ## 0.1.22
 
 ### Patch Changes

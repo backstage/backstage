@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.14.5
+
+### Patch Changes
+
+- a29ed8d: The `SignInPage` guest provider will now fall back to legacy guest auth if the backend request fails, allowing guest auth without a running backend.
+
 ## 0.14.4
 
 ### Patch Changes
