@@ -30,9 +30,9 @@ import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring
 import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { coreCliServices } from '../services';
-import { Command } from 'commander';
+import { Command, CommanderError } from 'commander';
 
-export interface BackendRegisterInit {
+export interface CliBackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
   provides: Set<ServiceOrExtensionPoint>;
   init: {
@@ -41,7 +41,7 @@ export interface BackendRegisterInit {
   };
 }
 
-export class BackendInitializer {
+export class CliBackendInitializer {
   startPromise?: Promise<void>;
   #features = new Array<InternalBackendFeature>();
   #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
@@ -172,8 +172,8 @@ export class BackendInitializer {
     // Initialize all root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
 
-    const pluginInits = new Map<string, BackendRegisterInit>();
-    const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
+    const pluginInits = new Map<string, CliBackendRegisterInit>();
+    const moduleInits = new Map<string, Map<string, CliBackendRegisterInit>>();
 
     // Enumerate all features
     for (const feature of this.#features) {
@@ -305,7 +305,7 @@ export class BackendInitializer {
     try {
       await commanderService.parseAsync(process.argv);
     } catch (err) {
-      if (err.exitCode !== 0) {
+      if (err.exitCode !== 0 && !(err instanceof CommanderError)) {
         console.error(
           `${err.message} ${err.stack} ${err.code} ${
             err.name

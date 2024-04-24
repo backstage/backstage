@@ -30,7 +30,7 @@ import dot from 'dot-object';
 async function fetchOpenApiSpec(baseUrl: string) {
   const response = await fetch(`${baseUrl}/openapi.json`);
   if (!response.ok) {
-    throw new Error('Bad response');
+    throw new Error(`Bad response (${response.status})`);
   }
   const spec = await response.json();
   return (await Parser.dereference(spec)) as any;
@@ -73,7 +73,11 @@ async function handleResponse(
       console.log(JSON.stringify(parsedResponse, null, 2));
       return;
     }
-    console.table(flattenObjectArray(parsedResponse));
+    if (Array.isArray(parsedResponse)) {
+      console.table(flattenObjectArray(parsedResponse));
+    } else {
+      console.log(JSON.stringify(parsedResponse, null, 2));
+    }
   } else {
     const parsedResponse = await response.text();
     if (options.json) {
@@ -94,7 +98,7 @@ const openapiPlugin = createBackendPlugin({
       },
       async init({ logger, commander, discovery }) {
         const specs = [];
-        for (const pluginId of ['catalog', 'todo', 'search']) {
+        for (const pluginId of ['catalog', 'search']) {
           const spec = await fetchOpenApiSpec(
             await discovery.getBaseUrl(pluginId),
           );
