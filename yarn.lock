@@ -19023,25 +19023,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"backstage-plugin-cli-builder-backend@^0.0.0, backstage-plugin-cli-builder-backend@workspace:plugins/cli-builder-backend":
-  version: 0.0.0-use.local
-  resolution: "backstage-plugin-cli-builder-backend@workspace:plugins/cli-builder-backend"
-  dependencies:
-    "@backstage/backend-common": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    "@backstage/config": "workspace:^"
-    "@types/express": "*"
-    "@types/supertest": ^2.0.8
-    express: ^4.17.1
-    express-promise-router: ^4.1.0
-    msw: ^1.0.0
-    node-fetch: ^2.6.7
-    supertest: ^6.2.4
-    winston: ^3.2.1
-    yn: ^4.0.0
-  languageName: unknown
-  linkType: soft
-
 "backstage-plugin-continuous-integration-backend-module-test@workspace:plugins/continuous-integration-backend":
   version: 0.0.0-use.local
   resolution: "backstage-plugin-continuous-integration-backend-module-test@workspace:plugins/continuous-integration-backend"
@@ -24328,7 +24309,6 @@ __metadata:
     "@types/express-serve-static-core": ^4.17.5
     "@types/luxon": ^3.0.0
     azure-devops-node-api: ^12.0.0
-    backstage-plugin-cli-builder-backend: ^0.0.0
     better-sqlite3: ^9.0.0
     dockerode: ^4.0.0
     example-app: "link:../app"
