@@ -1,5 +1,23 @@
 # @backstage/plugin-notifications-backend
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- ee09dfc: Updated documentation for sending messages by external services.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-notifications-node@0.1.4-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-events-node@0.3.4-next.0
+  - @backstage/plugin-notifications-common@0.0.3
+  - @backstage/plugin-signals-node@0.1.4-next.0
+
 ## 0.2.0
 
 ### Minor Changes
