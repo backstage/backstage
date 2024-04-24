@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { createTransport } from 'nodemailer';
-import { SendmailTransportConfig } from '../../types';
+import { Config } from '@backstage/config';
 
-export const createSendmailTransport = (config: SendmailTransportConfig) => {
+export const createSendmailTransport = (config: Config) => {
   return createTransport({
     sendmail: true,
-    newline: config.newline ?? 'unix',
-    path: config.path ?? '/usr/sbin/sendmail',
+    newline: config.getOptionalString('newline') ?? 'unix',
+    path: config.getOptionalString('path') ?? '/usr/sbin/sendmail',
   });
 };

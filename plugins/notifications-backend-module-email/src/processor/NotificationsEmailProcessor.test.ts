@@ -50,15 +50,17 @@ describe('NotificationsEmailProcessor', () => {
       logger,
       new ConfigReader({
         notifications: {
-          email: {
-            transport: {
-              transport: 'smtp',
-              hostname: 'localhost',
-              port: 465,
-              secure: true,
-              requireTls: false,
+          processors: {
+            email: {
+              transport: {
+                transport: 'smtp',
+                hostname: 'localhost',
+                port: 465,
+                secure: true,
+                requireTls: false,
+              },
+              sender: 'backstage@backstage.io',
             },
-            sender: 'backstage@backstage.io',
           },
         },
       }),
@@ -94,12 +96,14 @@ describe('NotificationsEmailProcessor', () => {
       logger,
       new ConfigReader({
         notifications: {
-          email: {
-            transport: {
-              transport: 'ses',
-              region: 'us-west-2',
+          processors: {
+            email: {
+              transport: {
+                transport: 'ses',
+                region: 'us-west-2',
+              },
+              sender: 'backstage@backstage.io',
             },
-            sender: 'backstage@backstage.io',
           },
         },
       }),
@@ -132,12 +136,14 @@ describe('NotificationsEmailProcessor', () => {
       logger,
       new ConfigReader({
         notifications: {
-          email: {
-            transport: {
-              transport: 'sendmail',
-              path: '/usr/local/bin/sendmail',
+          processors: {
+            email: {
+              transport: {
+                transport: 'sendmail',
+                path: '/usr/local/bin/sendmail',
+              },
+              sender: 'backstage@backstage.io',
             },
-            sender: 'backstage@backstage.io',
           },
         },
       }),
@@ -181,12 +187,14 @@ describe('NotificationsEmailProcessor', () => {
       logger,
       new ConfigReader({
         notifications: {
-          email: {
-            transport: {
-              transport: 'sendmail',
-              path: '/usr/local/bin/sendmail',
+          processors: {
+            email: {
+              transport: {
+                transport: 'sendmail',
+                path: '/usr/local/bin/sendmail',
+              },
+              sender: 'backstage@backstage.io',
             },
-            sender: 'backstage@backstage.io',
           },
         },
       }),
@@ -236,14 +244,16 @@ describe('NotificationsEmailProcessor', () => {
       logger,
       new ConfigReader({
         notifications: {
-          email: {
-            transport: {
-              transport: 'sendmail',
-              path: '/usr/local/bin/sendmail',
-            },
-            sender: 'backstage@backstage.io',
-            broadcastConfig: {
-              receiver: 'users',
+          processors: {
+            email: {
+              transport: {
+                transport: 'sendmail',
+                path: '/usr/local/bin/sendmail',
+              },
+              sender: 'backstage@backstage.io',
+              broadcastConfig: {
+                receiver: 'users',
+              },
             },
           },
         },
@@ -294,15 +304,17 @@ describe('NotificationsEmailProcessor', () => {
       logger,
       new ConfigReader({
         notifications: {
-          email: {
-            transport: {
-              transport: 'sendmail',
-              path: '/usr/local/bin/sendmail',
-            },
-            sender: 'backstage@backstage.io',
-            broadcastConfig: {
-              receiver: 'config',
-              receiverEmails: ['broadcast@backstage.io'] as JsonArray,
+          processors: {
+            email: {
+              transport: {
+                transport: 'sendmail',
+                path: '/usr/local/bin/sendmail',
+              },
+              sender: 'backstage@backstage.io',
+              broadcastConfig: {
+                receiver: 'config',
+                receiverEmails: ['broadcast@backstage.io'] as JsonArray,
+              },
             },
           },
         },

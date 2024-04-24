@@ -13,19 +13,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SesTransportConfig } from '../../types';
 import { createTransport } from 'nodemailer';
 import { SendRawEmailCommand, SES } from '@aws-sdk/client-ses';
+import { Config } from '@backstage/config';
+import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 
-export const createSesTransport = async (config: SesTransportConfig) => {
-  const credentials = await config.credentialsManager.getCredentialProvider({
-    accountId: config.accountId,
+export const createSesTransport = async (
+  config: Config,
+  credentialsManager: AwsCredentialsManager,
+) => {
+  const credentials = await credentialsManager.getCredentialProvider({
+    accountId: config.getOptionalString('accountId'),
   });
   const ses = new SES([
     {
-      apiVersion: config.apiVersion ?? '2010-12-01',
+      apiVersion: config.getOptionalString('apiVersion') ?? '2010-12-01',
       credentials: credentials.sdkCredentialProvider,
-      region: config.region,
+      region: config.getOptionalString('region'),
     },
   ]);
   return createTransport({

@@ -2,7 +2,7 @@
 
 Adds support for sending Backstage notifications as emails to users.
 
-Supports sending emails using SMTP, SES, or sendmail.
+Supports sending emails using `SMTP`, `SES`, or `sendmail`.
 
 ## Customizing email content
 
@@ -46,6 +46,7 @@ export const notificationsModuleEmailDecorator = createBackendModule({
 notifications:
   processors:
     email:
+      # Transport config, see options at `config.d.ts`
       transportConfig:
         transport: 'smtp'
         hostname: 'my-smtp-server'
@@ -53,12 +54,19 @@ notifications:
         secure: false
         username: 'my-username'
         password: 'my-password'
+      # The email sender address
       sender: 'sender@mycompany.com'
       replyTo: 'no-reply@mycompany.com'
+      # Who to get email for broadcast notifications
       broadcastConfig:
         receiver: 'users'
+      # How many emails to send concurrently, defaults to 2
+      concurrencyLimit: 10
+      # Cache configuration for email addresses
+      # This is to prevent unnecessary calls to the catalog
       cache:
-        ttl: 60000
+        ttl:
+          days: 1
 ```
 
 See `config.d.ts` for more options for configuration.

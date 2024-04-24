@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /**
    * Configuration options for notifications-backend-module-email */
@@ -86,6 +88,10 @@ export interface Config {
          */
         replyTo?: string;
         /**
+         * Concurrency limit for email sending, defaults to 2
+         */
+        concurrencyLimit?: number;
+        /**
          * Configuration for broadcast notifications
          */
         broadcastConfig?: {
@@ -105,7 +111,7 @@ export interface Config {
           /**
            * Email cache TTL, defaults to 1 hour
            */
-          ttl?: number;
+          ttl?: HumanDuration;
         };
       };
     };

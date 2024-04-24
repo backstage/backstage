@@ -13,18 +13,18 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SmtpTransportConfig } from '../../types';
 import { createTransport } from 'nodemailer';
+import { Config } from '@backstage/config';
 
-export const createSmtpTransport = (config: SmtpTransportConfig) => {
+export const createSmtpTransport = (config: Config) => {
+  const username = config.getOptionalString('username');
+  const password = config.getOptionalString('password');
+
   return createTransport({
-    host: config.hostname,
-    port: config.port,
-    secure: config.secure ?? false,
-    requireTLS: config.requireTls ?? false,
-    auth:
-      config.username && config.password
-        ? { user: config.username, pass: config.password }
-        : undefined,
+    host: config.getString('hostname'),
+    port: config.getNumber('port'),
+    secure: config.getOptionalBoolean('secure') ?? false,
+    requireTLS: config.getOptionalBoolean('requireTls') ?? false,
+    auth: username && password ? { user: username, pass: password } : undefined,
   });
 };

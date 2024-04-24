@@ -22,26 +22,33 @@ import {
   CacheService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
-import { JsonArray } from '@backstage/types';
+import { Config, readDurationFromConfig } from '@backstage/config';
+import { durationToMilliseconds, JsonArray } from '@backstage/types';
 import {
   CATALOG_FILTER_EXISTS,
   CatalogClient,
 } from '@backstage/catalog-client';
 import { Notification } from '@backstage/plugin-notifications-common';
-import { createSendmailTransport, createSmtpTransport } from './transports';
-import { createSesTransport } from './transports/ses';
+import {
+  createSendmailTransport,
+  createSesTransport,
+  createSmtpTransport,
+} from './transports';
 import { UserEntity } from '@backstage/catalog-model';
 import { compact } from 'lodash';
 import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { NotificationTemplateRenderer } from '../extensions';
+import Mail from 'nodemailer/lib/mailer';
+import pLimit from 'p-limit';
 
 export class NotificationsEmailProcessor implements NotificationProcessor {
   private transporter: any;
   private readonly broadcastConfig?: Config;
+  private readonly transportConfig: Config;
   private readonly sender: string;
   private readonly replyTo?: string;
   private readonly cacheTtl: number;
+  private readonly concurrencyLimit: number;
 
   constructor(
     private readonly logger: LoggerService,
@@ -51,50 +58,39 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     private readonly cache?: CacheService,
     private readonly templateRenderer?: NotificationTemplateRenderer,
   ) {
-    this.broadcastConfig = config.getOptionalConfig(
-      'notifications.email.broadcastConfig',
+    const emailProcessorConfig = config.getConfig(
+      'notifications.processors.email',
     );
-    this.sender = config.getString('notifications.email.sender');
-    this.replyTo = config.getOptionalString('notifications.email.replyTo');
-    this.cacheTtl =
-      config.getOptionalNumber('notifications.email.cache.ttl') ?? 3_600_000;
+    this.transportConfig = emailProcessorConfig.getConfig('transport');
+    this.broadcastConfig =
+      emailProcessorConfig.getOptionalConfig('broadcastConfig');
+    this.sender = emailProcessorConfig.getString('sender');
+    this.replyTo = emailProcessorConfig.getOptionalString('replyTo');
+    this.concurrencyLimit =
+      emailProcessorConfig.getOptionalNumber('concurrencyLimit') ?? 2;
+    const cacheConfig = emailProcessorConfig.getOptionalConfig('cache.ttl');
+    this.cacheTtl = cacheConfig
+      ? durationToMilliseconds(readDurationFromConfig(cacheConfig))
+      : 3_600_000;
   }
 
   private async getTransporter() {
     if (this.transporter) {
       return this.transporter;
     }
-    const transportConfig = this.config.getConfig(
-      'notifications.email.transport',
-    );
-    const transport = transportConfig.getString('transport');
+    const transport = this.transportConfig.getString('transport');
     if (transport === 'smtp') {
-      this.transporter = createSmtpTransport({
-        transport: 'smtp',
-        hostname: transportConfig.getString('hostname'),
-        port: transportConfig.getNumber('port'),
-        secure: transportConfig.getOptionalBoolean('secure'),
-        requireTls: transportConfig.getOptionalBoolean('requireTls'),
-        username: transportConfig.getOptionalString('username'),
-        password: transportConfig.getOptionalString('password'),
-      });
+      this.transporter = createSmtpTransport(this.transportConfig);
     } else if (transport === 'ses') {
       const awsCredentialsManager = DefaultAwsCredentialsManager.fromConfig(
         this.config,
       );
-      this.transporter = await createSesTransport({
-        transport: 'ses',
-        credentialsManager: awsCredentialsManager,
-        apiVersion: transportConfig.getOptionalString('apiVersion'),
-        accountId: transportConfig.getOptionalString('accountId'),
-        region: transportConfig.getOptionalString('region'),
-      });
+      this.transporter = await createSesTransport(
+        this.transportConfig,
+        awsCredentialsManager,
+      );
     } else if (transport === 'sendmail') {
-      this.transporter = createSendmailTransport({
-        transport: 'sendmail',
-        path: transportConfig.getOptionalString('path'),
-        newline: transportConfig.getOptionalString('newline'),
-      });
+      this.transporter = createSendmailTransport(this.transportConfig);
     } else {
       throw new Error(`Unsupported transport: ${transport}`);
     }
@@ -122,14 +118,13 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     }
 
     if (receiver === 'users') {
-      const cached = await this.cache?.get<JsonArray>('user-emails:all');
+      const cached = await this.cache?.get<string[]>('user-emails:all');
       if (cached) {
-        return cached as string[];
+        return cached;
       }
 
-      const credentials = await this.auth.getOwnServiceCredentials();
       const { token } = await this.auth.getPluginRequestToken({
-        onBehalfOf: credentials,
+        onBehalfOf: await this.auth.getOwnServiceCredentials(),
         targetPluginId: 'catalog',
       });
       const entities = await this.catalog.getEntities(
@@ -148,6 +143,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
           }),
         ),
       ]);
+
       await this.cache?.set('user-emails:all', ret as JsonArray, {
         ttl: this.cacheTtl,
       });
@@ -163,28 +159,24 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return [cached];
     }
 
-    const credentials = await this.auth.getOwnServiceCredentials();
     const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: credentials,
+      onBehalfOf: await this.auth.getOwnServiceCredentials(),
       targetPluginId: 'catalog',
     });
     const entity = await this.catalog.getEntityByRef(entityRef, { token });
-    if (!entity) {
-      return [];
+    const ret: string[] = [];
+    if (entity) {
+      const userEntity = entity as UserEntity;
+      if (userEntity.spec.profile?.email) {
+        ret.push(userEntity.spec.profile.email);
+      }
     }
 
-    const userEntity = entity as UserEntity;
-    if (!userEntity.spec.profile?.email) {
-      return [];
-    }
+    await this.cache?.set(`user-emails:${entityRef}`, ret[0], {
+      ttl: this.cacheTtl,
+    });
 
-    await this.cache?.set(
-      `user-emails:${entityRef}`,
-      userEntity.spec.profile.email,
-      { ttl: this.cacheTtl },
-    );
-
-    return [userEntity.spec.profile.email];
+    return ret;
   }
 
   private async getRecipientEmails(
@@ -195,6 +187,23 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return await this.getBroadcastEmails();
     }
     return await this.getUserEmail(notification.user);
+  }
+
+  private async sendMail(options: Mail.Options) {
+    try {
+      await this.transporter.sendMail(options);
+    } catch (e) {
+      this.logger.error(`Failed to send email to ${options.to}: ${e}`);
+    }
+  }
+
+  private async sendMails(options: Mail.Options, emails: string[]) {
+    const limit = pLimit(this.concurrencyLimit);
+    await Promise.all(
+      emails.map(email =>
+        limit(() => this.sendMail({ ...options, to: email })),
+      ),
+    );
   }
 
   private async sendPlainEmail(notification: Notification, emails: string[]) {
@@ -214,13 +223,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       replyTo: this.replyTo,
     };
 
-    for (const email of emails) {
-      try {
-        await this.transporter.sendMail({ ...mailOptions, to: email });
-      } catch (e) {
-        this.logger.error(`Failed to send email to ${email}: ${e}`);
-      }
-    }
+    await this.sendMails(mailOptions, emails);
   }
 
   private async sendTemplateEmail(
@@ -237,13 +240,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       replyTo: this.replyTo,
     };
 
-    for (const email of emails) {
-      try {
-        await this.transporter.sendMail({ ...mailOptions, to: email });
-      } catch (e) {
-        this.logger.error(`Failed to send email to ${email}: ${e}`);
-      }
-    }
+    await this.sendMails(mailOptions, emails);
   }
 
   async postProcess(

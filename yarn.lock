@@ -6051,6 +6051,7 @@ __metadata:
     "@types/nodemailer": ^6.4.14
     lodash: ^4.17.21
     nodemailer: ^6.9.13
+    p-limit: ^3.1.0
   languageName: unknown
   linkType: soft
 
