@@ -20,9 +20,9 @@ import {
   coreServices,
   ServiceRef,
   ServiceFactory,
+  LifecycleService,
+  RootLifecycleService,
 } from '@backstage/backend-plugin-api';
-import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
-import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
 import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
@@ -345,27 +345,42 @@ export class BackendInitializer {
   }
 
   // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
-  async #getRootLifecycleImpl(): Promise<BackendLifecycleImpl> {
+  async #getRootLifecycleImpl(): Promise<
+    RootLifecycleService & {
+      startup(): Promise<void>;
+      shutdown(): Promise<void>;
+    }
+  > {
     const lifecycleService = await this.#serviceRegistry.get(
       coreServices.rootLifecycle,
       'root',
     );
-    if (lifecycleService instanceof BackendLifecycleImpl) {
-      return lifecycleService;
+
+    const service = lifecycleService as any;
+    if (
+      service &&
+      typeof service.startup === 'function' &&
+      typeof service.shutdown === 'function'
+    ) {
+      return service;
     }
+
     throw new Error('Unexpected root lifecycle service implementation');
   }
 
   async #getPluginLifecycleImpl(
     pluginId: string,
-  ): Promise<BackendPluginLifecycleImpl> {
+  ): Promise<LifecycleService & { startup(): Promise<void> }> {
     const lifecycleService = await this.#serviceRegistry.get(
       coreServices.lifecycle,
       pluginId,
     );
-    if (lifecycleService instanceof BackendPluginLifecycleImpl) {
-      return lifecycleService;
+
+    const service = lifecycleService as any;
+    if (service && typeof service.startup === 'function') {
+      return service;
     }
+
     throw new Error('Unexpected plugin lifecycle service implementation');
   }
 }

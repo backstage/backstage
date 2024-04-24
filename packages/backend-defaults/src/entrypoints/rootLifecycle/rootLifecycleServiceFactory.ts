@@ -13,29 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
-  LifecycleService,
-  LifecycleServiceShutdownHook,
-  LifecycleServiceShutdownOptions,
+  createServiceFactory,
+  coreServices,
   LifecycleServiceStartupHook,
   LifecycleServiceStartupOptions,
-  LoggerService,
-  PluginMetadataService,
+  LifecycleServiceShutdownHook,
+  LifecycleServiceShutdownOptions,
   RootLifecycleService,
-  coreServices,
-  createServiceFactory,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
-/**
- * @internal
- * @deprecated
- */
-export class BackendPluginLifecycleImpl implements LifecycleService {
-  constructor(
-    private readonly logger: LoggerService,
-    private readonly rootLifecycle: RootLifecycleService,
-    private readonly pluginMetadata: PluginMetadataService,
-  ) {}
+/** @internal */
+export class BackendLifecycleImpl implements RootLifecycleService {
+  constructor(private readonly logger: LoggerService) {}
 
   #hasStarted = false;
   #startupTasks: Array<{
@@ -59,30 +51,56 @@ export class BackendPluginLifecycleImpl implements LifecycleService {
     }
     this.#hasStarted = true;
 
-    this.logger.debug(
-      `Running ${this.#startupTasks.length} plugin startup tasks...`,
-    );
+    this.logger.debug(`Running ${this.#startupTasks.length} startup tasks...`);
     await Promise.all(
       this.#startupTasks.map(async ({ hook, options }) => {
         const logger = options?.logger ?? this.logger;
         try {
           await hook();
-          logger.debug(`Plugin startup hook succeeded`);
+          logger.debug(`Startup hook succeeded`);
         } catch (error) {
-          logger.error(`Plugin startup hook failed, ${error}`);
+          logger.error(`Startup hook failed, ${error}`);
         }
       }),
     );
   }
 
+  #hasShutdown = false;
+  #shutdownTasks: Array<{
+    hook: LifecycleServiceShutdownHook;
+    options?: LifecycleServiceShutdownOptions;
+  }> = [];
+
   addShutdownHook(
     hook: LifecycleServiceShutdownHook,
     options?: LifecycleServiceShutdownOptions,
   ): void {
-    const plugin = this.pluginMetadata.getId();
-    this.rootLifecycle.addShutdownHook(hook, {
-      logger: options?.logger?.child({ plugin }) ?? this.logger,
-    });
+    if (this.#hasShutdown) {
+      throw new Error('Attempted to add shutdown hook after shutdown');
+    }
+    this.#shutdownTasks.push({ hook, options });
+  }
+
+  async shutdown(): Promise<void> {
+    if (this.#hasShutdown) {
+      return;
+    }
+    this.#hasShutdown = true;
+
+    this.logger.debug(
+      `Running ${this.#shutdownTasks.length} shutdown tasks...`,
+    );
+    await Promise.all(
+      this.#shutdownTasks.map(async ({ hook, options }) => {
+        const logger = options?.logger ?? this.logger;
+        try {
+          await hook();
+          logger.debug(`Shutdown hook succeeded`);
+        } catch (error) {
+          logger.error(`Shutdown hook failed, ${error}`);
+        }
+      }),
+    );
   }
 }
 
@@ -90,20 +108,13 @@ export class BackendPluginLifecycleImpl implements LifecycleService {
  * Allows plugins to register shutdown hooks that are run when the process is about to exit.
  *
  * @public
- * @deprecated Please import from `@backstage/backend-defaults/lifecycle` instead.
  */
-export const lifecycleServiceFactory = createServiceFactory({
-  service: coreServices.lifecycle,
+export const rootLifecycleServiceFactory = createServiceFactory({
+  service: coreServices.rootLifecycle,
   deps: {
-    logger: coreServices.logger,
-    rootLifecycle: coreServices.rootLifecycle,
-    pluginMetadata: coreServices.pluginMetadata,
+    logger: coreServices.rootLogger,
   },
-  async factory({ rootLifecycle, logger, pluginMetadata }) {
-    return new BackendPluginLifecycleImpl(
-      logger,
-      rootLifecycle,
-      pluginMetadata,
-    );
+  async factory({ logger }) {
+    return new BackendLifecycleImpl(logger);
   },
 });

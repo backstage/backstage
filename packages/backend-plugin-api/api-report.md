@@ -204,9 +204,11 @@ export namespace coreServices {
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin'>;
-  const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
+  const // @deprecated
+    tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
-  const identity: ServiceRef<IdentityService, 'plugin'>;
+  const // @deprecated
+    identity: ServiceRef<IdentityService, 'plugin'>;
 }
 
 // @public

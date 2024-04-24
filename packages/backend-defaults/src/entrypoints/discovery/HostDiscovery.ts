@@ -29,7 +29,6 @@ type Target = string | { internal: string; external: string };
  * resolved to the same host, so there won't be any balancing of internal traffic.
  *
  * @public
- * @deprecated Please import from `@backstage/backend-defaults/discovery` instead.
  */
 export class HostDiscovery implements DiscoveryService {
   /**

@@ -25,7 +25,6 @@ import {
 
 /**
  * @public
- * @deprecated Please import from `@backstage/backend-defaults/rootConfig` instead.
  */
 export interface RootConfigFactoryOptions {
   /**
@@ -42,7 +41,6 @@ export interface RootConfigFactoryOptions {
 
 /**
  * @public
- * @deprecated Please import from `@backstage/backend-defaults/rootConfig` instead.
  */
 export const rootConfigServiceFactory = createServiceFactory(
   (options?: RootConfigFactoryOptions) => ({

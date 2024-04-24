@@ -20,10 +20,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 
-/**
- * @public
- * @deprecated Please import from `@backstage/backend-defaults/urlReader` instead.
- */
+/** @public */
 export const urlReaderServiceFactory = createServiceFactory({
   service: coreServices.urlReader,
   deps: {
