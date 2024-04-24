@@ -81,9 +81,6 @@ describe('readHarnessConfig', () => {
     expect(() => readHarnessConfig(buildConfig({ ...valid, host: 2 }))).toThrow(
       /host/,
     );
-    expect(() =>
-      readHarnessConfig(buildConfig({ ...valid, baseUrl: 2 })),
-    ).toThrow(/baseUrl/);
   });
 
   it('works on the frontend', async () => {

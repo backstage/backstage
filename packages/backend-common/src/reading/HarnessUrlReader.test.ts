@@ -69,19 +69,19 @@ const harnessApiResponse = (content: any) => {
 const handlers = [
   rest.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/all-apis.yaml',
-    (req, res, ctx) => {
+    (_req, res, ctx) => {
       return res(ctx.status(500), ctx.json({ message: 'Error!!!' }));
     },
   ),
   rest.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/404error.yaml',
-    (req, res, ctx) => {
+    (_req, res, ctx) => {
       return res(ctx.status(404), ctx.json({ message: 'File not found.' }));
     },
   ),
   rest.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/stream.TXT',
-    (req, res, ctx) => {
+    (_req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.body(harnessApiResponse(responseBuffer.toString())),
@@ -91,7 +91,7 @@ const handlers = [
 
   rest.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/buffer.TXT',
-    (req, res, ctx) => {
+    (_req, res, ctx) => {
       return res(
         ctx.status(200),
         ctx.body(harnessApiResponse(responseBuffer.toString())),

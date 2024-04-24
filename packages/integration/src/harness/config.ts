@@ -44,7 +44,6 @@ export type HarnessIntegrationConfig = {
  */
 export function readHarnessConfig(config: Config): HarnessIntegrationConfig {
   const host = config.getString('host');
-  let baseUrl = config.getOptionalString('baseUrl');
   const token = config.getOptionalString('token');
   const apiKey = config.getOptionalString('apiKey');
 
@@ -53,8 +52,6 @@ export function readHarnessConfig(config: Config): HarnessIntegrationConfig {
       `Invalid Harness Code integration config, '${host}' is not a valid host`,
     );
   }
-
-  baseUrl = `https://${host}`;
 
   return {
     host,

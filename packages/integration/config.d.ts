@@ -353,16 +353,10 @@ export interface Config {
        */
       host: string;
       /**
-       * The base url for the Gitea instance.
-       * @visibility frontend
-       */
-      baseUrl?: string;
-
-      /**
-       * The username to use for authenticated requests.
+       * The apikey to use for authenticated requests.
        * @visibility secret
        */
-      username?: string;
+      apiKey?: string;
       /**
        * Harness Code token used to authenticate requests. This can be either a generated access token.
        * @visibility secret

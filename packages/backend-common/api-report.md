@@ -551,8 +551,7 @@ export class HarnessUrlReader implements UrlReader {
 // @public
 export type HarnessIntegrationConfig = {
   host: string;
-  baseUrl?: string;
-  username?: string;
+  apiKey?: string;
   token?: string;
 };
 
