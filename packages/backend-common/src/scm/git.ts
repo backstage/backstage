@@ -15,10 +15,10 @@
  */
 
 import git, {
-  ProgressCallback,
-  MergeResult,
-  ReadCommitResult,
   AuthCallback,
+  MergeResult,
+  ProgressCallback,
+  ReadCommitResult,
 } from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import fs from 'fs-extra';
@@ -40,6 +40,7 @@ export type StaticAuthOptions = {
   password?: string;
   token?: string;
   logger?: LoggerService;
+  signingKey?: string;
 };
 
 /**
@@ -50,6 +51,7 @@ export type StaticAuthOptions = {
 export type AuthCallbackOptions = {
   onAuth: AuthCallback;
   logger?: LoggerService;
+  signingKey?: string;
 };
 
 /*
@@ -82,6 +84,7 @@ export class Git {
       onAuth: AuthCallback;
       token?: string;
       logger?: LoggerService;
+      signingKey?: string;
     },
   ) {
     this.onAuth = config.onAuth;
@@ -137,12 +140,20 @@ export class Git {
     message: string;
     author: { name: string; email: string };
     committer: { name: string; email: string };
+    sign?: boolean;
   }): Promise<string> {
-    const { dir, message, author, committer } = options;
+    const { dir, message, author, committer, sign } = options;
     this.config.logger?.info(
       `Committing file to repo {dir=${dir},message=${message}}`,
     );
-    return git.commit({ fs, dir, message, author, committer });
+    return git.commit({
+      fs,
+      dir,
+      message,
+      author,
+      committer,
+      signingKey: sign ? this.config.signingKey : undefined,
+    });
   }
 
   /** https://isomorphic-git.org/docs/en/clone */
@@ -241,8 +252,9 @@ export class Git {
     ours?: string;
     author: { name: string; email: string };
     committer: { name: string; email: string };
+    sign?: boolean;
   }): Promise<MergeResult> {
-    const { dir, theirs, ours, author, committer } = options;
+    const { dir, theirs, ours, author, committer, sign } = options;
     this.config.logger?.info(
       `Merging branch '${theirs}' into '${ours}' for repository {dir=${dir}}`,
     );
@@ -255,6 +267,7 @@ export class Git {
       theirs,
       author,
       committer,
+      signingKey: sign ? this.config.signingKey : undefined,
     });
   }
 
@@ -351,7 +364,12 @@ export class Git {
       return new Git({ onAuth, logger });
     }
 
-    const { username, password, token, logger } = options;
-    return new Git({ onAuth: () => ({ username, password }), token, logger });
+    const { username, password, token, logger, signingKey } = options;
+    return new Git({
+      onAuth: () => ({ username, password }),
+      token,
+      logger,
+      signingKey,
+    });
   };
 }
