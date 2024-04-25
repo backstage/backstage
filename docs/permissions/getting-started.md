@@ -20,6 +20,8 @@ The permissions framework itself is new to Backstage and still evolving quickly.
 
 Like many other parts of Backstage, the permissions framework relies on information about group membership. This simplifies authoring policies through the use of groups, rather than requiring each user to be listed in the configuration. Group membership is also often useful for conditional permissions, for example allowing permissions to act on an entity to be granted when a user is a member of a group that owns that entity.
 
+[The IdentityResolver docs](../auth/identity-resolver.md) describe the process for resolving group membership on sign in.
+
 ## Optionally add cookie-based authentication
 
 Asset requests initiated by the browser will not include a token in the `Authorization` header. If these requests check authorization through the permission framework, as done in plugins like TechDocs, then you'll need to set up cookie-based authentication. Refer to the ["Authenticate API requests"](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/authenticate-api-requests.md) tutorial for a demonstration on how to implement this behavior.
@@ -34,12 +36,7 @@ The permissions framework uses a new `permission-backend` plugin to accept autho
 
 ```bash
 # From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-permission-backend
-```
-
-```bash
-# From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-permission-backend-module-allow-all-policy
+yarn --cwd packages/backend add @backstage/plugin-permission-backend @backstage/plugin-permission-backend-module-allow-all-policy
 ```
 
 2. Add the following to `packages/backend/src/index.ts`. This adds the permission-backend router, and configures it with a policy which allows everything.
