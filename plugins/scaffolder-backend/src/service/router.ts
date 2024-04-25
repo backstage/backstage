@@ -65,6 +65,7 @@ import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
+  TemplateAction,
   TaskBroker,
   TemplateFilter,
   TemplateGlobal,
@@ -78,7 +79,6 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import {
   AuthorizeResult,
   PermissionRuleParams,
@@ -491,7 +491,7 @@ export async function createRouter(
 
       if (permissions) {
         const authorizationResponse = (
-          await permissions?.authorizeConditional(
+          await permissions.authorizeConditional(
             [{ permission: actionReadPermission }],
             { credentials: credentials },
           )
@@ -520,7 +520,7 @@ export async function createRouter(
       const credentials = await httpAuth.credentials(req);
       if (permissions) {
         const authorizationResponse = (
-          await permissions?.authorizeConditional(
+          await permissions.authorizeConditional(
             [{ permission: taskCreatePermission }],
             { credentials: credentials },
           )
@@ -611,7 +611,7 @@ export async function createRouter(
 
       if (permissions) {
         const authorizationResponse = (
-          await permissions?.authorizeConditional(
+          await permissions.authorizeConditional(
             [{ permission: taskReadPermission }],
             { credentials: credentials },
           )
@@ -648,7 +648,7 @@ export async function createRouter(
 
       if (permissions) {
         const authorizationResponse = (
-          await permissions?.authorizeConditional(
+          await permissions.authorizeConditional(
             [{ permission: taskReadPermission }],
             { credentials: credentials },
           )
@@ -672,7 +672,7 @@ export async function createRouter(
       const credentials = await httpAuth.credentials(req);
 
       if (permissions) {
-        const authorizationResponses = await permissions?.authorizeConditional(
+        const authorizationResponses = await permissions.authorizeConditional(
           [
             { permission: taskCancelPermission },
             { permission: taskReadPermission },
@@ -696,7 +696,7 @@ export async function createRouter(
 
       if (permissions) {
         const authorizationResponse = (
-          await permissions?.authorizeConditional(
+          await permissions.authorizeConditional(
             [{ permission: taskReadPermission }],
             { credentials: credentials },
           )
@@ -758,7 +758,7 @@ export async function createRouter(
 
       if (permissions) {
         const authorizationResponse = (
-          await permissions?.authorizeConditional(
+          await permissions.authorizeConditional(
             [{ permission: taskReadPermission }],
             { credentials: credentials },
           )
@@ -802,7 +802,7 @@ export async function createRouter(
 
       if (permissions) {
         const authorizationResponse = (
-          await permissions?.authorizeConditional(
+          await permissions.authorizeConditional(
             [{ permission: taskCreatePermission }],
             { credentials: credentials },
           )

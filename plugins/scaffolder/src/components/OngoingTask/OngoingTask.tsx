@@ -35,6 +35,12 @@ import {
   TaskSteps,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { useAsync } from '@react-hookz/web';
+import { usePermission } from '@backstage/plugin-permission-react';
+import {
+  taskCancelPermission,
+  taskReadPermission,
+  taskCreatePermission,
+} from '@backstage/plugin-scaffolder-common/alpha';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -80,6 +86,28 @@ export const OngoingTask = (props: {
 
   const [logsVisible, setLogVisibleState] = useState(false);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
+
+  // Used dummy string value for `resourceRef` since `allowed` field will always return `false` if `resourceRef` is `undefined`
+  const { allowed: canCancelTask } = usePermission({
+    permission: taskCancelPermission,
+    resourceRef: 'task',
+  });
+
+  const { allowed: canReadTask } = usePermission({
+    permission: taskReadPermission,
+    resourceRef: 'task',
+  });
+
+  const { allowed: canCreateTask } = usePermission({
+    permission: taskCreatePermission,
+    resourceRef: 'task',
+  });
+
+  // Cancel endpoint requires user to have both read and cancel permissions
+  const cancelNotAllowed = !(canReadTask && canCancelTask);
+
+  // Start Over endpoint requires user to have both read (to grab parameters) and create (to create new task) permissions
+  const canStartOver = canReadTask && canCreateTask;
 
   useEffect(() => {
     if (taskStream.error) {
@@ -192,7 +220,11 @@ export const OngoingTask = (props: {
                 <div className={classes.buttonBar}>
                   <Button
                     className={classes.cancelButton}
-                    disabled={!cancelEnabled || cancelStatus !== 'not-executed'}
+                    disabled={
+                      !cancelEnabled ||
+                      cancelStatus !== 'not-executed' ||
+                      cancelNotAllowed
+                    }
                     onClick={triggerCancel}
                     data-testid="cancel-button"
                   >
@@ -209,8 +241,9 @@ export const OngoingTask = (props: {
                   <Button
                     variant="contained"
                     color="primary"
-                    disabled={cancelEnabled}
+                    disabled={cancelEnabled || !canStartOver}
                     onClick={startOver}
+                    data-testid="start-over-button"
                   >
                     Start Over
                   </Button>

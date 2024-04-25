@@ -35,6 +35,8 @@ import LanguageIcon from '@material-ui/icons/Language';
 import React from 'react';
 import { CardHeader } from './CardHeader';
 import { CardLink } from './CardLink';
+import { usePermission } from '@backstage/plugin-permission-react';
+import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
 
 const useStyles = makeStyles<Theme>(theme => ({
   box: {
@@ -102,6 +104,11 @@ export const TemplateCard = (props: TemplateCardProps) => {
   const hasLinks =
     !!props.additionalLinks?.length || !!template.metadata.links?.length;
   const displayDefaultDivider = !hasTags && !hasLinks;
+
+  const { allowed: canCreateTask } = usePermission({
+    permission: taskCreatePermission,
+    resourceRef: 'task',
+  });
 
   return (
     <Card>
@@ -186,14 +193,16 @@ export const TemplateCard = (props: TemplateCardProps) => {
               </>
             )}
           </div>
-          <Button
-            size="small"
-            variant="outlined"
-            color="primary"
-            onClick={() => props.onSelected?.(template)}
-          >
-            Choose
-          </Button>
+          {canCreateTask ? (
+            <Button
+              size="small"
+              variant="outlined"
+              color="primary"
+              onClick={() => props.onSelected?.(template)}
+            >
+              Choose
+            </Button>
+          ) : null}
         </div>
       </CardActions>
     </Card>
