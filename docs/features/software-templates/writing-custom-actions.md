@@ -142,7 +142,7 @@ argument. It looks like the following:
 
 ## Registering Custom Actions
 
-### Register Action With Previous Backend System, Backstage Version < 1.25.x
+### Register Action With Previous Backend System, Backstage Version < 1.24.x
 
 Once you have your Custom Action ready for usage with the scaffolder, you'll
 need to pass this into the `scaffolder-backend` `createRouter` function. You
@@ -194,7 +194,7 @@ export default async function createPlugin(
 }
 ```
 
-### Register Action With New Backend System, Backstage Version >= 1.25.0
+### Register Action With New Backend System, Backstage Version >= 1.24.0
 
 To register your new custom action in the New Backend System you will need to create a backend module. Here is a very simplified example of how to do that:
 
