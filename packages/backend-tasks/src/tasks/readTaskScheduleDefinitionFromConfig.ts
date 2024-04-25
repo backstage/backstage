@@ -51,6 +51,7 @@ function readCronOrDuration(
  *
  * @param config - config for a TaskScheduleDefinition.
  * @public
+ * @deprecated Please import from `@backstage/backend-plugin-api/scheduler` instead
  */
 export function readTaskScheduleDefinitionFromConfig(
   config: Config,
