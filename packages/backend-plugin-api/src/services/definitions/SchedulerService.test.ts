@@ -17,9 +17,9 @@
 import { ConfigReader } from '@backstage/config';
 import { HumanDuration } from '@backstage/types';
 import { Duration } from 'luxon';
-import { readTaskScheduleDefinitionFromConfig } from './readTaskScheduleDefinitionFromConfig';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from './SchedulerService';
 
-describe('readTaskScheduleDefinitionFromConfig', () => {
+describe('readSchedulerServiceTaskScheduleDefinitionFromConfig', () => {
   it('all valid values', () => {
     const config = new ConfigReader({
       frequency: {
@@ -32,7 +32,7 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
       scope: 'global',
     });
 
-    const result = readTaskScheduleDefinitionFromConfig(config);
+    const result = readSchedulerServiceTaskScheduleDefinitionFromConfig(config);
 
     expect((result.frequency as { cron: string }).cron).toBe('0 30 * * * *');
     expect(result.timeout).toEqual(Duration.fromISO('PT3M'));
@@ -48,7 +48,7 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
       timeout: 'PT3M',
     });
 
-    const result = readTaskScheduleDefinitionFromConfig(config);
+    const result = readSchedulerServiceTaskScheduleDefinitionFromConfig(config);
 
     expect((result.frequency as { cron: string }).cron).toBe('0 30 * * * *');
     expect(result.timeout).toEqual(Duration.fromISO('PT3M'));
@@ -61,9 +61,9 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
       timeout: 'PT3M',
     });
 
-    expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
-      "Missing required config value at 'frequency'",
-    );
+    expect(() =>
+      readSchedulerServiceTaskScheduleDefinitionFromConfig(config),
+    ).toThrow("Missing required config value at 'frequency'");
   });
 
   it('fail without required timeout', () => {
@@ -71,9 +71,9 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
       frequency: 'PT30M',
     });
 
-    expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
-      "Missing required config value at 'timeout'",
-    );
+    expect(() =>
+      readSchedulerServiceTaskScheduleDefinitionFromConfig(config),
+    ).toThrow("Missing required config value at 'timeout'");
   });
 
   it('invalid frequency key', () => {
@@ -84,7 +84,9 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
       timeout: 'PT3M',
     });
 
-    expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
+    expect(() =>
+      readSchedulerServiceTaskScheduleDefinitionFromConfig(config),
+    ).toThrow(
       "Failed to read duration from config at 'frequency', Error: Needs one or more of 'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'",
     );
   });
@@ -97,7 +99,9 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
       timeout: 'PT3M',
     });
 
-    expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
+    expect(() =>
+      readSchedulerServiceTaskScheduleDefinitionFromConfig(config),
+    ).toThrow(
       "Failed to read duration from config, Error: Unable to convert config value for key 'frequency.minutes' in 'mock-config' to a number",
     );
   });
@@ -111,7 +115,9 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
       timeout: 'PT3M',
     });
 
-    expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
+    expect(() =>
+      readSchedulerServiceTaskScheduleDefinitionFromConfig(config),
+    ).toThrow(
       "Failed to read duration from config at 'frequency', Error: Unknown property 'invalid'; expected one or more of 'years', 'months', 'weeks', 'days', 'hours', 'minutes', 'seconds', 'milliseconds'",
     );
   });
@@ -125,7 +131,9 @@ describe('readTaskScheduleDefinitionFromConfig', () => {
       scope: 'invalid',
     });
 
-    expect(() => readTaskScheduleDefinitionFromConfig(config)).toThrow(
+    expect(() =>
+      readSchedulerServiceTaskScheduleDefinitionFromConfig(config),
+    ).toThrow(
       'Only "global" or "local" are allowed for TaskScheduleDefinition.scope, but got: invalid',
     );
   });

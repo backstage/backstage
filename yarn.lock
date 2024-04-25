@@ -3433,7 +3433,17 @@ __metadata:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/types": "workspace:^"
+    "@opentelemetry/api": ^1.3.0
+    cron: ^3.0.0
+    knex: ^3.0.0
+    lodash: ^4.17.21
+    luxon: ^3.0.0
+    uuid: ^9.0.0
+    wait-for-expect: ^3.0.2
+    zod: ^3.22.4
   languageName: unknown
   linkType: soft
 

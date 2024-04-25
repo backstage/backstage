@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-export { readTaskScheduleDefinitionFromConfig } from './readTaskScheduleDefinitionFromConfig';
-export type {
-  SchedulerService,
-  TaskDescriptor,
-  TaskFunction,
-  TaskInvocationDefinition,
-  TaskRunner,
-  TaskScheduleDefinition,
-  TaskScheduleDefinitionConfig,
-} from './types';
+export function createTestScopedSignal(): () => AbortSignal {
+  let testAbortController = new AbortController();
+
+  beforeEach(() => {
+    testAbortController = new AbortController();
+  });
+  afterEach(() => {
+    testAbortController.abort();
+  });
+
+  return () => testAbortController.signal;
+}

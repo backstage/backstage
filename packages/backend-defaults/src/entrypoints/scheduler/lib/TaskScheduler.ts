@@ -20,24 +20,23 @@ import {
   LegacyRootDatabaseService,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
-import { Config } from '@backstage/config';
+import {
+  LoggerService,
+  RootConfigService,
+} from '@backstage/backend-plugin-api';
 import { once } from 'lodash';
 import { Duration } from 'luxon';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
 import { PluginTaskSchedulerJanitor } from './PluginTaskSchedulerJanitor';
 import { PluginTaskScheduler } from './types';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Deals with the scheduling of distributed tasks.
- *
- * @public
- * @deprecated Please migrate to the new backend system, and depend on `coreServices.scheduler` from  `@backstage/backend-plugin-api` instead.
  */
 export class TaskScheduler {
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options?: {
       databaseManager?: LegacyRootDatabaseService;
       logger?: LoggerService;

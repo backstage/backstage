@@ -165,7 +165,7 @@ export namespace coreServices {
    * @public
    */
   export const scheduler = createServiceRef<
-    import('@backstage/backend-plugin-api/scheduler').SchedulerService
+    import('./SchedulerService').SchedulerService
   >({ id: 'core.scheduler' });
 
   /**

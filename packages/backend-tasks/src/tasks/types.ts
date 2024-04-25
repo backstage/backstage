@@ -26,7 +26,7 @@ import { z } from 'zod';
  * processing should abort and return as quickly as possible.
  *
  * @public
- * @deprecated Please import from `@backstage/backend-plugin-api/scheduler` instead
+ * @deprecated Please import `SchedulerServiceTaskFunction` from `@backstage/backend-plugin-api` instead
  */
 export type TaskFunction =
   | ((abortSignal: AbortSignal) => void | Promise<void>)
@@ -36,7 +36,7 @@ export type TaskFunction =
  * A semi-opaque type to describe an actively scheduled task.
  *
  * @public
- * @deprecated Please import from `@backstage/backend-plugin-api/scheduler` instead
+ * @deprecated Please import `SchedulerServiceTaskDescriptor` from `@backstage/backend-plugin-api` instead
  */
 export type TaskDescriptor = {
   /**
@@ -59,7 +59,7 @@ export type TaskDescriptor = {
  * Options that control the scheduling of a task.
  *
  * @public
- * @deprecated Please import from `@backstage/backend-plugin-api/scheduler` instead
+ * @deprecated Please import `SchedulerServiceTaskScheduleDefinition` from `@backstage/backend-plugin-api` instead
  */
 export interface TaskScheduleDefinition {
   /**
@@ -157,7 +157,7 @@ export interface TaskScheduleDefinition {
  * that control the scheduling of a task.
  *
  * @public
- * @deprecated Please import from `@backstage/backend-plugin-api/scheduler` instead
+ * @deprecated Please import `SchedulerServiceTaskDefinitionConfig` from `@backstage/backend-plugin-api` instead
  */
 export interface TaskScheduleDefinitionConfig {
   /**
@@ -254,7 +254,7 @@ export interface TaskScheduleDefinitionConfig {
  * Options that apply to the invocation of a given task.
  *
  * @public
- * @deprecated Please import from `@backstage/backend-plugin-api/scheduler` instead
+ * @deprecated Please import `SchedulerServiceTaskInvocationDefinition` from `@backstage/backend-plugin-api` instead
  */
 export interface TaskInvocationDefinition {
   /**
@@ -278,7 +278,7 @@ export interface TaskInvocationDefinition {
  * A previously prepared task schedule, ready to be invoked.
  *
  * @public
- * @deprecated Please import from `@backstage/backend-plugin-api/scheduler` instead
+ * @deprecated Please import `SchedulerServiceTaskRunner` from `@backstage/backend-plugin-api` instead
  */
 export interface TaskRunner {
   /**
@@ -293,7 +293,7 @@ export interface TaskRunner {
  * Deals with the scheduling of distributed tasks, for a given plugin.
  *
  * @public
- * @deprecated Please use `SchedulerService` from `@backstage/backend-plugin-api/scheduler` instead
+ * @deprecated Please use `SchedulerService` from `@backstage/backend-plugin-api` instead (most likely via `coreServices.scheduler`)
  */
 export interface PluginTaskScheduler {
   /**

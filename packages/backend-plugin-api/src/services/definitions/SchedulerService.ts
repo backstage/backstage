@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { HumanDuration, JsonObject } from '@backstage/types';
 import { Duration } from 'luxon';
 
@@ -25,7 +26,7 @@ import { Duration } from 'luxon';
  *
  * @public
  */
-export type TaskFunction =
+export type SchedulerServiceTaskFunction =
   | ((abortSignal: AbortSignal) => void | Promise<void>)
   | (() => void | Promise<void>);
 
@@ -34,7 +35,7 @@ export type TaskFunction =
  *
  * @public
  */
-export type TaskDescriptor = {
+export type SchedulerServiceTaskDescriptor = {
   /**
    * The unique identifier of the task.
    */
@@ -56,7 +57,7 @@ export type TaskDescriptor = {
  *
  * @public
  */
-export interface TaskScheduleDefinition {
+export interface SchedulerServiceTaskScheduleDefinition {
   /**
    * How often you want the task to run. The system does its best to avoid
    * overlapping invocations.
@@ -148,12 +149,12 @@ export interface TaskScheduleDefinition {
 }
 
 /**
- * Config options for {@link TaskScheduleDefinition}
+ * Config options for {@link SchedulerServiceTaskScheduleDefinition}
  * that control the scheduling of a task.
  *
  * @public
  */
-export interface TaskScheduleDefinitionConfig {
+export interface SchedulerServiceTaskScheduleDefinitionConfig {
   /**
    * How often you want the task to run. The system does its best to avoid
    * overlapping invocations.
@@ -249,7 +250,7 @@ export interface TaskScheduleDefinitionConfig {
  *
  * @public
  */
-export interface TaskInvocationDefinition {
+export interface SchedulerServiceTaskInvocationDefinition {
   /**
    * A unique ID (within the scope of the plugin) for the task.
    */
@@ -258,7 +259,7 @@ export interface TaskInvocationDefinition {
   /**
    * The actual task function to be invoked regularly.
    */
-  fn: TaskFunction;
+  fn: SchedulerServiceTaskFunction;
 
   /**
    * An abort signal that, when triggered, will stop the recurring execution of
@@ -272,13 +273,13 @@ export interface TaskInvocationDefinition {
  *
  * @public
  */
-export interface TaskRunner {
+export interface SchedulerServiceTaskRunner {
   /**
    * Takes the schedule and executes an actual task using it.
    *
    * @param task - The actual runtime properties of the task
    */
-  run(task: TaskInvocationDefinition): Promise<void>;
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void>;
 }
 
 /**
@@ -311,7 +312,8 @@ export interface SchedulerService {
    * @param task - The task definition
    */
   scheduleTask(
-    task: TaskScheduleDefinition & TaskInvocationDefinition,
+    task: SchedulerServiceTaskScheduleDefinition &
+      SchedulerServiceTaskInvocationDefinition,
   ): Promise<void>;
 
   /**
@@ -326,7 +328,9 @@ export interface SchedulerService {
    *
    * @param schedule - The task schedule
    */
-  createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
+  createScheduledTaskRunner(
+    schedule: SchedulerServiceTaskScheduleDefinition,
+  ): SchedulerServiceTaskRunner;
 
   /**
    * Returns all scheduled tasks registered to this scheduler.
@@ -339,5 +343,62 @@ export interface SchedulerService {
    *
    * @returns Scheduled tasks
    */
-  getScheduledTasks(): Promise<TaskDescriptor[]>;
+  getScheduledTasks(): Promise<SchedulerServiceTaskDescriptor[]>;
+}
+
+function readDuration(config: Config, key: string): Duration | HumanDuration {
+  if (typeof config.get(key) === 'string') {
+    const value = config.getString(key);
+    const duration = Duration.fromISO(value);
+    if (!duration.isValid) {
+      throw new Error(`Invalid duration: ${value}`);
+    }
+    return duration;
+  }
+
+  return readDurationFromConfig(config, { key });
+}
+
+function readCronOrDuration(
+  config: Config,
+  key: string,
+): { cron: string } | Duration | HumanDuration {
+  const value = config.get(key);
+  if (typeof value === 'object' && (value as { cron?: string }).cron) {
+    return value as { cron: string };
+  }
+
+  return readDuration(config, key);
+}
+
+/**
+ * Reads a {@link SchedulerServiceTaskScheduleDefinition} from config. Expects
+ * the config not to be the root config, but the config for the definition.
+ *
+ * @param config - config for a TaskScheduleDefinition.
+ * @public
+ */
+export function readSchedulerServiceTaskScheduleDefinitionFromConfig(
+  config: Config,
+): SchedulerServiceTaskScheduleDefinition {
+  const frequency = readCronOrDuration(config, 'frequency');
+  const timeout = readDuration(config, 'timeout');
+
+  const initialDelay = config.has('initialDelay')
+    ? readDuration(config, 'initialDelay')
+    : undefined;
+
+  const scope = config.getOptionalString('scope');
+  if (scope && !['global', 'local'].includes(scope)) {
+    throw new Error(
+      `Only "global" or "local" are allowed for TaskScheduleDefinition.scope, but got: ${scope}`,
+    );
+  }
+
+  return {
+    frequency,
+    timeout,
+    initialDelay,
+    scope: scope as 'global' | 'local' | undefined,
+  };
 }

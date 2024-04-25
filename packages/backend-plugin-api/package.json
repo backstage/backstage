@@ -20,7 +20,6 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
-    "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./alpha": "./src/alpha.ts",
     "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
@@ -29,9 +28,6 @@
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
-      "scheduler": [
-        "src/entrypoints/scheduler/index.ts"
-      ],
       "alpha": [
         "src/alpha.ts"
       ],

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-import { type SchedulerService as SchedulerService_ } from '@backstage/backend-plugin-api/scheduler';
+export const DB_MIGRATIONS_TABLE = 'backstage_backend_tasks__knex_migrations';
+export const DB_TASKS_TABLE = 'backstage_backend_tasks__tasks';
 
-/**
- * @public
- * @deprecated import from `@backstage/backend-plugin-api/scheduler` instead
- */
-export type SchedulerService = SchedulerService_;
+export type DbTasksRow = {
+  id: string;
+  settings_json: string;
+  next_run_start_at: Date;
+  current_run_ticket?: string;
+  current_run_started_at?: Date | string;
+  current_run_expires_at?: Date | string;
+};
