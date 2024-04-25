@@ -41,6 +41,7 @@ export type NotificationRecipients =
   | {
       type: 'entity';
       entityRef: string | string[];
+      excludeEntityRef?: string | string[];
     }
   | {
       type: 'broadcast';

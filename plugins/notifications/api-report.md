@@ -100,6 +100,7 @@ export const notificationsPlugin: BackstagePlugin<
 export const NotificationsSidebarItem: (props?: {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
+  snackbarEnabled?: boolean;
   className?: string;
   icon?: IconComponent;
   text?: string;
@@ -111,6 +112,7 @@ export const NotificationsSidebarItem: (props?: {
 export const NotificationsTable: ({
   isLoading,
   notifications,
+  isUnread,
   onUpdate,
   setContainsText,
   onPageChange,
@@ -126,6 +128,7 @@ export type NotificationsTableProps = Pick<
   'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
 > & {
   isLoading?: boolean;
+  isUnread: boolean;
   notifications?: Notification_2[];
   onUpdate: () => void;
   setContainsText: (search: string) => void;

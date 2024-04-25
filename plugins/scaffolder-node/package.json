@@ -33,7 +33,6 @@
     }
   },
   "files": [
-    "alpha",
     "dist"
   ],
   "scripts": {

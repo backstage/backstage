@@ -20,7 +20,7 @@ import { resolve as resolvePath } from 'path';
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import chalk from 'chalk';
 import { getPackages, Package } from '@manypkg/get-packages';
-import { getPackageExportNames } from '../../lib/entryPoints';
+import { getPackageExportDetails } from '../../lib/getPackageExportDetails';
 
 export default async () => {
   const { packages } = await getPackages(resolvePath('.'));
@@ -97,11 +97,9 @@ function findAllDeps(declSrc: string) {
  * missing or incorrect in package.json
  */
 function checkTypes(pkg: Package) {
-  const entryPointNames = getPackageExportNames(pkg.packageJson) ?? ['index'];
-
-  const allDeps = entryPointNames.flatMap(name => {
+  const allDeps = getPackageExportDetails(pkg.packageJson).flatMap(exp => {
     const typeDecl = fs.readFileSync(
-      resolvePath(pkg.dir, `dist/${name}.d.ts`),
+      resolvePath(pkg.dir, 'dist', exp.distPath),
       'utf8',
     );
     return findAllDeps(typeDecl);

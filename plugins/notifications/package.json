@@ -43,6 +43,8 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@types/react": "^16.13.1 || ^17.0.0",
     "lodash": "^4.17.21",
+    "material-ui-confirm": "^3.0.12",
+    "notistack": "^3.0.1",
     "react-relative-time": "^0.0.9",
     "react-use": "^17.2.4"
   },

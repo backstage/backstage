@@ -1,40 +1,26 @@
 {
-  "name": "@backstage/plugin-user-settings-backend",
-  "version": "0.2.17-next.0",
-  "description": "The Backstage backend plugin to manage user settings",
+  "name": "@backstage/plugin-notifications-backend-module-email",
+  "version": "0.0.0",
+  "description": "The email backend module for the notifications plugin.",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin-module"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.cjs.js",
+    "types": "dist/index.d.ts"
   },
-  "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/user-settings-backend"
+    "directory": "plugins/notifications-backend-module-email"
   },
   "license": "Apache-2.0",
-  "exports": {
-    ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
-    "./package.json": "./package.json"
-  },
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "typesVersions": {
-    "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
-      "package.json": [
-        "package.json"
-      ]
-    }
-  },
   "files": [
     "dist",
-    "migrations"
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -46,23 +32,25 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.550.0",
+    "@aws-sdk/types": "^3.347.0",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/errors": "workspace:^",
-    "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/integration-aws-node": "workspace:^",
+    "@backstage/plugin-notifications-common": "workspace:^",
+    "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@types/express": "^4.17.6",
-    "express": "^4.17.1",
-    "express-promise-router": "^4.1.0",
-    "knex": "^3.0.0",
-    "winston": "^3.2.1",
-    "yn": "^4.0.0"
+    "lodash": "^4.17.21",
+    "nodemailer": "^6.9.13",
+    "p-throttle": "^6.1.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/supertest": "^2.0.8",
-    "supertest": "^6.1.3"
-  }
+    "@types/nodemailer": "^6.4.14"
+  },
+  "configSchema": "config.d.ts"
 }
