@@ -22,10 +22,6 @@ Like many other parts of Backstage, the permissions framework relies on informat
 
 [The IdentityResolver docs](../auth/identity-resolver.md) describe the process for resolving group membership on sign in.
 
-## Optionally add cookie-based authentication
-
-Asset requests initiated by the browser will not include a token in the `Authorization` header. If these requests check authorization through the permission framework, as done in plugins like TechDocs, then you'll need to set up cookie-based authentication. Refer to the ["Authenticate API requests"](https://github.com/backstage/backstage/blob/master/contrib/docs/tutorials/authenticate-api-requests.md) tutorial for a demonstration on how to implement this behavior.
-
 ## Integrating the permission framework with your Backstage instance
 
 ### 1. Set up the permission backend
