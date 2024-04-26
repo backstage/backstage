@@ -26,7 +26,6 @@ import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
   entityPresentationApiRef,
-  EntityRefPresentationSnapshot,
   EntityDisplayName,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
