@@ -5,6 +5,7 @@
 ```ts
 import { AddLocationRequest } from '@backstage/catalog-client';
 import { AddLocationResponse } from '@backstage/catalog-client';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogRequestOptions } from '@backstage/catalog-client';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -99,6 +100,10 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     locationRef: string,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<ValidateEntityResponse>;
+  // (undocumented)
+  withCredentials(
+    credentialsProvider: () => Promise<BackstageCredentials>,
+  ): CatalogApi;
 }
 
 // @public

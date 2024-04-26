@@ -9,6 +9,7 @@ import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common'
 import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { CatalogApi } from '@backstage/catalog-client';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
@@ -189,6 +190,10 @@ export interface CatalogService {
     locationRef: string,
     options: CatalogServiceRequestOptions,
   ): Promise<ValidateEntityResponse>;
+  // (undocumented)
+  withCredentials(
+    credentialsProvider: () => Promise<BackstageCredentials>,
+  ): CatalogApi;
 }
 
 // @public

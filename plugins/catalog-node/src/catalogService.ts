@@ -56,6 +56,10 @@ export interface CatalogServiceRequestOptions {
  * @public
  */
 export interface CatalogService {
+  withCredentials(
+    credentialsProvider: () => Promise<BackstageCredentials>,
+  ): CatalogApi;
+
   getEntities(
     request: GetEntitiesRequest | undefined,
     options: CatalogServiceRequestOptions,
@@ -141,6 +145,135 @@ class DefaultCatalogService implements CatalogService {
   }) {
     this.#catalogApi = catalogApi;
     this.#auth = auth;
+  }
+
+  withCredentials(
+    credentialsProvider: () => Promise<BackstageCredentials>,
+  ): CatalogApi {
+    const catalogApi = this.#catalogApi;
+    const getOptions = this.#getOptions.bind(this);
+
+    return {
+      async getEntities(
+        request: GetEntitiesRequest | undefined,
+      ): Promise<GetEntitiesResponse> {
+        return catalogApi.getEntities(
+          request,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async getEntitiesByRefs(
+        request: GetEntitiesByRefsRequest,
+      ): Promise<GetEntitiesByRefsResponse> {
+        return catalogApi.getEntitiesByRefs(
+          request,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async queryEntities(
+        request: QueryEntitiesRequest | undefined,
+      ): Promise<QueryEntitiesResponse> {
+        return catalogApi.queryEntities(
+          request,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async getEntityAncestors(
+        request: GetEntityAncestorsRequest,
+      ): Promise<GetEntityAncestorsResponse> {
+        return catalogApi.getEntityAncestors(
+          request,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async getEntityByRef(
+        entityRef: string | CompoundEntityRef,
+      ): Promise<Entity | undefined> {
+        return catalogApi.getEntityByRef(
+          entityRef,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async removeEntityByUid(uid: string): Promise<void> {
+        return catalogApi.removeEntityByUid(
+          uid,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async refreshEntity(entityRef: string): Promise<void> {
+        return catalogApi.refreshEntity(
+          entityRef,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async getEntityFacets(
+        request: GetEntityFacetsRequest,
+      ): Promise<GetEntityFacetsResponse> {
+        return catalogApi.getEntityFacets(
+          request,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async getLocationById(id: string): Promise<Location | undefined> {
+        return catalogApi.getLocationById(
+          id,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async getLocationByRef(
+        locationRef: string,
+      ): Promise<Location | undefined> {
+        return catalogApi.getLocationByRef(
+          locationRef,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async addLocation(
+        location: AddLocationRequest,
+      ): Promise<AddLocationResponse> {
+        return catalogApi.addLocation(
+          location,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async removeLocationById(id: string): Promise<void> {
+        return catalogApi.removeLocationById(
+          id,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async getLocationByEntity(
+        entityRef: string | CompoundEntityRef,
+      ): Promise<Location | undefined> {
+        return catalogApi.getLocationByEntity(
+          entityRef,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+
+      async validateEntity(
+        entity: Entity,
+        locationRef: string,
+      ): Promise<ValidateEntityResponse> {
+        return catalogApi.validateEntity(
+          entity,
+          locationRef,
+          await getOptions({ credentials: await credentialsProvider() }),
+        );
+      },
+    };
   }
 
   async getEntities(

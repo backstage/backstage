@@ -62,7 +62,8 @@ function simpleMock<TService>(
 export function catalogServiceMock(options?: {
   entities?: Entity[];
 }): CatalogServiceMock {
-  return new InMemoryCatalogClient(options);
+  const client = new InMemoryCatalogClient(options);
+  return Object.assign(client, { withCredentials: () => client });
 }
 
 /**
@@ -80,13 +81,14 @@ export namespace catalogServiceMock {
     createServiceFactory({
       service: catalogServiceRef,
       deps: {},
-      factory: () => new InMemoryCatalogClient(options),
+      factory: () => catalogServiceMock(options),
     }) as ServiceFactory<CatalogServiceMock, 'plugin', 'singleton'>;
   /**
    * Creates a catalog client whose methods are mock functions, possibly with
    * some of them overloaded by the caller.
    */
   export const mock = simpleMock<CatalogServiceMock>(catalogServiceRef, () => ({
+    withCredentials: jest.fn(),
     getEntities: jest.fn(),
     getEntitiesByRefs: jest.fn(),
     queryEntities: jest.fn(),

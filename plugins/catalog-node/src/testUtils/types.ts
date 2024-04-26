@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import {
   AddLocationRequest,
   AddLocationResponse,
@@ -50,6 +51,10 @@ import {
  * care about credentials.
  */
 export interface CatalogServiceMock extends CatalogService, CatalogApi {
+  withCredentials(
+    credentialsProvider: () => Promise<BackstageCredentials>,
+  ): CatalogApi;
+
   getEntities(
     request?: GetEntitiesRequest,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,

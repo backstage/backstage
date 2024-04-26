@@ -117,4 +117,34 @@ describe('catalogServiceRef', () => {
       { credentials: mockCredentials.service() },
     );
   });
+
+  it('should inject token from predefined service credentials when given', async () => {
+    expect.assertions(1);
+
+    server.use(
+      rest.get('http://localhost/api/catalog/entities', (req, res, ctx) => {
+        expect(req.headers.get('authorization')).toBe(
+          mockCredentials.service.header({
+            onBehalfOf: mockCredentials.service(),
+            targetPluginId: 'catalog',
+          }),
+        );
+        return res(ctx.json({}));
+      }),
+    );
+    const tester = ServiceFactoryTester.from(
+      createServiceFactory({
+        service: createServiceRef<void>({ id: 'unused-dummy' }),
+        deps: {},
+        factory() {},
+      }),
+      { dependencies: [mockServices.discovery.factory()] },
+    );
+
+    const catalogService = await tester.getService(catalogServiceRef);
+
+    await catalogService
+      .withCredentials(async () => mockCredentials.service())
+      .getEntities({});
+  });
 });
