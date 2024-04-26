@@ -104,7 +104,11 @@ import {
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 
-type ScaffolderPermissionRuleInput =
+/**
+ *
+ * @public
+ */
+export type ScaffolderPermissionRuleInput =
   | TemplatePermissionRuleInput
   | ActionPermissionRuleInput
   | TaskPermissionRuleInput;

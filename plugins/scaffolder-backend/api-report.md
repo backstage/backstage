@@ -479,8 +479,6 @@ export interface RouterOptions {
   lifecycle?: LifecycleService;
   // (undocumented)
   logger: Logger;
-  // Warning: (ae-forgotten-export) The symbol "ScaffolderPermissionRuleInput" needs to be exported by the entry point index.d.ts
-  //
   // (undocumented)
   permissionRules?: Array<ScaffolderPermissionRuleInput>;
   // (undocumented)
@@ -500,6 +498,12 @@ export type RunCommandOptions = ExecuteShellCommandOptions;
 
 // @public @deprecated
 export const ScaffolderEntitiesProcessor: typeof ScaffolderEntitiesProcessor_2;
+
+// @public (undocumented)
+export type ScaffolderPermissionRuleInput =
+  | TemplatePermissionRuleInput
+  | ActionPermissionRuleInput
+  | TaskPermissionRuleInput;
 
 // @public @deprecated
 export type SerializedTask = SerializedTask_2;
