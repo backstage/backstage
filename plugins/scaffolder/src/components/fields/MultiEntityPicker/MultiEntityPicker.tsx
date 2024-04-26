@@ -71,14 +71,8 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     const { items } = await catalogApi.getEntities(
       catalogFilter ? { filter: catalogFilter } : undefined,
     );
-    const primaryTitles: string[] = [];
-    for (const item of items) {
-      const entityPresentation = (await entityPresentationApi.forEntity(item)
-        ?.promise) as EntityRefPresentationSnapshot[];
-      entityPresentation.map(e => primaryTitles.push(e.primaryTitle));
-    }
 
-    return { items, primaryTitles };
+    return items;
   });
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
@@ -134,10 +128,10 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   );
 
   useEffect(() => {
-    if (entities?.items?.length === 1) {
-      onChange([stringifyEntityRef(entities.items[0])]);
+    if (entities?.length === 1) {
+      onChange([stringifyEntityRef(entities[0])]);
     }
-  }, [entities?.items, onChange]);
+  }, [entities, onChange]);
 
   return (
     <FormControl
@@ -148,21 +142,11 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
       <Autocomplete
         multiple
         filterSelectedOptions
-        disabled={entities?.items?.length === 1}
+        disabled={entities?.length === 1}
         id={idSchema?.$id}
-        value={
-          // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
-          //  back to the given value.
-          entities?.items?.filter(
-            e => formData && formData.includes(stringifyEntityRef(e)),
-          ) ??
-          (allowArbitraryValues && formData
-            ? entities?.primaryTitles || []
-            : [])
-        }
         loading={loading}
         onChange={onSelect}
-        options={entities?.items || []}
+        options={entities || []}
         renderOption={option => <EntityDisplayName entityRef={option} />}
         getOptionLabel={option =>
           // option can be a string due to freeSolo.
