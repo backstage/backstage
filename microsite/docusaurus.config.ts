@@ -73,7 +73,15 @@ const config: Config = {
   markdown: {
     preprocessor({ fileContent }) {
       // Replace all HTML comments with empty strings as these are not supported by MDXv2.
-      return fileContent.replace(/<!--.*?-->/gs, '');
+      function removeHtmlComments(input) {
+        let previous;
+        do {
+          previous = input;
+          input = input.replace(/<!--|--!?>/g, '');
+        } while (input !== previous);
+        return input;
+      }
+      return removeHtmlComments(fileContent);
     },
     format: 'detect',
   },
