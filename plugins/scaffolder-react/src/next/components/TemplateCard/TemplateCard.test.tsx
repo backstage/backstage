@@ -29,10 +29,7 @@ import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { fireEvent } from '@testing-library/react';
-import {
-  PermissionApi,
-  permissionApiRef,
-} from '@backstage/plugin-permission-react';
+import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SWRConfig } from 'swr';
 

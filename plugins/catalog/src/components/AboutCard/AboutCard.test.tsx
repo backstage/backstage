@@ -831,7 +831,7 @@ describe('<AboutCard />', () => {
     mockAuthorize.mockImplementation(async () => ({
       result: AuthorizeResult.DENY,
     }));
-    const rendered = await renderInTestApp(
+    await renderInTestApp(
       <SWRConfig value={{ provider: () => new Map() }}>
         <TestApiProvider
           apis={[
