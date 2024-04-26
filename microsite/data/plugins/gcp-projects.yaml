@@ -4,9 +4,9 @@ author: Trivago
 authorUrl: https://www.trivago.com
 category: Infrastructure
 description: Create, list and manage your Google Cloud Projects.
-documentation: https://github.com/backstage/backstage/tree/master/plugins/gcp-projects
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/gcp-projects/plugins/gcp-projects
 iconUrl: https://avatars1.githubusercontent.com/u/2810941?s=280&v=4
-npmPackageName: '@backstage/plugin-gcp-projects'
+npmPackageName: '@backstage-community/plugin-gcp-projects'
 tags:
   - cloud
   - project

@@ -146,6 +146,18 @@ microsoftGraphOrg:
       search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
 ```
 
+### User photos
+
+By default, the photos of users will be fetched and added to each user entity. For huge organizations this may be unfeasible, as it will take a _very_ long time, and can be disabled by setting `loadPhotos` to `false`:
+
+```yaml
+microsoftGraphOrg:
+  providerId:
+    user:
+      filter: ...
+      loadPhotos: false
+```
+
 ## Customizing Transformation
 
 Ingested entities can be customized by providing custom transformers.

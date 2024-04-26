@@ -36,7 +36,6 @@ import {
   searchApiRef,
   SearchContextProvider,
 } from '@backstage/plugin-search-react';
-import { stackOverflowApiRef, HomePageStackOverflowQuestions } from '@backstage/plugin-stack-overflow';
 import { Grid, makeStyles } from '@material-ui/core';
 import React, { ComponentType, PropsWithChildren } from 'react';
 
@@ -79,25 +78,6 @@ const mockCatalogApi = {
   getEntities: async () => ({ items: entities }),
 };
 
-const mockStackOverflowApi = {
-  listQuestions: async () => [
-    {
-      title: 'Customizing Spotify backstage UI',
-      link: 'stackoverflow.question/1',
-      answer_count: 0,
-      tags: ['backstage'],
-      owner: { 'some owner': 'name' },
-    },
-    {
-      title: 'Customizing Spotify backstage UI',
-      link: 'stackoverflow.question/1',
-      answer_count: 0,
-      tags: ['backstage'],
-      owner: { 'some owner': 'name' },
-    },
-  ],
-};
-
 const starredEntitiesApi = new MockStarredEntitiesApi();
 starredEntitiesApi.toggleStarred('component:default/example-starred-entity');
 starredEntitiesApi.toggleStarred('component:default/example-starred-entity-2');
@@ -112,7 +92,6 @@ export default {
         <>
           <TestApiProvider
             apis={[
-              [stackOverflowApiRef, mockStackOverflowApi],
               [catalogApiRef, mockCatalogApi],
               [starredEntitiesApiRef, starredEntitiesApi],
               [searchApiRef, { query: () => Promise.resolve({ results: [] }) }],
@@ -202,15 +181,6 @@ export const DefaultTemplate = () => {
                   {/* placeholder for content */}
                   <div style={{ height: 370 }} />
                 </InfoCard>
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <HomePageStackOverflowQuestions
-                  requestParams={{
-                    tagged: 'backstage',
-                    site: 'stackoverflow',
-                    pagesize: 5,
-                  }}
-                />
               </Grid>
             </Grid>
           </Grid>

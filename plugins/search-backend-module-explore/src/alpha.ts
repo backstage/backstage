@@ -44,6 +44,7 @@ export default createBackendModule({
         discovery: coreServices.discovery,
         scheduler: coreServices.scheduler,
         tokenManager: coreServices.tokenManager,
+        auth: coreServices.auth,
         indexRegistry: searchIndexRegistryExtensionPoint,
       },
       async init({
@@ -51,8 +52,9 @@ export default createBackendModule({
         logger,
         discovery,
         scheduler,
-        indexRegistry,
         tokenManager,
+        auth,
+        indexRegistry,
       }) {
         const defaultSchedule = {
           frequency: { minutes: 10 },
@@ -71,6 +73,7 @@ export default createBackendModule({
           factory: ToolDocumentCollatorFactory.fromConfig(config, {
             discovery,
             logger,
+            auth,
             tokenManager,
           }),
         });

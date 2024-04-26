@@ -19,6 +19,7 @@ jobs:
         with:
           include-title: 1
           include-body: 0
-          configuration-path: .github/labeler.yml
+          configuration-path: .github/issue-labeler.yml
+          enable-versioned-regex: 0
           not-before: 2024-04-19T15:03:51Z
           repo-token: '${{ secrets.GITHUB_TOKEN }}'

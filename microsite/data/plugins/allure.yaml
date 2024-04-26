@@ -4,7 +4,7 @@ author: Deepak Bhardwaj
 authorUrl: https://github.com/deepak-bhardwaj-ps
 category: Reporting
 description: View Allure reports for your components in Backstage.
-documentation: https://github.com/backstage/backstage/tree/master/plugins/allure
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/allure/plugins/allure
 iconUrl: https://avatars.githubusercontent.com/u/5879127
-npmPackageName: '@backstage/plugin-allure'
+npmPackageName: '@backstage-community/plugin-allure'
 addedDate: '2021-09-02'

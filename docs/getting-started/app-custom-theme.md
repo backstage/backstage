@@ -19,7 +19,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
   }),
@@ -73,7 +73,7 @@ import {
   shapes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: {
       ...palettes.light,
@@ -158,7 +158,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
     typography: {
@@ -210,7 +210,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
     typography: {
@@ -248,10 +248,11 @@ const myCustomFont = {
     local('My-Custom-Font'),
     url(${MyCustomFont}) format('woff2'),
   `,
-},
+};
 
 export const myTheme = createUnifiedTheme({
   fontFamily: 'My-Custom-Font',
+  palette: palettes.light,
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -259,7 +260,7 @@ export const myTheme = createUnifiedTheme({
       },
     },
   },
-};
+});
 ```
 
 If you want to utilize different or multiple fonts, then you can set the top level `fontFamily` to what you want for your body, and then override `fontFamily` in `typography` to control fonts for various headings.
@@ -277,7 +278,7 @@ const myCustomFont = {
     local('My-Custom-Font'),
     url(${MyCustomFont}) format('woff2'),
   `,
-},
+};
 
 const myAwesomeFont = {
   fontFamily: 'My-Awesome-Font',
@@ -288,7 +289,7 @@ const myAwesomeFont = {
     local('My-Awesome-Font'),
     url(${myAwesomeFont}) format('woff2'),
   `,
-},
+};
 
 export const myTheme = createUnifiedTheme({
   fontFamily: 'My-Custom-Font',
@@ -314,7 +315,7 @@ export const myTheme = createUnifiedTheme({
     },
     defaultPageTheme: 'home',
   }),
-};
+});
 ```
 
 ## Overriding Backstage and Material UI components styles
@@ -345,7 +346,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
   }),
@@ -405,8 +406,6 @@ You can change the following [icons](https://github.com/backstage/backstage/blob
 #### Create React Component
 
 In your front-end application, locate the `src` folder. We suggest creating the `assets/icons` directory and `CustomIcons.tsx` file.
-
-> Another example [here](https://github.com/backstage/backstage/blob/master/plugins/azure-devops/src/components/AzurePipelinesIcon/AzurePipelinesIcon.tsx), if you want to ensure proper behavior in light and dark themes.
 
 ```tsx title="customIcons.tsx"
 import { SvgIcon, SvgIconProps } from '@material-ui/core';

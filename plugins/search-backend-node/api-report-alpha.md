@@ -34,6 +34,7 @@ export const searchIndexRegistryExtensionPoint: ExtensionPoint<SearchIndexRegist
 export interface SearchIndexService {
   getDocumentTypes(): Record<string, DocumentTypeInfo>;
   start(options: SearchIndexServiceStartOptions): Promise<void>;
+  stop(): Promise<void>;
 }
 
 // @alpha
