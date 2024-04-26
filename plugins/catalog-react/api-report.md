@@ -291,6 +291,7 @@ export const EntityListContext: React_2.Context<
 export type EntityListContextProps<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 > = {
+  requestedFilters: EntityFilters;
   filters: EntityFilters;
   entities: Entity[];
   backendEntities: Entity[];

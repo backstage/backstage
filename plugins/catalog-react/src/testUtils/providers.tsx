@@ -67,6 +67,7 @@ export function MockEntityListContextProvider<
       entities: value?.entities ?? defaultValues.entities,
       backendEntities: value?.backendEntities ?? defaultValues.backendEntities,
       updateFilters: value?.updateFilters ?? updateFilters,
+      requestedFilters: filters,
       filters,
       loading: value?.loading ?? false,
       queryParameters: value?.queryParameters ?? defaultValues.queryParameters,

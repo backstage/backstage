@@ -71,6 +71,14 @@ export type EntityListContextProps<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 > = {
   /**
+   * The requested filters, adhering to the shape of DefaultEntityFilters or an extension
+   * of that default (to add custom filter types).
+   *
+   * These filters might not yet have been fulfilled, for that use `filters` instead.
+   */
+  requestedFilters: EntityFilters;
+
+  /**
    * The currently registered filters, adhering to the shape of DefaultEntityFilters or an extension
    * of that default (to add custom filter types).
    */
@@ -353,6 +361,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
 
   const value = useMemo(
     () => ({
+      requestedFilters,
       filters: outputState.appliedFilters,
       entities: outputState.entities,
       backendEntities: outputState.backendEntities,
@@ -363,7 +372,15 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       pageInfo,
       totalItems: outputState.totalItems,
     }),
-    [outputState, updateFilters, queryParameters, loading, error, pageInfo],
+    [
+      requestedFilters,
+      outputState,
+      updateFilters,
+      queryParameters,
+      loading,
+      error,
+      pageInfo,
+    ],
   );
 
   return (
