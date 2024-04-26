@@ -100,10 +100,10 @@ You can browse and search for all available plugins in the
 [Plugin Directory](https://backstage.io/plugins).
 
 If you can't find it in the directory, before you write a plugin
-[search the plugin issues](https://github.com/backstage/backstage/issues?q=is%3Aissue+label%3Aplugin+)
+[search the plugin issues on the community plugins repo](https://github.com/backstage/community-plugins/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin)
 to see if is in the works. If no one's thought of it yet, great! Open a new
 issue as
-[a plugin suggestion](https://github.com/backstage/backstage/issues/new/choose)
+[a plugin suggestion](https://github.com/backstage/community-plugins/issues/new/choose)
 and describe what your plugin will do. This will help coordinate our
 contributors' efforts and avoid duplicating existing functionality.
 
@@ -195,10 +195,9 @@ ambition will be to keep Backstage modular.
 ### How can I get involved?
 
 Jump right in! Come help us fix some of the
-[early bugs and good first issues](https://github.com/backstage/backstage/contribute)
-or reach [a new milestone](https://github.com/backstage/backstage/milestones).
-Or write an open source plugin for Backstage, like this
-[Lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse).
+[early bugs and good first issues](https://github.com/backstage/backstage/contribute).
+Or write an open source plugin for Backstage in our
+[community plugins repository](https://github.com/backstage/community-plugins).
 See all the ways you can
 [contribute here](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md).
 We'd love to have you as part of the community.

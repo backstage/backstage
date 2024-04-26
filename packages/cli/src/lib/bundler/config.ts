@@ -130,6 +130,9 @@ export async function createConfig(
 
   plugins.push(
     new HtmlWebpackPlugin({
+      meta: {
+        'backstage-app-mode': options?.appMode ?? 'public',
+      },
       template: paths.targetHtml,
       templateParameters: {
         publicPath,

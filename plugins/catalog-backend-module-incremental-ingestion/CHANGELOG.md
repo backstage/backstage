@@ -1,5 +1,39 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.4.23-next.0
+
+### Patch Changes
+
+- 8c1ab9e: Fix plugin/incremental-ingestion 'Maximum call stack size exceeded' error when ingest large entities.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.22.0-next.0
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/plugin-catalog-node@1.11.2-next.0
+  - @backstage/backend-tasks@0.5.23-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-events-node@0.3.4-next.0
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.4.22
+
+### Patch Changes
+
+- d5a1fe1: Replaced winston logger with `LoggerService`
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-catalog-backend@1.21.1
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/backend-tasks@0.5.22
+  - @backstage/plugin-events-node@0.3.3
+  - @backstage/plugin-catalog-node@1.11.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.4.22-next.1
 
 ### Patch Changes

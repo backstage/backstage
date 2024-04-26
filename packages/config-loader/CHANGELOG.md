@@ -1,5 +1,29 @@
 # @backstage/config-loader
 
+## 1.8.0
+
+### Minor Changes
+
+- 2ce31b3: The default environment variable substitution function will now trim whitespace characters from the substituted value. This alleviates bugs where whitespace characters are mistakenly included in environment variables.
+
+  If you depend on the old behavior, you can override the default substitution function with your own, for example:
+
+  ```ts
+  ConfigSources.default({
+    substitutionFunc: async name => process.env[name],
+  });
+  ```
+
+- 99bab65: Support parameter substitution for environment variables
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.8.0-next.0
 
 ### Minor Changes

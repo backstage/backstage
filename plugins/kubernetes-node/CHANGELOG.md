@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.1.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/plugin-kubernetes-common@0.7.6-next.0
+  - @backstage/types@1.1.1
+
+## 0.1.11
+
+### Patch Changes
+
+- f5cec55: Fixing issue where `BackstageCredentials` were not properly forwarded for all calls
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/catalog-model@1.4.5
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+
 ## 0.1.11-next.1
 
 ### Patch Changes

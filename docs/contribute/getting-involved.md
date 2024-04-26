@@ -17,15 +17,15 @@ Look through the GitHub issues for [bugs](https://github.com/backstage/backstage
 
 ### Build a plugin
 
-The value of Backstage grows with every new plugin that gets added. Wouldn't it be fantastic if there was a plugin for every infrastructure project out there? We think so. And we would love your help.
+The value of Backstage grows with every new plugin that gets added. Wouldn't it be fantastic if there was a plugin for every infrastructure project out there? We think so. And we would love your help. Head over to [the community plugins repo](https://github.com/backstage/community-plugins) and get started!
 
 A great reference example of a plugin can be found on [our blog](https://backstage.io/blog/2020/04/06/lighthouse-plugin) (thanks [@fastfrwrd](https://github.com/fastfrwrd)!)
 
-What kind of plugins should/could be created? Some inspiration from the 120+ plugins that we have developed inside Spotify can be found [here](https://backstage.io/demos), but we will keep a running list of suggestions labeled with [[plugin]](https://github.com/backstage/backstage/labels/plugin).
+What kind of plugins should/could be created? Some inspiration from the 120+ plugins that we have developed inside Spotify can be found [here](https://backstage.io/demos), but we will keep a running list of suggestions labeled with [[plugin]](https://github.com/backstage/community-plugins/labels/plugin) in our [community plugins repo](https://github.com/backstage/community-plugins).
 
 ### Suggesting a plugin
 
-If you start developing a plugin that you aim to release as open source, we suggest that you create a [new Issue](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME). This helps the community know what plugins are in development.
+If you start developing a plugin that you aim to release as open source, we suggest that you create a [new Issue](https://github.com/backstage/community-plugins/issues/new/choose) in the community plugins repo. This helps the community know what plugins are in development.
 
 You can also use this process if you have an idea for a good plugin but you hope that someone else will pick up the work.
 

@@ -28,11 +28,8 @@ import {
 } from '@backstage/plugin-home';
 import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
-import { HomePageCalendar } from '@backstage/plugin-gcalendar';
-import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
 import React from 'react';
 import HomeIcon from '@material-ui/icons/Home';
-import { HomePagePagerDutyCard } from '@backstage/plugin-pagerduty';
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -98,9 +95,6 @@ export const homePage = (
       <CustomHomepageGrid config={defaultConfig}>
         <HomePageSearchBar />
         <HomePageRandomJoke />
-        <HomePageCalendar />
-        <HomePagePagerDutyCard name="Rota" />
-        <MicrosoftCalendarCard />
         <HomePageStarredEntities />
         <HomePageCompanyLogo />
         <WelcomeTitle />

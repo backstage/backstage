@@ -19,3 +19,8 @@ export {
   type AuthProviderRegistrationOptions,
   type AuthProvidersExtensionPoint,
 } from './AuthProvidersExtensionPoint';
+
+export {
+  authOwnershipResolutionExtensionPoint,
+  type AuthOwnershipResolutionExtensionPoint,
+} from './AuthOwnershipResolutionExtensionPoint';

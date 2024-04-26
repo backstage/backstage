@@ -1,5 +1,26 @@
 # @backstage/plugin-auth-backend-module-gcp-iap-provider
 
+## 0.2.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.2.12
+
+### Patch Changes
+
+- e0ed31c: Add user id annotation sign-in resolver
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-auth-node@0.4.12
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.12-next.1
 
 ### Patch Changes

@@ -1,5 +1,37 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.2.1-next.0
+
+### Patch Changes
+
+- f3f0281: Fix incorrect dependency import.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/plugin-catalog-node@1.11.2-next.0
+  - @backstage/backend-openapi-utils@0.1.11-next.0
+  - @backstage/backend-tasks@0.5.23-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.2.0
+
+### Minor Changes
+
+- 2e2167a: The name and title of the returned openapi doc entity are now configurable
+
+### Patch Changes
+
+- 58763e8: Use direct access of openapi.json files and not external route
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/backend-tasks@0.5.22
+  - @backstage/plugin-catalog-node@1.11.1
+  - @backstage/backend-openapi-utils@0.1.10
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.11-next.1
 
 ### Patch Changes

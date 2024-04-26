@@ -1,5 +1,31 @@
 # @backstage/backend-plugin-api
 
+## 0.6.18-next.0
+
+### Patch Changes
+
+- 1fedf0c: Removed explicit `toString()` method from `ServiceRef` type.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-tasks@0.5.23-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.6.17
+
+### Patch Changes
+
+- 007e7ea: Added a new required `listPublicServiceKeys` to `AuthService`.
+- 54f2ac8: Added `initialization` option to `createServiceFactory` which defines the initialization strategy for the service. The default strategy mimics the current behavior where plugin scoped services are initialized lazily by default and root scoped services are initialized eagerly.
+- 4fecffc: The credentials passed to the `issueUserCookie` method of the `HttpAuthService` are no longer required to represent a user principal.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.22
+  - @backstage/plugin-auth-node@0.4.12
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.6.17-next.1
 
 ### Patch Changes
