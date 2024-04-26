@@ -9,7 +9,13 @@ import { ResourcePermission } from '@backstage/plugin-permission-common';
 export const actionExecutePermission: ResourcePermission<'scaffolder-action'>;
 
 // @alpha
+export const actionReadPermission: ResourcePermission<'scaffolder-action'>;
+
+// @alpha
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
+
+// @alpha
+export const RESOURCE_TYPE_SCAFFOLDER_TASK = 'scaffolder-task';
 
 // @alpha
 export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
@@ -24,7 +30,19 @@ export const scaffolderPermissions: (
 )[];
 
 // @alpha
+export const scaffolderTaskPermissions: ResourcePermission<'scaffolder-task'>[];
+
+// @alpha
 export const scaffolderTemplatePermissions: ResourcePermission<'scaffolder-template'>[];
+
+// @alpha
+export const taskCancelPermission: ResourcePermission<'scaffolder-task'>;
+
+// @alpha
+export const taskCreatePermission: ResourcePermission<'scaffolder-task'>;
+
+// @alpha
+export const taskReadPermission: ResourcePermission<'scaffolder-task'>;
 
 // @alpha
 export const templateParameterReadPermission: ResourcePermission<'scaffolder-template'>;
