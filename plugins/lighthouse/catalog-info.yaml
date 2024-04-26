@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-lighthouse
+  title: '@backstage/plugin-lighthouse'
+  description: A Backstage plugin that integrates towards Lighthouse
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

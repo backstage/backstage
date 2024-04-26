@@ -18,7 +18,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import TabUI, { TabProps } from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import React, { useCallback, useEffect, useState } from 'react';
-import { Link } from '../../components/Link';
+import { Link } from '@backstage/core-components';
 
 // TODO(blam): Remove this implementation when the Tabs are ready
 // This is just a temporary solution to implementing tabs for now

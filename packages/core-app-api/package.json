@@ -1,30 +1,14 @@
 {
   "name": "@backstage/core-app-api",
-  "version": "1.12.4",
   "description": "Core app API used by Backstage apps",
-  "backstage": {
-    "role": "web-library"
-  },
+  "version": "1.12.4-next.0",
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "backstage"
-  ],
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "packages/core-app-api"
-  },
-  "license": "Apache-2.0",
-  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./package.json": "./package.json"
   },
-  "main": "src/index.ts",
-  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "package.json": [
@@ -32,18 +16,30 @@
       ]
     }
   },
-  "files": [
-    "dist",
-    "config.d.ts"
+  "backstage": {
+    "role": "web-library"
+  },
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/core-app-api"
+  },
+  "keywords": [
+    "backstage"
   ],
+  "license": "Apache-2.0",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
-    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "start": "backstage-cli package start",
-    "test": "backstage-cli package test"
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
@@ -60,6 +56,11 @@
     "zen-observable": "^0.10.0",
     "zod": "^3.22.4"
   },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
@@ -75,10 +76,9 @@
     "react-router-dom-stable": "npm:react-router-dom@^6.3.0",
     "react-router-stable": "npm:react-router@^6.3.0"
   },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
   "configSchema": "config.d.ts"
 }

@@ -30,7 +30,6 @@ import { AuthenticationError } from '@backstage/errors';
 import { jwtVerify } from 'jose';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { JwksClient } from '../JwksClient';
-import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 
 /**
  * The margin for how many times longer we make the public key available
@@ -46,8 +45,8 @@ type Options = {
   publicKeyStore: KeyStore;
   discovery: DiscoveryService;
   logger: LoggerService;
-  /** Expiration time of signing keys */
-  keyDuration: HumanDuration;
+  /** Expiration time of signing keys in seconds */
+  keyDurationSeconds: number;
   /** JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
    * Must match one of the algorithms defined for IdentityClient.
    * When setting a different algorithm, check if the `key` field
@@ -71,7 +70,7 @@ export class PluginTokenHandler {
       options.logger,
       options.ownPluginId,
       options.publicKeyStore,
-      Math.round(durationToMilliseconds(options.keyDuration) / 1000),
+      options.keyDurationSeconds,
       options.algorithm ?? 'ES256',
       options.discovery,
     );

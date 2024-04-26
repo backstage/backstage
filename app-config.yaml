@@ -246,6 +246,7 @@ catalog:
       plugins:
         - catalog
         - search
+        - todo
 
   processors:
     ldapOrg:

@@ -11,134 +11,34 @@ groups -- directly from GitLab. The result is a hierarchy of
 [`Group`](../../features/software-catalog/descriptor-format.md#kind-group)
 entities that mirrors your org setup.
 
-This provider can also be configured to ingest GitLab data based on [GitLab System hooks](https://docs.gitlab.com/ee/administration/system_hooks.html). The events currently accepted are:
-
-- `group_create`
-- `group_destroy`
-- `group_rename`
-- `user_create`
-- `user_destroy`
-- `user_add_to_group`
-- `user_remove_from_group`
-
-## Installation
-
 As this provider is not one of the default providers, you will first need to install the Gitlab provider plugin:
 
 ```bash
 # From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gitlab @backstage/plugin-catalog-backend-module-gitlab-org
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gitlab
 ```
 
-### Installation with New Backend System
-
-Then add the following to your backend initialization:
-
-```ts title="packages/backend/src/index.ts
-// optional if you want HTTP endpoints to receive external events
-// backend.add(import('@backstage/plugin-events-backend/alpha'));
-// optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
-// backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));
-// optional - event router for gitlab. See.: https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md
-// backend.add(eventsModuleGitlabEventRouter());
-// optional - token validator for the gitlab topic
-// backend.add(eventsModuleGitlabWebhook());
-backend.add(import('@backstage/plugin-catalog-backend-module-gitlab-org'));
-```
-
-You need to decide how you want to receive events from external sources like
-
-- [via HTTP endpoint](https://github.com/backstage/backstage/blob/master/plugins/events-backend/README.md#configuration)
-- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
-
-Further documentation:
-
-- [GitLab System hooks](https://docs.gitlab.com/ee/administration/system_hooks.html)
-- [Events Plugin](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
-- [GitLab Module for the Events Plugin](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md)
-
-### Installation with Legacy Backend System
-
-#### Installation without Events Support
-
-Add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.ts`:
+Then add the plugin to the plugin catalog `packages/backend/src/plugins/catalog.ts`:
 
 ```ts
 /* packages/backend/src/plugins/catalog.ts */
 /* highlight-add-next-line */
 import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  /** ... other processors and/or providers ... */
-  /* highlight-add-start */
-  builder.addEntityProvider(
-    ...GitlabOrgDiscoveryEntityProvider.fromConfig(env.config, {
-      logger: env.logger,
-      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { minutes: 30 },
-        timeout: { minutes: 3 },
-      }),
-      // optional: alternatively, use schedule
-      scheduler: env.scheduler,
+const builder = await CatalogBuilder.create(env);
+/** ... other processors and/or providers ... */
+/* highlight-add-start */
+builder.addEntityProvider(
+  ...GitlabOrgDiscoveryEntityProvider.fromConfig(env.config, {
+    logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 30 },
+      timeout: { minutes: 3 },
     }),
-  );
-  /* highlight-add-end */
-  // ..
-}
-```
-
-#### Installation with Events Support
-
-Please follow the installation instructions at
-
-- [Events Plugin](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
-- [GitLab Module for the Events Plugin](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md)
-
-Additionally, you need to decide how you want to receive events from external sources like
-
-- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
-- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
-
-Set up your provider
-
-```ts title="packages/backend/src/plugins/catalog.ts"
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-/* highlight-add-next-line */
-import { GitlabOrgDiscoveryEntityProvider } from '@backstage/plugin-catalog-backend-module-gitlab';
-import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  builder.addProcessor(new ScaffolderEntitiesProcessor());
-  /* highlight-add-start */
-  const gitlabOrgProvider = GitlabOrgDiscoveryEntityProvider.fromConfig(
-    env.config,
-    {
-      logger: env.logger,
-      // optional: alternatively, use scheduler with schedule defined in app-config.yaml
-      schedule: env.scheduler.createScheduledTaskRunner({
-        frequency: { minutes: 30 },
-        timeout: { minutes: 3 },
-      }),
-      // optional: alternatively, use schedule
-      scheduler: env.scheduler,
-    },
-  );
-  env.eventBroker.subscribe(gitlabOrgProvider);
-  builder.addEntityProvider(gitlabOrgProvider);
-  /* highlight-add-end */
-  const { processingEngine, router } = await builder.build();
-  await processingEngine.start();
-  return router;
-}
+  }),
+);
+/* highlight-add-end */
 ```
 
 ## Configuration
@@ -158,8 +58,6 @@ amount of data, this can take significant time and resources.
 The token used must have the `read_api` scope, and the Users and Groups fetched
 will be those visible to the account which provisioned the token.
 
-> > NOTE: if you are using the New Backend System, the `schedule` has to be setup in the config, as shown below.
-
 ```yaml
 catalog:
   providers:
@@ -168,13 +66,7 @@ catalog:
         host: gitlab.com
         orgEnabled: true
         group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
-        allowInherited: true # Allow groups to be ingested even if there are no direct members.
         groupPattern: '[\s\S]*' # Optional. Filters found groups based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
-        schedule: # Same options as in TaskScheduleDefinition. Optional for the Legacy Backend System.
-          # supports cron, ISO duration, "human duration" as used in code
-          frequency: { minutes: 30 }
-          # supports ISO duration, "human duration" as used in code
-          timeout: { minutes: 3 }
 ```
 
 ### Groups
@@ -213,74 +105,6 @@ catalog:
         group: org/teams
         rules:
           - allow: [Group, User]
-```
-
-### Custom Transformers
-
-You can inject your own transformation logic to help map GitLab API responses
-into Backstage entities. You can do this on the user and group requests to
-enable you to do further processing or updates to these entities.
-
-To enable this you pass a function into the `GitlabOrgDiscoveryEntityProvider`. You can
-pass a `UserTransformer`, a `GroupEntitiesTransformer` or a `GroupNameTransformer` (or all of them)). The function is invoked
-for each item (user or group) that is returned from the API.
-
-The example below uses the groupNameTransformer option to change the metadata.name property of the Backstage Group Entity. Instead of populating it with the usual `group.full_path` data that comes from GitLab, it uses the `group.id`:
-
-```ts
-import { loggerToWinstonLogger } from '@backstage/backend-common';
-import {
-  coreServices,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
-import {
-  GitlabOrgDiscoveryEntityProvider,
-  /* highlight-add-next-line */
-  GroupNameTransformerOptions,
-} from '@backstage/plugin-catalog-backend-module-gitlab';
-
-/* highlight-add-start */
-function customGroupNameTransformer(
-  options: GroupNameTransformerOptions,
-): string {
-  return `${options.group.id}`;
-}
-/* highlight-add-end */
-
-/**
- * Registers the GitlabDiscoveryEntityProvider with the catalog processing extension point.
- *
- * @alpha
- */
-export const catalogModuleGitlabOrgDiscoveryEntityProvider =
-  createBackendModule({
-    pluginId: 'catalog',
-    moduleId: 'gitlabOrgDiscoveryEntityProvider',
-    register(env) {
-      env.registerInit({
-        deps: {
-          config: coreServices.rootConfig,
-          catalog: catalogProcessingExtensionPoint,
-          logger: coreServices.logger,
-          scheduler: coreServices.scheduler,
-          events: eventsServiceRef,
-        },
-        async init({ config, catalog, logger, scheduler, events }) {
-          const gitlabOrgDiscoveryEntityProvider =
-            GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-              /* highlight-add-next-line */
-              groupNameTransformer: customGroupNameTransformer,
-              logger: loggerToWinstonLogger(logger),
-              events,
-              scheduler,
-            });
-          catalog.addEntityProvider(gitlabOrgDiscoveryEntityProvider);
-        },
-      });
-    },
-  });
 ```
 
 ## Troubleshooting

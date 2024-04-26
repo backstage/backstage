@@ -11,6 +11,7 @@ const BACKSTAGE_CORE_STORIES = [
   'plugins/search',
   'plugins/search-react',
   'plugins/home',
+  'plugins/stack-overflow',
   'plugins/catalog-react',
 ];
 

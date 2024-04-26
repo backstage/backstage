@@ -1,0 +1,35 @@
+{
+  "status": "ok",
+  "data": [
+    {
+      "id": 10,
+      "entity_ref": null,
+      "title": "Lorem ipsum 1",
+      "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+      "status": "proposed",
+      "updated_at": "2023-03-10T12:41:41.941Z",
+      "community": "",
+      "size": "medium",
+      "start_date": null,
+      "end_date": null,
+      "responsible": "Responsible Adult 1",
+      "docs": null,
+      "members_count": "3"
+    },
+    {
+      "id": 11,
+      "entity_ref": null,
+      "title": "Lorem ipsum 2",
+      "description": "sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud",
+      "status": "proposed",
+      "updated_at": "2023-03-09T12:41:41.941Z",
+      "community": "",
+      "size": "medium",
+      "start_date": null,
+      "end_date": null,
+      "responsible": "Responsible Adult 2",
+      "docs": null,
+      "members_count": "5"
+    }
+  ]
+}

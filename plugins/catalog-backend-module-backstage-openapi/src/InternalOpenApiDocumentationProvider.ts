@@ -38,7 +38,7 @@ import {
   DiscoveryService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import * as uuid from 'uuid';
+import uuid from 'uuid';
 import lodash from 'lodash';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 

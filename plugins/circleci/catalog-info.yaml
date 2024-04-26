@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-circleci
+  title: '@backstage/plugin-circleci'
+  description: A Backstage plugin that integrates towards Circle CI
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: adamdmharvey

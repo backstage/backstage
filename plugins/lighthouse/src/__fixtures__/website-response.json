@@ -1,0 +1,118 @@
+{
+  "url": "https://spotify.com",
+  "audits": [
+    {
+      "id": "f471916c-80bc-4a22-93de-f3347835e785",
+      "url": "https://spotify.com",
+      "timeCreated": "2020-03-31T15:29:25.68-04:00",
+      "status": "RUNNING"
+    },
+    {
+      "id": "047f506b-15f8-4eb1-b177-d8e3d0377b85",
+      "url": "https://spotify.com",
+      "timeCreated": "2020-03-27T12:58:34.605-04:00",
+      "timeCompleted": "2020-03-27T12:58:43.842-04:00",
+      "status": "COMPLETED",
+      "categories": {
+        "pwa": {
+          "id": "pwa",
+          "title": "Progressive Web App",
+          "score": 0.33
+        },
+        "seo": { "id": "seo", "title": "SEO", "score": 0.92 },
+        "performance": {
+          "id": "performance",
+          "title": "Performance",
+          "score": 0.44
+        },
+        "accessibility": {
+          "id": "accessibility",
+          "title": "Accessibility",
+          "score": 0.82
+        },
+        "best-practices": {
+          "id": "best-practices",
+          "title": "Best Practices",
+          "score": 0.86
+        }
+      }
+    },
+    {
+      "id": "2e7810fd-fe42-4620-8787-b047b7f6c57a",
+      "url": "https://spotify.com",
+      "timeCreated": "2020-03-26T14:09:59.146-04:00",
+      "timeCompleted": "2020-03-26T14:10:05.356-04:00",
+      "status": "COMPLETED",
+      "categories": {
+        "pwa": {
+          "id": "pwa",
+          "title": "Progressive Web App",
+          "score": 0.33
+        },
+        "seo": { "id": "seo", "title": "SEO", "score": 0.92 },
+        "performance": {
+          "id": "performance",
+          "title": "Performance",
+          "score": 0.47
+        },
+        "accessibility": {
+          "id": "accessibility",
+          "title": "Accessibility",
+          "score": 0.82
+        },
+        "best-practices": {
+          "id": "best-practices",
+          "title": "Best Practices",
+          "score": 0.86
+        }
+      }
+    },
+    {
+      "id": "0f094aa2-12c6-479e-bb52-fad2b089d5c1",
+      "url": "https://spotify.com",
+      "timeCreated": "2020-03-26T14:02:03.023-04:00",
+      "timeCompleted": "2020-03-26T14:02:33.336-04:00",
+      "status": "FAILED"
+    },
+    {
+      "id": "628d7eb6-e26a-4d1a-9690-adc3c6af1baa",
+      "url": "https://spotify.com",
+      "timeCreated": "2020-03-26T14:00:43.878-04:00",
+      "timeCompleted": "2020-03-26T14:01:14.203-04:00",
+      "status": "FAILED"
+    },
+    {
+      "id": "71b8e012-88fc-49d8-9d88-3b03ef9ec34e",
+      "url": "https://spotify.com",
+      "timeCreated": "2020-03-26T13:59:51.243-04:00",
+      "timeCompleted": "2020-03-26T13:59:51.595-04:00",
+      "status": "FAILED"
+    }
+  ],
+  "lastAudit": {
+    "id": "f471916c-80bc-4a22-93de-f3347835e785",
+    "url": "https://spotify.com",
+    "timeCreated": "2020-03-31T15:29:25.68-04:00",
+    "timeCompleted": "2020-03-31T15:29:33.085-04:00",
+    "status": "COMPLETED",
+    "categories": {
+      "pwa": { "id": "pwa", "title": "Progressive Web App", "score": 0.33 },
+      "seo": { "id": "seo", "title": "SEO", "score": 0.9 },
+      "performance": {
+        "id": "performance",
+        "title": "Performance",
+        "score": 0.43
+      },
+      "accessibility": {
+        "id": "accessibility",
+        "title": "Accessibility",
+        "score": 0.82
+      },
+      "best-practices": {
+        "id": "best-practices",
+        "title": "Best Practices",
+        "score": 0.86
+      }
+    }
+  }
+}

@@ -12,4 +12,3 @@ metadata:
       icon: dashboard
 spec:
   owner: team-a
-  subdomainOf: audio

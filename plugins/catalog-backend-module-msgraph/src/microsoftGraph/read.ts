@@ -384,7 +384,7 @@ export async function readMicrosoftGraphOrg(
     logger: LoggerService;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
-  let users: UserEntity[] = [];
+  const users: UserEntity[] = [];
 
   if (options.userGroupMemberFilter || options.userGroupMemberSearch) {
     const { users: usersInGroups } = await readMicrosoftGraphUsersInGroups(
@@ -401,7 +401,7 @@ export async function readMicrosoftGraphOrg(
         logger: options.logger,
       },
     );
-    users = usersInGroups;
+    users.push(...usersInGroups);
   } else {
     const { users: usersWithFilter } = await readMicrosoftGraphUsers(client, {
       queryMode: options.queryMode,
@@ -412,7 +412,7 @@ export async function readMicrosoftGraphOrg(
       transformer: options.userTransformer,
       logger: options.logger,
     });
-    users = usersWithFilter;
+    users.push(...usersWithFilter);
   }
   const { groups, rootGroup, groupMember, groupMemberOf } =
     await readMicrosoftGraphGroups(client, tenantId, {

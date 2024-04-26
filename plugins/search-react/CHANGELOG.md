@@ -1,34 +1,5 @@
 # @backstage/plugin-search-react
 
-## 1.7.11-next.0
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/theme@0.5.4-next.0
-  - @backstage/core-components@0.14.5-next.0
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/frontend-plugin-api@0.6.5-next.0
-  - @backstage/types@1.1.1
-  - @backstage/version-bridge@1.0.8
-  - @backstage/plugin-search-common@1.2.11
-
-## 1.7.10
-
-### Patch Changes
-
-- 8d50bd3: add mui imports eslint rule
-- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
-- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
-- Updated dependencies
-  - @backstage/core-components@0.14.4
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/frontend-plugin-api@0.6.4
-  - @backstage/theme@0.5.3
-  - @backstage/version-bridge@1.0.8
-  - @backstage/types@1.1.1
-  - @backstage/plugin-search-common@1.2.11
-
 ## 1.7.10-next.1
 
 ### Patch Changes

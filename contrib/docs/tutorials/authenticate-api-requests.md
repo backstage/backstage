@@ -1,14 +1,5 @@
 # Authenticate API requests
 
-> [!CAUTION]
-> This entire guide MUST NOT BE USED by users of Backstage 1.26 and
-> newer. If you have applied the changes in this guide, you need to remove them
-> again as you upgrade to recent versions of Backstage. When [the new auth
-> changes](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution)
-> landed backends became natively secured through the framework, and the
-> instructions outlined in here can interfere with the backend functioning
-> correctly.
-
 The Backstage backend APIs are by default available without authentication. To avoid evil-doers from accessing or modifying data, one might use a network protection mechanism such as a firewall or an authenticating reverse proxy. For Backstage instances that are available on the Internet one can instead use the experimental IdentityClient as outlined below.
 
 API requests from frontend plugins include an authorization header with a Backstage identity token acquired when the user logs in. By adding a middleware that verifies said token to be valid and signed by Backstage, non-authenticated requests can be blocked with a 401 Unauthorized response.

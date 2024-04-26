@@ -362,8 +362,6 @@ SIG
 SIGs
 siloed
 Sinon
-snackbars
-snackbar
 Snyk
 Sonarqube
 sourcemaps

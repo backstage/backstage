@@ -48,7 +48,6 @@ describe('readProviderConfigs', () => {
       filters: {
         projectKey: undefined,
         repoSlug: undefined,
-        skipArchivedRepos: undefined,
       },
     });
   });
@@ -88,7 +87,6 @@ describe('readProviderConfigs', () => {
       filters: {
         projectKey: undefined,
         repoSlug: undefined,
-        skipArchivedRepos: undefined,
       },
     });
     expect(providerConfigs[1]).toEqual({
@@ -98,7 +96,6 @@ describe('readProviderConfigs', () => {
       filters: {
         projectKey: undefined,
         repoSlug: undefined,
-        skipArchivedRepos: undefined,
       },
     });
     expect(providerConfigs[2]).toEqual({
@@ -108,7 +105,6 @@ describe('readProviderConfigs', () => {
       filters: {
         projectKey: undefined,
         repoSlug: undefined,
-        skipArchivedRepos: undefined,
       },
       schedule: {
         frequency: Duration.fromISO('PT30M'),
@@ -129,7 +125,6 @@ describe('readProviderConfigs', () => {
               filters: {
                 projectKey: 'project1',
                 repoSlug: '.*',
-                skipArchivedRepos: true,
               },
             },
           },
@@ -146,7 +141,6 @@ describe('readProviderConfigs', () => {
       filters: {
         projectKey: /project1/,
         repoSlug: /.*/,
-        skipArchivedRepos: true,
       },
     });
   });

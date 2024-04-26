@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-export { readGitlabConfigs } from '../providers/config';
 export { GitLabClient, paginated } from './client';
 export type {
+  GitLabUser,
   GitLabGroup,
   GitLabGroupSamlIdentity,
   GitLabProject,
-  GitLabUser,
-  GitlabGroupDescription,
   GitlabProviderConfig,
+  GitlabGroupDescription,
   GroupNameTransformer,
   GroupNameTransformerOptions,
   GroupTransformer,
@@ -30,3 +29,4 @@ export type {
   UserTransformer,
   UserTransformerOptions,
 } from './types';
+export { readGitlabConfigs } from '../providers/config';

@@ -15,4 +15,3 @@
  */
 export * from './NotificationsSideBarItem';
 export * from './NotificationsTable';
-export type { NotificationsPageProps } from './NotificationsPage';

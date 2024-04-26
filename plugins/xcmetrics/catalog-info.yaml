@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-xcmetrics
+  title: '@backstage/plugin-xcmetrics'
+  description: A Backstage plugin that shows XCode build metrics for your components
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

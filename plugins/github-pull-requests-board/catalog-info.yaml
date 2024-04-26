@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-github-pull-requests-board
+  title: '@backstage/plugin-github-pull-requests-board'
+  description: >-
+    A Backstage plugin that allows you to see all open Pull Requests for all the
+    repositories owned by your team
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

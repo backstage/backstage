@@ -1,15 +1,5 @@
 # @backstage/plugin-permission-react
 
-## 0.4.22
-
-### Patch Changes
-
-- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
-- Updated dependencies
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/config@1.2.0
-  - @backstage/plugin-permission-common@0.7.13
-
 ## 0.4.21
 
 ### Patch Changes

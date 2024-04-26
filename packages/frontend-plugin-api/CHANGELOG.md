@@ -1,27 +1,5 @@
 # @backstage/frontend-plugin-api
 
-## 0.6.5-next.0
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/core-components@0.14.5-next.0
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/types@1.1.1
-  - @backstage/version-bridge@1.0.8
-
-## 0.6.4
-
-### Patch Changes
-
-- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
-- 35452b3: Fixed the type for `useRouteRef`, which wasn't handling optional external route refs correctly.
-- Updated dependencies
-  - @backstage/core-components@0.14.4
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/version-bridge@1.0.8
-  - @backstage/types@1.1.1
-
 ## 0.6.4-next.1
 
 ### Patch Changes

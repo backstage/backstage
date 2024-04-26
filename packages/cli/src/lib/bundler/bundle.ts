@@ -41,10 +41,6 @@ export async function buildBundle(options: BuildOptions) {
   const { statsJsonEnabled, schema: configSchema } = options;
 
   const paths = resolveBundlingPaths(options);
-  const publicPaths = await resolveOptionalBundlingPaths({
-    entry: 'src/index-public-experimental',
-    dist: 'dist/public',
-  });
 
   const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
     config: options.fullConfig,
@@ -61,22 +57,20 @@ export async function buildBundle(options: BuildOptions) {
     await createConfig(paths, {
       ...commonConfigOptions,
       additionalEntryPoints: detectedModulesEntryPoint,
-      appMode: publicPaths ? 'protected' : 'public',
     }),
   ];
 
+  const publicPaths = await resolveOptionalBundlingPaths({
+    entry: 'src/index-public-experimental',
+    dist: 'dist/public',
+  });
   if (publicPaths) {
     console.log(
       chalk.yellow(
         `⚠️  WARNING: The app /public entry point is an experimental feature that may receive immediate breaking changes.`,
       ),
     );
-    configs.push(
-      await createConfig(publicPaths, {
-        ...commonConfigOptions,
-        appMode: 'public',
-      }),
-    );
+    configs.push(await createConfig(publicPaths, commonConfigOptions));
   }
 
   const isCi = yn(process.env.CI, { default: false });

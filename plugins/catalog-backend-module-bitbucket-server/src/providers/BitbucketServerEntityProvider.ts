@@ -201,9 +201,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
         ) {
           continue;
         }
-        if (this.config?.filters?.skipArchivedRepos && repository.archived) {
-          continue;
-        }
         for await (const entity of this.parser({
           client,
           logger: this.logger,

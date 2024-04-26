@@ -23,7 +23,7 @@ import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError, ForwardedError } from '@backstage/errors';
+import { AuthenticationError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { decodeJwt } from 'jose';
 import { ExternalTokenHandler } from './external/ExternalTokenHandler';
@@ -151,13 +151,7 @@ export class DefaultAuthService implements AuthService {
           });
         }
         // If the target plugin does not support the new auth service, fall back to using old token format
-        return this.tokenManager.getToken().catch(error => {
-          throw new ForwardedError(
-            `Unable to generate legacy token for communication with the '${targetPluginId}' plugin. ` +
-              `You will typically encounter this error when attempting to call a plugin that does not exist, or is deployed with an old version of Backstage`,
-            error,
-          );
-        });
+        return this.tokenManager.getToken();
       case 'user': {
         const { token } = internalForward;
         if (!token) {

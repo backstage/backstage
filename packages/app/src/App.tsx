@@ -34,6 +34,8 @@ import {
   SignInPage,
 } from '@backstage/core-components';
 import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
+import { AzurePullRequestsPage } from '@backstage/plugin-azure-devops';
+
 import {
   CatalogEntityPage,
   CatalogIndexPage,
@@ -45,15 +47,24 @@ import {
   CatalogImportPage,
   catalogImportPlugin,
 } from '@backstage/plugin-catalog-import';
+import {
+  CostInsightsLabelDataflowInstructionsPage,
+  CostInsightsPage,
+  CostInsightsProjectGrowthInstructionsPage,
+} from '@backstage/plugin-cost-insights';
 import { orgPlugin } from '@backstage/plugin-org';
+import { ExplorePage } from '@backstage/plugin-explore';
+import { GcpProjectsPage } from '@backstage/plugin-gcp-projects';
 import { HomepageCompositionRoot, VisitListener } from '@backstage/plugin-home';
-
+import { LighthousePage } from '@backstage/plugin-lighthouse';
+import { NewRelicPage } from '@backstage/plugin-newrelic';
 import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
 import {
   ScaffolderFieldExtensions,
   ScaffolderLayouts,
 } from '@backstage/plugin-scaffolder-react';
 import { SearchPage } from '@backstage/plugin-search';
+import { TechRadarPage } from '@backstage/plugin-tech-radar';
 import {
   TechDocsIndexPage,
   techdocsPlugin,
@@ -85,11 +96,16 @@ import { providers } from './identityProviders';
 import * as plugins from './plugins';
 
 import { techDocsPage } from './components/techdocs/TechDocsPage';
+import { ApacheAirflowPage } from '@backstage/plugin-apache-airflow';
 import { RequirePermission } from '@backstage/plugin-permission-react';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import { PlaylistIndexPage, PlaylistPage } from '@backstage/plugin-playlist';
 import { TwoColumnLayout } from './components/scaffolder/customScaffolderLayouts';
-import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
+import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
+import { StackstormPage } from '@backstage/plugin-stackstorm';
+import { PuppetDbPage } from '@backstage/plugin-puppetdb';
 import { DevToolsPage } from '@backstage/plugin-devtools';
+import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { NotificationsPage } from '@backstage/plugin-notifications';
 
@@ -221,17 +237,39 @@ const routes = (
         <TwoColumnLayout />
       </ScaffolderLayouts>
     </Route>
-
+    <Route path="/explore" element={<ExplorePage />} />
+    <Route
+      path="/tech-radar"
+      element={<TechRadarPage width={1500} height={800} />}
+    />
+    <Route path="/lighthouse" element={<LighthousePage />} />
     <Route path="/api-docs" element={<ApiExplorerPage />} />
+    <Route path="/gcp-projects" element={<GcpProjectsPage />} />
+    <Route path="/newrelic" element={<NewRelicPage />} />
     <Route path="/search" element={<SearchPage />}>
       {searchPage}
     </Route>
-
+    <Route path="/cost-insights" element={<CostInsightsPage />} />
+    <Route
+      path="/cost-insights/investigating-growth"
+      element={<CostInsightsProjectGrowthInstructionsPage />}
+    />
+    <Route
+      path="/cost-insights/labeling-jobs"
+      element={<CostInsightsLabelDataflowInstructionsPage />}
+    />
     <Route path="/settings" element={<UserSettingsPage />}>
       <SettingsLayout.Route path="/advanced" title="Advanced">
         <AdvancedSettings />
       </SettingsLayout.Route>
     </Route>
+    <Route path="/azure-pull-requests" element={<AzurePullRequestsPage />} />
+    <Route path="/apache-airflow" element={<ApacheAirflowPage />} />
+    <Route path="/playlist" element={<PlaylistIndexPage />} />
+    <Route path="/playlist/:playlistId" element={<PlaylistPage />} />
+    <Route path="/score-board" element={<ScoreBoardPage />} />
+    <Route path="/stackstorm" element={<StackstormPage />} />
+    <Route path="/puppetdb" element={<PuppetDbPage />} />
     <Route path="/devtools" element={<DevToolsPage />}>
       {customDevToolsPage}
     </Route>

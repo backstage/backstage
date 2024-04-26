@@ -44,6 +44,8 @@ export type ServiceRef<
    */
   T: TService;
 
+  toString(): string;
+
   $$type: '@backstage/ServiceRef';
 };
 

@@ -1,45 +1,33 @@
 {
   "name": "@backstage/cli",
-  "version": "0.26.5-next.0",
   "description": "CLI for developing Backstage plugins and apps",
-  "backstage": {
-    "role": "cli"
-  },
+  "version": "0.26.3-next.1",
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "backstage"
-  ],
+  "backstage": {
+    "role": "cli"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/cli"
   },
+  "keywords": [
+    "backstage"
+  ],
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
-  "bin": {
-    "backstage-cli": "bin/backstage-cli"
-  },
-  "files": [
-    "asset-types",
-    "templates",
-    "config",
-    "bin",
-    "dist/**/*.js"
-  ],
   "scripts": {
     "build": "backstage-cli package build",
-    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "start": "nodemon --",
-    "test": "backstage-cli package test"
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
+    "start": "nodemon --"
   },
-  "nodemonConfig": {
-    "exec": "bin/backstage-cli",
-    "ext": "ts",
-    "watch": "./src"
+  "bin": {
+    "backstage-cli": "bin/backstage-cli"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -132,7 +120,6 @@
     "react-dev-utils": "^12.0.0-next.60",
     "react-refresh": "^0.14.0",
     "recursive-readdir": "^2.2.2",
-    "replace-in-file": "^7.1.0",
     "rollup": "^4.0.0",
     "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-esbuild": "^6.1.1",
@@ -208,6 +195,18 @@
     "vite-plugin-node-polyfills": {
       "optional": true
     }
+  },
+  "files": [
+    "asset-types",
+    "templates",
+    "config",
+    "bin",
+    "dist/**/*.js"
+  ],
+  "nodemonConfig": {
+    "watch": "./src",
+    "exec": "bin/backstage-cli",
+    "ext": "ts"
   },
   "configSchema": {
     "$schema": "https://backstage.io/schema/config-v1",

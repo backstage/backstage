@@ -4,9 +4,9 @@ author: ExpediaGroup
 authorUrl: https://github.com/ExpediaGroup
 category: Automation
 description: Manage StackStorm workflow executions from within Backstage.
-documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/stackstorm/plugins/stackstorm
+documentation: https://github.com/backstage/backstage/tree/master/plugins/stackstorm
 iconUrl: /img/stackstorm.png
-npmPackageName: '@backstage-community/plugin-stackstorm'
+npmPackageName: '@backstage/plugin-stackstorm'
 tags:
   - stackstorm
   - st2

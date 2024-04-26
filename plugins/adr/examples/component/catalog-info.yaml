@@ -1,0 +1,13 @@
+---
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: component-with-adrs
+  title: Component With ADRs
+  description: A Service with ADRs registerd
+  annotations:
+    backstage.io/adr-location: https://github.com/adr/madr/tree/develop/docs/decisions
+spec:
+  type: service
+  lifecycle: experimental
+  owner: user:guest

@@ -1,0 +1,84 @@
+{
+  "name": "@backstage/plugin-cost-insights",
+  "version": "0.12.23-next.1",
+  "description": "A Backstage plugin that helps you keep track of your cloud spend",
+  "backstage": {
+    "role": "frontend-plugin"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/cost-insights"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/core-components": "workspace:^",
+    "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-cost-insights-common": "workspace:^",
+    "@backstage/theme": "workspace:^",
+    "@material-ui/core": "^4.12.2",
+    "@material-ui/icons": "^4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.61",
+    "@material-ui/styles": "^4.9.6",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "@types/recharts": "^1.8.14",
+    "classnames": "^2.2.6",
+    "history": "^5.0.0",
+    "luxon": "^3.0.0",
+    "pluralize": "^8.0.0",
+    "qs": "^6.9.4",
+    "react-use": "^17.2.4",
+    "recharts": "^2.5.0",
+    "regression": "^2.0.1",
+    "yup": "^1.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/dev-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^15.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/pluralize": "^0.0.33",
+    "@types/recharts": "^1.8.14",
+    "@types/regression": "^2.0.0",
+    "@types/yup": "^0.32.0",
+    "canvas": "^2.10.2"
+  },
+  "peerDependencies": {
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "configSchema": "config.d.ts"
+}

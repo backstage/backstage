@@ -22,11 +22,11 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { DocumentTypeInfo } from '@backstage/plugin-search-common';
+
 import {
   IndexBuilder,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
-  Scheduler,
   SearchEngine,
 } from '@backstage/plugin-search-backend-node';
 
@@ -49,11 +49,6 @@ export interface SearchIndexService {
    * Starts indexing process
    */
   start(options: SearchIndexServiceStartOptions): Promise<void>;
-
-  /**
-   * Stops indexing process
-   */
-  stop(): Promise<void>;
   /**
    * Returns an index types list.
    */
@@ -86,9 +81,8 @@ type DefaultSearchIndexServiceOptions = {
  * Reponsible for register the indexing task and start the schedule.
  */
 class DefaultSearchIndexService implements SearchIndexService {
-  private readonly logger: LoggerService;
+  private logger: LoggerService;
   private indexBuilder: IndexBuilder | null = null;
-  private scheduler: Scheduler | null = null;
 
   private constructor(options: DefaultSearchIndexServiceOptions) {
     this.logger = options.logger;
@@ -113,15 +107,7 @@ class DefaultSearchIndexService implements SearchIndexService {
     );
 
     const { scheduler } = await this.indexBuilder?.build();
-    this.scheduler = scheduler;
-    this.scheduler!.start();
-  }
-
-  async stop(): Promise<void> {
-    if (this.scheduler) {
-      this.scheduler.stop();
-      this.scheduler = null;
-    }
+    scheduler.start();
   }
 
   getDocumentTypes(): Record<string, DocumentTypeInfo> {

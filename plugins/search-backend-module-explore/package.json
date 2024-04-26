@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-explore",
-  "version": "0.1.23-next.0",
+  "version": "0.1.21-next.1",
   "description": "A module for the search backend that exports explore modules",
   "backstage": {
     "role": "backend-plugin-module"
@@ -46,11 +46,11 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage-community/plugin-explore-common": "^0.0.3",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/plugin-explore-common": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "node-fetch": "^2.6.7"

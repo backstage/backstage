@@ -32,6 +32,7 @@ import {
   UserSettingsSignInAvatar,
 } from '@backstage/plugin-user-settings';
 import { SidebarSearchModal } from '@backstage/plugin-search';
+import { Shortcuts } from '@backstage/plugin-shortcuts';
 import {
   Link,
   Sidebar,
@@ -165,6 +166,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
           <SidebarItem icon={Score} to="score-board" text="Score board" />
         </SidebarScrollWrapper>
         <SidebarDivider />
+        <Shortcuts allowExternalLinks />
         <SidebarDivider />
         <NotificationsSidebarItem />
       </SidebarGroup>

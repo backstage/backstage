@@ -58,16 +58,16 @@ jest.mock('ora', () => ({
 }));
 
 let mockDir: MockDirectory;
-jest.mock('@backstage/cli-common', () => ({
-  ...jest.requireActual('@backstage/cli-common'),
-  findPaths: () => ({
+
+jest.mock('../../lib/paths', () => ({
+  paths: {
     resolveTargetRoot(filename: string) {
       return mockDir.resolve(filename);
     },
     get targetDir() {
       return mockDir.path;
     },
-  }),
+  },
 }));
 
 jest.mock('../../lib/run', () => {
@@ -200,7 +200,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+    const { log: logs } = await withLogCollector(['log'], async () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
@@ -216,7 +216,6 @@ describe('bump', () => {
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
       'Running yarn install to install new versions',
-      'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 2.0.0',
       '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
@@ -304,7 +303,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+    const { log: logs } = await withLogCollector(['log'], async () => {
       await bump({
         pattern: null,
         release: 'main',
@@ -324,7 +323,6 @@ describe('bump', () => {
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
       'Skipping yarn install',
-      'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 2.0.0',
       '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
@@ -421,7 +419,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+    const { log: logs } = await withLogCollector(['log'], async () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
@@ -439,7 +437,6 @@ describe('bump', () => {
       'bumping @backstage/core in a to ^1.0.6',
       'Your project is now at version 0.0.1, which has been written to backstage.json',
       'Running yarn install to install new versions',
-      'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
       '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
@@ -520,7 +517,7 @@ describe('bump', () => {
         (_, res, ctx) => res(ctx.status(404), ctx.json({})),
       ),
     );
-    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+    const { log: logs } = await withLogCollector(['log'], async () => {
       await expect(
         bump({ pattern: null, release: '999.0.1' } as unknown as Command),
       ).rejects.toThrow('No release found for 999.0.1 version');
@@ -625,7 +622,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+    const { log: logs } = await withLogCollector(['log'], async () => {
       await bump({ pattern: null, release: 'next' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
@@ -643,7 +640,6 @@ describe('bump', () => {
       'bumping @backstage/core in a to ^1.0.6',
       'Your project is now at version 1.0.0, which has been written to backstage.json',
       'Running yarn install to install new versions',
-      'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 5.0.0',
       '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
@@ -722,7 +718,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+    const { log: logs } = await withLogCollector(['log'], async () => {
       await bump({
         pattern: '@{backstage,backstage-extra}/*',
         release: 'main',
@@ -749,7 +745,6 @@ describe('bump', () => {
       'bumping @backstage/theme in b to ^2.0.0',
       'Skipping backstage.json update as custom pattern is used',
       'Running yarn install to install new versions',
-      'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage-extra/custom-two : 1.0.0 ~> 2.0.0',
       '  @backstage/theme : 1.0.0 ~> 2.0.0',
@@ -842,7 +837,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+    const { log: logs } = await withLogCollector(['log'], async () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
@@ -957,7 +952,7 @@ describe('bump', () => {
           ),
       ),
     );
-    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+    const { log: logs } = await withLogCollector(['log'], async () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
     });
     expectLogsToMatch(logs, [
@@ -973,7 +968,6 @@ describe('bump', () => {
       'bumping @backstage/core in b to ^1.0.6',
       'bumping @backstage/theme in b to ^2.0.0',
       'Running yarn install to install new versions',
-      'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
       '  @backstage/theme : 1.0.0 ~> 2.0.0',
       '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',

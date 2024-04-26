@@ -11,8 +11,7 @@
         "description": "Everything about artists"
       },
       "spec": {
-        "owner": "artist-relations-team",
-        "subdomainOf": "audio"
+        "owner": "artist-relations-team"
       }
     }
   ],
@@ -38,12 +37,6 @@
               "type": "string",
               "description": "An entity reference to the owner of the component.",
               "examples": ["artist-relations-team", "user:john.johnson"],
-              "minLength": 1
-            },
-            "subdomainOf": {
-              "type": "string",
-              "description": "An entity reference to another domain of which the domain is a part.",
-              "examples": ["audio"],
               "minLength": 1
             }
           }

@@ -35,7 +35,9 @@ const ItemDetailTimeAgo = ({ visit }: { visit: Visit }) => {
       color="textSecondary"
       dateTime={visitDate.toISO() ?? undefined}
     >
-      {visitDate.toRelative()}
+      {visitDate >= DateTime.now().startOf('day')
+        ? visitDate.toFormat('HH:mm')
+        : visitDate.toRelative()}
     </Typography>
   );
 };

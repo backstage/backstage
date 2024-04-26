@@ -77,7 +77,6 @@ export default createBackendModule({
 
     env.registerInit({
       deps: {
-        auth: coreServices.auth,
         config: coreServices.rootConfig,
         discovery: coreServices.discovery,
         tokenManager: coreServices.tokenManager,
@@ -86,7 +85,6 @@ export default createBackendModule({
         catalog: catalogServiceRef,
       },
       async init({
-        auth,
         config,
         discovery,
         tokenManager,
@@ -99,7 +97,6 @@ export default createBackendModule({
             readScheduleConfigOptions(config),
           ),
           factory: DefaultCatalogCollatorFactory.fromConfig(config, {
-            auth,
             entityTransformer,
             discovery,
             tokenManager,

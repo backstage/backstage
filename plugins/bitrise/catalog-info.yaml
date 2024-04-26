@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-bitrise
+  title: '@backstage/plugin-bitrise'
+  description: A Backstage plugin that integrates towards Bitrise
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: sda-se-reviewers

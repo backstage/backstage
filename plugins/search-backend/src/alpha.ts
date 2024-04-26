@@ -98,7 +98,6 @@ export default createBackendPlugin({
         auth: coreServices.auth,
         http: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
-        lifecycle: coreServices.rootLifecycle,
         searchIndexService: searchIndexServiceRef,
       },
       async init({
@@ -109,7 +108,6 @@ export default createBackendPlugin({
         auth,
         http,
         httpAuth,
-        lifecycle,
         searchIndexService,
       }) {
         let searchEngine = searchEngineRegistry.getSearchEngine();
@@ -122,16 +120,10 @@ export default createBackendPlugin({
         const collators = searchIndexRegistry.getCollators();
         const decorators = searchIndexRegistry.getDecorators();
 
-        lifecycle.addStartupHook(async () => {
-          await searchIndexService.start({
-            searchEngine: searchEngine!,
-            collators,
-            decorators,
-          });
-        });
-
-        lifecycle.addShutdownHook(async () => {
-          await searchIndexService.stop();
+        await searchIndexService.start({
+          searchEngine,
+          collators,
+          decorators,
         });
 
         const router = await createRouter({

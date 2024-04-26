@@ -1,28 +1,5 @@
 # @techdocs/cli
 
-## 1.8.10-next.0
-
-### Patch Changes
-
-- 1a0e009: Fix cookie endpoint mock for `serve`
-- Updated dependencies
-  - @backstage/catalog-model@1.5.0-next.0
-  - @backstage/backend-common@0.21.8-next.0
-  - @backstage/plugin-techdocs-node@1.12.4-next.0
-  - @backstage/cli-common@0.1.13
-  - @backstage/config@1.2.0
-
-## 1.8.9
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/backend-common@0.21.7
-  - @backstage/plugin-techdocs-node@1.12.3
-  - @backstage/catalog-model@1.4.5
-  - @backstage/cli-common@0.1.13
-  - @backstage/config@1.2.0
-
 ## 1.8.9-next.1
 
 ### Patch Changes

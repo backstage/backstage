@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-tech-insights-backend-module-jsonfc
+  title: '@backstage/plugin-tech-insights-backend-module-jsonfc'
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: xantier

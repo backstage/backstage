@@ -1,33 +1,5 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
-## 1.4.1-next.0
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/plugin-search-backend-node@1.2.22-next.0
-  - @backstage/backend-common@0.21.8-next.0
-  - @backstage/backend-plugin-api@0.6.18-next.0
-  - @backstage/config@1.2.0
-  - @backstage/integration-aws-node@0.1.12
-  - @backstage/plugin-search-common@1.2.11
-
-## 1.4.0
-
-### Minor Changes
-
-- 4d754e3: When using the New Backend System, the Elasticsearch provider will only be added if the `search.elasticsearch` config section exists.
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/backend-common@0.21.7
-  - @backstage/backend-plugin-api@0.6.17
-  - @backstage/plugin-search-backend-node@1.2.21
-  - @backstage/integration-aws-node@0.1.12
-  - @backstage/config@1.2.0
-  - @backstage/plugin-search-common@1.2.11
-
 ## 1.3.20-next.1
 
 ### Patch Changes

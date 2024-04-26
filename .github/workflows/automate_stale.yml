@@ -28,7 +28,7 @@ jobs:
             for your contributions.
           days-before-issue-stale: 60
           days-before-issue-close: 7
-          exempt-issue-labels: plugin,after-vacations,will-fix,bep
+          exempt-issue-labels: plugin,after-vacations,will-fix
           stale-issue-label: stale
           stale-pr-message: >
             This PR has been automatically marked as stale because it has not had

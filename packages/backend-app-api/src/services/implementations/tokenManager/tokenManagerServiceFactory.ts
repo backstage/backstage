@@ -30,7 +30,6 @@ export const tokenManagerServiceFactory = createServiceFactory({
   createRootContext({ config, logger }) {
     return ServerTokenManager.fromConfig(config, {
       logger,
-      allowDisabledTokenManager: true,
     });
   },
   async factory(_deps, tokenManager) {

@@ -37,7 +37,6 @@ import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
-import type { Server } from 'node:http';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
@@ -288,8 +287,6 @@ export interface RootHttpRouterConfigureContext {
   // (undocumented)
   app: Express_2;
   // (undocumented)
-  applyDefaults: () => void;
-  // (undocumented)
   config: RootConfigService;
   // (undocumented)
   lifecycle: LifecycleService;
@@ -299,8 +296,6 @@ export interface RootHttpRouterConfigureContext {
   middleware: MiddlewareFactory;
   // (undocumented)
   routes: RequestHandler;
-  // (undocumented)
-  server: Server;
 }
 
 // @public (undocumented)

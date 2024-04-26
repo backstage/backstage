@@ -1,6 +1,6 @@
 # search-backend-module-explore
 
-This package exports a module that extends the search backend to also indexing the tools exposed by the [`explore` service](https://github.com/backstage/community-plugins/tree/main/workspaces/explore/plugins/explore-backend).
+This package exports a module that extends the search backend to also indexing the tools exposed by the [`explore` service](https://github.com/backstage/backstage/tree/master/plugins/explore-backend).
 
 ## Installation
 

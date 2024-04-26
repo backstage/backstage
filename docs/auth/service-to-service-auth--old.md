@@ -1,5 +1,5 @@
 ---
-id: service-to-service-auth--old
+id: service-to-service-auth
 title: Service to Service Auth
 # prettier-ignore
 description: This section describes how to use service to service authentication, both internally within Backstage plugins and towards external services.

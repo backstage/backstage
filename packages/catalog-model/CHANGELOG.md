@@ -1,17 +1,5 @@
 # @backstage/catalog-model
 
-## 1.5.0-next.0
-
-### Minor Changes
-
-- 79025f3: Introduce a domain attribute to the domain entity to allow a hierarchy of domains to exist.
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/errors@1.2.4
-  - @backstage/types@1.1.1
-
 ## 1.4.5
 
 ### Patch Changes

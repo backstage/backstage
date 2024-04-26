@@ -28,6 +28,7 @@ import {
   catalogApiRef,
   CATALOG_FILTER_EXISTS,
 } from '@backstage/plugin-catalog-react';
+import { AdrSearchResultListItem } from '@backstage/plugin-adr';
 import { SearchType } from '@backstage/plugin-search';
 import {
   SearchBar,
@@ -40,6 +41,8 @@ import {
 import { TechDocsSearchResultListItem } from '@backstage/plugin-techdocs';
 import { Grid, makeStyles, Paper, Theme } from '@material-ui/core';
 import React from 'react';
+import { ToolSearchResultListItem } from '@backstage/plugin-explore';
+import BuildIcon from '@material-ui/icons/Build';
 
 const useStyles = makeStyles((theme: Theme) => ({
   filter: {
@@ -128,6 +131,8 @@ const SearchPage = () => {
             <SearchResult>
               <CatalogSearchResultListItem icon={<CatalogIcon />} />
               <TechDocsSearchResultListItem icon={<DocsIcon />} />
+              <ToolSearchResultListItem icon={<BuildIcon />} />
+              <AdrSearchResultListItem icon={<DocsIcon />} />
             </SearchResult>
             <SearchResultPager />
           </Grid>

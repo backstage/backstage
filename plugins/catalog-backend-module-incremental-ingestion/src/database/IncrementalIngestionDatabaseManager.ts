@@ -336,9 +336,11 @@ export class IncrementalIngestionDatabaseManager {
           .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
           .where('ingestions.id', previousIngestion.id);
 
-        for (const entityRef of stale) {
-          removed.push({ entityRef: entityRef.ref });
-        }
+        removed.push(
+          ...stale.map(e => {
+            return { entityRef: e.ref };
+          }),
+        );
       }
 
       return { total, removed };

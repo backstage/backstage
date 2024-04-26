@@ -85,20 +85,16 @@ export class WinstonLogger implements RootLoggerService {
 
     let redactionPattern: RegExp | undefined = undefined;
 
-    const replace = (obj: TransformableInfo) => {
-      for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          if (typeof obj[key] === 'object') {
-            obj[key] = replace(obj[key] as TransformableInfo);
-          } else if (typeof obj[key] === 'string') {
-            obj[key] = obj[key]?.replace(redactionPattern, '[REDACTED]');
-          }
-        }
-      }
-      return obj;
-    };
     return {
-      format: format(replace)(),
+      format: format(info => {
+        if (redactionPattern && typeof info.message === 'string') {
+          info.message = info.message.replace(redactionPattern, '[REDACTED]');
+        }
+        if (redactionPattern && typeof info.stack === 'string') {
+          info.stack = info.stack.replace(redactionPattern, '[REDACTED]');
+        }
+        return info;
+      })(),
       add(newRedactions) {
         let added = 0;
         for (const redactionToTrim of newRedactions) {

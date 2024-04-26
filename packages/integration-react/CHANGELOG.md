@@ -1,15 +1,5 @@
 # @backstage/integration-react
 
-## 1.1.26
-
-### Patch Changes
-
-- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
-- Updated dependencies
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/integration@1.10.0
-  - @backstage/config@1.2.0
-
 ## 1.1.26-next.0
 
 ### Patch Changes

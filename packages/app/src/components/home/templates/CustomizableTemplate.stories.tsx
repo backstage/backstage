@@ -30,6 +30,8 @@ import { configApiRef } from '@backstage/core-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { HomePageSearchBar, searchPlugin } from '@backstage/plugin-search';
+import { HomePageCalendar } from '@backstage/plugin-gcalendar';
+import { MicrosoftCalendarCard } from '@backstage/plugin-microsoft-calendar';
 import React, { ComponentType } from 'react';
 
 const entities = [
@@ -143,6 +145,8 @@ export const CustomizableTemplate = () => {
       // remove the widgets as they want.
       <HomePageSearchBar />
       <HomePageRandomJoke />
+      <HomePageCalendar />
+      <MicrosoftCalendarCard />
       <HomePageStarredEntities />
     </CustomHomepageGrid>
   );

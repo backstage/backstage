@@ -17,7 +17,6 @@ export interface BackstagePackageJson {
   // (undocumented)
   backstage?: {
     role?: PackageRole;
-    moved?: string;
   };
   // (undocumented)
   bundled?: boolean;

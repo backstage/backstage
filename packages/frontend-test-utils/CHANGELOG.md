@@ -1,26 +1,5 @@
 # @backstage/frontend-test-utils
 
-## 0.1.7-next.0
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/frontend-app-api@0.6.5-next.0
-  - @backstage/frontend-plugin-api@0.6.5-next.0
-  - @backstage/test-utils@1.5.5-next.0
-  - @backstage/types@1.1.1
-
-## 0.1.6
-
-### Patch Changes
-
-- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
-- Updated dependencies
-  - @backstage/frontend-app-api@0.6.4
-  - @backstage/frontend-plugin-api@0.6.4
-  - @backstage/test-utils@1.5.4
-  - @backstage/types@1.1.1
-
 ## 0.1.6-next.1
 
 ### Patch Changes

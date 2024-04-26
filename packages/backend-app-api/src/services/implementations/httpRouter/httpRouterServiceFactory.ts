@@ -75,8 +75,8 @@ export const httpRouterServiceFactory = createServiceFactory(
         config,
       });
 
-      router.use(createAuthIntegrationRouter({ auth }));
       router.use(createLifecycleMiddleware({ lifecycle }));
+      router.use(createAuthIntegrationRouter({ auth }));
       router.use(credentialsBarrier.middleware);
       router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
 

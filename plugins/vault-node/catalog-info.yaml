@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-vault-node
+  title: '@backstage/plugin-vault-node'
+  description: Node.js library for the vault plugin
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

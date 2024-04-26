@@ -1,32 +1,5 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
-## 0.1.10-next.0
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/plugin-auth-backend@0.22.5-next.0
-  - @backstage/plugin-auth-node@0.4.13-next.0
-  - @backstage/backend-common@0.21.8-next.0
-  - @backstage/backend-plugin-api@0.6.18-next.0
-  - @backstage/errors@1.2.4
-
-## 0.1.9
-
-### Patch Changes
-
-- f286d59: Added support for AWS GovCloud (US) regions
-- 30f5a51: Added `authModuleAwsAlbProvider` as a default export.
-
-  It can now be used like this in your backend: `backend.add(import('@backstage/plugin-auth-backend-module-aws-alb-provider'));`
-
-- Updated dependencies
-  - @backstage/backend-common@0.21.7
-  - @backstage/plugin-auth-backend@0.22.4
-  - @backstage/backend-plugin-api@0.6.17
-  - @backstage/plugin-auth-node@0.4.12
-  - @backstage/errors@1.2.4
-
 ## 0.1.9-next.1
 
 ### Patch Changes

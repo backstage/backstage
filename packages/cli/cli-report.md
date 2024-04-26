@@ -23,7 +23,6 @@ Commands:
   migrate [command]
   versions:bump [options]
   versions:check [options]
-  versions:migrate [options]
   clean
   build-workspace [options] <workspace-dir> [packages...]
   create-github-app <github-org>
@@ -601,7 +600,6 @@ Options:
   --pattern <glob>
   --release <version|next|main>
   --skip-install
-  --skip-migrate
   -h, --help
 ```
 
@@ -612,16 +610,5 @@ Usage: backstage-cli versions:check [options]
 
 Options:
   --fix
-  -h, --help
-```
-
-### `backstage-cli versions:migrate`
-
-```
-Usage: backstage-cli versions:migrate [options]
-
-Options:
-  --pattern <glob>
-  --skip-code-changes
   -h, --help
 ```

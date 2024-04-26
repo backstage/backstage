@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-common';
 import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { ExploreTool } from '@backstage-community/plugin-explore-common';
+import { ExploreTool } from '@backstage/plugin-explore-common';
 import {
   DocumentCollatorFactory,
   IndexableDocument,

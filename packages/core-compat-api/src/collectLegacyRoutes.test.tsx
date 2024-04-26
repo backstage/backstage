@@ -23,8 +23,8 @@ import {
   EntitySwitch,
   isKind,
 } from '@backstage/plugin-catalog';
-import { PuppetDbPage } from '@backstage-community/plugin-puppetdb';
-import { StackstormPage } from '@backstage-community/plugin-stackstorm';
+import { PuppetDbPage } from '@backstage/plugin-puppetdb';
+import { StackstormPage } from '@backstage/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import React, { Fragment } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';

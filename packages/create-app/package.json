@@ -1,46 +1,36 @@
 {
   "name": "@backstage/create-app",
-  "version": "0.5.15-next.0",
   "description": "A CLI that helps you create your own Backstage app",
-  "backstage": {
-    "role": "cli"
-  },
+  "version": "0.5.14-next.1",
   "publishConfig": {
     "access": "public"
   },
-  "keywords": [
-    "backstage"
-  ],
+  "backstage": {
+    "role": "cli"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/create-app"
   },
+  "keywords": [
+    "backstage"
+  ],
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
   "bin": {
     "backstage-create-app": "bin/backstage-create-app"
   },
-  "files": [
-    "bin",
-    "dist",
-    "templates"
-  ],
   "scripts": {
-    "add-lock-seed": "node scripts/add-lock-seed.js",
     "build": "backstage-cli package build",
-    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
+    "clean": "backstage-cli package clean",
     "prepack": "node scripts/prepack.js",
     "postpack": "node scripts/postpack.js",
     "start": "yarn nodemon --",
-    "test": "backstage-cli package test"
-  },
-  "nodemonConfig": {
-    "exec": "bin/backstage-create-app",
-    "ext": "ts",
-    "watch": "./src"
+    "add-lock-seed": "node scripts/add-lock-seed.js"
   },
   "dependencies": {
     "@backstage/cli-common": "workspace:^",
@@ -63,5 +53,15 @@
     "@types/recursive-readdir": "^2.2.0",
     "msw": "^1.0.0",
     "nodemon": "^3.0.1"
-  }
+  },
+  "nodemonConfig": {
+    "watch": "./src",
+    "exec": "bin/backstage-create-app",
+    "ext": "ts"
+  },
+  "files": [
+    "bin",
+    "dist",
+    "templates"
+  ]
 }

@@ -217,39 +217,6 @@ describe('useCookieAuthRefresh', () => {
     );
   });
 
-  it('should handle 404 as disabled cookie auth', async () => {
-    const { result } = renderHook(
-      () => useCookieAuthRefresh({ pluginId: 'techdocs' }),
-      {
-        wrapper: ({ children }) => (
-          <TestApiProvider
-            apis={[
-              [
-                fetchApiRef,
-                {
-                  fetch: jest.fn().mockResolvedValue({
-                    ok: false,
-                    status: 404,
-                  }),
-                },
-              ],
-              [discoveryApiRef, discoveryApiMock],
-            ]}
-          >
-            {children}
-          </TestApiProvider>
-        ),
-      },
-    );
-
-    await waitFor(() =>
-      expect(result.current).toEqual({
-        status: 'success',
-        data: { expiresAt: expect.any(Date) },
-      }),
-    );
-  });
-
   it('should call the api to get the cookie and use it', async () => {
     const { result } = renderHook(
       () => useCookieAuthRefresh({ pluginId: 'techdocs' }),

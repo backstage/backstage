@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 
 /** @public */
 export function useTitleCounter() {
   const [title, setTitle] = useState(document.title);
   const [count, setCount] = useState(0);
-  const titleTimer = useRef<undefined | number>(undefined);
 
   const getPrefix = (value: number) => {
     return value === 0 ? '' : `(${value}) `;
@@ -30,42 +29,27 @@ export function useTitleCounter() {
   };
 
   useEffect(() => {
+    document.title = title;
+  }, [title]);
+
+  useEffect(() => {
     const baseTitle = cleanTitle(title);
-    const shownTitle = `${getPrefix(count)}${baseTitle}`;
-    if (document.title !== shownTitle) {
-      window.clearTimeout(titleTimer.current);
-      document.title = shownTitle;
-      // Need to do this in timeout as the React Helmet overrides the title after this effect
-      titleTimer.current = window.setTimeout(() => {
-        document.title = shownTitle;
-      }, 50);
-    }
+    setTitle(`${getPrefix(count)}${baseTitle}`);
     return () => {
-      window.clearTimeout(titleTimer.current);
       document.title = cleanTitle(title);
     };
   }, [title, count]);
 
-  useEffect(() => {
-    const titleElement = document.querySelector('title');
-    let observer: MutationObserver | undefined;
-    if (titleElement) {
-      observer = new MutationObserver(mutations => {
-        if (mutations?.[0]?.target?.textContent) {
-          setTitle(mutations[0].target.textContent);
-        }
-      });
-      observer.observe(titleElement, {
-        characterData: true,
-        childList: true,
-      });
-    }
-    return () => {
-      if (observer) {
-        observer.disconnect();
-      }
-    };
-  }, []);
+  const titleElement = document.querySelector('title');
+  if (titleElement) {
+    new MutationObserver(() => {
+      setTitle(document.title);
+    }).observe(titleElement, {
+      subtree: true,
+      characterData: true,
+      childList: true,
+    });
+  }
 
   const setNotificationCount = useCallback(
     (newCount: number) => setCount(newCount),

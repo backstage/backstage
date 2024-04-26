@@ -28,16 +28,7 @@ export type NotificationServiceOptions = {
 export type NotificationRecipients =
   | {
       type: 'entity';
-      /**
-       * Entity references to send the notifications to
-       */
       entityRef: string | string[];
-      /**
-       * Optional entity reference(s) to filter out of the resolved recipients.
-       * Usually the currently logged-in user for preventing sending notification
-       * of user action to him/herself.
-       */
-      excludeEntityRef?: string | string[];
     }
   | { type: 'broadcast' };
 

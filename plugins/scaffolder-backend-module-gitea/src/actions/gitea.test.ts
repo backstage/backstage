@@ -53,13 +53,6 @@ describe('publish:gitea', () => {
       description,
     },
   });
-  const mockContextWithPublicRepoVisibility = createMockActionContext({
-    input: {
-      repoUrl: 'gitea.com?repo=repo&owner=owner',
-      description,
-      private: false,
-    },
-  });
 
   const server = setupServer();
   setupRequestMockHandlers(server);
@@ -118,7 +111,6 @@ describe('publish:gitea', () => {
         );
         expect(req.body).toEqual({
           name: 'repo',
-          private: false,
           description,
         });
         return res(
@@ -154,71 +146,6 @@ describe('publish:gitea', () => {
       'repoContentsUrl',
       'https://gitea.com/org1/repo/src/branch/main/',
     );
-  });
-
-  it('should create a Gitea repository where visibility is public', async () => {
-    server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
-            id: 1,
-            name: 'org1',
-            visibility: 'public',
-            repo_admin_change_team_access: false,
-            username: 'org1',
-          }),
-        );
-      }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/main',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
-          );
-        },
-      ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic Z2l0ZWFfdXNlcjpnaXRlYV9wYXNzd29yZA==',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: false,
-          description,
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
-    );
-
-    await action.handler({
-      ...mockContextWithPublicRepoVisibility,
-      input: {
-        ...mockContextWithPublicRepoVisibility.input,
-        repoUrl: 'gitea.com?repo=repo&owner=org1',
-      },
-    });
-
-    expect(initRepoAndPush).toHaveBeenCalledWith({
-      dir: mockContextWithPublicRepoVisibility.workspacePath,
-      remoteUrl: 'https://gitea.com/org1/repo.git',
-      defaultBranch: 'main',
-      auth: { username: 'gitea_user', password: 'gitea_password' },
-      logger: mockContextWithPublicRepoVisibility.logger,
-      commitMessage: expect.stringContaining('initial commit\n\nChange-Id:'),
-      gitAuthorInfo: {
-        email: undefined,
-        name: undefined,
-      },
-    });
   });
 
   afterEach(() => {

@@ -570,6 +570,7 @@ export type ServiceRef<
   id: string;
   scope: TScope;
   T: TService;
+  toString(): string;
   $$type: '@backstage/ServiceRef';
 };
 

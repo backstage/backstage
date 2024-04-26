@@ -1,39 +1,5 @@
 # @backstage/frontend-app-api
 
-## 0.6.5-next.0
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/theme@0.5.4-next.0
-  - @backstage/core-components@0.14.5-next.0
-  - @backstage/config@1.2.0
-  - @backstage/core-app-api@1.12.4
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/errors@1.2.4
-  - @backstage/frontend-plugin-api@0.6.5-next.0
-  - @backstage/types@1.1.1
-  - @backstage/version-bridge@1.0.8
-
-## 0.6.4
-
-### Patch Changes
-
-- 83f24f6: add `@backstage/no-top-level-material-ui-4-imports` lint rule
-- c884b9a: The app is now aware of if it is being served from the `app-backend` with a separate public and protected bundles. When in protected mode the app will now continuously refresh the session cookie, as well as clear the cookie if the user signs out.
-- 7ef7cc8: Fix duplicated subpath on routes resolved by the `useRouteRef` hook.
-- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
-- Updated dependencies
-  - @backstage/core-components@0.14.4
-  - @backstage/core-app-api@1.12.4
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/frontend-plugin-api@0.6.4
-  - @backstage/theme@0.5.3
-  - @backstage/version-bridge@1.0.8
-  - @backstage/config@1.2.0
-  - @backstage/errors@1.2.4
-  - @backstage/types@1.1.1
-
 ## 0.6.4-next.1
 
 ### Patch Changes

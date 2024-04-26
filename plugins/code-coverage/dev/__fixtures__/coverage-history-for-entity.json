@@ -1,0 +1,84 @@
+{
+  "entity": {
+    "name": "backstage",
+    "kind": "component",
+    "namespace": "default"
+  },
+  "history": [
+    {
+      "timestamp": 1694413579498,
+      "branch": {
+        "available": 23,
+        "covered": 22,
+        "missed": 1,
+        "percentage": 95.65
+      },
+      "line": {
+        "available": 45,
+        "covered": 43,
+        "missed": 2,
+        "percentage": 95.56
+      }
+    },
+    {
+      "timestamp": 1694178927072,
+      "branch": {
+        "available": 23,
+        "covered": 22,
+        "missed": 1,
+        "percentage": 95.65
+      },
+      "line": {
+        "available": 45,
+        "covered": 43,
+        "missed": 2,
+        "percentage": 95.56
+      }
+    },
+    {
+      "timestamp": 1694178830777,
+      "branch": {
+        "available": 19,
+        "covered": 18,
+        "missed": 1,
+        "percentage": 94.74
+      },
+      "line": {
+        "available": 45,
+        "covered": 43,
+        "missed": 2,
+        "percentage": 95.56
+      }
+    },
+    {
+      "timestamp": 1694178708402,
+      "branch": {
+        "available": 15,
+        "covered": 10,
+        "missed": 5,
+        "percentage": 66.67
+      },
+      "line": {
+        "available": 45,
+        "covered": 36,
+        "missed": 9,
+        "percentage": 80
+      }
+    },
+    {
+      "timestamp": 1694178270486,
+      "branch": {
+        "available": 10,
+        "covered": 5,
+        "missed": 5,
+        "percentage": 50
+      },
+      "line": {
+        "available": 45,
+        "covered": 26,
+        "missed": 19,
+        "percentage": 57.78
+      }
+    }
+  ]
+}

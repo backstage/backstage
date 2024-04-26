@@ -213,7 +213,7 @@ const backend = createBackend();
 // Other plugins...
 
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
 /* highlight-add-end */
 
 backend.start();

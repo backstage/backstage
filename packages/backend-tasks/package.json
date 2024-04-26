@@ -1,39 +1,35 @@
 {
   "name": "@backstage/backend-tasks",
-  "version": "0.5.23-next.0",
   "description": "Common distributed task management library for Backstage backends",
-  "backstage": {
-    "role": "node-library"
-  },
+  "version": "0.5.22-next.1",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
     "types": "dist/index.d.ts"
   },
-  "keywords": [
-    "backstage"
-  ],
+  "backstage": {
+    "role": "node-library"
+  },
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/backend-tasks"
   },
-  "license": "Apache-2.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "files": [
-    "dist",
-    "migrations/**/*.{js,d.ts}"
+  "keywords": [
+    "backstage"
   ],
+  "license": "Apache-2.0",
   "scripts": {
     "build": "backstage-cli package build",
-    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
+    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "start": "backstage-cli package start",
-    "test": "backstage-cli package test"
+    "clean": "backstage-cli package clean",
+    "start": "backstage-cli package start"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -54,5 +50,9 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "wait-for-expect": "^3.0.2"
-  }
+  },
+  "files": [
+    "dist",
+    "migrations/**/*.{js,d.ts}"
+  ]
 }

@@ -26,11 +26,27 @@ package.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 ```
 
-And then update your backend by adding the following line:
+And then add the entity provider to your catalog builder:
 
-```ts title="packages/backend/src/index.ts"
-// github discovery
-backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-start */
+  builder.addEntityProvider(
+    GithubEntityProvider.fromConfig(env.config, {
+      logger: env.logger,
+      scheduler: env.scheduler,
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
 ## Installation with Events Support

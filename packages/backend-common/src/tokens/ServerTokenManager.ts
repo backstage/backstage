@@ -41,23 +41,6 @@ class NoopTokenManager implements TokenManager {
 }
 
 /**
- * A token manager that throws an error when trying to generate or authenticate tokens.
- */
-class DisabledTokenManager implements TokenManager {
-  async getToken(): Promise<{ token: string }> {
-    throw new Error(
-      "Unable to generate legacy token, no legacy keys are configured in 'backend.auth.keys' or 'backend.auth.externalAccess'",
-    );
-  }
-
-  async authenticate() {
-    throw new AuthenticationError(
-      "Unable to authenticate legacy token, no legacy keys are configured in 'backend.auth.keys' or 'backend.auth.externalAccess'",
-    );
-  }
-}
-
-/**
  * Options for {@link ServerTokenManager}.
  *
  * @public
@@ -67,11 +50,6 @@ export interface ServerTokenManagerOptions {
    * The logger to use.
    */
   logger: LoggerService;
-
-  /**
-   * Whether to disable the token manager if no keys are configured.
-   */
-  allowDisabledTokenManager?: boolean;
 }
 
 /**
@@ -95,10 +73,7 @@ export class ServerTokenManager implements TokenManager {
     return new NoopTokenManager();
   }
 
-  static fromConfig(
-    config: Config,
-    options: ServerTokenManagerOptions,
-  ): TokenManager {
+  static fromConfig(config: Config, options: ServerTokenManagerOptions) {
     const oldSecrets = config
       .getOptionalConfigArray('backend.auth.keys')
       ?.map(c => c.getString('secret'));
@@ -110,14 +85,6 @@ export class ServerTokenManager implements TokenManager {
 
     if (secrets.length) {
       return new ServerTokenManager(secrets, options);
-    }
-
-    // When using the new backend system with new auth services we instead rely
-    // on the new plugin auth and external access configurations. If no legacy
-    // keys are configured we disable the token manager completely, rather than
-    // requiring users to configure legacy keys.
-    if (options.allowDisabledTokenManager) {
-      return new DisabledTokenManager();
     }
 
     if (process.env.NODE_ENV !== 'development') {

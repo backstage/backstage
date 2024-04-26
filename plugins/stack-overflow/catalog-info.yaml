@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-stack-overflow
+  title: '@backstage/plugin-stack-overflow'
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: discoverability-maintainers

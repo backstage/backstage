@@ -1,0 +1,10 @@
+---
+title: AWS Code Services
+author: Amazon Web Services
+authorUrl: https://aws.amazon.com/
+category: CI/CD
+description: View resources related to AWS CodePipeline, AWS CodeBuild and AWS CodeDeploy for your components in Backstage.
+documentation: https://github.com/awslabs/aws-codeservices-plugins-for-backstage#readme
+iconUrl: https://github.com/awslabs/aws-codeservices-plugins-for-backstage/blob/main/docs/images/codepipeline-logo.png?raw=true
+npmPackageName: '@aws/aws-codeservices-plugin-for-backstage'
+addedDate: '2023-01-17'

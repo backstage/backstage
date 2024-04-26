@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-user-settings-backend",
-  "version": "0.2.17-next.0",
+  "version": "0.2.16-next.1",
   "description": "The Backstage backend plugin to manage user settings",
   "backstage": {
     "role": "backend-plugin"
@@ -34,7 +34,8 @@
   },
   "files": [
     "dist",
-    "migrations"
+    "migrations",
+    "alpha"
   ],
   "scripts": {
     "build": "backstage-cli package build",

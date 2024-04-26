@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-code-coverage
+  title: '@backstage/plugin-code-coverage'
+  description: A Backstage plugin that helps you keep track of your code coverage
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: alde

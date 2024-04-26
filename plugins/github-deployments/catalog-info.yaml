@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-github-deployments
+  title: '@backstage/plugin-github-deployments'
+  description: A Backstage plugin that integrates towards GitHub Deployments
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers

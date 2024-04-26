@@ -1,32 +1,5 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
-## 0.2.8-next.0
-
-### Patch Changes
-
-- 5d99272: Update local development dependencies.
-- Updated dependencies
-  - @backstage/backend-common@0.21.8-next.0
-  - @backstage/backend-plugin-api@0.6.18-next.0
-  - @backstage/plugin-scaffolder-node@0.4.4-next.0
-  - @backstage/config@1.2.0
-  - @backstage/errors@1.2.4
-  - @backstage/integration@1.10.0
-
-## 0.2.7
-
-### Patch Changes
-
-- d5a1fe1: Replaced winston logger with `LoggerService`
-- 33f958a: Improve examples to ensure consistency across all publish actions
-- Updated dependencies
-  - @backstage/backend-common@0.21.7
-  - @backstage/backend-plugin-api@0.6.17
-  - @backstage/integration@1.10.0
-  - @backstage/plugin-scaffolder-node@0.4.3
-  - @backstage/config@1.2.0
-  - @backstage/errors@1.2.4
-
 ## 0.2.7-next.1
 
 ### Patch Changes

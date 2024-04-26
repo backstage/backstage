@@ -22,7 +22,6 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import express, { RequestHandler, Express } from 'express';
-import type { Server } from 'node:http';
 import {
   createHttpServer,
   MiddlewareFactory,
@@ -35,13 +34,11 @@ import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
  */
 export interface RootHttpRouterConfigureContext {
   app: Express;
-  server: Server;
   middleware: MiddlewareFactory;
   routes: RequestHandler;
   config: RootConfigService;
   logger: LoggerService;
   lifecycle: LifecycleService;
-  applyDefaults: () => void;
 }
 
 /**
@@ -57,8 +54,15 @@ export type RootHttpRouterFactoryOptions = {
   configure?(context: RootHttpRouterConfigureContext): void;
 };
 
-function defaultConfigure({ applyDefaults }: RootHttpRouterConfigureContext) {
-  applyDefaults();
+function defaultConfigure(context: RootHttpRouterConfigureContext) {
+  const { app, routes, middleware } = context;
+  app.use(middleware.helmet());
+  app.use(middleware.cors());
+  app.use(middleware.compression());
+  app.use(middleware.logging());
+  app.use(routes);
+  app.use(middleware.notFound());
+  app.use(middleware.error());
 }
 
 /** @public */
@@ -77,31 +81,21 @@ export const rootHttpRouterServiceFactory = createServiceFactory(
 
       const router = DefaultRootHttpRouter.create({ indexPath });
       const middleware = MiddlewareFactory.create({ config, logger });
-      const routes = router.handler();
+
+      configure({
+        app,
+        routes: router.handler(),
+        middleware,
+        config,
+        logger,
+        lifecycle,
+      });
+
       const server = await createHttpServer(
         app,
         readHttpServerOptions(config.getOptionalConfig('backend')),
         { logger },
       );
-
-      configure({
-        app,
-        server,
-        routes,
-        middleware,
-        config,
-        logger,
-        lifecycle,
-        applyDefaults() {
-          app.use(middleware.helmet());
-          app.use(middleware.cors());
-          app.use(middleware.compression());
-          app.use(middleware.logging());
-          app.use(routes);
-          app.use(middleware.notFound());
-          app.use(middleware.error());
-        },
-      });
 
       lifecycle.addShutdownHook(() => server.stop());
 

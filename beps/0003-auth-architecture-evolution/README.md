@@ -1,6 +1,6 @@
 ---
 title: Auth Architecture Evolution
-status: implemented
+status: implementable
 authors:
   - '@Rugvip'
 owners:

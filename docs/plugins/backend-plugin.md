@@ -44,7 +44,7 @@ cd plugins/carmen-backend
 yarn start
 ```
 
-> Note: this documentation assumes you are using the latest version of Backstage and the new backend system. If you are not, please upgrade and migrate your backend using the [Migration Guide](../backend-system/building-backends/08-migrating.md)
+> Note: this documentation assumes you are using the latest version of Backstage and the new backend system. If you are not please upgrade and migrate your backend using the [Migration Guide](../backend-system/building-backends/08-migrating.md)
 
 This will think for a bit, and then say `Listening on :7007`. In a different
 terminal window, now run
@@ -72,19 +72,38 @@ to your backend.
 yarn --cwd packages/backend add @internal/plugin-carmen-backend@^0.1.0 # Change this to match the plugin's package.json
 ```
 
-Update `packages/backend/src/index` with the following,
+Create a new file named `packages/backend/src/plugins/carmen.ts`, and add the
+following to it
 
 ```ts
-const backend = createBackend();
+import { createRouter } from '@internal/plugin-carmen-backend';
+import { Router } from 'express';
+import { PluginEnvironment } from '../types';
 
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  // Here is where you will add all of the required initialization code that
+  // your backend plugin needs to be able to start!
+
+  // The env contains a lot of goodies, but our router currently only
+  // needs a logger
+  return await createRouter({
+    logger: env.logger,
+  });
+}
+```
+
+And finally, wire this into the overall backend router. Edit
+`packages/backend/src/index.ts`:
+
+```ts
+import carmen from './plugins/carmen';
 // ...
-
-// highlight-add-next-line
-backend.add(import('@internal/plugin-carmen-backend'));
-
-// ...
-
-backend.start();
+async function main() {
+  // ...
+  const carmenEnv = useHotMemoize(module, () => createEnv('carmen'));
+  apiRouter.use('/carmen', await carmen(carmenEnv));
 ```
 
 After you start the backend (e.g. using `yarn start-backend` from the repo
@@ -97,123 +116,36 @@ curl localhost:7007/api/carmen/health
 
 This should return `{"status":"ok"}` like before. Success!
 
-## Secure by Default
-
-In 1.25, Backstage started moving to a secure by default model for plugins. This means that network requests to plugins will by default not allow unauthenticated users. Let's take a deeper look at the above curl request which should allow unauthenticated access.
-
-The actual endpoint that is being called is defined in
-
-```ts title="plugins/carmen-backend/src/service/router.ts"
-export async function createRouter(
-  options: RouterOptions,
-): Promise<express.Router> {
-  // ...
-
-  // highlight-start
-  router.get('/health', (_, response) => {
-    logger.info('PONG!');
-    response.json({ status: 'ok' });
-  });
-  // highlight-end
-
-  // ...
-  return router;
-}
-```
-
-You'll notice that there is no authentication mechanism defined here, just the route name and response data. That's because the authentication is handled in your plugin definition,
-
-```ts title="plugins/carmen-backend/src/plugin.ts"
-httpRouter.use(
-  await createRouter({
-    logger,
-  }),
-);
-// highlight-start
-httpRouter.addAuthPolicy({
-  path: '/health',
-  allow: 'unauthenticated',
-});
-// highlight-end
-```
-
-This allows requests to this plugin's `/health` endpoint to go through unauthenticated!
-
-## Using Dependencies
-
-In the new backend, dependencies are defined statically during registration and then "injected" during initialization. Here's an example of what this looks like,
-
-```ts title="plugins/carmen-backend/src/plugin.ts"
-
-// highlight-start
-deps: {
-  httpRouter: coreServices.httpRouter,
-  logger: coreServices.logger,
-},
-// highlight-end
-// And then you can use them through the options property!
-// highlight-next-line
-async init({ httpRouter, logger }) {
-    // ...
-},
-
-```
-
-You can add your own dependencies by adding a named item to the `deps` parameter:
-
-```ts
-deps: {
-  // highlight-next-line
-  myDependency: coreServices.rootConfig,
-},
-```
-
-And then you can access it by referencing it in the `init` block of your plugin definition,
-
-```ts
-async init({ myDependency }) {
-   // ..
-}
-```
-
-And then you're free to call it and pass it into your router as needed.
-
-Backstage provides a bunch of `coreServices` out of box, see the more in depth docs [here](../backend-system/core-services/01-index.md).
-
 ## Making Use of a Database
 
 The Backstage backend comes with a builtin facility for SQL database access.
 Most plugins that have persistence needs will choose to make use of this
 facility, so that Backstage operators can manage database needs uniformly.
 
-You can access this by adding a dependency on the `coreServices.database` service.
-That will give you a [Knex](http://knexjs.org/) connection object.
+As part of the environment object that is passed to your `createPlugin`
+function, there is a `database` field. You can use that to get a
+[Knex](http://knexjs.org/) connection object.
 
-```ts title="plugins/carmen-backend/src/plugin.ts"
-deps: {
-  // ...
-  // highlight-next-line
-  database: coreServices.database,
-},
-async init({
-  // highlight-next-line
-  database,
-}) {
+```ts
+// in packages/backend/src/plugins/carmen.ts
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const db: Knex<any, unknown[]> = await env.database.getClient();
+
   // You will then pass this client into your actual plugin implementation
   // code, maybe similar to the following:
-  const model = new CarmenDatabaseModel(database);
-  httpRouter.use(
-    await createRouter({
-      // highlight-next-line
-      model,
-      logger,
-    }),
-  );
+  const model = new CarmenDatabaseModel(db);
+  return await createRouter({
+    model: model,
+    logger: env.logger,
+  });
 }
 ```
 
-All plugin database needs are configured under the `backend.database` config key
-of your `app-config.yaml`. The framework may even make sure behind the scenes that
+You may note that the `getClient` call has no parameters. This is because all
+plugin database needs are configured under the `backend.database` config key of
+your `app-config.yaml`. The framework may even make sure behind the scenes that
 the logical database is created automatically if it doesn't exist, based on
 rules that the Backstage operator decides on.
 
@@ -227,67 +159,37 @@ database..
 
 ## Making Use of the User's Identity
 
-The Backstage backend also offers a core service to access the user's identity. You can access it through the `coreServices.httpAuth` and `coreServices.userInfo` dependencies.
+The Backstage backend comes with a facility for retrieving the identity of the
+logged in user.
 
-```ts title="plugins/carmen-backend/src/plugin.ts"
-deps: {
-  // highlight-start
-  httpAuth: coreServices.httpAuth,
-  userInfo: coreServices.userInfo,
-  // highlight-end
-},
-async init({
-  // highlight-start
-  httpAuth,
-  userInfo,
-  // highlight-end
-}) {
-  httpRouter.use(
-    await createRouter({
-      // highlight-start
-      httpAuth,
-      userInfo,
-      // highlight-end
-      logger,
-    }),
-  );
+As part of the environment object that is passed to your `createPlugin`
+function, there is a `identity` field. You can use that to get an identity
+from the request.
+
+```ts
+// in packages/backend/src/plugins/carmen.ts
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  return await createRouter({
+    model: model,
+    logger: env.logger,
+    identity: env.identity,
+  });
 }
 ```
 
 The plugin can then extract the identity from the request.
 
 ```ts
-export interface RouterOptions {
-  logger: LoggerService;
-  // highlight-start
-  userInfo: UserInfoService;
-  httpAuth: HttpAuthService;
-  // highlight-end
-}
-
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { userInfo, httpAuth } = options;
+  const router = Router();
+  const { identity } = options;
 
-  router.post('/me', async (req, res) => {
-    const credentials = await httpAuth.credentials(req, {
-      // This rejects request from non-users. Only use this if your plugin needs to access the
-      // user identity, most of the time it's enough to just call `httpAuth.credentials(req)`
-      allow: ['user'],
-    });
-
-    const userInfo = await userInfo.getUserInfo(credentials);
-
-    res.json({
-      // The catalog entity ref of the user.
-      userEntityRef: userInfo.userEntityRef,
-
-      // The list of entities that this user or any teams this user is a part of owns.
-      ownershipEntityRefs: userInfo.ownershipEntityRefs,
-    });
+  router.post('/example', async (req, res) => {
+    const userIdentity = await identity.getIdentity({ request: req });
+    ...
   });
-
-  // ...
-}
 ```

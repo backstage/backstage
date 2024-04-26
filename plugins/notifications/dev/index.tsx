@@ -15,37 +15,14 @@
  */
 import React from 'react';
 import { createDevApp } from '@backstage/dev-utils';
-import {
-  NotificationsPage,
-  notificationsPlugin,
-  NotificationsSidebarItem,
-} from '../src';
-import { signalsPlugin } from '@backstage/plugin-signals';
-import { SidebarItem } from '@backstage/core-components';
-import AddAlert from '@material-ui/icons/AddAlert';
+import { NotificationsPage, notificationsPlugin } from '../src/plugin';
+import { NotificationsSidebarItem } from '../src';
 
 createDevApp()
   .registerPlugin(notificationsPlugin)
-  .registerPlugin(signalsPlugin)
   .addPage({
-    element: (
-      <NotificationsPage
-        title="Notifications (debug)"
-        subtitle="Notifications local development environment to showcase notification capabilities"
-      />
-    ),
+    element: <NotificationsPage />,
     path: '/notifications',
   })
-  .addSidebarItem(<NotificationsSidebarItem webNotificationsEnabled />)
-  .addSidebarItem(
-    <SidebarItem
-      icon={AddAlert}
-      text="Random notification"
-      onClick={() => {
-        fetch('http://localhost:7007/api/notifications-debug/', {
-          method: 'POST',
-        });
-      }}
-    />,
-  )
+  .addSidebarItem(<NotificationsSidebarItem />)
   .render();

@@ -22,7 +22,6 @@ import {
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import Grid from '@material-ui/core/Grid';
-import { ConfirmProvider } from 'material-ui-confirm';
 import { useSignal } from '@backstage/plugin-signals-react';
 
 import { NotificationsTable } from '../NotificationsTable';
@@ -33,34 +32,12 @@ import {
   SortBy,
   SortByOptions,
 } from '../NotificationsFilters';
-import { GetNotificationsOptions, GetNotificationsResponse } from '../../api';
-import {
-  NotificationSeverity,
-  NotificationStatus,
-} from '@backstage/plugin-notifications-common';
+import { GetNotificationsOptions } from '../../api';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 
 const ThrottleDelayMs = 2000;
 
-/** @public */
-export type NotificationsPageProps = {
-  title?: string;
-  themeId?: string;
-  subtitle?: string;
-  tooltip?: string;
-  type?: string;
-  typeLink?: string;
-};
-
-export const NotificationsPage = (props?: NotificationsPageProps) => {
-  const {
-    title = 'Notifications',
-    themeId = 'tool',
-    subtitle,
-    tooltip,
-    type,
-    typeLink,
-  } = props ?? {};
-
+export const NotificationsPage = () => {
   const [refresh, setRefresh] = React.useState(false);
   const { lastSignal } = useSignal('notifications');
   const [unreadOnly, setUnreadOnly] = React.useState<boolean | undefined>(true);
@@ -74,9 +51,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
   );
   const [severity, setSeverity] = React.useState<NotificationSeverity>('low');
 
-  const { error, value, retry, loading } = useNotificationsApi<
-    [GetNotificationsResponse, NotificationStatus]
-  >(
+  const { error, value, retry, loading } = useNotificationsApi(
     api => {
       const options: GetNotificationsOptions = {
         search: containsText,
@@ -97,7 +72,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
         options.createdAfter = createdAfterDate;
       }
 
-      return Promise.all([api.getNotifications(options), api.getStatus()]);
+      return api.getNotifications(options);
     },
     [
       containsText,
@@ -137,52 +112,38 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
     return <ResponseErrorPanel error={error} />;
   }
 
-  const notifications = value?.[0]?.notifications;
-  const totalCount = value?.[0]?.totalCount;
-  const isUnread = !!value?.[1]?.unread;
-
   return (
-    <PageWithHeader
-      title={title}
-      themeId={themeId}
-      tooltip={tooltip}
-      subtitle={subtitle}
-      type={type}
-      typeLink={typeLink}
-    >
+    <PageWithHeader title="Notifications" themeId="tool">
       <Content>
-        <ConfirmProvider>
-          <Grid container>
-            <Grid item xs={2}>
-              <NotificationsFilters
-                unreadOnly={unreadOnly}
-                onUnreadOnlyChanged={setUnreadOnly}
-                createdAfter={createdAfter}
-                onCreatedAfterChanged={setCreatedAfter}
-                onSortingChanged={setSorting}
-                sorting={sorting}
-                saved={saved}
-                onSavedChanged={setSaved}
-                severity={severity}
-                onSeverityChanged={setSeverity}
-              />
-            </Grid>
-            <Grid item xs={10}>
-              <NotificationsTable
-                isLoading={loading}
-                isUnread={isUnread}
-                notifications={notifications}
-                onUpdate={onUpdate}
-                setContainsText={setContainsText}
-                onPageChange={setPageNumber}
-                onRowsPerPageChange={setPageSize}
-                page={pageNumber}
-                pageSize={pageSize}
-                totalCount={totalCount}
-              />
-            </Grid>
+        <Grid container>
+          <Grid item xs={2}>
+            <NotificationsFilters
+              unreadOnly={unreadOnly}
+              onUnreadOnlyChanged={setUnreadOnly}
+              createdAfter={createdAfter}
+              onCreatedAfterChanged={setCreatedAfter}
+              onSortingChanged={setSorting}
+              sorting={sorting}
+              saved={saved}
+              onSavedChanged={setSaved}
+              severity={severity}
+              onSeverityChanged={setSeverity}
+            />
           </Grid>
-        </ConfirmProvider>
+          <Grid item xs={10}>
+            <NotificationsTable
+              isLoading={loading}
+              notifications={value?.notifications}
+              onUpdate={onUpdate}
+              setContainsText={setContainsText}
+              onPageChange={setPageNumber}
+              onRowsPerPageChange={setPageSize}
+              page={pageNumber}
+              pageSize={pageSize}
+              totalCount={value?.totalCount}
+            />
+          </Grid>
+        </Grid>
       </Content>
     </PageWithHeader>
   );

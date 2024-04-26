@@ -322,9 +322,7 @@ export class IncrementalIngestionEngine
         }
       }
       if (doRemoval) {
-        for (const entityRef of result.removed) {
-          removed.push(entityRef);
-        }
+        removed.push(...result.removed);
       }
     }
 

@@ -121,7 +121,6 @@ describe('BitbucketServerClient', () => {
                       },
                     ],
                   },
-                  archived: false,
                 },
               ],
             };
@@ -199,7 +198,6 @@ describe('BitbucketServerClient', () => {
                 },
               ],
             },
-            archived: false,
           };
 
           return res(ctx.json(response));

@@ -18,6 +18,8 @@ import React from 'react';
 import { createApp } from '@backstage/frontend-app-api';
 import { pagesPlugin } from './examples/pagesPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
+import graphiqlPlugin from '@backstage/plugin-graphiql/alpha';
+import techRadarPlugin from '@backstage/plugin-tech-radar/alpha';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import homePlugin, {
   titleExtensionDataRef,
@@ -116,7 +118,9 @@ const collectedLegacyPlugins = convertLegacyApp(
 
 const app = createApp({
   features: [
+    graphiqlPlugin,
     pagesPlugin,
+    techRadarPlugin,
     techdocsPlugin,
     userSettingsPlugin,
     homePlugin,

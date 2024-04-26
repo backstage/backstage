@@ -1,29 +1,5 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
-## 1.1.10-next.0
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/core-components@0.14.5-next.0
-  - @backstage/plugin-techdocs-react@1.2.4-next.0
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/integration@1.10.0
-  - @backstage/integration-react@1.1.26
-
-## 1.1.9
-
-### Patch Changes
-
-- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
-- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
-- Updated dependencies
-  - @backstage/plugin-techdocs-react@1.2.3
-  - @backstage/core-components@0.14.4
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/integration-react@1.1.26
-  - @backstage/integration@1.10.0
-
 ## 1.1.9-next.0
 
 ### Patch Changes

@@ -23,16 +23,15 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { defaultAuthProviderFactories } from '../providers';
-import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import {
-  createLegacyAuthAdapters,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
+  createLegacyAuthAdapters,
 } from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import { bindOidcRouter, KeyStores, TokenFactory } from '../identity';
+import { bindOidcRouter, TokenFactory, KeyStores } from '../identity';
 import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
@@ -42,7 +41,7 @@ import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { Config } from '@backstage/config';
-import { bindProviderRouters, ProviderFactories } from '../providers/router';
+import { ProviderFactories, bindProviderRouters } from '../providers/router';
 
 /** @public */
 export interface RouterOptions {
@@ -57,7 +56,6 @@ export interface RouterOptions {
   providerFactories?: ProviderFactories;
   disableDefaultProviderFactories?: boolean;
   catalogApi?: CatalogApi;
-  ownershipResolver?: AuthOwnershipResolver;
 }
 
 /** @public */

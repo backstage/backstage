@@ -62,7 +62,7 @@ import { IMarkdownEmitterContext } from '@microsoft/api-documenter/lib/markdown/
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { paths as cliPaths } from '../../lib/paths';
 import { minimatch } from 'minimatch';
-import { getPackageExportDetails } from '../../lib/getPackageExportDetails';
+import { getPackageExportNames } from '../../lib/entryPoints';
 import { createBinRunner } from '../util';
 
 const tmpDir = cliPaths.resolveTargetRoot(
@@ -303,15 +303,8 @@ function logApiReportInstructions() {
 
 async function findPackageEntryPoints(packageDirs: string[]): Promise<
   Array<{
-    // package dir relative to root, e.g. "packages/backend-app-api"
     packageDir: string;
-    // the name of the export, e.g. "index" or "alpha"
     name: string;
-    // the path within the dist directory for this export, e.g. "alpha.d.ts"
-    distPath: string;
-    // the path within the dist-types directory of this package for this export,
-    // e.g. "src/entrypoints/foo/index.d.ts"
-    distTypesPath: string;
   }>
 > {
   return Promise.all(
@@ -320,9 +313,12 @@ async function findPackageEntryPoints(packageDirs: string[]): Promise<
         cliPaths.resolveTargetRoot(packageDir, 'package.json'),
       );
 
-      return getPackageExportDetails(pkg).map(details => {
-        return { packageDir, ...details };
-      });
+      return (
+        getPackageExportNames(pkg)?.map(name => ({ packageDir, name })) ?? {
+          packageDir,
+          name: 'index',
+        }
+      );
     }),
   ).then(results => results.flat());
 }
@@ -348,23 +344,13 @@ export async function runApiExtraction({
 }: ApiExtractionOptions) {
   await fs.remove(outputDir);
 
-  // The collection of all entry points of all packages, as a single list
-  const allEntryPoints = await findPackageEntryPoints(packageDirs);
+  const packageEntryPoints = await findPackageEntryPoints(packageDirs);
 
-  // The path (relative to the root) to ALL dist-types entry points (e.g.
-  // "dist-types/packages/backend-app-api/src/index.d.ts"). These are used as
-  // "extra"/contextual entry points for the extractor so that it can see the
-  // full context of things that are required by the local entry point being
-  // inspected.
-  const allDistTypesEntryPointPaths = allEntryPoints.map(
-    ({ packageDir, distTypesPath }) => {
-      return cliPaths.resolveTargetRoot(
-        './dist-types',
-        packageDir,
-        distTypesPath,
-      );
-    },
-  );
+  const entryPoints = packageEntryPoints.map(({ packageDir, name }) => {
+    return cliPaths.resolveTargetRoot(
+      `./dist-types/${packageDir}/src/${name}.d.ts`,
+    );
+  });
 
   let compilerState: CompilerState | undefined = undefined;
 
@@ -378,8 +364,8 @@ export async function runApiExtraction({
   }
   const warnings = new Array<string>();
 
-  for (const [packageDir, packageEntryPoints] of Object.entries(
-    groupBy(allEntryPoints, ep => ep.packageDir),
+  for (const [packageDir, group] of Object.entries(
+    groupBy(packageEntryPoints, ep => ep.packageDir),
   )) {
     console.log(`## Processing ${packageDir}`);
     const noBail = Array.isArray(allowWarnings)
@@ -391,6 +377,7 @@ export async function runApiExtraction({
       './dist-types',
       packageDir,
     );
+    const names = group.map(ep => ep.name);
 
     const remainingReportFiles = new Set(
       fs
@@ -402,9 +389,8 @@ export async function runApiExtraction({
         ),
     );
 
-    for (const packageEntryPoint of packageEntryPoints) {
-      const suffix =
-        packageEntryPoint.name === 'index' ? '' : `-${packageEntryPoint.name}`;
+    for (const name of names) {
+      const suffix = name === 'index' ? '' : `-${name}`;
       const reportFileName = `api-report${suffix}.md`;
       const reportPath = resolvePath(projectFolder, reportFileName);
       remainingReportFiles.delete(reportFileName);
@@ -415,7 +401,7 @@ export async function runApiExtraction({
         configObject: {
           mainEntryPointFilePath: resolvePath(
             packageFolder,
-            packageEntryPoint.distTypesPath,
+            `src/${name}.d.ts`,
           ),
           bundledPackages: [],
 
@@ -436,7 +422,7 @@ export async function runApiExtraction({
           docModel: {
             // TODO(Rugvip): This skips docs for non-index entry points. We can try to work around it, but
             //               most likely it makes sense to wait for API Extractor to natively support exports.
-            enabled: packageEntryPoint.name === 'index',
+            enabled: name === 'index',
             apiJsonFilePath: resolvePath(
               outputDir,
               `<unscopedPackageName>${suffix}.api.json`,
@@ -496,7 +482,7 @@ export async function runApiExtraction({
 
       if (!compilerState) {
         compilerState = CompilerState.create(extractorConfig, {
-          additionalEntryPoints: allDistTypesEntryPointPaths,
+          additionalEntryPoints: entryPoints,
         });
       }
 
@@ -533,21 +519,18 @@ export async function runApiExtraction({
       });
 
       // This release tag validation makes sure that the release tag of known entry points match expectations.
-      // The root index entry point is only allowed @public exports, while /alpha and /beta only allow @alpha and @beta.
+      // The root index entrypoint is only allowed @public exports, while /alpha and /beta only allow @alpha and @beta.
       if (
         validateReleaseTags &&
         fs.pathExistsSync(extractorConfig.reportFilePath)
       ) {
-        if (['index', 'alpha', 'beta'].includes(packageEntryPoint.name)) {
+        if (['index', 'alpha', 'beta'].includes(name)) {
           const report = await fs.readFile(
             extractorConfig.reportFilePath,
             'utf8',
           );
           const lines = report.split(/\r?\n/);
-          const expectedTag =
-            packageEntryPoint.name === 'index'
-              ? 'public'
-              : packageEntryPoint.name;
+          const expectedTag = name === 'index' ? 'public' : name;
           for (let i = 0; i < lines.length; i += 1) {
             const line = lines[i];
             const match = line.match(/^\/\/ @(alpha|beta|public)/);

@@ -57,18 +57,10 @@ function getReleaseSchedule() {
   const firstReleaseYear = 2022;
   const firstReleaseMonth = 2;
 
-  // for any releases that are off schedule (i.e. v1.25.0 was released
-  // in the same month as v1.24.0), we need to adjust the release date
-  const offScheduleReleases = [25];
-
   return Array(100)
     .fill(0)
     .map((_, i) => {
-      const modifier = offScheduleReleases.filter(v => i >= v).length;
-      const date = getReleaseOfMonth(
-        firstReleaseYear,
-        firstReleaseMonth + i - modifier,
-      );
+      const date = getReleaseOfMonth(firstReleaseYear, firstReleaseMonth + i);
       return { version: `1.${i}.0`, date };
     });
 }

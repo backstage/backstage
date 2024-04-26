@@ -7,52 +7,62 @@ description: Adding Azure's EasyAuth Proxy as an authentication provider in Back
 
 The Backstage `core-plugin-api` package comes with a Microsoft authentication provider that can authenticate users using Microsoft Entra ID (formerly Azure Active Directory) for PaaS service hosted in Azure that support Easy Auth, such as Azure App Services.
 
-## Backend Changes
+## Backstage Changes
 
-Add the following into your `app-config.yaml` under the root `auth` configuration:
+Add the following into your `app-config.yaml` or `app-config.production.yaml` file
 
-```yaml title="app-config.yaml"
+```yaml
 auth:
+  environment: development
   providers:
-    azureEasyAuth:
-      signIn:
-        resolvers:
-          - resolver: idMatchingUserEntityAnnotation
-          - resolver: emailMatchingUserEntityProfileEmail
-          - resolver: emailLocalPartMatchingUserEntityName
+    azure-easyauth: {}
 ```
 
-The `idMatchingUserEntityAnnotation` is
-[a builtin sign-in resolver](../identity-resolver.md#using-builtin-resolvers) from `azureEasyAuth` provider.
-It tries to find a user entity with [a `graph.microsoft.com/user-id` annotation](../../features/software-catalog/well-known-annotations.md#graphmicrosoftcomtenant-id-graphmicrosoftcomgroup-id-graphmicrosoftcomuser-id)
-which matches the object ID of the user attempting to sign in.
-If you want to provide your own sign-in resolver,
-see [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers).
+Add a `providerFactories` entry to the router in
+`packages/backend/src/plugins/auth.ts`.
 
-Add the `@backstage/plugin-auth-backend-module-azure-easyauth-provider` to your backend installation.
+```ts
+import { providers } from '@backstage/plugin-auth-backend';
 
-```sh
-# From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-azure-easyauth-provider
-```
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const authProviderFactories = {
+    'azure-easyauth': providers.easyAuth.create({
+      signIn: {
+        resolver: async (info, ctx) => {
+          const {
+            fullProfile: { id },
+          } = info.result;
 
-Then, add it to your backend's source,
+          if (!id) {
+            throw new Error('User profile contained no id');
+          }
 
-```ts title="packages/backend/src/index.ts"
-const backend = createBackend();
+          return await ctx.signInWithCatalogUser({
+            annotations: {
+              'graph.microsoft.com/user-id': id,
+            },
+          });
+        },
+      },
+    }),
+  };
 
-backend.add(import('@backstage/plugin-auth-backend'));
-// highlight-add-next-line
-backend.add(
-  import('@backstage/plugin-auth-backend-module-azure-easyauth-provider'),
-);
-
-await backend.start();
+  return await createRouter({
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    discovery: env.discovery,
+    tokenManager: env.tokenManager,
+    providerFactories: authProviderFactories,
+  });
+}
 ```
 
 Now the backend is ready to serve auth requests on the
-`/api/auth/azureEasyAuth/refresh` endpoint. All that's left is to update the frontend
-sign-in mechanism to poll that endpoint through the Easy Auth proxy, on the user's behalf.
+`/api/auth/azure-easyauth/refresh` endpoint. All that's left is to update the frontend
+sign-in mechanism to poll that endpoint through the IAP, on the user's behalf.
 
 ## Frontend Changes
 
@@ -71,7 +81,7 @@ const app = createApp({
     SignInPage: props => {
       const configApi = useApi(configApiRef);
       if (configApi.getString('auth.environment') !== 'development') {
-        return <ProxiedSignInPage {...props} provider="azureEasyAuth" />;
+        return <ProxiedSignInPage {...props} provider="azure-easyauth" />;
       }
       return (
         <SignInPage

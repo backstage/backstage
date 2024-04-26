@@ -1,0 +1,29 @@
+export function add(a, b) {
+  if (isNaN(a) || isNaN(b)) {
+    throw new Error('Invalid input');
+  }
+  return a + b;
+}
+
+export function subtract(a, b) {
+  if (isNaN(a) || isNaN(b)) {
+    throw new Error('Invalid input');
+  }
+  return a - b;
+}
+
+export function multiply(a, b) {
+  if (isNaN(a) || isNaN(b)) {
+    throw new Error('Invalid input');
+  }
+  return a * b;
+}
+
+export function divide(a, b) {
+  if (isNaN(a) || isNaN(b)) {
+    throw new Error('Invalid input');
+  } else if (b === 0) {
+    throw new Error('Division by zero');
+  }
+  return a / b;
+}

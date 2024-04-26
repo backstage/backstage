@@ -55,7 +55,7 @@ import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alp
 import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { BackstageLoggerTransport, WinstonLogger } from './logger';
+import { WinstonLogger } from './logger';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -98,11 +98,9 @@ const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
 const createStepLogger = ({
   task,
   step,
-  rootLogger,
 }: {
   task: TaskContext;
   step: TaskStep;
-  rootLogger: winston.Logger;
 }) => {
   const stepLogStream = new PassThrough();
   stepLogStream.on('data', async data => {
@@ -119,8 +117,8 @@ const createStepLogger = ({
       winston.format.simple(),
     ),
     transports: [
+      new winston.transports.Console(),
       new winston.transports.Stream({ stream: stepLogStream }),
-      new BackstageLoggerTransport(rootLogger),
     ],
   });
 
@@ -264,11 +262,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const action: TemplateAction<JsonObject> =
         this.options.actionRegistry.get(step.action);
-      const { taskLogger, streamLogger } = createStepLogger({
-        task,
-        step,
-        rootLogger: this.options.logger,
-      });
+      const { taskLogger, streamLogger } = createStepLogger({ task, step });
 
       if (task.isDryRun) {
         const redactedSecrets = Object.fromEntries(

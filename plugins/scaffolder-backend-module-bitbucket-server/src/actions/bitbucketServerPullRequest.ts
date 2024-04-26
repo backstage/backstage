@@ -31,7 +31,6 @@ import {
 import fetch, { RequestInit, Response } from 'node-fetch';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
-import { examples } from './bitbucketServerPullRequest.examples';
 
 const createPullRequest = async (opts: {
   project: string;
@@ -225,7 +224,6 @@ export function createPublishBitbucketServerPullRequestAction(options: {
     gitAuthorEmail?: string;
   }>({
     id: 'publish:bitbucketServer:pull-request',
-    examples,
     schema: {
       input: {
         type: 'object',

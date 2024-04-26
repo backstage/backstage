@@ -25,7 +25,6 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { createGitlabApi } from './helpers';
-import { examples } from './gitlabRepoPush.examples';
 
 /**
  * Create a new action that commits into a gitlab repository.
@@ -47,7 +46,6 @@ export const createGitlabRepoPushAction = (options: {
     commitAction?: 'create' | 'delete' | 'update';
   }>({
     id: 'gitlab:repo:push',
-    examples,
     schema: {
       input: {
         required: ['repoUrl', 'branchName', 'commitMessage'],

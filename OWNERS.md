@@ -118,16 +118,6 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 | Philipp Hugenroth    | Spotify      | [tudi2d](https://github.com/tudi2d)         | `tudi2d`     |
 | Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
 
-### Events
-
-Team: @backstage/events-maintainers
-
-Scope: The Events plugin and library, along with events modules in the main repository
-
-| Name               | Organization              | GitHub                                        | Discord       |
-| ------------------ | ------------------------- | --------------------------------------------- | ------------- |
-| Patrick Jungermann | Bonial International GmbH | [pjungermann](https://github.com/pjungermann) | `pjungermann` |
-
 ### Notifications
 
 Team: @backstage/notifications-maintainers
@@ -170,7 +160,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 
 | Name                           | Organization              | GitHub                                                | Discord                        |
 | ------------------------------ | ------------------------- | ----------------------------------------------------- | ------------------------------ |
-| Adam Harvey                    | Okta                      | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey_`                  |
+| Adam Harvey                    | Cisco                     | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey_`                  |
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
 | Andre Wanlin                   | Spotify                   | [awanlin](https://github.com/awanlin)                 | `ahhhndre`                     |
 | Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |

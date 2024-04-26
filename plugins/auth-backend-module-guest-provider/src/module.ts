@@ -31,10 +31,16 @@ export const authModuleGuestProvider = createBackendModule({
   register(reg) {
     reg.registerInit({
       deps: {
+        logger: coreServices.logger,
         providers: authProvidersExtensionPoint,
         config: coreServices.rootConfig,
       },
-      async init({ providers, config }) {
+      async init({ providers, logger, config }) {
+        if (process.env.NODE_ENV !== 'development') {
+          logger.warn(
+            'You should NOT be using the guest provider outside of a development environment.',
+          );
+        }
         providers.registerProvider({
           providerId: 'guest',
           factory: createProxyAuthProviderFactory({

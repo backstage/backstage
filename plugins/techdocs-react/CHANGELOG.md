@@ -1,29 +1,5 @@
 # @backstage/plugin-techdocs-react
 
-## 1.2.4-next.0
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/catalog-model@1.5.0-next.0
-  - @backstage/core-components@0.14.5-next.0
-  - @backstage/config@1.2.0
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/version-bridge@1.0.8
-
-## 1.2.3
-
-### Patch Changes
-
-- b450af3: Added ESLint rule `no-top-level-material-ui-4-imports` in the Techdocs-react plugin to migrate the Material UI imports.
-- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
-- Updated dependencies
-  - @backstage/core-components@0.14.4
-  - @backstage/core-plugin-api@1.9.2
-  - @backstage/version-bridge@1.0.8
-  - @backstage/catalog-model@1.4.5
-  - @backstage/config@1.2.0
-
 ## 1.2.3-next.0
 
 ### Patch Changes

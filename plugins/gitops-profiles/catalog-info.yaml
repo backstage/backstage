@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-gitops-profiles
+  title: '@backstage/plugin-gitops-profiles'
+  description: A Backstage plugin that helps you manage GitOps profiles
+spec:
+  lifecycle: experimental
+  type: backstage-frontend-plugin
+  owner: maintainers
