@@ -1064,5 +1064,51 @@ describe('read microsoft graph', () => {
       );
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
     });
+
+    it('should handle loading huge amounts of users', async () => {
+      client.getOrganization.mockResolvedValue(getExampleOrg());
+
+      const userCount = 200_000;
+
+      async function* getHugeAmountsOfExampleUsers() {
+        for (let i = 0; i < userCount; ++i) {
+          yield {
+            id: `userid-${i}`,
+            displayName: 'User Name',
+            mail: 'user.name@example.com',
+          };
+        }
+      }
+
+      client.getUsers.mockImplementation(getHugeAmountsOfExampleUsers);
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { users } = await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        loadUserPhotos: false,
+      });
+
+      expect(users.length).toBe(userCount);
+
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+    });
   });
 });
