@@ -955,6 +955,43 @@ describe('read microsoft graph', () => {
       );
     });
 
+    it('should ignore loading photos if loadPhotos is false', async () => {
+      client.getOrganization.mockResolvedValue(getExampleOrg());
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        loadUserPhotos: false,
+      });
+
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(0);
+
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+    });
+
     it('should read users with userSelect', async () => {
       client.getOrganization.mockResolvedValue({
         id: 'tenantid',
