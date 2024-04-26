@@ -55,16 +55,24 @@ export const MyComponent = () => {
 };
 ```
 
-Note that there is no explicit type given for
+:::note Note
+
+There is no explicit type given for
 [`ErrorApi`](../reference/core-plugin-api.errorapi.md). This is because the
 [`errorApiRef`](../reference/core-plugin-api.errorapiref.md) has the type
 embedded, and [`useApi`](../reference/core-plugin-api.useapi.md) is able to infer
 the type.
 
-Also note that consuming Utility APIs is not limited to plugins, it can be done
+:::
+
+:::note Note
+
+Consuming Utility APIs is not limited to plugins, it can be done
 from any component inside Backstage, including the ones in
 [`@backstage/core-plugin-api`](../reference/core-plugin-api.md). The only
 requirement is that they are beneath the `AppProvider` in the react tree.
+
+:::
 
 ## Supplying APIs
 
@@ -230,10 +238,14 @@ const app = createApp({
 });
 ```
 
-Note that the above line will cause an error if `IgnoreErrorApi` does not fully
+:::note Note
+
+The above line will cause an error if `IgnoreErrorApi` does not fully
 implement the [`ErrorApi`](../reference/core-plugin-api.errorapi.md), as it is
 checked by the type embedded in the
 [`errorApiRef`](../reference/core-plugin-api.errorapiref.md) at compile time.
+
+:::
 
 ## Defining custom Utility APIs
 
