@@ -110,4 +110,35 @@ export class KubernetesProxyClient {
       .then(response => this.handleText(response))
       .then(text => ({ text }));
   }
+
+  async deletePod({
+    podName,
+    namespace,
+    clusterName,
+    containerName,
+    previous,
+  }: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+    previous?: boolean;
+  }): Promise<{ text: string }> {
+    const params = new URLSearchParams({
+      container: containerName,
+    });
+    if (previous) {
+      params.append('previous', '');
+    }
+    return await this.kubernetesApi
+      .proxy({
+        clusterName: clusterName,
+        path: `/api/v1/namespaces/${namespace}/pods/${podName}`,
+        init: {
+          method: 'DELETE',
+        },
+      })
+      .then(response => this.handleText(response))
+      .then(text => ({ text }));
+  }
 }

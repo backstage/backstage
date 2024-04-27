@@ -513,6 +513,16 @@ export interface KubernetesObjects {
 // @public (undocumented)
 export interface KubernetesProxyApi {
   // (undocumented)
+  deletePod(request: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+    previous?: boolean;
+  }): Promise<{
+    text: string;
+  }>;
+  // (undocumented)
   getEventsByInvolvedObjectName(request: {
     clusterName: string;
     involvedObjectName: string;
@@ -536,6 +546,22 @@ export const kubernetesProxyApiRef: ApiRef<KubernetesProxyApi>;
 // @public
 export class KubernetesProxyClient {
   constructor(options: { kubernetesApi: KubernetesApi });
+  // (undocumented)
+  deletePod({
+    podName,
+    namespace,
+    clusterName,
+    containerName,
+    previous,
+  }: {
+    podName: string;
+    namespace: string;
+    clusterName: string;
+    containerName: string;
+    previous?: boolean;
+  }): Promise<{
+    text: string;
+  }>;
   // (undocumented)
   getEventsByInvolvedObjectName({
     clusterName,

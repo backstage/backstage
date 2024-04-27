@@ -27,5 +27,20 @@ export interface Config {
        */
       enabled?: boolean;
     };
+    /**
+     * Pod Delete config
+     */
+    podDelete?: {
+      /**
+       * Enable `podDelete` UI feature
+       * @visibility frontend
+       */
+      enabled?: boolean;
+      /**
+       * Override the `podDelete` button text
+       * @visibility frontend
+       */
+      buttonText?: string;
+    };
   };
 }
