@@ -20,13 +20,19 @@ import {
   coreServices,
   ServiceRef,
   ServiceFactory,
+  createServiceFactory,
+  FeatureMetadata,
 } from '@backstage/backend-plugin-api';
 import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
 import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
 import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
-import { InternalBackendFeature } from '@backstage/backend-plugin-api/src/wiring/types';
+import {
+  InternalBackendFeature,
+  InternalBackendModuleRegistration,
+  InternalBackendPluginRegistration,
+} from '@backstage/backend-plugin-api/src/wiring/types';
 import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
@@ -40,6 +46,36 @@ export interface BackendRegisterInit {
     func: (deps: { [name: string]: unknown }) => Promise<void>;
   };
 }
+
+const instanceMetadataServiceFactory = createServiceFactory(
+  (options?: {
+    features: (
+      | InternalBackendModuleRegistration
+      | InternalBackendPluginRegistration
+    )[];
+  }) => ({
+    service: coreServices.instanceMetadata,
+    deps: {},
+    factory: async () => ({
+      getInstalledFeatures: () => {
+        const features = options?.features!.map<FeatureMetadata>(e => {
+          if (e.type === 'module') {
+            return {
+              moduleId: e.moduleId,
+              type: 'module',
+              pluginId: e.pluginId,
+            };
+          }
+          return {
+            pluginId: e.pluginId,
+            type: 'plugin',
+          };
+        });
+        return features!;
+      },
+    }),
+  }),
+);
 
 export class BackendInitializer {
   #startPromise?: Promise<void>;
@@ -175,9 +211,15 @@ export class BackendInitializer {
     const pluginInits = new Map<string, BackendRegisterInit>();
     const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
 
+    const registrations:
+      | (
+          | InternalBackendPluginRegistration
+          | InternalBackendModuleRegistration
+        )[] = [];
     // Enumerate all features
     for (const feature of this.#features) {
       for (const r of feature.getRegistrations()) {
+        registrations.push(r);
         const provides = new Set<ExtensionPoint<unknown>>();
 
         if (r.type === 'plugin' || r.type === 'module') {
@@ -223,6 +265,10 @@ export class BackendInitializer {
         }
       }
     }
+
+    this.#serviceRegistry.add(
+      instanceMetadataServiceFactory({ features: registrations }),
+    );
 
     const allPluginIds = [...pluginInits.keys()];
 
@@ -298,6 +344,7 @@ export class BackendInitializer {
     // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
     const lifecycleService = await this.#getRootLifecycleImpl();
     await lifecycleService.startup();
+    console.log('started');
 
     // Once the backend is started, any uncaught errors or unhandled rejections are caught
     // and logged, in order to avoid crashing the entire backend on local failures.

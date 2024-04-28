@@ -133,6 +133,15 @@ export namespace coreServices {
   >({ id: 'core.pluginMetadata' });
 
   /**
+   * The service reference for the instance scoped {@link InstanceMetadataService}.
+   *
+   * @public
+   */
+  export const instanceMetadata = createServiceRef<
+    import('./InstanceMetadataService').InstanceMetadataService
+  >({ id: 'core.instanceMetadata', scope: 'root' });
+
+  /**
    * The service reference for the root scoped {@link RootHttpRouterService}.
    *
    * @public
