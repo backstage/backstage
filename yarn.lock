@@ -5791,6 +5791,30 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-dynamic-discovery-backend@workspace:^, @backstage/plugin-dynamic-discovery-backend@workspace:plugins/dynamic-discovery-backend":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-dynamic-discovery-backend@workspace:plugins/dynamic-discovery-backend"
+  dependencies:
+    "@backstage/backend-app-api": "workspace:^"
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
+    "@types/express": "*"
+    "@types/supertest": ^2.0.8
+    express: ^4.17.1
+    express-promise-router: ^4.1.0
+    msw: ^1.0.0
+    node-fetch: ^2.6.7
+    supertest: ^6.2.4
+    winston: ^3.2.1
+    yn: ^4.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-events-backend-module-aws-sqs@workspace:plugins/events-backend-module-aws-sqs":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-module-aws-sqs@workspace:plugins/events-backend-module-aws-sqs"
@@ -24214,6 +24238,86 @@ __metadata:
     vite-plugin-html: ^3.2.0
     vite-plugin-node-polyfills: ^0.21.0
     zen-observable: ^0.10.0
+  languageName: unknown
+  linkType: soft
+
+"example-backend-next-gateway@workspace:packages/backend-next-split-gateway":
+  version: 0.0.0-use.local
+  resolution: "example-backend-next-gateway@workspace:packages/backend-next-split-gateway"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-app-backend": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
+    "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
+    "@backstage/plugin-devtools-backend": "workspace:^"
+    "@backstage/plugin-dynamic-discovery-backend": "workspace:^"
+    "@backstage/plugin-kubernetes-backend": "workspace:^"
+    "@backstage/plugin-notifications-backend": "workspace:^"
+    "@backstage/plugin-permission-backend": "workspace:^"
+    "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
+    "@backstage/plugin-proxy-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-github": "workspace:^"
+    "@backstage/plugin-search-backend": "workspace:^"
+    "@backstage/plugin-search-backend-module-catalog": "workspace:^"
+    "@backstage/plugin-search-backend-module-explore": "workspace:^"
+    "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-signals-backend": "workspace:^"
+    "@backstage/plugin-techdocs-backend": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
+"example-backend-next-split-leaf@workspace:packages/backend-next-split-leaf":
+  version: 0.0.0-use.local
+  resolution: "example-backend-next-split-leaf@workspace:packages/backend-next-split-leaf"
+  dependencies:
+    "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-tasks": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-app-backend": "workspace:^"
+    "@backstage/plugin-auth-backend": "workspace:^"
+    "@backstage/plugin-auth-backend-module-github-provider": "workspace:^"
+    "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
+    "@backstage/plugin-auth-node": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
+    "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
+    "@backstage/plugin-devtools-backend": "workspace:^"
+    "@backstage/plugin-dynamic-discovery-backend": "workspace:^"
+    "@backstage/plugin-kubernetes-backend": "workspace:^"
+    "@backstage/plugin-notifications-backend": "workspace:^"
+    "@backstage/plugin-permission-backend": "workspace:^"
+    "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"
+    "@backstage/plugin-permission-common": "workspace:^"
+    "@backstage/plugin-permission-node": "workspace:^"
+    "@backstage/plugin-proxy-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-backend": "workspace:^"
+    "@backstage/plugin-scaffolder-backend-module-github": "workspace:^"
+    "@backstage/plugin-search-backend": "workspace:^"
+    "@backstage/plugin-search-backend-module-catalog": "workspace:^"
+    "@backstage/plugin-search-backend-module-explore": "workspace:^"
+    "@backstage/plugin-search-backend-module-techdocs": "workspace:^"
+    "@backstage/plugin-search-backend-node": "workspace:^"
+    "@backstage/plugin-signals-backend": "workspace:^"
+    "@backstage/plugin-techdocs-backend": "workspace:^"
   languageName: unknown
   linkType: soft
 

@@ -1,0 +1,9 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: example-backend-next-split-leaf
+  title: example-backend-next-split-leaf
+spec:
+  lifecycle: experimental
+  type: backstage-backend
+  owner: maintainers

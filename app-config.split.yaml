@@ -1,0 +1,8 @@
+backend:
+  baseUrl: http://localhost:8080
+  listen:
+    port: 8080
+
+discovery:
+  gateway:
+    internalUrl: http://localhost:7007
