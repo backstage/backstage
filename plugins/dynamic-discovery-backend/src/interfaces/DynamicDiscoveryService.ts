@@ -33,4 +33,6 @@ export interface DynamicDiscoveryService
   listFeatures(): Promise<{
     features: FeatureMetadata[];
   }>;
+
+  isGateway: boolean;
 }

@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// We need the HttpServerOptions during runtime, not as a dev dependency.
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import { readHttpServerOptions } from '@backstage/backend-app-api';
 import {
   DiscoveryService,

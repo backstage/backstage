@@ -23,6 +23,7 @@ import { DynamicDiscoveryService } from '../../interfaces/DynamicDiscoveryServic
 import { LocalDiscoveryService } from './LocalDiscoveryService';
 
 export class GatewayDiscoveryService implements DynamicDiscoveryService {
+  isGateway = true;
   #pluginLocations: Map<string, { internalUrl: string; externalUrl: string }> =
     new Map();
 

@@ -49,7 +49,7 @@ export async function createRouter(
     try {
       discovery.register(instanceLocation, feature, featureLocation);
     } catch (err) {
-      if (err instanceof AlreadyRegisteredError) {
+      if (err.name === AlreadyRegisteredError.name) {
         res.status(400).json({
           message: 'AlreadyRegisteredError',
         });
