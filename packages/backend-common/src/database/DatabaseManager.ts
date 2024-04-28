@@ -19,14 +19,6 @@ import { JsonObject } from '@backstage/types';
 import { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import { mergeDatabaseConfig } from './config';
-import {
-  createDatabaseClient,
-  createNameOverride,
-  createSchemaOverride,
-  ensureDatabaseExists,
-  ensureSchemaExists,
-  normalizeConnection,
-} from './connection';
 import { PluginDatabaseManager } from './types';
 import path from 'path';
 import {
@@ -36,6 +28,9 @@ import {
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import { stringifyError } from '@backstage/errors';
+import { PgConnector } from './connectors/postgres';
+import { Sqlite3Connector } from './connectors/sqlite3';
+import { MysqlConnector } from './connectors/mysql';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -86,10 +81,16 @@ export class DatabaseManager implements LegacyRootDatabaseService {
     options?: DatabaseManagerOptions,
   ): DatabaseManager {
     const databaseConfig = config.getConfig('backend.database');
-
     return new DatabaseManager(
       databaseConfig,
       databaseConfig.getOptionalString('prefix'),
+      {
+        pg: new PgConnector(config, prefix, options),
+        sqlite3: new Sqlite3Connector(config, prefix, options),
+        'better-sqlite3': new Sqlite3Connector(config, prefix, options),
+        mysql: new MysqlConnector(config, prefix, options),
+        mysql2: new MysqlConnector(config, prefix, options),
+      },
       options,
     );
   }
@@ -97,6 +98,18 @@ export class DatabaseManager implements LegacyRootDatabaseService {
   private constructor(
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',
+    private readonly connectors: Record<
+      string,
+      {
+        getClient(
+          pluginId: string,
+          deps?: {
+            lifecycle: LifecycleService;
+            pluginMetadata: PluginMetadataService;
+          },
+        ): Promise<Knex>;
+      }
+    >,
     private readonly options?: DatabaseManagerOptions,
     private readonly databaseCache: Map<string, Promise<Knex>> = new Map(),
   ) {}
@@ -115,6 +128,11 @@ export class DatabaseManager implements LegacyRootDatabaseService {
       pluginMetadata: PluginMetadataService;
     },
   ): PluginDatabaseManager {
+    const client = this.getClientType(pluginId).client;
+    const connector = this.connectors[client];
+    if (!connector) {
+      throw new Error(`Unsupported database client type '${client}'`);
+    }
     const getClient = () => this.getDatabase(pluginId, deps);
     const migrations = { skip: false, ...this.options?.migrations };
     return { getClient, migrations };
