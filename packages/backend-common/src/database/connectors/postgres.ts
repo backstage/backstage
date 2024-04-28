@@ -23,7 +23,6 @@ import { ForwardedError, InputError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
-import path from 'path';
 import { Client } from 'pg';
 import { Connector, DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
@@ -216,11 +215,15 @@ export async function dropPgDatabase(
   ...databases: Array<string>
 ) {
   const admin = createPgDatabaseClient(dbConfig);
-  await Promise.all(
-    databases.map(async database => {
-      await admin.raw(`DROP DATABASE ??`, [database]);
-    }),
-  );
+  try {
+    await Promise.all(
+      databases.map(async database => {
+        await admin.raw(`DROP DATABASE ??`, [database]);
+      }),
+    );
+  } finally {
+    await admin.destroy();
+  }
 }
 
 export const pgConnector: DatabaseConnector = Object.freeze({
@@ -232,17 +235,6 @@ export const pgConnector: DatabaseConnector = Object.freeze({
   parseConnectionString: parsePgConnectionString,
   dropDatabase: dropPgDatabase,
 });
-
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -295,7 +287,7 @@ function createNameOverride(
 export class PgConnector implements Connector {
   constructor(
     private readonly config: Config,
-    private readonly prefix: string = 'backstage_plugin_',
+    private readonly prefix: string,
   ) {}
 
   async getClient(
@@ -312,7 +304,7 @@ export class PgConnector implements Connector {
     const databaseName = this.getDatabaseName(pluginId);
     if (databaseName && this.getEnsureExistsConfig(pluginId)) {
       try {
-        await pgConnector.ensureDatabaseExists(pluginConfig, databaseName);
+        await pgConnector.ensureDatabaseExists!(pluginConfig, databaseName);
       } catch (error) {
         throw new Error(
           `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
@@ -325,7 +317,7 @@ export class PgConnector implements Connector {
       schemaOverrides = this.getSchemaOverrides(pluginId);
       if (this.getEnsureExistsConfig(pluginId)) {
         try {
-          await pgConnector.ensureSchemaExists(pluginConfig, pluginId);
+          await pgConnector.ensureSchemaExists!(pluginConfig, pluginId);
         } catch (error) {
           throw new Error(
             `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
@@ -347,6 +339,10 @@ export class PgConnector implements Connector {
     );
 
     return client;
+  }
+
+  async dropDatabase(...databaseNames: string[]): Promise<void> {
+    return await dropPgDatabase(this.config, ...databaseNames);
   }
 
   /**

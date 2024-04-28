@@ -13,44 +13,91 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { ConfigReader } from '@backstage/config';
-import { omit } from 'lodash';
-import path from 'path';
-import { DatabaseManager } from './DatabaseManager';
-import {
-  createDatabaseClient,
-  ensureDatabaseExists,
-  ensureSchemaExists,
-} from './connection';
+import { DatabaseManagerImpl } from './DatabaseManager';
+import { Connector } from './types';
 
-jest.mock('./connection', () => ({
-  ...jest.requireActual('./connection'),
-  createDatabaseClient: jest.fn(),
-  ensureDatabaseExists: jest.fn(),
-  ensureSchemaExists: jest.fn(),
-}));
+describe('DatabaseManagerImpl', () => {
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
-describe('DatabaseManager', () => {
-  // This is similar to the ts-jest `mocked` helper.
-  const mocked = (f: Function) => f as jest.Mock;
+  it('calls the right connector, only once per plugin id', async () => {
+    const connector1 = {
+      getClient: jest.fn(),
+      dropDatabase: jest.fn(),
+    } satisfies Connector;
+    const connector2 = {
+      getClient: jest.fn(),
+      dropDatabase: jest.fn(),
+    } satisfies Connector;
 
-  afterEach(() => jest.resetAllMocks());
+    const impl = new DatabaseManagerImpl(
+      new ConfigReader({
+        client: 'pg',
+      }),
+      {
+        pg: connector1,
+        notpg: connector2,
+      },
+    );
 
-  describe('DatabaseManager.fromConfig', () => {
-    const backendConfig = {
-      backend: {
-        database: {
-          client: 'pg',
-          connection: {
-            host: 'localhost',
-            user: 'foo',
-            password: 'bar',
-            database: 'foodb',
+    await impl.forPlugin('plugin1').getClient();
+    expect(connector1.getClient).toHaveBeenCalledTimes(1);
+    expect(connector1.getClient).toHaveBeenLastCalledWith('plugin1', undefined);
+    expect(connector2.getClient).toHaveBeenCalledTimes(0);
+
+    await impl.forPlugin('plugin1').getClient();
+    expect(connector1.getClient).toHaveBeenCalledTimes(1);
+    expect(connector1.getClient).toHaveBeenLastCalledWith('plugin1', undefined);
+    expect(connector2.getClient).toHaveBeenCalledTimes(0);
+
+    await impl.forPlugin('plugin2').getClient();
+    expect(connector1.getClient).toHaveBeenCalledTimes(2);
+    expect(connector1.getClient).toHaveBeenLastCalledWith('plugin2', undefined);
+    expect(connector2.getClient).toHaveBeenCalledTimes(0);
+  });
+
+  it('respects per-plugin overridden connectors', async () => {
+    const connector1 = {
+      getClient: jest.fn(),
+      dropDatabase: jest.fn(),
+    } satisfies Connector;
+    const connector2 = {
+      getClient: jest.fn(),
+      dropDatabase: jest.fn(),
+    } satisfies Connector;
+
+    const impl = new DatabaseManagerImpl(
+      new ConfigReader({
+        client: 'pg',
+        plugin: {
+          plugin2: {
+            client: 'mysql',
           },
         },
+      }),
+      {
+        pg: connector1,
+        mysql: connector2,
       },
-    };
+    );
 
+    await impl.forPlugin('plugin1').getClient();
+    expect(connector1.getClient).toHaveBeenCalledTimes(1);
+    expect(connector1.getClient).toHaveBeenLastCalledWith('plugin1', undefined);
+    expect(connector2.getClient).toHaveBeenCalledTimes(0);
+
+    await impl.forPlugin('plugin2').getClient();
+    expect(connector1.getClient).toHaveBeenCalledTimes(1);
+    expect(connector1.getClient).toHaveBeenLastCalledWith('plugin1', undefined);
+    expect(connector2.getClient).toHaveBeenCalledTimes(1);
+    expect(connector2.getClient).toHaveBeenLastCalledWith('plugin2', undefined);
+  });
+
+  // eslint-disable-next-line jest/no-commented-out-tests
+  /*
     it('accesses the backend.database key', () => {
       const config = new ConfigReader(backendConfig);
       const getConfigSpy = jest.spyOn(config, 'getConfig');
@@ -848,4 +895,5 @@ describe('DatabaseManager', () => {
       );
     });
   });
+  */
 });

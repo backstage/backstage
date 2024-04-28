@@ -54,44 +54,10 @@ export type LegacyRootDatabaseService = {
 };
 
 /**
- * Manages database connections for Backstage backend plugins.
- *
- * @public
- * @remarks
- *
- * The database manager allows the user to set connection and client settings on
- * a per pluginId basis by defining a database config block under
- * `plugin.<pluginId>` in addition to top level defaults. Optionally, a user may
- * set `prefix` which is used to prefix generated database names if config is
- * not provided.
+ * Testable implementation class for {@link DatabaseManager} below.
  */
-export class DatabaseManager implements LegacyRootDatabaseService {
-  /**
-   * Creates a {@link DatabaseManager} from `backend.database` config.
-   *
-   * @param config - The loaded application configuration.
-   * @param options - An optional configuration object.
-   */
-  static fromConfig(
-    config: Config,
-    options?: DatabaseManagerOptions,
-  ): DatabaseManager {
-    const databaseConfig = config.getConfig('backend.database');
-    const prefix = databaseConfig.getOptionalString('prefix');
-    return new DatabaseManager(
-      databaseConfig,
-      {
-        pg: new PgConnector(config, prefix),
-        sqlite3: new Sqlite3Connector(config, prefix),
-        'better-sqlite3': new Sqlite3Connector(config, prefix),
-        mysql: new MysqlConnector(config, prefix),
-        mysql2: new MysqlConnector(config, prefix),
-      },
-      options,
-    );
-  }
-
-  private constructor(
+export class DatabaseManagerImpl implements LegacyRootDatabaseService {
+  constructor(
     private readonly config: Config,
     private readonly connectors: Record<string, Connector>,
     private readonly options?: DatabaseManagerOptions,
@@ -202,5 +168,86 @@ export class DatabaseManager implements LegacyRootDatabaseService {
         },
       );
     }, 60 * 1000);
+  }
+}
+
+// NOTE: This class looks odd but is kept around for API compatibility reasons
+/**
+ * Manages database connections for Backstage backend plugins.
+ *
+ * @public
+ * @remarks
+ *
+ * The database manager allows the user to set connection and client settings on
+ * a per pluginId basis by defining a database config block under
+ * `plugin.<pluginId>` in addition to top level defaults. Optionally, a user may
+ * set `prefix` which is used to prefix generated database names if config is
+ * not provided.
+ */
+export class DatabaseManager implements LegacyRootDatabaseService {
+  /**
+   * Creates a {@link DatabaseManager} from `backend.database` config.
+   *
+   * @param config - The loaded application configuration.
+   * @param options - An optional configuration object.
+   */
+  static fromConfig(
+    config: Config,
+    options?: DatabaseManagerOptions,
+  ): DatabaseManager {
+    const databaseConfig = config.getConfig('backend.database');
+    const prefix =
+      databaseConfig.getOptionalString('prefix') || 'backstage_plugin_';
+    return new DatabaseManager(
+      new DatabaseManagerImpl(
+        databaseConfig,
+        {
+          pg: new PgConnector(databaseConfig, prefix),
+          sqlite3: new Sqlite3Connector(databaseConfig),
+          'better-sqlite3': new Sqlite3Connector(databaseConfig),
+          mysql: new MysqlConnector(databaseConfig, prefix),
+          mysql2: new MysqlConnector(databaseConfig, prefix),
+        },
+        options,
+      ),
+    );
+  }
+
+  private constructor(private readonly impl: DatabaseManagerImpl) {}
+
+  /**
+   * Generates a PluginDatabaseManager for consumption by plugins.
+   *
+   * @param pluginId - The plugin that the database manager should be created for. Plugin names
+   * should be unique as they are used to look up database config overrides under
+   * `backend.database.plugin`.
+   */
+  forPlugin(
+    pluginId: string,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
+  ): PluginDatabaseManager {
+    return this.impl.forPlugin(pluginId, deps);
+  }
+}
+
+/**
+ * Helper for deleting databases, only exists for backend-test-utils for now.
+ *
+ * @public
+ */
+export async function dropDatabase(
+  dbConfig: Config,
+  ...databaseNames: string[]
+): Promise<void> {
+  const client = dbConfig.getString('client');
+  const prefix = dbConfig.getOptionalString('prefix') || 'backstage_plugin_';
+
+  if (client === 'pg') {
+    await new PgConnector(dbConfig, prefix).dropDatabase(...databaseNames);
+  } else if (client === 'mysql' || client === 'mysql2') {
+    await new MysqlConnector(dbConfig, prefix).dropDatabase(...databaseNames);
   }
 }

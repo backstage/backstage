@@ -168,17 +168,6 @@ export const sqliteConnector: DatabaseConnector = Object.freeze({
   parseConnectionString: parseSqliteConnectionString,
 });
 
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /**
  * Provides a config lookup path for a plugin's config block.
  */
@@ -199,20 +188,6 @@ function normalizeConnection(
     : connection;
 }
 
-function createSchemaOverride(
-  client: string,
-  name: string,
-): Partial<Knex.Config | undefined> {
-  try {
-    return sqliteConnector.createSchemaOverride?.(name);
-  } catch (e) {
-    throw new InputError(
-      `Unable to create database schema override for '${client}' connector`,
-      e,
-    );
-  }
-}
-
 function createNameOverride(
   client: string,
   name: string,
@@ -228,10 +203,7 @@ function createNameOverride(
 }
 
 export class Sqlite3Connector implements Connector {
-  constructor(
-    private readonly config: Config,
-    private readonly prefix: string = 'backstage_plugin_',
-  ) {}
+  constructor(private readonly config: Config) {}
 
   async getClient(
     pluginId: string,
@@ -244,35 +216,16 @@ export class Sqlite3Connector implements Connector {
       this.getConfigForPlugin(pluginId) as JsonObject,
     );
 
-    const databaseName = this.getDatabaseName(pluginId);
-    if (databaseName && this.getEnsureExistsConfig(pluginId)) {
-      try {
-        await sqliteConnector.ensureDatabaseExists(pluginConfig, databaseName);
-      } catch (error) {
-        throw new Error(
-          `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
-        );
-      }
-    }
-
-    let schemaOverrides;
-    if (this.getPluginDivisionModeConfig() === 'schema') {
-      schemaOverrides = this.getSchemaOverrides(pluginId);
-      if (this.getEnsureExistsConfig(pluginId)) {
-        try {
-          await sqliteConnector.ensureSchemaExists(pluginConfig, pluginId);
-        } catch (error) {
-          throw new Error(
-            `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
-          );
-        }
-      }
+    const pluginDivisionMode = this.getPluginDivisionModeConfig();
+    if (pluginDivisionMode !== 'database') {
+      throw new Error(
+        `The SQLite driver does not suppoert plugin division mode '${pluginDivisionMode}'`,
+      );
     }
 
     const databaseClientOverrides = mergeDatabaseConfig(
       {},
       this.getDatabaseOverrides(pluginId),
-      schemaOverrides,
     );
 
     const client = sqliteConnector.createClient(
@@ -282,6 +235,10 @@ export class Sqlite3Connector implements Connector {
     );
 
     return client;
+  }
+
+  async dropDatabase(..._databaseNames: string[]): Promise<void> {
+    // do nothing
   }
 
   /**
@@ -299,30 +256,18 @@ export class Sqlite3Connector implements Connector {
   private getDatabaseName(pluginId: string): string | undefined {
     const connection = this.getConnectionConfig(pluginId);
 
-    if (this.getClientType(pluginId).client.includes('sqlite3')) {
-      const sqliteFilename: string | undefined = (
-        connection as Knex.Sqlite3ConnectionConfig
-      ).filename;
+    const sqliteFilename: string | undefined = (
+      connection as Knex.Sqlite3ConnectionConfig
+    ).filename;
 
-      if (sqliteFilename === ':memory:') {
-        return sqliteFilename;
-      }
-
-      const sqliteDirectory =
-        (connection as { directory?: string }).directory ?? '.';
-
-      return path.join(sqliteDirectory, sqliteFilename ?? `${pluginId}.sqlite`);
+    if (sqliteFilename === ':memory:') {
+      return sqliteFilename;
     }
 
-    const databaseName = (connection as Knex.ConnectionConfig)?.database;
+    const sqliteDirectory =
+      (connection as { directory?: string }).directory ?? '.';
 
-    // `pluginDivisionMode` as `schema` should use overridden databaseName if supplied or fallback to default knex database
-    if (this.getPluginDivisionModeConfig() === 'schema') {
-      return databaseName;
-    }
-
-    // all other supported databases should fallback to an auto-prefixed name
-    return databaseName ?? `${this.prefix}${pluginId}`;
+    return path.join(sqliteDirectory, sqliteFilename ?? `${pluginId}.sqlite`);
   }
 
   /**
@@ -375,14 +320,6 @@ export class Sqlite3Connector implements Connector {
       ?.get<JsonObject>();
 
     return merge(baseConfig, pluginConfig);
-  }
-
-  private getEnsureExistsConfig(pluginId: string): boolean {
-    const baseConfig = this.config.getOptionalBoolean('ensureExists') ?? true;
-    return (
-      this.config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureExists`) ??
-      baseConfig
-    );
   }
 
   private getPluginDivisionModeConfig(): string {
@@ -457,17 +394,6 @@ export class Sqlite3Connector implements Connector {
       connection: this.getConnectionConfig(pluginId),
       ...(role && { role }),
     };
-  }
-
-  /**
-   * Provides a partial `Knex.Config` database schema override for a given
-   * plugin.
-   *
-   * @param pluginId - Target plugin to get database schema override
-   * @returns Partial `Knex.Config` with database schema override
-   */
-  private getSchemaOverrides(pluginId: string): Knex.Config | undefined {
-    return createSchemaOverride(this.getClientType(pluginId).client, pluginId);
   }
 
   /**

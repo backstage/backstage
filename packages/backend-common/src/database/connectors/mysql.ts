@@ -23,7 +23,6 @@ import { InputError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
-import path from 'path';
 import yn from 'yn';
 import { Connector, DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
@@ -236,17 +235,6 @@ export const mysqlConnector: DatabaseConnector = Object.freeze({
   dropDatabase: dropMysqlDatabase,
 });
 
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
 /**
  * Provides a config lookup path for a plugin's config block.
  */
@@ -267,20 +255,6 @@ function normalizeConnection(
     : connection;
 }
 
-function createSchemaOverride(
-  client: string,
-  name: string,
-): Partial<Knex.Config | undefined> {
-  try {
-    return mysqlConnector.createSchemaOverride?.(name);
-  } catch (e) {
-    throw new InputError(
-      `Unable to create database schema override for '${client}' connector`,
-      e,
-    );
-  }
-}
-
 function createNameOverride(
   client: string,
   name: string,
@@ -298,7 +272,7 @@ function createNameOverride(
 export class MysqlConnector implements Connector {
   constructor(
     private readonly config: Config,
-    private readonly prefix: string = 'backstage_plugin_',
+    private readonly prefix: string,
   ) {}
 
   async getClient(
@@ -315,7 +289,7 @@ export class MysqlConnector implements Connector {
     const databaseName = this.getDatabaseName(pluginId);
     if (databaseName && this.getEnsureExistsConfig(pluginId)) {
       try {
-        await mysqlConnector.ensureDatabaseExists(pluginConfig, databaseName);
+        await mysqlConnector.ensureDatabaseExists!(pluginConfig, databaseName);
       } catch (error) {
         throw new Error(
           `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
@@ -323,24 +297,16 @@ export class MysqlConnector implements Connector {
       }
     }
 
-    let schemaOverrides;
-    if (this.getPluginDivisionModeConfig() === 'schema') {
-      schemaOverrides = this.getSchemaOverrides(pluginId);
-      if (this.getEnsureExistsConfig(pluginId)) {
-        try {
-          await mysqlConnector.ensureSchemaExists(pluginConfig, pluginId);
-        } catch (error) {
-          throw new Error(
-            `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
-          );
-        }
-      }
+    const pluginDivisionMode = this.getPluginDivisionModeConfig();
+    if (pluginDivisionMode !== 'database') {
+      throw new Error(
+        `The MySQL driver does not suppoert plugin division mode '${pluginDivisionMode}'`,
+      );
     }
 
     const databaseClientOverrides = mergeDatabaseConfig(
       {},
       this.getDatabaseOverrides(pluginId),
-      schemaOverrides,
     );
 
     const client = mysqlConnector.createClient(
@@ -352,29 +318,24 @@ export class MysqlConnector implements Connector {
     return client;
   }
 
+  async dropDatabase(...databaseNames: string[]): Promise<void> {
+    return await dropMysqlDatabase(this.config, ...databaseNames);
+  }
+
   /**
    * Provides the canonical database name for a given plugin.
    *
-   * This method provides the effective database name which is determined using global
-   * and plugin specific database config. If no explicit database name is configured
-   * and `pluginDivisionMode` is not `schema`, this method will provide a generated name
-   * which is the pluginId prefixed with 'backstage_plugin_'. If `pluginDivisionMode` is
-   * `schema`, it will fallback to using the default database for the knex instance.
+   * This method provides the effective database name which is determined using
+   * global and plugin specific database config. If no explicit database name,
+   * this method will provide a generated name which is the pluginId prefixed
+   * with 'backstage_plugin_'.
    *
    * @param pluginId - Lookup the database name for given plugin
    * @returns String representing the plugin's database name
    */
   private getDatabaseName(pluginId: string): string | undefined {
     const connection = this.getConnectionConfig(pluginId);
-
     const databaseName = (connection as Knex.ConnectionConfig)?.database;
-
-    // `pluginDivisionMode` as `schema` should use overridden databaseName if supplied or fallback to default knex database
-    if (this.getPluginDivisionModeConfig() === 'schema') {
-      return databaseName;
-    }
-
-    // all other supported databases should fallback to an auto-prefixed name
     return databaseName ?? `${this.prefix}${pluginId}`;
   }
 
@@ -498,17 +459,6 @@ export class MysqlConnector implements Connector {
       connection: this.getConnectionConfig(pluginId),
       ...(role && { role }),
     };
-  }
-
-  /**
-   * Provides a partial `Knex.Config` database schema override for a given
-   * plugin.
-   *
-   * @param pluginId - Target plugin to get database schema override
-   * @returns Partial `Knex.Config` with database schema override
-   */
-  private getSchemaOverrides(pluginId: string): Knex.Config | undefined {
-    return createSchemaOverride(this.getClientType(pluginId).client, pluginId);
   }
 
   /**
