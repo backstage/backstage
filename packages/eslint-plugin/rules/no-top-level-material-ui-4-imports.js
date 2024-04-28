@@ -155,7 +155,11 @@ module.exports = {
               const value = s.imported.name;
               const alias = s.local.name === value ? undefined : s.local.name;
 
-              const propsMatch = /^([A-Z]\w+)Props$/.exec(value);
+              const propsMatch =
+                /^([A-Z]\w+)Props$/.exec(value) ??
+                (node.source.value === '@material-ui/pickers'
+                  ? /^Keyboard([A-Z]\w+Picker)$/.exec(value)
+                  : null);
 
               const emitProp = propsMatch !== null;
               const emitComponent = !emitProp;

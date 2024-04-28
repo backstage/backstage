@@ -161,5 +161,10 @@ import { styled, withStyles, alpha, duration } from '@material-ui/core/styles';`
 import TreeView from '@material-ui/lab/TreeView';
 import { AlertProps } from '@material-ui/lab/Alert';`,
     },
+    {
+      code: `import { KeyboardDatePicker  } from '@material-ui/pickers';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import { KeyboardDatePicker } from '@material-ui/pickers/DatePicker';`,
+    },
   ],
 });
