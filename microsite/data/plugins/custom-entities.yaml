@@ -1,0 +1,10 @@
+---
+title: Custom Entities
+author: Telereso
+authorUrl: https://github.com/telereso/
+category: Authentication/Authorization
+description: Add/Remove Enitities such as User,Group ..etc from backstage it self
+documentation: https://github.com/telereso/backstage-plugins/blob/main/plugins/custom-entities/README.md
+iconUrl: https://raw.githubusercontent.com/telereso/backstage-plugins/main/docs/images/plugin-logo.png
+npmPackageName: '@telereso/backstage-plugin-custom-entities'
+addedDate: '2024-04-28'
