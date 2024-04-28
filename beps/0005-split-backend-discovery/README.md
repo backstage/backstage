@@ -1,6 +1,6 @@
 ---
 title: Discovery API - Split Backends
-status: provisional
+status: implementable
 authors:
   - '@aramissennyeydd'
 owners:
