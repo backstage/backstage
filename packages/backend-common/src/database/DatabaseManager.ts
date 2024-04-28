@@ -170,7 +170,7 @@ export class DatabaseManager implements LegacyRootDatabaseService {
       return this.databaseCache.get(pluginId)!;
     }
 
-    const clientPromise = connector.getClient(pluginId, deps).then();
+    const clientPromise = connector.getClient(pluginId, deps);
     this.databaseCache.set(pluginId, clientPromise);
 
     if (process.env.NODE_ENV !== 'test') {

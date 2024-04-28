@@ -364,21 +364,6 @@ export class PgConnector implements Connector {
   private getDatabaseName(pluginId: string): string | undefined {
     const connection = this.getConnectionConfig(pluginId);
 
-    if (this.getClientType(pluginId).client.includes('sqlite3')) {
-      const sqliteFilename: string | undefined = (
-        connection as Knex.Sqlite3ConnectionConfig
-      ).filename;
-
-      if (sqliteFilename === ':memory:') {
-        return sqliteFilename;
-      }
-
-      const sqliteDirectory =
-        (connection as { directory?: string }).directory ?? '.';
-
-      return path.join(sqliteDirectory, sqliteFilename ?? `${pluginId}.sqlite`);
-    }
-
     const databaseName = (connection as Knex.ConnectionConfig)?.database;
 
     // `pluginDivisionMode` as `schema` should use overridden databaseName if supplied or fallback to default knex database
@@ -461,9 +446,8 @@ export class PgConnector implements Connector {
    * This method provides a baseConfig for a plugin database connector. If the
    * client type has not been overridden, the global connection config will be
    * included with plugin specific config as the base. Values from the plugin
-   * connection take precedence over the base. Base database name is omitted for
-   * all supported databases excluding SQLite unless `pluginDivisionMode` is set
-   * to `schema`.
+   * connection take precedence over the base. Base database name is omitted
+   * unless `pluginDivisionMode` is set to `schema`.
    */
   private getConnectionConfig(pluginId: string): Knex.StaticConnectionConfig {
     const { client, overridden } = this.getClientType(pluginId);
@@ -473,20 +457,9 @@ export class PgConnector implements Connector {
       this.config.getString('client'),
     );
 
-    if (
-      client.includes('sqlite3') &&
-      'filename' in baseConnection &&
-      baseConnection.filename !== ':memory:'
-    ) {
-      throw new Error(
-        '`connection.filename` is not supported for the base sqlite connection. Prefer `connection.directory` or provide a filename for the plugin connection instead.',
-      );
-    }
-
     // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`. The
     // `database` property from the base connection is omitted unless `pluginDivisionMode`
-    // is set to `schema`. SQLite3's `filename` property is an exception as this is used as a
-    // directory elsewhere so we preserve `filename`.
+    // is set to `schema`.
     if (this.getPluginDivisionModeConfig() !== 'schema') {
       baseConnection = omit(baseConnection, 'database');
     }
@@ -497,11 +470,9 @@ export class PgConnector implements Connector {
       client,
     );
 
-    if (client === 'pg') {
-      (
-        baseConnection as Knex.PgConnectionConfig
-      ).application_name ||= `backstage_plugin_${pluginId}`;
-    }
+    (
+      baseConnection as Knex.PgConnectionConfig
+    ).application_name ||= `backstage_plugin_${pluginId}`;
 
     return {
       // include base connection if client type has not been overridden
