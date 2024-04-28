@@ -22,6 +22,9 @@ import { GatewayDiscoveryService } from './GatewayDiscoveryService';
 import { LeafNodeDiscoveryService } from './LeafNodeDiscoveryService';
 import { LeafNodeRegistration } from '../registration/LeafNodeRegistration';
 
+/**
+ * @alpha
+ */
 export const dynamicDiscoveryServiceFactory = createServiceFactory({
   service: coreServices.discovery,
   deps: {

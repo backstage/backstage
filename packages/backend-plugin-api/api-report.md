@@ -198,6 +198,7 @@ export namespace coreServices {
   const logger: ServiceRef<LoggerService, 'plugin'>;
   const permissions: ServiceRef<PermissionsService, 'plugin'>;
   const pluginMetadata: ServiceRef<PluginMetadataService, 'plugin'>;
+  const instanceMetadata: ServiceRef<InstanceMetadataService, 'root'>;
   const rootHttpRouter: ServiceRef<RootHttpRouterService, 'root'>;
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root'>;
@@ -296,6 +297,10 @@ export interface DatabaseService {
 export interface DiscoveryService {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
+  // (undocumented)
+  listFeatures?(): Promise<{
+    features: FeatureMetadata[];
+  }>;
 }
 
 // @public
@@ -310,6 +315,18 @@ export type ExtensionPoint<T> = {
 export interface ExtensionPointConfig {
   id: string;
 }
+
+// @public (undocumented)
+export type FeatureMetadata =
+  | {
+      type: 'plugin';
+      pluginId: string;
+    }
+  | {
+      type: 'module';
+      pluginId: string;
+      moduleId: string;
+    };
 
 // @public (undocumented)
 export interface HttpAuthService {
@@ -350,6 +367,12 @@ export interface HttpRouterServiceAuthPolicy {
 
 // @public (undocumented)
 export interface IdentityService extends IdentityApi {}
+
+// @public (undocumented)
+export interface InstanceMetadataService {
+  // (undocumented)
+  getInstalledFeatures(): FeatureMetadata[];
+}
 
 // @public (undocumented)
 export interface LifecycleService {
