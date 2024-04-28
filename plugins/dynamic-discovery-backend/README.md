@@ -1,14 +1,7 @@
 # dynamic-discovery
 
-Welcome to the dynamic-discovery backend plugin!
-
-_This plugin was created through the Backstage CLI_
+**NOTE** This is a highly experimental plugin and should not be used in production. If you do not use an mTLS service-to-service proxy, the use of this plugin may result in attackers registering pods into your Backstage instance.
 
 ## Getting started
 
-Your plugin has been added to the example app in this repository, meaning you'll be able to access it by running `yarn
-start` in the root directory, and then navigating to [/dynamicDiscoveryPlugin/health](http://localhost:7007/api/dynamicDiscoveryPlugin/health).
-
-You can also serve the plugin in isolation by running `yarn start` in the plugin directory.
-This method of serving the plugin provides quicker iteration speed and a faster startup and hot reloads.
-It is only meant for local development, and the setup for it can be found inside the [/dev](/dev) directory.
+To start development, you'll want to run both the `backend-next-split-leaf` and `backend-next-split-gateway` projects at the same time. I use different terminals for both. The leaf project has some additional required config.

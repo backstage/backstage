@@ -22,7 +22,6 @@ backend.add(import('@backstage/plugin-dynamic-discovery-backend/plugin'));
 
 backend.add(import('@backstage/plugin-app-backend/alpha'));
 
-backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
 backend.add(import('@backstage/plugin-proxy-backend/alpha'));
 backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
 backend.add(import('@backstage/plugin-search-backend/alpha'));
