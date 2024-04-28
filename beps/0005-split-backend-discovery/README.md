@@ -113,20 +113,33 @@ info:
 paths:
   /register:
     post:
-      summary: Register a plugin with the gateway.
-      operationId: registerPlugin
+      summary: Register a feature with the gateway.
+      operationId: registerFeature
       requestBody:
         content:
           application/json:
             schema:
               type: object
               properties:
-                pluginId:
-                  type: string
-                externalUrl:
-                  type: string
-                internalUrl:
-                  type: string
+                feature:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    pluginId:
+                      type: string
+                    moduleId:
+                      type: string
+                instanceLocation:
+                  externalUrl:
+                    type: string
+                  internalUrl:
+                    type: string
+                featureLocation:
+                  externalUrl:
+                    type: string
+                  internalUrl:
+                    type: string
         required: true
       responses:
         '200':
@@ -143,12 +156,25 @@ paths:
             schema:
               type: object
               properties:
-                pluginId:
-                  type: string
-                externalUrl:
-                  type: string
-                internalUrl:
-                  type: string
+                feature:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    pluginId:
+                      type: string
+                    moduleId:
+                      type: string
+                instanceLocation:
+                  externalUrl:
+                    type: string
+                  internalUrl:
+                    type: string
+                featureLocation:
+                  externalUrl:
+                    type: string
+                  internalUrl:
+                    type: string
         required: true
       responses:
         '200':
@@ -157,7 +183,7 @@ paths:
           description: Invalid input or already unregistered.
   /registrations:
     get:
-      summary: Get all registered pluginIds
+      summary: Get all registered features
       operationId: listRegistrations
       responses:
         '200':
@@ -167,11 +193,41 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
-  /by-plugin/{pluginId}:
+                  type: object
+                  properties:
+                    type:
+                      type: string
+                    pluginId:
+                      type: string
+                    moduleId:
+                      type: string
+  /by-plugin/{pluginId}/base-url:
+    # separating these out so that the internal URLs can be restricted to just service AuthZ.
     get:
-      summary: Get registration URLs for a given pluginId.
-      operationId: getRegistrationByPlugin
+      summary: Get internal registration URL for a given pluginId.
+      operationId: getInternalRegistrationByPlugin
+      parameters:
+        - name: pluginId
+          in: path
+          description: The plugin ID to get information for.
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                # using an object here so that we can add extra metadata like cache ttl, etc.
+                properties:
+                  url:
+                    type: string
+  /by-plugin/{pluginId}/external-base-url:
+    get:
+      summary: Get external registration URL for a given pluginId.
+      operationId: getExternalRegistrationByPlugin
       parameters:
         - name: pluginId
           in: path
@@ -187,10 +243,23 @@ paths:
               schema:
                 type: object
                 properties:
-                  internal:
+                  url:
                     type: string
-                  external:
-                    type: string
+```
+
+### New Type `BackstageFeature`
+
+```ts
+type BackstageFeature =
+  | {
+      type: 'plugin';
+      pluginId: string;
+    }
+  | {
+      type: 'module';
+      pluginId: string;
+      moduleId: string;
+    };
 ```
 
 ### Backend Requests
@@ -209,7 +278,7 @@ We also propose adding a new method to this service to give a list of plugins ac
 ```ts
 interface DiscoveryService {
   ...
-  listPlugins: () => Promise<string[]>;
+  listFeatures: () => Promise<BackstageFeature[]>;
 }
 ```
 
@@ -227,9 +296,7 @@ While we could attach the existing information to the `PluginMetadataService`, w
 
 ```ts
 interface InstanceMetadataService {
-  listFeatures: () => BackendFeature[];
-  // or
-  listFeatures: () => string[]; // list of pluginIds/moduleIds.
+  getInstalledFeatures: () => BackstageFeature[];
 }
 ```
 
@@ -237,12 +304,12 @@ interface InstanceMetadataService {
 
 ![](./frontend.drawio.png)
 
-This will leverage the existing [`DiscoveryApi`](https://github.com/backstage/backstage/blob/master/packages/core-plugin-api/src/apis/definitions/DiscoveryApi.ts). We propose adding a new method, `listPlugins` that will return a list of all plugins installed in your Backstage deployment.
+This will leverage the existing [`DiscoveryApi`](https://github.com/backstage/backstage/blob/master/packages/core-plugin-api/src/apis/definitions/DiscoveryApi.ts). We propose adding a new method, `listFeatures` that will return a list of all features installed in your Backstage deployment.
 
 ```ts
 interface DiscoveryApi {
   ...
-  listPlugins: () => Promise<string[]>;
+  listFeatures: () => Promise<BackstageFeature[]>;
 }
 ```
 
@@ -291,6 +358,11 @@ This section should describe the rollout process for any new features. It must t
 
 If there is any particular feedback to be gathered during the rollout, this should be described here as well.
 -->
+
+- Create the new plugin package, `dynamic-discovery-backend`.
+- Add the new `InstanceMetadataService` + creation to the new backend.
+- Implement database routing for gateway nodes.
+- Error handling for when a gateway node/leaf node goes down.
 
 ## Dependencies
 
