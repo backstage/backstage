@@ -22,8 +22,8 @@ export * from './DatabaseManager';
  */
 export {
   createDatabaseClient,
-  ensureDatabaseExists,
   dropDatabase,
+  ensureDatabaseExists,
 } from './connection';
 
 export type { PluginDatabaseManager } from './types';

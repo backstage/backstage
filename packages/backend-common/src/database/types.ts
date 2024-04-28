@@ -86,3 +86,13 @@ export interface DatabaseConnector {
    */
   dropDatabase?(dbConfig: Config, ...databases: Array<string>): Promise<void>;
 }
+
+export interface Connector {
+  getClient(
+    pluginId: string,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
+  ): Promise<Knex>;
+}

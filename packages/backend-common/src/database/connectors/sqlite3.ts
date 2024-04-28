@@ -26,8 +26,8 @@ import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import path from 'path';
-import { mergeDatabaseConfig } from '../config';
-import { DatabaseConnector } from '../types';
+import { Connector, DatabaseConnector } from '../types';
+import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 
 /**
  * Creates a knex SQLite3 database connection
@@ -227,7 +227,7 @@ function createNameOverride(
   }
 }
 
-export class Sqlite3Connector implements DatabaseConnector {
+export class Sqlite3Connector implements Connector {
   constructor(
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',

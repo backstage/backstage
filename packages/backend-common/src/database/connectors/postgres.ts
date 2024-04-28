@@ -25,10 +25,10 @@ import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import path from 'path';
 import { Client } from 'pg';
-import { mergeDatabaseConfig } from '../config';
-import { DatabaseConnector } from '../types';
+import { Connector, DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
+import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 
 /**
  * Creates a knex postgres database connection
@@ -292,7 +292,7 @@ function createNameOverride(
   }
 }
 
-export class PgConnector {
+export class PgConnector implements Connector {
   constructor(
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',

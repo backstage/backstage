@@ -25,9 +25,9 @@ import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import path from 'path';
 import yn from 'yn';
-import { mergeDatabaseConfig } from '../config';
-import { DatabaseConnector } from '../types';
+import { Connector, DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
+import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 
 /**
  * Creates a knex mysql database connection
@@ -295,7 +295,7 @@ function createNameOverride(
   }
 }
 
-export class MysqlConnector {
+export class MysqlConnector implements Connector {
   constructor(
     private readonly config: Config,
     private readonly prefix: string = 'backstage_plugin_',

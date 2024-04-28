@@ -16,12 +16,12 @@
 import { ConfigReader } from '@backstage/config';
 import { omit } from 'lodash';
 import path from 'path';
+import { DatabaseManager } from './DatabaseManager';
 import {
   createDatabaseClient,
   ensureDatabaseExists,
   ensureSchemaExists,
 } from './connection';
-import { DatabaseManager } from './DatabaseManager';
 
 jest.mock('./connection', () => ({
   ...jest.requireActual('./connection'),
