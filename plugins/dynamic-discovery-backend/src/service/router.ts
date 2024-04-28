@@ -19,7 +19,6 @@ import { FeatureMetadata, LoggerService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import Router from 'express-promise-router';
 import { DynamicDiscoveryService } from '../interfaces/DynamicDiscoveryService';
-import { AlreadyRegisteredError } from '../implementations/discovery/errors';
 
 export interface RouterOptions {
   logger: LoggerService;
@@ -49,7 +48,7 @@ export async function createRouter(
     try {
       discovery.register(instanceLocation, feature, featureLocation);
     } catch (err) {
-      if (err.name === AlreadyRegisteredError.name) {
+      if (err.name === 'AlreadyRegisteredError') {
         res.status(400).json({
           message: 'AlreadyRegisteredError',
         });
