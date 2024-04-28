@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { FeatureMetadata } from './InstanceMetadataService';
+
 /**
  * The DiscoveryService is used to provide a mechanism for backend
  * plugins to discover the endpoints for itself or other backend plugins.
@@ -60,4 +62,8 @@ export interface DiscoveryService {
    * like `https://backstage.example.com/api/catalog`
    */
   getExternalBaseUrl(pluginId: string): Promise<string>;
+
+  listFeatures?(): Promise<{
+    features: FeatureMetadata[];
+  }>;
 }
