@@ -4,7 +4,7 @@ author: '@mufaddal7'
 authorUrl: https://github.com/mufaddal7
 category: Monitoring
 description: Easily view your New Relic Dashboards in Backstage, via real-time snapshots of your dashboards
-documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/newrelic-dashboard/plugins/newrelic-dashboard
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/newrelic/plugins/newrelic-dashboard/README.md
 iconUrl: https://newrelic.com/themes/custom/erno/assets/mediakit/new_relic_logo_vertical_white.svg
 npmPackageName: '@backstage-community/plugin-newrelic-dashboard'
 tags:
