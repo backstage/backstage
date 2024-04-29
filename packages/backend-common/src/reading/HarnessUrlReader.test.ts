@@ -58,29 +58,24 @@ const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
 };
 const responseBuffer = Buffer.from('Apache License');
 const harnessApiResponse = (content: any) => {
-  return JSON.stringify({
-    content: {
-      data: Buffer.from(content).toString('base64'),
-      encoding: 'base64',
-    },
-  });
+  return content;
 };
 
 const handlers = [
   rest.get(
-    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/all-apis.yaml',
+    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/all-apis.yaml',
     (_req, res, ctx) => {
       return res(ctx.status(500), ctx.json({ message: 'Error!!!' }));
     },
   ),
   rest.get(
-    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/404error.yaml',
+    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/404error.yaml',
     (_req, res, ctx) => {
       return res(ctx.status(404), ctx.json({ message: 'File not found.' }));
     },
   ),
   rest.get(
-    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/stream.TXT',
+    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/stream.TXT',
     (_req, res, ctx) => {
       return res(
         ctx.status(200),
@@ -90,7 +85,7 @@ const handlers = [
   ),
 
   rest.get(
-    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/content/buffer.TXT',
+    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/buffer.TXT',
     (_req, res, ctx) => {
       return res(
         ctx.status(200),
@@ -173,7 +168,7 @@ describe('HarnessUrlReader', () => {
           'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/404error.yaml',
         ),
       ).rejects.toThrow(
-        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/404error.yaml x https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/content/404error.yaml?routingId=accountId&include_commit=false&ref=refMain, 404 Not Found',
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/404error.yaml x https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/raw/404error.yaml?routingId=accountId&git_ref=refMain, 404 Not Found',
       );
     });
 
@@ -183,7 +178,7 @@ describe('HarnessUrlReader', () => {
           'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml',
         ),
       ).rejects.toThrow(
-        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml x https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/content/all-apis.yaml?routingId=accountId&include_commit=false&ref=refMain, 500 Internal Server Error',
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml x https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/raw/all-apis.yaml?routingId=accountId&git_ref=refMain, 500 Internal Server Error',
       );
     });
   });

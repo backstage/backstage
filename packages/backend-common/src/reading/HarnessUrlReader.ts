@@ -79,18 +79,18 @@ export class HarnessUrlReader implements UrlReader {
     }
 
     if (response.ok) {
-      // Harness Code returns an object with the file contents encoded, not the file itself
-      const jsonResponse = await response.json();
-      if (jsonResponse?.content?.encoding === 'base64') {
+      // Harness Code returns the raw content object
+      const jsonResponse = { data: response.body };
+      if (jsonResponse) {
         return ReadUrlResponseFactory.fromReadable(
-          Readable.from(Buffer.from(jsonResponse?.content?.data, 'base64')),
+          Readable.from(jsonResponse.data),
           {
             etag: response.headers.get('ETag') ?? undefined,
           },
         );
       }
 
-      throw new Error(`Unknown encoding: ${jsonResponse?.content?.encoding}`);
+      throw new Error(`Unknown json: ${jsonResponse}`);
     }
 
     const message = `${url} x ${blobUrl}, ${response.status} ${response.statusText}`;
