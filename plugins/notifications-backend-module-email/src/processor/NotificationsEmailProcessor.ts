@@ -219,8 +219,14 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
 
   private getNotificationLink(notification: Notification) {
     if (notification.payload.link) {
+      const stripLeadingSlash = (s: string) => s.replace(/^\//, '');
+      const ensureTrailingSlash = (s: string) => s.replace(/\/?$/, '/');
+
       try {
-        const url = new URL(notification.payload.link, this.frontendBaseUrl);
+        const url = new URL(
+          stripLeadingSlash(notification.payload.link),
+          ensureTrailingSlash(this.frontendBaseUrl),
+        );
         return url.toString();
       } catch (_e) {
         // noop: fallback to relative URL

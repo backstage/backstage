@@ -383,6 +383,32 @@ describe('NotificationsEmailProcessor', () => {
       text: 'https://example.org/catalog/user/default/john.doe',
       to: 'mock@backstage.io',
     });
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: 'user:default/mock',
+        created: new Date(),
+        payload: {
+          title: 'notification',
+          link: '/catalog/user/default/jane.doe',
+        },
+      },
+      {
+        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledWith({
+      from: 'backstage@backstage.io',
+      html: '<p><a href="https://example.org/catalog/user/default/jane.doe">https://example.org/catalog/user/default/jane.doe</a></p>',
+      replyTo: undefined,
+      subject: 'notification',
+      text: 'https://example.org/catalog/user/default/jane.doe',
+      to: 'mock@backstage.io',
+    });
   });
 
   it('should send email with absolute link to given address', async () => {
