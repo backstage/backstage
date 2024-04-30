@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-proxy-backend",
-  "version": "0.4.15",
+  "version": "0.4.16-next.0",
   "description": "A Backstage backend plugin that helps you set up proxy endpoints in the backend",
   "backstage": {
     "role": "backend-plugin"
@@ -37,8 +37,7 @@
   },
   "files": [
     "dist",
-    "config.d.ts",
-    "alpha"
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",

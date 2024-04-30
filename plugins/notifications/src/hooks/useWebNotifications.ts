@@ -14,49 +14,58 @@
  * limitations under the License.
  */
 import { useCallback, useEffect, useState } from 'react';
+import { rootRouteRef } from '../routes';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { useNavigate } from 'react-router-dom';
 
 /** @public */
-export function useWebNotifications() {
+export function useWebNotifications(enabled: boolean) {
   const [webNotificationPermission, setWebNotificationPermission] =
     useState('default');
-  const [webNotifications, setWebNotifications] = useState<Notification[]>([]);
+  const notificationsRoute = useRouteRef(rootRouteRef);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    if ('Notification' in window && webNotificationPermission === 'default') {
+    if (
+      enabled &&
+      'Notification' in window &&
+      webNotificationPermission === 'default'
+    ) {
       window.Notification.requestPermission().then(permission => {
         setWebNotificationPermission(permission);
       });
     }
-  }, [webNotificationPermission]);
-
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState === 'visible') {
-      webNotifications.forEach(n => n.close());
-      setWebNotifications([]);
-    }
-  });
+  }, [enabled, webNotificationPermission]);
 
   const sendWebNotification = useCallback(
-    (options: { title: string; description: string; link?: string }) => {
+    (options: {
+      id: string;
+      title: string;
+      description: string;
+      link?: string;
+    }) => {
       if (webNotificationPermission !== 'granted') {
         return null;
       }
 
       const notification = new Notification(options.title, {
         body: options.description,
+        tag: options.id, // Prevent duplicates from multiple tabs
       });
 
       notification.onclick = event => {
         event.preventDefault();
-        notification.close();
         if (options.link) {
           window.open(options.link, '_blank');
+        } else {
+          navigate(notificationsRoute());
         }
+        notification.close();
       };
 
       return notification;
     },
-    [webNotificationPermission],
+    [webNotificationPermission, navigate, notificationsRoute],
   );
 
   return { sendWebNotification };

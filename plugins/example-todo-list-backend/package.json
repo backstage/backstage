@@ -1,6 +1,6 @@
 {
   "name": "@internal/plugin-todo-list-backend",
-  "version": "1.0.26",
+  "version": "1.0.27-next.0",
   "backstage": {
     "role": "backend-plugin"
   },
@@ -20,8 +20,7 @@
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "dist",
-    "alpha"
+    "dist"
   ],
   "scripts": {
     "build": "backstage-cli package build",

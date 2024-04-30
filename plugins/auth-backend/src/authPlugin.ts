@@ -19,6 +19,8 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import {
+  authOwnershipResolutionExtensionPoint,
+  AuthOwnershipResolver,
   AuthProviderFactory,
   authProvidersExtensionPoint,
 } from '@backstage/plugin-auth-node';
@@ -34,6 +36,7 @@ export const authPlugin = createBackendPlugin({
   pluginId: 'auth',
   register(reg) {
     const providers = new Map<string, AuthProviderFactory>();
+    let ownershipResolver: AuthOwnershipResolver | undefined = undefined;
 
     reg.registerExtensionPoint(authProvidersExtensionPoint, {
       registerProvider({ providerId, factory }) {
@@ -43,6 +46,15 @@ export const authPlugin = createBackendPlugin({
           );
         }
         providers.set(providerId, factory);
+      },
+    });
+
+    reg.registerExtensionPoint(authOwnershipResolutionExtensionPoint, {
+      setAuthOwnershipResolver(resolver) {
+        if (ownershipResolver) {
+          throw new Error('Auth ownership resolver is already set');
+        }
+        ownershipResolver = resolver;
       },
     });
 
@@ -80,6 +92,7 @@ export const authPlugin = createBackendPlugin({
           catalogApi,
           providerFactories: Object.fromEntries(providers),
           disableDefaultProviderFactories: true,
+          ownershipResolver,
         });
         httpRouter.addAuthPolicy({
           path: '/',
