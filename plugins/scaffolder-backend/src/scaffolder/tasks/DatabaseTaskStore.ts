@@ -511,7 +511,7 @@ export class DatabaseTaskStore implements TaskStore {
     });
   }
 
-  async rehydrateWorkspace?(options: {
+  async rehydrateWorkspace(options: {
     taskId: string;
     targetPath: string;
   }): Promise<void> {
