@@ -23,11 +23,15 @@ import { ForwardedError, InputError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
+import limiterFactory from 'p-limit';
 import { Client } from 'pg';
 import { Connector, DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
+
+// Limits the number of concurrent DDL operations to 1
+const ddlLimiter = limiterFactory(1);
 
 /**
  * Creates a knex postgres database connection
@@ -159,7 +163,7 @@ export async function ensurePgDatabaseExists(
         let lastErr: Error | undefined = undefined;
         for (let i = 0; i < 3; i++) {
           try {
-            return await ensureDatabase(database);
+            return await ddlLimiter(() => ensureDatabase(database));
           } catch (err) {
             lastErr = err;
           }
@@ -198,7 +202,9 @@ export async function ensurePgSchemaExists(
       }
     };
 
-    await Promise.all(schemas.map(ensureSchema));
+    await Promise.all(
+      schemas.map(database => ddlLimiter(() => ensureSchema(database))),
+    );
   } finally {
     await admin.destroy();
   }
@@ -218,7 +224,7 @@ export async function dropPgDatabase(
   try {
     await Promise.all(
       databases.map(async database => {
-        await admin.raw(`DROP DATABASE ??`, [database]);
+        await ddlLimiter(() => admin.raw(`DROP DATABASE ??`, [database]));
       }),
     );
   } finally {

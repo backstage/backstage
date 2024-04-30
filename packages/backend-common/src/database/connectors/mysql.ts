@@ -23,10 +23,14 @@ import { InputError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
+import limiterFactory from 'p-limit';
 import yn from 'yn';
 import { Connector, DatabaseConnector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
+
+// Limits the number of concurrent DDL operations to 1
+const ddlLimiter = limiterFactory(1);
 
 /**
  * Creates a knex mysql database connection
@@ -174,7 +178,7 @@ export async function ensureMysqlDatabaseExists(
         let lastErr: Error | undefined = undefined;
         for (let i = 0; i < 3; i++) {
           try {
-            return await ensureDatabase(database);
+            return await ddlLimiter(() => ensureDatabase(database));
           } catch (err) {
             lastErr = err;
           }
@@ -214,7 +218,7 @@ export async function dropMysqlDatabase(
     };
     await Promise.all(
       databases.map(async database => {
-        return await dropDatabase(database);
+        return await ddlLimiter(() => dropDatabase(database));
       }),
     );
   } finally {
