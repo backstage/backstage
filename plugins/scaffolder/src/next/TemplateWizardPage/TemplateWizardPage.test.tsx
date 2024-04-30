@@ -129,30 +129,19 @@ describe('TemplateWizardPage', () => {
       fireEvent.click(await findByRole('button', { name: 'Create' }));
     });
 
-    // The "Next Step" button should have fired few events
+    // The "Next Step" button should have fired an event
     expect(analyticsMock.getEvents()[0]).toMatchObject({
       action: 'click',
       subject: 'Next Step (1)',
       context: { entityRef: 'template:default/test' },
     });
 
+    // And the "Create" button should have fired an event
     expect(analyticsMock.getEvents()[1]).toMatchObject({
-      action: 'click',
-      subject: 'Next Step (1)',
-      context: { entityRef: 'template:default/test' },
-    });
-
-    // And the "Create" button should have fired few event
-    expect(analyticsMock.getEvents()[2]).toMatchObject({
       action: 'create',
       subject: 'expected-name',
       context: { entityRef: 'template:default/test' },
-    });
-
-    expect(analyticsMock.getEvents()[3]).toMatchObject({
-      action: 'click',
-      subject: 'Create',
-      context: { entityRef: 'template:default/test' },
+      value: 120,
     });
   });
   describe('scaffolder page context menu', () => {
