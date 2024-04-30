@@ -14,77 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  SchedulerServiceTaskDescriptor,
-  SchedulerServiceTaskInvocationDefinition,
-  SchedulerServiceTaskRunner,
-  SchedulerServiceTaskScheduleDefinition,
-} from '@backstage/backend-plugin-api';
 import { CronTime } from 'cron';
 import { Duration } from 'luxon';
 import { z } from 'zod';
-
-/**
- * Deals with the scheduling of distributed tasks, for a given plugin.
- */
-export interface PluginTaskScheduler {
-  /**
-   * Manually triggers a task by ID.
-   *
-   * If the task doesn't exist, a NotFoundError is thrown. If the task is
-   * currently running, a ConflictError is thrown.
-   *
-   * @param id - The task ID
-   */
-  triggerTask(id: string): Promise<void>;
-
-  /**
-   * Schedules a task function for recurring runs.
-   *
-   * @remarks
-   *
-   * The `scope` task field controls whether to use coordinated exclusive
-   * invocation across workers, or to just coordinate within the current worker.
-   *
-   * This convenience method performs both the scheduling and invocation in one
-   * go.
-   *
-   * @param task - The task definition
-   */
-  scheduleTask(
-    task: SchedulerServiceTaskScheduleDefinition &
-      SchedulerServiceTaskInvocationDefinition,
-  ): Promise<void>;
-
-  /**
-   * Creates a scheduled but dormant recurring task, ready to be launched at a
-   * later time.
-   *
-   * @remarks
-   *
-   * This method is useful for pre-creating a schedule in outer code to be
-   * passed into an inner implementation, such that the outer code controls
-   * scheduling while inner code controls implementation.
-   *
-   * @param schedule - The task schedule
-   */
-  createScheduledTaskRunner(
-    schedule: SchedulerServiceTaskScheduleDefinition,
-  ): SchedulerServiceTaskRunner;
-
-  /**
-   * Returns all scheduled tasks registered to this scheduler.
-   *
-   * @remarks
-   *
-   * This method is useful for triggering tasks manually using the triggerTask
-   * functionality. Note that the returned tasks contain only tasks that have
-   * been initialized in this instance of the scheduler.
-   *
-   * @returns Scheduled tasks
-   */
-  getScheduledTasks(): Promise<SchedulerServiceTaskDescriptor[]>;
-}
 
 function isValidOptionalDurationString(d: string | undefined): boolean {
   try {

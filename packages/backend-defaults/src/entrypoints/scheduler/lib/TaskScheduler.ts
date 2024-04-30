@@ -23,13 +23,13 @@ import {
 import {
   LoggerService,
   RootConfigService,
+  SchedulerService,
 } from '@backstage/backend-plugin-api';
 import { once } from 'lodash';
 import { Duration } from 'luxon';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
 import { PluginTaskSchedulerJanitor } from './PluginTaskSchedulerJanitor';
-import { PluginTaskScheduler } from './types';
 
 /**
  * Deals with the scheduling of distributed tasks.
@@ -59,9 +59,9 @@ export class TaskScheduler {
    * Instantiates a task manager instance for the given plugin.
    *
    * @param pluginId - The unique ID of the plugin, for example "catalog"
-   * @returns A {@link PluginTaskScheduler} instance
+   * @returns A {@link SchedulerService} instance
    */
-  forPlugin(pluginId: string): PluginTaskScheduler {
+  forPlugin(pluginId: string): SchedulerService {
     return TaskScheduler.forPlugin({
       pluginId,
       databaseManager: this.databaseManager.forPlugin(pluginId),
@@ -73,7 +73,7 @@ export class TaskScheduler {
     pluginId: string;
     databaseManager: PluginDatabaseManager;
     logger: LoggerService;
-  }): PluginTaskScheduler {
+  }): SchedulerService {
     const databaseFactory = once(async () => {
       const knex = await opts.databaseManager.getClient();
 

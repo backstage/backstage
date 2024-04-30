@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
 import {
+  LoggerService,
+  SchedulerService,
   SchedulerServiceTaskDescriptor,
   SchedulerServiceTaskFunction,
   SchedulerServiceTaskInvocationDefinition,
@@ -27,13 +28,13 @@ import { Knex } from 'knex';
 import { Duration } from 'luxon';
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
-import { PluginTaskScheduler, TaskSettingsV2 } from './types';
+import { TaskSettingsV2 } from './types';
 import { validateId } from './util';
 
 /**
  * Implements the actual task management.
  */
-export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
+export class PluginTaskSchedulerImpl implements SchedulerService {
   private readonly localTasksById = new Map<string, LocalTaskWorker>();
   private readonly allScheduledTasks: SchedulerServiceTaskDescriptor[] = [];
 
