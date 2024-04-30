@@ -26,6 +26,7 @@ auth:
       development:
         signIn:
           resolvers:
+            # typically you would pick one of these
             - resolver: emailMatchingUserEntityProfileEmail
             - resolver: emailLocalPartMatchingUserEntityName
             - resolver: forwardedUserMatchingUserEntityName

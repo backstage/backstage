@@ -29,6 +29,7 @@ auth:
       jwtHeader: x-custom-header # Optional: Only if you are using a custom header for the IAP JWT
       signIn:
         resolvers:
+          # typically you would pick one of these
           - resolver: emailMatchingUserEntityProfileEmail
           - resolver: emailLocalPartMatchingUserEntityName
           - resolver: emailMatchingUserEntityAnnotation

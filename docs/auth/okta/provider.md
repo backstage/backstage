@@ -49,6 +49,7 @@ auth:
         additionalScopes: ${AUTH_OKTA_ADDITIONAL_SCOPES} # Optional
         signIn:
           resolvers:
+            # typically you would pick one of these
             - resolver: emailMatchingUserEntityProfileEmail
             - resolver: emailLocalPartMatchingUserEntityName
             - resolver: emailMatchingUserEntityAnnotation

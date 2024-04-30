@@ -59,6 +59,7 @@ auth:
           - Mail.Send
         signIn:
           resolvers:
+            # typically you would pick one of these
             - resolver: emailMatchingUserEntityProfileEmail
             - resolver: emailLocalPartMatchingUserEntityName
             - resolver: emailMatchingUserEntityAnnotation

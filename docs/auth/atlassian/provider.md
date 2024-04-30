@@ -49,6 +49,7 @@ auth:
         scope: ${AUTH_ATLASSIAN_SCOPES}
         signIn:
           resolvers:
+            # typically you would pick one of these
             - resolver: emailMatchingUserEntityProfileEmail
             - resolver: emailLocalPartMatchingUserEntityName
             - resolver: usernameMatchingUserEntityName

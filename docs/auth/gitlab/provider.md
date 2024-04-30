@@ -45,6 +45,7 @@ auth:
         # callbackUrl: https://${BASE_URL}/api/auth/gitlab/handler/frame
         signIn:
           resolvers:
+            # typically you would pick one of these
             - resolver: emailMatchingUserEntityProfileEmail
             - resolver: emailLocalPartMatchingUserEntityName
             - resolver: usernameMatchingUserEntityName

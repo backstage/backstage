@@ -44,6 +44,7 @@ auth:
         clientSecret: ${AUTH_GOOGLE_CLIENT_SECRET}
         signIn:
           resolvers:
+            # typically you would pick one of these
             - resolver: emailMatchingUserEntityProfileEmail
             - resolver: emailLocalPartMatchingUserEntityName
             - resolver: emailMatchingUserEntityAnnotation
