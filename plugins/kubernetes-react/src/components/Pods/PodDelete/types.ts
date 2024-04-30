@@ -16,7 +16,7 @@
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 
 /**
- * Contains the details needed to make a delete request to Kubernetes, except the container name
+ * Contains the details needed to make a delete request to Kubernetes
  *
  * @public
  */
@@ -24,13 +24,4 @@ export interface PodScope {
   podName: string;
   podNamespace: string;
   cluster: ClusterAttributes;
-}
-
-/**
- * Contains the details needed to make a delete request to Kubernetes
- *
- * @public
- */
-export interface ContainerScope extends PodScope {
-  containerName: string;
 }

@@ -25,14 +25,9 @@ import { IContainer, IContainerStatus } from 'kubernetes-models/v1';
 import { DateTime } from 'luxon';
 import React from 'react';
 
-import {
-  useIsPodDeleteEnabled,
-  usePodDeleteButtonText,
-  useIsPodExecTerminalEnabled,
-} from '../../../hooks';
+import { useIsPodExecTerminalEnabled } from '../../../hooks';
 import { bytesToMiB, formatMillicores } from '../../../utils/resources';
 import { PodExecTerminalDialog } from '../../PodExecTerminal/PodExecTerminalDialog';
-import { PodDeleteDialog } from '../PodDelete/PodDeleteDialog';
 import { ResourceUtilization } from '../../ResourceUtilization';
 import { PodLogsDialog, PodScope } from '../PodLogs';
 
@@ -118,8 +113,6 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
   containerMetrics,
 }: ContainerCardProps) => {
   const isPodExecTerminalEnabled = useIsPodExecTerminalEnabled();
-  const isPodDeleteEnabled = useIsPodDeleteEnabled();
-  const usePodDeleteCustomButtonText = usePodDeleteButtonText();
 
   // This should never be undefined
   if (containerSpec === undefined) {
@@ -241,15 +234,6 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
             ...podScope,
           }}
         />
-        {isPodDeleteEnabled && (
-          <PodDeleteDialog
-            containerScope={{
-              containerName: containerStatus.name,
-              ...podScope,
-            }}
-            buttonText={usePodDeleteCustomButtonText}
-          />
-        )}
         {isPodExecTerminalEnabled && (
           <PodExecTerminalDialog
             cluster={podScope.cluster}

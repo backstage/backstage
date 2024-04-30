@@ -517,8 +517,6 @@ export interface KubernetesProxyApi {
     podName: string;
     namespace: string;
     clusterName: string;
-    containerName: string;
-    previous?: boolean;
   }): Promise<{
     text: string;
   }>;
@@ -551,14 +549,10 @@ export class KubernetesProxyClient {
     podName,
     namespace,
     clusterName,
-    containerName,
-    previous,
   }: {
     podName: string;
     namespace: string;
     clusterName: string;
-    containerName: string;
-    previous?: boolean;
   }): Promise<{
     text: string;
   }>;

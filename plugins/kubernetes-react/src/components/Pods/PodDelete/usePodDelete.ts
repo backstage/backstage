@@ -15,7 +15,7 @@
  */
 import useAsync from 'react-use/lib/useAsync';
 
-import { ContainerScope } from './types';
+import { PodScope } from './types';
 import { useApi } from '@backstage/core-plugin-api';
 import { kubernetesProxyApiRef } from '../../../api/types';
 
@@ -25,8 +25,7 @@ import { kubernetesProxyApiRef } from '../../../api/types';
  * @public
  */
 export interface PodDeleteOptions {
-  containerScope: ContainerScope;
-  previous?: boolean;
+  podScope: PodScope;
 }
 
 /**
@@ -34,18 +33,13 @@ export interface PodDeleteOptions {
  *
  * @public
  */
-export const usePodDelete = ({
-  containerScope,
-  previous,
-}: PodDeleteOptions) => {
+export const usePodDelete = ({ podScope }: PodDeleteOptions) => {
   const kubernetesProxyApi = useApi(kubernetesProxyApiRef);
   return useAsync(async () => {
     return await kubernetesProxyApi.deletePod({
-      podName: containerScope.podName,
-      namespace: containerScope.podNamespace,
-      containerName: containerScope.containerName,
-      clusterName: containerScope.cluster.name,
-      previous,
+      podName: podScope.podName,
+      namespace: podScope.podNamespace,
+      clusterName: podScope.cluster.name,
     });
-  }, [JSON.stringify(containerScope)]);
+  }, [JSON.stringify(podScope)]);
 };

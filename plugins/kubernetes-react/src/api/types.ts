@@ -87,8 +87,6 @@ export interface KubernetesProxyApi {
     podName: string;
     namespace: string;
     clusterName: string;
-    containerName: string;
-    previous?: boolean;
   }): Promise<{ text: string }>;
   getEventsByInvolvedObjectName(request: {
     clusterName: string;

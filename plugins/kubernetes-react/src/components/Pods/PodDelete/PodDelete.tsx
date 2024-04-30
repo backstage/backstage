@@ -23,7 +23,7 @@ import {
 import Paper from '@material-ui/core/Paper';
 import Skeleton from '@material-ui/lab/Skeleton';
 
-import { ContainerScope } from './types';
+import { PodScope } from './types';
 import { usePodDelete } from './usePodDelete';
 
 /**
@@ -32,8 +32,7 @@ import { usePodDelete } from './usePodDelete';
  * @public
  */
 export interface PodDeleteProps {
-  containerScope: ContainerScope;
-  previous?: boolean;
+  podScope: PodScope;
 }
 
 /**
@@ -42,13 +41,9 @@ export interface PodDeleteProps {
  * @public
  */
 export const PodDelete: React.FC<PodDeleteProps> = ({
-  containerScope,
-  previous,
+  podScope,
 }: PodDeleteProps) => {
-  const { value, error, loading } = usePodDelete({
-    containerScope,
-    previous,
-  });
+  const { value, error, loading } = usePodDelete({ podScope });
 
   return (
     <>

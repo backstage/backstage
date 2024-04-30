@@ -19,7 +19,7 @@ import DeleteIcon from '@material-ui/icons/Close';
 
 import { KubernetesDialog } from '../../KubernetesDialog';
 import { PodDelete } from './PodDelete';
-import { ContainerScope } from './types';
+import { PodScope } from './types';
 
 /**
  * Props for PodDeleteDialog
@@ -27,8 +27,7 @@ import { ContainerScope } from './types';
  * @public
  */
 export interface PodDeleteDialogProps {
-  containerScope: ContainerScope;
-  previous?: boolean;
+  podScope: PodScope;
   buttonText?: string;
 }
 
@@ -38,8 +37,7 @@ export interface PodDeleteDialogProps {
  * @public
  */
 export const PodDeleteDialog = ({
-  containerScope,
-  previous,
+  podScope,
   buttonText,
 }: PodDeleteDialogProps) => {
   return (
@@ -48,13 +46,11 @@ export const PodDeleteDialog = ({
       buttonIcon={<DeleteIcon />}
       buttonText={buttonText ?? 'Delete Pod'}
       disabled={false}
-      title={`${containerScope.podName} - ${
-        containerScope.containerName
-      } logs on cluster ${
-        containerScope.cluster.title || containerScope.cluster.name
+      title={`${podScope.podName} - logs on cluster ${
+        podScope.cluster.title || podScope.cluster.name
       }`}
     >
-      <PodDelete containerScope={containerScope} previous={previous} />
+      <PodDelete podScope={podScope} />
     </KubernetesDialog>
   );
 };
