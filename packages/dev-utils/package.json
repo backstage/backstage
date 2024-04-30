@@ -1,6 +1,6 @@
 {
   "name": "@backstage/dev-utils",
-  "version": "1.0.32-next.0",
+  "version": "1.0.32-next.1",
   "description": "Utilities for developing Backstage plugins.",
   "backstage": {
     "role": "web-library"

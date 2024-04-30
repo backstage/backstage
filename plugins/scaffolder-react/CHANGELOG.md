@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.8.5-next.1
+
+### Patch Changes
+
+- 9156654: Capturing more event clicks for scaffolder
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.2-next.1
+  - @backstage/core-components@0.14.6-next.1
+  - @backstage/plugin-catalog-react@1.11.4-next.1
+
 ## 1.8.5-next.0
 
 ### Patch Changes
