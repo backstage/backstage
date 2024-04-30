@@ -419,6 +419,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                 reason: stringifyError(err),
               });
               throw err;
+            } finally {
+              await task.serializeWorkspace?.({ path: workspacePath });
             }
           },
           createTemporaryDirectory: async () => {
@@ -460,6 +462,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       await taskTrack.markFailed(step, err);
       await stepTrack.markFailed();
       throw err;
+    } finally {
+      await task.serializeWorkspace?.({ path: workspacePath });
     }
   }
 
@@ -469,10 +473,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         'Wrong template version executed with the workflow engine',
       );
     }
-    const workspacePath = path.join(
-      this.options.workingDirectory,
-      await task.getWorkspaceName(),
-    );
+    const taskId = await task.getWorkspaceName();
+
+    const workspacePath = path.join(this.options.workingDirectory, taskId);
 
     const { additionalTemplateFilters, additionalTemplateGlobals } =
       this.options;
@@ -486,6 +489,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     });
 
     try {
+      await task.rehydrateWorkspace?.({ taskId, targetPath: workspacePath });
+
       const taskTrack = await this.tracker.taskStart(task);
       await fs.ensureDir(workspacePath);
 

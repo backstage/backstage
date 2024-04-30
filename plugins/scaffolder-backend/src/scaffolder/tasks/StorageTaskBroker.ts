@@ -99,6 +99,13 @@ export class TaskManager implements TaskContext {
     return this.task.taskId;
   }
 
+  async rehydrateWorkspace(options: {
+    taskId: string;
+    targetPath: string;
+  }): Promise<void> {
+    return this.storage.rehydrateWorkspace?.(options);
+  }
+
   get done() {
     return this.isDone;
   }
@@ -141,6 +148,13 @@ export class TaskManager implements TaskContext {
     await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
       state: this.task.state,
+    });
+  }
+
+  async serializeWorkspace?(options: { path: string }): Promise<void> {
+    await this.storage.serializeWorkspace?.({
+      path: options.path,
+      taskId: this.task.taskId,
     });
   }
 
@@ -219,6 +233,8 @@ export interface CurrentClaimedTask {
    * The creator of the task.
    */
   createdBy?: string;
+
+  workspace?: Promise<Buffer>;
 }
 
 function defer() {

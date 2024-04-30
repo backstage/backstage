@@ -42,6 +42,7 @@ import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
 import { intervalFromNowTill } from './dbUtil';
+import { restoreWorkspace, serializeWorkspace } from './serializer';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',
@@ -57,6 +58,7 @@ export type RawDbTaskRow = {
   created_at: string;
   created_by: string | null;
   secrets?: string | null;
+  workspace?: Buffer;
 };
 
 export type RawDbTaskEventRow = {
@@ -507,6 +509,30 @@ export class DatabaseTaskStore implements TaskStore {
         message,
       },
     });
+  }
+
+  async rehydrateWorkspace?(options: {
+    taskId: string;
+    targetPath: string;
+  }): Promise<void> {
+    const [result] = await this.db<RawDbTaskRow>('tasks')
+      .where({ id: options.taskId })
+      .select('workspace');
+
+    await restoreWorkspace(options.targetPath, result.workspace);
+  }
+
+  async serializeWorkspace(options: {
+    path: string;
+    taskId: string;
+  }): Promise<void> {
+    if (options.path) {
+      await this.db<RawDbTaskRow>('tasks')
+        .where({ id: options.taskId })
+        .update({
+          workspace: await serializeWorkspace(options.path),
+        });
+    }
   }
 
   async cancelTask(

@@ -361,11 +361,15 @@ export interface TaskContext {
     | undefined
   >;
   // (undocumented)
+  getWorkspace?(options: { taskId: string }): Promise<Buffer | undefined>;
+  // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
   isDryRun?: boolean;
   // (undocumented)
   secrets?: TaskSecrets;
+  // (undocumented)
+  serializeWorkspace?(options: { path: string }): Promise<void>;
   // (undocumented)
   spec: TaskSpec;
   // (undocumented)
