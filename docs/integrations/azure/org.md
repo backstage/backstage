@@ -7,11 +7,7 @@ description: Importing users and groups from Microsoft Entra ID into Backstage
 ---
 
 :::info
-This documentation is written for [the new backend
-system](../backend-system/index.md) which is the default since Backstage
-[version 1.24](../releases/v1.24.0.md). If you are still on the old backend
-system, you may want to read [its own article](./identity-resolver--old.md)
-instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./org--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 The Backstage catalog can be set up to ingest organizational data - users and

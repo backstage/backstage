@@ -7,11 +7,7 @@ description: Automatically discovering catalog entities from repositories in an 
 ---
 
 :::info
-This documentation is written for the old backend which has been replaced by
-[the new backend system](../backend-system/index.md), being the default since
-Backstage [version 1.24](../releases/v1.24.0.md). If have migrated to the new
-backend system, you may want to read [its own article](./discovery.md)
-instead. Otherwise, [consider migrating](../backend-system/building-backends/08-migrating.md)!
+This documentation is written for the old backend which has been replaced by [the new backend system](../../backend-system/index.md), being the default since Backstage [version 1.24](../../releases/v1.24.0.md). If have migrated to the new backend system, you may want to read [its own article](./discovery.md) instead. Otherwise, [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 The Azure DevOps integration has a special entity provider for discovering
