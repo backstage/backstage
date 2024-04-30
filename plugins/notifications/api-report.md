@@ -80,6 +80,7 @@ export const NotificationsPage: (
 
 // @public (undocumented)
 export type NotificationsPageProps = {
+  markAsReadOnLinkOpen?: boolean;
   title?: string;
   themeId?: string;
   subtitle?: string;
@@ -110,6 +111,7 @@ export const NotificationsSidebarItem: (props?: {
 
 // @public (undocumented)
 export const NotificationsTable: ({
+  markAsReadOnLinkOpen,
   isLoading,
   notifications,
   isUnread,
@@ -127,6 +129,7 @@ export type NotificationsTableProps = Pick<
   TableProps,
   'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
 > & {
+  markAsReadOnLinkOpen?: boolean;
   isLoading?: boolean;
   isUnread: boolean;
   notifications?: Notification_2[];
