@@ -182,7 +182,6 @@ export const Stepper = (stepperProps: StepperProps) => {
       setActiveStep(prevActiveStep => {
         const stepNum = prevActiveStep + 1;
         analytics.captureEvent('click', `Next Step (${stepNum})`);
-        analytics.captureEvent('click', `Next Step (${stepNum})`);
         return stepNum;
       });
     }
