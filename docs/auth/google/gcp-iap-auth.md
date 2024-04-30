@@ -55,9 +55,30 @@ If these resolvers do not fit your needs you can build a custom resolver, this i
 
 ## Backend Changes
 
-This provider is not enabled by default in the auth backend code, because
-besides the config section above, it also needs to be given one or more
-callbacks in actual code as well as described below.
+There is a module for this provider that you will need to add to your backend.
+
+First you'll want to run this command to add the module:
+
+```sh
+ yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-gcp-iap-provider
+```
+
+Then you will need to add this to your backend:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-auth-backend-module-gcp-iap-provider'));
+/* highlight-add-end */
+```
+
+### Legacy Backend Changes
+
+If you are still using the legacy backend you will need to make the changes outlined here.
+
+This provider is not enabled by default in the auth backend code, because besides the config section above, it also needs to be given one or more callbacks in actual code as well as described below.
 
 Add a `providerFactories` entry to the router in
 `packages/backend/src/plugins/auth.ts`.
@@ -110,27 +131,6 @@ export default async function createPlugin(
 Now the backend is ready to serve auth requests on the
 `/api/auth/gcp-iap/refresh` endpoint. All that's left is to update the frontend
 sign-in mechanism to poll that endpoint through the IAP, on the user's behalf.
-
-### New Backend System
-
-There is a module for this provider that works with the new backend system.
-
-First you'll want to run this command to add the module:
-
-```sh
- yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-gcp-iap-provider
-```
-
-Then you will need to add this to your backend:
-
-```ts title="packages/backend/src/index.ts"
-const backend = createBackend();
-
-backend.add(import('@backstage/plugin-auth-backend'));
-/* highlight-add-start */
-backend.add(import('@backstage/plugin-auth-backend-module-gcp-iap-provider'));
-/* highlight-add-end */
-```
 
 ## Frontend Changes
 
