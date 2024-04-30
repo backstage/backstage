@@ -1,5 +1,5 @@
 ---
-id: discovery
+id: discovery--old
 title: Azure DevOps Discovery
 sidebar_label: Discovery
 # prettier-ignore
@@ -7,11 +7,11 @@ description: Automatically discovering catalog entities from repositories in an 
 ---
 
 :::info
-This documentation is written for [the new backend
-system](../backend-system/index.md) which is the default since Backstage
-[version 1.24](../releases/v1.24.0.md). If you are still on the old backend
-system, you may want to read [its own article](./discovery--old.md)
-instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
+This documentation is written for the old backend which has been replaced by
+[the new backend system](../backend-system/index.md), being the default since
+Backstage [version 1.24](../releases/v1.24.0.md). If have migrated to the new
+backend system, you may want to read [its own article](./discovery.md)
+instead. Otherwise, [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
 The Azure DevOps integration has a special entity provider for discovering
@@ -38,7 +38,7 @@ Setup [Azure integration](locations.md) with `host` and `token`. Host must be `d
 
 ## Installation
 
-In your configuration, you add one or more provider configs:
+At your configuration, you add one or more provider configs:
 
 ```yaml title="app-config.yaml"
 catalog:
@@ -111,11 +111,81 @@ the Azure catalog plugin:
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-azure
 ```
 
-Then updated your backend by adding the following line:
+Once you've done that, you'll also need to add the segment below to `packages/backend/src/plugins/catalog.ts`:
 
-```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { AzureDevOpsEntityProvider } from '@backstage/plugin-catalog-backend-module-azure';
+
+const builder = await CatalogBuilder.create(env);
+/** ... other processors and/or providers ... */
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-azure/alpha'));
+builder.addEntityProvider(
+  AzureDevOpsEntityProvider.fromConfig(env.config, {
+    logger: env.logger,
+    // optional: alternatively, use scheduler with schedule defined in app-config.yaml
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 30 },
+      timeout: { minutes: 3 },
+    }),
+    // optional: alternatively, use schedule
+    scheduler: env.scheduler,
+  }),
+);
 /* highlight-add-end */
 ```
+
+## Alternative Processor
+
+As an alternative to the entity provider `AzureDevOpsEntityProvider`, you can still use the `AzureDevopsDiscoveryProcessor`.
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { AzureDevOpsDiscoveryProcessor } from '@backstage/plugin-catalog-backend-module-azure';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-next-line */
+  builder.addProcessor(
+    AzureDevOpsDiscoveryProcessor.fromConfig(env.config, {
+      logger: env.logger,
+    }),
+  );
+
+  // ..
+}
+```
+
+```yaml
+catalog:
+  locations:
+    # Scan all repositories for a catalog-info.yaml in the root of the default branch
+    - type: azure-discovery
+      target: https://dev.azure.com/myorg/myproject
+    # Or use a custom pattern for a subset of all repositories with default repository
+    - type: azure-discovery
+      target: https://dev.azure.com/myorg/myproject/_git/service-*
+    # Or use a custom file format and location
+    - type: azure-discovery
+      target: https://dev.azure.com/myorg/myproject/_git/*?path=/src/*/catalog-info.yaml
+    # And optionally provide a specific branch name using the version parameter
+    - type: azure-discovery
+      target: https://dev.azure.com/myorg/myproject/_git/*?path=/catalog-info.yaml&version=GBtopic/catalog-info
+```
+
+Note the `azure-discovery` type, as this is not a regular `url` processor.
+
+When using a custom pattern, the target is composed of these parts:
+
+- The base instance URL, `https://dev.azure.com` in this case
+- The organization name which is required, `myorg` in this case
+- The project name which is optional, `myproject` in this case. This defaults to \*, which scans all the projects where the token has access to.
+- The repository blob to scan, which accepts \* wildcard tokens and must be
+  added after `_git/`. This can simply be `*` to scan all repositories in the
+  project.
+- The path within each repository to find the catalog YAML file. This will
+  usually be `/catalog-info.yaml`, `/src/*/catalog-info.yaml` or a similar
+  variation for catalog files stored in the root directory of each repository.
+- The repository branch to scan which is optional, `topic/catalog-info` in this case. If omitted, the repo's default branch will be scanned. The `GB` prefix is required, as this is how Azure DevOps identifies the version as a branch.
