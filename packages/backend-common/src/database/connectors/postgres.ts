@@ -321,7 +321,7 @@ export class PgConnector implements Connector {
     let schemaOverrides;
     if (this.getPluginDivisionModeConfig() === 'schema') {
       schemaOverrides = this.getSchemaOverrides(pluginId);
-      if (this.getEnsureExistsConfig(pluginId)) {
+      if (this.getEnsureSchemaExistsConfig(pluginId)) {
         try {
           await pgConnector.ensureSchemaExists!(pluginConfig, pluginId);
         } catch (error) {
@@ -431,6 +431,15 @@ export class PgConnector implements Connector {
 
   private getEnsureExistsConfig(pluginId: string): boolean {
     const baseConfig = this.config.getOptionalBoolean('ensureExists') ?? true;
+    return (
+      this.config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureExists`) ??
+      baseConfig
+    );
+  }
+
+  private getEnsureSchemaExistsConfig(pluginId: string): boolean {
+    const baseConfig =
+      this.config.getOptionalBoolean('ensureSchemaExists') ?? true;
     return (
       this.config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureExists`) ??
       baseConfig
