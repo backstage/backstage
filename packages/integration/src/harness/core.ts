@@ -120,10 +120,6 @@ export function getHarnessRequestOptions(config: HarnessIntegrationConfig): {
   const headers: Record<string, string> = {};
   const { token, apiKey } = config;
 
-  if (!token) {
-    return headers;
-  }
-
   if (apiKey) {
     headers['x-api-key'] = apiKey;
   } else if (token) {

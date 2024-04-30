@@ -15,7 +15,7 @@
  */
 
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { setupRequestMockHandlers } from '../helpers';
 import { HarnessIntegrationConfig } from './config';
 import {
   getHarnessEditContentsUrl,
@@ -59,26 +59,26 @@ describe('Harness code core', () => {
     });
   });
 
-  describe('getGerritRequestOptions', () => {
+  describe('getHarnessRequestOptions', () => {
     it('adds token header when only a token is specified', () => {
       const authRequest: HarnessIntegrationConfig = {
-        host: 'gerrit.com',
+        host: 'app.harness.io',
         token: 'P',
       };
       const anonymousRequest: HarnessIntegrationConfig = {
-        host: 'gerrit.com',
+        host: 'app.harness.io',
       };
       expect(
         (getHarnessRequestOptions(authRequest).headers as any).Authorization,
       ).toEqual('Bearer P');
-      expect(
-        getHarnessRequestOptions(anonymousRequest).headers,
-      ).toBeUndefined();
+      expect(getHarnessRequestOptions(anonymousRequest).headers).toStrictEqual(
+        {},
+      );
     });
 
     it('adds basic auth when apikey and token are specified', () => {
       const authRequest: HarnessIntegrationConfig = {
-        host: 'gerrit.com',
+        host: 'app.harness.io',
         token: 'P',
         apiKey: 'a',
       };
