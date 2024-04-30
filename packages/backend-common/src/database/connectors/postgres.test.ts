@@ -16,8 +16,8 @@
 
 import { Config, ConfigReader } from '@backstage/config';
 import {
-  createPgDatabaseClient,
   buildPgDatabaseConfig,
+  createPgDatabaseClient,
   getPgConnectionConfig,
   parsePgConnectionString,
 } from './postgres';
