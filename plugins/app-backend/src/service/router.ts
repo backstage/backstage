@@ -17,8 +17,8 @@
 import {
   notFoundHandler,
   PluginDatabaseManager,
-  resolvePackagePath,
 } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { AppConfig, Config } from '@backstage/config';
 import helmet from 'helmet';
 import express from 'express';

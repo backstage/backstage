@@ -53,7 +53,9 @@
   },
   "dependencies": {
     "@backstage/backend-tasks": "workspace:^",
+    "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/types": "workspace:^",
@@ -62,6 +64,7 @@
     "knex": "^3.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"
   }
 }

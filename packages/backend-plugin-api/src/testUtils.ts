@@ -16,7 +16,7 @@
 
 // TODO: Remove this relative import when extrating the path utilities to this package
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { packagePathMocks } from '../../backend-common/src/paths';
+import { packagePathMocks } from './paths';
 import { posix as posixPath, resolve as resolvePath } from 'path';
 
 /** @public */
