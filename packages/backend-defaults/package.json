@@ -1,10 +1,10 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.2.17",
-  "description": "Backend defaults used by Backstage backend apps",
   "version": "0.2.18-next.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
+  "description": "Backend defaults used by Backstage backend apps",
+  "backstage": {
+    "role": "node-library"
+  },
   "publishConfig": {
     "access": "public",
     "main": "dist/index.cjs.js",
