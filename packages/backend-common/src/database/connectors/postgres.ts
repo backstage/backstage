@@ -143,16 +143,36 @@ export async function ensurePgDatabaseExists(
 
   try {
     const ensureDatabase = async (database: string) => {
-      const result = await admin
-        .from('pg_database')
-        .where('datname', database)
-        .count<Record<string, { count: string }>>();
+      if (
+        dbConfig.getOptionalString('pluginDivisionMode') === 'database' ||
+        dbConfig.getOptionalString('pluginDivisionMode') === undefined
+      ) {
+        const result = await admin
+          .from('pg_database')
+          .where('datname', database)
+          .count<Record<string, { count: string }>>();
 
-      if (parseInt(result[0].count, 10) > 0) {
-        return;
+        if (parseInt(result[0].count, 10) > 0) {
+          return;
+        }
+
+        await admin.raw(`CREATE DATABASE ??`, [database]);
+      } else if (
+        dbConfig.getOptionalString('pluginDivisionMode') === 'schema'
+      ) {
+        const pgClient = createPgDatabaseClient(dbConfig);
+        const result = await pgClient
+          .from('information_schema.schemata')
+          .where('schema_name', database)
+          .andWhere('catalog_name', '(SELECT current_database())')
+          .count<Record<string, { count: string }>>();
+
+        if (parseInt(result[0].count, 10) > 0) {
+          return;
+        }
+
+        await ensurePgSchemaExists(dbConfig, database);
       }
-
-      await admin.raw(`CREATE DATABASE ??`, [database]);
     };
 
     await Promise.all(
