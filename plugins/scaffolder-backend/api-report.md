@@ -418,8 +418,6 @@ export class DatabaseTaskStore implements TaskStore {
     | undefined
   >;
   // (undocumented)
-  getWorkspace?(options: { taskId: string }): Promise<Buffer | undefined>;
-  // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
   list(options: { createdBy?: string }): Promise<{
@@ -440,6 +438,11 @@ export class DatabaseTaskStore implements TaskStore {
   recoverTasks(options: TaskStoreRecoverTaskOptions): Promise<{
     ids: string[];
   }>;
+  // (undocumented)
+  rehydrateWorkspace?(options: {
+    taskId: string;
+    targetPath: string;
+  }): Promise<void>;
   // (undocumented)
   saveTaskState(options: { taskId: string; state?: JsonObject }): Promise<void>;
   // (undocumented)
@@ -562,9 +565,12 @@ export class TaskManager implements TaskContext_2 {
     | undefined
   >;
   // (undocumented)
-  getWorkspace(options: { taskId: string }): Promise<Buffer | undefined>;
-  // (undocumented)
   getWorkspaceName(): Promise<string>;
+  // (undocumented)
+  rehydrateWorkspace(options: {
+    taskId: string;
+    targetPath: string;
+  }): Promise<void>;
   // (undocumented)
   get secrets(): TaskSecrets_2 | undefined;
   // (undocumented)
@@ -621,8 +627,6 @@ export interface TaskStore {
     | undefined
   >;
   // (undocumented)
-  getWorkspace?(options: { taskId: string }): Promise<Buffer | undefined>;
-  // (undocumented)
   heartbeatTask(taskId: string): Promise<void>;
   // (undocumented)
   list?(options: { createdBy?: string }): Promise<{
@@ -642,6 +646,11 @@ export interface TaskStore {
   recoverTasks?(options: TaskStoreRecoverTaskOptions): Promise<{
     ids: string[];
   }>;
+  // (undocumented)
+  rehydrateWorkspace?(options: {
+    taskId: string;
+    targetPath: string;
+  }): Promise<void>;
   // (undocumented)
   saveTaskState?(options: {
     taskId: string;
