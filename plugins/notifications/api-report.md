@@ -103,6 +103,7 @@ export const NotificationsSidebarItem: (props?: {
   titleCounterEnabled?: boolean;
   snackbarEnabled?: boolean;
   snackbarAutoHideDuration?: number | null;
+  markAsReadOnLinkOpen?: boolean;
   className?: string;
   icon?: IconComponent;
   text?: string;
@@ -182,7 +183,10 @@ export function useTitleCounter(): {
 };
 
 // @public (undocumented)
-export function useWebNotifications(enabled: boolean): {
+export function useWebNotifications(
+  enabled: boolean,
+  markAsReadOnLinkOpen: boolean,
+): {
   sendWebNotification: (options: {
     id: string;
     title: string;

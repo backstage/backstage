@@ -15,14 +15,19 @@
  */
 import { useCallback, useEffect, useState } from 'react';
 import { rootRouteRef } from '../routes';
-import { useRouteRef } from '@backstage/core-plugin-api';
+import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
+import { notificationsApiRef } from '../api';
 
 /** @public */
-export function useWebNotifications(enabled: boolean) {
+export function useWebNotifications(
+  enabled: boolean,
+  markAsReadOnLinkOpen: boolean,
+) {
   const [webNotificationPermission, setWebNotificationPermission] =
     useState('default');
   const notificationsRoute = useRouteRef(rootRouteRef);
+  const notificationsApi = useApi(notificationsApiRef);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -57,6 +62,12 @@ export function useWebNotifications(enabled: boolean) {
         event.preventDefault();
         if (options.link) {
           window.open(options.link, '_blank');
+          if (markAsReadOnLinkOpen) {
+            notificationsApi.updateNotifications({
+              ids: [options.id],
+              read: true,
+            });
+          }
         } else {
           navigate(notificationsRoute());
         }
@@ -65,7 +76,13 @@ export function useWebNotifications(enabled: boolean) {
 
       return notification;
     },
-    [webNotificationPermission, navigate, notificationsRoute],
+    [
+      webNotificationPermission,
+      markAsReadOnLinkOpen,
+      notificationsApi,
+      navigate,
+      notificationsRoute,
+    ],
   );
 
   return { sendWebNotification };
