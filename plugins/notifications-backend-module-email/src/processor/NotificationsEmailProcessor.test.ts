@@ -30,6 +30,36 @@ jest.mock('nodemailer', () => ({
   createTransport: jest.fn(),
 }));
 
+const DEFAULT_ENTITIES_RESPONSE = {
+  items: [
+    {
+      kind: 'User',
+      spec: {
+        profile: {
+          email: 'mock@backstage.io',
+        },
+      },
+    },
+  ],
+};
+
+const DEFAULT_SENDMAIL_CONFIG = {
+  app: {
+    baseUrl: 'https://example.org',
+  },
+  notifications: {
+    processors: {
+      email: {
+        transportConfig: {
+          transport: 'sendmail',
+          path: '/usr/local/bin/sendmail',
+        },
+        sender: 'backstage@backstage.io',
+      },
+    },
+  },
+};
+
 describe('NotificationsEmailProcessor', () => {
   const logger = mockServices.logger.mock();
   const auth = mockServices.auth();
@@ -49,6 +79,10 @@ describe('NotificationsEmailProcessor', () => {
     const processor = new NotificationsEmailProcessor(
       logger,
       new ConfigReader({
+        app: {
+          baseUrl: 'http://localhost:3000',
+          externalBaseUrl: 'https://example.org',
+        },
         notifications: {
           processors: {
             email: {
@@ -95,6 +129,10 @@ describe('NotificationsEmailProcessor', () => {
     const processor = new NotificationsEmailProcessor(
       logger,
       new ConfigReader({
+        app: {
+          baseUrl: 'http://localhost:3000',
+          externalBaseUrl: 'https://example.org',
+        },
         notifications: {
           processors: {
             email: {
@@ -135,6 +173,10 @@ describe('NotificationsEmailProcessor', () => {
     const processor = new NotificationsEmailProcessor(
       logger,
       new ConfigReader({
+        app: {
+          baseUrl: 'http://localhost:3000',
+          externalBaseUrl: 'https://example.org',
+        },
         notifications: {
           processors: {
             email: {
@@ -175,29 +217,10 @@ describe('NotificationsEmailProcessor', () => {
 
   it('should send user email', async () => {
     (createTransport as jest.Mock).mockReturnValue(mockTransport);
-    getEntityRefMock.mockResolvedValue({
-      kind: 'User',
-      spec: {
-        profile: {
-          email: 'mock@backstage.io',
-        },
-      },
-    });
+    getEntityRefMock.mockResolvedValue(DEFAULT_ENTITIES_RESPONSE.items[0]);
     const processor = new NotificationsEmailProcessor(
       logger,
-      new ConfigReader({
-        notifications: {
-          processors: {
-            email: {
-              transportConfig: {
-                transport: 'sendmail',
-                path: '/usr/local/bin/sendmail',
-              },
-              sender: 'backstage@backstage.io',
-            },
-          },
-        },
-      }),
+      mockServices.rootConfig({ data: DEFAULT_SENDMAIL_CONFIG }),
       mockCatalogClient as unknown as CatalogClient,
       auth,
     );
@@ -218,41 +241,29 @@ describe('NotificationsEmailProcessor', () => {
 
     expect(sendmailMock).toHaveBeenCalledWith({
       from: 'backstage@backstage.io',
-      html: '<p></p>',
+      html: '<p><a href="https://example.org/notifications">https://example.org/notifications</a></p>',
       replyTo: undefined,
       subject: 'notification',
-      text: '',
+      text: 'https://example.org/notifications',
       to: 'mock@backstage.io',
     });
   });
 
   it('should send email to all', async () => {
     (createTransport as jest.Mock).mockReturnValue(mockTransport);
-    getEntitiesMock.mockResolvedValue({
-      items: [
-        {
-          kind: 'User',
-          spec: {
-            profile: {
-              email: 'mock@backstage.io',
-            },
-          },
-        },
-      ],
-    });
+    getEntitiesMock.mockResolvedValue(DEFAULT_ENTITIES_RESPONSE);
     const processor = new NotificationsEmailProcessor(
       logger,
-      new ConfigReader({
-        notifications: {
-          processors: {
-            email: {
-              transportConfig: {
-                transport: 'sendmail',
-                path: '/usr/local/bin/sendmail',
-              },
-              sender: 'backstage@backstage.io',
-              broadcastConfig: {
-                receiver: 'users',
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                broadcastConfig: {
+                  receiver: 'users',
+                },
               },
             },
           },
@@ -278,42 +289,30 @@ describe('NotificationsEmailProcessor', () => {
 
     expect(sendmailMock).toHaveBeenCalledWith({
       from: 'backstage@backstage.io',
-      html: '<p></p>',
+      html: '<p><a href="https://example.org/notifications">https://example.org/notifications</a></p>',
       replyTo: undefined,
       subject: 'notification',
-      text: '',
+      text: 'https://example.org/notifications',
       to: 'mock@backstage.io',
     });
   });
 
   it('should send email to configured addresses', async () => {
     (createTransport as jest.Mock).mockReturnValue(mockTransport);
-    getEntitiesMock.mockResolvedValue({
-      items: [
-        {
-          kind: 'User',
-          spec: {
-            profile: {
-              email: 'mock@backstage.io',
-            },
-          },
-        },
-      ],
-    });
+    getEntitiesMock.mockResolvedValue(DEFAULT_ENTITIES_RESPONSE);
     const processor = new NotificationsEmailProcessor(
       logger,
-      new ConfigReader({
-        notifications: {
-          processors: {
-            email: {
-              transportConfig: {
-                transport: 'sendmail',
-                path: '/usr/local/bin/sendmail',
-              },
-              sender: 'backstage@backstage.io',
-              broadcastConfig: {
-                receiver: 'config',
-                receiverEmails: ['broadcast@backstage.io'] as JsonArray,
+      mockServices.rootConfig({
+        data: {
+          ...DEFAULT_SENDMAIL_CONFIG,
+          notifications: {
+            processors: {
+              email: {
+                ...DEFAULT_SENDMAIL_CONFIG.notifications.processors.email,
+                broadcastConfig: {
+                  receiver: 'config',
+                  receiverEmails: ['broadcast@backstage.io'] as JsonArray,
+                },
               },
             },
           },
@@ -339,11 +338,89 @@ describe('NotificationsEmailProcessor', () => {
 
     expect(sendmailMock).toHaveBeenCalledWith({
       from: 'backstage@backstage.io',
-      html: '<p></p>',
+      html: '<p><a href="https://example.org/notifications">https://example.org/notifications</a></p>',
       replyTo: undefined,
       subject: 'notification',
-      text: '',
+      text: 'https://example.org/notifications',
       to: 'broadcast@backstage.io',
+    });
+  });
+
+  it('should send email with relative link to given address', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    getEntityRefMock.mockResolvedValue(DEFAULT_ENTITIES_RESPONSE.items[0]);
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: DEFAULT_SENDMAIL_CONFIG,
+      }),
+      mockCatalogClient as unknown as CatalogClient,
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: 'user:default/mock',
+        created: new Date(),
+        payload: {
+          title: 'notification',
+          link: 'catalog/user/default/john.doe',
+        },
+      },
+      {
+        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledWith({
+      from: 'backstage@backstage.io',
+      html: '<p><a href="https://example.org/catalog/user/default/john.doe">https://example.org/catalog/user/default/john.doe</a></p>',
+      replyTo: undefined,
+      subject: 'notification',
+      text: 'https://example.org/catalog/user/default/john.doe',
+      to: 'mock@backstage.io',
+    });
+  });
+
+  it('should send email with absolute link to given address', async () => {
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    getEntityRefMock.mockResolvedValue(DEFAULT_ENTITIES_RESPONSE.items[0]);
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({
+        data: DEFAULT_SENDMAIL_CONFIG,
+      }),
+      mockCatalogClient as unknown as CatalogClient,
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: 'user:default/mock',
+        created: new Date(),
+        payload: {
+          title: 'notification',
+          link: 'https://backstage.io',
+        },
+      },
+      {
+        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledWith({
+      from: 'backstage@backstage.io',
+      html: '<p><a href="https://backstage.io/">https://backstage.io/</a></p>',
+      replyTo: undefined,
+      subject: 'notification',
+      text: 'https://backstage.io/',
+      to: 'mock@backstage.io',
     });
   });
 });
