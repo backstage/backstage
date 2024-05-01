@@ -441,8 +441,9 @@ export class PgConnector implements Connector {
     const baseConfig =
       this.config.getOptionalBoolean('ensureSchemaExists') ?? true;
     return (
-      this.config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureExists`) ??
-      baseConfig
+      this.config.getOptionalBoolean(
+        `${pluginPath(pluginId)}.getEnsureSchemaExistsConfig`,
+      ) ?? baseConfig
     );
   }
 
