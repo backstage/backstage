@@ -125,6 +125,7 @@ integration:
 
 - Reading software components:
   - `Contents`: `Read-only`
+  - `Commit statuses`: `Read-only`
 - Reading organization data:
   - `Members`: `Read-only`
 - Publishing software templates:
@@ -135,7 +136,6 @@ integration:
   - `Pull requests`: `Read & write`
   - `Issues`: `Read & write`
   - `Workflows`: `Read & write` (if templates include GitHub workflows)
-  - `Commit statuses`: `Read-only`
   - `Variables`: `Read & write` (if templates include GitHub Action Repository Variables)
   - `Secrets`: `Read & write` (if templates include GitHub Action Repository Secrets)
   - `Environments`: `Read & write` (if templates include GitHub Environments)
