@@ -88,7 +88,8 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Initializes a GitLab repository with fast forward merge and always squash settings.',
+    description:
+      'Initializes a GitLab repository with fast forward merge and always squash settings.',
     example: yaml.stringify({
       steps: [
         {

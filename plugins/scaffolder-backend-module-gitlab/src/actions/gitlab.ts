@@ -179,7 +179,8 @@ export function createPublishGitlabAction(options: {
               },
               squash_option: {
                 title: 'Squash option',
-                description: 'Set squash option for the project (never, always, default_on, default_off)',
+                description:
+                  'Set squash option for the project (never, always, default_on, default_off)',
                 type: 'string',
                 enum: ['default_off', 'default_on', 'never', 'always'],
               },
