@@ -2,4 +2,4 @@
 '@backstage/backend-common': patch
 ---
 
-add ensureSchemaExists backend database config
+Added config prop `ensureSchemaExists` to support postgres instances where user can create schemas but not databases.
