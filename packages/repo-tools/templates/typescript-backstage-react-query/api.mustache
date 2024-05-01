@@ -23,7 +23,7 @@ import {createApiFactory, createApiRef, discoveryApiRef, fetchApiRef, useApi} fr
 /**
  * @public
  */
-export const {{appName}}ApiRef = createApiRef<{{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client>({
+export const {{#lambda.camelcase}}{{appName}}{{/lambda.camelcase}}ApiRef = createApiRef<{{#lambda.pascalcase}}{{appName}}{{/lambda.pascalcase}}Client>({
   id: '{{apiRefNamespace}}.{{appName}}',
 });
 
