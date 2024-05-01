@@ -77,7 +77,7 @@ const config: Config = {
         let previous;
         do {
           previous = input;
-          input = input.replace(/<!--|--!?>/g, '');
+          input = input.replace(/<!--.*?-->/gs, '');
         } while (input !== previous);
         return input;
       }
