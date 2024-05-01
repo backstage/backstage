@@ -22,44 +22,27 @@ The provider configuration can be added to your `app-config.yaml` under the root
 auth:
   environment: development
   providers:
-    oauth2Proxy: {}
+    oauth2Proxy:
+      development:
+        signIn:
+          resolvers:
+            # typically you would pick one of these
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: forwardedUserMatchingUserEntityName
 ```
 
-Right now no configuration options are supported, but the empty object is needed
-to enable the provider in the auth backend.
+### Resolvers
 
-To use the `oauth2Proxy` provider you must also configure it with a sign-in resolver.
-For more information about the sign-in process in general, see the
-[Sign-in Identities and Resolvers](../identity-resolver.md) documentation.
+This provider includes several resolvers out of the box that you can use:
 
-For the `oauth2Proxy` provider, the sign-in result is quite different than other providers.
-Because it's a proxy provider that can be configured to forward information through
-arbitrary headers, the auth result simply just gives you access to the HTTP headers
-of the incoming request. Using these you can either extract the information directly,
-or grab ID or access tokens to look up additional information and/or validate the request.
+- `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
+- `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
+- `forwardedUserMatchingUserEntityName`: Matches the value in the `x-forwarded-user` header from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 
-A simple sign-in resolver might for example look like this:
+> Note: The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
 
-```ts
-providerFactories: {
-  ...defaultAuthProviderFactories,
-  oauth2Proxy: providers.oauth2Proxy.create({
-    signIn: {
-      async resolver({ result }, ctx) {
-        const name = result.getHeader('x-forwarded-user');
-        if (!name) {
-          throw new Error('Request did not contain a user')
-        }
-        return ctx.signInWithCatalogUser({
-          entityRef: { name },
-        });
-      },
-    },
-  }),
-},
-```
-
-[An example on how to sign a user in without a matching user](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/auth.ts)
+If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
 
 ## Adding the provider to the Backstage frontend
 
