@@ -56,13 +56,13 @@ Si vous voulez contribuer et vous impliquer dans notre communauté, voici les re
 - [Discord chatroom](https://discord.gg/backstage-687207715902193673) - Pour obtenir de l'aide ou discuter du projet
 - [Contributing to Backstage](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md) - Rendez-vous ici si vous souhaitez contribuer
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - Contribuez à définir la direction technique
-- [FAQ](https://backstage.io/docs/FAQ) - FAQ
+- [FAQ](https://backstage.io/docs/FAQ)
 - [Code of Conduct](CODE_OF_CONDUCT.md) - C'est comme ça qu'on fonctionne
 - [Adopters](ADOPTERS.md) - Les entreprises utilisent déjà Backstage
 - [Blog](https://backstage.io/blog/) - Annonces et mises à jour
 - [Newsletter](https://spoti.fi/backstagenewsletter) - Abonnez-vous à notre newsletter par e-mail
 - [Backstage Community Sessions](https://github.com/backstage/community) - Participez aux rencontres mensuelles et découvrez la communauté Backstage
-- Donnez-nous une étoile ⭐️ - Si vous utilisez Backstage ou si vous trouvez que c'est un projet intéressant, nous apprécierions beaucoup votre soutien. ❤️
+- Donnez-nous une étoile ⭐️ - Si vous utilisez Backstage ou si vous trouvez que c'est un projet intéressant, nous apprécierions beaucoup votre soutien ❤️
 
 ## Licence
 
