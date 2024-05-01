@@ -175,11 +175,13 @@ export function createPublishGitlabAction(options: {
                 title: 'Merge Method to use',
                 description: 'Merge Methods (merge, rebase_merge, ff)',
                 type: 'string',
+                enum: ['merge', 'rebase_merge', 'ff'],
               },
               squash_option: {
                 title: 'Squash option',
-                description: 'Set squash option for the project (never, always, default_on, default_off',
+                description: 'Set squash option for the project (never, always, default_on, default_off)',
                 type: 'string',
+                enum: ['default_off', 'default_on', 'never', 'always'],
               },
               topics: {
                 title: 'Topic labels',
