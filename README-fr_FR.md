@@ -60,14 +60,15 @@ Si vous voulez contribuer et vous impliquer dans notre communauté, voici les re
 - [Code of Conduct](CODE_OF_CONDUCT.md) - C'est comme ça qu'on fonctionne
 - [Adopters](ADOPTERS.md) - Les entreprises utilisent déjà Backstage
 - [Blog](https://backstage.io/blog/) - Annonces et mises à jour
-- [Newsletter](https://spoti.fi/backstagenewsletter) - Abonnez-vous à notre newsletter par e-mail
+- [Newsletter](https://spoti.fi/backstagenewsletter) - Abonnez-vous à notre newsletter par mail
 - [Backstage Community Sessions](https://github.com/backstage/community) - Participez aux rencontres mensuelles et découvrez la communauté Backstage
 - Donnez-nous une étoile ⭐️ - Si vous utilisez Backstage ou si vous trouvez que c'est un projet intéressant, nous apprécierions beaucoup votre soutien ❤️
 
 ## Licence
 
-Copyright 2020-2024 © Les auteurs de Backstage. Tous droits réservés. La Linux Foundation détient des marques déposées et utilise des marques commerciales. Pour une liste des marques de commerce de la Linux Foundation, veuillez consulter notre page d'utilisation des marques : 
-Sous licence Apache, version 2.0 : http://www.apache.org/licenses/LICENSE-2.0
+Copyright 2020-2024 © Les auteurs de Backstage. Tous droits réservés. La Linux Foundation détient des marques déposées et utilise des marques commerciales. Pour une liste des marques de commerce de la Linux Foundation, veuillez consulter notre page d'utilisation des marques: https://www.linuxfoundation.org/trademark-usage
+
+Sous licence Apache, version 2.0: http://www.apache.org/licenses/LICENSE-2.0
 
 ## Sécurité
 
