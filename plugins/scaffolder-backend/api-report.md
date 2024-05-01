@@ -439,7 +439,7 @@ export class DatabaseTaskStore implements TaskStore {
     ids: string[];
   }>;
   // (undocumented)
-  rehydrateWorkspace?(options: {
+  rehydrateWorkspace(options: {
     taskId: string;
     targetPath: string;
   }): Promise<void>;
