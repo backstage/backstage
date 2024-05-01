@@ -28,7 +28,7 @@ import { ContainerCard } from './ContainerCard';
 
 import { PodAndErrors } from '../types';
 import { KubernetesDrawer } from '../../KubernetesDrawer';
-import { PodDeleteDialog } from '../PodDelete/PodDeleteDialog';
+import { PodDeleteButton } from '../PodDelete/PodDeleteButton';
 import { PendingPodContent } from './PendingPodContent';
 import { ErrorList } from '../ErrorList';
 import { usePodMetrics } from '../../../hooks/usePodMetrics';
@@ -102,7 +102,7 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
       <div className={classes.content}>
         {isPodDeleteEnabled && (
           <CardActions>
-            <PodDeleteDialog
+            <PodDeleteButton
               podScope={{
                 podName: podAndErrors.pod.metadata?.name ?? 'unknown',
                 podNamespace: podAndErrors.pod.metadata?.namespace ?? 'default',

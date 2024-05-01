@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './PodDelete';
-export * from './PodDeleteDialog';
+export * from './PodDeleteButton';
 export * from './usePodDelete';
 export * from './types';

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import useAsync from 'react-use/lib/useAsync';
+import { useCallback } from 'react';
 
 import { PodScope } from './types';
 import { useApi } from '@backstage/core-plugin-api';
@@ -33,13 +33,19 @@ export interface PodDeleteOptions {
  *
  * @public
  */
-export const usePodDelete = ({ podScope }: PodDeleteOptions) => {
+export const usePodDelete = () => {
   const kubernetesProxyApi = useApi(kubernetesProxyApiRef);
-  return useAsync(async () => {
-    return await kubernetesProxyApi.deletePod({
-      podName: podScope.podName,
-      namespace: podScope.podNamespace,
-      clusterName: podScope.cluster.name,
-    });
-  }, [JSON.stringify(podScope)]);
+
+  const deletePod = useCallback(
+    async (podScope: PodScope) => {
+      return await kubernetesProxyApi.deletePod({
+        podName: podScope.podName,
+        namespace: podScope.podNamespace,
+        clusterName: podScope.cluster.name,
+      });
+    },
+    [kubernetesProxyApi],
+  );
+
+  return deletePod;
 };
