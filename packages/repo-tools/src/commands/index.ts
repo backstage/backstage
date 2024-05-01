@@ -59,6 +59,25 @@ function registerPackageCommand(program: Command) {
         import('./package/schema/openapi/generate').then(m => m.command),
       ),
     );
+
+  openApiCommand
+    .command('fuzz')
+    .description(
+      'Fuzz an OpenAPI schema by generating random data and sending it to the server.',
+    )
+    .option('--limit <limit>', 'Maximum number of requests to send.')
+    .option('--workers <workers>', 'Number of workers to use', '2')
+    .option(
+      '--debug',
+      `Enable debug mode, which will save cassettes to '.cassettes/{pluginId}.yml'`,
+    )
+    .option(
+      '--exclude-checks <excludeChecks>',
+      'Exclude checks from schemathesis run',
+    )
+    .action(
+      lazy(() => import('./package/schema/openapi/fuzz').then(m => m.command)),
+    );
 }
 
 function registerRepoCommand(program: Command) {
@@ -102,6 +121,17 @@ function registerRepoCommand(program: Command) {
     .option('--update', 'Update the spec on failure.')
     .action(
       lazy(() => import('./repo/schema/openapi/test').then(m => m.bulkCommand)),
+    );
+
+  openApiCommand
+    .command('fuzz')
+    .description('Fuzz all packages')
+    .option(
+      '--since <ref>',
+      'Only fuzz packages that have changed since the given ref',
+    )
+    .action(
+      lazy(() => import('./repo/schema/openapi/fuzz').then(m => m.command)),
     );
 }
 

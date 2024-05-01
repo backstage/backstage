@@ -21,7 +21,7 @@ import {
   useApi,
 } from '@backstage/core-plugin-api';
 import { useEffect } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 /** @public */
 export const useUserProfile = () => {

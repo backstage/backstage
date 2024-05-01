@@ -6,16 +6,16 @@
 /// <reference types="react" />
 
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncState } from 'react-use/lib/useAsync';
-import { AutocompleteProps } from '@material-ui/lab';
+import { AsyncState } from 'react-use/esm/useAsync';
+import { AutocompleteProps } from '@material-ui/lab/Autocomplete';
 import { Extension } from '@backstage/core-plugin-api';
 import { ForwardRefExoticComponent } from 'react';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { LinkProps } from '@backstage/core-components';
-import { ListItemProps } from '@material-ui/core';
-import { ListItemTextProps } from '@material-ui/core';
-import { ListProps } from '@material-ui/core';
+import { ListItemProps } from '@material-ui/core/ListItem';
+import { ListItemTextProps } from '@material-ui/core/ListItemText';
+import { ListProps } from '@material-ui/core/List';
 import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { ReactElement } from 'react';
@@ -26,7 +26,7 @@ import { SearchQuery } from '@backstage/plugin-search-common';
 import { SearchResult as SearchResult_2 } from '@backstage/plugin-search-common';
 import { SearchResultSet } from '@backstage/plugin-search-common';
 import { TextFieldProps } from '@material-ui/core/TextField';
-import { TypographyProps } from '@material-ui/core';
+import { TypographyProps } from '@material-ui/core/Typography';
 
 // @public (undocumented)
 export const AutocompleteFilter: (

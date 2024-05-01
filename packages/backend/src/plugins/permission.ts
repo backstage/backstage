@@ -24,23 +24,15 @@ import {
   PermissionPolicy,
   PolicyQuery,
 } from '@backstage/plugin-permission-node';
-import {
-  DefaultPlaylistPermissionPolicy,
-  isPlaylistPermission,
-} from '@backstage/plugin-playlist-backend';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
 class ExamplePermissionPolicy implements PermissionPolicy {
-  private playlistPermissionPolicy = new DefaultPlaylistPermissionPolicy();
-
   async handle(
-    request: PolicyQuery,
-    user?: BackstageIdentityResponse,
+    _request: PolicyQuery,
+    _user?: BackstageIdentityResponse,
   ): Promise<PolicyDecision> {
-    if (isPlaylistPermission(request.permission)) {
-      return this.playlistPermissionPolicy.handle(request, user);
-    }
+    // some logic to determine if the user is allowed to access the resource
 
     return {
       result: AuthorizeResult.ALLOW,

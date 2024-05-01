@@ -25,6 +25,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
 import { resolveSafeChildPath } from '@backstage/backend-common';
 import { createGitlabApi } from './helpers';
+import { examples } from './gitlabMergeRequest.examples';
 
 /**
  * Create a new action that creates a gitlab merge request.
@@ -52,6 +53,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     assignee?: string;
   }>({
     id: 'publish:gitlab:merge-request',
+    examples,
     schema: {
       input: {
         required: ['repoUrl', 'branchName'],

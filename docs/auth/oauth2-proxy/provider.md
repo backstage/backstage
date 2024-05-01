@@ -22,8 +22,7 @@ The provider configuration can be added to your `app-config.yaml` under the root
 auth:
   environment: development
   providers:
-    oauth2Proxy:
-      development: {}
+    oauth2Proxy: {}
 ```
 
 Right now no configuration options are supported, but the empty object is needed

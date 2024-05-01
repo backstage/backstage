@@ -233,3 +233,9 @@ Full documentation can be found on the [Docusaurus website](https://docusaurus.i
     - `highlight-remove-next-line`
     - `highlight-remove-start`
     - `highlight-remove-end`
+
+## Feedback widget
+
+A feedback widget is provided by the `docusaurus-pushfeedback` plugin, which connects to the https://pushfeedback.com service. Styling of the button is configured in `microsite/src/theme/customTheme.scss`, while the plugin itself is configured in `microsite/docusaurus.config.js`.
+
+Feedback submissions are connected to an account owned by @Rugvip and are available on request, reach out to @Rugvip on [Discord](https://discord.gg/backstage-687207715902193673).

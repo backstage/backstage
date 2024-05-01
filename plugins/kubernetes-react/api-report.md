@@ -4,7 +4,7 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
-import { AsyncState } from 'react-use/lib/useAsyncFn';
+import { AsyncState } from 'react-use/esm/useAsyncFn';
 import { ClientContainerStatus } from '@backstage/plugin-kubernetes-common';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';

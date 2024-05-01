@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  AuthService,
+  BackstageCredentials,
+} from '@backstage/backend-plugin-api';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { CATALOG_FILTER_EXISTS, CatalogApi } from '@backstage/catalog-client';
 import {
@@ -34,16 +38,23 @@ function isObject(obj: unknown): obj is JsonObject {
 
 export class CatalogClusterLocator implements KubernetesClustersSupplier {
   private catalogClient: CatalogApi;
+  private auth: AuthService;
 
-  constructor(catalogClient: CatalogApi) {
+  constructor(catalogClient: CatalogApi, auth: AuthService) {
     this.catalogClient = catalogClient;
+    this.auth = auth;
   }
 
-  static fromConfig(catalogApi: CatalogApi): CatalogClusterLocator {
-    return new CatalogClusterLocator(catalogApi);
+  static fromConfig(
+    catalogApi: CatalogApi,
+    auth: AuthService,
+  ): CatalogClusterLocator {
+    return new CatalogClusterLocator(catalogApi, auth);
   }
 
-  async getClusters(): Promise<ClusterDetails[]> {
+  async getClusters(options?: {
+    credentials: BackstageCredentials;
+  }): Promise<ClusterDetails[]> {
     const apiServerKey = `metadata.annotations.${ANNOTATION_KUBERNETES_API_SERVER}`;
     const apiServerCaKey = `metadata.annotations.${ANNOTATION_KUBERNETES_API_SERVER_CA}`;
     const authProviderKey = `metadata.annotations.${ANNOTATION_KUBERNETES_AUTH_PROVIDER}`;
@@ -56,9 +67,21 @@ export class CatalogClusterLocator implements KubernetesClustersSupplier {
       [authProviderKey]: CATALOG_FILTER_EXISTS,
     };
 
-    const clusters = await this.catalogClient.getEntities({
-      filter: [filter],
-    });
+    const clusters = await this.catalogClient.getEntities(
+      {
+        filter: [filter],
+      },
+      options?.credentials
+        ? {
+            token: (
+              await this.auth.getPluginRequestToken({
+                onBehalfOf: options.credentials,
+                targetPluginId: 'catalog',
+              })
+            ).token,
+          }
+        : undefined,
+    );
     return clusters.items.map(entity => {
       const annotations = entity.metadata.annotations!;
       const clusterDetails: ClusterDetails = {

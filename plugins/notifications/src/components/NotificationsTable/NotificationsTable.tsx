@@ -13,296 +13,300 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Button,
-  IconButton,
-  makeStyles,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
-import {
-  Notification,
-  NotificationType,
-} from '@backstage/plugin-notifications-common';
-import { useNavigate } from 'react-router-dom';
-import Checkbox from '@material-ui/core/Checkbox';
-import Check from '@material-ui/icons/Check';
-import Bookmark from '@material-ui/icons/Bookmark';
-import { notificationsApiRef } from '../../api';
-import { useApi } from '@backstage/core-plugin-api';
-import Inbox from '@material-ui/icons/Inbox';
-import CloseIcon from '@material-ui/icons/Close';
+import React from 'react';
+import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
-import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import CheckBox from '@material-ui/core/Checkbox';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
+import { Notification } from '@backstage/plugin-notifications-common';
+import { useConfirm } from 'material-ui-confirm';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  Link,
+  Table,
+  TableColumn,
+  TableProps,
+} from '@backstage/core-components';
 
-const useStyles = makeStyles(theme => ({
-  table: {
-    border: `1px solid ${theme.palette.divider}`,
-  },
-  header: {
-    borderBottom: `1px solid ${theme.palette.divider}`,
-  },
+import { notificationsApiRef } from '../../api';
 
-  notificationRow: {
-    cursor: 'pointer',
-    '&.unread': {
-      border: '1px solid rgba(255, 255, 255, .3)',
-    },
-    '& .hideOnHover': {
-      display: 'initial',
-    },
-    '& .showOnHover': {
-      display: 'none',
-    },
-    '&:hover': {
-      '& .hideOnHover': {
-        display: 'none',
-      },
-      '& .showOnHover': {
-        display: 'initial',
-      },
-    },
+import { SeverityIcon } from './SeverityIcon';
+import { SelectAll } from './SelectAll';
+import { BulkActions } from './BulkActions';
+
+const ThrottleDelayMs = 1000;
+
+const useStyles = makeStyles({
+  description: {
+    maxHeight: '5rem',
+    overflow: 'scroll',
   },
-  actionButton: {
-    padding: '9px',
+  severityItem: {
+    alignContent: 'center',
   },
-  checkBox: {
-    padding: '0 10px 10px 0',
-  },
-}));
+});
 
 /** @public */
-export const NotificationsTable = (props: {
-  onUpdate: () => void;
-  type: NotificationType;
+export type NotificationsTableProps = Pick<
+  TableProps,
+  'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
+> & {
+  markAsReadOnLinkOpen?: boolean;
+  isLoading?: boolean;
+  isUnread: boolean;
   notifications?: Notification[];
-}) => {
-  const { notifications, type } = props;
-  const navigate = useNavigate();
-  const styles = useStyles();
-  const [selected, setSelected] = useState<string[]>([]);
+  onUpdate: () => void;
+  setContainsText: (search: string) => void;
+  pageSize: number;
+};
+
+/** @public */
+export const NotificationsTable = ({
+  markAsReadOnLinkOpen,
+  isLoading,
+  notifications = [],
+  isUnread,
+  onUpdate,
+  setContainsText,
+  onPageChange,
+  onRowsPerPageChange,
+  page,
+  pageSize,
+  totalCount,
+}: NotificationsTableProps) => {
+  const classes = useStyles();
   const notificationsApi = useApi(notificationsApiRef);
+  const alertApi = useApi(alertApiRef);
+  const confirm = useConfirm();
 
-  const onCheckBoxClick = (id: string) => {
-    const index = selected.indexOf(id);
-    if (index !== -1) {
-      setSelected(selected.filter(s => s !== id));
-    } else {
-      setSelected([...selected, id]);
-    }
-  };
+  const [selectedNotifications, setSelectedNotifications] = React.useState(
+    new Set<Notification['id']>(),
+  );
 
-  useEffect(() => {
-    setSelected([]);
-  }, [type]);
+  const onNotificationsSelectChange = React.useCallback(
+    (ids: Notification['id'][], checked: boolean) => {
+      let newSelect: Set<Notification['id']>;
+      if (checked) {
+        newSelect = new Set([...selectedNotifications, ...ids]);
+      } else {
+        newSelect = new Set(selectedNotifications);
+        ids.forEach(id => newSelect.delete(id));
+      }
+      setSelectedNotifications(newSelect);
+    },
+    [selectedNotifications, setSelectedNotifications],
+  );
 
-  const isChecked = (id: string) => {
-    return selected.indexOf(id) !== -1;
-  };
+  const onSwitchReadStatus = React.useCallback(
+    (ids: Notification['id'][], newStatus: boolean) => {
+      notificationsApi
+        .updateNotifications({
+          ids,
+          read: newStatus,
+        })
+        .then(onUpdate);
+    },
+    [notificationsApi, onUpdate],
+  );
 
-  const isAllSelected = () => {
-    return (
-      selected.length === notifications?.length && notifications.length > 0
+  const onSwitchSavedStatus = React.useCallback(
+    (ids: Notification['id'][], newStatus: boolean) => {
+      notificationsApi
+        .updateNotifications({
+          ids,
+          saved: newStatus,
+        })
+        .then(onUpdate);
+    },
+    [notificationsApi, onUpdate],
+  );
+
+  const onMarkAllRead = React.useCallback(() => {
+    confirm({
+      title: 'Are you sure?',
+      description: (
+        <>
+          Mark <b>all</b> notifications as <b>read</b>.
+        </>
+      ),
+      confirmationText: 'Mark All',
+    })
+      .then(async () => {
+        const ids = (
+          await notificationsApi.getNotifications({ read: false })
+        ).notifications?.map(notification => notification.id);
+
+        return notificationsApi
+          .updateNotifications({
+            ids,
+            read: true,
+          })
+          .then(onUpdate);
+      })
+      .catch(e => {
+        if (e) {
+          // if e === undefined, the Cancel button has been hit
+          alertApi.post({
+            message: 'Failed to mark all notifications as read',
+            severity: 'error',
+          });
+        }
+      });
+  }, [alertApi, confirm, notificationsApi, onUpdate]);
+
+  const throttledContainsTextHandler = React.useMemo(
+    () => throttle(setContainsText, ThrottleDelayMs),
+    [setContainsText],
+  );
+
+  React.useEffect(() => {
+    const allShownIds = new Set(notifications.map(n => n.id));
+    const intersect = [...selectedNotifications].filter(id =>
+      allShownIds.has(id),
     );
-  };
+    if (selectedNotifications.size !== intersect.length) {
+      setSelectedNotifications(new Set(intersect));
+    }
+  }, [notifications, selectedNotifications]);
+
+  const compactColumns = React.useMemo(
+    (): TableColumn<Notification>[] => [
+      {
+        /* selection column */
+        width: '1rem',
+        title: (
+          <SelectAll
+            count={selectedNotifications.size}
+            totalCount={notifications.length}
+            onSelectAll={() =>
+              onNotificationsSelectChange(
+                notifications.map(notification => notification.id),
+                selectedNotifications.size !== notifications.length,
+              )
+            }
+          />
+        ),
+        render: (notification: Notification) => (
+          <CheckBox
+            color="primary"
+            checked={selectedNotifications.has(notification.id)}
+            onChange={(_, checked) =>
+              onNotificationsSelectChange([notification.id], checked)
+            }
+          />
+        ),
+      },
+      {
+        /* compact-data column */
+        customFilterAndSearch: () =>
+          true /* Keep sorting&filtering on backend due to pagination. */,
+        render: (notification: Notification) => {
+          // Compact content
+          return (
+            <Grid container>
+              <Grid item className={classes.severityItem}>
+                <SeverityIcon severity={notification.payload?.severity} />
+              </Grid>
+              <Grid item xs={11}>
+                <Box>
+                  <Typography variant="subtitle2">
+                    {notification.payload.link ? (
+                      <Link
+                        to={notification.payload.link}
+                        onClick={() => {
+                          if (markAsReadOnLinkOpen && !notification.read) {
+                            onSwitchReadStatus([notification.id], true);
+                          }
+                        }}
+                      >
+                        {notification.payload.title}
+                      </Link>
+                    ) : (
+                      notification.payload.title
+                    )}
+                  </Typography>
+                  {notification.payload.description ? (
+                    <Typography variant="body2" className={classes.description}>
+                      {notification.payload.description}
+                    </Typography>
+                  ) : null}
+                  <Typography variant="caption">
+                    {notification.origin && (
+                      <>{notification.origin}&nbsp;&bull;&nbsp;</>
+                    )}
+                    {notification.payload.topic && (
+                      <>{notification.payload.topic}&nbsp;&bull;&nbsp;</>
+                    )}
+                    {notification.created && (
+                      <RelativeTime value={notification.created} />
+                    )}
+                  </Typography>
+                </Box>
+              </Grid>
+            </Grid>
+          );
+        },
+      },
+      {
+        /* actions column */
+        width: '1rem',
+        title: (
+          <BulkActions
+            notifications={notifications}
+            selectedNotifications={selectedNotifications}
+            isUnread={isUnread}
+            onSwitchReadStatus={onSwitchReadStatus}
+            onSwitchSavedStatus={onSwitchSavedStatus}
+            onMarkAllRead={onMarkAllRead}
+          />
+        ),
+        render: (notification: Notification) => (
+          <BulkActions
+            notifications={[notification]}
+            selectedNotifications={new Set([notification.id])}
+            onSwitchReadStatus={onSwitchReadStatus}
+            onSwitchSavedStatus={onSwitchSavedStatus}
+            //
+          />
+        ),
+      },
+    ],
+    [
+      markAsReadOnLinkOpen,
+      selectedNotifications,
+      notifications,
+      isUnread,
+      onSwitchReadStatus,
+      onSwitchSavedStatus,
+      onMarkAllRead,
+      onNotificationsSelectChange,
+      classes.severityItem,
+      classes.description,
+    ],
+  );
 
   return (
-    <Table size="small" className={styles.table}>
-      <TableHead>
-        <TableRow>
-          <TableCell colSpan={3}>
-            {type !== 'saved' && !notifications?.length && 'No notifications'}
-            {type !== 'saved' && !!notifications?.length && (
-              <Checkbox
-                size="small"
-                style={{ paddingLeft: 0 }}
-                checked={isAllSelected()}
-                onClick={() => {
-                  if (isAllSelected()) {
-                    setSelected([]);
-                  } else {
-                    setSelected(
-                      notifications ? notifications.map(n => n.id) : [],
-                    );
-                  }
-                }}
-              />
-            )}
-            {type === 'saved' &&
-              `${notifications?.length ?? 0} saved notifications`}
-            {selected.length === 0 &&
-              !!notifications?.length &&
-              type !== 'saved' &&
-              'Select all'}
-            {selected.length > 0 && `${selected.length} selected`}
-            {type === 'done' && selected.length > 0 && (
-              <Button
-                startIcon={<Inbox fontSize="small" />}
-                onClick={() => {
-                  notificationsApi
-                    .updateNotifications({ ids: selected, done: false })
-                    .then(() => props.onUpdate());
-                  setSelected([]);
-                }}
-              >
-                Move to inbox
-              </Button>
-            )}
-
-            {type === 'undone' && selected.length > 0 && (
-              <Button
-                startIcon={<Check fontSize="small" />}
-                onClick={() => {
-                  notificationsApi
-                    .updateNotifications({ ids: selected, done: true })
-                    .then(() => props.onUpdate());
-                  setSelected([]);
-                }}
-              >
-                Mark as done
-              </Button>
-            )}
-          </TableCell>
-        </TableRow>
-      </TableHead>
-      <TableBody>
-        {props.notifications?.map(notification => {
-          return (
-            <TableRow
-              key={notification.id}
-              className={`${styles.notificationRow} ${
-                !notification.read ? 'unread' : ''
-              }`}
-              hover
-            >
-              <TableCell
-                width="60px"
-                style={{ verticalAlign: 'center', paddingRight: '0px' }}
-              >
-                <Checkbox
-                  className={styles.checkBox}
-                  size="small"
-                  checked={isChecked(notification.id)}
-                  onClick={() => onCheckBoxClick(notification.id)}
-                />
-              </TableCell>
-              <TableCell
-                onClick={() =>
-                  notificationsApi
-                    .updateNotifications({ ids: [notification.id], read: true })
-                    .then(() => navigate(notification.payload.link))
-                }
-                style={{ paddingLeft: 0 }}
-              >
-                <Typography variant="subtitle2">
-                  {notification.payload.title}
-                </Typography>
-                <Typography variant="body2">
-                  {notification.payload.description}
-                </Typography>
-              </TableCell>
-              <TableCell style={{ textAlign: 'right' }}>
-                <Box className="hideOnHover">
-                  <RelativeTime value={notification.created} />
-                </Box>
-                <Box className="showOnHover">
-                  <Tooltip title={notification.payload.link}>
-                    <IconButton
-                      className={styles.actionButton}
-                      onClick={() =>
-                        notificationsApi
-                          .updateNotifications({
-                            ids: [notification.id],
-                            read: true,
-                          })
-                          .then(() => navigate(notification.payload.link))
-                      }
-                    >
-                      <ArrowForwardIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip
-                    title={notification.read ? 'Move to inbox' : 'Mark as done'}
-                  >
-                    <IconButton
-                      className={styles.actionButton}
-                      onClick={() => {
-                        if (notification.read) {
-                          notificationsApi
-                            .updateNotifications({
-                              ids: [notification.id],
-                              done: false,
-                            })
-                            .then(() => {
-                              props.onUpdate();
-                            });
-                        } else {
-                          notificationsApi
-                            .updateNotifications({
-                              ids: [notification.id],
-                              done: true,
-                            })
-                            .then(() => {
-                              props.onUpdate();
-                            });
-                        }
-                      }}
-                    >
-                      {notification.read ? (
-                        <Inbox fontSize="small" />
-                      ) : (
-                        <Check fontSize="small" />
-                      )}
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip
-                    title={notification.saved ? 'Remove from saved' : 'Save'}
-                  >
-                    <IconButton
-                      className={styles.actionButton}
-                      onClick={() => {
-                        if (notification.saved) {
-                          notificationsApi
-                            .updateNotifications({
-                              ids: [notification.id],
-                              saved: false,
-                            })
-                            .then(() => {
-                              props.onUpdate();
-                            });
-                        } else {
-                          notificationsApi
-                            .updateNotifications({
-                              ids: [notification.id],
-                              saved: true,
-                            })
-                            .then(() => {
-                              props.onUpdate();
-                            });
-                        }
-                      }}
-                    >
-                      {notification.saved ? (
-                        <CloseIcon fontSize="small" />
-                      ) : (
-                        <Bookmark fontSize="small" />
-                      )}
-                    </IconButton>
-                  </Tooltip>
-                </Box>
-              </TableCell>
-            </TableRow>
-          );
-        })}
-      </TableBody>
-    </Table>
+    <Table<Notification>
+      isLoading={isLoading}
+      options={{
+        padding: 'dense',
+        search: true,
+        paging: true,
+        pageSize,
+        header: true,
+        sorting: false,
+      }}
+      onPageChange={onPageChange}
+      onRowsPerPageChange={onRowsPerPageChange}
+      page={page}
+      totalCount={totalCount}
+      onSearchChange={throttledContainsTextHandler}
+      data={notifications}
+      columns={compactColumns}
+    />
   );
 };

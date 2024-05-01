@@ -86,7 +86,7 @@ export type BackstageUserIdentity = {
  * If `annotations` are used, all annotations must be present and
  * match the provided value exactly. Only entities of kind `'User'` will be considered.
  *
- * If `filter` are used they are passed on as they are to the `CatalogApi`.
+ * If `filter` are used, only entities of kind `'User'` will be considered unless it is explicitly specified differently in the filter.
  *
  * Regardless of the query method, the query must match exactly one entity
  * in the catalog, or an error will be thrown.
@@ -162,6 +162,17 @@ export type AuthResolverContext = {
     query: AuthResolverCatalogUserQuery,
   ): Promise<BackstageSignInResult>;
 };
+
+/**
+ * Resolver interface for resolving the ownership entity references for entity
+ *
+ * @public
+ */
+export interface AuthOwnershipResolver {
+  resolveOwnershipEntityRefs(
+    entity: Entity,
+  ): Promise<{ ownershipEntityRefs: string[] }>;
+}
 
 /**
  * Any Auth provider needs to implement this interface which handles the routes in the
@@ -375,3 +386,21 @@ export type CookieConfigurer = (ctx: {
   secure: boolean;
   sameSite?: 'none' | 'lax' | 'strict';
 };
+
+/**
+ * Core properties of various token types.
+ *
+ * @public
+ */
+export const tokenTypes = Object.freeze({
+  user: Object.freeze({
+    typParam: 'vnd.backstage.user',
+    audClaim: 'backstage',
+  }),
+  limitedUser: Object.freeze({
+    typParam: 'vnd.backstage.limited-user',
+  }),
+  plugin: Object.freeze({
+    typParam: 'vnd.backstage.plugin',
+  }),
+});

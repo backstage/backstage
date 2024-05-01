@@ -15,7 +15,7 @@
  */
 
 import React, { useEffect } from 'react';
-import { Box } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import { useEntityTypeFilter } from '../../hooks/useEntityTypeFilter';
 
 import { alertApiRef, useApi } from '@backstage/core-plugin-api';

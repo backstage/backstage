@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 import React, { useContext } from 'react';
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Grid,
-} from '@material-ui/core';
+import Accordion from '@material-ui/core/Accordion';
+import AccordionDetails from '@material-ui/core/AccordionDetails';
+import AccordionSummary from '@material-ui/core/AccordionSummary';
+import Grid from '@material-ui/core/Grid';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import { V1Job, V1Pod } from '@kubernetes/client-node';
 import { PodsTable } from '../Pods';

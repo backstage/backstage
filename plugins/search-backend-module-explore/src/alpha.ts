@@ -23,7 +23,6 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
 
 import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
@@ -45,6 +44,7 @@ export default createBackendModule({
         discovery: coreServices.discovery,
         scheduler: coreServices.scheduler,
         tokenManager: coreServices.tokenManager,
+        auth: coreServices.auth,
         indexRegistry: searchIndexRegistryExtensionPoint,
       },
       async init({
@@ -52,8 +52,9 @@ export default createBackendModule({
         logger,
         discovery,
         scheduler,
-        indexRegistry,
         tokenManager,
+        auth,
+        indexRegistry,
       }) {
         const defaultSchedule = {
           frequency: { minutes: 10 },
@@ -71,7 +72,8 @@ export default createBackendModule({
           schedule: scheduler.createScheduledTaskRunner(schedule),
           factory: ToolDocumentCollatorFactory.fromConfig(config, {
             discovery,
-            logger: loggerToWinstonLogger(logger),
+            logger,
+            auth,
             tokenManager,
           }),
         });

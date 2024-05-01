@@ -17,7 +17,7 @@ import { useApiHolder } from '@backstage/core-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { makeStyles } from '@material-ui/core/styles';
 import React, { Component, ReactNode, useMemo, useState } from 'react';
-import useDebounce from 'react-use/lib/useDebounce';
+import useDebounce from 'react-use/esm/useDebounce';
 import yaml from 'yaml';
 import {
   LayoutOptions,

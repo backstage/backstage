@@ -28,6 +28,7 @@ import {
 import fetch, { Response, RequestInit } from 'node-fetch';
 
 import { Config } from '@backstage/config';
+import { examples } from './bitbucketServer.examples';
 
 const createRepository = async (opts: {
   project: string;
@@ -141,6 +142,7 @@ export function createPublishBitbucketServerAction(options: {
     id: 'publish:bitbucketServer',
     description:
       'Initializes a git repository of the content in the workspace, and publishes it to Bitbucket Server.',
+    examples,
     schema: {
       input: {
         type: 'object',

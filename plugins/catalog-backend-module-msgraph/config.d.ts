@@ -160,6 +160,11 @@ export interface Config {
                * E.g. "accountEnabled eq true and userType eq 'member'"
                */
               filter?: string;
+              /**
+               * Set to false to not load user photos.
+               * This can be useful for huge organizations.
+               */
+              loadPhotos?: boolean;
             };
 
             group?: {

@@ -17,15 +17,19 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import { TokenIssuer } from './types';
+import { AuthService } from '@backstage/backend-plugin-api';
+import { decodeJwt } from 'jose';
+import { AuthenticationError, InputError } from '@backstage/errors';
 
 export function bindOidcRouter(
   targetRouter: express.Router,
   options: {
     baseUrl: string;
+    auth: AuthService;
     tokenIssuer: TokenIssuer;
   },
 ) {
-  const { baseUrl, tokenIssuer } = options;
+  const { baseUrl, auth, tokenIssuer } = options;
 
   const router = Router();
   targetRouter.use(router);
@@ -51,7 +55,7 @@ export function bindOidcRouter(
     ],
     scopes_supported: ['openid'],
     token_endpoint_auth_methods_supported: [],
-    claims_supported: ['sub'],
+    claims_supported: ['sub', 'ent'],
     grant_types_supported: [],
   };
 
@@ -68,7 +72,40 @@ export function bindOidcRouter(
     res.status(501).send('Not Implemented');
   });
 
-  router.get('/v1/userinfo', (_req, res) => {
-    res.status(501).send('Not Implemented');
+  // This endpoint doesn't use the regular HttpAuthService, since the contract
+  // is specifically for the header to be communicated in the Authorization
+  // header, regardless of token type
+  router.get('/v1/userinfo', async (req, res) => {
+    const matches = req.headers.authorization?.match(/^Bearer[ ]+(\S+)$/i);
+    const token = matches?.[1];
+    if (!token) {
+      throw new AuthenticationError('No token provided');
+    }
+
+    const credentials = await auth.authenticate(token, {
+      allowLimitedAccess: true,
+    });
+    if (!auth.isPrincipal(credentials, 'user')) {
+      throw new InputError(
+        'Userinfo endpoint must be called with a token that represents a user principal',
+      );
+    }
+
+    const { sub: userEntityRef, ent: ownershipEntityRefs = [] } =
+      decodeJwt(token);
+
+    if (typeof userEntityRef !== 'string') {
+      throw new Error('Invalid user token, user entity ref must be a string');
+    }
+    if (
+      !Array.isArray(ownershipEntityRefs) ||
+      ownershipEntityRefs.some(ref => typeof ref !== 'string')
+    ) {
+      throw new Error(
+        'Invalid user token, ownership entity refs must be an array of strings',
+      );
+    }
+
+    res.json({ sub: userEntityRef, ent: ownershipEntityRefs });
   });
 }

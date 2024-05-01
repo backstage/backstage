@@ -17,16 +17,22 @@
 import express from 'express';
 import Router from 'express-promise-router';
 import cookieParser from 'cookie-parser';
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { defaultAuthProviderFactories } from '../providers';
 import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import { defaultAuthProviderFactories } from '../providers';
+import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
+import {
+  createLegacyAuthAdapters,
   PluginDatabaseManager,
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import { bindOidcRouter, TokenFactory, KeyStores } from '../identity';
+import { bindOidcRouter, KeyStores, TokenFactory } from '../identity';
 import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
@@ -36,7 +42,7 @@ import { TokenIssuer } from '../identity/types';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { Config } from '@backstage/config';
-import { ProviderFactories, bindProviderRouters } from '../providers/router';
+import { bindProviderRouters, ProviderFactories } from '../providers/router';
 
 /** @public */
 export interface RouterOptions {
@@ -45,10 +51,13 @@ export interface RouterOptions {
   config: Config;
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
   tokenFactoryAlgorithm?: string;
   providerFactories?: ProviderFactories;
   disableDefaultProviderFactories?: boolean;
   catalogApi?: CatalogApi;
+  ownershipResolver?: AuthOwnershipResolver;
 }
 
 /** @public */
@@ -63,6 +72,9 @@ export async function createRouter(
     tokenFactoryAlgorithm,
     providerFactories = {},
   } = options;
+
+  const { auth, httpAuth } = createLegacyAuthAdapters(options);
+
   const router = Router();
 
   const appUrl = config.getString('app.baseUrl');
@@ -136,9 +148,12 @@ export async function createRouter(
     baseUrl: authUrl,
     tokenIssuer,
     ...options,
+    auth,
+    httpAuth,
   });
 
   bindOidcRouter(router, {
+    auth,
     tokenIssuer,
     baseUrl: authUrl,
   });

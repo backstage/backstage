@@ -199,8 +199,20 @@ export class ServiceRegistry {
     this.#providedFactories.set(factoryId, toInternalServiceFactory(factory));
   }
 
-  getServiceRefs(): ServiceRef<unknown>[] {
-    return Array.from(this.#providedFactories.values()).map(f => f.service);
+  async initializeEagerServicesWithScope(
+    scope: 'root' | 'plugin',
+    pluginId: string = 'root',
+  ) {
+    for (const factory of this.#providedFactories.values()) {
+      if (factory.service.scope === scope) {
+        // Root-scoped services are eager by default, plugin-scoped are lazy by default
+        if (scope === 'root' && factory.initialization !== 'lazy') {
+          await this.get(factory.service, pluginId);
+        } else if (scope === 'plugin' && factory.initialization === 'always') {
+          await this.get(factory.service, pluginId);
+        }
+      }
+    }
   }
 
   get<T>(ref: ServiceRef<T>, pluginId: string): Promise<T> | undefined {

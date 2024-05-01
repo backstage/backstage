@@ -1,5 +1,29 @@
 # @backstage/theme
 
+## 0.5.4-next.0
+
+### Patch Changes
+
+- f1462df: Fixed bug where scrollbars don't pick up the theme when in dark mode
+
+## 0.5.3
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+
+## 0.5.2
+
+### Patch Changes
+
+- 6f4d2a0: Exported `defaultTypography` to make adjusting these values in a custom theme easier
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- 6f4d2a0: Exported `defaultTypography` to make adjusting these values in a custom theme easier
+
 ## 0.5.1
 
 ### Patch Changes

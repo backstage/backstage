@@ -23,7 +23,7 @@ import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import { catalogApiRef } from '../../api';
 import { Entity } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
-import { Button } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
 import { entityRouteRef } from '../../routes';
 
 const catalogApi: Partial<CatalogApi> = {

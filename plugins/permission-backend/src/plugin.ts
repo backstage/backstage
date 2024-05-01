@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -55,10 +54,19 @@ export const permissionPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         logger: coreServices.logger,
         discovery: coreServices.discovery,
-        identity: coreServices.identity,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
+        userInfo: coreServices.userInfo,
       },
-      async init({ http, config, logger, discovery, identity }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
+      async init({
+        http,
+        config,
+        logger,
+        discovery,
+        auth,
+        httpAuth,
+        userInfo,
+      }) {
         if (!policies.policy) {
           throw new Error(
             'No policy module installed! Please install a policy module. If you want to allow all requests, use @backstage/plugin-permission-backend-module-allow-all-policy permissionModuleAllowAllPolicy',
@@ -69,11 +77,17 @@ export const permissionPlugin = createBackendPlugin({
           await createRouter({
             config,
             discovery,
-            identity,
-            logger: winstonLogger,
+            logger,
             policy: policies.policy,
+            auth,
+            httpAuth,
+            userInfo,
           }),
         );
+        http.addAuthPolicy({
+          path: '/health',
+          allow: 'unauthenticated',
+        });
       },
     });
   },

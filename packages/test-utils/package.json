@@ -1,15 +1,31 @@
 {
   "name": "@backstage/test-utils",
+  "version": "1.5.5-next.0",
   "description": "Utilities to test Backstage plugins and apps.",
-  "version": "1.5.0",
+  "backstage": {
+    "role": "web-library"
+  },
   "publishConfig": {
     "access": "public"
   },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/test-utils"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -20,30 +36,17 @@
       ]
     }
   },
-  "backstage": {
-    "role": "web-library"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "packages/test-utils"
-  },
-  "keywords": [
-    "backstage"
+  "files": [
+    "dist"
   ],
-  "license": "Apache-2.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
@@ -60,18 +63,15 @@
     "i18next": "^22.4.15",
     "zen-observable": "^0.10.0"
   },
-  "peerDependencies": {
-    "@testing-library/react": "^12.1.3 || ^13.0.0 || ^14.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "msw": "^1.0.0"
   },
-  "files": [
-    "dist"
-  ]
+  "peerDependencies": {
+    "@testing-library/react": "^15.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  }
 }

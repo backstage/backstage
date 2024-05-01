@@ -21,6 +21,23 @@ import { Strategy } from 'passport';
 import { ZodSchema } from 'zod';
 import { ZodTypeDef } from 'zod';
 
+// @public (undocumented)
+export interface AuthOwnershipResolutionExtensionPoint {
+  // (undocumented)
+  setAuthOwnershipResolver(ownershipResolver: AuthOwnershipResolver): void;
+}
+
+// @public (undocumented)
+export const authOwnershipResolutionExtensionPoint: ExtensionPoint<AuthOwnershipResolutionExtensionPoint>;
+
+// @public
+export interface AuthOwnershipResolver {
+  // (undocumented)
+  resolveOwnershipEntityRefs(entity: Entity): Promise<{
+    ownershipEntityRefs: string[];
+  }>;
+}
+
 // @public @deprecated (undocumented)
 export type AuthProviderConfig = {
   baseUrl: string;
@@ -223,7 +240,7 @@ export class DefaultIdentityClient implements IdentityApi {
 // @public (undocumented)
 export function encodeOAuthState(state: OAuthState): string;
 
-// @public
+// @public @deprecated
 export function getBearerTokenFromAuthorizationHeader(
   authorizationHeader: unknown,
 ): string | undefined;
@@ -638,6 +655,20 @@ export type TokenParams = {
     ent?: string[];
   } & Record<string, JsonValue>;
 };
+
+// @public
+export const tokenTypes: Readonly<{
+  user: Readonly<{
+    typParam: 'vnd.backstage.user';
+    audClaim: 'backstage';
+  }>;
+  limitedUser: Readonly<{
+    typParam: 'vnd.backstage.limited-user';
+  }>;
+  plugin: Readonly<{
+    typParam: 'vnd.backstage.plugin';
+  }>;
+}>;
 
 // @public
 export type WebMessageResponse =

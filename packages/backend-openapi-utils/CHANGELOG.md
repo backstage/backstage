@@ -1,5 +1,94 @@
 # @backstage/backend-openapi-utils
 
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/errors@1.2.4
+
+## 0.1.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/errors@1.2.4
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/errors@1.2.4
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/errors@1.2.4
+
+## 0.1.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/errors@1.2.4
+
+## 0.1.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/errors@1.2.4
+
+## 0.1.7
+
+### Patch Changes
+
+- 85ec23e: Updated dependency `json-schema-to-ts` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+
+## 0.1.7-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/errors@1.2.4-next.0
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/errors@1.2.4-next.0
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 85ec23e: Updated dependency `json-schema-to-ts` to `^3.0.0`.
+- Updated dependencies
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+
 ## 0.1.3
 
 ### Patch Changes

@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  IconButton,
-  ListItemIcon,
-  ListItemText,
-  makeStyles,
-  MenuItem,
-  MenuList,
-  Popover,
-  Theme,
-  useTheme,
-} from '@material-ui/core';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Popover from '@material-ui/core/Popover';
+import { makeStyles, Theme, useTheme } from '@material-ui/core/styles';
 import { useAsync } from '@react-hookz/web';
 import Cancel from '@material-ui/icons/Cancel';
 import Retry from '@material-ui/icons/Repeat';
@@ -32,7 +28,7 @@ import Toc from '@material-ui/icons/Toc';
 import ControlPointIcon from '@material-ui/icons/ControlPoint';
 import MoreVert from '@material-ui/icons/MoreVert';
 import React, { useState } from 'react';
-import { useApi } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi } from '@backstage/core-plugin-api';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 
 type ContextMenuProps = {
@@ -65,10 +61,12 @@ export const ContextMenu = (props: ContextMenuProps) => {
   const pageTheme = getPageTheme({ themeId: 'website' });
   const classes = useStyles({ fontColor: pageTheme.fontColor });
   const scaffolderApi = useApi(scaffolderApiRef);
+  const analytics = useAnalytics();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
   const [{ status: cancelStatus }, { execute: cancel }] = useAsync(async () => {
     if (taskId) {
+      analytics.captureEvent('cancelled', 'Template has been cancelled');
       await scaffolderApi.cancelTask(taskId);
     }
   });

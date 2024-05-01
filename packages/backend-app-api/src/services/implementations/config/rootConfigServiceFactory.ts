@@ -34,6 +34,7 @@ export interface RootConfigFactoryOptions {
    * Enables and sets options for remote configuration loading.
    */
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
+  watch?: boolean;
 }
 
 /** @public */
@@ -45,6 +46,7 @@ export const rootConfigServiceFactory = createServiceFactory(
       const source = ConfigSources.default({
         argv: options?.argv,
         remote: options?.remote,
+        watch: options?.watch,
       });
       console.log(`Loading config from ${source}`);
       return await ConfigSources.toConfig(source);

@@ -18,6 +18,8 @@ import Typography from '@material-ui/core/Typography';
 import React, { ComponentClass, Component, ErrorInfo } from 'react';
 import { LinkButton } from '../../components/LinkButton';
 import { ErrorPanel } from '../../components/ErrorPanel';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 type SlackChannel = {
   name: string;
@@ -37,14 +39,21 @@ type State = {
 
 const SlackLink = (props: { slackChannel?: string | SlackChannel }) => {
   const { slackChannel } = props;
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   if (!slackChannel) {
     return null;
   } else if (typeof slackChannel === 'string') {
-    return <Typography>Please contact {slackChannel} for help.</Typography>;
+    return (
+      <Typography>{t('errorBoundary.title', { slackChannel })}</Typography>
+    );
   } else if (!slackChannel.href) {
     return (
-      <Typography>Please contact {slackChannel.name} for help.</Typography>
+      <Typography>
+        {t('errorBoundary.title', {
+          slackChannel: slackChannel.name,
+        })}
+      </Typography>
     );
   }
 

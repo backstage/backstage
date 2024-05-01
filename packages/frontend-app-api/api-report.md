@@ -8,6 +8,7 @@ import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
@@ -21,6 +22,7 @@ export function createApp(options?: {
     config: ConfigApi;
   }>;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+  loadingComponent?: ReactNode;
 }): {
   createRoot(): JSX_2.Element;
 };

@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { ClusterDetails as ClusterDetails_2 } from '@backstage/plugin-kubernetes-node';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Entity } from '@backstage/catalog-model';
@@ -87,7 +88,9 @@ export const kubernetesAuthStrategyExtensionPoint: ExtensionPoint<KubernetesAuth
 
 // @public
 export interface KubernetesClustersSupplier {
-  getClusters(): Promise<ClusterDetails[]>;
+  getClusters(options: {
+    credentials: BackstageCredentials;
+  }): Promise<ClusterDetails[]>;
 }
 
 // @public
@@ -151,10 +154,16 @@ export interface KubernetesObjectsProvider {
   // (undocumented)
   getCustomResourcesByEntity(
     customResourcesByEntity: CustomResourcesByEntity,
+    options: {
+      credentials: BackstageCredentials;
+    },
   ): Promise<ObjectsByEntityResponse>;
   // (undocumented)
   getKubernetesObjectsByEntity(
     kubernetesObjectsByEntity: KubernetesObjectsByEntity,
+    options: {
+      credentials: BackstageCredentials;
+    },
   ): Promise<ObjectsByEntityResponse>;
 }
 
@@ -266,6 +275,8 @@ export type PinnipedParameters = {
 
 // @public (undocumented)
 export interface ServiceLocatorRequestContext {
+  // (undocumented)
+  credentials: BackstageCredentials;
   // (undocumented)
   customResources: CustomResourceMatcher[];
   // (undocumented)

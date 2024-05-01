@@ -5,7 +5,9 @@ description: The Software Catalog API
 ---
 
 The software catalog backend has a JSON based REST API, which can be leveraged
-by external systems. This page describes its shape and features.
+by external systems. This page describes its shape and features. The OpenAPI spec
+for this API can be found [here](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/src/schema/openapi.yaml).
+A UI visualizing the OpenAPI endpoints including the ability to try them out in the browser can be found [here](https://www.postman.com/backstage-io/workspace/catalog-api/overview).
 
 ## Overview
 

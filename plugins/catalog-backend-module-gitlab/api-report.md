@@ -8,10 +8,11 @@ import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { GitLabIntegrationConfig } from '@backstage/integration';
 import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
@@ -25,15 +26,15 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
+      events?: EventsService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
   ): GitlabDiscoveryEntityProvider[];
   // (undocumented)
   getProviderName(): string;
-  // (undocumented)
-  refresh(logger: Logger): Promise<void>;
+  refresh(logger: LoggerService): Promise<void>;
 }
 
 // @public
@@ -42,7 +43,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       skipReposWithoutExactFileMatch?: boolean;
       skipForkedRepos?: boolean;
     },
@@ -63,6 +64,7 @@ export type GitLabGroup = {
   name: string;
   full_path: string;
   description?: string;
+  visibility?: string;
   parent_id?: number;
 };
 
@@ -79,7 +81,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
+      events?: EventsService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
       userTransformer?: UserTransformer;
@@ -102,6 +105,7 @@ export type GitlabProviderConfig = {
   projectPattern: RegExp;
   userPattern: RegExp;
   groupPattern: RegExp;
+  allowInherited?: boolean;
   orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;
   skipForkedRepos?: boolean;

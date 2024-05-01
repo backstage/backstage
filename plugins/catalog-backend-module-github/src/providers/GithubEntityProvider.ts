@@ -18,9 +18,9 @@ import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import {
   GithubCredentialsProvider,
-  ScmIntegrations,
-  GithubIntegrationConfig,
   GithubIntegration,
+  GithubIntegrationConfig,
+  ScmIntegrations,
   SingleInstanceGithubCredentialsProvider,
 } from '@backstage/integration';
 import {
@@ -34,21 +34,25 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
 
 import { graphql } from '@octokit/graphql';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 import {
-  readProviderConfigs,
   GithubEntityProviderConfig,
+  readProviderConfigs,
 } from './GithubEntityProviderConfig';
 import { getOrganizationRepositories } from '../lib/github';
 import {
-  satisfiesTopicFilter,
   satisfiesForkFilter,
+  satisfiesTopicFilter,
   satisfiesVisibilityFilter,
 } from '../lib/util';
 
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
-import { PushEvent, Commit } from '@octokit/webhooks-types';
+import {
+  EventParams,
+  EventsService,
+  EventSubscriber,
+} from '@backstage/plugin-events-node';
+import { Commit, PushEvent } from '@octokit/webhooks-types';
 import { Minimatch } from 'minimatch';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const TOPIC_REPO_PUSH = 'github.push';
 
@@ -73,7 +77,8 @@ type Repository = {
  */
 export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   private readonly config: GithubEntityProviderConfig;
-  private readonly logger: Logger;
+  private readonly events?: EventsService;
+  private readonly logger: LoggerService;
   private readonly integration: GithubIntegrationConfig;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
@@ -82,7 +87,8 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      events?: EventsService;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -118,6 +124,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         integration,
         options.logger,
         taskRunner,
+        options.events,
       );
     });
   }
@@ -125,10 +132,12 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   private constructor(
     config: GithubEntityProviderConfig,
     integration: GithubIntegration,
-    logger: Logger,
+    logger: LoggerService,
     taskRunner: TaskRunner,
+    events?: EventsService,
   ) {
     this.config = config;
+    this.events = events;
     this.integration = integration.config;
     this.logger = logger.child({
       target: this.getProviderName(),
@@ -146,6 +155,11 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection): Promise<void> {
     this.connection = connection;
+    await this.events?.subscribe({
+      id: this.getProviderName(),
+      topics: [TOPIC_REPO_PUSH],
+      onEvent: params => this.onEvent(params),
+    });
     return await this.scheduleFn();
   }
 
@@ -173,7 +187,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     };
   }
 
-  async refresh(logger: Logger) {
+  async refresh(logger: LoggerService) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }

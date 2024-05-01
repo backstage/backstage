@@ -19,15 +19,17 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { CatalogApi } from '@backstage/catalog-client';
-import { InputError, AuthenticationError } from '@backstage/errors';
+import { InputError } from '@backstage/errors';
 import express, { Request } from 'express';
 import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
+import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
   catalogApi: CatalogApi,
   objectsProvider: KubernetesObjectsProvider,
+  auth: AuthService,
+  httpAuth: HttpAuthService,
 ) => {
   const getEntityByReq = async (req: Request<any>) => {
     const rawEntityRef = req.body.entityRef;
@@ -44,32 +46,30 @@ export const addResourceRoutesToRouter = (
       throw new InputError(`Invalid entity ref, ${error}`);
     }
 
-    const token = getBearerTokenFromAuthorizationHeader(
-      req.headers.authorization,
-    );
-
-    if (!token) {
-      throw new AuthenticationError('No Backstage token');
-    }
-
-    const entity = await catalogApi.getEntityByRef(entityRef, {
-      token: token,
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await httpAuth.credentials(req),
+      targetPluginId: 'catalog',
     });
 
+    const entity = await catalogApi.getEntityByRef(entityRef, { token });
     if (!entity) {
       throw new InputError(
         `Entity ref missing, ${stringifyEntityRef(entityRef)}`,
       );
     }
+
     return entity;
   };
 
   router.post('/resources/workloads/query', async (req, res) => {
     const entity = await getEntityByReq(req);
-    const response = await objectsProvider.getKubernetesObjectsByEntity({
-      entity,
-      auth: req.body.auth,
-    });
+    const response = await objectsProvider.getKubernetesObjectsByEntity(
+      {
+        entity,
+        auth: req.body.auth,
+      },
+      { credentials: await httpAuth.credentials(req) },
+    );
     res.json(response);
   });
 
@@ -84,11 +84,14 @@ export const addResourceRoutesToRouter = (
       throw new InputError('at least 1 customResource is required');
     }
 
-    const response = await objectsProvider.getCustomResourcesByEntity({
-      entity,
-      customResources: req.body.customResources,
-      auth: req.body.auth,
-    });
+    const response = await objectsProvider.getCustomResourcesByEntity(
+      {
+        entity,
+        customResources: req.body.customResources,
+        auth: req.body.auth,
+      },
+      { credentials: await httpAuth.credentials(req) },
+    );
     res.json(response);
   });
 };

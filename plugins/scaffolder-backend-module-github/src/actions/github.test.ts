@@ -34,15 +34,13 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import {
   DefaultGithubCredentialsProvider,
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { when } from 'jest-when';
-import { PassThrough } from 'stream';
 import { createPublishGithubAction } from './github';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import {
@@ -103,19 +101,14 @@ describe('publish:github', () => {
   let githubCredentialsProvider: GithubCredentialsProvider;
   let action: TemplateAction<any>;
 
-  const mockContext = {
+  const mockContext = createMockActionContext({
     input: {
       repoUrl: 'github.com?repo=repo&owner=owner',
       description: 'description',
       repoVisibility: 'private' as const,
       access: 'owner/blam',
     },
-    workspacePath: 'lol',
-    logger: getVoidLogger(),
-    logStream: new PassThrough(),
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     initRepoAndPushMocked.mockResolvedValue({
@@ -762,15 +755,13 @@ describe('publish:github', () => {
       },
     });
 
-    when(mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg)
-      .calledWith({
-        org: 'owner',
-        owner: 'owner',
-        repo: 'repo',
-        team_slug: 'robot-1',
-        permission: 'pull',
-      })
-      .mockRejectedValueOnce(new Error('Something bad happened') as never);
+    mockOctokit.rest.teams.addOrUpdateRepoPermissionsInOrg.mockImplementation(
+      async opts => {
+        if (opts.team_slug === 'robot-1') {
+          throw Error('Something bad happened');
+        }
+      },
+    );
 
     await action.handler({
       ...mockContext,

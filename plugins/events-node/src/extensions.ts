@@ -26,12 +26,21 @@ import {
  * @alpha
  */
 export interface EventsExtensionPoint {
+  /**
+   * @deprecated use `eventsServiceRef` and `eventsServiceFactory` instead
+   */
   setEventBroker(eventBroker: EventBroker): void;
 
+  /**
+   * @deprecated use `EventsService.publish` instead
+   */
   addPublishers(
     ...publishers: Array<EventPublisher | Array<EventPublisher>>
   ): void;
 
+  /**
+   * @deprecated use `EventsService.subscribe` instead
+   */
   addSubscribers(
     ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
   ): void;

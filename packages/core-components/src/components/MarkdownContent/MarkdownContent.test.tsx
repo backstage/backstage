@@ -45,6 +45,36 @@ describe('<MarkdownContent />', () => {
     ).toBeInTheDocument();
   });
 
+  it('Render MarkdownContent component without custom class', async () => {
+    await renderInTestApp(
+      <MarkdownContent content="https://example.com" dialect="common-mark" />,
+    );
+    const content = screen.getByText('https://example.com', { selector: 'p' });
+
+    expect(
+      Array.from(content.parentElement?.classList?.values() ?? []).map(cls =>
+        cls.replace(/-\d+$/, ''),
+      ),
+    ).toEqual(['BackstageMarkdownContent-markdown']);
+  });
+
+  it('Render MarkdownContent component with custom class', async () => {
+    await renderInTestApp(
+      <MarkdownContent
+        content="https://example.com"
+        dialect="common-mark"
+        className="custom-class"
+      />,
+    );
+    const content = screen.getByText('https://example.com', { selector: 'p' });
+
+    expect(
+      Array.from(content.parentElement?.classList?.values() ?? []).map(cls =>
+        cls.replace(/-\d+$/, ''),
+      ),
+    ).toEqual(['BackstageMarkdownContent-markdown', 'custom-class']);
+  });
+
   it('render MarkdownContent component with CodeSnippet for code blocks', async () => {
     await renderInTestApp(
       <MarkdownContent content={'```typescript\njest(test: string);\n```'} />,

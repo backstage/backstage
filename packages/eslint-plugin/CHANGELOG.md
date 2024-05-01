@@ -1,5 +1,32 @@
 # @backstage/eslint-plugin
 
+## 0.1.7
+
+### Patch Changes
+
+- 9ef572d: fix lint rule fixer for more than one `Component + Prop`
+- 3a7eee7: eslint autofix for mui ThemeProvider
+- d55828d: add fixer logic for import aliases
+
+## 0.1.7-next.0
+
+### Patch Changes
+
+- 9ef572d: fix lint rule fixer for more than one `Component + Prop`
+- 3a7eee7: eslint autofix for mui ThemeProvider
+
+## 0.1.6
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 999224f: Bump dependency `minimatch` to v9
+
 ## 0.1.5
 
 ### Patch Changes

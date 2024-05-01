@@ -20,7 +20,7 @@ import { VisitedByType } from './VisitedByType';
 import { Visit, visitsApiRef } from '../../api';
 import { ContextValueOnly, useContext } from './Context';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 /** @public */
 export type VisitedByTypeKind = 'recent' | 'top';

@@ -5,7 +5,9 @@ sidebar_label: Root Http Router
 description: Documentation for the Root Http Router service
 ---
 
-The root HTTP router is a service that allows you to register routes on the root of the backend service. This is useful for things like health checks, or other routes that you want to expose on the root of the backend service. It is used as the base router that backs the `httpRouter` service. Most likely you won't need to use this service directly, but rather use the `httpRouter` service.
+The root HTTP router is a service that allows you to register routes on the root of the backend service. This is useful for things like health checks, or other routes that you want to expose on the root of the backend service. It is used as the base router that backs the `httpRouter` service and starts the Node.js HTTP server on backend startup. Most likely you won't need to use this service directly, but rather use the `httpRouter` service.
+
+The `/api/:pluginId/` path prefix is reserved for use by plugins to register their own routes via the [HttpRouter](./http-router.md) service.
 
 ## Using the service
 
@@ -27,11 +29,11 @@ createBackendPlugin({
       },
       async init({ rootHttpRouter }) {
         const router = Router();
-        router.get('/health', (request, response) => {
+        router.get('/readiness', (request, response) => {
           response.send('OK');
         });
 
-        rootHttpRouter.use(router);
+        rootHttpRouter.use('/health', router);
       },
     });
   },
@@ -70,6 +72,31 @@ backend.add(
       // some other middleware that comes after the other routes
       app.use(middleware.notFound());
       app.use(middleware.error());
+    },
+  }),
+);
+```
+
+Note that requests towards `/api/*` will never be handled by the `routes` handler unless a matching plugin exists, and will instead typically falling through to the `middleware.notFound()` handler. That is the case regardless of whether there is a configured `indexPath` or not.
+
+The root HTTP Router service also allows for configuration of the underlying Node.js HTTP server object. This is useful for modifying settings on the HTTP server itself, such as server [timeout](https://nodejs.org/api/http.html#servertimeout), [keepAliveTimeout](https://nodejs.org/api/http.html#serverkeepalivetimeout), and [headersTimeout](https://nodejs.org/api/http.html#serverheaderstimeout).
+
+A `applyDefaults` helper is also made available to use the default app/router configuration while still enabling custom server configuration
+
+```ts
+import { rootHttpRouterServiceFactory } from '@backstage/backend-app-api';
+
+const backend = createBackend();
+
+backend.add(
+  rootHttpRouterServiceFactory({
+    configure: ({ server, applyDefaults }) => {
+      // apply default app/router configuration
+      applyDefaults();
+
+      // customize the Node.js HTTP Server timeouts
+      server.keepAliveTimeout = 65 * 1000;
+      server.headersTimeout = 66 * 1000;
     },
   }),
 );

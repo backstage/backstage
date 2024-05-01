@@ -6,7 +6,7 @@
 import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { TaskRunner } from '@backstage/backend-tasks';
 
@@ -18,7 +18,7 @@ export class GerritEntityProvider implements EntityProvider {
   static fromConfig(
     configRoot: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
     },
@@ -26,7 +26,7 @@ export class GerritEntityProvider implements EntityProvider {
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
-  refresh(logger: Logger): Promise<void>;
+  refresh(logger: LoggerService): Promise<void>;
 }
 
 // (No @packageDocumentation comment for this package)

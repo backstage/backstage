@@ -32,7 +32,6 @@ import {
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import path from 'path';
-import { Logger } from 'winston';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
@@ -49,10 +48,10 @@ import {
   getEntityLocationRef,
   getEntityOriginLocationRef,
   isLocationEntity,
+  isObject,
   toAbsoluteUrl,
   validateEntity,
   validateEntityEnvelope,
-  isObject,
 } from './util';
 import { CatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { ProcessorCacheManager } from './ProcessorCacheManager';
@@ -61,6 +60,7 @@ import {
   TRACER_ID,
   withActiveSpan,
 } from '../util/opentelemetry';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const tracer = trace.getTracer(TRACER_ID);
 
@@ -92,7 +92,7 @@ export class DefaultCatalogProcessingOrchestrator
     private readonly options: {
       processors: CatalogProcessor[];
       integrations: ScmIntegrationRegistry;
-      logger: Logger;
+      logger: LoggerService;
       parser: CatalogProcessorParser;
       policy: EntityPolicy;
       rulesEnforcer: CatalogRulesEnforcer;

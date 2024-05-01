@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createBackendPlugin,
@@ -24,20 +23,20 @@ import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import { KubernetesBuilder } from '@backstage/plugin-kubernetes-backend';
 
 import {
-  kubernetesAuthStrategyExtensionPoint,
-  kubernetesClusterSupplierExtensionPoint,
-  kubernetesFetcherExtensionPoint,
-  kubernetesObjectsProviderExtensionPoint,
-  kubernetesServiceLocatorExtensionPoint,
   type AuthenticationStrategy,
+  kubernetesAuthStrategyExtensionPoint,
   type KubernetesAuthStrategyExtensionPoint,
-  type KubernetesClusterSupplierExtensionPoint,
   type KubernetesClustersSupplier,
+  kubernetesClusterSupplierExtensionPoint,
+  type KubernetesClusterSupplierExtensionPoint,
   type KubernetesFetcher,
+  kubernetesFetcherExtensionPoint,
   type KubernetesFetcherExtensionPoint,
   type KubernetesObjectsProvider,
+  kubernetesObjectsProviderExtensionPoint,
   type KubernetesObjectsProviderExtensionPoint,
   type KubernetesServiceLocator,
+  kubernetesServiceLocatorExtensionPoint,
   type KubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 
@@ -178,17 +177,31 @@ export const kubernetesPlugin = createBackendPlugin({
         http: coreServices.httpRouter,
         logger: coreServices.logger,
         config: coreServices.rootConfig,
+        discovery: coreServices.discovery,
         catalogApi: catalogServiceRef,
         permissions: coreServices.permissions,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
-      async init({ http, logger, config, catalogApi, permissions }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
+      async init({
+        http,
+        logger,
+        config,
+        discovery,
+        catalogApi,
+        permissions,
+        auth,
+        httpAuth,
+      }) {
         // TODO: expose all of the customization & extension points of the builder here
         const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
-          logger: winstonLogger,
+          logger,
           config,
           catalogApi,
           permissions,
+          discovery,
+          auth,
+          httpAuth,
         })
           .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
           .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())

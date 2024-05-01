@@ -17,7 +17,8 @@ import React from 'react';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderRJSFFieldProps } from '@backstage/plugin-scaffolder-react';
 import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
-import { Input, InputLabel } from '@material-ui/core';
+import Input from '@material-ui/core/Input';
+import InputLabel from '@material-ui/core/InputLabel';
 
 export const SecretInput = (props: ScaffolderRJSFFieldProps) => {
   const { setSecrets, secrets } = useTemplateSecrets();

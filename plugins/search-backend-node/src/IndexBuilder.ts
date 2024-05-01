@@ -17,16 +17,16 @@
 import {
   DocumentDecoratorFactory,
   DocumentTypeInfo,
-  SearchEngine,
 } from '@backstage/plugin-search-common';
-import { Transform, pipeline } from 'stream';
-import { Logger } from 'winston';
+import { pipeline, Transform } from 'stream';
 import { Scheduler } from './Scheduler';
 import {
   IndexBuilderOptions,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
+  SearchEngine,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Used for adding collators, decorators and compile them into tasks which are added to a scheduler returned to the caller.
@@ -37,7 +37,7 @@ export class IndexBuilder {
   private decorators: Record<string, DocumentDecoratorFactory[]>;
   private documentTypes: Record<string, DocumentTypeInfo>;
   private searchEngine: SearchEngine;
-  private logger: Logger;
+  private logger: LoggerService;
 
   constructor(options: IndexBuilderOptions) {
     this.collators = {};

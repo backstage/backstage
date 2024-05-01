@@ -9,7 +9,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Response as Response_2 } from 'node-fetch';
 import { TaskRunner } from '@backstage/backend-tasks';
@@ -55,7 +55,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   static fromConfig(
     config: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       parser?: BitbucketServerLocationParser;
       schedule?: TaskRunner;
       scheduler?: PluginTaskScheduler;
@@ -64,7 +64,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   // (undocumented)
   getProviderName(): string;
   // (undocumented)
-  refresh(logger: Logger): Promise<void>;
+  refresh(logger: LoggerService): Promise<void>;
 }
 
 // @public (undocumented)
@@ -78,7 +78,7 @@ export type BitbucketServerListOptions = {
 export type BitbucketServerLocationParser = (options: {
   client: BitbucketServerClient;
   location: LocationSpec;
-  logger: Logger;
+  logger: LoggerService;
 }) => AsyncIterable<Entity>;
 
 // @public (undocumented)
@@ -109,5 +109,6 @@ export type BitbucketServerRepository = {
       href: string;
     }[]
   >;
+  archived: boolean;
 };
 ```

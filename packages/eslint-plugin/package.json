@@ -1,7 +1,7 @@
 {
   "name": "@backstage/eslint-plugin",
+  "version": "0.1.7",
   "description": "Backstage ESLint plugin",
-  "version": "0.1.5",
   "publishConfig": {
     "access": "public"
   },
@@ -23,6 +23,7 @@
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@types/estree": "^1.0.5",
     "eslint": "^8.33.0"
   }
 }

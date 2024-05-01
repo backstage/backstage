@@ -6,12 +6,20 @@
 /// <reference types="jest" />
 /// <reference types="node" />
 
+import { AuthService } from '@backstage/backend-plugin-api';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { BackstageNonePrincipal } from '@backstage/backend-plugin-api';
+import { BackstageServicePrincipal } from '@backstage/backend-plugin-api';
+import { BackstageUserInfo } from '@backstage/backend-plugin-api';
+import { BackstageUserPrincipal } from '@backstage/backend-plugin-api';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { DatabaseService } from '@backstage/backend-plugin-api';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterFactoryOptions } from '@backstage/backend-app-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
@@ -30,6 +38,7 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public
 export function createMockDirectory(
@@ -38,6 +47,51 @@ export function createMockDirectory(
 
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
+
+// @public (undocumented)
+export namespace mockCredentials {
+  export function limitedUser(
+    userEntityRef?: string,
+  ): BackstageCredentials<BackstageUserPrincipal>;
+  export namespace limitedUser {
+    export function cookie(userEntityRef?: string): string;
+    // (undocumented)
+    export function invalidCookie(): string;
+    // (undocumented)
+    export function invalidToken(): string;
+    export function token(userEntityRef?: string): string;
+  }
+  export function none(): BackstageCredentials<BackstageNonePrincipal>;
+  export namespace none {
+    export function header(): string;
+  }
+  export function service(
+    subject?: string,
+  ): BackstageCredentials<BackstageServicePrincipal>;
+  export namespace service {
+    export function header(options?: TokenOptions): string;
+    // (undocumented)
+    export function invalidHeader(): string;
+    // (undocumented)
+    export function invalidToken(): string;
+    export function token(options?: TokenOptions): string;
+    export type TokenOptions = {
+      onBehalfOf: BackstageCredentials;
+      targetPluginId: string;
+    };
+  }
+  export function user(
+    userEntityRef?: string,
+  ): BackstageCredentials<BackstageUserPrincipal>;
+  export namespace user {
+    export function header(userEntityRef?: string): string;
+    // (undocumented)
+    export function invalidHeader(): string;
+    // (undocumented)
+    export function invalidToken(): string;
+    export function token(userEntityRef?: string): string;
+  }
+}
 
 // @public
 export interface MockDirectory {
@@ -87,6 +141,20 @@ export interface MockDirectoryOptions {
 // @public (undocumented)
 export namespace mockServices {
   // (undocumented)
+  export function auth(options?: {
+    pluginId?: string;
+    disableDefaultAuthPolicy?: boolean;
+  }): AuthService;
+  // (undocumented)
+  export namespace auth {
+    const // (undocumented)
+      factory: () => ServiceFactory<AuthService, 'plugin'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<AuthService> | undefined,
+      ) => ServiceMock<AuthService>;
+  }
+  // (undocumented)
   export namespace cache {
     const // (undocumented)
       factory: () => ServiceFactory<CacheService, 'plugin'>;
@@ -103,6 +171,35 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<DatabaseService> | undefined,
       ) => ServiceMock<DatabaseService>;
+  }
+  // (undocumented)
+  export function discovery(): DiscoveryService;
+  // (undocumented)
+  export namespace discovery {
+    const // (undocumented)
+      factory: () => ServiceFactory<DiscoveryService, 'plugin'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<DiscoveryService> | undefined,
+      ) => ServiceMock<DiscoveryService>;
+  }
+  export function httpAuth(options?: {
+    pluginId?: string;
+    defaultCredentials?: BackstageCredentials;
+  }): HttpAuthService;
+  // (undocumented)
+  export namespace httpAuth {
+    const factory: (
+      options?:
+        | {
+            defaultCredentials?: BackstageCredentials | undefined;
+          }
+        | undefined,
+    ) => ServiceFactory<HttpAuthService, 'plugin'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<HttpAuthService> | undefined,
+      ) => ServiceMock<HttpAuthService>;
   }
   // (undocumented)
   export namespace httpRouter {
@@ -231,6 +328,17 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<UrlReaderService> | undefined,
       ) => ServiceMock<UrlReaderService>;
+  }
+  export function userInfo(
+    customInfo?: Partial<BackstageUserInfo>,
+  ): UserInfoService;
+  // (undocumented)
+  export namespace userInfo {
+    const factory: () => ServiceFactory<UserInfoService, 'plugin'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<UserInfoService> | undefined,
+      ) => ServiceMock<UserInfoService>;
   }
 }
 

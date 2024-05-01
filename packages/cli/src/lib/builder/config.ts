@@ -25,7 +25,11 @@ import svgr from '@svgr/rollup';
 import dts from 'rollup-plugin-dts';
 import json from '@rollup/plugin-json';
 import yaml from '@rollup/plugin-yaml';
-import { RollupOptions, OutputOptions, RollupWarning } from 'rollup';
+import {
+  RollupOptions,
+  OutputOptions,
+  WarningHandlerWithDefault,
+} from 'rollup';
 
 import { forwardFileImports } from './plugins';
 import { BuildOptions, Output } from './types';
@@ -61,7 +65,7 @@ export async function makeRollupConfigs(
     targetPkg = (await fs.readJson(packagePath)) as BackstagePackageJson;
   }
 
-  const onwarn = ({ code, message }: RollupWarning) => {
+  const onwarn: WarningHandlerWithDefault = ({ code, message }) => {
     if (code === 'EMPTY_BUNDLE') {
       return; // We don't care about this one
     }
@@ -89,6 +93,7 @@ export async function makeRollupConfigs(
         entryFileNames: `[name].cjs.js`,
         chunkFileNames: `cjs/[name]-[hash].cjs.js`,
         format: 'commonjs',
+        interop: 'compat',
         sourcemap: true,
         exports: 'named',
       });
@@ -100,6 +105,8 @@ export async function makeRollupConfigs(
         chunkFileNames: `esm/[name]-[hash].esm.js`,
         format: 'module',
         sourcemap: true,
+        preserveModules: true,
+        preserveModulesRoot: `${targetDir}/src`,
       });
       // Assume we're building for the browser if ESM output is included
       mainFields.unshift('browser');

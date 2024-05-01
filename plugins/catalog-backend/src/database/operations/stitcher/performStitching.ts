@@ -24,7 +24,6 @@ import { AlphaEntity, EntityStatusItem } from '@backstage/catalog-model/alpha';
 import { SerializedError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
-import { Logger } from 'winston';
 import { StitchingStrategy } from '../../../stitching/types';
 import {
   DbFinalEntitiesRow,
@@ -34,6 +33,7 @@ import {
 import { buildEntitySearch } from './buildEntitySearch';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
 import { BATCH_SIZE, generateStableHash } from './util';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
 const scriptProtocolPattern =
@@ -47,7 +47,7 @@ const scriptProtocolPattern =
  */
 export async function performStitching(options: {
   knex: Knex | Knex.Transaction;
-  logger: Logger;
+  logger: LoggerService;
   strategy: StitchingStrategy;
   entityRef: string;
   stitchTicket?: string;

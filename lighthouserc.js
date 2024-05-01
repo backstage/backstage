@@ -52,7 +52,7 @@ module.exports = {
         outputPath: './.lighthouseci/reports',
         preset: 'desktop',
       },
-      startServerCommand: 'yarn dev',
+      startServerCommand: 'yarn start:lighthouse',
       startServerReadyPattern: 'webpack compiled successfully',
       startServerReadyTimeout: 600000,
       numberOfRuns: 1,

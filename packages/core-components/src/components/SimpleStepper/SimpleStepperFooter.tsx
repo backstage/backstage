@@ -20,6 +20,8 @@ import React, { PropsWithChildren, ReactNode, useContext } from 'react';
 
 import { VerticalStepperContext } from './SimpleStepper';
 import { StepActions } from './types';
+import { coreComponentsTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 export type SimpleStepperFooterClassKey = 'root';
 
@@ -55,9 +57,12 @@ interface BackBtnProps extends CommonBtnProps {
   disabled?: boolean;
   stepIndex: number;
 }
-export const RestartBtn = ({ text, handleClick }: RestartBtnProps) => (
-  <Button onClick={handleClick}>{text || 'Reset'}</Button>
-);
+export const RestartBtn = ({ text, handleClick }: RestartBtnProps) => {
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
+  return (
+    <Button onClick={handleClick}>{text || t('simpleStepper.reset')}</Button>
+  );
+};
 
 const NextBtn = ({
   text,
@@ -65,39 +70,48 @@ const NextBtn = ({
   disabled,
   last,
   stepIndex,
-}: NextBtnProps) => (
-  <Button
-    variant="contained"
-    color="primary"
-    disabled={disabled}
-    data-testid={`nextButton-${stepIndex}`}
-    onClick={handleClick}
-  >
-    {text || (last ? 'Finish' : 'Next')}
-  </Button>
-);
+}: NextBtnProps) => {
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
+  return (
+    <Button
+      variant="contained"
+      color="primary"
+      disabled={disabled}
+      data-testid={`nextButton-${stepIndex}`}
+      onClick={handleClick}
+    >
+      {text || (last ? t('simpleStepper.finish') : t('simpleStepper.next'))}
+    </Button>
+  );
+};
 
-const SkipBtn = ({ text, handleClick, disabled, stepIndex }: SkipBtnProps) => (
-  <Button
-    variant="outlined"
-    color="primary"
-    disabled={disabled}
-    data-testid={`skipButton-${stepIndex}`}
-    onClick={handleClick}
-  >
-    {text || 'Skip'}
-  </Button>
-);
+const SkipBtn = ({ text, handleClick, disabled, stepIndex }: SkipBtnProps) => {
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
+  return (
+    <Button
+      variant="outlined"
+      color="primary"
+      disabled={disabled}
+      data-testid={`skipButton-${stepIndex}`}
+      onClick={handleClick}
+    >
+      {text || t('simpleStepper.skip')}
+    </Button>
+  );
+};
 
-const BackBtn = ({ text, handleClick, disabled, stepIndex }: BackBtnProps) => (
-  <Button
-    onClick={handleClick}
-    data-testid={`backButton-${stepIndex}`}
-    disabled={disabled}
-  >
-    {text || 'Back'}
-  </Button>
-);
+const BackBtn = ({ text, handleClick, disabled, stepIndex }: BackBtnProps) => {
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
+  return (
+    <Button
+      onClick={handleClick}
+      data-testid={`backButton-${stepIndex}`}
+      disabled={disabled}
+    >
+      {text || t('simpleStepper.back')}
+    </Button>
+  );
+};
 
 export type SimpleStepperFooterProps = {
   actions?: StepActions;

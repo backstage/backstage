@@ -19,7 +19,6 @@ import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 import { Knex } from 'knex';
 import splitToChunks from 'lodash/chunk';
 import { DateTime } from 'luxon';
-import { Logger } from 'winston';
 import { getDeferredStitchableEntities } from '../database/operations/stitcher/getDeferredStitchableEntities';
 import { markForStitching } from '../database/operations/stitcher/markForStitching';
 import { performStitching } from '../database/operations/stitcher/performStitching';
@@ -31,6 +30,7 @@ import {
   StitchingStrategy,
   stitchingStrategyFromConfig,
 } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 type DeferredStitchItem = Awaited<
   ReturnType<typeof getDeferredStitchableEntities>
@@ -45,7 +45,7 @@ type StitchProgressTracker = ReturnType<typeof progressTracker>;
  */
 export class DefaultStitcher implements Stitcher {
   private readonly knex: Knex;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly strategy: StitchingStrategy;
   private readonly tracker: StitchProgressTracker;
   private stopFunc?: () => void;
@@ -54,7 +54,7 @@ export class DefaultStitcher implements Stitcher {
     config: Config,
     options: {
       knex: Knex;
-      logger: Logger;
+      logger: LoggerService;
     },
   ): DefaultStitcher {
     return new DefaultStitcher({
@@ -66,7 +66,7 @@ export class DefaultStitcher implements Stitcher {
 
   constructor(options: {
     knex: Knex;
-    logger: Logger;
+    logger: LoggerService;
     strategy: StitchingStrategy;
   }) {
     this.knex = options.knex;

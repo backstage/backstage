@@ -1,5 +1,254 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.17.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-kubernetes-node@0.1.12-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/plugin-permission-node@0.7.29-next.1
+  - @backstage/plugin-catalog-node@1.11.2-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.17.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/plugin-kubernetes-node@0.1.12-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-catalog-node@1.11.2-next.0
+  - @backstage/plugin-kubernetes-common@0.7.6-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-node@0.7.29-next.0
+
+## 0.17.0
+
+### Minor Changes
+
+- 6c19c14: **BREAKING**: `KubernetesProxy` now requires the `DiscoveryService` to be passed to the constuctor
+- 5dd8177: **BREAKING** Winston logger has been replaced with `LoggerService`
+
+### Patch Changes
+
+- f5cec55: Fixing issue where `BackstageCredentials` were not properly forwarded for all calls
+- dd269e9: Fixed a bug where the proxy handler did not properly handle a missing header
+- 9d89aed: Fixed a crash reading `credentials` from `undefined`.
+- e5a2ccc: Updated dependency `@types/http-proxy-middleware` to `^1.0.0`.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.1.11
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-permission-node@0.7.28
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-auth-node@0.4.12
+  - @backstage/catalog-client@1.6.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-catalog-node@1.11.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.17.0-next.1
+
+### Minor Changes
+
+- 6c19c14: **BREAKING**: `KubernetesProxy` now requires the `DiscoveryService` to be passed to the constuctor
+
+### Patch Changes
+
+- f5cec55: Fixing issue where `BackstageCredentials` were not properly forwarded for all calls
+- Updated dependencies
+  - @backstage/plugin-kubernetes-node@0.1.11-next.1
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/plugin-permission-node@0.7.28-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.11.1-next.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.16.4-next.0
+
+### Patch Changes
+
+- 9d89aed: Fixed a crash reading `credentials` from `undefined`.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/plugin-kubernetes-node@0.1.11-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.12-next.0
+  - @backstage/plugin-catalog-node@1.11.1-next.0
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-node@0.7.28-next.0
+
+## 0.16.3
+
+### Patch Changes
+
+- 9b1abac: Added a new service locator `CatalogRelationServiceLocator` that only returns clusters an entity lists in `relations.dependsOn`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.11.0
+  - @backstage/catalog-client@1.6.3
+  - @backstage/plugin-auth-node@0.4.11
+  - @backstage/backend-common@0.21.6
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-kubernetes-node@0.1.10
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/plugin-permission-node@0.7.27
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.16.2
+
+### Patch Changes
+
+- 9b1abac: Added a new service locator `CatalogRelationServiceLocator` that only returns clusters an entity lists in `relations.dependsOn`.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.10.0
+  - @backstage/catalog-client@1.6.2
+  - @backstage/backend-common@0.21.5
+  - @backstage/integration-aws-node@0.1.11
+  - @backstage/plugin-kubernetes-node@0.1.9
+  - @backstage/plugin-auth-node@0.4.10
+  - @backstage/plugin-permission-node@0.7.26
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.16.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.9.0
+  - @backstage/plugin-kubernetes-node@0.1.8
+
+## 0.16.0
+
+### Minor Changes
+
+- e1e540c: **BREAKING**: The `KubernetesBuilder.createBuilder` method now requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+
+### Patch Changes
+
+- b9a0888: Fixed a bug in the proxy endpoint. Now when the `serviceAccount` strategy is used and no `serviceAccountToken` has been provided, the proxy endpoint assumes backstage is running on Kubernetes and gets the URL and CA from the Pod instance.
+- 69d0217: Pass user credentials when calling catalog get entities api.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/plugin-auth-node@0.4.9
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-catalog-node@1.8.0
+  - @backstage/plugin-kubernetes-node@0.1.8
+  - @backstage/catalog-client@1.6.1
+  - @backstage/plugin-permission-node@0.7.25
+  - @backstage/plugin-kubernetes-common@0.7.5
+  - @backstage/catalog-model@1.4.5
+  - @backstage/integration-aws-node@0.1.10
+  - @backstage/types@1.1.1
+
+## 0.16.0-next.2
+
+### Patch Changes
+
+- b9a0888: Fixed a bug in the proxy endpoint. Now when the `serviceAccount` strategy is used and no `serviceAccountToken` has been provided, the proxy endpoint assumes backstage is running on Kubernetes and gets the URL and CA from the Pod instance.
+- Updated dependencies
+  - @backstage/catalog-client@1.6.1-next.1
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/plugin-kubernetes-node@0.1.8-next.2
+  - @backstage/plugin-auth-node@0.4.9-next.2
+  - @backstage/plugin-catalog-node@1.8.0-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.2.0-next.1
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/integration-aws-node@0.1.10-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.5-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.2
+
+## 0.16.0-next.1
+
+### Patch Changes
+
+- 69d0217: Pass user credentials when calling catalog get entities api.
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/plugin-kubernetes-node@0.1.8-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/integration-aws-node@0.1.10-next.1
+  - @backstage/plugin-auth-node@0.4.9-next.1
+  - @backstage/plugin-permission-common@0.7.13-next.1
+  - @backstage/plugin-permission-node@0.7.25-next.1
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-node@1.8.0-next.1
+  - @backstage/plugin-kubernetes-common@0.7.5-next.1
+
+## 0.16.0-next.0
+
+### Minor Changes
+
+- e1e540c: **BREAKING**: The `KubernetesBuilder.createBuilder` method now requires the `discovery` service to be forwarded from the plugin environment. This is part of the migration to support new auth services.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/plugin-auth-node@0.4.8-next.0
+  - @backstage/errors@1.2.4-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/plugin-permission-common@0.7.13-next.0
+  - @backstage/plugin-catalog-node@1.8.0-next.0
+  - @backstage/plugin-permission-node@0.7.24-next.0
+  - @backstage/plugin-kubernetes-common@0.7.5-next.0
+  - @backstage/plugin-kubernetes-node@0.1.7-next.0
+  - @backstage/catalog-client@1.6.1-next.0
+  - @backstage/catalog-model@1.4.5-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/integration-aws-node@0.1.10-next.0
+  - @backstage/types@1.1.1
+
 ## 0.15.0
 
 ### Minor Changes

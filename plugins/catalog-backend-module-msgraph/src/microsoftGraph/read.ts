@@ -20,7 +20,6 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import limiterFactory from 'p-limit';
-import { Logger } from 'winston';
 import { MicrosoftGraphClient } from './client';
 import {
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
@@ -39,6 +38,7 @@ import {
   defaultUserTransformer,
 } from './defaultTransformers';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const PAGE_SIZE = 999;
 
@@ -49,8 +49,9 @@ export async function readMicrosoftGraphUsers(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    loadUserPhotos?: boolean;
     transformer?: UserTransformer;
-    logger: Logger;
+    logger: LoggerService;
   },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
@@ -70,6 +71,7 @@ export async function readMicrosoftGraphUsers(
       client,
       users,
       options.logger,
+      options.loadUserPhotos,
       options.transformer,
     ),
   };
@@ -82,11 +84,12 @@ export async function readMicrosoftGraphUsersInGroups(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
     groupExpand?: string;
     transformer?: UserTransformer;
-    logger: Logger;
+    logger: LoggerService;
   },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
@@ -145,6 +148,7 @@ export async function readMicrosoftGraphUsersInGroups(
       client,
       userGroupMembers.values(),
       options.logger,
+      options.loadUserPhotos,
       options.transformer,
     ),
   };
@@ -366,6 +370,7 @@ export async function readMicrosoftGraphOrg(
     userExpand?: string;
     userFilter?: string;
     userSelect?: string[];
+    loadUserPhotos?: boolean;
     userGroupMemberSearch?: string;
     userGroupMemberFilter?: string;
     groupExpand?: string;
@@ -376,10 +381,10 @@ export async function readMicrosoftGraphOrg(
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
-    logger: Logger;
+    logger: LoggerService;
   },
 ): Promise<{ users: UserEntity[]; groups: GroupEntity[] }> {
-  const users: UserEntity[] = [];
+  let users: UserEntity[] = [];
 
   if (options.userGroupMemberFilter || options.userGroupMemberSearch) {
     const { users: usersInGroups } = await readMicrosoftGraphUsersInGroups(
@@ -391,21 +396,23 @@ export async function readMicrosoftGraphOrg(
         userSelect: options.userSelect,
         userGroupMemberFilter: options.userGroupMemberFilter,
         userGroupMemberSearch: options.userGroupMemberSearch,
+        loadUserPhotos: options.loadUserPhotos,
         transformer: options.userTransformer,
         logger: options.logger,
       },
     );
-    users.push(...usersInGroups);
+    users = usersInGroups;
   } else {
     const { users: usersWithFilter } = await readMicrosoftGraphUsers(client, {
       queryMode: options.queryMode,
       userExpand: options.userExpand,
       userFilter: options.userFilter,
       userSelect: options.userSelect,
+      loadUserPhotos: options.loadUserPhotos,
       transformer: options.userTransformer,
       logger: options.logger,
     });
-    users.push(...usersWithFilter);
+    users = usersWithFilter;
   }
   const { groups, rootGroup, groupMember, groupMemberOf } =
     await readMicrosoftGraphGroups(client, tenantId, {
@@ -428,7 +435,8 @@ export async function readMicrosoftGraphOrg(
 async function transformUsers(
   client: MicrosoftGraphClient,
   users: Iterable<MicrosoftGraph.User> | AsyncIterable<MicrosoftGraph.User>,
-  logger: Logger,
+  logger: LoggerService,
+  loadUserPhotos = true,
   transformer?: UserTransformer,
 ) {
   const limiter = limiterFactory(10);
@@ -443,12 +451,14 @@ async function transformUsers(
       limiter(async () => {
         let userPhoto;
         try {
-          userPhoto = await client.getUserPhotoWithSizeLimit(
-            user.id!,
-            // We are limiting the photo size, as users with full resolution photos
-            // can make the Backstage API slow
-            120,
-          );
+          if (loadUserPhotos) {
+            userPhoto = await client.getUserPhotoWithSizeLimit(
+              user.id!,
+              // We are limiting the photo size, as users with full resolution photos
+              // can make the Backstage API slow
+              120,
+            );
+          }
         } catch (e) {
           logger.warn(`Unable to load user photo for`, {
             user: user.id,

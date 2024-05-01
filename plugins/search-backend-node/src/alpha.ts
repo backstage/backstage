@@ -14,26 +14,21 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-
 import {
-  createServiceRef,
-  createServiceFactory,
   coreServices,
+  createExtensionPoint,
+  createServiceFactory,
+  createServiceRef,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { DocumentTypeInfo } from '@backstage/plugin-search-common';
 import {
-  DocumentTypeInfo,
-  SearchEngine,
-} from '@backstage/plugin-search-common';
-import { createExtensionPoint } from '@backstage/backend-plugin-api';
-
-import {
+  IndexBuilder,
   RegisterCollatorParameters,
   RegisterDecoratorParameters,
+  Scheduler,
+  SearchEngine,
 } from '@backstage/plugin-search-backend-node';
-
-import { IndexBuilder } from './IndexBuilder';
 
 /**
  * @alpha
@@ -54,6 +49,11 @@ export interface SearchIndexService {
    * Starts indexing process
    */
   start(options: SearchIndexServiceStartOptions): Promise<void>;
+
+  /**
+   * Stops indexing process
+   */
+  stop(): Promise<void>;
   /**
    * Returns an index types list.
    */
@@ -78,7 +78,7 @@ export interface SearchEngineRegistryExtensionPoint {
 }
 
 type DefaultSearchIndexServiceOptions = {
-  logger: Logger;
+  logger: LoggerService;
 };
 
 /**
@@ -86,8 +86,9 @@ type DefaultSearchIndexServiceOptions = {
  * Reponsible for register the indexing task and start the schedule.
  */
 class DefaultSearchIndexService implements SearchIndexService {
-  private logger: Logger;
+  private readonly logger: LoggerService;
   private indexBuilder: IndexBuilder | null = null;
+  private scheduler: Scheduler | null = null;
 
   private constructor(options: DefaultSearchIndexServiceOptions) {
     this.logger = options.logger;
@@ -112,7 +113,15 @@ class DefaultSearchIndexService implements SearchIndexService {
     );
 
     const { scheduler } = await this.indexBuilder?.build();
-    scheduler.start();
+    this.scheduler = scheduler;
+    this.scheduler!.start();
+  }
+
+  async stop(): Promise<void> {
+    if (this.scheduler) {
+      this.scheduler.stop();
+      this.scheduler = null;
+    }
   }
 
   getDocumentTypes(): Record<string, DocumentTypeInfo> {
@@ -134,7 +143,7 @@ export const searchIndexServiceRef = createServiceRef<SearchIndexService>({
       },
       factory({ logger }) {
         return DefaultSearchIndexService.fromConfig({
-          logger: loggerToWinstonLogger(logger),
+          logger,
         });
       },
     }),

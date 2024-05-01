@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
-import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { Config } from '@backstage/config';
+import type { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import * as k8sTypes from '@backstage/plugin-kubernetes-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  *
  * @public
  */
-export type ServiceLocatorMethod = 'multiTenant' | 'singleTenant' | 'http'; // TODO implement http
+export type ServiceLocatorMethod =
+  | 'multiTenant'
+  | 'singleTenant'
+  | 'catalogRelation'
+  | 'http'; // TODO implement http
 
 /**
  *
  * @public
  */
 export interface KubernetesObjectsProviderOptions {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   fetcher: k8sTypes.KubernetesFetcher;
   serviceLocator: k8sTypes.KubernetesServiceLocator;

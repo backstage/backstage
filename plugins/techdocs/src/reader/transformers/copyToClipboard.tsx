@@ -16,16 +16,13 @@
 
 import React, { useState, useCallback } from 'react';
 import { renderReactElement } from './renderReactElement';
-import {
-  withStyles,
-  Theme,
-  ThemeProvider,
-  SvgIcon,
-  Tooltip,
-} from '@material-ui/core';
+import { ThemeProvider } from '@material-ui/core/styles';
+import SvgIcon from '@material-ui/core/SvgIcon';
+import Tooltip from '@material-ui/core/Tooltip';
+import { withStyles, Theme } from '@material-ui/core/styles';
 import IconButton from '@material-ui/core/IconButton';
 import type { Transformer } from './transformer';
-import useCopyToClipboard from 'react-use/lib/useCopyToClipboard';
+import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 
 const CopyToClipboardTooltip = withStyles(theme => ({
   tooltip: {

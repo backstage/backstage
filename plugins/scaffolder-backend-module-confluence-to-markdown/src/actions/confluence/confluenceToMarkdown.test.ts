@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PassThrough } from 'stream';
+
 import { createConfluenceToMarkdownAction } from './confluenceToMarkdown';
 import { getVoidLogger } from '@backstage/backend-common';
 import { UrlReader } from '@backstage/backend-common';
@@ -26,6 +26,7 @@ import {
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('confluence:transform:markdown', () => {
   const baseUrl = `https://nodomain.confluence.com`;
@@ -69,7 +70,7 @@ describe('confluence:transform:markdown', () => {
       }),
       search: jest.fn(),
     };
-    mockContext = {
+    mockContext = createMockActionContext({
       input: {
         confluenceUrls: [
           'https://nodomain.confluence.com/display/testing/mkdocs',
@@ -79,10 +80,7 @@ describe('confluence:transform:markdown', () => {
       },
       workspacePath,
       logger,
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    };
+    });
 
     mockDir.setContent({ 'workspace/mkdocs.yml': 'File contents' });
   });
@@ -221,7 +219,7 @@ describe('confluence:transform:markdown', () => {
     const action = createConfluenceToMarkdownAction(options);
     await expect(async () => {
       await action.handler(mockContext);
-    }).rejects.toThrow('Request failed with 401 Error');
+    }).rejects.toThrow('Request failed with 401 nope');
   });
 
   it('should return nothing in results from the first api call and fail', async () => {
@@ -284,6 +282,6 @@ describe('confluence:transform:markdown', () => {
     const action = createConfluenceToMarkdownAction(options);
     await expect(async () => {
       await action.handler(mockContext);
-    }).rejects.toThrow('Request failed with 404 Error');
+    }).rejects.toThrow('Request failed with 404 nope');
   });
 });

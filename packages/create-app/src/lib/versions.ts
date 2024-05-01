@@ -33,6 +33,7 @@ import { version as root } from '../../../../package.json';
 
 import { version as appDefaults } from '../../../app-defaults/package.json';
 import { version as backendCommon } from '../../../backend-common/package.json';
+import { version as backendDefaults } from '../../../backend-defaults/package.json';
 import { version as backendTasks } from '../../../backend-tasks/package.json';
 import { version as catalogClient } from '../../../catalog-client/package.json';
 import { version as catalogModel } from '../../../catalog-model/package.json';
@@ -50,6 +51,8 @@ import { version as theme } from '../../../theme/package.json';
 import { version as pluginApiDocs } from '../../../../plugins/api-docs/package.json';
 import { version as pluginAppBackend } from '../../../../plugins/app-backend/package.json';
 import { version as pluginAuthBackend } from '../../../../plugins/auth-backend/package.json';
+import { version as pluginAuthBackendModuleGithubProvider } from '../../../../plugins/auth-backend-module-github-provider/package.json';
+import { version as pluginAuthBackendModuleGuestProvider } from '../../../../plugins/auth-backend-module-guest-provider/package.json';
 import { version as pluginAuthNode } from '../../../../plugins/auth-node/package.json';
 import { version as pluginCatalog } from '../../../../plugins/catalog/package.json';
 import { version as pluginCatalogCommon } from '../../../../plugins/catalog-common/package.json';
@@ -58,15 +61,13 @@ import { version as pluginCatalogBackend } from '../../../../plugins/catalog-bac
 import { version as pluginCatalogBackendModuleScaffolderEntityModel } from '../../../../plugins/catalog-backend-module-scaffolder-entity-model/package.json';
 import { version as pluginCatalogGraph } from '../../../../plugins/catalog-graph/package.json';
 import { version as pluginCatalogImport } from '../../../../plugins/catalog-import/package.json';
-import { version as pluginExplore } from '../../../../plugins/explore/package.json';
-import { version as pluginGithubActions } from '../../../../plugins/github-actions/package.json';
-import { version as pluginLighthouse } from '../../../../plugins/lighthouse/package.json';
 import { version as pluginOrg } from '../../../../plugins/org/package.json';
+import { version as pluginPermissionBackend } from '../../../../plugins/permission-backend/package.json';
+import { version as pluginPermissionBackendModulePolicyAllowAll } from '../../../../plugins/permission-backend-module-policy-allow-all/package.json';
 import { version as pluginPermissionCommon } from '../../../../plugins/permission-common/package.json';
 import { version as pluginPermissionReact } from '../../../../plugins/permission-react/package.json';
 import { version as pluginPermissionNode } from '../../../../plugins/permission-node/package.json';
 import { version as pluginProxyBackend } from '../../../../plugins/proxy-backend/package.json';
-import { version as pluginRollbarBackend } from '../../../../plugins/rollbar-backend/package.json';
 import { version as pluginScaffolder } from '../../../../plugins/scaffolder/package.json';
 import { version as pluginScaffolderBackend } from '../../../../plugins/scaffolder-backend/package.json';
 import { version as pluginSearch } from '../../../../plugins/search/package.json';
@@ -76,7 +77,6 @@ import { version as pluginSearchBackendModuleCatalog } from '../../../../plugins
 import { version as pluginSearchBackendModulePg } from '../../../../plugins/search-backend-module-pg/package.json';
 import { version as pluginSearchBackendModuleTechdocs } from '../../../../plugins/search-backend-module-techdocs/package.json';
 import { version as pluginSearchBackendNode } from '../../../../plugins/search-backend-node/package.json';
-import { version as pluginTechRadar } from '../../../../plugins/tech-radar/package.json';
 import { version as pluginTechdocs } from '../../../../plugins/techdocs/package.json';
 import { version as pluginTechdocsReact } from '../../../../plugins/techdocs-react/package.json';
 import { version as pluginTechdocsModuleAddonsContrib } from '../../../../plugins/techdocs-module-addons-contrib/package.json';
@@ -87,6 +87,7 @@ export const packageVersions = {
   root,
   '@backstage/app-defaults': appDefaults,
   '@backstage/backend-common': backendCommon,
+  '@backstage/backend-defaults': backendDefaults,
   '@backstage/backend-tasks': backendTasks,
   '@backstage/catalog-client': catalogClient,
   '@backstage/catalog-model': catalogModel,
@@ -101,6 +102,10 @@ export const packageVersions = {
   '@backstage/plugin-api-docs': pluginApiDocs,
   '@backstage/plugin-app-backend': pluginAppBackend,
   '@backstage/plugin-auth-backend': pluginAuthBackend,
+  '@backstage/plugin-auth-backend-module-github-provider':
+    pluginAuthBackendModuleGithubProvider,
+  '@backstage/plugin-auth-backend-module-guest-provider':
+    pluginAuthBackendModuleGuestProvider,
   '@backstage/plugin-auth-node': pluginAuthNode,
   '@backstage/plugin-catalog': pluginCatalog,
   '@backstage/plugin-catalog-common': pluginCatalogCommon,
@@ -110,15 +115,14 @@ export const packageVersions = {
     pluginCatalogBackendModuleScaffolderEntityModel,
   '@backstage/plugin-catalog-graph': pluginCatalogGraph,
   '@backstage/plugin-catalog-import': pluginCatalogImport,
-  '@backstage/plugin-explore': pluginExplore,
-  '@backstage/plugin-github-actions': pluginGithubActions,
-  '@backstage/plugin-lighthouse': pluginLighthouse,
   '@backstage/plugin-org': pluginOrg,
+  '@backstage/plugin-permission-backend': pluginPermissionBackend,
+  '@backstage/plugin-permission-backend-module-allow-all-policy':
+    pluginPermissionBackendModulePolicyAllowAll,
   '@backstage/plugin-permission-common': pluginPermissionCommon,
   '@backstage/plugin-permission-node': pluginPermissionNode,
   '@backstage/plugin-permission-react': pluginPermissionReact,
   '@backstage/plugin-proxy-backend': pluginProxyBackend,
-  '@backstage/plugin-rollbar-backend': pluginRollbarBackend,
   '@backstage/plugin-scaffolder': pluginScaffolder,
   '@backstage/plugin-scaffolder-backend': pluginScaffolderBackend,
   '@backstage/plugin-search': pluginSearch,
@@ -130,7 +134,6 @@ export const packageVersions = {
   '@backstage/plugin-search-backend-module-techdocs':
     pluginSearchBackendModuleTechdocs,
   '@backstage/plugin-search-backend-node': pluginSearchBackendNode,
-  '@backstage/plugin-tech-radar': pluginTechRadar,
   '@backstage/plugin-techdocs': pluginTechdocs,
   '@backstage/plugin-techdocs-react': pluginTechdocsReact,
   '@backstage/plugin-techdocs-module-addons-contrib':

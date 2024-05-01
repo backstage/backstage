@@ -1,5 +1,95 @@
 # @backstage/backend-defaults
 
+## 0.2.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.2-next.1
+  - @backstage/backend-common@0.22.0-next.1
+
+## 0.2.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.1-next.0
+  - @backstage/backend-common@0.21.8-next.0
+
+## 0.2.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-app-api@0.7.0
+
+## 0.2.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-app-api@0.7.0-next.1
+
+## 0.2.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.3-next.0
+  - @backstage/backend-common@0.21.7-next.0
+
+## 0.2.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.2
+  - @backstage/backend-common@0.21.6
+
+## 0.2.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.1
+  - @backstage/backend-common@0.21.5
+
+## 0.2.14
+
+### Patch Changes
+
+- 7cbb760: Added support for the new auth services, which are now installed by default. See the [migration guide](https://backstage.io/docs/tutorials/auth-service-migration) for details.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/backend-app-api@0.6.0
+
+## 0.2.14-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.0-next.2
+  - @backstage/backend-common@0.21.4-next.2
+
+## 0.2.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.6.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+
+## 0.2.13-next.0
+
+### Patch Changes
+
+- 7cbb760: Added support for the new auth services, which are now installed by default. See the [migration guide](https://backstage.io/docs/tutorials/auth-service-migration) for details.
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-app-api@0.6.0-next.0
+
 ## 0.2.10
 
 ### Patch Changes

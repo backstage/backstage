@@ -20,15 +20,14 @@ import {
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import CardHeader from '@material-ui/core/CardHeader';
+import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
+import { makeStyles } from '@material-ui/core/styles';
 import {
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  IconButton,
-  makeStyles,
-} from '@material-ui/core';
-import {
+  AppIcon,
   HeaderIconLinkRow,
   IconLinkVerticalProps,
   InfoCardVariants,
@@ -62,6 +61,7 @@ import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { parseEntityRef } from '@backstage/catalog-model';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
+import { useSourceTemplateCompoundEntityRef } from './hooks';
 
 const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
 
@@ -110,6 +110,7 @@ export function AboutCard(props: AboutCardProps) {
   const errorApi = useApi(errorApiRef);
   const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(createFromTemplateRouteRef);
+  const sourceTemplateRef = useSourceTemplateCompoundEntityRef(entity);
   const { allowed: canRefresh } = useEntityPermission(
     catalogEntityRefreshPermission,
   );
@@ -238,6 +239,18 @@ export function AboutCard(props: AboutCardProps) {
             >
               <EditIcon />
             </IconButton>
+            {sourceTemplateRef && templateRoute && (
+              <IconButton
+                component={Link}
+                title="Create something similar"
+                to={templateRoute({
+                  namespace: sourceTemplateRef.namespace,
+                  templateName: sourceTemplateRef.name,
+                })}
+              >
+                <AppIcon id="scaffolder" />
+              </IconButton>
+            )}
           </>
         }
         subheader={<HeaderIconLinkRow links={subHeaderLinks} />}

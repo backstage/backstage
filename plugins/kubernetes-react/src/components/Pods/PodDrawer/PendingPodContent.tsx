@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import React from 'react';
-import { Grid, List, ListItem, Typography } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import Typography from '@material-ui/core/Typography';
 import { IPodCondition, Pod } from 'kubernetes-models/v1';
 import {
   StatusError,

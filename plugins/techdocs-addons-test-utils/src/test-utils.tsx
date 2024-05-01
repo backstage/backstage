@@ -24,7 +24,11 @@ import { act, render } from '@testing-library/react';
 
 import { wrapInTestApp, TestApiProvider } from '@backstage/test-utils';
 import { FlatRoutes } from '@backstage/core-app-api';
-import { ApiRef } from '@backstage/core-plugin-api';
+import {
+  ApiRef,
+  discoveryApiRef,
+  fetchApiRef,
+} from '@backstage/core-plugin-api';
 
 import {
   TechDocsAddons,
@@ -44,26 +48,6 @@ if (!global.TextEncoder) {
 }
 const { renderToStaticMarkup } =
   require('react-dom/server') as typeof import('react-dom/server');
-
-const techdocsApi = {
-  getTechDocsMetadata: jest.fn(),
-  getEntityMetadata: jest.fn(),
-};
-
-const techdocsStorageApi = {
-  getApiOrigin: jest.fn(),
-  getBaseUrl: jest.fn(),
-  getEntityDocs: jest.fn(),
-  syncEntityDocs: jest.fn(),
-};
-
-const searchApi = {
-  query: jest.fn().mockResolvedValue({ results: [] }),
-};
-
-const scmIntegrationsApi = {
-  fromConfig: jest.fn().mockReturnValue({}),
-};
 
 /** @ignore */
 type TechDocsAddonTesterTestApiPair<TApi> = TApi extends infer TImpl
@@ -199,7 +183,49 @@ export class TechDocsAddonTester {
    * App instance, using the given Addon(s).
    */
   build() {
+    const techdocsApi = {
+      getTechDocsMetadata: jest.fn(),
+      getEntityMetadata: jest.fn(),
+      getCookie: jest.fn().mockReturnValue({
+        // Expires in 10 minutes
+        expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+      }),
+    };
+
+    const techdocsStorageApi = {
+      getApiOrigin: jest.fn(),
+      getBaseUrl: jest.fn(),
+      getEntityDocs: jest.fn(),
+      syncEntityDocs: jest.fn(),
+    };
+
+    const searchApi = {
+      query: jest.fn().mockResolvedValue({ results: [] }),
+    };
+
+    const scmIntegrationsApi = {
+      fromConfig: jest.fn().mockReturnValue({}),
+    };
+
+    const discoveryApi = {
+      getBaseUrl: jest
+        .fn()
+        .mockResolvedValue('https://backstage.example.com/api/techdocs'),
+    };
+
+    const fetchApi = {
+      fetch: jest.fn().mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({
+          // Expires in 10 minutes
+          expiresAt: new Date(Date.now() + 10 * 60 * 1000).toISOString(),
+        }),
+      }),
+    };
+
     const apis: TechdocsAddonTesterApis<any[]> = [
+      [fetchApiRef, fetchApi],
+      [discoveryApiRef, discoveryApi],
       [techdocsApiRef, techdocsApi],
       [techdocsStorageApiRef, techdocsStorageApi],
       [searchApiRef, searchApi],

@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Initializes a Gitea repository using the content of the workspace and publish it to Gitea with default configuration.',
+      'Initializes a git repository with the content in the workspace, and publishes it to Gitea with the default configuration.',
     example: yaml.stringify({
       steps: [
         {
@@ -51,6 +51,23 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
+    description: 'Initializes a private Gitea repository ',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitea',
+          name: 'Publish to Gitea',
+          input: {
+            repoUrl: 'gitea.com?repo=repo&owner=owner',
+            defaultBranch: 'main',
+            repoVisibility: 'private',
+          },
+        },
+      ],
+    }),
+  },
+  {
     description:
       'Initializes a Gitea repository with a default Branch, if not set defaults to main',
     example: yaml.stringify({
@@ -69,7 +86,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a Gitea repository with an initial commit message, if not set defaults to initial commit',
+      'Initializes a Gitea repository with an initial commit message, if not set defaults to `initial commit`',
     example: yaml.stringify({
       steps: [
         {
@@ -150,6 +167,7 @@ export const examples: TemplateExample[] = [
             gitAuthorName: 'John Doe',
             gitAuthorEmail: 'johndoe@email.com',
             sourcePath: 'repository/',
+            repoVisibility: 'public',
           },
         },
       ],

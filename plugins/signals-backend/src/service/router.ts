@@ -14,43 +14,110 @@
  * limitations under the License.
  */
 import {
+  createLegacyAuthAdapters,
   errorHandler,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  BackstageUserInfo,
+  LoggerService,
+  UserInfoService,
+} from '@backstage/backend-plugin-api';
 import * as https from 'https';
 import http, { IncomingMessage } from 'http';
 import { SignalManager } from './SignalManager';
-import {
-  BackstageIdentityResponse,
-  IdentityApi,
-  IdentityApiGetIdentityRequest,
-} from '@backstage/plugin-auth-node';
-import { EventBroker } from '@backstage/plugin-events-node';
+import { IdentityApi } from '@backstage/plugin-auth-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { WebSocket, WebSocketServer } from 'ws';
+import { Duplex } from 'stream';
 
 /** @public */
 export interface RouterOptions {
   logger: LoggerService;
-  eventBroker?: EventBroker;
+  events: EventsService;
   identity: IdentityApi;
   discovery: PluginEndpointDiscovery;
+  auth?: AuthService;
+  userInfo?: UserInfoService;
 }
 
 /** @public */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
-  const { logger, identity, discovery } = options;
+  const { logger, discovery } = options;
+  const { auth, userInfo } = createLegacyAuthAdapters(options);
+
   const manager = SignalManager.create(options);
   let subscribedToUpgradeRequests = false;
+  let apiUrl: string | undefined = undefined;
 
   const webSocketServer = new WebSocketServer({
     noServer: true,
     clientTracking: false,
   });
+
+  webSocketServer.on('error', (error: Error) => {
+    logger.error('WebSocket server error', error);
+  });
+
+  webSocketServer.on('close', () => {
+    logger.info('WebSocket server closed');
+  });
+
+  const handleUpgrade = async (
+    request: Request<any, any, any, any, any>,
+    socket: Duplex,
+    head: Buffer,
+  ) => {
+    if (!apiUrl) {
+      apiUrl = await discovery.getBaseUrl('signals');
+    }
+
+    if (!request.url || !apiUrl || !apiUrl.endsWith(request.url)) {
+      return;
+    }
+
+    let userIdentity: BackstageUserInfo | undefined = undefined;
+
+    // Authentication token is passed in Sec-WebSocket-Protocol header as there
+    // is no other way to pass the token with plain websockets
+    try {
+      const token = request.headers['sec-websocket-protocol'];
+      if (token) {
+        const credentials = await auth.authenticate(token);
+        if (auth.isPrincipal(credentials, 'user')) {
+          userIdentity = await userInfo.getUserInfo(credentials);
+        }
+      }
+    } catch (e) {
+      logger.error('Failed to authenticate WebSocket connection', e);
+      socket.write(
+        'HTTP/1.1 401 Web Socket Protocol Handshake\r\n' +
+          'Upgrade: WebSocket\r\n' +
+          'Connection: Upgrade\r\n' +
+          '\r\n',
+      );
+      socket.destroy();
+      return;
+    }
+
+    try {
+      webSocketServer.handleUpgrade(
+        request,
+        socket,
+        head,
+        (ws: WebSocket, __: IncomingMessage) => {
+          manager.addConnection(ws, userIdentity);
+        },
+      );
+    } catch (e) {
+      logger.error('Failed to handle WebSocket upgrade', e);
+    }
+  };
 
   const upgradeMiddleware = async (
     req: Request,
@@ -70,34 +137,7 @@ export async function createRouter(
     }
 
     subscribedToUpgradeRequests = true;
-    const apiUrl = await discovery.getBaseUrl('signals');
-    server.on('upgrade', async (request, socket, head) => {
-      if (!request.url || !apiUrl.endsWith(request.url)) {
-        return;
-      }
-
-      let userIdentity: BackstageIdentityResponse | undefined = undefined;
-
-      // Authentication token is passed in Sec-WebSocket-Protocol header as there
-      // is no other way to pass the token with plain websockets
-      const token = req.headers['sec-websocket-protocol'];
-      if (token) {
-        userIdentity = await identity.getIdentity({
-          request: {
-            headers: { authorization: token },
-          },
-        } as IdentityApiGetIdentityRequest);
-      }
-
-      webSocketServer.handleUpgrade(
-        request,
-        socket,
-        head,
-        (ws: WebSocket, __: IncomingMessage) => {
-          manager.addConnection(ws, userIdentity);
-        },
-      );
-    });
+    server.on('upgrade', handleUpgrade);
   };
 
   const router = Router();

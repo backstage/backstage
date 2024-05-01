@@ -16,26 +16,27 @@
 
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { MarkdownContent, UserIcon } from '@backstage/core-components';
-import { IconComponent, useApp } from '@backstage/core-plugin-api';
+import {
+  IconComponent,
+  useAnalytics,
+  useApp,
+} from '@backstage/core-plugin-api';
 import {
   EntityRefLinks,
   getEntityRelations,
 } from '@backstage/plugin-catalog-react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import {
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  Chip,
-  Divider,
-  Button,
-  Grid,
-  makeStyles,
-  Theme,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Chip from '@material-ui/core/Chip';
+import Divider from '@material-ui/core/Divider';
+import Button from '@material-ui/core/Button';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles, Theme } from '@material-ui/core/styles';
 import LanguageIcon from '@material-ui/icons/Language';
-import React from 'react';
+import React, { useCallback } from 'react';
 import { CardHeader } from './CardHeader';
 import { CardLink } from './CardLink';
 
@@ -95,8 +96,9 @@ export interface TemplateCardProps {
  * @alpha
  */
 export const TemplateCard = (props: TemplateCardProps) => {
-  const { template } = props;
+  const { onSelected, template } = props;
   const styles = useStyles();
+  const analytics = useAnalytics();
   const ownedByRelations = getEntityRelations(template, RELATION_OWNED_BY);
   const app = useApp();
   const iconResolver = (key?: string): IconComponent =>
@@ -105,6 +107,11 @@ export const TemplateCard = (props: TemplateCardProps) => {
   const hasLinks =
     !!props.additionalLinks?.length || !!template.metadata.links?.length;
   const displayDefaultDivider = !hasTags && !hasLinks;
+
+  const handleChoose = useCallback(() => {
+    analytics.captureEvent('click', `Template has been opened`);
+    onSelected?.(template);
+  }, [analytics, onSelected, template]);
 
   return (
     <Card>
@@ -193,7 +200,7 @@ export const TemplateCard = (props: TemplateCardProps) => {
             size="small"
             variant="outlined"
             color="primary"
-            onClick={() => props.onSelected?.(template)}
+            onClick={handleChoose}
           >
             Choose
           </Button>

@@ -27,20 +27,20 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 import {
   GroupTransformer,
-  MicrosoftGraphClient,
-  MicrosoftGraphProviderConfig,
   MICROSOFT_GRAPH_GROUP_ID_ANNOTATION,
   MICROSOFT_GRAPH_TENANT_ID_ANNOTATION,
   MICROSOFT_GRAPH_USER_ID_ANNOTATION,
+  MicrosoftGraphClient,
+  MicrosoftGraphProviderConfig,
   OrganizationTransformer,
   readMicrosoftGraphConfig,
   readMicrosoftGraphOrg,
   UserTransformer,
 } from '../microsoftGraph';
 import { readProviderConfigs } from '../microsoftGraph/config';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Options for {@link MicrosoftGraphOrgEntityProvider}.
@@ -53,7 +53,7 @@ export type MicrosoftGraphOrgEntityProviderOptions =
       /**
        * The logger to use.
        */
-      logger: Logger;
+      logger: LoggerService;
 
       /**
        * The refresh schedule to use.
@@ -122,7 +122,7 @@ export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
   /**
    * The logger to use.
    */
-  logger: Logger;
+  logger: LoggerService;
 
   /**
    * The refresh schedule to use.
@@ -272,7 +272,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     private options: {
       id: string;
       provider: MicrosoftGraphProviderConfig;
-      logger: Logger;
+      logger: LoggerService;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
       organizationTransformer?: OrganizationTransformer;
@@ -294,7 +294,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
    * Runs one complete ingestion loop. Call this method regularly at some
    * appropriate cadence.
    */
-  async read(options?: { logger?: Logger }) {
+  async read(options?: { logger?: LoggerService }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -310,6 +310,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
         userExpand: provider.userExpand,
         userFilter: provider.userFilter,
         userSelect: provider.userSelect,
+        loadUserPhotos: provider.loadUserPhotos,
         userGroupMemberFilter: provider.userGroupMemberFilter,
         userGroupMemberSearch: provider.userGroupMemberSearch,
         groupExpand: provider.groupExpand,
@@ -364,7 +365,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
 }
 
 // Helps wrap the timing and logging behaviors
-function trackProgress(logger: Logger) {
+function trackProgress(logger: LoggerService) {
   let timestamp = Date.now();
   let summary: string;
 

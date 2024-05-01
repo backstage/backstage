@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
-import { getVoidLogger } from '@backstage/backend-common';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGitlabIssueAction, IssueType } from './createGitlabIssueAction';
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { advanceTo, clear } from 'jest-date-mock';
 
 const mockGitlabClient = {
   Issues: {
@@ -37,11 +35,13 @@ jest.mock('@gitbeaker/rest', () => ({
 describe('gitlab:issues:create', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    advanceTo(new Date(1988, 5, 3, 12, 0, 0)); // Set the desired date and time
+    jest.useFakeTimers({
+      now: new Date(1988, 5, 3, 12, 0, 0),
+    });
   });
 
   afterEach(() => {
-    clear(); // Reset the date mock after each test
+    jest.useRealTimers();
   });
 
   const config = new ConfigReader({
@@ -60,21 +60,18 @@ describe('gitlab:issues:create', () => {
   const action = createGitlabIssueAction({ integrations });
 
   it('should return a Gitlab issue when called with minimal input params', async () => {
-    const mockContext = {
+    const mockContext = createMockActionContext({
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
         title: 'Computer banks to rule the world',
       },
       workspacePath: 'seen2much',
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    };
+    });
 
     mockGitlabClient.Issues.create.mockResolvedValue({
       id: 42,
+      iid: 1,
       web_url: 'https://gitlab.com/hangar18-/issues/42',
     });
 
@@ -102,6 +99,7 @@ describe('gitlab:issues:create', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
+    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 1);
     expect(mockContext.output).toHaveBeenCalledWith(
       'issueUrl',
       'https://gitlab.com/hangar18-/issues/42',
@@ -109,7 +107,7 @@ describe('gitlab:issues:create', () => {
   });
 
   it('should return a Gitlab issue when called with oAuth Token', async () => {
-    const mockContext = {
+    const mockContext = createMockActionContext({
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
@@ -117,14 +115,11 @@ describe('gitlab:issues:create', () => {
         token: 'myAwesomeToken',
       },
       workspacePath: 'seen2much',
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    };
+    });
 
     mockGitlabClient.Issues.create.mockResolvedValue({
       id: 42,
+      iid: 1,
       web_url: 'https://gitlab.com/hangar18-/issues/42',
     });
 
@@ -152,6 +147,7 @@ describe('gitlab:issues:create', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
+    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 1);
     expect(mockContext.output).toHaveBeenCalledWith(
       'issueUrl',
       'https://gitlab.com/hangar18-/issues/42',
@@ -159,7 +155,7 @@ describe('gitlab:issues:create', () => {
   });
 
   it('should return a Gitlab issue when called with several input params', async () => {
-    const mockContext = {
+    const mockContext = createMockActionContext({
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
@@ -173,14 +169,11 @@ describe('gitlab:issues:create', () => {
         labels: 'operation:mindcrime',
       },
       workspacePath: 'seen2much',
-      logger: getVoidLogger(),
-      logStream: new PassThrough(),
-      output: jest.fn(),
-      createTemporaryDirectory: jest.fn(),
-    };
+    });
 
     mockGitlabClient.Issues.create.mockResolvedValue({
       id: 42,
+      iid: 1,
       web_url: 'https://gitlab.com/hangar18-/issues/42',
     });
 
@@ -209,6 +202,7 @@ describe('gitlab:issues:create', () => {
     );
 
     expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
+    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 1);
     expect(mockContext.output).toHaveBeenCalledWith(
       'issueUrl',
       'https://gitlab.com/hangar18-/issues/42',

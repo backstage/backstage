@@ -7,5 +7,4 @@ module.exports = async (browser, context) => {
   await page.evaluate(() => {
     localStorage.setItem('@backstage/core:SignInPage:provider', 'guest');
   });
-  await page.goto('http://localhost:3000');
 };

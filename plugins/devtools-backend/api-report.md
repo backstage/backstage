@@ -7,17 +7,19 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigInfo } from '@backstage/plugin-devtools-common';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
-import { Logger } from 'winston';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
+import { LoggerService } from '@backstage/backend-plugin-api';
+import { PermissionsService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
 
 // @public (undocumented)
 export class DevToolsBackendApi {
-  constructor(logger: Logger, config: Config);
+  constructor(logger: LoggerService, config: Config);
   // (undocumented)
   listConfig(): Promise<ConfigInfo>;
   // (undocumented)
@@ -37,8 +39,12 @@ export interface RouterOptions {
   // (undocumented)
   devToolsBackendApi?: DevToolsBackendApi;
   // (undocumented)
-  logger: Logger;
+  discovery: DiscoveryService;
   // (undocumented)
-  permissions: PermissionEvaluator;
+  httpAuth?: HttpAuthService;
+  // (undocumented)
+  logger: LoggerService;
+  // (undocumented)
+  permissions: PermissionsService;
 }
 ```

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -25,7 +26,6 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { merge, isErrorResult } from 'openapi-merge';
-import { TokenManager } from '@backstage/backend-common';
 import { getOpenApiSpecRoute } from '@backstage/backend-openapi-utils';
 import type {
   OpenAPIObject,
@@ -33,8 +33,13 @@ import type {
   PathItemObject,
 } from 'openapi3-ts';
 import fetch from 'cross-fetch';
-import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import * as uuid from 'uuid';
+import lodash from 'lodash';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 
 const HTTP_VERBS: (keyof PathItemObject)[] = [
@@ -108,19 +113,22 @@ const loadSpecs = async ({
   discovery,
   plugins,
   logger,
-  tokenManager,
+  auth,
 }: {
   baseUrl: string;
   plugins: string[];
   discovery: DiscoveryService;
   logger: LoggerService;
-  tokenManager: TokenManager;
+  auth: AuthService;
 }) => {
   const specs: OpenAPIObject[] = [];
   for (const pluginId of plugins) {
-    const url = await discovery.getExternalBaseUrl(pluginId);
+    const url = await discovery.getBaseUrl(pluginId);
     const openApiUrl = getOpenApiSpecRoute(url);
-    const { token } = await tokenManager.getToken();
+    const { token } = await auth.getPluginRequestToken({
+      onBehalfOf: await auth.getOwnServiceCredentials(),
+      targetPluginId: pluginId,
+    });
     const response = await fetch(openApiUrl, {
       method: 'GET',
       headers: {
@@ -149,11 +157,12 @@ const loadSpecs = async ({
 export class InternalOpenApiDocumentationProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private readonly scheduleFn: () => Promise<void>;
+
   constructor(
     public readonly config: Config,
     public readonly discovery: DiscoveryService,
     public readonly logger: LoggerService,
-    public readonly tokenManager: TokenManager,
+    public readonly auth: AuthService,
     taskRunner: TaskRunner,
   ) {
     this.scheduleFn = this.createScheduleFn(taskRunner);
@@ -165,7 +174,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       discovery: DiscoveryService;
       logger: LoggerService;
       schedule: PluginTaskScheduler;
-      tokenManager: TokenManager;
+      auth: AuthService;
     },
   ) {
     const taskRunner = options.schedule.createScheduledTaskRunner({
@@ -180,7 +189,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       config,
       options.discovery,
       options.logger,
-      options.tokenManager,
+      options.auth,
       taskRunner,
     );
   }
@@ -221,13 +230,26 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     const pluginsToMerge = this.config.getStringArray(
       'catalog.providers.backstageOpenapi.plugins',
     );
-    logger.info(`Loading specs from from ${pluginsToMerge}.`);
-    const documentationEntity: ApiEntity = {
+    const configToMerge = this.config.getOptional(
+      'catalog.providers.backstageOpenapi.entityOverrides',
+    );
+
+    const baseConfig = {
+      metadata: {
+        name: 'internal_backstage_openapi_doc',
+        title: 'Backstage API',
+      },
+      spec: {
+        lifecycle: 'production',
+        owner: 'backstage',
+      },
+    };
+
+    logger.info(`Loading specs from ${pluginsToMerge}.`);
+    const requiredConfig = {
       apiVersion: 'backstage.io/v1beta1',
       kind: 'API',
       metadata: {
-        name: 'INTERNAL_instance_openapi_doc',
-        title: 'Your Backstage Instance documentation',
         annotations: {
           [ANNOTATION_LOCATION]:
             'internal-package:@backstage/plugin-catalog-backend-module-backstage-openapi',
@@ -237,19 +259,27 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
       },
       spec: {
         type: 'openapi',
-        lifecycle: 'production',
-        owner: 'backstage',
         definition: JSON.stringify(
           await loadSpecs({
             baseUrl: this.config.getString('backend.baseUrl'),
             discovery: this.discovery,
-            tokenManager: this.tokenManager,
+            auth: this.auth,
             plugins: pluginsToMerge,
             logger,
           }),
         ),
       },
     };
+
+    // Overwrite baseConfig with options from config file.
+    const mergedConfig = lodash.merge(baseConfig, configToMerge);
+
+    // Overwite mergedConfig with requiredConfig (i.e., spec.type and spec.definition) to avoid bad configuration.
+    const documentationEntity = lodash.merge(
+      mergedConfig,
+      requiredConfig,
+    ) as ApiEntity;
+
     await this.connection?.applyMutation({
       type: 'full',
       entities: [

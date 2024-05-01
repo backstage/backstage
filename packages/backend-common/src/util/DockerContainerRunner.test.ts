@@ -83,6 +83,30 @@ describe('DockerContainerRunner', () => {
     expect(mockDocker.run).toHaveBeenCalled();
   });
 
+  it('should pull the docker container with authentication', async () => {
+    await containerTaskApi.runContainer({
+      imageName,
+      args,
+      pullOptions: {
+        authconfig: {
+          auth: 'aaaaaaaaa',
+        },
+      },
+    });
+
+    expect(mockDocker.pull).toHaveBeenCalledWith(
+      imageName,
+      {
+        authconfig: {
+          auth: 'aaaaaaaaa',
+        },
+      },
+      expect.any(Function),
+    );
+
+    expect(mockDocker.run).toHaveBeenCalled();
+  });
+
   it('should not pull the docker container when pullImage is false', async () => {
     await containerTaskApi.runContainer({
       imageName,

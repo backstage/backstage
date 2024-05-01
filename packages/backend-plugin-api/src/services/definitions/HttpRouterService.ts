@@ -16,9 +16,17 @@
 
 import { Handler } from 'express';
 
+/** @public */
+export interface HttpRouterServiceAuthPolicy {
+  path: string;
+  allow: 'unauthenticated' | 'user-cookie';
+}
+
 /**
  * @public
  */
 export interface HttpRouterService {
   use(handler: Handler): void;
+
+  addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
 }

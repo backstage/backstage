@@ -15,7 +15,11 @@
  */
 
 import { JsonValue } from '@backstage/types';
-import { Box, Chip, Divider, makeStyles, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
+import Divider from '@material-ui/core/Divider';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { Schema } from 'jsonschema';
 import React, { useEffect, useRef } from 'react';
 import { useScrollTargets } from '../ScrollTargetsContext/ScrollTargetsContext';

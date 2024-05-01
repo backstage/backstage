@@ -19,6 +19,8 @@ import { useState } from 'react';
 import { Link } from '../../components/Link';
 import { CodeSnippet } from '../../components';
 import { makeStyles } from '@material-ui/core/styles';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { coreComponentsTranslationRef } from '../../translation';
 
 interface IStackDetailsProps {
   stack: string;
@@ -46,6 +48,7 @@ const useStyles = makeStyles(
 export function StackDetails(props: IStackDetailsProps) {
   const { stack } = props;
   const classes = useStyles();
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
 
   const [detailsOpen, setDetailsOpen] = useState<boolean>(false);
 
@@ -53,7 +56,7 @@ export function StackDetails(props: IStackDetailsProps) {
     return (
       <Typography variant="h6" className={classes.title}>
         <Link to="#" onClick={() => setDetailsOpen(true)}>
-          Show more details
+          {t('errorPage.showMoreDetails')}
         </Link>
       </Typography>
     );
@@ -63,7 +66,7 @@ export function StackDetails(props: IStackDetailsProps) {
     <>
       <Typography variant="h6" className={classes.title}>
         <Link to="#" onClick={() => setDetailsOpen(false)}>
-          Show less details
+          {t('errorPage.showLessDetails')}
         </Link>
       </Typography>
       <CodeSnippet

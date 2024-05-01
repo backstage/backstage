@@ -8,6 +8,7 @@
 
 import { AppConfig } from '@backstage/config';
 import { AuthCallback } from 'isomorphic-git';
+import { AuthService } from '@backstage/backend-plugin-api';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
@@ -30,10 +31,9 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
-import { Knex } from 'knex';
-import knexFactory from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
@@ -65,6 +65,7 @@ import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
+import { UserInfoService } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
@@ -223,14 +224,37 @@ export interface ContainerRunner {
 }
 
 // @public
-export function createDatabaseClient(
-  dbConfig: Config,
-  overrides?: Partial<Knex.Config>,
-  deps?: {
-    lifecycle: LifecycleService;
-    pluginMetadata: PluginMetadataService;
+export function createLegacyAuthAdapters<
+  TOptions extends {
+    auth?: AuthService;
+    httpAuth?: HttpAuthService;
+    userInfo?: UserInfoService;
+    identity?: IdentityService;
+    tokenManager?: TokenManager;
+    discovery: PluginEndpointDiscovery;
   },
-): knexFactory.Knex<any, any[]>;
+  TAdapters = (TOptions extends {
+    auth?: AuthService;
+  }
+    ? {
+        auth: AuthService;
+      }
+    : {}) &
+    (TOptions extends {
+      httpAuth?: HttpAuthService;
+    }
+      ? {
+          httpAuth: HttpAuthService;
+        }
+      : {}) &
+    (TOptions extends {
+      userInfo?: UserInfoService;
+    }
+      ? {
+          userInfo: UserInfoService;
+        }
+      : {}),
+>(options: TOptions): TAdapters;
 
 // @public
 export function createRootLogger(
@@ -279,13 +303,7 @@ export class DockerContainerRunner implements ContainerRunner {
 // @public
 export function dropDatabase(
   dbConfig: Config,
-  ...databases: Array<string>
-): Promise<void>;
-
-// @public
-export function ensureDatabaseExists(
-  dbConfig: Config,
-  ...databases: Array<string>
+  ...databaseNames: string[]
 ): Promise<void>;
 
 // @public
@@ -607,6 +625,21 @@ export { PluginDatabaseManager };
 export { PluginEndpointDiscovery };
 
 // @public
+export interface PullOptions {
+  // (undocumented)
+  [key: string]: unknown;
+  // (undocumented)
+  authconfig?: {
+    username?: string;
+    password?: string;
+    auth?: string;
+    email?: string;
+    serveraddress?: string;
+    [key: string]: unknown;
+  };
+}
+
+// @public
 export type ReaderFactory = (options: {
   config: Config;
   logger: LoggerService;
@@ -704,6 +737,7 @@ export type RunContainerOptions = {
   envVars?: Record<string, string>;
   pullImage?: boolean;
   defaultUser?: boolean;
+  pullOptions?: PullOptions;
 };
 
 export { SearchOptions };
@@ -720,7 +754,7 @@ export class ServerTokenManager implements TokenManager {
   static fromConfig(
     config: Config,
     options: ServerTokenManagerOptions,
-  ): ServerTokenManager;
+  ): TokenManager;
   // (undocumented)
   getToken(): Promise<{
     token: string;
@@ -730,6 +764,7 @@ export class ServerTokenManager implements TokenManager {
 
 // @public
 export interface ServerTokenManagerOptions {
+  allowDisabledTokenManager?: boolean;
   logger: LoggerService;
 }
 

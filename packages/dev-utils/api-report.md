@@ -10,10 +10,12 @@ import { AppTheme } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { Entity } from '@backstage/catalog-model';
-import { GridProps } from '@material-ui/core';
+import { GridProps } from '@material-ui/core/Grid';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
+import { default as React_2 } from 'react';
 import { ReactNode } from 'react';
+import { SignInProviderConfig } from '@backstage/core-components';
 
 // @public
 export function createDevApp(): DevAppBuilder;
@@ -22,6 +24,8 @@ export function createDevApp(): DevAppBuilder;
 export class DevAppBuilder {
   addPage(opts: DevAppPageOptions): DevAppBuilder;
   addRootChild(node: ReactNode): DevAppBuilder;
+  addSidebarItem(sidebarItem: JSX.Element): DevAppBuilder;
+  addSignInProvider(provider: SignInProviderConfig): this;
   addThemes(themes: AppTheme[]): this;
   build(): ComponentType<PropsWithChildren<{}>>;
   registerApi<
@@ -50,4 +54,10 @@ export const EntityGridItem: (
     entity: Entity;
   },
 ) => JSX.Element;
+
+// @public
+export const SidebarSignOutButton: (props: {
+  icon?: IconComponent;
+  text?: string;
+}) => React_2.JSX.Element;
 ```

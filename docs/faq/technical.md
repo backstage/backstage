@@ -47,7 +47,7 @@ gets a consistent UX, no matter what tool or service is being accessed on the
 other side.
 
 Each plugin is treated as a self-contained web app and can include almost any
-type of content. Plugins all use a common set of platform APIs and reusable UI
+type of content. Plugins all use a common set of framework APIs and reusable UI
 components. Plugins can fetch data either from the backend or an API exposed
 through the proxy.
 
@@ -100,10 +100,10 @@ You can browse and search for all available plugins in the
 [Plugin Directory](https://backstage.io/plugins).
 
 If you can't find it in the directory, before you write a plugin
-[search the plugin issues](https://github.com/backstage/backstage/issues?q=is%3Aissue+label%3Aplugin+)
+[search the plugin issues on the community plugins repo](https://github.com/backstage/community-plugins/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin)
 to see if is in the works. If no one's thought of it yet, great! Open a new
 issue as
-[a plugin suggestion](https://github.com/backstage/backstage/issues/new/choose)
+[a plugin suggestion](https://github.com/backstage/community-plugins/issues/new/choose)
 and describe what your plugin will do. This will help coordinate our
 contributors' efforts and avoid duplicating existing functionality.
 
@@ -115,7 +115,7 @@ where you write documentation using the same workflow as you write your code.
 This makes it easier to create, find, and update documentation.
 [TechDocs is now open source.](https://backstage.io/docs/features/techdocs/)
 (See also:
-"[Will Spotify's internal plugins be open sourced, too?](#will-spotifys-internal-plugins-be-open-sourced-too)"
+"[Will Spotify's internal plugins be open sourced, too?](https://backstage.io/docs/faq/product#will-spotifys-internal-plugins-be-open-sourced-too)"
 above)
 
 ### Are you planning to have plugins baked into the repo? Or should they be developed in separate repos?
@@ -179,7 +179,7 @@ No. Backstage does not collect any telemetry from any third party using the
 platform. Spotify, and the open source community, do have access to
 [GitHub Insights](https://github.com/features/insights), which contains
 information such as contributors, commits, traffic, and dependencies. Backstage
-is an open platform, but you are in control of your own data. You control who
+is an open source framework, but you are in control of your own data. You control who
 has access to any data you provide to your version of Backstage and who that
 data is shared with.
 
@@ -195,10 +195,9 @@ ambition will be to keep Backstage modular.
 ### How can I get involved?
 
 Jump right in! Come help us fix some of the
-[early bugs and good first issues](https://github.com/backstage/backstage/contribute)
-or reach [a new milestone](https://github.com/backstage/backstage/milestones).
-Or write an open source plugin for Backstage, like this
-[Lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse).
+[early bugs and good first issues](https://github.com/backstage/backstage/contribute).
+Or write an open source plugin for Backstage in our
+[community plugins repository](https://github.com/backstage/community-plugins).
 See all the ways you can
 [contribute here](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md).
 We'd love to have you as part of the community.

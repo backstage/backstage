@@ -20,6 +20,7 @@ import {
   isKind,
   isNamespace,
   isResourceType,
+  isApiType,
   isEntityWith,
 } from './conditions';
 
@@ -63,6 +64,27 @@ const notComponent: Entity = {
   kind: 'not-component',
   metadata: { name: 'aService' },
   spec: { type: 'service' },
+};
+
+const graphqlApi: Entity = {
+  apiVersion: '',
+  kind: 'api',
+  metadata: { name: 'aProtocol' },
+  spec: { type: 'graphql' },
+};
+
+const grpcApi: Entity = {
+  apiVersion: '',
+  kind: 'api',
+  metadata: { name: 'aProtocol' },
+  spec: { type: 'grpc' },
+};
+
+const notApi: Entity = {
+  apiVersion: '',
+  kind: 'not-api',
+  metadata: { name: 'aProtocol' },
+  spec: { type: 'grpc' },
 };
 
 const missingSpecType: Entity = {
@@ -130,6 +152,26 @@ describe('isComponentType', () => {
 
     expect(checkEntity(serviceComponent)).toBeTruthy();
     expect(checkEntity(websiteComponent)).toBeTruthy();
+  });
+});
+
+describe('isApiType', () => {
+  it('should false on non API kinds', () => {
+    const checkEntity = isApiType('openapi');
+
+    expect(checkEntity(notApi)).not.toBeTruthy();
+  });
+  it('should check for the intended type', () => {
+    const checkEntity = isApiType('grpc');
+
+    expect(checkEntity(graphqlApi)).not.toBeTruthy();
+    expect(checkEntity(grpcApi)).toBeTruthy();
+  });
+  it('should check for multiple types', () => {
+    const checkEntity = isApiType(['grpc', 'graphql']);
+
+    expect(checkEntity(graphqlApi)).toBeTruthy();
+    expect(checkEntity(grpcApi)).toBeTruthy();
   });
 });
 

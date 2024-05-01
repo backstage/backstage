@@ -170,11 +170,7 @@ export class BackendInitializer {
     }
 
     // Initialize all root scoped services
-    for (const ref of this.#serviceRegistry.getServiceRefs()) {
-      if (ref.scope === 'root') {
-        await this.#serviceRegistry.get(ref, 'root');
-      }
-    }
+    await this.#serviceRegistry.initializeEagerServicesWithScope('root');
 
     const pluginInits = new Map<string, BackendRegisterInit>();
     const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
@@ -228,13 +224,17 @@ export class BackendInitializer {
       }
     }
 
-    const allPluginIds = [
-      ...new Set([...pluginInits.keys(), ...moduleInits.keys()]),
-    ];
+    const allPluginIds = [...pluginInits.keys()];
 
     // All plugins are initialized in parallel
     await Promise.all(
       allPluginIds.map(async pluginId => {
+        // Initialize all eager services
+        await this.#serviceRegistry.initializeEagerServicesWithScope(
+          'plugin',
+          pluginId,
+        );
+
         // Modules are initialized before plugins, so that they can provide extension to the plugin
         const modules = moduleInits.get(pluginId);
         if (modules) {

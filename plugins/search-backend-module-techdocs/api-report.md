@@ -5,11 +5,13 @@
 ```ts
 /// <reference types="node" />
 
+import { AuthService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { Entity } from '@backstage/catalog-model';
-import { Logger } from 'winston';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { Readable } from 'stream';
@@ -42,8 +44,10 @@ export type TechDocsCollatorEntityTransformer = (
 // @public
 export type TechDocsCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
-  logger: Logger;
+  logger: LoggerService;
   tokenManager: TokenManager;
+  auth?: AuthService;
+  httpAuth?: HttpAuthService;
   locationTemplate?: string;
   catalogClient?: CatalogApi;
   parallelismLimit?: number;

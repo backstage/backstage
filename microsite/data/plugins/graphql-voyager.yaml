@@ -4,9 +4,9 @@ author: PostNL
 authorUrl: https://github.com/postnl
 category: Debugging
 description: Integrates the GraphQL Voyager tool inside Backstage as a plugin.
-documentation: https://github.com/backstage/backstage/tree/master/plugins/graphql-voyager
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/graphql-voyager/plugins/graphql-voyager
 iconUrl: https://res.cloudinary.com/apideck/image/upload/v1612724234/icons/graphql-voyager.png
-npmPackageName: '@backstage/plugin-graphql-voyager'
+npmPackageName: '@backstage-community/plugin-graphql-voyager'
 tags:
   - graphql
   - graphql-voyager

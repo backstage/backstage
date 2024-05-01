@@ -16,14 +16,17 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Box, Button, makeStyles, Paper } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
 import {
   ScaffolderTaskOutput,
   scaffolderApiRef,
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
 import {
@@ -63,6 +66,7 @@ export const OngoingTask = (props: {
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
+  const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
   const taskStream = useTaskEventStream(taskId!);
   const classes = useStyles();
@@ -110,6 +114,8 @@ export const OngoingTask = (props: {
       return;
     }
 
+    analytics.captureEvent('click', `Task has been started over`);
+
     navigate({
       pathname: templateRouteRef({
         namespace,
@@ -118,6 +124,7 @@ export const OngoingTask = (props: {
       search: `?${qs.stringify({ formData: JSON.stringify(formData) })}`,
     });
   }, [
+    analytics,
     navigate,
     taskStream.task?.spec.parameters,
     taskStream.task?.spec.templateInfo?.entity?.metadata,
@@ -127,6 +134,7 @@ export const OngoingTask = (props: {
   const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
     async () => {
       if (taskId) {
+        analytics.captureEvent('cancelled', 'Template has been cancelled');
         await scaffolderApi.cancelTask(taskId);
       }
     },

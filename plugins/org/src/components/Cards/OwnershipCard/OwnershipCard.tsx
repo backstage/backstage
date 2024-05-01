@@ -16,20 +16,26 @@
 
 import { InfoCard, InfoCardVariants } from '@backstage/core-components';
 import { useEntity } from '@backstage/plugin-catalog-react';
-import {
-  List,
-  ListItem,
-  ListItemSecondaryAction,
-  ListItemText,
-  makeStyles,
-  Switch,
-  Tooltip,
-} from '@material-ui/core';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
+import Switch from '@material-ui/core/Switch';
+import Tooltip from '@material-ui/core/Tooltip';
+import { makeStyles } from '@material-ui/core/styles';
 import React, { useEffect, useState } from 'react';
 import { ComponentsGrid } from './ComponentsGrid';
-import { EntityRelationAggregation } from './types';
+import { EntityRelationAggregation } from '../types';
 
 const useStyles = makeStyles(theme => ({
+  card: {
+    maxHeight: '100%',
+  },
+  cardContent: {
+    display: 'flex',
+    flexDirection: 'column',
+    overflow: 'hidden',
+  },
   list: {
     [theme.breakpoints.down('xs')]: {
       padding: `0 0 12px`,
@@ -49,6 +55,10 @@ const useStyles = makeStyles(theme => ({
       position: 'relative',
       transform: 'unset',
     },
+  },
+  grid: {
+    overflowY: 'auto',
+    marginTop: 0,
   },
 }));
 
@@ -84,7 +94,12 @@ export const OwnershipCard = (props: {
   }, [setRelationsType, defaultRelationsType, relationsType]);
 
   return (
-    <InfoCard title="Ownership" variant={variant}>
+    <InfoCard
+      title="Ownership"
+      variant={variant}
+      className={classes.card}
+      cardClassName={classes.cardContent}
+    >
       {!relationsToggle && (
         <List dense>
           <ListItem className={classes.list}>
@@ -118,6 +133,7 @@ export const OwnershipCard = (props: {
         </List>
       )}
       <ComponentsGrid
+        className={classes.grid}
         entity={entity}
         entityLimit={entityLimit}
         relationsType={getRelationsType}

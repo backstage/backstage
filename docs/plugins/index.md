@@ -16,7 +16,9 @@ Embark on your plugin development journey by following the detailed steps provid
 
 ## Suggesting a Plugin
 
-If you're developing an open-source plugin, we encourage you to initiate a [new issue](https://github.com/backstage/backstage/issues/new?labels=plugin&template=plugin_template.md&title=%5BPlugin%5D+THE+PLUGIN+NAME) on our GitHub repository. This gesture informs the community about upcoming plugins and invites collaboration and feedback.
+If you're developing an open-source plugin, we encourage you to create a
+[new issue in the community plugins repo](https://github.com/backstage/community-plugins/issues/new/choose).
+This informs the community about upcoming plugins and invites collaboration and feedback.
 
 This approach is equally beneficial if you conceive an idea for a potentially impactful plugin but prefer if another contributor undertakes its development.
 

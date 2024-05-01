@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { createWaitAction } from './wait';
 import { Writable } from 'stream';
 import { examples } from './wait.examples';
 import yaml from 'yaml';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('debug:wait examples', () => {
   const action = createWaitAction();
@@ -28,18 +27,9 @@ describe('debug:wait examples', () => {
     write: jest.fn(),
   } as jest.Mocked<Partial<Writable>> as jest.Mocked<Writable>;
 
-  const mockDir = createMockDirectory();
-  const workspacePath = mockDir.resolve('workspace');
-
-  const mockContext = {
-    input: {},
-    baseUrl: 'somebase',
-    workspacePath,
-    logger: getVoidLogger(),
+  const mockContext = createMockActionContext({
     logStream,
-    output: jest.fn(),
-    createTemporaryDirectory: jest.fn(),
-  };
+  });
 
   beforeEach(() => {
     jest.resetAllMocks();

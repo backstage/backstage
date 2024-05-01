@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { EntityNamePickerProps } from './schema';
-import { TextField } from '@material-ui/core';
+import TextField from '@material-ui/core/TextField';
 
 export { EntityNamePickerSchema } from './schema';
 

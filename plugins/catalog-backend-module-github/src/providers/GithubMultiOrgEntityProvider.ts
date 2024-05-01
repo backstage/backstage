@@ -38,15 +38,15 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventBroker, EventParams } from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
 import {
   InstallationCreatedEvent,
   InstallationEvent,
+  MembershipEvent,
   OrganizationEvent,
   OrganizationMemberAddedEvent,
   OrganizationMemberRemovedEvent,
-  MembershipEvent,
   TeamCreatedEvent,
   TeamDeletedEvent,
   TeamEditedEvent,
@@ -54,7 +54,6 @@ import {
 } from '@octokit/webhooks-types';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 
 import {
   assignGroupsToUsers,
@@ -79,6 +78,14 @@ import {
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
+import { LoggerService } from '@backstage/backend-plugin-api';
+
+const EVENT_TOPICS = [
+  'github.installation',
+  'github.membership',
+  'github.organization',
+  'github.team',
+];
 
 /**
  * Options for {@link GithubMultiOrgEntityProvider}.
@@ -101,10 +108,15 @@ export interface GithubMultiOrgEntityProviderOptions {
   githubUrl: string;
 
   /**
-   * The list of the GitHub orgs to consume. By default will consume all accessible
+   * The list of the GitHub orgs to consume. By default, it will consume all accessible
    * orgs on the given GitHub instance (support for GitHub App integration only).
    */
   orgs?: string[];
+
+  /**
+   * Passing the optional EventsService enables event-based delta updates.
+   */
+  events?: EventsService;
 
   /**
    * The refresh schedule to use.
@@ -124,7 +136,7 @@ export interface GithubMultiOrgEntityProviderOptions {
   /**
    * The logger to use.
    */
-  logger: Logger;
+  logger: LoggerService;
 
   /**
    * Optionally supply a custom credentials provider, replacing the default one.
@@ -138,14 +150,9 @@ export interface GithubMultiOrgEntityProviderOptions {
 
   /**
    * Optionally include a team transformer for transforming from GitHub teams to Group Entities.
-   * By default groups will be namespaced according to their GitHub org.
+   * By default, groups will be namespaced according to their GitHub org.
    */
   teamTransformer?: TeamTransformer;
-
-  /**
-   * An EventBroker to subscribe this provider to GitHub events to trigger delta mutations
-   */
-  eventBroker?: EventBroker;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -190,27 +197,22 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       orgs: options.orgs,
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
+      events: options.events,
     });
 
     provider.schedule(options.schedule);
-
-    if (options.eventBroker) {
-      options.eventBroker.subscribe({
-        supportsEventTopics: provider.supportsEventTopics.bind(provider),
-        onEvent: provider.onEvent.bind(provider),
-      });
-    }
 
     return provider;
   }
 
   constructor(
     private readonly options: {
+      events?: EventsService;
       id: string;
       gitHubConfig: GithubIntegrationConfig;
       githubCredentialsProvider: GithubCredentialsProvider;
       githubUrl: string;
-      logger: Logger;
+      logger: LoggerService;
       orgs?: string[];
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
@@ -225,6 +227,11 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
   /** {@inheritdoc @backstage/plugin-catalog-backend#EntityProvider.connect} */
   async connect(connection: EntityProviderConnection) {
     this.connection = connection;
+    await this.options.events?.subscribe({
+      id: this.getProviderName(),
+      topics: EVENT_TOPICS,
+      onEvent: params => this.onEvent(params),
+    });
     await this.scheduleFn?.();
   }
 
@@ -232,7 +239,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
    * Runs one single complete ingestion. This is only necessary if you use
    * manual scheduling.
    */
-  async read(options?: { logger?: Logger }) {
+  async read(options?: { logger?: LoggerService }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -309,15 +316,6 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     });
 
     markCommitComplete();
-  }
-
-  private supportsEventTopics(): string[] {
-    return [
-      'github.installation',
-      'github.organization',
-      'github.team',
-      'github.membership',
-    ];
   }
 
   private async onEvent(params: EventParams): Promise<void> {
@@ -905,7 +903,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 }
 
 // Helps wrap the timing and logging behaviors
-function trackProgress(logger: Logger) {
+function trackProgress(logger: LoggerService) {
   let timestamp = Date.now();
   let summary: string;
 

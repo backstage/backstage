@@ -16,20 +16,20 @@
 
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
-import { Logger } from 'winston';
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
 import {
   PluginTaskScheduler,
   TaskDescriptor,
+  TaskFunction,
   TaskInvocationDefinition,
   TaskRunner,
   TaskScheduleDefinition,
   TaskSettingsV2,
 } from './types';
 import { validateId } from './util';
-import { TaskFunction } from './types';
-import { metrics, Counter, Histogram } from '@opentelemetry/api';
+import { Counter, Histogram, metrics } from '@opentelemetry/api';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Implements the actual task management.
@@ -43,7 +43,7 @@ export class PluginTaskSchedulerImpl implements PluginTaskScheduler {
 
   constructor(
     private readonly databaseFactory: () => Promise<Knex>,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
   ) {
     const meter = metrics.getMeter('default');
     this.counter = meter.createCounter('backend_tasks.task.runs.count', {

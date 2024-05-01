@@ -120,7 +120,7 @@ the infrastructure tooling through plugins. Different plugins are used for
 managing different types of components.
 
 For example, the
-[Lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse)
+[Lighthouse plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/lighthouse/plugins/lighthouse)
 only makes sense for Websites. The more specific you can be in how you model
 your software, the easier it is to provide plugins that are contextual.
 
@@ -139,11 +139,12 @@ Example intents:
 > data in annotation values, not just strings."
 
 After pieces of raw entity data have been read from a location, they are passed
-through a fixed number of so called `Validators`, as part of the entity policy
-check step. They ensure that the types and syntax of the base envelope and
-metadata make sense - in short, things that aren't entity-kind-specific. Some or
-all of these validators can be replaced when building the backend catalog using
-the `CatalogBuilder`.
+through a field format validation step. This ensures that the types and syntax
+of the base envelope and metadata make sense - in short, things that aren't
+entity-kind-specific. Some or all of these validators can be replaced when
+building the backend using the catalog's dedicated `catalogModelExtensionPoint`
+(or directly on the `CatalogBuilder` if you are still using the old backend
+system).
 
 The risk and impact of this type of extension varies, based on what it is that
 you want to do. For example, extending the valid character set for kinds,
@@ -154,8 +155,55 @@ aren't careful about encoding arguments. Supporting non-strings in annotations
 may be possible but has not yet been tried out in the real world - there is
 likely to be some level of plugin breakage that can be hard to predict.
 
+You must also be careful about not making the rules _more strict_ than they used
+to be after populating the catalog with data. This risks making previously valid
+entities start having processing errors and fail to update.
+
 Before making this kind of extension, we recommend that you contact the
 Backstage maintainers or a support partner to discuss your use case.
+
+This is an example of relaxing the format rules of the `metadata.name` field:
+
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+
+const myCatalogCustomizations = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'catalog-customization',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        catalogModel: catalogModelExtensionPoint,
+      },
+      async init({ catalogModel }) {
+        catalogModel.setFieldValidators({
+          // This is only one of many methods that you can pass into
+          // setFieldValidators; your editor of choice should help you
+          // find the others. The length checks and regexp inside are
+          // just examples and can be adjusted as needed, but take care
+          // to test your changes thoroughly to ensure that you get
+          // them right.
+          isValidEntityName(value) {
+            return (
+              typeof value === 'string' &&
+              value.length >= 1 &&
+              value.length <= 63 &&
+              /^[A-Za-z0-9@+_.-]+$/.test(value)
+            );
+          },
+        });
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+// ... add other backend features and the catalog backend itself here ...
+backend.add(myCatalogCustomizations);
+backend.start();
+```
 
 ## Changing the Validation Rules for Core Entity Fields
 
@@ -451,7 +499,7 @@ You can generate an isomorphic plugin package by running:`yarn new --select plug
 or you can run `yarn new` and then select "plugin-common" from the list of options
 
 There's at this point no existing templates for generating isomorphic plugins
-using the `@backstage/cli`. Perhaps the simplest wat to get started right now is
+using the `@backstage/cli`. Perhaps the simplest way to get started right now is
 to copy the contents of one of the existing packages in the main repository,
 such as `plugins/scaffolder-common`, and rename the folder and file contents to
 the desired name. This example uses _foobar_ as the plugin name so the plugin

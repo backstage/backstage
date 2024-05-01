@@ -14,13 +14,17 @@
  * limitations under the License.
  */
 
+import { Handler } from 'express';
+import PromiseRouter from 'express-promise-router';
 import {
   coreServices,
   createServiceFactory,
+  HttpRouterServiceAuthPolicy,
 } from '@backstage/backend-plugin-api';
-import { Handler } from 'express';
-import PromiseRouter from 'express-promise-router';
 import { createLifecycleMiddleware } from './createLifecycleMiddleware';
+import { createCredentialsBarrier } from './createCredentialsBarrier';
+import { createAuthIntegrationRouter } from './createAuthIntegrationRouter';
+import { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
 
 /**
  * @public
@@ -36,23 +40,52 @@ export interface HttpRouterFactoryOptions {
 export const httpRouterServiceFactory = createServiceFactory(
   (options?: HttpRouterFactoryOptions) => ({
     service: coreServices.httpRouter,
+    initialization: 'always',
     deps: {
       plugin: coreServices.pluginMetadata,
+      config: coreServices.rootConfig,
+      logger: coreServices.logger,
       lifecycle: coreServices.lifecycle,
       rootHttpRouter: coreServices.rootHttpRouter,
+      auth: coreServices.auth,
+      httpAuth: coreServices.httpAuth,
     },
-    async factory({ plugin, rootHttpRouter, lifecycle }) {
+    async factory({
+      auth,
+      httpAuth,
+      config,
+      logger,
+      plugin,
+      rootHttpRouter,
+      lifecycle,
+    }) {
+      if (options?.getPath) {
+        logger.warn(
+          `DEPRECATION WARNING: The 'getPath' option for HttpRouterService is deprecated. The ability to reconfigure the '/api/' path prefix for plugins will be removed in the future.`,
+        );
+      }
       const getPath = options?.getPath ?? (id => `/api/${id}`);
       const path = getPath(plugin.getId());
 
       const router = PromiseRouter();
       rootHttpRouter.use(path, router);
 
+      const credentialsBarrier = createCredentialsBarrier({
+        httpAuth,
+        config,
+      });
+
+      router.use(createAuthIntegrationRouter({ auth }));
       router.use(createLifecycleMiddleware({ lifecycle }));
+      router.use(credentialsBarrier.middleware);
+      router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
 
       return {
-        use(handler: Handler) {
+        use(handler: Handler): void {
           router.use(handler);
+        },
+        addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
+          credentialsBarrier.addAuthPolicy(policy);
         },
       };
     },

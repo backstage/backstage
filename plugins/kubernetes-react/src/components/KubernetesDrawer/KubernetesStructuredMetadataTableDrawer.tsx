@@ -15,18 +15,14 @@
  */
 
 import React, { ChangeEvent, useContext, useState } from 'react';
-import {
-  Button,
-  Typography,
-  makeStyles,
-  IconButton,
-  createStyles,
-  Theme,
-  Drawer,
-  Switch,
-  FormControlLabel,
-  Grid,
-} from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+import Drawer from '@material-ui/core/Drawer';
+import Switch from '@material-ui/core/Switch';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Close from '@material-ui/icons/Close';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import { V1ObjectMeta } from '@kubernetes/client-node';
@@ -41,7 +37,7 @@ import { ClusterAttributes } from '@backstage/plugin-kubernetes-common';
 import { ManifestYaml } from './ManifestYaml';
 import { useApi } from '@backstage/core-plugin-api';
 import { kubernetesClusterLinkFormatterApiRef } from '../../api';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({

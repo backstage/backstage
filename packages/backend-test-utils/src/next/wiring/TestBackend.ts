@@ -29,6 +29,7 @@ import {
   ExtensionPoint,
   coreServices,
   createBackendModule,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { mockServices } from '../services';
 import { ConfigReader } from '@backstage/config';
@@ -66,9 +67,11 @@ export interface TestBackend extends Backend {
 }
 
 export const defaultServiceFactories = [
+  mockServices.auth.factory(),
   mockServices.cache.factory(),
   mockServices.rootConfig.factory(),
   mockServices.database.factory(),
+  mockServices.httpAuth.factory(),
   mockServices.httpRouter.factory(),
   mockServices.identity.factory(),
   mockServices.lifecycle.factory(),
@@ -78,8 +81,45 @@ export const defaultServiceFactories = [
   mockServices.rootLogger.factory(),
   mockServices.scheduler.factory(),
   mockServices.tokenManager.factory(),
+  mockServices.userInfo.factory(),
   mockServices.urlReader.factory(),
 ];
+
+/**
+ * Given a set of features, return an array of plugins that ensures that each
+ * module in the provided set of features has a corresponding plugin.
+ * @internal
+ */
+function createPluginsForOrphanModules(features: Array<BackendFeature>) {
+  const pluginIds = new Set<string>();
+  const modulePluginIds = new Set<string>();
+
+  for (const feature of features) {
+    if (isInternalBackendFeature(feature)) {
+      const registrations = feature.getRegistrations();
+      for (const registration of registrations) {
+        if (registration.type === 'plugin') {
+          pluginIds.add(registration.pluginId);
+        } else if (registration.type === 'module') {
+          modulePluginIds.add(registration.pluginId);
+        }
+      }
+    }
+  }
+
+  for (const pluginId of pluginIds) {
+    modulePluginIds.delete(pluginId);
+  }
+
+  return Array.from(modulePluginIds).map(pluginId =>
+    createBackendPlugin({
+      pluginId,
+      register(reg) {
+        reg.registerInit({ deps: {}, async init() {} });
+      },
+    }),
+  );
+}
 
 /**
  * Given a set of extension points and features, find the extension
@@ -274,7 +314,9 @@ export async function startTestBackend<TExtensionPoints extends any[]>(
   for (const m of createExtensionPointTestModules(features, extensionPoints)) {
     backend.add(m);
   }
-
+  for (const p of createPluginsForOrphanModules(features)) {
+    backend.add(p);
+  }
   for (const feature of features) {
     backend.add(feature);
   }

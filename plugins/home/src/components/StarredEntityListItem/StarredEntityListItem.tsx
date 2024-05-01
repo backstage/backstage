@@ -15,13 +15,11 @@
  */
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { entityRouteParams } from '@backstage/plugin-catalog-react';
-import {
-  ListItem,
-  ListItemIcon,
-  Tooltip,
-  IconButton,
-  ListItemText,
-} from '@material-ui/core';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Tooltip from '@material-ui/core/Tooltip';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemText from '@material-ui/core/ListItemText';
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { entityRouteRef } from '@backstage/plugin-catalog-react';

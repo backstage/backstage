@@ -5,8 +5,8 @@ category: Productivity
 description: |
   The plugin integrates with your Microsoft Calendar.
   It displays all your calendars and events in it.
-documentation: https://github.com/backstage/backstage/tree/master/plugins/microsoft-calendar
-npmPackageName: '@backstage/plugin-microsoft-calendar'
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/microsoft-calendar/plugins/microsoft-calendar
+npmPackageName: '@backstage-community/plugin-microsoft-calendar'
 tags:
   - Microsoft
   - calendar

@@ -20,7 +20,7 @@ import {
   V1DeploymentCondition,
 } from '@kubernetes/client-node';
 import React, { Fragment, ReactNode } from 'react';
-import { Chip } from '@material-ui/core';
+import Chip from '@material-ui/core/Chip';
 import {
   StatusAborted,
   StatusError,

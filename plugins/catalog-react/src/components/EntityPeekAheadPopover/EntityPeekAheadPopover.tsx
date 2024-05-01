@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import useAsyncFn from 'react-use/lib/useAsyncFn';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
 import React, { PropsWithChildren, useEffect, useMemo, useState } from 'react';
 import HoverPopover from 'material-ui-popup-state/HoverPopover';
@@ -23,16 +23,14 @@ import {
   bindPopover,
   usePopupState,
 } from 'material-ui-popup-state/hooks';
-import {
-  Box,
-  Card,
-  CardActions,
-  CardContent,
-  Chip,
-  makeStyles,
-  Tooltip,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Card from '@material-ui/core/Card';
+import CardActions from '@material-ui/core/CardActions';
+import CardContent from '@material-ui/core/CardContent';
+import Chip from '@material-ui/core/Chip';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import { useApiHolder } from '@backstage/core-plugin-api';
 import { isGroupEntity, isUserEntity } from '@backstage/catalog-model';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';

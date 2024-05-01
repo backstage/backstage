@@ -194,6 +194,18 @@ export interface TaskStore {
 
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
 
+  getTaskState?({ taskId }: { taskId: string }): Promise<
+    | {
+        state: JsonObject;
+      }
+    | undefined
+  >;
+
+  saveTaskState?(options: {
+    taskId: string;
+    state?: JsonObject;
+  }): Promise<void>;
+
   listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }>;
@@ -215,4 +227,11 @@ export type TaskTrackType = {
     step: TaskStep,
     action: TemplateAction<JsonObject>,
   ) => Promise<void>;
+};
+
+/**
+ * @internal
+ */
+export type InternalTaskSecrets = TaskSecrets & {
+  __initiatorCredentials: string;
 };

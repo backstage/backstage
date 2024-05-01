@@ -7,7 +7,7 @@
 
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { ListItemProps } from '@material-ui/core';
+import { ListItemProps } from '@material-ui/core/ListItem';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult } from '@backstage/plugin-search-common';

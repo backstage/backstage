@@ -13,7 +13,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: backstage/actions/cron@a674369920067381b450d398b27df7039b7ef635 # v0.6.5
+      - uses: backstage/actions/cron@af61233abb88019335b07ab855873d991f43d25a # v0.6.7
         with:
           app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
           private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}

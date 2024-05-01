@@ -13,26 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { TokenManager } from '@backstage/backend-common';
+
 import { NotificationService } from './NotificationService';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
 
 /** @public */
 export type NotificationServiceOptions = {
+  auth: AuthService;
   discovery: DiscoveryService;
-  tokenManager: TokenManager;
-  pluginId: string;
 };
 
 /** @public */
-export type NotificationRecipients = {
-  type: 'entity';
-  entityRef: string | string[];
-};
-
-// TODO: Support for broadcast messages
-//  | { type: 'broadcast' };
+export type NotificationRecipients =
+  | {
+      type: 'entity';
+      /**
+       * Entity references to send the notifications to
+       */
+      entityRef: string | string[];
+      /**
+       * Optional entity reference(s) to filter out of the resolved recipients.
+       * Usually the currently logged-in user for preventing sending notification
+       * of user action to him/herself.
+       */
+      excludeEntityRef?: string | string[];
+    }
+  | { type: 'broadcast' };
 
 /** @public */
 export type NotificationSendOptions = {
@@ -44,29 +51,26 @@ export type NotificationSendOptions = {
 export class DefaultNotificationService implements NotificationService {
   private constructor(
     private readonly discovery: DiscoveryService,
-    private readonly tokenManager: TokenManager,
-    private readonly pluginId: string,
+    private readonly auth: AuthService,
   ) {}
 
-  static create({
-    tokenManager,
-    discovery,
-    pluginId,
-  }: NotificationServiceOptions): DefaultNotificationService {
-    return new DefaultNotificationService(discovery, tokenManager, pluginId);
+  static create(
+    options: NotificationServiceOptions,
+  ): DefaultNotificationService {
+    return new DefaultNotificationService(options.discovery, options.auth);
   }
 
   async send(notification: NotificationSendOptions): Promise<void> {
     try {
       const baseUrl = await this.discovery.getBaseUrl('notifications');
-      const { token } = await this.tokenManager.getToken();
+      const { token } = await this.auth.getPluginRequestToken({
+        onBehalfOf: await this.auth.getOwnServiceCredentials(),
+        targetPluginId: 'notifications',
+      });
+
       const response = await fetch(`${baseUrl}/`, {
         method: 'POST',
-        body: JSON.stringify({
-          ...notification,
-          // TODO: Should retrieve this in the backend from service auth instead
-          origin: `plugin-${this.pluginId}`,
-        }),
+        body: JSON.stringify(notification),
         headers: {
           'Content-Type': 'application/json',
           Accept: 'application/json',

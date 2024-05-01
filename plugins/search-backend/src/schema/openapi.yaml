@@ -132,6 +132,7 @@ paths:
         - name: term
           in: query
           required: false
+          allowReserved: true
           schema:
             type: string
             default: ''
@@ -140,6 +141,7 @@ paths:
           required: false
           style: deepObject
           explode: true
+          allowReserved: true
           schema:
             # JsonObject is used here instead of the full ZOD schema definition as
             #   resolution of recursive schemas isn't possible with the library we're using
@@ -148,6 +150,7 @@ paths:
         - name: types
           in: query
           required: false
+          allowReserved: true
           schema:
             type: array
             items:
@@ -155,10 +158,12 @@ paths:
         - name: pageCursor
           in: query
           required: false
+          allowReserved: true
           schema:
             type: string
         - name: pageLimit
           in: query
           required: false
+          allowReserved: true
           schema:
             type: integer

@@ -17,22 +17,28 @@ import {
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { DefaultSignalService } from './DefaultSignalService';
-import { SignalService } from './SignalService';
+import { DefaultSignalsService } from './DefaultSignalsService';
+import { SignalsService } from './SignalsService';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /** @public */
-export const signalService = createServiceRef<SignalService>({
+export const signalsServiceRef = createServiceRef<SignalsService>({
   id: 'signals.service',
   scope: 'plugin',
   defaultFactory: async service =>
     createServiceFactory({
       service,
       deps: {
-        // TODO: EventBroker. It is optional for now but it's actually required so waiting for the new backend system
-        //       for the events-backend for this to work.
+        events: eventsServiceRef,
       },
-      factory({}) {
-        return DefaultSignalService.create({});
+      factory({ events }) {
+        return DefaultSignalsService.create({ events });
       },
     }),
 });
+
+/**
+ * @public
+ * @deprecated Use `signalsServiceRef` instead
+ */
+export const signalService = signalsServiceRef;

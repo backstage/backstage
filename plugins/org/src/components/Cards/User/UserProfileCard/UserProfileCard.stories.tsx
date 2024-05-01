@@ -20,7 +20,7 @@ import {
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
 import { wrapInTestApp } from '@backstage/test-utils';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import React, { ComponentType, PropsWithChildren } from 'react';
 import { UserProfileCard } from './UserProfileCard';
 

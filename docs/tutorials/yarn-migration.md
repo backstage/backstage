@@ -41,7 +41,7 @@ And this to `.dockerignore`:
 Let's move on to the actual installation. We'd recommend making separate Git commits of most of these steps, in case you need to go back and debug anything. To install Yarn 3, run the following command in the project root:
 
 ```bash
-yarn set version stable
+yarn set version 3.x
 ```
 
 We'll need the Yarn workspace tools plugin later on, so let's install that too:

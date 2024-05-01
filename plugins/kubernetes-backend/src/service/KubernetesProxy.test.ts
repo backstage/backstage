@@ -17,13 +17,19 @@
 import 'buffer';
 import { resolve as resolvePath } from 'path';
 import { errorHandler, getVoidLogger } from '@backstage/backend-common';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
 import {
   AuthorizeResult,
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
-import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
+import {
+  ANNOTATION_KUBERNETES_AUTH_PROVIDER,
+  KubernetesRequestAuth,
+} from '@backstage/plugin-kubernetes-common';
 import { getMockReq, getMockRes } from '@jest-mock/express';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -32,6 +38,7 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
 import { AddressInfo, WebSocket, WebSocketServer } from 'ws';
+import { Config } from '@kubernetes/client-node';
 
 import { LocalKubectlProxyClusterLocator } from '../cluster-locator/LocalKubectlProxyLocator';
 import {
@@ -48,6 +55,16 @@ import {
 } from './KubernetesProxy';
 
 import type { Request } from 'express';
+import {
+  BackstageCredentials,
+  DiscoveryService,
+} from '@backstage/backend-plugin-api';
+
+const mockCertDir = createMockDirectory({
+  content: {
+    'ca.crt': 'MOCKCA',
+  },
+});
 
 describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
@@ -56,12 +73,20 @@ describe('KubernetesProxy', () => {
   const logger = getVoidLogger();
 
   const clusterSupplier: jest.Mocked<KubernetesClustersSupplier> = {
-    getClusters: jest.fn<Promise<ClusterDetails[]>, []>(),
+    getClusters: jest.fn<
+      Promise<ClusterDetails[]>,
+      [{ credentials: BackstageCredentials }]
+    >(),
   };
 
   const permissionApi: jest.Mocked<PermissionEvaluator> = {
     authorize: jest.fn(),
     authorizeConditional: jest.fn(),
+  };
+
+  const mockDisocveryApi: jest.Mocked<DiscoveryService> = {
+    getBaseUrl: jest.fn(),
+    getExternalBaseUrl: jest.fn(),
   };
 
   setupRequestMockHandlers(worker);
@@ -133,7 +158,12 @@ describe('KubernetesProxy', () => {
       validateCluster: jest.fn(),
       presentAuthMetadata: jest.fn(),
     };
-    proxy = new KubernetesProxy({ logger, clusterSupplier, authStrategy });
+    proxy = new KubernetesProxy({
+      logger,
+      clusterSupplier,
+      authStrategy,
+      discovery: mockDisocveryApi,
+    });
     permissionApi.authorize.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
     ]);
@@ -522,6 +552,7 @@ describe('KubernetesProxy', () => {
       logger: getVoidLogger(),
       clusterSupplier: clusterSupplier,
       authStrategy: strategy,
+      discovery: mockDisocveryApi,
     });
 
     worker.use(
@@ -643,6 +674,7 @@ describe('KubernetesProxy', () => {
       logger: getVoidLogger(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
       authStrategy: new AnonymousStrategy(),
+      discovery: mockDisocveryApi,
     });
 
     worker.use(
@@ -975,6 +1007,74 @@ describe('KubernetesProxy', () => {
       const closePromise = eventPromiseFactory(webSocket, 'close');
       webSocket.close();
       await closePromise;
+    });
+  });
+
+  describe('Backstage running on k8s', () => {
+    const initialHost = process.env.KUBERNETES_SERVICE_HOST;
+    const initialPort = process.env.KUBERNETES_SERVICE_PORT;
+    const initialCaPath = Config.SERVICEACCOUNT_CA_PATH;
+
+    afterEach(() => {
+      process.env.KUBERNETES_SERVICE_HOST = initialHost;
+      process.env.KUBERNETES_SERVICE_PORT = initialPort;
+      Config.SERVICEACCOUNT_CA_PATH = initialCaPath;
+    });
+
+    it('makes in-cluster requests when cluster details has no token', async () => {
+      process.env.KUBERNETES_SERVICE_HOST = '10.10.10.10';
+      process.env.KUBERNETES_SERVICE_PORT = '443';
+      Config.SERVICEACCOUNT_CA_PATH = mockCertDir.resolve('ca.crt');
+
+      clusterSupplier.getClusters.mockResolvedValue([
+        {
+          name: 'cluster1',
+          url: 'http://ignored',
+          authMetadata: {
+            [ANNOTATION_KUBERNETES_AUTH_PROVIDER]: 'serviceAccount',
+          },
+        },
+      ] as ClusterDetails[]);
+
+      authStrategy.getCredential.mockResolvedValue({
+        type: 'bearer token',
+        token: 'SA_token',
+      });
+
+      worker.use(
+        rest.get(
+          'https://10.10.10.10/api/v1/namespaces',
+          (req: any, res: any, ctx: any) => {
+            if (req.headers.get('Authorization') === 'Bearer SA_token') {
+              return res(
+                ctx.status(200),
+                ctx.json({
+                  kind: 'NamespaceList',
+                  apiVersion: 'v1',
+                  items: [],
+                }),
+              );
+            }
+            return res(ctx.status(403));
+          },
+        ),
+      );
+
+      const requestPromise = setupProxyPromise({
+        proxyPath: '/mountpath',
+        requestPath: '/api/v1/namespaces',
+        headers: {
+          [HEADER_KUBERNETES_CLUSTER]: 'cluster1',
+        },
+      });
+
+      const response = await requestPromise;
+
+      expect(response.body).toStrictEqual({
+        kind: 'NamespaceList',
+        apiVersion: 'v1',
+        items: [],
+      });
     });
   });
 });

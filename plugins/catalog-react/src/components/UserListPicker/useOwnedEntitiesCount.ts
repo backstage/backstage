@@ -17,13 +17,13 @@
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { compact, intersection } from 'lodash';
 import { useMemo } from 'react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../api';
 import { EntityOwnerFilter, EntityUserFilter } from '../../filters';
 import { useEntityList } from '../../hooks';
 import { CatalogFilters, reduceCatalogFilters } from '../../utils';
-import useAsyncFn from 'react-use/lib/useAsyncFn';
-import useDeepCompareEffect from 'react-use/lib/useDeepCompareEffect';
+import useAsyncFn from 'react-use/esm/useAsyncFn';
+import useDeepCompareEffect from 'react-use/esm/useDeepCompareEffect';
 
 export function useOwnedEntitiesCount() {
   const identityApi = useApi(identityApiRef);

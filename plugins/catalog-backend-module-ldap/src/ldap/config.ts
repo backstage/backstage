@@ -49,6 +49,10 @@ export type LdapProviderConfig = {
 export type TLSConfig = {
   // Node TLS rejectUnauthorized
   rejectUnauthorized?: boolean;
+  // A file containing private keys in PEM format
+  keys?: string;
+  // A file containing cert chains in PEM format
+  certs?: string;
 };
 
 /**
@@ -205,6 +209,8 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
     }
     return {
       rejectUnauthorized: c.getOptionalBoolean('rejectUnauthorized'),
+      keys: c.getOptionalString('keys'),
+      certs: c.getOptionalString('certs'),
     };
   }
 

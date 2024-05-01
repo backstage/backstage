@@ -1,5 +1,147 @@
 # @backstage/plugin-app-backend
 
+## 0.3.66-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-plugin-api@0.6.18-next.1
+  - @backstage/plugin-app-node@0.1.18-next.1
+
+## 0.3.66-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.18-next.0
+
+## 0.3.65
+
+### Patch Changes
+
+- d5a1fe1: Replaced winston logger with `LoggerService`
+- c884b9a: Track assets namespace in the cache store, implement a cookie authentication for when the public entry is enabled and used with the new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-auth-node@0.4.12
+  - @backstage/plugin-app-node@0.1.17
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.65-next.1
+
+### Patch Changes
+
+- c884b9a: Track assets namespace in the cache store, implement a cookie authentication for when the public entry is enabled and used with the new auth services.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.17-next.1
+
+## 0.3.65-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/backend-plugin-api@0.6.17-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.17-next.0
+
+## 0.3.64
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.6
+  - @backstage/backend-plugin-api@0.6.16
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.16
+
+## 0.3.63
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.5
+  - @backstage/backend-plugin-api@0.6.15
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.15
+
+## 0.3.62
+
+### Patch Changes
+
+- 52e43f2: Disable default auth policy, allowing unauthenticated access to app bundle.
+- Updated dependencies
+  - @backstage/backend-common@0.21.4
+  - @backstage/config@1.2.0
+  - @backstage/backend-plugin-api@0.6.14
+  - @backstage/config-loader@1.7.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.14
+
+## 0.3.62-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.4-next.2
+  - @backstage/backend-plugin-api@0.6.14-next.2
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/types@1.1.1
+  - @backstage/plugin-app-node@0.1.14-next.2
+
+## 0.3.62-next.1
+
+### Patch Changes
+
+- 52e43f2: Disable default auth policy, allowing unauthenticated access to app bundle.
+- Updated dependencies
+  - @backstage/config@1.2.0-next.1
+  - @backstage/config-loader@1.7.0-next.1
+  - @backstage/backend-common@0.21.4-next.1
+  - @backstage/backend-plugin-api@0.6.14-next.1
+  - @backstage/plugin-app-node@0.1.14-next.1
+  - @backstage/types@1.1.1
+
+## 0.3.61-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.3-next.0
+  - @backstage/backend-plugin-api@0.6.13-next.0
+  - @backstage/config-loader@1.6.3-next.0
+  - @backstage/config@1.1.2-next.0
+  - @backstage/plugin-app-node@0.1.13-next.0
+  - @backstage/types@1.1.1
+
 ## 0.3.58
 
 ### Patch Changes

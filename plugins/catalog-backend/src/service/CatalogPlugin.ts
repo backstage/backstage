@@ -14,29 +14,30 @@
  * limitations under the License.
  */
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { Entity, Validators } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
   CatalogAnalysisExtensionPoint,
   catalogAnalysisExtensionPoint,
-  CatalogProcessingExtensionPoint,
-  catalogProcessingExtensionPoint,
-  CatalogPermissionExtensionPoint,
-  catalogPermissionExtensionPoint,
   CatalogModelExtensionPoint,
   catalogModelExtensionPoint,
+  CatalogPermissionExtensionPoint,
+  catalogPermissionExtensionPoint,
+  CatalogProcessingExtensionPoint,
+  catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import {
   CatalogProcessor,
+  CatalogProcessorParser,
   EntityProvider,
   PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { merge } from 'lodash';
+import { Permission } from '@backstage/plugin-permission-common';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -112,7 +113,12 @@ class CatalogAnalysisExtensionPointImpl
 class CatalogPermissionExtensionPointImpl
   implements CatalogPermissionExtensionPoint
 {
+  #permissions = new Array<Permission>();
   #permissionRules = new Array<CatalogPermissionRuleInput>();
+
+  addPermissions(...permission: Array<Permission | Array<Permission>>): void {
+    this.#permissions.push(...permission.flat());
+  }
 
   addPermissionRules(
     ...rules: Array<
@@ -120,6 +126,10 @@ class CatalogPermissionExtensionPointImpl
     >
   ): void {
     this.#permissionRules.push(...rules.flat());
+  }
+
+  get permissions() {
+    return this.#permissions;
   }
 
   get permissionRules() {
@@ -136,6 +146,21 @@ class CatalogModelExtensionPointImpl implements CatalogModelExtensionPoint {
 
   get fieldValidators() {
     return this.#fieldValidators;
+  }
+
+  #entityDataParser?: CatalogProcessorParser;
+
+  setEntityDataParser(parser: CatalogProcessorParser): void {
+    if (this.#entityDataParser) {
+      throw new Error(
+        'Attempted to install second EntityDataParser. Only one can be set.',
+      );
+    }
+    this.#entityDataParser = parser;
+  }
+
+  get entityDataParser() {
+    return this.#entityDataParser;
   }
 }
 
@@ -176,8 +201,11 @@ export const catalogPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
-        lifecycle: coreServices.lifecycle,
+        lifecycle: coreServices.rootLifecycle,
         scheduler: coreServices.scheduler,
+        discovery: coreServices.discovery,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
       async init({
         logger,
@@ -188,15 +216,20 @@ export const catalogPlugin = createBackendPlugin({
         httpRouter,
         lifecycle,
         scheduler,
+        discovery,
+        auth,
+        httpAuth,
       }) {
-        const winstonLogger = loggerToWinstonLogger(logger);
         const builder = await CatalogBuilder.create({
           config,
           reader,
           permissions,
           database,
           scheduler,
-          logger: winstonLogger,
+          logger,
+          discovery,
+          auth,
+          httpAuth,
         });
         if (processingExtensions.onProcessingErrorHandler) {
           builder.subscribe({
@@ -205,16 +238,24 @@ export const catalogPlugin = createBackendPlugin({
         }
         builder.addProcessor(...processingExtensions.processors);
         builder.addEntityProvider(...processingExtensions.entityProviders);
+
+        if (modelExtensions.entityDataParser) {
+          builder.setEntityDataParser(modelExtensions.entityDataParser);
+        }
+
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
         builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
+        builder.addPermissions(...permissionExtensions.permissions);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 
         const { processingEngine, router } = await builder.build();
 
-        await processingEngine.start();
+        lifecycle.addStartupHook(async () => {
+          await processingEngine.start();
+        });
         lifecycle.addShutdownHook(() => processingEngine.stop());
         httpRouter.use(router);
       },

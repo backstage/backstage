@@ -31,6 +31,7 @@ import {
 import fetch, { RequestInit, Response } from 'node-fetch';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
+import { examples } from './bitbucketServerPullRequest.examples';
 
 const createPullRequest = async (opts: {
   project: string;
@@ -220,8 +221,11 @@ export function createPublishBitbucketServerPullRequestAction(options: {
     targetBranch?: string;
     sourceBranch: string;
     token?: string;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   }>({
     id: 'publish:bitbucketServer:pull-request',
+    examples,
     schema: {
       input: {
         type: 'object',
@@ -257,6 +261,16 @@ export function createPublishBitbucketServerPullRequestAction(options: {
             description:
               'The token to use for authorization to BitBucket Server',
           },
+          gitAuthorName: {
+            title: 'Author Name',
+            type: 'string',
+            description: `Sets the author name for the commit. The default value is 'Scaffolder'`,
+          },
+          gitAuthorEmail: {
+            title: 'Author Email',
+            type: 'string',
+            description: `Sets the author email for the commit.`,
+          },
         },
       },
       output: {
@@ -276,6 +290,8 @@ export function createPublishBitbucketServerPullRequestAction(options: {
         description,
         targetBranch = 'master',
         sourceBranch,
+        gitAuthorName,
+        gitAuthorEmail,
       } = ctx.input;
 
       const { project, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -354,8 +370,12 @@ export function createPublishBitbucketServerPullRequestAction(options: {
             };
 
         const gitAuthorInfo = {
-          name: config.getOptionalString('scaffolder.defaultAuthor.name'),
-          email: config.getOptionalString('scaffolder.defaultAuthor.email'),
+          name:
+            gitAuthorName ||
+            config.getOptionalString('scaffolder.defaultAuthor.name'),
+          email:
+            gitAuthorEmail ||
+            config.getOptionalString('scaffolder.defaultAuthor.email'),
         };
 
         const tempDir = await ctx.createTemporaryDirectory();

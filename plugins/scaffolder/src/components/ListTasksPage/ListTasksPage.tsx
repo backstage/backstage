@@ -25,7 +25,7 @@ import {
 } from '@backstage/core-components';
 import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { CatalogFilterLayout } from '@backstage/plugin-catalog-react';
-import useAsync from 'react-use/lib/useAsync';
+import useAsync from 'react-use/esm/useAsync';
 import React, { useState } from 'react';
 import {
   ScaffolderTask,
@@ -105,6 +105,7 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
             },
             {
               title: 'Template',
+              field: 'spec.templateInfo.entity.metadata.title',
               render: row => (
                 <TemplateTitleColumn
                   entityRef={row.spec.templateInfo?.entityRef}

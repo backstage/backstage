@@ -632,7 +632,7 @@ A basic installation of the events plugin looks as follows.
 ```ts title="packages/backend/src/index.ts"
 const backend = createBackend();
 /* highlight-add-next-line */
-backend.add(import('@backstage/plugin-events-backend'));
+backend.add(import('@backstage/plugin-events-backend/alpha'));
 ```
 
 If you have other customizations made to `plugins/events.ts`, such as adding
@@ -646,6 +646,7 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
@@ -663,7 +664,28 @@ const eventsModuleCustomExtensions = createBackendModule({
       async init({ events /* ..., other dependencies */ }) {
         // Here you have the opportunity to interact with the extension
         // point before the plugin itself gets instantiated
-        events.addSubscribers(new MySubscriber()); // just an example
+        events.addHttpPostIngress({
+          // ...
+        });
+      },
+    });
+  },
+});
+/* highlight-add-end */
+
+/* highlight-add-start */
+const otherPluginModuleCustomExtensions = createBackendModule({
+  pluginId: 'other-plugin', // name of the plugin that the module is targeting
+  moduleId: 'custom-extensions',
+  register(env) {
+    env.registerInit({
+      deps: {
+        events: eventsServiceRef,
+        // ... and other dependencies as needed
+      },
+      async init({ events /* ..., other dependencies */ }) {
+        // Here you have the opportunity to interact with the extension
+        // point before the plugin itself gets instantiated
       },
     });
   },
@@ -671,17 +693,11 @@ const eventsModuleCustomExtensions = createBackendModule({
 /* highlight-add-end */
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-events-backend'));
+backend.add(import('@backstage/plugin-events-backend/alpha'));
 /* highlight-add-next-line */
 backend.add(eventsModuleCustomExtensions());
-```
-
-This also requires that you have a dependency on the corresponding node package,
-if you didn't already have one.
-
-```bash
-# from the repository root
-yarn --cwd packages/backend add @backstage/plugin-events-node
+/* highlight-add-next-line */
+backend.add(otherPluginModuleCustomExtensions());
 ```
 
 Here we've placed the module directly in the backend index file just to get
@@ -1026,3 +1042,312 @@ backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(authModuleGoogleProvider);
 /* highlight-add-end */
 ```
+
+#### Using Legacy Providers
+
+Not all authentication providers have been refactored to support the new backend system. If your authentication provider module is not available yet, you will need to import your backend auth plugin using the legacy helper:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+/* highlight-add-next-line */
+import { legacyPlugin } from '@backstage/backend-common';
+import { coreServices } from '@backstage/backend-plugin-api';
+
+const backend = createBackend();
+/* highlight-remove-next-line */
+backend.add(import('@backstage/plugin-auth-backend'));
+/* highlight-add-next-line */
+backend.add(legacyPlugin('auth', import('./plugins/auth')));
+
+backend.start();
+```
+
+> You can track the progress of the module migration efforts [here](https://github.com/backstage/backstage/issues/19476).
+
+### The Search Plugin
+
+A basic installation of the Search plugin will look as follows:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-search-backend/alpha'));
+/* highlight-add-end */
+```
+
+> Note: this will use the Lunr search engine which stores its index in memory
+
+#### Search Engines
+
+The following sections outline how you can add other Search engines than the default lunr engine.
+
+##### Postgres
+
+An installation of the Search plugin using the Postgres search engine will look as follows:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-pg/alpha'));
+/* highlight-add-end */
+```
+
+##### Elasticsearch
+
+A basic installation of the Search plugin using the Elasticsearch search engine will look as follows:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(
+  import('@backstage/plugin-search-backend-module-elasticsearch/alpha'),
+);
+/* highlight-add-end */
+```
+
+#### Search Collators
+
+The following sections outline how you add search collators (input sources for the search indexing process).
+
+##### Catalog
+
+A basic installation of the Search plugin with the Catalog collator will look as follows:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+/* highlight-add-end */
+```
+
+##### TechDocs
+
+A basic installation of the Search plugin with the TechDocs collator will look as follows:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+/* highlight-add-end */
+```
+
+### The Permission Plugin
+
+A basic installation of the Permission plugin will look as follows:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-permission-backend/alpha'));
+backend.add(
+  import('@backstage/plugin-permission-backend-module-allow-all-policy'),
+);
+/* highlight-add-end */
+```
+
+> Note: The above example includes a default allow-all policy. If that is not what you want, do not add the second line and instead investigate one of the options below.
+
+#### Custom Permission Policy
+
+In order to add your own permission policy you'll need to do the following:
+
+```ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { BackstageIdentityResponse } from '@backstage/plugin-auth-node';
+import {
+  PolicyDecision,
+  AuthorizeResult,
+} from '@backstage/plugin-permission-common';
+import {
+  PermissionPolicy,
+  PolicyQuery,
+} from '@backstage/plugin-permission-node';
+import { policyExtensionPoint } from '@backstage/plugin-permission-node/alpha';
+
+class CustomPermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
+    // TODO: Add code here that inspects the incoming request and user, and returns AuthorizeResult.ALLOW, AuthorizeResult.DENY, or AuthorizeResult.CONDITIONAL as needed. See the docs at https://backstage.io/docs/permissions/writing-a-policy for more information
+
+    return {
+      result: AuthorizeResult.ALLOW,
+    };
+  }
+}
+
+const customPermissionBackendModule = createBackendModule({
+  pluginId: 'permission',
+  moduleId: 'custom-policy',
+  register(reg) {
+    reg.registerInit({
+      deps: { policy: policyExtensionPoint },
+      async init({ policy }) {
+        policy.setPolicy(new CustomPermissionPolicy());
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-permission-backend/alpha'));
+backend.add(customPermissionBackendModule);
+/* highlight-add-end */
+```
+
+### The TechDocs Plugin
+
+A basic installation of the TechDocs plugin will look as follows:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+/* highlight-add-end */
+```
+
+### The Kubernetes Plugin
+
+A basic installation of the Kubernetes plugin will look as follows:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+/* highlight-add-end */
+```
+
+### The Plugins in Backstage Repo
+
+The vast majority of the backend plugins that currently live in the Backstage Repo have been migrated and their respective `README`s have details on how they should be installed using the New Backend System.
+
+| Package                                                            | Role                  | Migrated | Uses Alpha Export | Link to `README`                                                                                                                                  |
+| ------------------------------------------------------------------ | --------------------- | -------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------------------------------- |
+| @backstage-community/plugin-adr-backend                            | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/adr/plugins/adr-backend/README.md)                                 |
+| @backstage-community/plugin-airbrake-backend                       | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/airbrake/plugins/airbrake-backend/README.md)                       |
+| @backstage/plugin-app-backend                                      | backend-plugin        | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/app-backend/README.md)                                                        |
+| @backstage/plugin-auth-backend                                     | backend-plugin        | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend/README.md)                                                       |
+| @backstage/plugin-auth-backend-module-atlassian-provider           | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-atlassian-provider/README.md)                             |
+| @backstage/plugin-auth-backend-module-aws-alb-provider             | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-aws-alb-provider/README.md)                               |
+| @backstage/plugin-auth-backend-module-gcp-iap-provider             | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-gcp-iap-provider/README.md)                               |
+| @backstage/plugin-auth-backend-module-github-provider              | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-github-provider/README.md)                                |
+| @backstage/plugin-auth-backend-module-gitlab-provider              | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-gitlab-provider/README.md)                                |
+| @backstage/plugin-auth-backend-module-google-provider              | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-google-provider/README.md)                                |
+| @backstage/plugin-auth-backend-module-guest-provider               | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-guest-provider/README.md)                                 |
+| @backstage/plugin-auth-backend-module-microsoft-provider           | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-microsoft-provider/README.md)                             |
+| @backstage/plugin-auth-backend-module-oauth2-provider              | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-oauth2-provider/README.md)                                |
+| @backstage/plugin-auth-backend-module-oauth2-proxy-provider        | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-oauth2-proxy-provider/README.md)                          |
+| @backstage/plugin-auth-backend-module-oidc-provider                | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-oidc-provider/README.md)                                  |
+| @backstage/plugin-auth-backend-module-okta-provider                | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-okta-provider/README.md)                                  |
+| @backstage/plugin-auth-backend-module-pinniped-provider            | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-pinniped-provider/README.md)                              |
+| @backstage/plugin-auth-backend-module-vmware-cloud-provider        | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/auth-backend-module-vmware-cloud-provider/README.md)                          |
+| @backstage-community/plugin-azure-devops-backend                   | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/azure-devops/plugins/azure-devops-backend/README.md)               |
+| @backstage-community/plugin-azure-sites-backend                    | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/azure-sites/plugins/azure-sites-backend/README.md)                 |
+| @backstage-community/plugin-badges-backend                         | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/badges/plugins/badges-backend/README.md)                           |
+| @backstage-community/plugin-bazaar-backend                         | backend-plugin        | true     | true              | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/bazaar/plugins/bazaar-backend/README.md)                           |
+| @backstage/plugin-catalog-backend                                  | backend-plugin        | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/README.md)                                                    |
+| @backstage/plugin-catalog-backend-module-aws                       | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-aws/README.md)                                         |
+| @backstage/plugin-catalog-backend-module-azure                     | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-azure/README.md)                                       |
+| @backstage/plugin-catalog-backend-module-backstage-openapi         | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-backstage-openapi/README.md)                           |
+| @backstage/plugin-catalog-backend-module-bitbucket-cloud           | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-bitbucket-cloud/README.md)                             |
+| @backstage/plugin-catalog-backend-module-bitbucket-server          | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-bitbucket-server/README.md)                            |
+| @backstage/plugin-catalog-backend-module-gcp                       | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-gcp/README.md)                                         |
+| @backstage/plugin-catalog-backend-module-gerrit                    | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-gerrit/README.md)                                      |
+| @backstage/plugin-catalog-backend-module-github                    | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-github/README.md)                                      |
+| @backstage/plugin-catalog-backend-module-github-org                | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-github-org/README.md)                                  |
+| @backstage/plugin-catalog-backend-module-gitlab                    | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-gitlab/README.md)                                      |
+| @backstage/plugin-catalog-backend-module-incremental-ingestion     | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-incremental-ingestion/README.md)                       |
+| @backstage/plugin-catalog-backend-module-ldap                      | backend-plugin-module |          |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-ldap/README.md)                                        |
+| @backstage/plugin-catalog-backend-module-msgraph                   | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-msgraph/README.md)                                     |
+| @backstage/plugin-catalog-backend-module-openapi                   | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-openapi/README.md)                                     |
+| @backstage/plugin-catalog-backend-module-puppetdb                  | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-puppetdb/README.md)                                    |
+| @backstage/plugin-catalog-backend-module-scaffolder-entity-model   | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-scaffolder-entity-model/README.md)                     |
+| @backstage/plugin-catalog-backend-module-unprocessed               | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-unprocessed/README.md)                                 |
+| @backstage-community/plugin-code-coverage-backend                  | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/code-coverage/plugins/code-coverage-backend/README.md)             |
+| @backstage/plugin-devtools-backend                                 | backend-plugin        | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/devtools-backend/README.md)                                                   |
+| @backstage-community/plugin-entity-feedback-backend                | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/entity-feedback/plugins/entity-feedback-backend/README.md)         |
+| @backstage/plugin-events-backend                                   | backend-plugin        | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/events-backend/README.md)                                                     |
+| @backstage/plugin-events-backend-module-aws-sqs                    | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-aws-sqs/README.md)                                      |
+| @backstage/plugin-events-backend-module-azure                      | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-azure/README.md)                                        |
+| @backstage/plugin-events-backend-module-bitbucket-cloud            | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-bitbucket-cloud/README.md)                              |
+| @backstage/plugin-events-backend-module-gerrit                     | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gerrit/README.md)                                       |
+| @backstage/plugin-events-backend-module-github                     | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-github/README.md)                                       |
+| @backstage/plugin-events-backend-module-gitlab                     | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md)                                       |
+| @internal/plugin-todo-list-backend                                 | backend-plugin        | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/example-todo-list-backend/README.md)                                          |
+| @backstage-community/plugin-explore-backend                        | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/explore/plugins/explore-backend/README.md)                         |
+| @backstage-community/plugin-jenkins-backend                        | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/jenkins/plugins/jenkins-backend/README.md)                         |
+| @backstage-community/plugin-kafka-backend                          | backend-plugin        | true     | true              | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/kafka/plugins/kafka-backend/README.md)                             |
+| @backstage/plugin-kubernetes-backend                               | backend-plugin        | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/kubernetes-backend/README.md)                                                 |
+| @backstage-community/plugin-lighthouse-backend                     | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/lighthouse/plugins/lighthouse-backend/README.md)                   |
+| @backstage-community/plugin-linguist-backend                       | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/linguist/plugins/linguist-backend/README.md)                       |
+| @backstage-community/plugin-nomad-backend                          | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/nomad/plugins/nomad-backend/README.md)                             |
+| @backstage/plugin-notifications-backend                            | backend-plugin        | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/notifications-backend/README.md)                                              |
+| @backstage-community/plugin-periskop-backend                       | backend-plugin        | true     | true              | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/periskop/plugins/periskop-backend/README.md)                       |
+| @backstage/plugin-permission-backend                               | backend-plugin        | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/permission-backend/README.md)                                                 |
+| @backstage/plugin-permission-backend-module-allow-all-policy       | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/permission-backend-module-policy-allow-all/README.md)                         |
+| @backstage-community/plugin-playlist-backend                       | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/playlist/plugins/playlist-backend/README.md)                       |
+| @backstage/plugin-proxy-backend                                    | backend-plugin        | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/proxy-backend/README.md)                                                      |
+| @backstage-community/plugin-rollbar-backend                        | backend-plugin        |          |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/rollbar/plugins/rollbar-backend/README.md)                         |
+| @backstage/plugin-scaffolder-backend                               | backend-plugin        | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend/README.md)                                                 |
+| @backstage/plugin-scaffolder-backend-module-azure                  | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-azure/README.md)                                    |
+| @backstage/plugin-scaffolder-backend-module-bitbucket              | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-bitbucket/README.md)                                |
+| @backstage/plugin-scaffolder-backend-module-bitbucket-cloud        | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-bitbucket-cloud/README.md)                          |
+| @backstage/plugin-scaffolder-backend-module-bitbucket-server       | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-bitbucket-server/README.md)                         |
+| @backstage/plugin-scaffolder-backend-module-confluence-to-markdown | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-confluence-to-markdown/README.md)                   |
+| @backstage/plugin-scaffolder-backend-module-cookiecutter           | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-cookiecutter/README.md)                             |
+| @backstage/plugin-scaffolder-backend-module-gerrit                 | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-gerrit/README.md)                                   |
+| @backstage/plugin-scaffolder-backend-module-gitea                  | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-gitea/README.md)                                    |
+| @backstage/plugin-scaffolder-backend-module-github                 | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-github/README.md)                                   |
+| @backstage/plugin-scaffolder-backend-module-gitlab                 | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-gitlab/README.md)                                   |
+| @backstage/plugin-scaffolder-backend-module-rails                  | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-rails/README.md)                                    |
+| @backstage/plugin-scaffolder-backend-module-sentry                 | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-sentry/README.md)                                   |
+| @backstage/plugin-scaffolder-backend-module-yeoman                 | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/scaffolder-backend-module-yeoman/README.md)                                   |
+| @backstage/plugin-search-backend                                   | backend-plugin        | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/search-backend/README.md)                                                     |
+| @backstage/plugin-search-backend-module-catalog                    | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-catalog/README.md)                                      |
+| @backstage/plugin-search-backend-module-elasticsearch              | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-elasticsearch/README.md)                                |
+| @backstage/plugin-search-backend-module-explore                    | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-explore/README.md)                                      |
+| @backstage/plugin-search-backend-module-pg                         | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-pg/README.md)                                           |
+| @backstage/plugin-search-backend-module-stack-overflow-collator    | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-stack-overflow-collator/README.md)                      |
+| @backstage/plugin-search-backend-module-techdocs                   | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-techdocs/README.md)                                     |
+| @backstage/plugin-signals-backend                                  | backend-plugin        | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/signals-backend/README.md)                                                    |
+| @backstage-community/plugin-sonarqube-backend                      | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/sonarqube/plugins/sonarqube-backend/README.md)                     |
+| @backstage-community/plugin-stack-overflow-backend                 | backend-plugin        |          |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/stack-overflow/plugins/stack-overflow-backend/README.md)           |
+| @backstage-community/plugin-tech-insights-backend                  | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/tech-insights/plugins/tech-insights-backend/README.md)             |
+| @backstage-community/plugin-tech-insights-backend-module-jsonfc    | backend-plugin-module | true     |                   | [README](https://github.com/backstage/community-plugins/blob/main/workspaces/tech-insights/plugins/tech-insights-backend-module-jsonfc/README.md) |
+| @backstage/plugin-techdocs-backend                                 | backend-plugin        | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/techdocs-backend/README.md)                                                   |
+| @backstage-community/plugin-todo-backend                           | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/todo/plugins/todo-backend/README.md)                               |
+| @backstage/plugin-user-settings-backend                            | backend-plugin        | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/user-settings-backend/README.md)                                              |
+| @backstage-community/plugin-vault-backend                          | backend-plugin        | true     |                   | [README](https://github.com/backstage/community-plugins/blob/master/workspaces/vault/plugins/vault-backend/README.md)                             |

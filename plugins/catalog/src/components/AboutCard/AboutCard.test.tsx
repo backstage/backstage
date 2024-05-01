@@ -31,7 +31,7 @@ import { AboutCard } from './AboutCard';
 import { ConfigReader } from '@backstage/core-app-api';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
@@ -44,6 +44,7 @@ describe('<AboutCard />', () => {
   const catalogApi: jest.Mocked<CatalogApi> = {
     getLocationById: jest.fn(),
     getEntityByName: jest.fn(),
+    getEntityByRef: jest.fn(),
     getEntities: jest.fn(),
     addLocation: jest.fn(),
     getLocationByRef: jest.fn(),
@@ -264,6 +265,138 @@ describe('<AboutCard />', () => {
     );
     expect(screen.getByText('View Source')).toBeVisible();
     expect(screen.getByText('View Source').closest('a')).toBeNull();
+  });
+
+  it('renders "create something similar" button', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/source-template': 'template:default/foo-template',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    // Return any valid value to indicate access to the template is okay.
+    catalogApi.getEntityByRef.mockImplementation(async ref => {
+      expect(ref).toBe('template:default/foo-template');
+      return entity;
+    });
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/create/templates/:namespace/:templateName':
+            createFromTemplateRouteRef,
+        },
+      },
+    );
+
+    await waitFor(() => {
+      const createSimilarLink = screen
+        .getByTitle('Create something similar')
+        .closest('a');
+      expect(createSimilarLink).toHaveAttribute(
+        'href',
+        '/create/templates/default/foo-template',
+      );
+    });
+  });
+
+  it('should not render "create something similar" button if template does not exist', async () => {
+    const entity = {
+      apiVersion: 'v1',
+      kind: 'Component',
+      metadata: {
+        name: 'software',
+        annotations: {
+          'backstage.io/source-template': 'template:default/gone-template',
+        },
+      },
+      spec: {
+        owner: 'guest',
+        type: 'service',
+        lifecycle: 'production',
+      },
+    };
+
+    // Return any valid value to indicate access to the template is okay.
+    catalogApi.getEntityByRef.mockImplementation(async ref => {
+      expect(ref).toBe('template:default/gone-template');
+      return undefined;
+    });
+
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[
+          [
+            scmIntegrationsApiRef,
+            ScmIntegrationsApi.fromConfig(
+              new ConfigReader({
+                integrations: {
+                  github: [
+                    {
+                      host: 'github.com',
+                      token: '...',
+                    },
+                  ],
+                },
+              }),
+            ),
+          ],
+          [catalogApiRef, catalogApi],
+          [permissionApiRef, {}],
+        ]}
+      >
+        <EntityProvider entity={entity}>
+          <AboutCard />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/create/templates/:namespace/:templateName':
+            createFromTemplateRouteRef,
+        },
+      },
+    );
+
+    expect(
+      screen.queryByTitle('Create something similar'),
+    ).not.toBeInTheDocument();
   });
 
   it.each([

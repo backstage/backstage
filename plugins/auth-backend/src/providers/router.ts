@@ -18,11 +18,18 @@ import {
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
-import { NotFoundError, assertError } from '@backstage/errors';
-import { AuthProviderFactory } from '@backstage/plugin-auth-node';
+import { assertError, NotFoundError } from '@backstage/errors';
+import {
+  AuthOwnershipResolver,
+  AuthProviderFactory,
+} from '@backstage/plugin-auth-node';
 import express from 'express';
 import Router from 'express-promise-router';
 import { Minimatch } from 'minimatch';
@@ -41,8 +48,11 @@ export function bindProviderRouters(
     config: Config;
     logger: LoggerService;
     discovery: PluginEndpointDiscovery;
+    auth: AuthService;
+    httpAuth: HttpAuthService;
     tokenManager: TokenManager;
     tokenIssuer: TokenIssuer;
+    ownershipResolver?: AuthOwnershipResolver;
     catalogApi?: CatalogApi;
   },
 ) {
@@ -53,9 +63,12 @@ export function bindProviderRouters(
     config,
     logger,
     discovery,
+    auth,
+    httpAuth,
     tokenManager,
     tokenIssuer,
     catalogApi,
+    ownershipResolver,
   } = options;
 
   const providersConfig = config.getOptionalConfig('auth.providers');
@@ -69,10 +82,10 @@ export function bindProviderRouters(
         const provider = providerFactory({
           providerId,
           appUrl,
-          baseUrl: baseUrl,
+          baseUrl,
           isOriginAllowed,
           globalConfig: {
-            baseUrl: baseUrl,
+            baseUrl,
             appUrl,
             isOriginAllowed,
           },
@@ -84,6 +97,10 @@ export function bindProviderRouters(
               catalogApi ?? new CatalogClient({ discoveryApi: discovery }),
             tokenIssuer,
             tokenManager,
+            discovery,
+            auth,
+            httpAuth,
+            ownershipResolver,
           }),
         });
 

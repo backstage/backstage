@@ -72,6 +72,7 @@ export class Generators implements GeneratorBuilder {
     options: {
       logger: Logger;
       containerRunner: ContainerRunner;
+      customGenerator?: TechdocsGenerator;
     },
   ): Promise<GeneratorBuilder>;
   get(entity: Entity): GeneratorBase;
@@ -273,6 +274,15 @@ export class TechdocsGenerator implements GeneratorBase {
 }
 
 // @public
+export interface TechdocsGeneratorExtensionPoint {
+  // (undocumented)
+  setTechdocsGenerator(generator: TechdocsGenerator): void;
+}
+
+// @public
+export const techdocsGeneratorExtensionPoint: ExtensionPoint<TechdocsGeneratorExtensionPoint>;
+
+// @public
 export type TechDocsMetadata = {
   site_name: string;
   site_description: string;
@@ -280,6 +290,15 @@ export type TechDocsMetadata = {
   build_timestamp: number;
   files?: string[];
 };
+
+// @public
+export interface TechdocsPreparerExtensionPoint {
+  // (undocumented)
+  registerPreparer(protocol: RemoteProtocol, preparer: PreparerBase): void;
+}
+
+// @public
+export const techdocsPreparerExtensionPoint: ExtensionPoint<TechdocsPreparerExtensionPoint>;
 
 // @public
 export const transformDirLocation: (
