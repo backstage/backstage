@@ -5,9 +5,12 @@
     "role": "backend-plugin"
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/dynamic-discovery-backend"
   },
   "license": "Apache-2.0",
   "exports": {
