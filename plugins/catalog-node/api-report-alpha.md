@@ -10,6 +10,7 @@ import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
@@ -20,8 +21,8 @@ import { Validators } from '@backstage/catalog-model';
 
 // @alpha (undocumented)
 export interface CatalogAnalysisExtensionPoint {
-  // (undocumented)
-  addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
+  addScmLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
+  setLocationAnalyzer(analyzer: LocationAnalyzer): void;
 }
 
 // @alpha (undocumented)

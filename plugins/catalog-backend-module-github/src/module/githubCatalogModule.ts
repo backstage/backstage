@@ -56,7 +56,7 @@ export const githubCatalogModule = createBackendModule({
         discovery,
         auth,
       }) {
-        analyzers.addLocationAnalyzer(
+        analyzers.addScmLocationAnalyzer(
           new GithubLocationAnalyzer({
             discovery,
             config,

@@ -20,7 +20,6 @@ import {
 import { Entity, Validators } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
-  CatalogAnalysisExtensionPoint,
   catalogAnalysisExtensionPoint,
   CatalogModelExtensionPoint,
   catalogModelExtensionPoint,
@@ -33,6 +32,7 @@ import {
   CatalogProcessor,
   CatalogProcessorParser,
   EntityProvider,
+  LocationAnalyzer,
   PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
@@ -93,20 +93,6 @@ class CatalogProcessingExtensionPointImpl
 
   get onProcessingErrorHandler() {
     return this.#onProcessingErrorHandler;
-  }
-}
-
-class CatalogAnalysisExtensionPointImpl
-  implements CatalogAnalysisExtensionPoint
-{
-  #locationAnalyzers = new Array<ScmLocationAnalyzer>();
-
-  addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void {
-    this.#locationAnalyzers.push(analyzer);
-  }
-
-  get locationAnalyzers() {
-    return this.#locationAnalyzers;
   }
 }
 
@@ -178,11 +164,19 @@ export const catalogPlugin = createBackendPlugin({
       processingExtensions,
     );
 
-    const analysisExtensions = new CatalogAnalysisExtensionPointImpl();
-    env.registerExtensionPoint(
-      catalogAnalysisExtensionPoint,
-      analysisExtensions,
-    );
+    let locationAnalyzer: LocationAnalyzer | undefined = undefined;
+    const scmLocationAnalyzers = new Array<ScmLocationAnalyzer>();
+    env.registerExtensionPoint(catalogAnalysisExtensionPoint, {
+      setLocationAnalyzer(analyzer: LocationAnalyzer) {
+        if (locationAnalyzer) {
+          throw new Error('LocationAnalyzer has already been set');
+        }
+        locationAnalyzer = analyzer;
+      },
+      addScmLocationAnalyzer(analyzer: ScmLocationAnalyzer) {
+        scmLocationAnalyzers.push(analyzer);
+      },
+    });
 
     const permissionExtensions = new CatalogPermissionExtensionPointImpl();
     env.registerExtensionPoint(
@@ -246,7 +240,11 @@ export const catalogPlugin = createBackendPlugin({
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
-        builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
+        if (locationAnalyzer) {
+          builder.setLocationAnalyzer(locationAnalyzer);
+        } else {
+          builder.addLocationAnalyzers(...scmLocationAnalyzers);
+        }
         builder.addPermissions(...permissionExtensions.permissions);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
