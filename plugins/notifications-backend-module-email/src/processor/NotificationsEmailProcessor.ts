@@ -50,6 +50,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly cacheTtl: number;
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
+  private readonly frontendBaseUrl: string;
 
   constructor(
     private readonly logger: LoggerService,
@@ -78,6 +79,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     this.cacheTtl = cacheConfig
       ? durationToMilliseconds(readDurationFromConfig(cacheConfig))
       : 3_600_000;
+    this.frontendBaseUrl = config.getString('app.baseUrl');
   }
 
   private async getTransporter() {
@@ -215,20 +217,50 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     );
   }
 
-  private async sendPlainEmail(notification: Notification, emails: string[]) {
+  private getNotificationLink(notification: Notification) {
+    if (notification.payload.link) {
+      const stripLeadingSlash = (s: string) => s.replace(/^\//, '');
+      const ensureTrailingSlash = (s: string) => s.replace(/\/?$/, '/');
+
+      try {
+        const url = new URL(
+          stripLeadingSlash(notification.payload.link),
+          ensureTrailingSlash(this.frontendBaseUrl),
+        );
+        return url.toString();
+      } catch (_e) {
+        // noop: fallback to relative URL
+      }
+      return notification.payload.link;
+    }
+    return `${this.frontendBaseUrl}/notifications`;
+  }
+
+  private getHtmlContent(notification: Notification) {
     const contentParts: string[] = [];
     if (notification.payload.description) {
       contentParts.push(`${notification.payload.description}`);
     }
-    if (notification.payload.link) {
-      contentParts.push(`${notification.payload.link}`);
-    }
+    const link = this.getNotificationLink(notification);
+    contentParts.push(`<a href="${link}">${link}</a>`);
+    return `<p>${contentParts.join('<br/>')}</p>`;
+  }
 
+  private getTextContent(notification: Notification) {
+    const contentParts: string[] = [];
+    if (notification.payload.description) {
+      contentParts.push(notification.payload.description);
+    }
+    contentParts.push(this.getNotificationLink(notification));
+    return contentParts.join('\n\n');
+  }
+
+  private async sendPlainEmail(notification: Notification, emails: string[]) {
     const mailOptions = {
       from: this.sender,
       subject: notification.payload.title,
-      html: `<p>${contentParts.join('<br/>')}</p>`,
-      text: contentParts.join('\n\n'),
+      html: this.getHtmlContent(notification),
+      text: this.getTextContent(notification),
       replyTo: this.replyTo,
     };
 
