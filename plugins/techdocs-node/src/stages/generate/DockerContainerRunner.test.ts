@@ -15,13 +15,26 @@
  */
 
 import fs from 'fs-extra';
-import Docker from 'dockerode';
 import Stream, { PassThrough } from 'stream';
 import { DockerContainerRunner, UserOptions } from './DockerContainerRunner';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ContainerRunner } from './types';
 
-const mockDocker = new Docker() as jest.Mocked<Docker>;
+const mockPull = jest.fn();
+const mockRun = jest.fn();
+const mockPing = jest.fn();
+
+jest.mock(
+  'dockerode',
+  () =>
+    function MockDocker() {
+      return {
+        pull: mockPull,
+        run: mockRun,
+        ping: mockPing,
+      };
+    },
+);
 
 describe('DockerContainerRunner', () => {
   let containerTaskApi: ContainerRunner;
@@ -33,23 +46,19 @@ describe('DockerContainerRunner', () => {
     inputDir.clear();
     outputDir.clear();
 
-    jest.spyOn(mockDocker, 'pull').mockImplementation((async (
-      _image: string,
-      _something: any,
-      handler: (err: Error | undefined, stream: PassThrough) => void,
-    ) => {
-      const mockStream = new PassThrough();
-      handler(undefined, mockStream);
-      mockStream.end();
-    }) as any);
-
-    jest
-      .spyOn(mockDocker, 'run')
-      .mockResolvedValue([{ Error: null, StatusCode: 0 }]);
-
-    jest
-      .spyOn(mockDocker, 'ping')
-      .mockResolvedValue(Buffer.from('OK', 'utf-8'));
+    mockPull.mockImplementation(
+      (
+        _repoTag: string,
+        _options: {},
+        callback: (error?: any, result?: any) => void,
+      ) => {
+        const mockStream = new PassThrough();
+        callback(undefined, mockStream);
+        mockStream.end();
+      },
+    );
+    mockRun.mockResolvedValue([{ Error: null, StatusCode: 0 }]);
+    mockPing.mockResolvedValue(Buffer.from('OK', 'utf-8'));
 
     containerTaskApi = new DockerContainerRunner();
   });
@@ -58,7 +67,7 @@ describe('DockerContainerRunner', () => {
     jest.clearAllMocks();
   });
 
-  const imageName = 'dockerOrg/image';
+  const imageName = 'dockerorg/image';
   const args = ['bash', '-c', 'echo test'];
   const mountDirs = {
     [inputDir.path]: '/input',
@@ -74,13 +83,9 @@ describe('DockerContainerRunner', () => {
       args,
     });
 
-    expect(mockDocker.pull).toHaveBeenCalledWith(
-      imageName,
-      {},
-      expect.any(Function),
-    );
+    expect(mockPull).toHaveBeenCalledWith(imageName, {}, expect.any(Function));
 
-    expect(mockDocker.run).toHaveBeenCalled();
+    expect(mockRun).toHaveBeenCalled();
   });
 
   it('should not pull the docker container when pullImage is false', async () => {
@@ -90,8 +95,8 @@ describe('DockerContainerRunner', () => {
       pullImage: false,
     });
 
-    expect(mockDocker.pull).not.toHaveBeenCalled();
-    expect(mockDocker.run).toHaveBeenCalled();
+    expect(mockPull).not.toHaveBeenCalled();
+    expect(mockRun).toHaveBeenCalled();
   });
 
   it('should call the dockerClient run command with the correct arguments passed through', async () => {
@@ -103,7 +108,7 @@ describe('DockerContainerRunner', () => {
       workingDir,
     });
 
-    expect(mockDocker.run).toHaveBeenCalledWith(
+    expect(mockRun).toHaveBeenCalledWith(
       imageName,
       args,
       expect.any(Stream),
@@ -131,7 +136,7 @@ describe('DockerContainerRunner', () => {
       args,
     });
 
-    expect(mockDocker.ping).toHaveBeenCalled();
+    expect(mockPing).toHaveBeenCalled();
   });
 
   it('should pass through the user and group id from the host machine and set the home dir', async () => {
@@ -145,7 +150,7 @@ describe('DockerContainerRunner', () => {
       userOptions.User = `${process.getuid()}:${process.getgid()}`;
     }
 
-    expect(mockDocker.run).toHaveBeenCalledWith(
+    expect(mockRun).toHaveBeenCalledWith(
       imageName,
       args,
       expect.any(Stream),
@@ -156,7 +161,7 @@ describe('DockerContainerRunner', () => {
   });
 
   it('throws a correct error if the command fails in docker', async () => {
-    mockDocker.run.mockResolvedValueOnce([
+    mockRun.mockResolvedValueOnce([
       {
         Error: new Error('Something went wrong with docker'),
         StatusCode: 0,
@@ -175,7 +180,7 @@ describe('DockerContainerRunner', () => {
     const dockerError = 'a docker error';
 
     beforeEach(() => {
-      jest.spyOn(mockDocker, 'ping').mockImplementationOnce(() => {
+      mockPing.mockImplementationOnce(() => {
         throw new Error(dockerError);
       });
     });
@@ -198,7 +203,7 @@ describe('DockerContainerRunner', () => {
       logStream,
     });
 
-    expect(mockDocker.run).toHaveBeenCalledWith(
+    expect(mockRun).toHaveBeenCalledWith(
       imageName,
       args,
       logStream,
