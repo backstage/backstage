@@ -121,6 +121,15 @@ export const apis: AnyApiFactory[] = [
 
 This replaces the default implementation of the `scaffolderApiRef`.
 
+### Local development
+
+When you develop a new template, action or new `<ScaffolderFieldExtensions/>`, then we recommend
+to launch the plugin locally using the `createDevApp` of the `./dev/index.tsx` file for testing/Debugging purposes
+
+To play with it, open a terminal and run the command: `yarn start` within the `./plugins/scaffolder` folder
+
+**NOTE:** Don't forget to open a second terminal and to launch the backend or [backend-next](../../docs/backend-system/index.md) there, using `yarn start` and to specify the locations of the templates to play with !
+
 ## Links
 
 - [scaffolder-backend](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend)

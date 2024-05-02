@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { CatalogClient } from '@backstage/catalog-client';
 import { createDevApp } from '@backstage/dev-utils';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
-  catalogApiRef,
   starredEntitiesApiRef,
   MockStarredEntitiesApi,
 } from '@backstage/plugin-catalog-react';
@@ -30,18 +28,10 @@ import {
   fetchApiRef,
   identityApiRef,
 } from '@backstage/core-plugin-api';
-import { CatalogEntityPage } from '@backstage/plugin-catalog';
+import { CatalogEntityPage, catalogPlugin } from '@backstage/plugin-catalog';
 
 createDevApp()
-  .addPage({
-    path: '/catalog/:kind/:namespace/:name',
-    element: <CatalogEntityPage />,
-  })
-  .registerApi({
-    api: catalogApiRef,
-    deps: { discoveryApi: discoveryApiRef },
-    factory: ({ discoveryApi }) => new CatalogClient({ discoveryApi }),
-  })
+  .registerPlugin(catalogPlugin)
   .registerApi({
     api: starredEntitiesApiRef,
     deps: {},
@@ -62,6 +52,10 @@ createDevApp()
         scmIntegrationsApi,
         identityApi,
       }),
+  })
+  .addPage({
+    path: '/catalog/:kind/:namespace/:name',
+    element: <CatalogEntityPage />,
   })
   .addPage({
     path: '/create',
