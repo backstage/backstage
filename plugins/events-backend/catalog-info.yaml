@@ -6,4 +6,4 @@ metadata:
 spec:
   lifecycle: experimental
   type: backstage-backend-plugin
-  owner: pjungermann
+  owner: maintainers

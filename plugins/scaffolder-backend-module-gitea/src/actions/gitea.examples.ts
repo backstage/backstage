@@ -51,6 +51,23 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
+    description: 'Initializes a private Gitea repository ',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitea',
+          name: 'Publish to Gitea',
+          input: {
+            repoUrl: 'gitea.com?repo=repo&owner=owner',
+            defaultBranch: 'main',
+            repoVisibility: 'private',
+          },
+        },
+      ],
+    }),
+  },
+  {
     description:
       'Initializes a Gitea repository with a default Branch, if not set defaults to main',
     example: yaml.stringify({
@@ -150,6 +167,7 @@ export const examples: TemplateExample[] = [
             gitAuthorName: 'John Doe',
             gitAuthorEmail: 'johndoe@email.com',
             sourcePath: 'repository/',
+            repoVisibility: 'public',
           },
         },
       ],

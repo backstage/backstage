@@ -362,6 +362,8 @@ SIG
 SIGs
 siloed
 Sinon
+snackbars
+snackbar
 Snyk
 Sonarqube
 sourcemaps
@@ -462,6 +464,7 @@ Weaveworks
 Webpack
 widget's
 winston
+Wolfi
 www
 WWW
 XCMetrics

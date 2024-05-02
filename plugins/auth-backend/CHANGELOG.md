@@ -1,5 +1,59 @@
 # @backstage/plugin-auth-backend
 
+## 0.22.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.10-next.1
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.9-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.10-next.1
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.1.1-next.1
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.1.1-next.1
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.15-next.1
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.15-next.1
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.13-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.15-next.1
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.11-next.1
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.1.1-next.1
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.13-next.1
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.15-next.1
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.11-next.1
+  - @backstage/plugin-catalog-node@1.11.2-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.22.5-next.0
+
+### Patch Changes
+
+- ea9262b: Allow overriding default ownership resolving with the new `AuthOwnershipResolutionExtensionPoint`
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.1.9-next.0
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.1.1-next.0
+  - @backstage/plugin-catalog-node@1.11.2-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.10-next.0
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.1.1-next.0
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.1.1-next.0
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.13-next.0
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.15-next.0
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.15-next.0
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.15-next.0
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.13-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.1.15-next.0
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.11-next.0
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.11-next.0
+
 ## 0.22.4
 
 ### Patch Changes

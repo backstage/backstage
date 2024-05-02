@@ -1127,6 +1127,7 @@ export type SidebarSubmenuItemProps = {
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
+  initialShowDropdown?: boolean;
 };
 
 // @public

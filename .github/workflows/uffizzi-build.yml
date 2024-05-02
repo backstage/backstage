@@ -31,7 +31,7 @@ jobs:
           egress-policy: audit
 
       - name: checkout
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
 
       - name: setup-node
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
@@ -40,7 +40,7 @@ jobs:
           registry-url: https://registry.npmjs.org/
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@caa4901322ee3b5af18814ffc837bd052f150073 # v0.6.6
+        uses: backstage/actions/yarn-install@af61233abb88019335b07ab855873d991f43d25a # v0.6.7
         with:
           cache-prefix: linux-v18
 
@@ -89,7 +89,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout git repo
-        uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+        uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
       - name: Render Compose File
         run: |
           # update image after the build above

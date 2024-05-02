@@ -22,17 +22,22 @@ import MarkAsUnreadIcon from '@material-ui/icons/Markunread' /* TODO: use Drafts
 import MarkAsReadIcon from '@material-ui/icons/CheckCircle';
 import MarkAsUnsavedIcon from '@material-ui/icons/LabelOff' /* TODO: use BookmarkRemove and BookmarkAdd once we have mui 5 icons */;
 import MarkAsSavedIcon from '@material-ui/icons/Label';
+import MarkAllReadIcon from '@material-ui/icons/DoneAll';
 
 export const BulkActions = ({
   selectedNotifications,
   notifications,
+  isUnread,
   onSwitchReadStatus,
   onSwitchSavedStatus,
+  onMarkAllRead,
 }: {
   selectedNotifications: Set<Notification['id']>;
   notifications: Notification[];
+  isUnread?: boolean;
   onSwitchReadStatus: (ids: Notification['id'][], newStatus: boolean) => void;
   onSwitchSavedStatus: (ids: Notification['id'][], newStatus: boolean) => void;
+  onMarkAllRead?: () => void;
 }) => {
   const isDisabled = selectedNotifications.size === 0;
   const bulkNotifications = notifications.filter(notification =>
@@ -58,7 +63,22 @@ export const BulkActions = ({
 
   return (
     <Grid container wrap="nowrap">
-      <Grid item>
+      <Grid item xs={3}>
+        {onMarkAllRead ? (
+          <Tooltip title="Mark all read">
+            <div>
+              {/* The <div> here is a workaround for the Tooltip which does not work for a "disabled" child */}
+              <IconButton disabled={!isUnread} onClick={onMarkAllRead}>
+                <MarkAllReadIcon aria-label={markAsSavedText} />
+              </IconButton>
+            </div>
+          </Tooltip>
+        ) : (
+          <div />
+        )}
+      </Grid>
+
+      <Grid item xs={3}>
         <Tooltip title={markAsSavedText}>
           <div>
             {/* The <div> here is a workaround for the Tooltip which does not work for a "disabled" child */}
@@ -74,7 +94,7 @@ export const BulkActions = ({
         </Tooltip>
       </Grid>
 
-      <Grid item>
+      <Grid item xs={3}>
         <Tooltip title={markAsReadText}>
           <div>
             <IconButton

@@ -24,11 +24,11 @@ import { Knex } from 'knex';
 export type { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 
 /**
- * DatabaseConnector manages an underlying Knex database driver.
+ * Manages an underlying Knex database driver.
  */
 export interface DatabaseConnector {
   /**
-   * createClient provides an instance of a knex database connector.
+   * Provides an instance of a knex database connector.
    */
   createClient(
     dbConfig: Config,
@@ -38,27 +38,29 @@ export interface DatabaseConnector {
       pluginMetadata: PluginMetadataService;
     },
   ): Knex;
+
   /**
-   * createNameOverride provides a partial knex config sufficient to override a
-   * database name.
+   * Provides a partial knex config sufficient to override a database name.
    */
   createNameOverride(name: string): Partial<Knex.Config>;
+
   /**
-   * createSchemaOverride provides a partial knex config sufficient to override a
-   * PostgreSQL schema name within utilizing the `searchPath` knex configuration.
+   * Provides a partial knex config sufficient to override a PostgreSQL schema
+   * name within utilizing the `searchPath` knex configuration.
    */
   createSchemaOverride?(name: string): Partial<Knex.Config>;
+
   /**
-   * parseConnectionString produces a knex connection config object representing
-   * a database connection string.
+   * Produces a knex connection config object representing a database connection
+   * string.
    */
   parseConnectionString(
     connectionString: string,
     client?: string,
   ): Knex.StaticConnectionConfig;
+
   /**
-   * ensureDatabaseExists performs a side-effect to ensure database names passed in are
-   * present.
+   * Performs a side-effect to ensure database names passed in are present.
    *
    * Calling this function on databases which already exist should do nothing.
    * Missing databases should be created if needed.
@@ -69,8 +71,7 @@ export interface DatabaseConnector {
   ): Promise<void>;
 
   /**
-   * ensureSchemaExists performs a side-effect to ensure schema names passed in are
-   * present.
+   * Performs a side-effect to ensure schema names passed in are present.
    *
    * Calling this function on schemas which already exist should do nothing.
    * Missing schemas should be created if needed.
@@ -80,5 +81,20 @@ export interface DatabaseConnector {
     ...schemas: Array<string>
   ): Promise<void>;
 
+  /**
+   * Deletes databases.
+   */
   dropDatabase?(dbConfig: Config, ...databases: Array<string>): Promise<void>;
+}
+
+export interface Connector {
+  getClient(
+    pluginId: string,
+    deps?: {
+      lifecycle: LifecycleService;
+      pluginMetadata: PluginMetadataService;
+    },
+  ): Promise<Knex>;
+
+  dropDatabase(...databaseNames: string[]): Promise<void>;
 }

@@ -34,8 +34,6 @@ import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath } from '@backstage/cli-common';
-import { Knex } from 'knex';
-import knexFactory from 'knex';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
@@ -226,16 +224,6 @@ export interface ContainerRunner {
 }
 
 // @public
-export function createDatabaseClient(
-  dbConfig: Config,
-  overrides?: Partial<Knex.Config>,
-  deps?: {
-    lifecycle: LifecycleService;
-    pluginMetadata: PluginMetadataService;
-  },
-): knexFactory.Knex<any, any[]>;
-
-// @public
 export function createLegacyAuthAdapters<
   TOptions extends {
     auth?: AuthService;
@@ -315,13 +303,7 @@ export class DockerContainerRunner implements ContainerRunner {
 // @public
 export function dropDatabase(
   dbConfig: Config,
-  ...databases: Array<string>
-): Promise<void>;
-
-// @public
-export function ensureDatabaseExists(
-  dbConfig: Config,
-  ...databases: Array<string>
+  ...databaseNames: string[]
 ): Promise<void>;
 
 // @public
@@ -772,7 +754,7 @@ export class ServerTokenManager implements TokenManager {
   static fromConfig(
     config: Config,
     options: ServerTokenManagerOptions,
-  ): ServerTokenManager;
+  ): TokenManager;
   // (undocumented)
   getToken(): Promise<{
     token: string;
@@ -782,6 +764,7 @@ export class ServerTokenManager implements TokenManager {
 
 // @public
 export interface ServerTokenManagerOptions {
+  allowDisabledTokenManager?: boolean;
   logger: LoggerService;
 }
 

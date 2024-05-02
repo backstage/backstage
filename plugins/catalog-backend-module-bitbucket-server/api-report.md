@@ -109,5 +109,6 @@ export type BitbucketServerRepository = {
       href: string;
     }[]
   >;
+  archived: boolean;
 };
 ```

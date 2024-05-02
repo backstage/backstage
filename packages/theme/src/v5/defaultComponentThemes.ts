@@ -34,6 +34,29 @@ export const defaultComponentThemes: ThemeOptions['components'] = {
         overscrollBehaviorY: 'none',
         fontSize: '0.875rem',
         lineHeight: 1.43,
+        '&::-webkit-scrollbar, & *::-webkit-scrollbar': {
+          backgroundColor: theme.palette.background.paper,
+          width: '1em',
+        },
+        '&::-webkit-scrollbar-thumb, & *::-webkit-scrollbar-thumb': {
+          borderRadius: 8,
+          backgroundColor: theme.palette.textVerySubtle,
+          border: `3px solid ${theme.palette.background.paper}`,
+        },
+        '&::-webkit-scrollbar-thumb:active, & *::-webkit-scrollbar-thumb:active':
+          {
+            backgroundColor:
+              theme.palette.mode === 'dark'
+                ? lighten(theme.palette.textVerySubtle, 0.2)
+                : darken(theme.palette.textVerySubtle, 0.2),
+          },
+        '&::-webkit-scrollbar-thumb:hover, & *::-webkit-scrollbar-thumb:hover':
+          {
+            backgroundColor:
+              theme.palette.mode === 'dark'
+                ? lighten(theme.palette.textVerySubtle, 0.2)
+                : darken(theme.palette.textVerySubtle, 0.2),
+          },
       },
       a: {
         color: 'inherit',

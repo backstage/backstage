@@ -32,11 +32,11 @@ The following sections show the plugins and search engines currently supported b
 
 ### Plugins integrated with Backstage Search
 
-| Plugin                                                                                                                                                 | Support Status |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| Software Catalog                                                                                                                                       | ✅             |
-| [TechDocs](./how-to-guides.md#how-to-index-techdocs-documents)                                                                                         | ✅             |
-| [Stack Overflow](https://github.com/backstage/backstage/blob/master/plugins/stack-overflow-backend/README.md#index-stack-overflow-questions-to-search) | ✅             |
+| Plugin                                                                                                                                                                        | Support Status |
+| ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------------- |
+| Software Catalog                                                                                                                                                              | ✅             |
+| [TechDocs](./how-to-guides.md#how-to-index-techdocs-documents)                                                                                                                | ✅             |
+| [Stack Overflow](https://github.com/backstage/backstage/blob/master/plugins/search-backend-module-stack-overflow-collator/README.md#index-stack-overflow-questions-to-search) | ✅             |
 
 ### Search engines
 
