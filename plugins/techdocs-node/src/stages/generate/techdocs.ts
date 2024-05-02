@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import path from 'path';
 import { Logger } from 'winston';
@@ -36,6 +35,7 @@ import {
   patchMkdocsYmlWithPlugins,
 } from './mkdocsPatchers';
 import {
+  ContainerRunner,
   GeneratorBase,
   GeneratorConfig,
   GeneratorOptions,
@@ -43,6 +43,7 @@ import {
   GeneratorRunOptions,
 } from './types';
 import { ForwardedError } from '@backstage/errors';
+import { DockerContainerRunner } from './DockerContainerRunner';
 
 /**
  * Generates documentation files
@@ -55,10 +56,9 @@ export class TechdocsGenerator implements GeneratorBase {
    */
   public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.3';
   private readonly logger: Logger;
-  private readonly containerRunner?: ContainerRunner;
   private readonly options: GeneratorConfig;
   private readonly scmIntegrations: ScmIntegrationRegistry;
-
+  private containerRunner?: ContainerRunner;
   /**
    * Returns a instance of TechDocs generator
    * @param config - A Backstage configuration
@@ -157,9 +157,7 @@ export class TechdocsGenerator implements GeneratorBase {
           break;
         case 'docker':
           if (this.containerRunner === undefined) {
-            throw new Error(
-              "Invalid state: containerRunner cannot be undefined when runIn is 'docker'",
-            );
+            this.containerRunner = new DockerContainerRunner();
           }
           await this.containerRunner.runContainer({
             imageName:

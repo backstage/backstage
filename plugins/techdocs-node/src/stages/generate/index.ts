@@ -17,6 +17,8 @@ export { TechdocsGenerator } from './techdocs';
 export { Generators } from './generators';
 export { getMkdocsYml } from './helpers';
 export type {
+  RunContainerOptions,
+  ContainerRunner,
   GeneratorBase,
   GeneratorOptions,
   GeneratorBuilder,

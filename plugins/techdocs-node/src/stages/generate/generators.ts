@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
@@ -42,7 +41,6 @@ export class Generators implements GeneratorBuilder {
     config: Config,
     options: {
       logger: Logger;
-      containerRunner: ContainerRunner;
       customGenerator?: TechdocsGenerator;
     },
   ): Promise<GeneratorBuilder> {

@@ -7802,6 +7802,7 @@ __metadata:
     "@types/recursive-readdir": ^2.2.0
     "@types/supertest": ^2.0.8
     aws-sdk-client-mock: ^4.0.0
+    dockerode: ^4.0.0
     express: ^4.17.1
     fs-extra: ^11.2.0
     git-url-parse: ^14.0.0

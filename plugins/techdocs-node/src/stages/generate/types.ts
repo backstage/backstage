@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 import { Logger } from 'winston';
@@ -99,3 +98,32 @@ export type DefaultMkdocsContent = {
   docs_dir: string;
   plugins: String[];
 };
+
+/**
+ * Options passed to the {@link ContainerRunner.runContainer} method.
+ *
+ * @public
+ */
+export type RunContainerOptions = {
+  imageName: string;
+  command?: string | string[];
+  args: string[];
+  logStream?: Writable;
+  mountDirs?: Record<string, string>;
+  workingDir?: string;
+  envVars?: Record<string, string>;
+  pullImage?: boolean;
+  defaultUser?: boolean;
+};
+
+/**
+ * Handles the running of containers, on behalf of others.
+ *
+ * @public
+ */
+export interface ContainerRunner {
+  /**
+   * Runs a container image to completion.
+   */
+  runContainer(opts: RunContainerOptions): Promise<void>;
+}
