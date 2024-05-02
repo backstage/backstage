@@ -1,5 +1,19 @@
 # @backstage/backend-app-api
 
+## 0.7.2
+
+### Patch Changes
+
+- 6079afa: Redact `meta` fields too with the logger
+- Updated dependencies
+  - @backstage/backend-common@0.21.8
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/plugin-permission-node@0.7.29
+  - @backstage/cli-node@0.2.5
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-plugin-api@0.6.18
+
 ## 0.7.1
 
 ### Patch Changes
