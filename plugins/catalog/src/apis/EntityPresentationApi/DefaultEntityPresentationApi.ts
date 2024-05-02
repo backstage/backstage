@@ -260,47 +260,70 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       };
     }
 
+    if (!needsLoad) {
+      return {
+        snapshot: initialSnapshot,
+        promise: Promise.resolve(initialSnapshot),
+      };
+    }
+
+    const loadingPromise = Promise.resolve().then(() =>
+      this.#loader?.load(entityRef),
+    );
+
     // And then the following snapshot
-    const observable = !needsLoad
-      ? undefined
-      : new ObservableImpl<EntityRefPresentationSnapshot>(subscriber => {
-          let aborted = false;
+    const observable = new ObservableImpl<EntityRefPresentationSnapshot>(
+      subscriber => {
+        let aborted = false;
 
-          Promise.resolve()
-            .then(() => this.#loader?.load(entityRef))
-            .then(newEntity => {
-              if (
-                !aborted &&
-                newEntity &&
-                newEntity.metadata.etag !== entity?.metadata.etag
-              ) {
-                const updatedSnapshot = render({
-                  loading: false,
-                  entity: newEntity,
-                });
-                subscriber.next(updatedSnapshot);
-              }
-            })
-            .catch(() => {
-              // Intentionally ignored - we do not propagate errors to the
-              // observable here. The presentation API should be error free and
-              // always return SOMETHING that makes sense to render, and we have
-              // already ensured above that the initial snapshot was that.
-            })
-            .finally(() => {
-              if (!aborted) {
-                subscriber.complete();
-              }
-            });
+        loadingPromise
+          .then(newEntity => {
+            if (
+              !aborted &&
+              newEntity &&
+              newEntity.metadata.etag !== entity?.metadata.etag
+            ) {
+              const updatedSnapshot = render({
+                loading: false,
+                entity: newEntity,
+              });
+              subscriber.next(updatedSnapshot);
+            }
+          })
+          .catch(() => {
+            // Intentionally ignored - we do not propagate errors to the
+            // observable here. The presentation API should be error free and
+            // always return SOMETHING that makes sense to render, and we have
+            // already ensured above that the initial snapshot was that.
+          })
+          .finally(() => {
+            if (!aborted) {
+              subscriber.complete();
+            }
+          });
 
-          return () => {
-            aborted = true;
-          };
-        });
+        return () => {
+          aborted = true;
+        };
+      },
+    );
+
+    const promise = loadingPromise
+      .then(newEntity => {
+        if (newEntity && newEntity.metadata.etag !== entity?.metadata.etag) {
+          return render({
+            loading: false,
+            entity: newEntity,
+          });
+        }
+        return initialSnapshot;
+      })
+      .catch(() => initialSnapshot);
 
     return {
       snapshot: initialSnapshot,
       update$: observable,
+      promise: promise,
     };
   }
 
