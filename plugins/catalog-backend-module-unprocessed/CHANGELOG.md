@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.4.5-next.1
+
+### Patch Changes
+
+- 6f5a3a3: Correctly convert owner to string in case owner has not been provided
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/plugin-catalog-node@1.11.2-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 0.4.5-next.0
 
 ### Patch Changes

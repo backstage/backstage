@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { mergeDatabaseConfig } from './config';
+import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 
-describe('config', () => {
+describe('mergeDatabaseConfig', () => {
   describe('mergeDatabaseConfig', () => {
     it('does not mutate the input object', () => {
       const input = {

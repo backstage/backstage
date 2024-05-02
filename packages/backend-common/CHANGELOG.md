@@ -1,5 +1,21 @@
 # @backstage/backend-common
 
+## 0.22.0-next.1
+
+### Minor Changes
+
+- ed83f85: Internal refactor of the database code.
+
+  **BREAKING**: The helper functions `createDatabaseClient` and `ensureDatabaseExists` have been removed from the public interface, since they have no usage within the repository and never were suitable for calling from the outside. Please consider using `coreServices.database` or `DatabaseManager` directly wherever possible instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.2-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 0.21.8-next.0
 
 ### Patch Changes

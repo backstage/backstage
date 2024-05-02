@@ -35,9 +35,8 @@ import {
   type FormValidation,
 } from './createAsyncValidators';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
-import { useTemplateSchema } from '../../hooks/useTemplateSchema';
+import { useTemplateSchema, useFormDataFromQuery } from '../../hooks';
 import validator from '@rjsf/validator-ajv8';
-import { useFormDataFromQuery } from '../../hooks';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 import { hasErrors } from './utils';
 import * as FieldOverrides from './FieldOverrides';
@@ -115,6 +114,13 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
 
+  const backLabel =
+    presentation?.buttonLabels?.backButtonText ?? backButtonText;
+  const createLabel =
+    presentation?.buttonLabels?.createButtonText ?? createButtonText;
+  const reviewLabel =
+    presentation?.buttonLabels?.reviewButtonText ?? reviewButtonText;
+
   const extensions = useMemo(() => {
     return Object.fromEntries(
       props.extensions.map(({ name, component }) => [name, component]),
@@ -150,7 +156,8 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleCreate = useCallback(() => {
     props.onCreate(formState);
-  }, [props, formState]);
+    analytics.captureEvent('click', `${createLabel}`);
+  }, [props, formState, analytics, createLabel]);
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
 
@@ -181,13 +188,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     setFormState(current => ({ ...current, ...formData }));
   };
 
-  const backLabel =
-    presentation?.buttonLabels?.backButtonText ?? backButtonText;
-  const createLabel =
-    presentation?.buttonLabels?.createButtonText ?? createButtonText;
-  const reviewLabel =
-    presentation?.buttonLabels?.reviewButtonText ?? reviewButtonText;
-
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
@@ -214,7 +214,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           );
         })}
         <MuiStep>
-          <MuiStepLabel>Review</MuiStepLabel>
+          <MuiStepLabel>${reviewLabel}</MuiStepLabel>
         </MuiStep>
       </MuiStepper>
       <div className={styles.formWrapper}>
@@ -274,7 +274,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 className={styles.backButton}
                 disabled={activeStep < 1}
               >
-                Back
+                {backLabel}
               </Button>
               <Button
                 variant="contained"

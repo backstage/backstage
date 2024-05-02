@@ -26,7 +26,7 @@ import {
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
 import {
@@ -72,6 +72,7 @@ export const OngoingTask = (props: {
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
+  const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
   const taskStream = useTaskEventStream(taskId!);
   const classes = useStyles();
@@ -141,6 +142,8 @@ export const OngoingTask = (props: {
       return;
     }
 
+    analytics.captureEvent('click', `Task has been started over`);
+
     navigate({
       pathname: templateRouteRef({
         namespace,
@@ -149,6 +152,7 @@ export const OngoingTask = (props: {
       search: `?${qs.stringify({ formData: JSON.stringify(formData) })}`,
     });
   }, [
+    analytics,
     navigate,
     taskStream.task?.spec.parameters,
     taskStream.task?.spec.templateInfo?.entity?.metadata,
@@ -158,6 +162,7 @@ export const OngoingTask = (props: {
   const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
     async () => {
       if (taskId) {
+        analytics.captureEvent('cancelled', 'Template has been cancelled');
         await scaffolderApi.cancelTask(taskId);
       }
     },

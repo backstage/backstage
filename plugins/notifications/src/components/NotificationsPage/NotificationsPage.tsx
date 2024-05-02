@@ -43,6 +43,8 @@ const ThrottleDelayMs = 2000;
 
 /** @public */
 export type NotificationsPageProps = {
+  /** Mark notification as read when opening the link it contains, defaults to false */
+  markAsReadOnLinkOpen?: boolean;
   title?: string;
   themeId?: string;
   subtitle?: string;
@@ -59,6 +61,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
     tooltip,
     type,
     typeLink,
+    markAsReadOnLinkOpen,
   } = props ?? {};
 
   const [refresh, setRefresh] = React.useState(false);
@@ -171,6 +174,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
               <NotificationsTable
                 isLoading={loading}
                 isUnread={isUnread}
+                markAsReadOnLinkOpen={markAsReadOnLinkOpen}
                 notifications={notifications}
                 onUpdate={onUpdate}
                 setContainsText={setContainsText}

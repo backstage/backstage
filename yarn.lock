@@ -6194,7 +6194,7 @@ __metadata:
     "@types/nodemailer": ^6.4.14
     lodash: ^4.17.21
     nodemailer: ^6.9.13
-    p-throttle: ^6.1.0
+    p-throttle: ^4.1.1
   languageName: unknown
   linkType: soft
 
@@ -33455,10 +33455,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-throttle@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "p-throttle@npm:6.1.0"
-  checksum: c1947cca8844564c3d86f8c09067add5e7398b87898cb1f1aea5c48d2c211590d039a316d28a4b0d95364ffa0213c01dff6bf71175c468eab0e381f77715dbdb
+"p-throttle@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "p-throttle@npm:4.1.1"
+  checksum: fe8709f3c3b1da7c033479375c2c302e80c1a5d86449013afa7cd46d1dc210bc824a7e4a9d088e66d31987d00878c2b5491bb2fe76246d4d2fc9a1636f5f8298
   languageName: node
   linkType: hard
 
