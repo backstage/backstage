@@ -7,7 +7,6 @@
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -18,6 +17,11 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
 import * as winston from 'winston';
 import { Writable } from 'stream';
+
+// @public
+export interface ContainerRunner {
+  runContainer(opts: RunContainerOptions): Promise<void>;
+}
 
 // @public
 export class DirectoryPreparer implements PreparerBase {
@@ -72,7 +76,6 @@ export class Generators implements GeneratorBuilder {
     config: Config,
     options: {
       logger: Logger;
-      containerRunner: ContainerRunner;
       customGenerator?: TechdocsGenerator;
     },
   ): Promise<GeneratorBuilder>;
@@ -235,6 +238,19 @@ export type ReadinessResponse = {
 
 // @public
 export type RemoteProtocol = 'url' | 'dir';
+
+// @public
+export type RunContainerOptions = {
+  imageName: string;
+  command?: string | string[];
+  args: string[];
+  logStream?: Writable;
+  mountDirs?: Record<string, string>;
+  workingDir?: string;
+  envVars?: Record<string, string>;
+  pullImage?: boolean;
+  defaultUser?: boolean;
+};
 
 // @public
 export type SupportedGeneratorKey = 'techdocs' | string;
