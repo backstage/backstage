@@ -1,33 +1,45 @@
 {
   "name": "@backstage/cli",
-  "description": "CLI for developing Backstage plugins and apps",
   "version": "0.26.5-next.0",
-  "publishConfig": {
-    "access": "public"
-  },
+  "description": "CLI for developing Backstage plugins and apps",
   "backstage": {
     "role": "cli"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/cli"
   },
-  "keywords": [
-    "backstage"
-  ],
   "license": "Apache-2.0",
   "main": "dist/index.cjs.js",
-  "scripts": {
-    "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
-    "clean": "backstage-cli package clean",
-    "start": "nodemon --"
-  },
   "bin": {
     "backstage-cli": "bin/backstage-cli"
+  },
+  "files": [
+    "asset-types",
+    "templates",
+    "config",
+    "bin",
+    "dist/**/*.js"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "start": "nodemon --",
+    "test": "backstage-cli package test"
+  },
+  "nodemonConfig": {
+    "exec": "bin/backstage-cli",
+    "ext": "ts",
+    "watch": "./src"
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
@@ -197,18 +209,6 @@
       "optional": true
     }
   },
-  "files": [
-    "asset-types",
-    "templates",
-    "config",
-    "bin",
-    "dist/**/*.js"
-  ],
-  "nodemonConfig": {
-    "watch": "./src",
-    "exec": "bin/backstage-cli",
-    "ext": "ts"
-  },
   "configSchema": {
     "$schema": "https://backstage.io/schema/config-v1",
     "title": "@backstage/cli",
@@ -248,6 +248,16 @@
                 "type": "string",
                 "visibility": "frontend",
                 "description": "site for Datadog RUM events"
+              },
+              "sessionSampleRate": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "sample rate of Datadog RUM events"
+              },
+              "sessionReplaySampleRate": {
+                "type": "number",
+                "visibility": "frontend",
+                "description": "sample rate of session replays based upon already sampled Datadog RUM events"
               }
             },
             "required": [
