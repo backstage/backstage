@@ -115,7 +115,7 @@ export interface Config {
        * Whether to ensure the given database schema exists by creating it if it does not.
        * Defaults to false if unspecified.
        *
-       * * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
+       * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
        */
       ensureSchemaExists?: boolean;
       /**
@@ -158,7 +158,7 @@ export interface Config {
            * Whether to ensure the given database schema exists by creating it if it does not.
            * Defaults to false if unspecified.
            *
-           * * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
+           * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
            */
           ensureSchemaExists?: boolean;
           /**
