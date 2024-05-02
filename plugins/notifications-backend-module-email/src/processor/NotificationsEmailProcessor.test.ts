@@ -52,7 +52,7 @@ describe('NotificationsEmailProcessor', () => {
         notifications: {
           processors: {
             email: {
-              transport: {
+              transportConfig: {
                 transport: 'smtp',
                 hostname: 'localhost',
                 port: 465,
@@ -98,7 +98,7 @@ describe('NotificationsEmailProcessor', () => {
         notifications: {
           processors: {
             email: {
-              transport: {
+              transportConfig: {
                 transport: 'ses',
                 region: 'us-west-2',
               },
@@ -138,7 +138,7 @@ describe('NotificationsEmailProcessor', () => {
         notifications: {
           processors: {
             email: {
-              transport: {
+              transportConfig: {
                 transport: 'sendmail',
                 path: '/usr/local/bin/sendmail',
               },
@@ -189,7 +189,7 @@ describe('NotificationsEmailProcessor', () => {
         notifications: {
           processors: {
             email: {
-              transport: {
+              transportConfig: {
                 transport: 'sendmail',
                 path: '/usr/local/bin/sendmail',
               },
@@ -246,7 +246,7 @@ describe('NotificationsEmailProcessor', () => {
         notifications: {
           processors: {
             email: {
-              transport: {
+              transportConfig: {
                 transport: 'sendmail',
                 path: '/usr/local/bin/sendmail',
               },
@@ -306,7 +306,7 @@ describe('NotificationsEmailProcessor', () => {
         notifications: {
           processors: {
             email: {
-              transport: {
+              transportConfig: {
                 transport: 'sendmail',
                 path: '/usr/local/bin/sendmail',
               },
