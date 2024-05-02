@@ -895,6 +895,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       it('filters steps that the user is not authorized to see', async () => {
         jest
           .spyOn(permissionApi, 'authorizeConditional')
+          .mockImplementationOnce(async () => [
+            {
+              result: AuthorizeResult.ALLOW,
+            },
+          ])
           .mockImplementation(async () => [
             {
               result: AuthorizeResult.ALLOW,
