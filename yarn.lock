@@ -6346,6 +6346,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-notifications-backend-module-teams@workspace:plugins/notifications-backend-module-teams":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-notifications-backend-module-teams@workspace:plugins/notifications-backend-module-teams"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/plugin-notifications-node": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@backstage/types": "workspace:^"
+    dataloader: ^2.0.0
+    msw: ^2.0.0
+    p-throttle: ^4.1.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-notifications-backend@workspace:^, @backstage/plugin-notifications-backend@workspace:plugins/notifications-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-notifications-backend@workspace:plugins/notifications-backend"
@@ -6401,6 +6421,7 @@ __metadata:
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
     "@backstage/plugin-notifications-common": "workspace:^"
     "@backstage/plugin-signals-node": "workspace:^"
     "@backstage/test-utils": "workspace:^"

@@ -1,16 +1,11 @@
 {
-  "name": "@backstage/plugin-notifications-node",
-  "version": "0.2.0",
-  "description": "Node.js library for the notifications plugin",
+  "name": "@backstage/plugin-notifications-backend-module-teams",
+  "version": "0.0.0",
+  "description": "The teams backend module for the notifications plugin.",
   "backstage": {
-    "role": "node-library",
+    "role": "backend-plugin-module",
     "pluginId": "notifications",
-    "pluginPackages": [
-      "@backstage/plugin-notifications",
-      "@backstage/plugin-notifications-backend",
-      "@backstage/plugin-notifications-common",
-      "@backstage/plugin-notifications-node"
-    ]
+    "pluginPackage": "@backstage/plugin-notifications-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -20,13 +15,14 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/notifications-node"
+    "directory": "plugins/notifications-backend-module-teams"
   },
   "license": "Apache-2.0",
   "main": "src/index.ts",
   "types": "src/index.ts",
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -34,6 +30,7 @@
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
     "test": "backstage-cli package test"
   },
   "dependencies": {
@@ -42,16 +39,16 @@
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/plugin-notifications-common": "workspace:^",
-    "@backstage/plugin-signals-node": "workspace:^",
-    "knex": "^3.0.0",
-    "node-fetch": "^2.6.7",
-    "uuid": "^9.0.0"
+    "@backstage/plugin-notifications-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "dataloader": "^2.0.0",
+    "p-throttle": "^4.1.1"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "msw": "^1.0.0"
-  }
+    "msw": "^2.0.0"
+  },
+  "configSchema": "config.d.ts"
 }

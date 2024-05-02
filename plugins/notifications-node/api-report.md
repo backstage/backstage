@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
@@ -20,6 +21,12 @@ export class DefaultNotificationService implements NotificationService {
   // (undocumented)
   send(notification: NotificationSendOptions): Promise<void>;
 }
+
+// @public
+export const getAbsoluteNotificationLink: (
+  config: Config,
+  notification: Notification_2 | NotificationSendOptions,
+) => string;
 
 // @public
 export interface NotificationProcessor {
