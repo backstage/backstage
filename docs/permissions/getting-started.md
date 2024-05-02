@@ -24,10 +24,6 @@ Like many other parts of Backstage, the permissions framework relies on informat
 
 ## Integrating the permission framework with your Backstage instance
 
-:::info
-If you created your backstage app using the [@backstage/create-app](https://backstage.io/docs/getting-started/#1-create-your-backstage-app), the permission framework will already be setup including the allow-all policy!
-:::
-
 ### 1. Set up the permission backend
 
 The permissions framework uses the `permission-backend` plugin to accept authorization requests from other plugins across your Backstage deployment. The default `@backstage/create-app` template includes the permission backend, but if you need to make the change manually, these are the steps:
