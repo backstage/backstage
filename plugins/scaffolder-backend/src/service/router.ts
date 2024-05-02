@@ -103,6 +103,7 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
+import { checkPermission } from '../util/checkPermissions';
 
 /**
  *
@@ -492,19 +493,11 @@ export async function createRouter(
     )
     .get('/v2/actions', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-
-      if (permissions) {
-        const authorizationResponse = (
-          await permissions.authorizeConditional(
-            [{ permission: actionReadPermission }],
-            { credentials: credentials },
-          )
-        )[0];
-
-        if (authorizationResponse.result === AuthorizeResult.DENY) {
-          throw new NotAllowedError();
-        }
-      }
+      await checkPermission({
+        credentials,
+        permissions: [actionReadPermission],
+        permissionService: permissions,
+      });
       const actionsList = actionRegistry.list().map(action => {
         return {
           id: action.id,
@@ -522,18 +515,11 @@ export async function createRouter(
       });
 
       const credentials = await httpAuth.credentials(req);
-      if (permissions) {
-        const authorizationResponse = (
-          await permissions.authorizeConditional(
-            [{ permission: taskCreatePermission }],
-            { credentials: credentials },
-          )
-        )[0];
-
-        if (authorizationResponse.result === AuthorizeResult.DENY) {
-          throw new NotAllowedError();
-        }
-      }
+      await checkPermission({
+        credentials,
+        permissions: [taskCreatePermission],
+        permissionService: permissions,
+      });
 
       const { token } = await auth.getPluginRequestToken({
         onBehalfOf: credentials,
@@ -612,22 +598,13 @@ export async function createRouter(
     })
     .get('/v2/tasks', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-
-      if (permissions) {
-        const authorizationResponse = (
-          await permissions.authorizeConditional(
-            [{ permission: taskReadPermission }],
-            { credentials: credentials },
-          )
-        )[0];
-
-        if (authorizationResponse.result === AuthorizeResult.DENY) {
-          throw new NotAllowedError();
-        }
-      }
+      await checkPermission({
+        credentials,
+        permissions: [taskReadPermission],
+        permissionService: permissions,
+      });
 
       const [userEntityRef] = [req.query.createdBy].flat();
-
       if (
         typeof userEntityRef !== 'string' &&
         typeof userEntityRef !== 'undefined'
@@ -649,19 +626,11 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-
-      if (permissions) {
-        const authorizationResponse = (
-          await permissions.authorizeConditional(
-            [{ permission: taskReadPermission }],
-            { credentials: credentials },
-          )
-        )[0];
-
-        if (authorizationResponse.result === AuthorizeResult.DENY) {
-          throw new NotAllowedError();
-        }
-      }
+      await checkPermission({
+        credentials,
+        permissions: [taskReadPermission],
+        permissionService: permissions,
+      });
 
       const { taskId } = req.params;
       const task = await taskBroker.get(taskId);
@@ -674,22 +643,12 @@ export async function createRouter(
     })
     .post('/v2/tasks/:taskId/cancel', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-
-      if (permissions) {
-        const authorizationResponses = await permissions.authorizeConditional(
-          [
-            { permission: taskCancelPermission },
-            { permission: taskReadPermission },
-          ],
-          { credentials: credentials },
-        );
-        // Requires both read and cancel permissions
-        for (const response of authorizationResponses) {
-          if (response.result === AuthorizeResult.DENY) {
-            throw new NotAllowedError();
-          }
-        }
-      }
+      // Requires both read and cancel permissions
+      await checkPermission({
+        credentials,
+        permissions: [taskCancelPermission, taskReadPermission],
+        permissionService: permissions,
+      });
 
       const { taskId } = req.params;
       await taskBroker.cancel?.(taskId);
@@ -697,19 +656,12 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
+      await checkPermission({
+        credentials,
+        permissions: [taskReadPermission],
+        permissionService: permissions,
+      });
 
-      if (permissions) {
-        const authorizationResponse = (
-          await permissions.authorizeConditional(
-            [{ permission: taskReadPermission }],
-            { credentials: credentials },
-          )
-        )[0];
-
-        if (authorizationResponse.result === AuthorizeResult.DENY) {
-          throw new NotAllowedError();
-        }
-      }
       const { taskId } = req.params;
       const after =
         req.query.after !== undefined ? Number(req.query.after) : undefined;
@@ -759,19 +711,12 @@ export async function createRouter(
     })
     .get('/v2/tasks/:taskId/events', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
+      await checkPermission({
+        credentials,
+        permissions: [taskReadPermission],
+        permissionService: permissions,
+      });
 
-      if (permissions) {
-        const authorizationResponse = (
-          await permissions.authorizeConditional(
-            [{ permission: taskReadPermission }],
-            { credentials: credentials },
-          )
-        )[0];
-
-        if (authorizationResponse.result === AuthorizeResult.DENY) {
-          throw new NotAllowedError();
-        }
-      }
       const { taskId } = req.params;
       const after = Number(req.query.after) || undefined;
 
@@ -803,19 +748,11 @@ export async function createRouter(
     })
     .post('/v2/dry-run', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-
-      if (permissions) {
-        const authorizationResponse = (
-          await permissions.authorizeConditional(
-            [{ permission: taskCreatePermission }],
-            { credentials: credentials },
-          )
-        )[0];
-
-        if (authorizationResponse.result === AuthorizeResult.DENY) {
-          throw new NotAllowedError();
-        }
-      }
+      await checkPermission({
+        credentials,
+        permissions: [taskCreatePermission],
+        permissionService: permissions,
+      });
 
       const bodySchema = z.object({
         template: z.unknown(),
