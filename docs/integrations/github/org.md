@@ -21,6 +21,13 @@ entities that mirror your org setup.
 > provide authentication. See the
 > [GitHub auth provider](../../auth/github/provider.md) for that.
 
+## Permissions
+
+Prior to installing the GitHub Org provider you should confirm you have the right permissions:
+
+- Personal Access Token permissions are listed in the [GitHub Locations](./locations.md#token-scopes) documentation
+- GitHub App(s) permissions are listed in the [GitHub Apps](./github-apps.md#app-permissions) documentation
+
 ## Installation
 
 You will have to add the GitHub Org provider to your backend as it is not installed by default, therefore you have to add a
@@ -32,7 +39,22 @@ package.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github-org
 ```
 
-And then update your backend by adding the following line:
+Next add the basic configuration to `app-config.yaml`
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    githubOrg:
+      id: github
+      githubUrl: https://github.com
+      orgs: ['organization-1', 'organization-2', 'organization-3']
+      schedule:
+        initialDelay: { seconds: 30 }
+        frequency: { hours: 1 }
+        timeout: { minutes: 50 }
+```
+
+Finally, update your backend by adding the following line:
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));
@@ -40,7 +62,38 @@ backend.add(import('@backstage/plugin-catalog-backend/alpha'));
 backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 ```
 
-## Events Support
+### Configuration Details
+
+In the installation steps above we included an simple example of the needed configuration. The section goes into more details about the various configuration options.
+
+```yaml title="app-config.yaml"
+catalog:
+  providers:
+    githubOrg:
+      - id: github
+        githubUrl: https://github.com
+        orgs: ['organization-1', 'organization-2', 'organization-3']
+        schedule:
+          initialDelay: { seconds: 30 }
+          frequency: { hours: 1 }
+          timeout: { minutes: 50 }
+      - id: ghe
+        githubUrl: https://ghe.mycompany.com
+        orgs: ['internal-1', 'internal-2', 'internal-3']
+        schedule:
+          initialDelay: { seconds: 30 }
+          frequency: { hours: 1 }
+          timeout: { minutes: 50 }
+```
+
+Directly under the `githubOrg` is a list of configurations, each entry is a structure with the following elements:
+
+- `id`: A stable id for this provider. Entities from this provider will be associated with this ID, so you should take care not to change it over time since that may lead to orphaned entities and/or conflicts.
+- `githubUrl`: The target that this provider should consume
+- `orgs` (optional): The list of the GitHub orgs to consume. By default wil consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
+- `schedule`: The refresh schedule to use, matches the structure of [`TaskScheduleDefinitionConfig`](https://backstage.io/docs/reference/backend-tasks.taskscheduledefinitionconfig/)
+
+### Events Support
 
 The catalog module for GitHub Org comes with events support enabled.
 This will make it subscribe to its relevant topics and expects these events to be published via the `EventsService`.
@@ -67,44 +120,7 @@ You can decide between the following options (extensible):
 You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
 The webhook will need to be configured to forward `organization`,`team` and `membership` events.
 
-## Configuration
-
-As mentioned above, you also must have some configuration in your app-config
-that describes the targets that you want to import. This lets the entity
-provider know what authorization to use, and what the API endpoints are. You may
-or may not have such an entry already added since before:
-
-```yaml
-integrations:
-  github:
-    # example for public github
-    - host: github.com
-      token: ${GITHUB_TOKEN}
-    # example for a private GitHub Enterprise instance
-    - host: ghe.example.net
-      apiBaseUrl: https://ghe.example.net/api/v3
-      token: ${GHE_TOKEN}
-```
-
-These examples use `${}` placeholders to reference environment variables. This
-is often suitable for production setups, but also means that you will have to
-supply those variables to the backend as it starts up. If you want, for local
-development in particular, you can experiment first by putting the actual tokens
-in a mirrored config directly in your `app-config.local.yaml` as well.
-
-If Backstage is configured to use GitHub Apps authentication you must grant
-`Read-Only` access for `Members` under `Organization` in order to ingest users
-correctly. You can modify the app's permissions under the organization settings,
-`https://github.com/organizations/{ORG}/settings/apps/{APP_NAME}/permissions`.
-
-![permissions](../../assets/integrations/github/permissions.png)
-
-**Please note that when you change permissions, the app owner will get an email
-that must be approved first before the changes are applied.**
-
-![email](../../assets/integrations/github/email.png)
-
-### Custom Transformers
+## Custom Transformers
 
 You can inject your own transformation logic to help map from GH API responses
 into backstage entities. You can do this on the user and team requests to
@@ -226,9 +242,6 @@ export const myVerifiedUserTransformer: UserTransformer = async (user, ctx) => {
 ```
 
 This example assumes you have implemented the custom transformer following the [Custom Transformers](#custom-transformers) and [Transformer Examples](#transformer-examples) documentation in the sections above.
-
-Once you have imported the emails you can resolve users in your [sign-in
-resolver](../../auth/github/provider.md) using the catalog entity search via email
 
 Once you have imported the emails you can resolve users by building a [Custom Resolver](../../auth/identity-resolver.md#building-custom-resolvers). In this custom resolver you can then use this example to properly match the user:
 
