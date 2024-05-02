@@ -26491,7 +26491,6 @@ __metadata:
     "@types/luxon": ^3.0.0
     azure-devops-node-api: ^12.0.0
     better-sqlite3: ^9.0.0
-    dockerode: ^4.0.0
     example-app: "link:../app"
     express: ^4.17.1
     express-prom-bundle: ^7.0.0
