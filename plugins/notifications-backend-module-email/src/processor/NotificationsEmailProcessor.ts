@@ -62,7 +62,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     const emailProcessorConfig = config.getConfig(
       'notifications.processors.email',
     );
-    this.transportConfig = emailProcessorConfig.getConfig('transport');
+    this.transportConfig = emailProcessorConfig.getConfig('transportConfig');
     this.broadcastConfig =
       emailProcessorConfig.getOptionalConfig('broadcastConfig');
     this.sender = emailProcessorConfig.getString('sender');
