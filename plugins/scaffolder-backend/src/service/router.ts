@@ -30,12 +30,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import {
-  InputError,
-  NotAllowedError,
-  NotFoundError,
-  stringifyError,
-} from '@backstage/errors';
+import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
@@ -79,10 +74,7 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import {
-  AuthorizeResult,
-  PermissionRuleParams,
-} from '@backstage/plugin-permission-common';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
   createPermissionIntegrationRouter,
