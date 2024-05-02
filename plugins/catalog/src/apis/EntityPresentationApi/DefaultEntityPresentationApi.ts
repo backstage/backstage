@@ -267,34 +267,37 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       };
     }
 
-    const loadingPromise = Promise.resolve().then(() =>
-      this.#loader?.load(entityRef),
-    );
+    // Load the entity and render it
+    const maybeUpdatedSnapshot = Promise.resolve()
+      .then(() => {
+        return this.#loader?.load(entityRef);
+      })
+      .then(newEntity => {
+        // We re-render no matter if we get back a new entity or the old
+        // one or nothing, because of the now false loading state - in
+        // case the renderer outputs different data depending on that
+        return render({
+          loading: false,
+          entity: newEntity ?? entity,
+        });
+      })
+      .catch(() => {
+        // Intentionally ignored - we do not propagate errors to the
+        // caller here. The presentation API should be error free and
+        // always return SOMETHING that makes sense to render, and we have
+        // already ensured above that the initial snapshot was that.
+        return undefined;
+      });
 
-    // And then the following snapshot
     const observable = new ObservableImpl<EntityRefPresentationSnapshot>(
       subscriber => {
         let aborted = false;
 
-        loadingPromise
-          .then(newEntity => {
-            if (
-              !aborted &&
-              newEntity &&
-              newEntity.metadata.etag !== entity?.metadata.etag
-            ) {
-              const updatedSnapshot = render({
-                loading: false,
-                entity: newEntity,
-              });
+        maybeUpdatedSnapshot
+          .then(updatedSnapshot => {
+            if (updatedSnapshot) {
               subscriber.next(updatedSnapshot);
             }
-          })
-          .catch(() => {
-            // Intentionally ignored - we do not propagate errors to the
-            // observable here. The presentation API should be error free and
-            // always return SOMETHING that makes sense to render, and we have
-            // already ensured above that the initial snapshot was that.
           })
           .finally(() => {
             if (!aborted) {
@@ -308,17 +311,9 @@ export class DefaultEntityPresentationApi implements EntityPresentationApi {
       },
     );
 
-    const promise = loadingPromise
-      .then(newEntity => {
-        if (newEntity && newEntity.metadata.etag !== entity?.metadata.etag) {
-          return render({
-            loading: false,
-            entity: newEntity,
-          });
-        }
-        return initialSnapshot;
-      })
-      .catch(() => initialSnapshot);
+    const promise = maybeUpdatedSnapshot.then(updatedSnapshot => {
+      return updatedSnapshot ?? initialSnapshot;
+    });
 
     return {
       snapshot: initialSnapshot,
