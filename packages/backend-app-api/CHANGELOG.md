@@ -1,5 +1,11 @@
 # @backstage/backend-app-api
 
+## 0.7.2
+
+### Patch Changes
+
+- b6b59c5: Redact `meta` fields too with the logger
+
 ## 0.7.1
 
 ### Patch Changes

@@ -1,5 +1,12 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.5
+
+### Patch Changes
+
+- b6b59c5: Fix issue with the log format not being respected when logging from actions
+- b6b59c5: Redact `meta` fields too with the logger
+
 ## 1.22.4
 
 ### Patch Changes

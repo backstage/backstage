@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.14.6
+
+### Patch Changes
+
+- 36054e3: Fixed an internal circular import that broke Jest mocks.
+
 ## 0.14.5
 
 ### Patch Changes
