@@ -73,7 +73,7 @@ describe('WinstonLogger', () => {
       msg({
         ...log,
         message: {
-          nested: '[REDACTED] (world) from nested',
+          nested: '[REDACTED] (world) from nested object',
         },
       }),
     );
