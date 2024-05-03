@@ -1,5 +1,12 @@
 # @backstage/core-components
 
+## 0.14.6-next.1
+
+### Patch Changes
+
+- 5223c4c: Fixed an internal circular import that broke Jest mocks.
+- 5b7b49b: The `SignInPage` guest provider will now fall back to legacy guest auth if the backend request fails, allowing guest auth without a running backend.
+
 ## 0.14.5-next.0
 
 ### Patch Changes

@@ -112,6 +112,13 @@ export interface Config {
        */
       ensureExists?: boolean;
       /**
+       * Whether to ensure the given database schema exists by creating it if it does not.
+       * Defaults to false if unspecified.
+       *
+       * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
+       */
+      ensureSchemaExists?: boolean;
+      /**
        * How plugins databases are managed/divided in the provided database instance.
        *
        * `database` -> Plugins are each given their own database to manage their schemas/tables.
@@ -147,6 +154,13 @@ export interface Config {
            * Defaults to base config if unspecified.
            */
           ensureExists?: boolean;
+          /**
+           * Whether to ensure the given database schema exists by creating it if it does not.
+           * Defaults to false if unspecified.
+           *
+           * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
+           */
+          ensureSchemaExists?: boolean;
           /**
            * Arbitrary config object to pass to knex when initializing
            * (https://knexjs.org/#Installation-client). Most notable is the

@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.5.2-next.1
+
+### Patch Changes
+
+- 9156654: Capturing more event clicks for scaffolder
+
 ## 1.5.2-next.0
 
 ### Patch Changes

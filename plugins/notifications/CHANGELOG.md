@@ -1,5 +1,15 @@
 # @backstage/plugin-notifications
 
+## 0.2.1-next.1
+
+### Patch Changes
+
+- f730c0b: The user can newly mark all unread messages as read at one click.
+- bfcb2f1: Allow showing notifications as snackbars in the UI
+- f6633ca: Add option to set the notification as read automatically when the notification link is opened
+- Updated dependencies
+  - @backstage/core-components@0.14.6-next.1
+
 ## 0.2.1-next.0
 
 ### Patch Changes

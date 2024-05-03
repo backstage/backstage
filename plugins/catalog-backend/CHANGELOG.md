@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend
 
+## 1.22.0-next.1
+
+### Patch Changes
+
+- 8479a0b: Fixed bug in stitching queue gauge that included entities that are scheduled in the future.
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/plugin-events-node@0.3.4-next.1
+  - @backstage/plugin-permission-node@0.7.29-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.24-next.1
+  - @backstage/plugin-catalog-node@1.11.2-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+  - @backstage/backend-openapi-utils@0.1.11-next.1
+
 ## 1.22.0-next.0
 
 ### Minor Changes
