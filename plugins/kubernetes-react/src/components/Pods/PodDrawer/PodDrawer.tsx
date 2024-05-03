@@ -19,7 +19,6 @@ import React from 'react';
 import { ItemCardGrid } from '@backstage/core-components';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import CardActions from '@material-ui/core/CardActions';
 import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 
 import { Pod } from 'kubernetes-models/v1';
@@ -101,16 +100,14 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
     >
       <div className={classes.content}>
         {isPodDeleteEnabled && (
-          <CardActions>
-            <PodDeleteButton
-              podScope={{
-                podName: podAndErrors.pod.metadata?.name ?? 'unknown',
-                podNamespace: podAndErrors.pod.metadata?.namespace ?? 'default',
-                cluster: podAndErrors.cluster,
-              }}
-              buttonText={usePodDeleteCustomButtonText}
-            />
-          </CardActions>
+          <PodDeleteButton
+            podScope={{
+              podName: podAndErrors.pod.metadata?.name ?? 'unknown',
+              podNamespace: podAndErrors.pod.metadata?.namespace ?? 'default',
+              cluster: podAndErrors.cluster,
+            }}
+            buttonText={usePodDeleteCustomButtonText}
+          />
         )}
         {podMetrics && (
           <Grid container item xs={12}>

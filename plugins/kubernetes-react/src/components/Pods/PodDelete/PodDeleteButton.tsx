@@ -15,6 +15,9 @@
  */
 import React, { useState } from 'react';
 
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import CardActions from '@material-ui/core/CardActions';
 import Button from '@material-ui/core/Button';
 import DeleteIcon from '@material-ui/icons/Close';
 import CircularProgress from '@material-ui/core/CircularProgress';
@@ -42,28 +45,49 @@ export const PodDeleteButton = ({
   buttonText,
 }: PodDeleteButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
+  const [hasError, setHasError] = useState(false);
   const deletePod = usePodDelete();
+  const getButtonText = buttonText ?? 'Delete Pod';
 
   const handleDeleteClick = async () => {
     setIsLoading(true);
     try {
       await deletePod(podScope);
     } catch (error) {
+      setHasError(true);
       // eslint-disable-next-line no-console
       console.error(error);
     }
   };
 
   return (
-    <Button
-      variant="outlined"
-      aria-label={buttonText ?? 'Delete Pod'}
-      component="label"
-      onClick={handleDeleteClick}
-      startIcon={isLoading ? <CircularProgress size={18} /> : <DeleteIcon />}
-      disabled={isLoading}
-    >
-      {buttonText ?? 'Delete Pod'}
-    </Button>
+    <Grid container item xs={12}>
+      <Grid item xs={12}>
+        <CardActions>
+          <Button
+            variant="outlined"
+            aria-label={getButtonText}
+            component="label"
+            onClick={handleDeleteClick}
+            startIcon={
+              isLoading ? <CircularProgress size={18} /> : <DeleteIcon />
+            }
+            disabled={isLoading}
+          >
+            {getButtonText}
+          </Button>
+        </CardActions>
+        {hasError && (
+          <Typography
+            variant="body1"
+            color="error"
+            style={{ textAlign: 'right' }}
+          >
+            Could not delete the pod. Please check the console for the full
+            report.
+          </Typography>
+        )}
+      </Grid>
+    </Grid>
   );
 };
