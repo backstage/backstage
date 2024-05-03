@@ -116,10 +116,9 @@ export function AboutCard(props: AboutCardProps) {
   const { allowed: canRefresh } = useEntityPermission(
     catalogEntityRefreshPermission,
   );
-  const { kind, name, namespace } = entity.metadata;
+
   const { allowed: canCreateTemplateTask } = usePermission({
     permission: taskCreatePermission,
-    resourceRef: `${kind}:${namespace}/${name}`,
   });
 
   const entitySourceLocation = getEntitySourceLocation(

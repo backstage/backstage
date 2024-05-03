@@ -5684,7 +5684,7 @@ __metadata:
     lodash: ^4.17.21
     pluralize: ^8.0.0
     react-use: ^17.2.4
-    swr: ^2.0.0
+    swr: ^2.2.5
     zen-observable: ^0.10.0
   peerDependencies:
     react: ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -39520,7 +39520,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"swr@npm:^2.0.0":
+"swr@npm:^2.0.0, swr@npm:^2.2.5":
   version: 2.2.5
   resolution: "swr@npm:2.2.5"
   dependencies:

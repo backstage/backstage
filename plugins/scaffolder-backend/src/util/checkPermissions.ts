@@ -20,12 +20,12 @@ import {
 import { NotAllowedError } from '@backstage/errors';
 import {
   AuthorizeResult,
-  ResourcePermission,
+  BasicPermission,
 } from '@backstage/plugin-permission-common';
 
 export type checkPermissionOptions = {
   credentials: BackstageCredentials;
-  permissions: ResourcePermission[];
+  permissions: BasicPermission[];
   permissionService?: PermissionsService;
 };
 
@@ -39,7 +39,7 @@ export async function checkPermission(options: checkPermissionOptions) {
     const permissionRequest = permissions.map(resourcePermission => ({
       permission: resourcePermission,
     }));
-    const authorizationResponses = await permissionService.authorizeConditional(
+    const authorizationResponses = await permissionService.authorize(
       permissionRequest,
       { credentials: credentials },
     );

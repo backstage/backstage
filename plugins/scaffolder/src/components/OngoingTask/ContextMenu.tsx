@@ -77,24 +77,17 @@ export const ContextMenu = (props: ContextMenuProps) => {
     }
   });
 
-  // Used dummy string value for `resourceRef` since `allowed` field will always return `false` if `resourceRef` is `undefined`
   const { allowed: canCancelTask } = usePermission({
     permission: taskCancelPermission,
-    resourceRef: 'task',
   });
 
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
-    resourceRef: 'task',
   });
 
   const { allowed: canCreateTask } = usePermission({
     permission: taskCreatePermission,
-    resourceRef: 'task',
   });
-
-  // Cancel endpoint requires user to have both read and cancel permissions
-  const cancelNotAllowed = !(canReadTask && canCancelTask);
 
   // Start Over endpoint requires user to have both read (to grab parameters) and create (to create new task) permissions
   const canStartOver = canReadTask && canCreateTask;
@@ -150,7 +143,7 @@ export const ContextMenu = (props: ContextMenuProps) => {
             disabled={
               !cancelEnabled ||
               cancelStatus !== 'not-executed' ||
-              cancelNotAllowed
+              !canCancelTask
             }
             data-testid="cancel-task"
           >

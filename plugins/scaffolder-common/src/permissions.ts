@@ -31,13 +31,6 @@ export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 
 /**
- * Permission resource type which corresponds to a scaffolder task.
- *
- * @alpha
- */
-export const RESOURCE_TYPE_SCAFFOLDER_TASK = 'scaffolder-task';
-
-/**
  * This permission is used to authorize actions that involve executing
  * an action from a template.
  *
@@ -49,6 +42,7 @@ export const actionExecutePermission = createPermission({
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
 });
 
+// TODO: Figure out whether to convert this to a basic permission or remove it completely since the current rules aren't applicable to this permission
 /**
  * This permission is used to authorize actions that involve access the action registry
  *
@@ -101,8 +95,6 @@ export const templateStepReadPermission = createPermission({
  * This permission is used to authorize actions that involve reading one or more tasks in the scaffolder,
  * and reading logs of tasks
  *
- * Task cancellation would also require this permission.
- *
  * @alpha
  */
 export const taskReadPermission = createPermission({
@@ -110,7 +102,6 @@ export const taskReadPermission = createPermission({
   attributes: {
     action: 'read',
   },
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
 });
 
 /**
@@ -123,20 +114,16 @@ export const taskCreatePermission = createPermission({
   attributes: {
     action: 'create',
   },
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
 });
 
 /**
- * This permission us used to authorize actions that involve the cancellation of tasks in the scaffolder.
- *
- * This will require the `scaffolder.task.read` permission to be authorized.
+ * This permission is used to authorize actions that involve the cancellation of tasks in the scaffolder.
  *
  * @alpha
  */
 export const taskCancelPermission = createPermission({
   name: 'scaffolder.task.cancel',
   attributes: {},
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
 });
 
 /**
@@ -144,7 +131,6 @@ export const taskCancelPermission = createPermission({
  * @alpha
  */
 export const scaffolderPermissions = [
-  actionExecutePermission,
   templateParameterReadPermission,
   templateStepReadPermission,
 ];

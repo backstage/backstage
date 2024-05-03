@@ -91,21 +91,15 @@ export const OngoingTask = (props: {
   // Used dummy string value for `resourceRef` since `allowed` field will always return `false` if `resourceRef` is `undefined`
   const { allowed: canCancelTask } = usePermission({
     permission: taskCancelPermission,
-    resourceRef: 'task',
   });
 
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
-    resourceRef: 'task',
   });
 
   const { allowed: canCreateTask } = usePermission({
     permission: taskCreatePermission,
-    resourceRef: 'task',
   });
-
-  // Cancel endpoint requires user to have both read and cancel permissions
-  const cancelNotAllowed = !(canReadTask && canCancelTask);
 
   // Start Over endpoint requires user to have both read (to grab parameters) and create (to create new task) permissions
   const canStartOver = canReadTask && canCreateTask;
@@ -228,7 +222,7 @@ export const OngoingTask = (props: {
                     disabled={
                       !cancelEnabled ||
                       cancelStatus !== 'not-executed' ||
-                      cancelNotAllowed
+                      !canCancelTask
                     }
                     onClick={triggerCancel}
                     data-testid="cancel-button"

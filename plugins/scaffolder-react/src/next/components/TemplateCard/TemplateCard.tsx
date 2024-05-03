@@ -112,7 +112,6 @@ export const TemplateCard = (props: TemplateCardProps) => {
 
   const { allowed: canCreateTask } = usePermission({
     permission: taskCreatePermission,
-    resourceRef: 'task',
   });
   const handleChoose = useCallback(() => {
     analytics.captureEvent('click', `Template has been opened`);

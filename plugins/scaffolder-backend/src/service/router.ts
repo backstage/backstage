@@ -30,7 +30,12 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
+import {
+  InputError,
+  NotAllowedError,
+  NotFoundError,
+  stringifyError,
+} from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
@@ -43,7 +48,6 @@ import {
 import {
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
-  RESOURCE_TYPE_SCAFFOLDER_TASK,
   scaffolderActionPermissions,
   scaffolderTemplatePermissions,
   taskCancelPermission,
@@ -74,7 +78,10 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  PermissionRuleParams,
+} from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
   createPermissionIntegrationRouter,
@@ -97,11 +104,7 @@ import {
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
 
-/**
- *
- * @public
- */
-export type ScaffolderPermissionRuleInput =
+type ScaffolderPermissionRuleInput =
   | TemplatePermissionRuleInput
   | ActionPermissionRuleInput
   | TaskPermissionRuleInput;
@@ -440,7 +443,7 @@ export async function createRouter(
         rules: actionRules,
       },
       {
-        resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+        resourceType: 'basic',
         permissions: scaffolderTaskPermissions,
         rules: taskRules,
       },
@@ -485,11 +488,18 @@ export async function createRouter(
     )
     .get('/v2/actions', async (req, res) => {
       const credentials = await httpAuth.credentials(req);
-      await checkPermission({
-        credentials,
-        permissions: [actionReadPermission],
-        permissionService: permissions,
-      });
+      if (permissions) {
+        const authorizationResponse = (
+          await permissions.authorizeConditional(
+            [{ permission: actionReadPermission }],
+            { credentials: credentials },
+          )
+        )[0];
+        if (authorizationResponse.result === AuthorizeResult.DENY) {
+          throw new NotAllowedError();
+        }
+      }
+
       const actionsList = actionRegistry.list().map(action => {
         return {
           id: action.id,
