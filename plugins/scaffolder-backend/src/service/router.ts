@@ -108,14 +108,6 @@ import { checkPermission } from '../util/checkPermissions';
  *
  * @public
  */
-export type ScaffolderPermissionRuleInput =
-  | TemplatePermissionRuleInput
-  | ActionPermissionRuleInput;
-
-/**
- *
- * @public
- */
 export type TemplatePermissionRuleInput<
   TParams extends PermissionRuleParams = PermissionRuleParams,
 > = PermissionRule<
@@ -125,7 +117,7 @@ export type TemplatePermissionRuleInput<
   TParams
 >;
 function isTemplatePermissionRuleInput(
-  permissionRule: ScaffolderPermissionRuleInput,
+  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
 ): permissionRule is TemplatePermissionRuleInput {
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TEMPLATE;
 }
@@ -143,7 +135,7 @@ export type ActionPermissionRuleInput<
   TParams
 >;
 function isActionPermissionRuleInput(
-  permissionRule: ScaffolderPermissionRuleInput,
+  permissionRule: TemplatePermissionRuleInput | ActionPermissionRuleInput,
 ): permissionRule is ActionPermissionRuleInput {
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
 }
@@ -176,7 +168,9 @@ export interface RouterOptions {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionsService;
-  permissionRules?: Array<ScaffolderPermissionRuleInput>;
+  permissionRules?: Array<
+    TemplatePermissionRuleInput | ActionPermissionRuleInput
+  >;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;

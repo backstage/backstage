@@ -479,7 +479,9 @@ export interface RouterOptions {
   // (undocumented)
   logger: Logger;
   // (undocumented)
-  permissionRules?: Array<ScaffolderPermissionRuleInput>;
+  permissionRules?: Array<
+    TemplatePermissionRuleInput | ActionPermissionRuleInput
+  >;
   // (undocumented)
   permissions?: PermissionsService;
   // (undocumented)
@@ -497,11 +499,6 @@ export type RunCommandOptions = ExecuteShellCommandOptions;
 
 // @public @deprecated
 export const ScaffolderEntitiesProcessor: typeof ScaffolderEntitiesProcessor_2;
-
-// @public (undocumented)
-export type ScaffolderPermissionRuleInput =
-  | TemplatePermissionRuleInput
-  | ActionPermissionRuleInput;
 
 // @public @deprecated
 export type SerializedTask = SerializedTask_2;
