@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import fs from 'fs-extra';
 import path from 'path';
-import { executeShellCommand } from '@backstage/plugin-scaffolder-node';
+import {
+  ContainerRunner,
+  executeShellCommand,
+} from '@backstage/plugin-scaffolder-node';
 import commandExists from 'command-exists';
 import {
   railsArgumentResolver,

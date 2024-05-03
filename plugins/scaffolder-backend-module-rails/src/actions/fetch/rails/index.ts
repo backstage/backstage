@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { ContainerRunner, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
 import {
+  ContainerRunner,
   createTemplateAction,
   fetchContents,
 } from '@backstage/plugin-scaffolder-node';
