@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-
 import React from 'react';
 import { BottomLink } from '../BottomLink';
 
 export default {
- title: 'Layout/BottomLink',
- component: BottomLink,
+  title: 'Layout/BottomLink',
+  component: BottomLink,
 };
 
-export const Default = (args:{
-  link:string
-  title:string
-}) => <BottomLink {...args} />
+export const Default = (args: { link: string; title: string }) => (
+  <BottomLink {...args} />
+);
 Default.args = {
- link: 'https://google.com',
- title: 'This is bottom link'
+  link: 'https://google.com',
+  title: 'This is bottom link',
 };

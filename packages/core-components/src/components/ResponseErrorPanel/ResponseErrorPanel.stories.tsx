@@ -19,20 +19,23 @@ import { ResponseErrorPanel } from '../ResponseErrorPanel';
 import { ErrorPanelProps } from '../ErrorPanel';
 
 export default {
- title: 'Data Display/ResponseErrorPanel',
- component: ResponseErrorPanel,
+  title: 'Data Display/ResponseErrorPanel',
+  component: ResponseErrorPanel,
 };
 
-export const Default = (args:ErrorPanelProps) => <ResponseErrorPanel {...args} />
+export const Default = (args: ErrorPanelProps) => (
+  <ResponseErrorPanel {...args} />
+);
 Default.args = {
-    error: new Error('Error message from error object'),
-    defaultExpanded: false
+  error: new Error('Error message from error object'),
+  defaultExpanded: false,
 };
 
-
-export const WithTitle = (args:ErrorPanelProps) => <ResponseErrorPanel {...args} />
+export const WithTitle = (args: ErrorPanelProps) => (
+  <ResponseErrorPanel {...args} />
+);
 WithTitle.args = {
-    error: new Error('test'),
-    defaultExpanded: false,
-    title:"Title prop is passed"
+  error: new Error('test'),
+  defaultExpanded: false,
+  title: 'Title prop is passed',
 };

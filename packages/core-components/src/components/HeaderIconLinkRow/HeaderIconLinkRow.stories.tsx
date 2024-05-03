@@ -18,34 +18,31 @@ import React from 'react';
 import { HeaderIconLinkRow } from '../HeaderIconLinkRow';
 import { IconLinkVerticalProps } from './IconLinkVertical';
 
-
 type Props = {
-    links: IconLinkVerticalProps[];
-  };
-
-export default {
- title: 'Data Display/HeaderIconLinkRow',
- component: HeaderIconLinkRow,
+  links: IconLinkVerticalProps[];
 };
 
+export default {
+  title: 'Data Display/HeaderIconLinkRow',
+  component: HeaderIconLinkRow,
+};
 
-
-export const Default = (args:Props) => <HeaderIconLinkRow {...args} />
+export const Default = (args: Props) => <HeaderIconLinkRow {...args} />;
 Default.args = {
-    links: [
-        {
-            color: 'primary',
-            disabled: false,
-            href: "https://google.com",
-            label: "primary",
-            title: "title"
-        },
-        {
-            color: 'secondary',
-            disabled: false,
-            href: "https://google.com",
-            label: "secondary",
-            title: "title-2"
-        },
-    ]
+  links: [
+    {
+      color: 'primary',
+      disabled: false,
+      href: 'https://google.com',
+      label: 'primary',
+      title: 'title',
+    },
+    {
+      color: 'secondary',
+      disabled: false,
+      href: 'https://google.com',
+      label: 'secondary',
+      title: 'title-2',
+    },
+  ],
 };

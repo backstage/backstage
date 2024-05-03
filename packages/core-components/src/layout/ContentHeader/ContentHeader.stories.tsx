@@ -14,45 +14,60 @@
  * limitations under the License.
  */
 
-import React , {ReactNode} from 'react';
+import React, { ReactNode } from 'react';
 import { ContentHeader } from '../ContentHeader';
 
 export default {
- title: 'Layout/ContentHeader',
- component: ContentHeader,
+  title: 'Layout/ContentHeader',
+  component: ContentHeader,
 };
 
 type ContentHeaderProps = {
-    title?: string
-    titleComponent?: ReactNode;
-    description?: string;
-    textAlign?: 'left' | 'right' | 'center';
-  };
+  title?: string;
+  titleComponent?: ReactNode;
+  description?: string;
+  textAlign?: 'left' | 'right' | 'center';
+};
 
-export const Default = (args:ContentHeaderProps) => <ContentHeader {...args} ><div>Child of Content Header</div></ContentHeader>
+export const Default = (args: ContentHeaderProps) => (
+  <ContentHeader {...args}>
+    <div>Child of Content Header</div>
+  </ContentHeader>
+);
 Default.args = {
- title: 'This is Content Header default aligned',
- description:'This is description'
+  title: 'This is Content Header default aligned',
+  description: 'This is description',
 };
 
-
-export const Left = (args:ContentHeaderProps) => <ContentHeader {...args} ><div>Child of Content Header</div></ContentHeader>
+export const Left = (args: ContentHeaderProps) => (
+  <ContentHeader {...args}>
+    <div>Child of Content Header</div>
+  </ContentHeader>
+);
 Left.args = {
- title: 'This is Content Header left aligned',
- description:'This is description',
- textAlign: 'left'
+  title: 'This is Content Header left aligned',
+  description: 'This is description',
+  textAlign: 'left',
 };
 
-export const Right = (args:ContentHeaderProps) => <ContentHeader {...args} ><div>Child of Content Header</div></ContentHeader>
+export const Right = (args: ContentHeaderProps) => (
+  <ContentHeader {...args}>
+    <div>Child of Content Header</div>
+  </ContentHeader>
+);
 Right.args = {
- title: 'This is Content Header right aligned',
- description:'This is description',
- textAlign: 'right'
+  title: 'This is Content Header right aligned',
+  description: 'This is description',
+  textAlign: 'right',
 };
 
-export const Center = (args:ContentHeaderProps) => <ContentHeader {...args} ><div>Child of Content Header</div></ContentHeader>
+export const Center = (args: ContentHeaderProps) => (
+  <ContentHeader {...args}>
+    <div>Child of Content Header</div>
+  </ContentHeader>
+);
 Center.args = {
- title: 'This is Content Header center aligned',
- description:'This is description',
- textAlign: 'center'
+  title: 'This is Content Header center aligned',
+  description: 'This is description',
+  textAlign: 'center',
 };
