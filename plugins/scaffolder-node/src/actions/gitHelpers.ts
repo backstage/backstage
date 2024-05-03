@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Git } from '@backstage/backend-common';
 import { Logger } from 'winston';
+import { Git } from '../scm';
 
 /**
  * @public

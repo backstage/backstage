@@ -71,7 +71,7 @@ import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
 
-// @public
+// @public @deprecated
 export type AuthCallbackOptions = {
   onAuth: AuthCallback;
   logger?: LoggerService;
@@ -370,7 +370,7 @@ export function getRootLogger(): winston.Logger;
 // @public
 export function getVoidLogger(): winston.Logger;
 
-// @public
+// @public @deprecated
 export class Git {
   // (undocumented)
   add(options: { dir: string; filepath: string }): Promise<void>;
@@ -818,7 +818,7 @@ export function setRootLogger(newLogger: winston.Logger): void;
 // @public @deprecated
 export const SingleHostDiscovery: typeof HostDiscovery_2;
 
-// @public
+// @public @deprecated
 export type StaticAuthOptions = {
   username?: string;
   password?: string;
