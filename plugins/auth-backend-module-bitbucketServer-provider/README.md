@@ -1,6 +1,6 @@
-# Auth Module: GitLab Provider
+# Auth Module: BitbucketServer Provider
 
-This module provides an GitLab auth provider implementation for `@backstage/plugin-auth-backend`.
+This module provides an BitbucketServer auth provider implementation for `@backstage/plugin-auth-backend`.
 
 ## Links
 
