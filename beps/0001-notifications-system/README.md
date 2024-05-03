@@ -110,7 +110,7 @@ The notification backend stores notification using the [database service](https:
   - Topic (optional)
   - Scope (optional)
   - Icon (optional)
-  - Extra (optional)
+  - Metadata (optional)
 
 The recipients is **not** a list of users, but rather a filter that describes who should receive the notification. It must be possible to evaluate this filter in a database query, so that we can efficiently fetch all notifications for a given user. The same filter will also be used by the signal backend to determine which users should receive a signal.
 
@@ -148,7 +148,7 @@ The link is a relative or absolute URL. As an example, it can be used:
 - by an external system to request an action within an asynchronous task
 - by a BE plugin to provide link to other part of the Backstage UI (i.e. to the Catalog)
 
-The extra is a flexible JSON like field, where an additional payload can be stored.
+The metadata is a flexible JSON like field, where an additional payload can be stored.
 
 The additional links are an array of title-URL pairs. They can represent immediate actions on the notification (i.e. yes-no) or lead the user to additional details.
 
