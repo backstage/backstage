@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ContainerRunner, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
@@ -27,6 +27,7 @@ import {
   createTemplateAction,
   fetchContents,
   executeShellCommand,
+  ContainerRunner,
 } from '@backstage/plugin-scaffolder-node';
 
 export class CookiecutterRunner {

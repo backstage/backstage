@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-import { UrlReader, ContainerRunner } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createFetchCookiecutterAction } from './cookiecutter';
 import { join } from 'path';
-import type { ActionContext } from '@backstage/plugin-scaffolder-node';
+import type {
+  ActionContext,
+  ContainerRunner,
+} from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { Writable } from 'stream';
 
