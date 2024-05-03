@@ -32,7 +32,9 @@ describe('usePodDeleteButtonText', () => {
           configApiRef,
           new ConfigReader({
             kubernetes: {
-              podDelete: { buttonText: haveButtonText },
+              frontend: {
+                podDelete: { buttonText: haveButtonText },
+              },
             },
           }),
         ],

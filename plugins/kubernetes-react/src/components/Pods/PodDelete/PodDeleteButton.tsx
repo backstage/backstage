@@ -57,13 +57,13 @@ export const PodDeleteButton = ({
   return (
     <Button
       variant="outlined"
-      aria-label={buttonText}
+      aria-label={buttonText ?? 'Delete Pod'}
       component="label"
       onClick={handleDeleteClick}
-      startIcon={isLoading ? <CircularProgress size={24} /> : <DeleteIcon />}
+      startIcon={isLoading ? <CircularProgress size={18} /> : <DeleteIcon />}
       disabled={isLoading}
     >
-      {buttonText}
+      {buttonText ?? 'Delete Pod'}
     </Button>
   );
 };

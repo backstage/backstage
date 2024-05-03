@@ -23,5 +23,7 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 export const useIsPodDeleteEnabled = (): boolean | undefined => {
   const configApi = useApi(configApiRef);
 
-  return configApi.getOptionalBoolean('kubernetes.podDelete.enabled');
+  return configApi
+    .getOptionalConfig('kubernetes.frontend')
+    ?.getOptionalBoolean('podDelete.enabled');
 };

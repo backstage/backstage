@@ -32,7 +32,9 @@ describe('useIsPodDeleteEnabled', () => {
           configApiRef,
           new ConfigReader({
             kubernetes: {
-              podDelete: { enabled: isPodDeleteEnabled },
+              frontend: {
+                podDelete: { enabled: isPodDeleteEnabled },
+              },
             },
           }),
         ],

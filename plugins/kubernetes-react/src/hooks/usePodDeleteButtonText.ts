@@ -23,5 +23,7 @@ import { configApiRef, useApi } from '@backstage/core-plugin-api';
 export const usePodDeleteButtonText = (): string | undefined => {
   const configApi = useApi(configApiRef);
 
-  return configApi.getOptionalString('kubernetes.podDelete.buttonText');
+  return configApi
+    .getOptionalConfig('kubernetes.frontend')
+    ?.getOptionalString('podDelete.buttonText');
 };
