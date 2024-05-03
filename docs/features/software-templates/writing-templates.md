@@ -744,51 +744,31 @@ The `projectSlug` filter generates a project slug from a repository URL
 ## Custom Filters
 
 Whenever it is needed to extend the built-in filters with yours `${{ parameters.name | my-filter1 | my-filter2 | etc }}`, then you can add them
-using the property `addTemplateFilters` that you typically define using the `createRouter()` function of the `Scaffolder plugin`
+using the property `additionalTemplateFilters`.
 
-```ts title="packages/backend/src/plugins/scaffolder.ts"
-export default async function createPlugin({
-  logger,
-  config,
-}: PluginEnvironment): Promise<Router> {
-  ...
-  return await createRouter({
-    logger,
-    config,
-
-    additionalTemplateFilters: {
-        <YOUR_FILTERS>
-    }
-  });
-```
-
-The `addTemplateFilters` property accepts a `Record`
+The `additionalTemplateFilters` property accepts as type a `Record`
 
 ```ts title="plugins/scaffolder-backend/src/service/Router.ts"
   additionalTemplateFilters?: Record<string, TemplateFilter>;
 ```
 
-where the first parameter is the name of the filter and the second `TemplateFilter` receives a list of `JSON value` arguments. The `templateFilter()` function must return a JsonValue (Json array, object or primitive).
+where the first parameter is the name of the filter and the second receives a list of `JSON value` arguments. The `templateFilter()` function must return a JsonValue which is either a Json array, object or primitive.
 
 ```ts title="plugins/scaffolder-node/src/types.ts"
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 ```
 
-From a practical coding point of view, you will translate that into the following snippet code
+From a practical coding point of view, you will translate that into the following snippet code handling 2 filters:
 
-```ts title="packages/backend/src/plugins/scaffolder.ts"
+```ts"
 ...
-  return await createRouter({
-    logger: env.logger,
-    config: env.config,
-    additionalTemplateFilters: {
-      base64: (...args: JsonValue[]) => btoa(args.join("")),
-      betterFilter: (...args: JsonValue[]) => { return `This is a much better string than "${args}", don't you think?` }
-    },
-});
+additionalTemplateFilters: {
+  base64: (...args: JsonValue[]) => btoa(args.join("")),
+  betterFilter: (...args: JsonValue[]) => { return `This is a much better string than "${args}", don't you think?` }
+}
 ```
 
-And within your template, you will be able to use the filters like this
+And within your template, you will be able to use the filters using a parameter and the filter passed using the pipe symbol
 
 ```yaml
 apiVersion: scaffolder.backstage.io/v1beta3
@@ -815,13 +795,11 @@ spec:
         message: ${{ parameters.userName | betterFilter | base64 }}
 ```
 
-### Register Custom Filters with the New Backend System
-
-To register the custom filters using the new Backend System, you will have to create a [backend module](../../backend-system/architecture/06-modules.md) calling following extension point: `scaffolderTemplatingExtensionPoint`.
+Next, you will have to register the property `addTemplateFilters` using the `scaffolderTemplatingExtensionPoint` of a new `BackendModule` [created](../../backend-system/architecture/06-modules.md).
 
 Here is a very simplified example of how to do that:
 
-```ts title="packages/backend/src/index.ts"
+```ts title="packages/backend-next/src/index.ts"
 /* highlight-add-start */
 import { scaffolderTemplatingExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { createBackendModule } from '@backstage/backend-plugin-api';
@@ -854,4 +832,22 @@ const backend = createBackend();
 backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
 /* highlight-add-next-line */
 backend.add(scaffolderModuleCustomFilters());
+```
+
+If you still use the legacy backend system, then you will use the `createRouter()` function of the `Scaffolder plugin`
+
+```ts title="packages/backend/src/plugins/scaffolder.ts"
+export default async function createPlugin({
+  logger,
+  config,
+}: PluginEnvironment): Promise<Router> {
+  ...
+  return await createRouter({
+    logger,
+    config,
+
+    additionalTemplateFilters: {
+        <YOUR_FILTERS>
+    }
+  });
 ```
