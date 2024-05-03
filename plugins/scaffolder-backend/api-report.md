@@ -36,7 +36,6 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
-import { RESOURCE_TYPE_SCAFFOLDER_TASK } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
 import { Schema } from 'jsonschema';
@@ -502,8 +501,7 @@ export const ScaffolderEntitiesProcessor: typeof ScaffolderEntitiesProcessor_2;
 // @public (undocumented)
 export type ScaffolderPermissionRuleInput =
   | TemplatePermissionRuleInput
-  | ActionPermissionRuleInput
-  | TaskPermissionRuleInput;
+  | ActionPermissionRuleInput;
 
 // @public @deprecated
 export type SerializedTask = SerializedTask_2;
@@ -579,16 +577,6 @@ export class TaskManager implements TaskContext_2 {
         },
   ): Promise<void>;
 }
-
-// @public (undocumented)
-export type TaskPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TASK,
-  TParams
->;
 
 // @public @deprecated (undocumented)
 export type TaskSecrets = TaskSecrets_2;

@@ -104,10 +104,13 @@ import {
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
 
-type ScaffolderPermissionRuleInput =
+/**
+ *
+ * @public
+ */
+export type ScaffolderPermissionRuleInput =
   | TemplatePermissionRuleInput
-  | ActionPermissionRuleInput
-  | TaskPermissionRuleInput;
+  | ActionPermissionRuleInput;
 
 /**
  *
@@ -145,23 +148,6 @@ function isActionPermissionRuleInput(
   return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_ACTION;
 }
 
-/**
- *
- * @public
- */
-export type TaskPermissionRuleInput<
-  TParams extends PermissionRuleParams = PermissionRuleParams,
-> = PermissionRule<
-  TemplateEntityStepV1beta3 | TemplateParametersV1beta3,
-  {},
-  typeof RESOURCE_TYPE_SCAFFOLDER_TASK,
-  TParams
->;
-function isTaskPermissionRuleInput(
-  permissionRule: ScaffolderPermissionRuleInput,
-): permissionRule is TaskPermissionRuleInput {
-  return permissionRule.resourceType === RESOURCE_TYPE_SCAFFOLDER_TASK;
-}
 /**
  * RouterOptions
  *
@@ -418,14 +404,12 @@ export async function createRouter(
   const actionRules: ActionPermissionRuleInput[] = Object.values(
     scaffolderActionRules,
   );
-  const taskRules: TaskPermissionRuleInput[] = [];
 
   if (permissionRules) {
     templateRules.push(
       ...permissionRules.filter(isTemplatePermissionRuleInput),
     );
     actionRules.push(...permissionRules.filter(isActionPermissionRuleInput));
-    taskRules.push(...permissionRules.filter(isTaskPermissionRuleInput));
   }
 
   const isAuthorized = createConditionAuthorizer(Object.values(templateRules));
@@ -445,7 +429,7 @@ export async function createRouter(
       {
         resourceType: 'basic',
         permissions: scaffolderTaskPermissions,
-        rules: taskRules,
+        rules: [],
       },
     ],
   });
