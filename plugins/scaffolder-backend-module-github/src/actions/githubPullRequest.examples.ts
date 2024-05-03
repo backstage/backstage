@@ -179,6 +179,25 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
+    description: 'Create a pull request with a git author',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'publish:github:pull-request',
+          name: 'Create a pull reuqest',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            branchName: 'new-app',
+            title: 'Create my new app',
+            description: 'This PR is really good',
+            gitAuthorName: 'Foo Bar',
+            gitAuthorEmail: 'foo@bar.example',
+          },
+        },
+      ],
+    }),
+  },
+  {
     description: 'Create a pull request with all parameters',
     example: yaml.stringify({
       steps: [
@@ -198,6 +217,8 @@ export const examples: TemplateExample[] = [
             reviewers: ['foobar'],
             teamReviewers: ['team-foo'],
             commitMessage: 'Commit for foo changes',
+            gitAuthorName: 'Foo Bar',
+            gitAuthorEmail: 'foo@bar.example',
           },
         },
       ],

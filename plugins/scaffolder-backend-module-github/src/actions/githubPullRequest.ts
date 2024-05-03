@@ -136,6 +136,8 @@ export const createPublishGithubPullRequestAction = (
     commitMessage?: string;
     update?: boolean;
     forceFork?: boolean;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   }>({
     id: 'publish:github:pull-request',
     examples,
@@ -223,6 +225,18 @@ export const createPublishGithubPullRequestAction = (
             title: 'Force Fork',
             description: 'Create pull request from a fork',
           },
+          gitAuthorName: {
+            type: 'string',
+            title: 'Default Author Name',
+            description:
+              "Sets the default author name for the commit. The default value is 'Scaffolder'",
+          },
+          gitAuthorEmail: {
+            type: 'string',
+            title: 'Default Author Email',
+            description:
+              "Sets the default author email for the commit. The default value is 'scaffolder@backstage.io'",
+          },
         },
       },
       output: {
@@ -262,6 +276,8 @@ export const createPublishGithubPullRequestAction = (
         commitMessage,
         update,
         forceFork,
+        gitAuthorEmail = 'scaffolder@backstage.io',
+        gitAuthorName = 'Scaffolder',
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -328,6 +344,10 @@ export const createPublishGithubPullRequestAction = (
             {
               files,
               commit: commitMessage ?? title,
+              author: {
+                name: gitAuthorName,
+                email: gitAuthorEmail,
+              },
             },
           ],
           body: description,
@@ -336,6 +356,7 @@ export const createPublishGithubPullRequestAction = (
           update,
           forceFork,
         };
+
         if (targetBranchName) {
           createOptions.base = targetBranchName;
         }

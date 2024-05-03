@@ -134,6 +134,10 @@ describe('publish:github:pull-request examples', () => {
               mode: '100644',
             },
           },
+          author: {
+            email: 'scaffolder@backstage.io',
+            name: 'Scaffolder',
+          },
         },
       ],
     });
@@ -174,6 +178,10 @@ describe('publish:github:pull-request examples', () => {
               mode: '100644',
             },
           },
+          author: {
+            email: 'scaffolder@backstage.io',
+            name: 'Scaffolder',
+          },
         },
       ],
     });
@@ -213,6 +221,10 @@ describe('publish:github:pull-request examples', () => {
               mode: '100644',
             },
           },
+          author: {
+            email: 'scaffolder@backstage.io',
+            name: 'Scaffolder',
+          },
         },
       ],
     });
@@ -251,6 +263,10 @@ describe('publish:github:pull-request examples', () => {
               encoding: 'base64',
               mode: '100644',
             },
+          },
+          author: {
+            email: 'scaffolder@backstage.io',
+            name: 'Scaffolder',
           },
         },
       ],
@@ -298,6 +314,10 @@ describe('publish:github:pull-request examples', () => {
               mode: '100644',
             },
           },
+          author: {
+            email: 'scaffolder@backstage.io',
+            name: 'Scaffolder',
+          },
         },
       ],
     });
@@ -338,6 +358,10 @@ describe('publish:github:pull-request examples', () => {
               mode: '100644',
             },
           },
+          author: {
+            email: 'scaffolder@backstage.io',
+            name: 'Scaffolder',
+          },
         },
       ],
     });
@@ -377,6 +401,10 @@ describe('publish:github:pull-request examples', () => {
               encoding: 'base64',
               mode: '100644',
             },
+          },
+          author: {
+            email: 'scaffolder@backstage.io',
+            name: 'Scaffolder',
           },
         },
       ],
@@ -424,6 +452,10 @@ describe('publish:github:pull-request examples', () => {
               mode: '100644',
             },
           },
+          author: {
+            email: 'scaffolder@backstage.io',
+            name: 'Scaffolder',
+          },
         },
       ],
     });
@@ -470,6 +502,54 @@ describe('publish:github:pull-request examples', () => {
               mode: '100644',
             },
           },
+          author: {
+            email: 'scaffolder@backstage.io',
+            name: 'Scaffolder',
+          },
+        },
+      ],
+    });
+
+    expect(fakeClient.rest.pulls.requestReviewers).not.toHaveBeenCalled();
+    expect(mockContext.output).toHaveBeenCalledTimes(3);
+    expect(mockContext.output).toHaveBeenCalledWith('targetBranchName', 'main');
+    expect(mockContext.output).toHaveBeenCalledWith(
+      'remoteUrl',
+      'https://github.com/myorg/myrepo/pull/123',
+    );
+    expect(mockContext.output).toHaveBeenCalledWith('pullRequestNumber', 123);
+  });
+
+  it('Create a pull request with a git author', async () => {
+    const input = yaml.parse(examples[9].example).steps[0].input;
+
+    await action.handler({
+      ...mockContext,
+      workspacePath,
+      input,
+    });
+
+    expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repo',
+      title: 'Create my new app',
+      body: 'This PR is really good',
+      head: 'new-app',
+      draft: undefined,
+      changes: [
+        {
+          commit: 'Create my new app',
+          files: {
+            'file.txt': {
+              content: Buffer.from('Hello there!').toString('base64'),
+              encoding: 'base64',
+              mode: '100644',
+            },
+          },
+          author: {
+            email: 'foo@bar.example',
+            name: 'Foo Bar',
+          },
         },
       ],
     });
@@ -491,7 +571,7 @@ describe('publish:github:pull-request examples', () => {
         irrelevant: { 'bar.txt': 'Nothing to see here' },
       },
     });
-    const input = yaml.parse(examples[9].example).steps[0].input;
+    const input = yaml.parse(examples[10].example).steps[0].input;
 
     await action.handler({
       ...mockContext,
@@ -516,6 +596,10 @@ describe('publish:github:pull-request examples', () => {
               encoding: 'base64',
               mode: '100644',
             },
+          },
+          author: {
+            email: 'foo@bar.example',
+            name: 'Foo Bar',
           },
         },
       ],
