@@ -6,7 +6,7 @@ sidebar_label: Configuring Extensions
 description: Documentation for how to configure extensions in a Backstage app
 ---
 
-All extensions in a Backstage app can be configured through static configuration. This configuration is all done under a the `app.extensions` configuration key. For more general information on how to write configuration for Backstage, see the section on [writing configuration](../../conf/writing.md).
+All extensions in a Backstage app can be configured through static configuration. This configuration is all done under the `app.extensions` configuration key. For more general information on how to write configuration for Backstage, see the section on [writing configuration](../../conf/writing.md).
 
 ## Extension Configuration Schema
 

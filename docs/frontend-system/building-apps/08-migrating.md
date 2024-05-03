@@ -117,7 +117,7 @@ You can then also add any additional extensions that you may need to create as p
 
 [Utility API](../utility-apis/01-index.md) factories are now installed as extensions instead. Pass the existing factory to `createApiExtension` and install it in the app. For more information, see the section on [configuring Utility APIs](../utility-apis/04-configuring.md).
 
-For example, the following apis configuration:
+For example, the following `apis` configuration:
 
 ```ts
 const app = createApp({
@@ -151,7 +151,7 @@ Icons are currently installed through the usual options to `createApp`, but will
 
 Plugins are now passed through the `features` options instead.
 
-For example, the following plugins configuration:
+For example, the following `plugins` configuration:
 
 ```tsx
 import { homePlugin } from '@backstage/plugin-home';
@@ -163,7 +163,7 @@ createApp({
 });
 ```
 
-Can be converted to the following features configuration:
+Can be converted to the following `features` configuration:
 
 ```tsx
 // plugins are now default exported via alpha subpath
