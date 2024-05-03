@@ -22,7 +22,7 @@ export const bitbucketServerAuthenticator: OAuthAuthenticator<
 
 // @public
 export namespace bitbucketServerSignInResolvers {
-  const usernameMatchingUserEntityName: SignInResolverFactory<
+  const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
     unknown
   >;
