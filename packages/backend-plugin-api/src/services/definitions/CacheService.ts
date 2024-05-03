@@ -85,5 +85,5 @@ export interface CacheService {
   /**
    * Returns an iterator over the cache store.
    */
-  iterator(): AsyncGenerator<JsonValue, void, JsonValue>;
+  iterator(): AsyncGenerator<[string, JsonValue], void, any>;
 }

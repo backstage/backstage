@@ -70,7 +70,7 @@ export class DefaultCacheClient implements CacheService {
     await this.#client.clear();
   }
 
-  iterator(): AsyncGenerator<JsonValue, void, JsonValue> {
+  iterator(): AsyncGenerator<[string, JsonValue], void, any> {
     return this.#client.iterator();
   }
 
