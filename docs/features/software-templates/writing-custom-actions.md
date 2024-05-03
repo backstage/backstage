@@ -150,7 +150,6 @@ should have something similar to the below in
 
 ```ts
 return await createRouter({
-  containerRunner,
   catalogClient,
   logger: env.logger,
   config: env.config,

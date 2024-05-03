@@ -27,12 +27,10 @@ const actions = [
   createFetchRailsAction({
     integrations,
     reader: env.reader,
-    containerRunner,
   }),
 ];
 
 return await createRouter({
-  containerRunner,
   catalogClient,
   actions,
   logger: env.logger,
@@ -254,7 +252,6 @@ const actions = [
   createFetchRailsAction({
     integrations,
     reader: env.reader,
-    containerRunner,
     allowedImageNames: ['repository/rails:tag'],
   }),
 ];
