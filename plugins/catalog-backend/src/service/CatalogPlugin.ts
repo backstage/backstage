@@ -38,6 +38,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
 import { Permission } from '@backstage/plugin-permission-common';
+import { ForwardedError } from '@backstage/errors';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -164,14 +165,24 @@ export const catalogPlugin = createBackendPlugin({
       processingExtensions,
     );
 
-    let locationAnalyzer: LocationAnalyzer | undefined = undefined;
+    let locationAnalyzerFactory:
+      | ((options: {
+          scmLocationAnalyzers: ScmLocationAnalyzer[];
+        }) => Promise<{ locationAnalyzer: LocationAnalyzer }>)
+      | undefined = undefined;
     const scmLocationAnalyzers = new Array<ScmLocationAnalyzer>();
     env.registerExtensionPoint(catalogAnalysisExtensionPoint, {
-      setLocationAnalyzer(analyzer: LocationAnalyzer) {
-        if (locationAnalyzer) {
+      setLocationAnalyzer(analyzerOrFactory) {
+        if (locationAnalyzerFactory) {
           throw new Error('LocationAnalyzer has already been set');
         }
-        locationAnalyzer = analyzer;
+        if (typeof analyzerOrFactory === 'function') {
+          locationAnalyzerFactory = analyzerOrFactory;
+        } else {
+          locationAnalyzerFactory = async () => ({
+            locationAnalyzer: analyzerOrFactory,
+          });
+        }
       },
       addScmLocationAnalyzer(analyzer: ScmLocationAnalyzer) {
         scmLocationAnalyzers.push(analyzer);
@@ -240,7 +251,12 @@ export const catalogPlugin = createBackendPlugin({
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
-        if (locationAnalyzer) {
+        if (locationAnalyzerFactory) {
+          const { locationAnalyzer } = await locationAnalyzerFactory({
+            scmLocationAnalyzers,
+          }).catch(e => {
+            throw new ForwardedError('Failed to create LocationAnalyzer', e);
+          });
           builder.setLocationAnalyzer(locationAnalyzer);
         } else {
           builder.addLocationAnalyzers(...scmLocationAnalyzers);

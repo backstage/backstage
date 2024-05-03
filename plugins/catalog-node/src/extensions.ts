@@ -81,10 +81,21 @@ export const catalogProcessingExtensionPoint =
  */
 export interface CatalogAnalysisExtensionPoint {
   /**
-   * Replaces the entire location analyzer with a new one. This will cause any
-   * SCM analyzers added through `addScmLocationAnalyzer` to be ignored.
+   * Replaces the entire location analyzer with a new one.
+   *
+   * @remarks
+   *
+   * By providing a factory function you can access all the SCM analyzers that
+   * have been added through `addScmLocationAnalyzer`. If you provide a
+   * `LocationAnalyzer` directly, the SCM analyzers will be ignored.
    */
-  setLocationAnalyzer(analyzer: LocationAnalyzer): void;
+  setLocationAnalyzer(
+    analyzerOrFactory:
+      | LocationAnalyzer
+      | ((options: {
+          scmLocationAnalyzers: ScmLocationAnalyzer[];
+        }) => Promise<{ locationAnalyzer: LocationAnalyzer }>),
+  ): void;
 
   /**
    * Adds an analyzer for a specific SCM type to the default location analyzer.

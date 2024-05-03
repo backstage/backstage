@@ -22,7 +22,13 @@ import { Validators } from '@backstage/catalog-model';
 // @alpha (undocumented)
 export interface CatalogAnalysisExtensionPoint {
   addScmLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
-  setLocationAnalyzer(analyzer: LocationAnalyzer): void;
+  setLocationAnalyzer(
+    analyzerOrFactory:
+      | LocationAnalyzer
+      | ((options: { scmLocationAnalyzers: ScmLocationAnalyzer[] }) => Promise<{
+          locationAnalyzer: LocationAnalyzer;
+        }>),
+  ): void;
 }
 
 // @alpha (undocumented)
