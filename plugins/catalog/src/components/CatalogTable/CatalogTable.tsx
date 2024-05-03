@@ -91,7 +91,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const { loading, error, entities, filters, pageInfo, totalItems } =
     entityListContext;
   const enablePagination = !!pageInfo;
-
   const tableColumns = useMemo(
     () =>
       typeof columns === 'function' ? columns(entityListContext) : columns,
@@ -170,13 +169,18 @@ export const CatalogTable = (props: CatalogTableProps) => {
 
   const currentKind = filters.kind?.value || '';
   const currentType = filters.type?.value || '';
+  const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
-  const titleDisplay = [titlePreamble, currentType, pluralize(currentKind)]
+  const title = [
+    titlePreamble,
+    currentType,
+    pluralize(currentKind),
+    currentCount,
+  ]
     .filter(s => s)
     .join(' ');
 
-  const title = `${titleDisplay} (${totalItems})`;
   const actions = props.actions || defaultActions;
   const options = {
     actionsColumnIndex: -1,
@@ -192,7 +196,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         columns={tableColumns}
         emptyContent={emptyContent}
         isLoading={loading}
-        title={titleDisplay}
+        title={title}
         actions={actions}
         subtitle={subtitle}
         options={options}
