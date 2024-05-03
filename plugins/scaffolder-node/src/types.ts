@@ -15,6 +15,7 @@
  */
 
 import { JsonValue } from '@backstage/types';
+import { Writable } from 'stream';
 
 /** @public */
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
@@ -23,3 +24,23 @@ export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
+
+/**
+ * Handles the running of containers, on behalf of others.
+ *
+ * @public
+ */
+export interface ContainerRunner {
+  /**
+   * Runs a container image to completion.
+   */
+  runContainer(opts: {
+    imageName: string;
+    command?: string | string[];
+    args: string[];
+    logStream?: Writable;
+    mountDirs?: Record<string, string>;
+    workingDir?: string;
+    envVars?: Record<string, string>;
+  }): Promise<void>;
+}
