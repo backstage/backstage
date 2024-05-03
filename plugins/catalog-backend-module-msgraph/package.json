@@ -49,7 +49,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@azure/identity": "^4.0.0",
+    "@azure/identity": "^4.0.1",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",

@@ -37,7 +37,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@azure/identity": "^4.0.0",
+    "@azure/identity": "^4.0.1",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@octokit/auth-app": "^4.0.0",
