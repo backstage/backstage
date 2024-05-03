@@ -66,6 +66,14 @@ export class DefaultCacheClient implements CacheService {
     await this.#client.delete(k);
   }
 
+  async clear(): Promise<void> {
+    await this.#client.clear();
+  }
+
+  iterator(): AsyncGenerator<JsonValue, void, JsonValue> {
+    return this.#client.iterator();
+  }
+
   withOptions(options: CacheServiceOptions): CacheService {
     const newOptions = { ...this.#options, ...options };
     return new DefaultCacheClient(

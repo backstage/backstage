@@ -76,4 +76,14 @@ export interface CacheService {
    * Creates a new {@link CacheService} instance with the given options.
    */
   withOptions(options: CacheServiceOptions): CacheService;
+
+  /**
+   * Removes all entries from the cache store.
+   */
+  clear(): Promise<void>;
+
+  /**
+   * Returns an iterator over the cache store.
+   */
+  iterator(): AsyncGenerator<JsonValue, void, JsonValue>;
 }
