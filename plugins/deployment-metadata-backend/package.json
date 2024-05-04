@@ -1,6 +1,19 @@
 {
   "name": "@backstage/plugin-deployment-metadata-backend",
   "version": "0.0.0",
+  "backstage": {
+    "role": "backend-plugin"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "private": false,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/deployment-metadata-backend"
+  },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./plugin": "./src/plugin.ts",
@@ -22,24 +35,17 @@
       ]
     }
   },
-  "license": "Apache-2.0",
-  "private": true,
-  "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
-  },
-  "backstage": {
-    "role": "backend-plugin"
-  },
+  "files": [
+    "dist"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
-    "postpack": "backstage-cli package postpack"
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -61,8 +67,5 @@
     "@types/supertest": "^2.0.8",
     "msw": "^1.0.0",
     "supertest": "^6.2.4"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }
