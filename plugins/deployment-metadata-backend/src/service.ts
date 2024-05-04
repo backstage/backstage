@@ -19,7 +19,10 @@ import {
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { DeploymentMetadataService } from './types';
-import type { DynamicDiscoveryService } from '@backstage/plugin-dynamic-discovery-backend';
+import {
+  isDynamicDiscoveryService,
+  type DynamicDiscoveryService,
+} from '@backstage/plugin-dynamic-discovery-backend';
 
 export const deploymentMetadataServiceRef =
   createServiceRef<DeploymentMetadataService>({
@@ -37,7 +40,7 @@ export const deploymentMetadataServiceFactory = createServiceFactory({
   async factory({ rootLogger, discovery }) {
     const logger = rootLogger.child({ plugin: 'deployment-metadata' });
     logger.info('Creating deployment metadata service');
-    if (!('isGateway' in discovery) || discovery.isGateway === undefined) {
+    if (!isDynamicDiscoveryService(discovery)) {
       throw new Error(
         'You must use this plugin with the dynamic-discovery-backend plugin',
       );

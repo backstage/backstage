@@ -13,4 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { DynamicDiscoveryService } from './interfaces/DynamicDiscoveryService';
+
 export type { DynamicDiscoveryService } from './interfaces/DynamicDiscoveryService';
+export function isDynamicDiscoveryService(
+  service: any,
+): service is DynamicDiscoveryService {
+  return service.$$type === 'backstage.dynamic-discovery-service';
+}

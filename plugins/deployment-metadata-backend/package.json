@@ -46,6 +46,7 @@
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/plugin-dynamic-discovery-backend": "workspace:^",
     "@types/express": "*",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",

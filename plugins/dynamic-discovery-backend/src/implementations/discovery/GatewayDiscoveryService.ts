@@ -24,6 +24,8 @@ import { LocalDiscoveryService } from './LocalDiscoveryService';
 
 export class GatewayDiscoveryService implements DynamicDiscoveryService {
   isGateway = true;
+  $$type: 'backstage.dynamic-discovery-service' =
+    'backstage.dynamic-discovery-service';
   #pluginLocations: Map<string, { internalUrl: string; externalUrl: string }> =
     new Map();
 

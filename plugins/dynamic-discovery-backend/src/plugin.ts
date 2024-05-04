@@ -20,6 +20,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
 import { GatewayDiscoveryService } from './implementations/discovery/GatewayDiscoveryService';
+import { isDynamicDiscoveryService } from '.';
 
 /**
  * dynamicDiscoveryPlugin backend plugin
@@ -37,7 +38,7 @@ export default createBackendPlugin({
       },
       async init({ httpRouter, logger, discovery }) {
         console.log(discovery);
-        if (!('isGateway' in discovery) || discovery.isGateway === undefined) {
+        if (!isDynamicDiscoveryService(discovery)) {
           throw new Error(
             'Invalid discovery service, you must install the dynamicDiscoveryServiceFactory as well.',
           );
