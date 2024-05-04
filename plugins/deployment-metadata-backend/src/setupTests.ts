@@ -13,16 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import {
-  DiscoveryService,
-  FeatureMetadata,
-} from '@backstage/backend-plugin-api';
-
-export interface DynamicDiscoveryService extends DiscoveryService {
-  listFeatures(): Promise<FeatureMetadata[]>;
-
-  isGateway: boolean;
-
-  $$type: 'backstage.dynamic-discovery-service';
-}
+export {};

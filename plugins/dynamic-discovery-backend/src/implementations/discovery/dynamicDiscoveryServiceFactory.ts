@@ -45,7 +45,7 @@ export const dynamicDiscoveryServiceFactory = createServiceFactory({
         instanceMetadata,
       });
     }
-    if (!discovery.isGateway) {
+    if (discovery instanceof LeafNodeDiscoveryService) {
       const registration = LeafNodeRegistration.fromConfig(config, {
         instanceMetadata,
         logger,

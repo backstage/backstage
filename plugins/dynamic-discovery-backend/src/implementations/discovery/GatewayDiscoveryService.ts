@@ -99,9 +99,7 @@ export class GatewayDiscoveryService implements DynamicDiscoveryService {
     return plugin.externalUrl;
   }
 
-  async listFeatures(): Promise<{
-    features: FeatureMetadata[];
-  }> {
-    return { features: [...this.#features.values()] };
+  async listFeatures(): Promise<FeatureMetadata[]> {
+    return [...this.#features.values()];
   }
 }

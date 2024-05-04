@@ -33,6 +33,7 @@
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^",
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^",
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^",
+    "@backstage/plugin-deployment-metadata-backend": "workspace:^",
     "@backstage/plugin-dynamic-discovery-backend": "workspace:^",
     "@backstage/plugin-permission-backend": "workspace:^",
     "@backstage/plugin-permission-backend-module-allow-all-policy": "workspace:^"

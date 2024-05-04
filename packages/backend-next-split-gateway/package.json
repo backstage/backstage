@@ -32,6 +32,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-tasks": "workspace:^",
     "@backstage/plugin-app-backend": "workspace:^",
+    "@backstage/plugin-deployment-metadata-backend": "workspace:^",
     "@backstage/plugin-dynamic-discovery-backend": "workspace:^",
     "@backstage/plugin-kubernetes-backend": "workspace:^",
     "@backstage/plugin-notifications-backend": "workspace:^",

@@ -133,7 +133,7 @@ export namespace coreServices {
   >({ id: 'core.pluginMetadata' });
 
   /**
-   * The service reference for the instance scoped {@link InstanceMetadataService}.
+   * The service reference for the root scoped {@link InstanceMetadataService}.
    *
    * @public
    */

@@ -1,0 +1,5 @@
+GET http://localhost:7007/.backstage/metadata/deployment/features
+
+###
+
+GET http://localhost:8080/.backstage/metadata/deployment/features

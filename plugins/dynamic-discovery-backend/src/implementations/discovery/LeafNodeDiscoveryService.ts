@@ -15,19 +15,21 @@
  */
 
 import {
-  DiscoveryService,
   FeatureMetadata,
   InstanceMetadataService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
 import { LocalDiscoveryService } from './LocalDiscoveryService';
 import fetch from 'node-fetch';
+import { DynamicDiscoveryService } from '../../interfaces/DynamicDiscoveryService';
 
-export class LeafNodeDiscoveryService implements DiscoveryService {
+export class LeafNodeDiscoveryService implements DynamicDiscoveryService {
   #instancePlugins: Set<string>;
   #localDiscovery;
   #gatewayUrl;
   isGateway = false;
+  $$type: 'backstage.dynamic-discovery-service' =
+    'backstage.dynamic-discovery-service';
 
   static fromConfig(
     config: RootConfigService,
@@ -89,9 +91,8 @@ export class LeafNodeDiscoveryService implements DiscoveryService {
       )
     ).externalBaseUrl;
   }
-  async listFeatures(): Promise<{
-    features: FeatureMetadata[];
-  }> {
+
+  async listFeatures(): Promise<FeatureMetadata[]> {
     return this.#gatewayFetch(`/registrations`);
   }
 }

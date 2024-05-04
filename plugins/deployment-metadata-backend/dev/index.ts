@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
-backend.add(import('@backstage/plugin-deployment-metadata-backend/service'));
-backend.add(import('@backstage/plugin-deployment-metadata-backend/plugin'));
-backend.add(import('@backstage/plugin-dynamic-discovery-backend/service'));
-backend.add(import('@backstage/plugin-dynamic-discovery-backend/plugin'));
 
-backend.add(import('@backstage/plugin-app-backend/alpha'));
-
-backend.add(import('@backstage/plugin-proxy-backend/alpha'));
-backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
-backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
+backend.add(import('../src'));
 
 backend.start();

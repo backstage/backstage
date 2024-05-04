@@ -17,6 +17,8 @@
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
+backend.add(import('@backstage/plugin-deployment-metadata-backend/service'));
+backend.add(import('@backstage/plugin-deployment-metadata-backend/plugin'));
 backend.add(import('@backstage/plugin-dynamic-discovery-backend/service'));
 backend.add(import('@backstage/plugin-dynamic-discovery-backend/plugin'));
 backend.add(import('@backstage/plugin-auth-backend'));

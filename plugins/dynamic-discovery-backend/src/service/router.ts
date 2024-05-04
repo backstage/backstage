@@ -18,11 +18,11 @@ import { errorHandler } from '@backstage/backend-common';
 import { FeatureMetadata, LoggerService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import Router from 'express-promise-router';
-import { DynamicDiscoveryService } from '../interfaces/DynamicDiscoveryService';
+import { GatewayDiscoveryService } from '../implementations/discovery/GatewayDiscoveryService';
 
 export interface RouterOptions {
   logger: LoggerService;
-  discovery: DynamicDiscoveryService;
+  discovery: GatewayDiscoveryService;
 }
 
 export async function createRouter(
@@ -57,7 +57,7 @@ export async function createRouter(
     res.status(200).send();
   });
   router.get('/registrations', async (_, res) => {
-    res.json(Object.keys(await discovery.listFeatures()));
+    res.json(await discovery.listFeatures());
   });
 
   router.get('/by-plugin/:pluginId/base-url', async (req, res) => {
