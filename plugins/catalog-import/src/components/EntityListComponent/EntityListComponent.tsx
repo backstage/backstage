@@ -21,6 +21,7 @@ import {
 } from '@backstage/catalog-model';
 import { useApi, useApp } from '@backstage/core-plugin-api';
 import {
+  EntityDisplayName,
   EntityRefLink,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
@@ -138,11 +139,7 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
                 );
                 return (
                   <ListItem
-                    key={
-                      entityPresentationApi.forEntity(
-                        stringifyEntityRef(entity),
-                      ).snapshot.entityRef
-                    }
+                    key={stringifyEntityRef(entity)}
                     className={classes.nested}
                     {...(withLinks
                       ? {
@@ -155,9 +152,7 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
                     <ListItemIcon>{Icon && <Icon />}</ListItemIcon>
                     <ListItemText
                       primary={
-                        entityPresentationApi.forEntity(
-                          stringifyEntityRef(entity),
-                        ).snapshot.entityRef
+                        <EntityDisplayName hideIcon entityRef={entity} />
                       }
                     />
                   </ListItem>
