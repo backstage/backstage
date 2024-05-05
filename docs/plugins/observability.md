@@ -37,7 +37,39 @@ An example log line could look as follows:
 
 ## Health Checks
 
-The example backend in the Backstage repository
+### New Backend
+
+The new backend is moving towards health checks being plugin-based, as such there is no current plugin for providing a health check route. You can add this yourself easily though,
+
+```ts
+import {
+  coreServices,
+  createBackendModule,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+
+const healthCheck = createBackendPlugin({
+  pluginId: 'healthcheck',
+
+  register(env) {
+    env.registerInit({
+      deps: {
+        rootHttpRouter: coreServices.rootHttpRouter,
+      },
+      init: async ({ rootHttpRouter }) => {
+        // You can adjust the route name and response as you need.
+        rootHttpRouter.use('/healthcheck', (req, res) => {
+          res.json({ status: 'ok' });
+        });
+      },
+    });
+  },
+});
+```
+
+### Old Backend
+
+The example old backend in the Backstage repository
 [supplies](https://github.com/backstage/backstage/blob/bc18571b7a742863a770b2a54e785d6bbef7e184/packages/backend/src/index.ts#L99)
 a very basic health check endpoint on the `/healthcheck` route. You may add such
 a handler to your backend as well, and supply your own logic to it that fits
