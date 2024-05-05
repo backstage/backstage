@@ -585,6 +585,50 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
 }
 ```
 
+### New Backend
+
+You should generally create a new module to hold your new processor. You can create a new backend module using the `backstage-cli create` command and selecting `backend-module` option. To create a new module, you need a plugin ID and a module ID. We'll be using `catalog` as our plugin ID since our module is adding/updating catalog functionality. For module ID, we'll use `foobar`, but this should match the ID of whatever your plugin that's integrating with the catalog is, for example, AWS would be `aws`, Backstage Search would be `search`, etc.
+
+```ts title="plugins/catalog-backend-module-foobar/src/index.ts"
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+/* highlight-add-next-line */
+import { FoobarEntitiesProcessor } from './providers';
+
+export const catalogModuleFoobarEntitiesProcessor = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'foobar',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogProcessingExtensionPoint,
+        // my dependencies
+      },
+      async init({ catalog, ...deps }) {
+        catalog.addProcessor(
+          FoobarEntitiesProcessor.fromConfig(config, {
+            ...deps,
+          }),
+        );
+      },
+    });
+  },
+});
+
+export default catalogModuleFoobarEntitiesProcessor;
+```
+
+that can then be installed to your backend as a regular module, like so,
+
+```ts
+backend.add(import('@internal/plugin-catalog-backend-module-foobar'));
+```
+
+### Old Backend
+
 Once the processor is created it can be wired up to the catalog via the
 `CatalogBuilder` in `packages/backend/src/plugins/catalog.ts`:
 
