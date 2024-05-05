@@ -2,4 +2,4 @@
 '@backstage/cli': patch
 ---
 
-Fix a bug in the backend plugin template that was creating an incorrect link.
+Fix a few minor issues with the backend template that were causing failing linting checks in the main repo.
