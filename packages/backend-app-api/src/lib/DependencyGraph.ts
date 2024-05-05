@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-interface NodeInput<T> {
+/**
+ * @public
+ */
+export interface NodeInput<T> {
   value: T;
   consumes?: Iterable<string>;
   provides?: Iterable<string>;
@@ -70,7 +73,7 @@ class CycleKeySet<T> {
 
 /**
  * Internal helper to help validate and traverse a dependency graph.
- * @internal
+ * @public
  */
 export class DependencyGraph<T> {
   static fromMap(

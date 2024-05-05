@@ -19005,19 +19005,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"backstage-plugin-continuous-integration-backend-module-test@workspace:plugins/continuous-integration-backend":
-  version: 0.0.0-use.local
-  resolution: "backstage-plugin-continuous-integration-backend-module-test@workspace:plugins/continuous-integration-backend"
-  dependencies:
-    "@backstage/backend-common": "workspace:^"
-    "@backstage/backend-plugin-api": "workspace:^"
-    "@backstage/backend-test-utils": "workspace:^"
-    "@backstage/catalog-model": "workspace:^"
-    "@backstage/cli": "workspace:^"
-    express-promise-router: ^4.1.1
-  languageName: unknown
-  linkType: soft
-
 "bail@npm:^2.0.0":
   version: 2.0.1
   resolution: "bail@npm:2.0.1"

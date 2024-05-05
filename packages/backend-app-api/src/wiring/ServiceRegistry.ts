@@ -56,6 +56,9 @@ const pluginMetadataServiceFactory = createServiceFactory(
   }),
 );
 
+/**
+ * @public
+ */
 export class ServiceRegistry {
   static create(factories: Array<ServiceFactory>): ServiceRegistry {
     const registry = new ServiceRegistry(factories);

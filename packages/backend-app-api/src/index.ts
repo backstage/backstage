@@ -25,4 +25,4 @@ export * from './http';
 export * from './logging';
 export * from './wiring';
 export * from './services/implementations';
-export { DependencyGraph } from './lib/DependencyGraph';
+export { DependencyGraph, type NodeInput } from './lib/DependencyGraph';

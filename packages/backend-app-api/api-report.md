@@ -40,6 +40,7 @@ import { SchedulerService } from '@backstage/backend-plugin-api';
 import type { Server } from 'node:http';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
+import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
 import { UrlReader } from '@backstage/backend-common';
@@ -119,6 +120,27 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
 // @public
 export interface DefaultRootHttpRouterOptions {
   indexPath?: string | false;
+}
+
+// @public
+export class DependencyGraph<T> {
+  detectCircularDependencies(): Generator<T[], undefined>;
+  detectCircularDependency(): T[] | undefined;
+  findUnsatisfiedDeps(): Array<{
+    value: T;
+    unsatisfied: string[];
+  }>;
+  // (undocumented)
+  static fromIterable<T>(
+    nodeInputs: Iterable<NodeInput<T>>,
+  ): DependencyGraph<T>;
+  // (undocumented)
+  static fromMap(
+    nodes: Record<string, Omit<NodeInput<unknown>, 'value'>>,
+  ): DependencyGraph<string>;
+  parallelTopologicalTraversal<TResult>(
+    fn: (value: T) => Promise<TResult>,
+  ): Promise<TResult[]>;
 }
 
 // @public (undocumented)
@@ -256,6 +278,16 @@ export interface MiddlewareFactoryOptions {
 }
 
 // @public (undocumented)
+export interface NodeInput<T> {
+  // (undocumented)
+  consumes?: Iterable<string>;
+  // (undocumented)
+  provides?: Iterable<string>;
+  // (undocumented)
+  value: T;
+}
+
+// @public (undocumented)
 export const permissionsServiceFactory: () => ServiceFactory<
   PermissionsService,
   'plugin'
@@ -331,6 +363,23 @@ export const schedulerServiceFactory: () => ServiceFactory<
   SchedulerService,
   'plugin'
 >;
+
+// @public (undocumented)
+export class ServiceRegistry {
+  // (undocumented)
+  add(factory: ServiceFactory): void;
+  // (undocumented)
+  checkForCircularDeps(): void;
+  // (undocumented)
+  static create(factories: Array<ServiceFactory>): ServiceRegistry;
+  // (undocumented)
+  get<T>(ref: ServiceRef<T>, pluginId: string): Promise<T> | undefined;
+  // (undocumented)
+  initializeEagerServicesWithScope(
+    scope: 'root' | 'plugin',
+    pluginId?: string,
+  ): Promise<void>;
+}
 
 // @public (undocumented)
 export const tokenManagerServiceFactory: () => ServiceFactory<
