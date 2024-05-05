@@ -6191,7 +6191,7 @@ __metadata:
     "@types/nodemailer": ^6.4.14
     lodash: ^4.17.21
     nodemailer: ^6.9.13
-    p-throttle: ^6.1.0
+    p-throttle: ^4.1.1
   languageName: unknown
   linkType: soft
 
@@ -7636,6 +7636,7 @@ __metadata:
     "@types/is-glob": ^4.0.2
     "@types/node": ^18.17.8
     "@types/prettier": ^2.0.0
+    "@useoptic/openapi-utilities": ^0.54.8
     chalk: ^4.0.0
     codeowners-utils: ^1.0.2
     command-exists: ^1.2.9
@@ -7814,7 +7815,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@changesets/assemble-release-plan@npm:^6.0.0":
+"@changesets/assemble-release-plan@npm:6.0.0":
   version: 6.0.0
   resolution: "@changesets/assemble-release-plan@npm:6.0.0"
   dependencies:
@@ -7825,6 +7826,20 @@ __metadata:
     "@manypkg/get-packages": ^1.1.3
     semver: ^7.5.3
   checksum: 0e6d25f25e0e3cc0e92aa8c43f5f496bae9464e2523be4ff81e31b6c9971b63bb1264821a2483c48d451d89d60af1acebe727e7f8c392ed48188a3ff26d0950e
+  languageName: node
+  linkType: hard
+
+"@changesets/assemble-release-plan@patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch::locator=root%40workspace%3A.":
+  version: 6.0.0
+  resolution: "@changesets/assemble-release-plan@patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch::version=6.0.0&hash=43c5e4&locator=root%40workspace%3A."
+  dependencies:
+    "@babel/runtime": ^7.20.1
+    "@changesets/errors": ^0.2.0
+    "@changesets/get-dependents-graph": ^2.0.0
+    "@changesets/types": ^6.0.0
+    "@manypkg/get-packages": ^1.1.3
+    semver: ^7.5.3
+  checksum: b7a68e28d03379bdc2a1d7171963990e1b88d0e5efca5f5ed490c0f583d66d0ccbd4c04ebf4e5cd1c38e1346ff0e5c4c16e1b4973cdd97fabdbad0c6996fe016
   languageName: node
   linkType: hard
 
@@ -17337,6 +17352,16 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@useoptic/json-pointer-helpers@npm:0.54.8":
+  version: 0.54.8
+  resolution: "@useoptic/json-pointer-helpers@npm:0.54.8"
+  dependencies:
+    jsonpointer: ^5.0.1
+    minimatch: 9.0.3
+  checksum: 4eddabb6dce3ca8160dcd4904299b6964945c3fe47d39bfeca6c68b9a50b058b901a6fb10ab168295475d651df3349149faa5f27f77293e15b6eee8d4417432e
+  languageName: node
+  linkType: hard
+
 "@useoptic/openapi-io@npm:0.50.10":
   version: 0.50.10
   resolution: "@useoptic/openapi-io@npm:0.50.10"
@@ -17388,6 +17413,31 @@ __metadata:
     url-join: ^4.0.1
     yaml-ast-parser: ^0.0.43
   checksum: 687b8db975467ff4a3db03c6aa024c1be90cfaa5c1db6723c1446f13a87aab5b90556f76c244c29d6e3b41248ae2274bc185d9746b82f6942ce91ca617d8a249
+  languageName: node
+  linkType: hard
+
+"@useoptic/openapi-utilities@npm:^0.54.8":
+  version: 0.54.8
+  resolution: "@useoptic/openapi-utilities@npm:0.54.8"
+  dependencies:
+    "@useoptic/json-pointer-helpers": 0.54.8
+    ajv: ^8.6.0
+    ajv-errors: ~3.0.0
+    ajv-formats: ~2.1.0
+    chalk: ^4.1.2
+    fast-deep-equal: ^3.1.3
+    is-url: ^1.2.4
+    js-yaml: ^4.1.0
+    json-stable-stringify: ^1.0.1
+    lodash.groupby: ^4.6.0
+    lodash.isequal: ^4.5.0
+    lodash.omit: ^4.5.0
+    node-machine-id: ^1.1.12
+    openapi-types: ^12.0.2
+    ts-invariant: ^0.9.3
+    url-join: ^4.0.1
+    yaml-ast-parser: ^0.0.43
+  checksum: fa9e9f430c77687591aaf8b43b7b31a7c2f80fe9c140aaa978f1948f84d3e974181c91c3d8ec3e06efca9735c7826290baf4be72063bf733887aa632b40c3c4a
   languageName: node
   linkType: hard
 
@@ -33447,10 +33497,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"p-throttle@npm:^6.1.0":
-  version: 6.1.0
-  resolution: "p-throttle@npm:6.1.0"
-  checksum: c1947cca8844564c3d86f8c09067add5e7398b87898cb1f1aea5c48d2c211590d039a316d28a4b0d95364ffa0213c01dff6bf71175c468eab0e381f77715dbdb
+"p-throttle@npm:^4.1.1":
+  version: 4.1.1
+  resolution: "p-throttle@npm:4.1.1"
+  checksum: fe8709f3c3b1da7c033479375c2c302e80c1a5d86449013afa7cd46d1dc210bc824a7e4a9d088e66d31987d00878c2b5491bb2fe76246d4d2fc9a1636f5f8298
   languageName: node
   linkType: hard
 

@@ -20,6 +20,7 @@ import { Gitlab } from '@gitbeaker/node';
 import { getToken } from '../util';
 import commonGitlabConfig from '../commonGitlabConfig';
 import { z } from 'zod';
+import { examples } from './createGitlabProjectVariableAction.examples';
 
 /**
  * Creates a `gitlab:projectVariable:create` Scaffolder action.
@@ -33,6 +34,7 @@ export const createGitlabProjectVariableAction = (options: {
   const { integrations } = options;
   return createTemplateAction({
     id: 'gitlab:projectVariable:create',
+    examples,
     schema: {
       input: commonGitlabConfig.merge(
         z.object({
@@ -85,7 +87,6 @@ export const createGitlabProjectVariableAction = (options: {
         host: integrationConfig.config.baseUrl,
         token: token,
       });
-
       await api.ProjectVariables.create(projectId, {
         key: key,
         value: value,

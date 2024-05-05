@@ -30,6 +30,7 @@ import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
+import { HarnessIntegration } from '@backstage/integration';
 import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
@@ -508,6 +509,23 @@ export class GitlabUrlReader implements UrlReader {
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
+export class HarnessUrlReader implements UrlReader {
+  constructor(integration: HarnessIntegration);
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
   // (undocumented)
   toString(): string;
 }
