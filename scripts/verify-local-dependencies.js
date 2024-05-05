@@ -88,6 +88,7 @@ const roleRules = [
     except: [
       // These are legitimate
       '@backstage/backend-common',
+      '@backstage/cli-builder',
       '@backstage/backend-defaults',
       '@backstage/backend-test-utils',
       '@backstage/backend-dynamic-feature-service',
