@@ -82,12 +82,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
         .map(ref => {
           if (typeof ref !== 'string') {
             // if ref does not exist: pass 'undefined' to trigger validation for required value
-            return ref
-              ? entityPresentationApi.forEntity(ref, {
-                  defaultKind,
-                  defaultNamespace,
-                }).snapshot.entityRef
-              : undefined;
+            return ref ? stringifyEntityRef(ref as Entity) : undefined;
           }
           if (reason === 'blur' || reason === 'create-option') {
             // Add in default namespace, etc.
@@ -116,14 +111,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
 
       onChange(values);
     },
-    [
-      onChange,
-      formData,
-      defaultKind,
-      defaultNamespace,
-      allowArbitraryValues,
-      entityPresentationApi,
-    ],
+    [onChange, formData, defaultKind, defaultNamespace, allowArbitraryValues],
   );
 
   useEffect(() => {
