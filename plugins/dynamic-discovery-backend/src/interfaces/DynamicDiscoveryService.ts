@@ -19,6 +19,9 @@ import {
   FeatureMetadata,
 } from '@backstage/backend-plugin-api';
 
+/**
+ * @public
+ */
 export interface DynamicDiscoveryService extends DiscoveryService {
   listFeatures(): Promise<FeatureMetadata[]>;
 

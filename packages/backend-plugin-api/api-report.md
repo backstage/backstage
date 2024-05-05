@@ -297,10 +297,6 @@ export interface DatabaseService {
 export interface DiscoveryService {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
-  // (undocumented)
-  listFeatures?(): Promise<{
-    features: FeatureMetadata[];
-  }>;
 }
 
 // @public

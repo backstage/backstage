@@ -24,11 +24,17 @@ import {
   type DynamicDiscoveryService,
 } from '@backstage/plugin-dynamic-discovery-backend';
 
+/**
+ * @public
+ */
 export const deploymentMetadataServiceRef =
   createServiceRef<DeploymentMetadataService>({
     id: 'deployment.metadata',
   });
 
+/**
+ * @public
+ */
 export const deploymentMetadataServiceFactory = createServiceFactory({
   service: deploymentMetadataServiceRef,
   deps: {
@@ -48,5 +54,7 @@ export const deploymentMetadataServiceFactory = createServiceFactory({
     return discovery as DynamicDiscoveryService;
   },
 });
+
+export type { DeploymentMetadataService };
 
 export default deploymentMetadataServiceFactory;

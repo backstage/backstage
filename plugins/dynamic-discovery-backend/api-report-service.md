@@ -6,7 +6,7 @@
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
-// @alpha (undocumented)
+// @public (undocumented)
 const dynamicDiscoveryServiceFactory: () => ServiceFactory<
   DiscoveryService,
   'plugin'

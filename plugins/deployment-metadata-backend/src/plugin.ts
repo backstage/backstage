@@ -20,6 +20,9 @@ import {
 import { deploymentMetadataServiceRef } from './service';
 import { createRouter } from './service/router';
 
+/**
+ * @public
+ */
 export const deploymentMetadataPlugin = createBackendPlugin({
   pluginId: 'deployment-metadata',
 

@@ -16,6 +16,9 @@
 
 import { FeatureMetadata } from '@backstage/backend-plugin-api';
 
+/**
+ * @public
+ */
 export interface DeploymentMetadataService {
   listFeatures(): Promise<FeatureMetadata[]>;
 }

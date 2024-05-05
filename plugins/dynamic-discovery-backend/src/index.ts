@@ -16,6 +16,10 @@
 import { DynamicDiscoveryService } from './interfaces/DynamicDiscoveryService';
 
 export type { DynamicDiscoveryService } from './interfaces/DynamicDiscoveryService';
+
+/**
+ * @public
+ */
 export function isDynamicDiscoveryService(
   service: any,
 ): service is DynamicDiscoveryService {
