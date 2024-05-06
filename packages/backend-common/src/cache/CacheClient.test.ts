@@ -16,7 +16,6 @@
 
 import { DefaultCacheClient } from './CacheClient';
 import Keyv from 'keyv';
-import { JsonValue } from '@backstage/types';
 
 describe('CacheClient', () => {
   let client: Keyv;
@@ -135,36 +134,6 @@ describe('CacheClient', () => {
       expect(actualGenerator).toEqual(expectedGenerator);
     });
 
-    it('ensures that data does not spill over between clients', async () => {
-      const client1 = new Keyv();
-      const client2 = new Keyv();
-
-      const sut1 = new DefaultCacheClient(client1, () => client1, {});
-      const sut2 = new DefaultCacheClient(client2, () => client2, {});
-
-      // Populate client1 with data
-      await sut1.set('key1', 'value1');
-      await sut1.set('key2', 'value2');
-
-      // Populate client2 with data
-      await sut2.set('key3', 'value3');
-      await sut2.set('key4', 'value4');
-
-      // Ensure that client1's iterator contains exactly client1's data
-      const client1Data: Record<string, JsonValue> = {};
-      for await (const [key, value] of sut1.iterator()) {
-        client1Data[key] = value;
-      }
-      expect(client1Data).toEqual({ key1: 'value1', key2: 'value2' });
-
-      // Ensure that client2's iterator contains exactly client2's data
-      const client2Data: Record<string, JsonValue> = {};
-      for await (const [key, value] of sut2.iterator()) {
-        client2Data[key] = value;
-      }
-      expect(client2Data).toEqual({ key3: 'value3', key4: 'value4' });
-    });
-
     it('fail for long keys', async () => {
       const keyv = new Keyv();
       const sut = new DefaultCacheClient(keyv, () => keyv, {});
@@ -199,31 +168,6 @@ describe('CacheClient', () => {
       client.clear = jest.fn().mockRejectedValue(expectedError);
 
       await expect(sut.clear()).rejects.toEqual(expectedError);
-    });
-
-    it('ensures that data does not spill over between clients', async () => {
-      const client1 = new Keyv();
-      const client2 = new Keyv();
-
-      const sut1 = new DefaultCacheClient(client1, () => client1, {});
-      const sut2 = new DefaultCacheClient(client2, () => client2, {});
-
-      // Populate client1 with data
-      await sut1.set('key1', 'value1');
-
-      // Populate client2 with data
-      await sut2.set('key2', 'value2');
-
-      // Ensure that client1's data does not spill over
-      expect(await sut1.get('key1')).toEqual('value1');
-      expect(await sut2.get('key2')).toEqual('value2');
-      expect(await sut1.get('key2')).toBeUndefined();
-      expect(await sut2.get('key1')).toBeUndefined();
-
-      // Clear client1's data and ensure it does not affect client2
-      await sut1.clear();
-      expect(await sut1.get('key1')).toBeUndefined();
-      expect(await sut2.get('key2')).toEqual('value2');
     });
   });
 

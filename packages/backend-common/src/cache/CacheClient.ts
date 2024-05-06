@@ -74,7 +74,8 @@ export class DefaultCacheClient implements CacheService {
   }
 
   iterator(): AsyncGenerator<[string, JsonValue], void, any> {
-    return this.remapKeys(this.#client.iterator());
+    const ns = this.#client.opts.namespace;
+    return this.remapKeys(this.#client.iterator(ns));
   }
 
   withOptions(options: CacheServiceOptions): CacheService {

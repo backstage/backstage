@@ -50,7 +50,10 @@ export class CacheManager {
    * instance ensures get/set/delete operations hit the same store, regardless
    * of where/when a client is instantiated.
    */
-  private readonly memoryStore = new Map();
+  private readonly memoryStores = new Map<
+    string /* pluginId*/,
+    Map<string, any> /* cache */
+  >();
 
   private readonly logger: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
@@ -178,10 +181,15 @@ export class CacheManager {
     pluginId: string,
     defaultTtl: number | undefined,
   ): Keyv {
+    let store = this.memoryStores.get(pluginId);
+    if (!store) {
+      store = new Map();
+      this.memoryStores.set(pluginId, store);
+    }
     return new Keyv({
       namespace: pluginId,
       ttl: defaultTtl,
-      store: this.memoryStore,
+      store,
     });
   }
 }
