@@ -16,12 +16,14 @@
 
 import {
   CacheService,
+  CacheServiceInternal,
   CacheServiceOptions,
   CacheServiceSetOptions,
 } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
 import { createHash } from 'crypto';
 import Keyv from 'keyv';
+import KeyvMemcache from '@keyv/memcache';
 
 export type CacheClientFactory = (options: CacheServiceOptions) => Keyv;
 
@@ -32,7 +34,7 @@ const NO_HASH_LIMIT = 200;
  * A basic, concrete implementation of the CacheService, suitable for almost
  * all uses in Backstage.
  */
-export class DefaultCacheClient implements CacheService {
+export class DefaultCacheClient implements CacheService, CacheServiceInternal {
   #client: Keyv;
   #clientFactory: CacheClientFactory;
   #options: CacheServiceOptions;
@@ -70,12 +72,17 @@ export class DefaultCacheClient implements CacheService {
   }
 
   async clear(): Promise<void> {
+    if (this.#client.opts.store instanceof KeyvMemcache) {
+      throw new Error('Memcached does not support clearing');
+    }
     await this.#client.clear();
   }
 
   iterator(): AsyncGenerator<[string, JsonValue], void, any> {
-    const ns = this.#client.opts.namespace;
-    return this.remapKeys(this.#client.iterator(ns));
+    if (!this.#client.iterator) {
+      throw new Error('The cache client does not support iteration');
+    }
+    return this.remapKeys(this.#client.iterator());
   }
 
   withOptions(options: CacheServiceOptions): CacheService {

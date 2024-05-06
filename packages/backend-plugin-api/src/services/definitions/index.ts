@@ -27,6 +27,7 @@ export type {
   CacheService,
   CacheServiceOptions,
   CacheServiceSetOptions,
+  CacheServiceInternal,
 } from './CacheService';
 export type { RootConfigService } from './RootConfigService';
 export type { DatabaseService } from './DatabaseService';

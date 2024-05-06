@@ -319,8 +319,6 @@ export namespace mockServices {
       get: jest.fn(),
       set: jest.fn(),
       withOptions: jest.fn(),
-      clear: jest.fn(),
-      iterator: jest.fn(),
     }));
   }
 

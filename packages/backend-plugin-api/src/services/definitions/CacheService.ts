@@ -76,7 +76,15 @@ export interface CacheService {
    * Creates a new {@link CacheService} instance with the given options.
    */
   withOptions(options: CacheServiceOptions): CacheService;
+}
 
+/**
+ * Additional methods available on the cache service provided by the DefaultCacheClient.
+ * Do not use these methods on memcached storages, as it does not support such functions.
+ *
+ * @public
+ */
+export interface CacheServiceInternal extends CacheService {
   /**
    * Removes all entries from the cache store.
    */
@@ -84,6 +92,8 @@ export interface CacheService {
 
   /**
    * Returns an iterator over the cache store.
+   * This `next` method of the `AsyncGenerator` will throw an error, if the base64
+   * representation of the key is longer than 200.
    */
   iterator(): AsyncGenerator<[string, JsonValue], void, any>;
 }

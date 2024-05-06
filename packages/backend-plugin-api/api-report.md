@@ -164,16 +164,20 @@ export type BackstageUserPrincipal = {
 
 // @public
 export interface CacheService {
-  clear(): Promise<void>;
   delete(key: string): Promise<void>;
   get<TValue extends JsonValue>(key: string): Promise<TValue | undefined>;
-  iterator(): AsyncGenerator<[string, JsonValue], void, any>;
   set(
     key: string,
     value: JsonValue,
     options?: CacheServiceSetOptions,
   ): Promise<void>;
   withOptions(options: CacheServiceOptions): CacheService;
+}
+
+// @public
+export interface CacheServiceInternal extends CacheService {
+  clear(): Promise<void>;
+  iterator(): AsyncGenerator<[string, JsonValue], void, any>;
 }
 
 // @public

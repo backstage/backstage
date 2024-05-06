@@ -32,8 +32,6 @@ describe('TechDocsCache', () => {
       set: jest.fn(),
       delete: jest.fn(),
       withOptions: jest.fn(),
-      clear: jest.fn(),
-      iterator: jest.fn(),
     };
     CacheUnderTest = TechDocsCache.fromConfig(new ConfigReader({}), {
       cache: MockClient,

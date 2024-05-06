@@ -17,7 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import { CacheManager } from './CacheManager';
 import { JsonValue } from '@backstage/types';
-import { CacheService } from '@backstage/backend-plugin-api';
+import { CacheServiceInternal } from '@backstage/backend-plugin-api';
 
 describe('CacheManager', () => {
   const defaultConfigOptions = {
@@ -28,13 +28,13 @@ describe('CacheManager', () => {
   afterEach(() => jest.resetAllMocks());
 
   describe('ensures that data does not spill over between clients', () => {
-    let cache1: CacheService;
-    let cache2: CacheService;
+    let cache1: CacheServiceInternal;
+    let cache2: CacheServiceInternal;
 
     beforeEach(() => {
       const manager = CacheManager.fromConfig(defaultConfig());
-      cache1 = manager.forPlugin('p1').getClient();
-      cache2 = manager.forPlugin('p2').getClient();
+      cache1 = manager.forPlugin('p1').getClient() as CacheServiceInternal;
+      cache2 = manager.forPlugin('p2').getClient() as CacheServiceInternal;
     });
 
     afterEach(() => {
