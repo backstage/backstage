@@ -159,6 +159,18 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | ------------------- | ------------ | ------------------------------------- | ---------------- |
 | Bogdan Nechyporenko | Bol.com      | [acierto](https://github.com/acierto) | `bogdan_haarlem` |
 
+### Documentation
+
+Team: @backstage/documentation-maintainers
+
+Scope: The Backstage Documentation
+
+| Name           | Organization | GitHub                                                | Discord           |
+| -------------- | ------------ | ----------------------------------------------------- | ----------------- |
+| Andre Wanlin   | Spotify      | [awanlin](https://github.com/awanlin)                 | `ahhhndre`        |
+| Aramis Sennyey |              | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984`     |
+| Waldir Montoya | Broadcom     | [waldirmontoya25](https://github.com/waldirmontoya25) | `waldirmontoya25` |
+
 ## Sponsors
 
 | Name              | Organization | GitHub                                      | Email              |
