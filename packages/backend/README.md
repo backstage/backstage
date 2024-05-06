@@ -1,6 +1,6 @@
 # example-backend
 
-This package is an EXAMPLE of a Backstage backend.
+This package is an EXAMPLE of a Backstage backend using the [new backend system](https://backstage.io/docs/backend-system/).
 
 The main purpose of this package is to provide a test bed for Backstage plugins
 that have a backend part. Feel free to experiment locally or within your fork
@@ -16,22 +16,22 @@ To run the example backend, first go to the project root and run
 yarn install
 ```
 
-You should only need to do this once.
+This will install all dependencies for the project. You only need to do this once, unless you make changes to the dependency definitions.
 
-After that, go to the `packages/backend` directory and run
+You can then start the backend by running the following command in the repo root:
 
 ```bash
-yarn start
+yarn start-backend
 ```
 
 If you want to override any configuration locally, for example adding any secrets,
-you can do so in `app-config.local.yaml`.
+you can do so in `app-config.local.yaml`, next to `app-config.yaml`.
 
 The backend starts up on port 7007 per default.
 
 ### Debugging
 
-The backend is a node process that can be inspected to allow breakpoints and live debugging. To enable this, pass the `--inspect` flag to [backend:dev](https://backstage.io/docs/local-dev/cli-build-system#backend-development).
+The backend is a node process that can be inspected to allow breakpoints and live debugging. To enable this, pass the `--inspect` flag when starting the backend.
 
 To debug the backend in [Visual Studio Code](https://code.visualstudio.com/):
 
@@ -51,9 +51,7 @@ in `app-config.yaml` under `catalog.locations`. For local development you can ov
 
 ## Authentication
 
-We chose [Passport](http://www.passportjs.org/) as authentication platform due to its comprehensive set of supported authentication [strategies](http://www.passportjs.org/packages/).
-
-Read more about the [auth-backend](https://github.com/backstage/backstage/blob/master/plugins/auth-backend/README.md) and [how to add a new provider](https://github.com/backstage/backstage/blob/master/docs/auth/add-auth-provider.md)
+The example backend has guest access enabled by default. This means you do not need to configure a real authentication provider, but will instead be logged in as a guest user.
 
 ## Documentation
 

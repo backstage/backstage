@@ -136,15 +136,15 @@ export function createFetchCatalogEntityAction(options: {
   auth?: AuthService;
 }): TemplateAction_2<
   {
-    entityRef?: string | undefined;
-    entityRefs?: string[] | undefined;
     optional?: boolean | undefined;
     defaultKind?: string | undefined;
     defaultNamespace?: string | undefined;
+    entityRef?: string | undefined;
+    entityRefs?: string[] | undefined;
   },
   {
-    entity?: any;
     entities?: any[] | undefined;
+    entity?: any;
   }
 >;
 
