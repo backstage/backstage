@@ -20,7 +20,6 @@
  * @packageDocumentation
  */
 
-export * from './ingestion';
 export * from './modules';
 export * from './processing';
 export * from './search';

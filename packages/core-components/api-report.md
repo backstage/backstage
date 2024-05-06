@@ -448,6 +448,7 @@ export type GaugeProps = {
   inverse?: boolean;
   unit?: string;
   max?: number;
+  size?: 'normal' | 'small';
   description?: ReactNode;
   getColor?: GaugePropsGetColor;
 };

@@ -1,5 +1,5 @@
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for general contribution guidelines.
-- See [GOVERNANCE.md](GOVERNANCE.md) for governance guidelines and responsibilities.
+- See [GOVERNANCE.md](https://github.com/backstage/community/blob/main/GOVERNANCE.md) for governance guidelines and responsibilities.
 
 ## Core Maintainers
 

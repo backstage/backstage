@@ -45,6 +45,7 @@ import {
   EntitiesSearchFilter,
   EntityProvider,
   PlaceholderResolver,
+  LocationAnalyzer,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
@@ -64,7 +65,6 @@ import {
   yamlPlaceholderResolver,
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
-import { LocationAnalyzer } from '../ingestion';
 import {
   CatalogProcessingEngine,
   createRandomProcessingInterval,

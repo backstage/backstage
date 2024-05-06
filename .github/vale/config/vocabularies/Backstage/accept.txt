@@ -152,6 +152,8 @@ graphviz
 Hackathons
 haproxy
 hardcoded
+Harness
+harness
 Helidon
 Henneke
 Heroku
