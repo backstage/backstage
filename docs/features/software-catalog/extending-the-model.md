@@ -605,14 +605,9 @@ export const catalogModuleFoobarEntitiesProcessor = createBackendModule({
     env.registerInit({
       deps: {
         catalog: catalogProcessingExtensionPoint,
-        // my dependencies
       },
-      async init({ catalog, ...deps }) {
-        catalog.addProcessor(
-          FoobarEntitiesProcessor.fromConfig(config, {
-            ...deps,
-          }),
-        );
+      async init({ catalog }) {
+        catalog.addProcessor(new FoobarEntitiesProcessor());
       },
     });
   },
