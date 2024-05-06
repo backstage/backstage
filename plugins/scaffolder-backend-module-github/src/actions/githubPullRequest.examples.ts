@@ -179,7 +179,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Create a pull request with a git author',
+    description: 'Create a pull request with a git author name and email',
     example: yaml.stringify({
       steps: [
         {
@@ -191,6 +191,46 @@ export const examples: TemplateExample[] = [
             title: 'Create my new app',
             description: 'This PR is really good',
             gitAuthorName: 'Foo Bar',
+            gitAuthorEmail: 'foo@bar.example',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a pull request with a git author name',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'publish:github:pull-request',
+          name: 'Create a pull reuqest',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            branchName: 'new-app',
+            title: 'Create my new app',
+            description: 'This PR is really good',
+            // gitAuthorEmail will be 'scaffolder@backstage.io'
+            // once one author attribute has been set we need to set both
+            gitAuthorName: 'Foo Bar',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Create a pull request with a git author email',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'publish:github:pull-request',
+          name: 'Create a pull reuqest',
+          input: {
+            repoUrl: 'github.com?repo=repo&owner=owner',
+            branchName: 'new-app',
+            title: 'Create my new app',
+            description: 'This PR is really good',
+            // gitAuthorName will be 'Scaffolder'
+            // once one author attribute has been set we need to set both
             gitAuthorEmail: 'foo@bar.example',
           },
         },

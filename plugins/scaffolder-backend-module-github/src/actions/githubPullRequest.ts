@@ -32,6 +32,7 @@ import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from './helpers';
 import { examples } from './githubPullRequest.examples';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -100,6 +101,7 @@ export interface CreateGithubPullRequestActionOptions {
       } | null>;
     }
   >;
+  config: Config;
 }
 
 type GithubPullRequest = {
@@ -119,6 +121,7 @@ export const createPublishGithubPullRequestAction = (
     integrations,
     githubCredentialsProvider,
     clientFactory = defaultClientFactory,
+    config,
   } = options;
 
   return createTemplateAction<{
@@ -229,13 +232,13 @@ export const createPublishGithubPullRequestAction = (
             type: 'string',
             title: 'Default Author Name',
             description:
-              "Sets the default author name for the commit. The default value is 'Scaffolder'",
+              "Sets the default author name for the commit. The default value is the authenticated user or 'Scaffolder'",
           },
           gitAuthorEmail: {
             type: 'string',
             title: 'Default Author Email',
             description:
-              "Sets the default author email for the commit. The default value is 'scaffolder@backstage.io'",
+              "Sets the default author email for the commit. The default value is the authenticated user or 'scaffolder@backstage.io'",
           },
         },
       },
@@ -276,8 +279,8 @@ export const createPublishGithubPullRequestAction = (
         commitMessage,
         update,
         forceFork,
-        gitAuthorEmail = 'scaffolder@backstage.io',
-        gitAuthorName = 'Scaffolder',
+        gitAuthorEmail,
+        gitAuthorName,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -343,11 +346,10 @@ export const createPublishGithubPullRequestAction = (
           changes: [
             {
               files,
-              commit: commitMessage ?? title,
-              author: {
-                name: gitAuthorName,
-                email: gitAuthorEmail,
-              },
+              commit:
+                commitMessage ??
+                config.getOptionalString('scaffolder.defaultCommitMessage') ??
+                title,
             },
           ],
           body: description,
@@ -356,6 +358,35 @@ export const createPublishGithubPullRequestAction = (
           update,
           forceFork,
         };
+
+        const gitAuthorInfo = {
+          name:
+            gitAuthorName ??
+            config.getOptionalString('scaffolder.defaultAuthor.name'),
+          email:
+            gitAuthorEmail ??
+            config.getOptionalString('scaffolder.defaultAuthor.email'),
+        };
+
+        if (gitAuthorInfo.name || gitAuthorInfo.email) {
+          if (Array.isArray(createOptions.changes)) {
+            createOptions.changes = createOptions.changes.map(change => ({
+              ...change,
+              author: {
+                name: gitAuthorInfo.name || 'Scaffolder',
+                email: gitAuthorInfo.email || 'scaffolder@backstage.io',
+              },
+            }));
+          } else {
+            createOptions.changes = {
+              ...createOptions.changes,
+              author: {
+                name: gitAuthorInfo.name || 'Scaffolder',
+                email: gitAuthorInfo.email || 'scaffolder@backstage.io',
+              },
+            };
+          }
+        }
 
         if (targetBranchName) {
           createOptions.base = targetBranchName;

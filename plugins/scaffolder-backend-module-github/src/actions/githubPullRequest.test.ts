@@ -15,7 +15,7 @@
  */
 
 import { createRootLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
+import { Config, ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
   ScmIntegrations,
@@ -46,6 +46,8 @@ describe('createPublishGithubPullRequestAction', () => {
       pulls: { requestReviewers: jest.Mock };
     };
   };
+  let config: Config;
+  let integrations: ScmIntegrations;
 
   const mockDir = createMockDirectory();
   const workspacePath = mockDir.resolve('workspace');
@@ -53,7 +55,8 @@ describe('createPublishGithubPullRequestAction', () => {
   beforeEach(() => {
     mockDir.clear();
 
-    const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+    config = new ConfigReader({});
+    integrations = ScmIntegrations.fromConfig(config);
     fakeClient = {
       createPullRequest: jest.fn(async (_: any) => {
         return {
@@ -84,6 +87,7 @@ describe('createPublishGithubPullRequestAction', () => {
       integrations,
       githubCredentialsProvider,
       clientFactory,
+      config,
     });
   });
 
@@ -155,10 +159,6 @@ describe('createPublishGithubPullRequestAction', () => {
                 mode: '100644',
               },
             },
-            author: {
-              email: 'scaffolder@backstage.io',
-              name: 'Scaffolder',
-            },
           },
         ],
       });
@@ -215,10 +215,6 @@ describe('createPublishGithubPullRequestAction', () => {
                 encoding: 'base64',
                 mode: '100644',
               },
-            },
-            author: {
-              email: 'scaffolder@backstage.io',
-              name: 'Scaffolder',
             },
           },
         ],
@@ -279,10 +275,6 @@ describe('createPublishGithubPullRequestAction', () => {
                 mode: '100644',
               },
             },
-            author: {
-              email: 'scaffolder@backstage.io',
-              name: 'Scaffolder',
-            },
           },
         ],
       });
@@ -333,10 +325,6 @@ describe('createPublishGithubPullRequestAction', () => {
                 encoding: 'base64',
                 mode: '100644',
               },
-            },
-            author: {
-              email: 'scaffolder@backstage.io',
-              name: 'Scaffolder',
             },
           },
         ],
@@ -465,10 +453,6 @@ describe('createPublishGithubPullRequestAction', () => {
                 mode: '120000',
               },
             },
-            author: {
-              email: 'scaffolder@backstage.io',
-              name: 'Scaffolder',
-            },
           },
         ],
       });
@@ -517,10 +501,6 @@ describe('createPublishGithubPullRequestAction', () => {
                 encoding: 'base64',
                 mode: '100755',
               },
-            },
-            author: {
-              email: 'scaffolder@backstage.io',
-              name: 'Scaffolder',
             },
           },
         ],
@@ -581,10 +561,6 @@ describe('createPublishGithubPullRequestAction', () => {
                 mode: '100755',
               },
             },
-            author: {
-              email: 'scaffolder@backstage.io',
-              name: 'Scaffolder',
-            },
           },
         ],
       });
@@ -640,10 +616,6 @@ describe('createPublishGithubPullRequestAction', () => {
                 mode: '100644',
               },
             },
-            author: {
-              email: 'scaffolder@backstage.io',
-              name: 'Scaffolder',
-            },
           },
         ],
       });
@@ -689,10 +661,6 @@ describe('createPublishGithubPullRequestAction', () => {
                 mode: '100644',
               },
             },
-            author: {
-              email: 'scaffolder@backstage.io',
-              name: 'Scaffolder',
-            },
           },
         ],
         forceFork: true,
@@ -700,7 +668,7 @@ describe('createPublishGithubPullRequestAction', () => {
     });
   });
 
-  describe('with author', () => {
+  describe('with author name and email', () => {
     let input: GithubPullRequestActionInput;
     let ctx: ActionContext<GithubPullRequestActionInput>;
 
@@ -721,7 +689,7 @@ describe('createPublishGithubPullRequestAction', () => {
       ctx = createMockActionContext({ input, workspacePath });
     });
 
-    it('creates a pull request', async () => {
+    it('creates a pull request with author name', async () => {
       await instance.handler(ctx);
 
       expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
@@ -743,6 +711,173 @@ describe('createPublishGithubPullRequestAction', () => {
             author: {
               email: 'foo@bar.example',
               name: 'Foo Bar',
+            },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('with author name', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        gitAuthorName: 'Foo Bar',
+      };
+
+      mockDir.setContent({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+
+      ctx = createMockActionContext({ input, workspacePath });
+    });
+
+    it('creates a pull request with author name', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+            author: {
+              email: 'scaffolder@backstage.io',
+              name: 'Foo Bar',
+            },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('with author email', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        gitAuthorEmail: 'foo@bar.example',
+      };
+
+      mockDir.setContent({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+
+      ctx = createMockActionContext({ input, workspacePath });
+    });
+
+    it('creates a pull request with author name', async () => {
+      await instance.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+            author: {
+              email: 'foo@bar.example',
+              name: 'Scaffolder',
+            },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('with author from config file', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+      };
+
+      mockDir.setContent({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+
+      ctx = createMockActionContext({ input, workspacePath });
+    });
+
+    it('creates a pull request with author name', async () => {
+      config = new ConfigReader({
+        scaffolder: {
+          defaultAuthor: {
+            name: 'Config',
+            email: 'config@file.example',
+          },
+        },
+      });
+
+      const clientFactory = jest.fn(async () => fakeClient as any);
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: jest.fn(),
+      };
+
+      const instanceWithConfig = createPublishGithubPullRequestAction({
+        integrations,
+        githubCredentialsProvider,
+        clientFactory,
+        config,
+      });
+
+      await instanceWithConfig.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+            author: {
+              email: 'config@file.example',
+              name: 'Config',
             },
           },
         ],

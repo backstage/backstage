@@ -128,6 +128,8 @@ export interface CreateGithubPullRequestActionOptions {
       } | null>;
     }
   >;
+  // (undocumented)
+  config: Config;
   githubCredentialsProvider?: GithubCredentialsProvider;
   integrations: ScmIntegrationRegistry;
 }
