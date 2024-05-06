@@ -21,6 +21,7 @@ import {
 import { LegacyTokenHandler } from './legacy';
 import { StaticTokenHandler } from './static';
 import { TokenHandler } from './types';
+import { JWKSHandler } from './jwks';
 
 const NEW_CONFIG_KEY = 'backend.auth.externalAccess';
 const OLD_CONFIG_KEY = 'backend.auth.keys';
@@ -40,9 +41,11 @@ export class ExternalTokenHandler {
 
     const staticHandler = new StaticTokenHandler();
     const legacyHandler = new LegacyTokenHandler();
+    const jwksHandler = new JWKSHandler();
     const handlers: Record<string, TokenHandler> = {
       static: staticHandler,
       legacy: legacyHandler,
+      jwks: jwksHandler,
     };
 
     // Load the new-style handlers
