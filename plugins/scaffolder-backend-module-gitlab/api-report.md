@@ -31,19 +31,19 @@ export const createGitlabIssueAction: (options: {
     title: string;
     repoUrl: string;
     projectId: number;
+    labels?: string | undefined;
+    description?: string | undefined;
+    weight?: number | undefined;
     token?: string | undefined;
     assignees?: number[] | undefined;
-    confidential?: boolean | undefined;
-    description?: string | undefined;
     createdAt?: string | undefined;
+    confidential?: boolean | undefined;
+    milestoneId?: number | undefined;
+    epicId?: number | undefined;
     dueDate?: string | undefined;
     discussionToResolve?: string | undefined;
-    epicId?: number | undefined;
-    labels?: string | undefined;
     issueType?: IssueType | undefined;
     mergeRequestToResolveDiscussionsOf?: number | undefined;
-    milestoneId?: number | undefined;
-    weight?: number | undefined;
   },
   {
     issueUrl: string;
@@ -59,11 +59,11 @@ export const createGitlabProjectAccessTokenAction: (options: {
   {
     repoUrl: string;
     projectId: string | number;
-    token?: string | undefined;
     name?: string | undefined;
-    accessLevel?: number | undefined;
+    token?: string | undefined;
     scopes?: string[] | undefined;
     expiresAt?: string | undefined;
+    accessLevel?: number | undefined;
   },
   {
     access_token: string;
@@ -78,8 +78,8 @@ export const createGitlabProjectDeployTokenAction: (options: {
     name: string;
     repoUrl: string;
     projectId: string | number;
-    token?: string | undefined;
     username?: string | undefined;
+    token?: string | undefined;
     scopes?: string[] | undefined;
   },
   {
@@ -98,11 +98,11 @@ export const createGitlabProjectVariableAction: (options: {
     repoUrl: string;
     projectId: string | number;
     variableType: string;
-    token?: string | undefined;
-    variableProtected?: boolean | undefined;
-    masked?: boolean | undefined;
     raw?: boolean | undefined;
+    token?: string | undefined;
+    masked?: boolean | undefined;
     environmentScope?: string | undefined;
+    variableProtected?: boolean | undefined;
   },
   JsonObject
 >;
