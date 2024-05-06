@@ -25,6 +25,9 @@ import Keyv from 'keyv';
 
 export type CacheClientFactory = (options: CacheServiceOptions) => Keyv;
 
+const HASH_PREFIX = '_$$HASHED$$_:';
+const NO_HASH_LIMIT = 200;
+
 /**
  * A basic, concrete implementation of the CacheService, suitable for almost
  * all uses in Backstage.
@@ -71,7 +74,7 @@ export class DefaultCacheClient implements CacheService {
   }
 
   iterator(): AsyncGenerator<[string, JsonValue], void, any> {
-    return this.#client.iterator();
+    return this.remapKeys(this.#client.iterator());
   }
 
   withOptions(options: CacheServiceOptions): CacheService {
@@ -83,6 +86,23 @@ export class DefaultCacheClient implements CacheService {
     );
   }
 
+  private async *remapKeys(
+    iterator: AsyncIterable<[string, JsonValue]>,
+  ): AsyncGenerator<[string, JsonValue], void, any> {
+    for await (const [key, value] of iterator) {
+      yield [this.getDenormalizedKey(key), value];
+    }
+  }
+
+  private getDenormalizedKey(normalizedKey: string): string {
+    if (normalizedKey.startsWith(HASH_PREFIX)) {
+      throw new Error(
+        `The key is hashed and cannot be denormalized. To iterate over keys, use keys that base64 representation is shorter than ${NO_HASH_LIMIT} bytes.`,
+      );
+    }
+    return Buffer.from(normalizedKey, 'base64').toString('utf8');
+  }
+
   /**
    * Ensures keys are well-formed for any/all cache stores.
    */
@@ -92,10 +112,12 @@ export class DefaultCacheClient implements CacheService {
 
     // Memcache in particular doesn't do well with keys > 250 bytes.
     // Padded because a plugin ID is also prepended to the key.
-    if (wellFormedKey.length < 200) {
+    if (wellFormedKey.length < NO_HASH_LIMIT) {
       return wellFormedKey;
     }
 
-    return createHash('sha256').update(candidateKey).digest('base64');
+    return (
+      HASH_PREFIX + createHash('sha256').update(candidateKey).digest('base64')
+    );
   }
 }
