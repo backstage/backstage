@@ -18,12 +18,7 @@ The plugin is already added to a default Backstage project.
 In `packages/backend/src/index.ts`:
 
 ```ts
-const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
-
-const service = createServiceBuilder(module)
-  .loadConfig(configReader)
-  /** ... other routers ... */
-  .addRouter('/proxy', await proxy(proxyEnv));
+backend.add(import('@backstage/plugin-proxy-backend/alpha'));
 ```
 
 ## Configuration
@@ -40,6 +35,7 @@ proxy:
     /simple-example: http://simple.example.com:8080
     '/larger-example/v1':
       target: http://larger.example.com:8080/svc.v1
+      credentials: require
       headers:
         Authorization: ${EXAMPLE_AUTH_HEADER}
         # ...or interpolating a value into part of a string,
@@ -56,6 +52,19 @@ backend requests to `/api/proxy/simple-example/...` and
 The value inside each route is either a simple URL string, or an object on the
 format accepted by
 [http-proxy-middleware](https://www.npmjs.com/package/http-proxy-middleware).
+Additionally, it has an optional `credentials` key which can have the following
+values:
+
+- `require`: Callers must provide Backstage user or service credentials with
+  each request. The credentials are not forwarded to the proxy target. This is
+  the default.
+- `forward`: Callers must provide Backstage user or service credentials with
+  each request, and those credentials are forwarded to the proxy target.
+- `dangerously-allow-unauthenticated`: No Backstage credentials are required to
+  access this proxy target. The target can still apply its own credentials
+  checks, but the proxy will not help block non-Backstage-blessed callers. If
+  you also add `allowedHeaders: ['Authorization']` to an endpoint configuration,
+  then the Backstage token (if provided) WILL be forwarded.
 
 If the value is a string, it is assumed to correspond to:
 
@@ -64,6 +73,7 @@ target: <the string>
 changeOrigin: true
 pathRewrite:
   '^<url prefix><the string>/': '/'
+credentials: require
 ```
 
 When the target is an object, it is given verbatim to `http-proxy-middleware`
@@ -76,6 +86,7 @@ except with the following caveats for convenience:
   `'^/api/proxy/larger-example/v1/': '/'` is added. That means that a request to
   `/api/proxy/larger-example/v1/some/path` will be translated to a request to
   `http://larger.example.com:8080/svc.v1/some/path`.
+- If `credentials` is not specified, it is set to `require`.
 
 There are also additional settings:
 
