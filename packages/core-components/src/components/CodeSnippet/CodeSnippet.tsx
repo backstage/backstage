@@ -15,7 +15,7 @@
  */
 
 import Box from '@material-ui/core/Box';
-import { useTheme } from '@material-ui/core/styles';
+import { makeStyles, useTheme } from '@material-ui/core/styles';
 import React, { useEffect, useRef } from 'react';
 import type {} from 'react-syntax-highlighter';
 import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
@@ -55,12 +55,6 @@ export interface CodeSnippetProps {
    */
   showCopyCodeButton?: boolean;
   /**
-   * Hightlight color for higlighted lines.
-   * You can use `const theme = useTheme()` hook to detect the current theme and set the color accordingly -
-   * then `theme.palette.type === 'dark' ? '#0078D7' : '#e6ffed';`
-   */
-  highlightColor?: string;
-  /**
    * Style - choose any hightlighter style from {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/ | react-syntax-highlighter}
    */
   style?: { [key: string]: React.CSSProperties } | undefined;
@@ -82,6 +76,15 @@ export interface CodeSnippetProps {
   customStyle?: any;
 }
 
+const useStyles = makeStyles(
+  theme => ({
+    highlight: {
+      backgroundColor: theme.palette.type === 'dark' ? '#0078D7' : '#e6ffed',
+    },
+  }),
+  { name: 'BackstageCodeSnippet' },
+);
+
 /**
  * Thin wrapper on top of {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/ | react-syntax-highlighter}
  * providing consistent theming and copy code button
@@ -97,7 +100,6 @@ export function CodeSnippet(props: CodeSnippetProps) {
     style,
     customStyle,
     scrollToLine,
-    highlightColor,
     showCopyCodeButton = false,
   } = props;
   const theme = useTheme();
@@ -109,13 +111,9 @@ export function CodeSnippet(props: CodeSnippetProps) {
     mode = theme.palette.type === 'dark' ? lioshi : docco;
   }
 
-  let highlightColorValue: string;
-  if (highlightColor) {
-    highlightColorValue = highlightColor;
-  } else {
-    highlightColorValue = theme.palette.type === 'dark' ? '#0078D7' : '#e6ffed';
-  }
   const lineNumberRef = useRef<React.RefObject<HTMLDivElement>>();
+
+  const classes = useStyles();
 
   useEffect(() => {
     if (!scrollToLine) {
@@ -144,9 +142,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
           return highlightedNumbers?.includes(lineNumber)
             ? {
                 ref,
-                style: {
-                  backgroundColor: highlightColorValue,
-                },
+                class: classes.highlight,
               }
             : {
                 ref,
