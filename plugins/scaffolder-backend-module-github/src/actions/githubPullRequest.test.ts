@@ -689,7 +689,7 @@ describe('createPublishGithubPullRequestAction', () => {
       ctx = createMockActionContext({ input, workspacePath });
     });
 
-    it('creates a pull request with author name', async () => {
+    it('creates a pull request', async () => {
       await instance.handler(ctx);
 
       expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
@@ -738,7 +738,7 @@ describe('createPublishGithubPullRequestAction', () => {
       ctx = createMockActionContext({ input, workspacePath });
     });
 
-    it('creates a pull request with author name', async () => {
+    it('creates a pull request', async () => {
       await instance.handler(ctx);
 
       expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
@@ -787,7 +787,7 @@ describe('createPublishGithubPullRequestAction', () => {
       ctx = createMockActionContext({ input, workspacePath });
     });
 
-    it('creates a pull request with author name', async () => {
+    it('creates a pull request', async () => {
       await instance.handler(ctx);
 
       expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
@@ -835,7 +835,7 @@ describe('createPublishGithubPullRequestAction', () => {
       ctx = createMockActionContext({ input, workspacePath });
     });
 
-    it('creates a pull request with author name', async () => {
+    it('creates a pull request with default config attributes', async () => {
       config = new ConfigReader({
         scaffolder: {
           defaultAuthor: {
@@ -878,6 +878,77 @@ describe('createPublishGithubPullRequestAction', () => {
             author: {
               email: 'config@file.example',
               name: 'Config',
+            },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('with author attributes and config file', () => {
+    let input: GithubPullRequestActionInput;
+    let ctx: ActionContext<GithubPullRequestActionInput>;
+
+    beforeEach(() => {
+      input = {
+        repoUrl: 'github.com?owner=myorg&repo=myrepo',
+        title: 'Create my new app',
+        branchName: 'new-app',
+        description: 'This PR is really good',
+        gitAuthorEmail: 'foo@bar.example',
+        gitAuthorName: 'Foo Bar',
+      };
+
+      mockDir.setContent({
+        [workspacePath]: { 'file.txt': 'Hello there!' },
+      });
+
+      ctx = createMockActionContext({ input, workspacePath });
+    });
+
+    it('creates a pull request with using author name and email from input', async () => {
+      config = new ConfigReader({
+        scaffolder: {
+          defaultAuthor: {
+            name: 'Config',
+            email: 'config@file.example',
+          },
+        },
+      });
+
+      const clientFactory = jest.fn(async () => fakeClient as any);
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: jest.fn(),
+      };
+
+      const instanceWithConfig = createPublishGithubPullRequestAction({
+        integrations,
+        githubCredentialsProvider,
+        clientFactory,
+        config,
+      });
+
+      await instanceWithConfig.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
+            },
+            author: {
+              email: 'foo@bar.example',
+              name: 'Foo Bar',
             },
           },
         ],
