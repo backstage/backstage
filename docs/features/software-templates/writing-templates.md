@@ -738,3 +738,39 @@ The `projectSlug` filter generates a project slug from a repository URL
 
 - **Input**: `github.com?repo=backstage&org=backstage`
 - **Output**: `backstage/backstage`
+
+## Template Editor
+
+Writing template is most of the times an iterative process. You will need to test your template to make sure it has a good user experience and that it works as expected. To help on this process the scaffolder comes with a build in template editor that allows you to test your template in a real environment for querying data and execute the actions on dry-run mode to see the results of those one.
+
+To access to the template editor you can go to the templates page and select "Template Editor" from the context menu or navigate to the `{scaffolder-path}/edit` url. (i.e. the default route would be `/create/edit`)
+
+![Context menu](../../assets/software-templates/context-menu.png)
+
+The template editor has 3 main sections:
+
+1. **Load Template Directory**: Load a local template directory, allowing you to both edit and try executing your own template.
+2. **Edit Template Form**: Preview and edit a template form, either using a sample template or by loading a template from the catalog.
+3. **Custom Field Explorer**: View and play around with available installed custom field extensions.
+
+### Load Template Directory
+
+Allow to load a directory on your local file system that contains a template and editing the files in it while previewing the form and executing the template.
+
+![template editor load dir](../../assets/software-templates/template-editor-load-dir.png)
+
+If you complete the form in the right side and click on `Create` button, the template will be executed in dry-run mode and the result will be shown in the `Dry-run result` drawer that will pop-up at the bottom of the screen.
+
+Here we could find all the file system results of the template execution as well as the logs of each action that was executed.
+
+![dry run drawer example](../../assets/software-templates/template-editor-dry-run.png)
+
+### Edit Template Form
+
+This is a reduced version of the template editor that allows you to select any template from the catalog and do some modifications on the form presented to the user to test some changes.
+
+Have in mind that changes in this form will not be saved on the template and is meant to test out changes to replicate them manually on the template file after.
+
+### Custom Field Explorer
+
+The custom filed explorer allows you to select any custom field loaded on the backstage instance and test different values and configurations.
