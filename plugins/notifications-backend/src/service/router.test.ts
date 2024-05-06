@@ -18,6 +18,7 @@ import {
   getVoidLogger,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
+import { Notification } from '@backstage/plugin-notifications-common';
 import express from 'express';
 import request from 'supertest';
 
@@ -25,6 +26,7 @@ import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -42,29 +44,35 @@ function createDatabase(): PluginDatabaseManager {
 describe('createRouter', () => {
   let app: express.Express;
 
-  const signalService: jest.Mocked<SignalsService> = {
+  const signals: jest.Mocked<SignalsService> = {
     publish: jest.fn(),
   };
 
   const discovery = mockServices.discovery();
   const userInfo = mockServices.userInfo();
-  const httpAuth = mockServices.httpAuth({
-    defaultCredentials: mockCredentials.service(),
-  });
   const auth = mockServices.auth();
   const database = createDatabase();
 
-  beforeAll(async () => {
-    const router = await createRouter({
+  const createCustomRouter = async (httpAuth: HttpAuthService) => {
+    return createRouter({
       logger: getVoidLogger(),
       database,
       discovery,
-      signals: signalService,
+      signals,
       userInfo,
       httpAuth,
       auth,
     });
-    app = express().use(router);
+  };
+
+  beforeAll(async () => {
+    app = express().use(
+      await createCustomRouter(
+        mockServices.httpAuth({
+          defaultCredentials: mockCredentials.service(),
+        }),
+      ),
+    );
   });
 
   beforeEach(() => {
@@ -86,17 +94,42 @@ describe('createRouter', () => {
           recipients: { type: 'broadcast' },
           payload: {
             title: 'upgrade',
+            metadata: {
+              backstage: 'outdated',
+              nodejs: 'unsupported',
+            },
           },
         });
 
       expect(response.status).toEqual(200);
 
       const client = await database.getClient();
-      const notifications = await client.from('broadcast').select('*');
-      expect(notifications.length).toBe(1);
+      const broadcastNotifications = await client.from('broadcast').select('*');
+      expect(broadcastNotifications.length).toBe(1);
+      expect(JSON.parse(broadcastNotifications[0].metadata)).toEqual({
+        backstage: 'outdated',
+        nodejs: 'unsupported',
+      });
 
-      const queryResponse = await request(app).get('/?read=true');
+      app = express().use(
+        await createCustomRouter(
+          mockServices.httpAuth({
+            defaultCredentials: mockCredentials.user(),
+          }),
+        ),
+      );
+
+      const queryResponse = await request(app).get(
+        '/?metadata.backstage=outdated',
+      );
+
       expect(queryResponse.status).toEqual(200);
+      const { notifications } = queryResponse.body as {
+        notifications: Notification[];
+      };
+
+      expect(notifications.length).toEqual(1);
+      expect(notifications[0].origin).toEqual('external:test-service');
     });
   });
 });

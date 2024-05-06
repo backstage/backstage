@@ -280,22 +280,13 @@ export async function createRouter(
       );
     }
 
-    const queryParamsToSkip = [
-      'offset',
-      'limit',
-      'orderField',
-      'search',
-      'read',
-      'saved',
-      'createdAfter',
-      'minimumSeverity',
-    ];
     Object.keys(req.query).forEach(key => {
       if (!opts.metadata) {
         opts.metadata = {};
       }
-      if (!queryParamsToSkip.includes(key)) {
-        opts.metadata[key] = req.query[key];
+      const prefix = 'metadata.';
+      if (key.startsWith(prefix)) {
+        opts.metadata[key.substring(prefix.length)] = req.query[key];
       }
     });
 
