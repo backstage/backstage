@@ -18,7 +18,7 @@ import { DatabaseManager, dropDatabase } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { randomBytes } from 'crypto';
 import { Knex } from 'knex';
-import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
+import { isDockerDisabledForTests } from '../util';
 import { startMysqlContainer } from './startMysqlContainer';
 import { startPostgresContainer } from './startPostgresContainer';
 import {

@@ -22,10 +22,21 @@ exports.up = async function up(knex) {
       .comment('Additional notification payload parameters.');
     table.dropColumn('done');
   });
+  await knex.schema.alterTable('broadcast', table => {
+    table
+      .text('metadata')
+      .nullable()
+      .comment('Additional notification payload parameters.');
+    table.dropColumn('done');
+  });
 };
 
 exports.down = async function down(knex) {
   await knex.schema.alterTable('notification', table => {
+    table.text('metadata').notNullable().alter();
+    table.datetime('done').nullable();
+  });
+  await knex.schema.alterTable('broadcast', table => {
     table.text('metadata').notNullable().alter();
     table.datetime('done').nullable();
   });

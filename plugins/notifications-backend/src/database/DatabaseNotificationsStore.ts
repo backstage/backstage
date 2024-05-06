@@ -106,7 +106,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         severity: row.severity,
         scope: row.scope,
         icon: row.icon,
-        metadata: row.metadata,
+        metadata: JSON.parse(row.metadata),
       },
     }));
   };
@@ -160,17 +160,22 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   ) => {
     const { user, orderField } = options;
 
-    const notification = options.metadata
-      ? this.db('notification').whereJsonObject('metadata', options.metadata)
-      : this.db('notification');
-
-    const subQuery = notification
+    const subQuery = this.db('notification')
       .select(NOTIFICATION_COLUMNS)
       .unionAll([this.getBroadcastUnion()])
       .as('notifications');
 
     const query = this.db.from(subQuery).where(q => {
       q.where('user', user).orWhereNull('user');
+    });
+
+    Object.keys(options.metadata ?? {}).forEach(key => {
+      query.whereJsonPath(
+        'metadata' as never,
+        `$.${key}`,
+        '=',
+        options.metadata?.[key],
+      );
     });
 
     if (orderField && orderField.length > 0) {

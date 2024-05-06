@@ -52,6 +52,7 @@ export type NotificationModifyOptions = {
 /** @internal */
 export interface NotificationsStore {
   getNotifications(options: NotificationGetOptions): Promise<Notification[]>;
+
   getNotificationsCount(options: NotificationGetOptions): Promise<number>;
 
   saveNotification(notification: Notification): Promise<void>;

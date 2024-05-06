@@ -104,7 +104,6 @@
     "@backstage/repo-tools": "workspace:*",
     "@changesets/cli": "^2.14.0",
     "@octokit/rest": "^19.0.3",
-    "@playwright/test": "^1.32.3",
     "@spotify/eslint-plugin": "^15.0.0",
     "@spotify/prettier-config": "^15.0.0",
     "@techdocs/cli": "workspace:*",
