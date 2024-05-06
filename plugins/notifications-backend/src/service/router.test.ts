@@ -24,7 +24,7 @@ import request from 'supertest';
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { SignalsService } from '@backstage/plugin-signals-node';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -48,13 +48,16 @@ describe('createRouter', () => {
 
   const discovery = mockServices.discovery();
   const userInfo = mockServices.userInfo();
-  const httpAuth = mockServices.httpAuth();
+  const httpAuth = mockServices.httpAuth({
+    defaultCredentials: mockCredentials.service(),
+  });
   const auth = mockServices.auth();
+  const database = createDatabase();
 
   beforeAll(async () => {
     const router = await createRouter({
       logger: getVoidLogger(),
-      database: createDatabase(),
+      database,
       discovery,
       signals: signalService,
       userInfo,
@@ -74,6 +77,26 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+
+    it('should allow to request metadata via api', async () => {
+      const response = await request(app)
+        .post('/')
+        .send({
+          recipients: { type: 'broadcast' },
+          payload: {
+            title: 'upgrade',
+          },
+        });
+
+      expect(response.status).toEqual(200);
+
+      const client = await database.getClient();
+      const notifications = await client.from('broadcast').select('*');
+      expect(notifications.length).toBe(1);
+
+      const queryResponse = await request(app).get('/?read=true');
+      expect(queryResponse.status).toEqual(200);
     });
   });
 });

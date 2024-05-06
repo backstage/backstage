@@ -280,6 +280,25 @@ export async function createRouter(
       );
     }
 
+    const queryParamsToSkip = [
+      'offset',
+      'limit',
+      'orderField',
+      'search',
+      'read',
+      'saved',
+      'createdAfter',
+      'minimumSeverity',
+    ];
+    Object.keys(req.query).forEach(key => {
+      if (!opts.metadata) {
+        opts.metadata = {};
+      }
+      if (!queryParamsToSkip.includes(key)) {
+        opts.metadata[key] = req.query[key];
+      }
+    });
+
     const [notifications, totalCount] = await Promise.all([
       store.getNotifications(opts),
       store.getNotificationsCount(opts),
