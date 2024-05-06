@@ -42,7 +42,7 @@ export const ImportInfoCard = (props: ImportInfoCardProps) => {
   const {
     exampleLocationUrl = 'https://github.com/backstage/backstage/blob/master/catalog-info.yaml',
     exampleGitRepositoryUrl = 'https://github.com/backstage/backstage',
-    exampleAzureRepositoryUrl = 'https://dev.azure.com/spotify/backstage/_git/backstage',
+    exampleAzureRepositoryUrl = 'https://dev.azure.com/org-name/project-name/_git/repo-name,
   } = props;
 
   const configApi = useApi(configApiRef);
