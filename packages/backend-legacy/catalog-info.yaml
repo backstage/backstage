@@ -1,8 +1,8 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: example-backend-next
-  title: example-backend-next
+  name: example-backend-legacy
+  title: example-backend-legacy
 spec:
   lifecycle: experimental
   type: backstage-backend

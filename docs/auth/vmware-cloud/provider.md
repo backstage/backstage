@@ -43,7 +43,7 @@ Cloud Console and within a Backstage app required to enable this capability.
 Apps using the [new backend system](../../backend-system/index.md),
 can enable the VMware Cloud provider with a small modification like:
 
-```ts title="packages/backend-next/src/index.ts"
+```ts title="packages/backend/src/index.ts"
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
