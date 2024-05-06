@@ -1,5 +1,60 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.2-next.1
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.16-next.1
+  - @backstage/plugin-scaffolder-node@0.4.4-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/plugin-permission-node@0.7.29-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.4-next.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.8-next.1
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.10-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.8-next.1
+  - @backstage/plugin-catalog-node@1.11.2-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 1.22.5-next.0
+
+### Patch Changes
+
+- 025641b: Fix issue with the log format not being respected when logging from actions
+- 025641b: Redact `meta` fields too with the logger
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.8-next.0
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.3.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.8-next.0
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.16-next.0
+  - @backstage/plugin-catalog-node@1.11.2-next.0
+  - @backstage/plugin-scaffolder-common@1.5.2-next.0
+  - @backstage/plugin-scaffolder-node@0.4.4-next.0
+  - @backstage/backend-tasks@0.5.23-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-node@0.7.29-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.10-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.8-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.10-next.0
+
 ## 1.22.4
 
 ### Patch Changes

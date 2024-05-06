@@ -27,10 +27,7 @@ export const includedFilter = (name: string) =>
   INCLUDED.some(pattern => pattern.test(name));
 
 // Packages that are not allowed to have any duplicates
-const FORBID_DUPLICATES = [
-  /^@backstage\/core-app-api$/,
-  /^@backstage\/plugin-/,
-];
+const FORBID_DUPLICATES = [/^@backstage\/\w+-app-api$/, /^@backstage\/plugin-/];
 
 // There are some packages that ARE explicitly allowed to have duplicates since
 // they handle that appropriately. This takes precedence over FORBID_DUPLICATES

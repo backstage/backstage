@@ -955,6 +955,43 @@ describe('read microsoft graph', () => {
       );
     });
 
+    it('should ignore loading photos if loadPhotos is false', async () => {
+      client.getOrganization.mockResolvedValue(getExampleOrg());
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        loadUserPhotos: false,
+      });
+
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(0);
+
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+    });
+
     it('should read users with userSelect', async () => {
       client.getOrganization.mockResolvedValue({
         id: 'tenantid',
@@ -1026,6 +1063,52 @@ describe('read microsoft graph', () => {
         undefined,
       );
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle loading huge amounts of users', async () => {
+      client.getOrganization.mockResolvedValue(getExampleOrg());
+
+      const userCount = 200_000;
+
+      async function* getHugeAmountsOfExampleUsers() {
+        for (let i = 0; i < userCount; ++i) {
+          yield {
+            id: `userid-${i}`,
+            displayName: 'User Name',
+            mail: 'user.name@example.com',
+          };
+        }
+      }
+
+      client.getUsers.mockImplementation(getHugeAmountsOfExampleUsers);
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { users } = await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: getVoidLogger(),
+        loadUserPhotos: false,
+      });
+
+      expect(users.length).toBe(userCount);
+
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
     });
   });
 });

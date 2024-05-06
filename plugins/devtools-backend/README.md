@@ -28,6 +28,7 @@ Here's how to get the DevTools Backend up and running:
        logger: env.logger,
        config: env.config,
        permissions: env.permissions,
+       discovery: env.discovery,
      });
    }
    ```

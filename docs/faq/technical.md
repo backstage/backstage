@@ -100,10 +100,10 @@ You can browse and search for all available plugins in the
 [Plugin Directory](https://backstage.io/plugins).
 
 If you can't find it in the directory, before you write a plugin
-[search the plugin issues](https://github.com/backstage/backstage/issues?q=is%3Aissue+label%3Aplugin+)
+[search the plugin issues on the community plugins repo](https://github.com/backstage/community-plugins/issues?q=is%3Aissue+is%3Aopen+label%3Aplugin)
 to see if is in the works. If no one's thought of it yet, great! Open a new
 issue as
-[a plugin suggestion](https://github.com/backstage/backstage/issues/new/choose)
+[a plugin suggestion](https://github.com/backstage/community-plugins/issues/new/choose)
 and describe what your plugin will do. This will help coordinate our
 contributors' efforts and avoid duplicating existing functionality.
 
@@ -154,7 +154,7 @@ maintains Backstage in your own environment.
 
 For more information, see our
 [Owners](https://github.com/backstage/backstage/blob/master/OWNERS.md) and
-[Governance](https://github.com/backstage/backstage/blob/master/GOVERNANCE.md).
+[Governance](https://github.com/backstage/community/blob/main/GOVERNANCE.md).
 
 ### Does Spotify provide a managed version of Backstage?
 

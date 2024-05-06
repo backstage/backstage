@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import fs from 'fs-extra';
 import { spawnSync } from 'child_process';
 import { paths as cliPaths } from '../../lib/paths';
@@ -27,7 +28,6 @@ import { paths as cliPaths } from '../../lib/paths';
  * @param tsconfigFilePath {string} The path to the `tsconfig.json` file to use for generating the declaration files.
  * @returns {Promise<void>} A promise that resolves when the declaration files have been generated.
  */
-
 export async function generateTypeDeclarations(tsconfigFilePath: string) {
   await fs.remove(cliPaths.resolveTargetRoot('dist-types'));
   const { status } = spawnSync(

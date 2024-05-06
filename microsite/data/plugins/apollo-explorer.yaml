@@ -4,7 +4,7 @@ author: unredundant
 authorUrl: https://github.com/unredundant
 category: Debugging
 description: Integrates Apollo Explorer graphs as a tool to browse GraphQL API endpoints inside Backstage.
-documentation: https://github.com/backstage/backstage/blob/master/plugins/apollo-explorer/README.md
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/apollo-explorer/plugins/apollo-explorer/README.md
 iconUrl: /img/apollo-explorer.png
 npmPackageName: '@backstage/plugin-apollo-explorer'
 addedDate: '2022-07-20'

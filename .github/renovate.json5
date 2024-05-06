@@ -63,6 +63,10 @@
       allowedVersions: '<4.0.0',
     },
     {
+      matchPackageNames: ['p-throttle'],
+      allowedVersions: '<4.0.0',
+    },
+    {
       matchPackageNames: ['p-queue'],
       allowedVersions: '<7.0.0',
     },

@@ -1,5 +1,47 @@
 # @backstage/plugin-catalog-backend
 
+## 1.22.0-next.1
+
+### Patch Changes
+
+- 8479a0b: Fixed bug in stitching queue gauge that included entities that are scheduled in the future.
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/plugin-events-node@0.3.4-next.1
+  - @backstage/plugin-permission-node@0.7.29-next.1
+  - @backstage/plugin-search-backend-module-catalog@0.1.24-next.1
+  - @backstage/plugin-catalog-node@1.11.2-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+  - @backstage/backend-openapi-utils@0.1.11-next.1
+
+## 1.22.0-next.0
+
+### Minor Changes
+
+- 8d14475: Emit well known relationships for the Domain entity kind.
+
+### Patch Changes
+
+- c6cb568: Add lifecycle monitoring for the catalog processing
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.23-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-catalog-common@1.0.23-next.0
+  - @backstage/plugin-catalog-node@1.11.2-next.0
+  - @backstage/backend-openapi-utils@0.1.11-next.0
+  - @backstage/backend-tasks@0.5.23-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-events-node@0.3.4-next.0
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-permission-node@0.7.29-next.0
+
 ## 1.21.1
 
 ### Patch Changes
