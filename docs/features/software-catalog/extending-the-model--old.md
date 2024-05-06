@@ -519,9 +519,6 @@ will be used within the catalog to make sure that it's able to ingest and
 validate entities of our new kind. Just like with the definition package, you
 can find inspiration in for example the existing
 [ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-scaffolder-entity-model/src/processor/ScaffolderEntitiesProcessor.ts).
-
-The custom processor should be created as a separate module for the catalog plugin. For information on how to set that up, see the [plugin docs](../../plugins/backend-plugin.md#creating-a-backend-plugin). Use `yarn new --select backend-module` instead to create a module. For our case, the module ID will be `foobar` and the plugin ID will be `catalog`.
-
 We also provide a high-level example of what a catalog process for a custom
 entity might look like:
 
@@ -588,43 +585,20 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
 }
 ```
 
-#### New Backend
+Once the processor is created it can be wired up to the catalog via the
+`CatalogBuilder` in `packages/backend/src/plugins/catalog.ts`:
 
-To them use your custom processor, you'll need to add the module to your backend as well as integrate your module with the catalog plugin.
-
-```ts title="plugins/catalog-backend-module-foobar/src/index.ts"
-import {
-  coreServices,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
-import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+```ts title="packages/backend/src/plugins/catalog.ts"
 /* highlight-add-next-line */
-import { FoobarEntitiesProcessor } from './providers';
+import { FoobarEntitiesProcessor } from '@internal/plugin-foobar-backend';
 
-export const catalogModuleFoobarEntitiesProcessor = createBackendModule({
-  pluginId: 'catalog',
-  moduleId: 'foobar',
-  register(env) {
-    env.registerInit({
-      deps: {
-        catalog: catalogProcessingExtensionPoint,
-      },
-      async init({ catalog }) {
-        catalog.addProcessor(new FoobarEntitiesProcessor());
-      },
-    });
-  },
-});
-
-export default catalogModuleFoobarEntitiesProcessor;
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+  /* highlight-add-next-line */
+  builder.addProcessor(new FoobarEntitiesProcessor());
+  const { processingEngine, router } = await builder.build();
+  // ..
+}
 ```
-
-This module can then be installed to your backend like so,
-
-```ts
-backend.add(import('@internal/plugin-catalog-backend-module-foobar'));
-```
-
-#### Legacy Backend
-
-Look through the [legacy documentation](./extending-the-model--old.md).
