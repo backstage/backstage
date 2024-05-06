@@ -759,7 +759,7 @@ Allow to load a directory on your local file system that contains a template and
 
 ![template editor load dir](../../assets/software-templates/template-editor-load-dir.png)
 
-if you complete the form in the right side and click on `Create` button, the template will be executed in dry-run mode and the result will be shown in the `Dry-run result` drawer that will pop-up at the bottom of the screen.
+If you complete the form in the right side and click on `Create` button, the template will be executed in dry-run mode and the result will be shown in the `Dry-run result` drawer that will pop-up at the bottom of the screen.
 
 Here we could find all the file system results of the template execution as well as the logs of each action that was executed.
 
