@@ -81,6 +81,38 @@ header:
 Authorization: Bearer eZv5o+fW3KnR3kVabMW4ZcDNLPl8nmMW
 ```
 
+## JWKS Token Auth
+
+This access method allows for external caller token authentication using configured JWKS.
+This is useful for callers that are authenticating to your instance of Backstage with
+third-party tools, such as Auth0.
+
+You can configure this access method by adding one or more entries of type `jwks`
+to the `backend.auth.externalAccess` app-config key:
+
+```yaml title="in e.g. app-config.production.yaml"
+backend:
+  auth:
+    externalAccess:
+      - type: jwks
+        options:
+          uri: https://example.com/.well-known/jwks.json
+          issuers:
+            - https://example.com
+          algorithms:
+            - RS256
+          audiences:
+            - example
+      - type: jwks
+        options:
+          uri: https://another-example.com/.well-known/jwks.json
+          issuers:
+            - https://example.com
+```
+
+The subject returned from the token verification will become part of the
+credentials object that the request recipients get.
+
 ## Legacy Tokens
 
 Plugins and backends that are _not_ on the new backend system use a legacy token
