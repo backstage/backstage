@@ -101,6 +101,9 @@ export interface CreateGithubPullRequestActionOptions {
       } | null>;
     }
   >;
+  /**
+   * An instance of {@link @backstage/config#Config} that will be used in the action.
+   */
   config: Config;
 }
 
