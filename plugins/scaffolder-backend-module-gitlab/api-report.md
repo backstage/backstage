@@ -145,6 +145,13 @@ export function createPublishGitlabAction(options: {
           auto_devops_enabled?: boolean | undefined;
           ci_config_path?: string | undefined;
           description?: string | undefined;
+          merge_method?: 'merge' | 'ff' | 'rebase_merge' | undefined;
+          squash_option?:
+            | 'always'
+            | 'never'
+            | 'default_on'
+            | 'default_off'
+            | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
         }
