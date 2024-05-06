@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonObject } from '@backstage/types';
+
 /** @public */
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
@@ -50,6 +52,8 @@ export type NotificationPayload = {
    * Optional notification icon
    */
   icon?: string;
+
+  metadata?: JsonObject;
 };
 
 /** @public */

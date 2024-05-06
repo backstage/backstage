@@ -42,6 +42,7 @@
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/plugin-signals-node": "workspace:^",
+    "@backstage/types": "workspace:^",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0",

@@ -6219,6 +6219,7 @@ __metadata:
     "@backstage/plugin-notifications-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-signals-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     "@types/supertest": ^2.0.8
     express: ^4.17.1
@@ -6238,6 +6239,7 @@ __metadata:
   resolution: "@backstage/plugin-notifications-common@workspace:plugins/notifications-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/types": ^1.1.1
     "@material-ui/icons": ^4.9.1
   languageName: unknown
   linkType: soft

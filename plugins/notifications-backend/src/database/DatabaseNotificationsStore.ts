@@ -48,6 +48,7 @@ const NOTIFICATION_COLUMNS = [
   'user',
   'read',
   'saved',
+  'metadata',
 ];
 
 export const normalizeSeverity = (input?: string): NotificationSeverity => {
@@ -105,6 +106,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         severity: row.severity,
         scope: row.scope,
         icon: row.icon,
+        metadata: row.metadata,
       },
     }));
   };
@@ -123,6 +125,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       scope: notification.payload?.scope,
       saved: notification.saved,
       read: notification.read,
+      metadata: notification.payload?.metadata,
     };
   };
 
@@ -137,6 +140,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       description: notification.payload?.description,
       severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
+      metadata: notification.payload?.metadata,
     };
   };
 
@@ -156,7 +160,11 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   ) => {
     const { user, orderField } = options;
 
-    const subQuery = this.db('notification')
+    const notification = options.metadata
+      ? this.db('notification').whereJsonObject('metadata', options.metadata)
+      : this.db('notification');
+
+    const subQuery = notification
       .select(NOTIFICATION_COLUMNS)
       .unionAll([this.getBroadcastUnion()])
       .as('notifications');
@@ -330,6 +338,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       topic: notification.payload.topic,
       updated: new Date(),
       severity: normalizeSeverity(notification.payload?.severity),
+      metadata: notification.payload.metadata,
       read: null,
     };
 
