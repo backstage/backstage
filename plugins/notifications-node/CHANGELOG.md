@@ -1,5 +1,15 @@
 # @backstage/plugin-notifications-node
 
+## 0.1.4-next.1
+
+### Patch Changes
+
+- 295c05d: Support for filtering entities from notification recipients after resolving them from the recipients
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-signals-node@0.1.4-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 0.1.4-next.0
 
 ### Patch Changes

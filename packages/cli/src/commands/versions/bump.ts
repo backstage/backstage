@@ -331,24 +331,22 @@ export default async (opts: OptionValues) => {
     forbiddenDuplicatesFilter(name),
   );
   if (forbiddenNewRanges.length > 0) {
-    throw new Error(
-      `Version bump failed for ${forbiddenNewRanges
-        .map(i => i.name)
-        .join(', ')}`,
-    );
-  }
-
-  const allowedDuplicates = result.newRanges.filter(
-    ({ name }) => !forbiddenDuplicatesFilter(name),
-  );
-
-  if (allowedDuplicates.length > 0) {
+    console.log(chalk.yellow('  ⚠️ Warning! ⚠️'));
+    console.log();
     console.log(
       chalk.yellow(
-        'The following packages have duplicates but have been allowed:',
+        '  The below package(s) have incompatible duplicate installations, likely due to a bad dependency in a plugin.',
       ),
     );
-    console.log(chalk.yellow(allowedDuplicates.map(i => i.name).join(', ')));
+    console.log(
+      chalk.yellow(
+        '  You can investigate this by running `yarn why <package-name>`, and report the issue to the plugin maintainers.',
+      ),
+    );
+    console.log();
+    for (const { name } of forbiddenNewRanges) {
+      console.log(chalk.yellow(`    ${name}`));
+    }
   }
 };
 

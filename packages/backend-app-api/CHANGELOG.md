@@ -1,5 +1,19 @@
 # @backstage/backend-app-api
 
+## 0.7.2-next.1
+
+### Patch Changes
+
+- 09f8988: Remove explicit `alg` check for user tokens in `verifyToken`
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/plugin-permission-node@0.7.29-next.1
+  - @backstage/cli-node@0.2.5
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 0.7.1-next.0
 
 ### Patch Changes

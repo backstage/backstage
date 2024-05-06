@@ -65,7 +65,7 @@ jobs:
       INTEGRATION_TEST_AZURE_TOKEN: ${{ secrets.INTEGRATION_TEST_AZURE_TOKEN }}
 
     steps:
-      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2
@@ -105,11 +105,11 @@ jobs:
       - name: test (and upload coverage)
         run: |
           yarn backstage-cli repo test --maxWorkers=3 --workerIdleMemoryLimit=1300M --coverage
-          bash <(curl -s https://codecov.io/bash)
+          # bash <(curl -s https://codecov.io/bash)
           # Upload code coverage for some specific flags. Also see .codecov.yml
-          bash <(curl -s https://codecov.io/bash) -f packages/core-app-api/coverage/* -F core-app-api
-          bash <(curl -s https://codecov.io/bash) -f packages/core-components/coverage/* -F core-components
-          bash <(curl -s https://codecov.io/bash) -f packages/core-plugin-api/coverage/* -F core-plugin-api
+          # bash <(curl -s https://codecov.io/bash) -f packages/core-app-api/coverage/* -F core-app-api
+          # bash <(curl -s https://codecov.io/bash) -f packages/core-components/coverage/* -F core-components
+          # bash <(curl -s https://codecov.io/bash) -f packages/core-plugin-api/coverage/* -F core-plugin-api
         env:
           BACKSTAGE_TEST_DISABLE_DOCKER: 1
           BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres16.ports[5432] }}
@@ -148,7 +148,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@1d96c772d19495a3b5c517cd2bc0cb401ea0529f # v4.1.3
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
 
       - name: use node.js ${{ matrix.node-version }}
         uses: actions/setup-node@60edb5dd545a775178f52524783378180af0d1f8 # v4.0.2

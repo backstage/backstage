@@ -240,6 +240,11 @@
       },
       {
         "type": "category",
+        "label": "Harness",
+        "items": ["integrations/harness/locations"]
+      },
+      {
+        "type": "category",
         "label": "Google GCS",
         "items": ["integrations/google-cloud-storage/locations"]
       },
