@@ -16,29 +16,30 @@ Defining feature flag in a plugin is done by passing the name of the feature fla
 
 ```ts
 /* src/plugin.ts */
-import { createPlugin, createRouteRef } from '@backstage/core-plugin-api';
-import ExampleComponent from './components/ExampleComponent';
+import { createPlugin } from '@backstage/core-plugin-api';
 
 export const examplePlugin = createPlugin({
-  id: 'example',
-  routes: {
-    root: rootRouteRef,
-  },
+  // ...
   featureFlags: [{ name: 'show-example-feature' }],
+  // ...
 });
 ```
 
 ### In the application
 
-Defining feature flag in the application is done by adding feature flags in`featureFlags` array in
+Defining feature flag in the application is done by adding feature flags in `featureFlags` array in
 `createApp()` function call:
 
 ```ts
+import { createApp } from '@backstage/app-defaults';
+
 const app = createApp({
   // ...
   featureFlags: [
     {
-      pluginId: '', // pluginId is required for feature flags in plugins. It can be left blank for a feature flag leveraged in the application.
+      // pluginId is required for feature flags used in plugins.
+      // pluginId can be left blank for a feature flag used in the application and not in plugins.
+      pluginId: '',  
       name: 'tech-radar',
       description: 'Enables the tech radar plugin',
     },
@@ -49,11 +50,9 @@ const app = createApp({
 
 ## Enabling Feature Flags
 
-Feature flags are defaulted to off and can be updated by individual users in the backstage interface.
+Feature flags are defaulted to off and can be updated by individual users in the backstage interface. These are set by navigating to the page under `Settings` > `Feature Flags`.
 
-These are set by navigating to the page under `Settings` > `Feature Flags`.
-
-The users selection is saved in the users browsers local storage. Once toggled it may be required for a user to refresh the page to see any new changes.
+The users selection is saved in the user's browser local storage. Once a feature flag is toggled it may be required for a user to refresh the page to see the change.
 
 ## FeatureFlagged Component
 
@@ -75,7 +74,7 @@ import { FeatureFlagged } from '@backstage/core-app-api';
 
 ## Evaluating Feature Flag State
 
-It is also possible to test the feature flag state using the [FeatureFlags Api](https://backstage.io/docs/reference/core-plugin-api.featureflagsapi).
+It is also possible to query a feature flag using the [FeatureFlags Api](https://backstage.io/docs/reference/core-plugin-api.featureflagsapi).
 
 ```ts
 import { useApi, featureFlagsApiRef } from '@backstage/core-plugin-api';
