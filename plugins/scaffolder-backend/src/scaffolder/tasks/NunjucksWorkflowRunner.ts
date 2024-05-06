@@ -457,6 +457,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         throw new Error(`Step ${step.name} has been cancelled.`);
       }
 
+      await task.cleanWorkspace?.();
       await stepTrack.markSuccessful();
     } catch (err) {
       await taskTrack.markFailed(step, err);

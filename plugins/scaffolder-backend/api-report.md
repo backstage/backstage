@@ -389,6 +389,8 @@ export class DatabaseTaskStore implements TaskStore {
   // (undocumented)
   claimTask(): Promise<SerializedTask_2 | undefined>;
   // (undocumented)
+  cleanWorkspace({ taskId }: { taskId: string }): Promise<void>;
+  // (undocumented)
   completeTask(options: {
     taskId: string;
     status: TaskStatus_2;
@@ -540,6 +542,8 @@ export class TaskManager implements TaskContext_2 {
   // (undocumented)
   get cancelSignal(): AbortSignal;
   // (undocumented)
+  cleanWorkspace?(): Promise<void>;
+  // (undocumented)
   complete(result: TaskCompletionState_2, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   static create(
@@ -548,6 +552,7 @@ export class TaskManager implements TaskContext_2 {
     abortSignal: AbortSignal,
     logger: Logger,
     auth?: AuthService,
+    config?: Config,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;
@@ -567,7 +572,9 @@ export class TaskManager implements TaskContext_2 {
   // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
-  rehydrateWorkspace(options: {
+  get isWorkspaceSerializationEnabled(): boolean;
+  // (undocumented)
+  rehydrateWorkspace?(options: {
     taskId: string;
     targetPath: string;
   }): Promise<void>;
@@ -605,6 +612,8 @@ export interface TaskStore {
   cancelTask?(options: TaskStoreEmitOptions): Promise<void>;
   // (undocumented)
   claimTask(): Promise<SerializedTask | undefined>;
+  // (undocumented)
+  cleanWorkspace?({ taskId }: { taskId: string }): Promise<void>;
   // (undocumented)
   completeTask(options: {
     taskId: string;

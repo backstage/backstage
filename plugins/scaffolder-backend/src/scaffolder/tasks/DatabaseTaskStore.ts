@@ -522,6 +522,12 @@ export class DatabaseTaskStore implements TaskStore {
     await restoreWorkspace(options.targetPath, result.workspace);
   }
 
+  async cleanWorkspace({ taskId }: { taskId: string }): Promise<void> {
+    await this.db<RawDbTaskRow>('tasks').where({ id: taskId }).update({
+      workspace: undefined,
+    });
+  }
+
   async serializeWorkspace(options: {
     path: string;
     taskId: string;

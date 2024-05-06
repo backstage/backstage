@@ -344,6 +344,8 @@ export interface TaskContext {
   // (undocumented)
   cancelSignal: AbortSignal;
   // (undocumented)
+  cleanWorkspace?(): Promise<void>;
+  // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   createdBy?: string;

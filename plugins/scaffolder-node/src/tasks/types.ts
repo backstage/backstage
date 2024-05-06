@@ -143,6 +143,8 @@ export interface TaskContext {
 
   serializeWorkspace?(options: { path: string }): Promise<void>;
 
+  cleanWorkspace?(): Promise<void>;
+
   rehydrateWorkspace?(options: {
     taskId: string;
     targetPath: string;

@@ -217,6 +217,8 @@ export interface TaskStore {
     targetPath: string;
   }): Promise<void>;
 
+  cleanWorkspace?({ taskId }: { taskId: string }): Promise<void>;
+
   serializeWorkspace?({
     path,
     taskId,

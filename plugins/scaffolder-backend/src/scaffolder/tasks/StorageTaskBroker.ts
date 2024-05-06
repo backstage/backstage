@@ -64,8 +64,16 @@ export class TaskManager implements TaskContext {
     abortSignal: AbortSignal,
     logger: Logger,
     auth?: AuthService,
+    config?: Config,
   ) {
-    const agent = new TaskManager(task, storage, abortSignal, logger, auth);
+    const agent = new TaskManager(
+      task,
+      storage,
+      abortSignal,
+      logger,
+      auth,
+      config,
+    );
     agent.startTimeout();
     return agent;
   }
@@ -77,7 +85,16 @@ export class TaskManager implements TaskContext {
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
     private readonly auth?: AuthService,
+    private readonly config?: Config,
   ) {}
+
+  get isWorkspaceSerializationEnabled(): boolean {
+    return (
+      this.config?.getOptionalBoolean(
+        'scaffolder.EXPERIMENTAL_workspaceSerialization',
+      ) ?? false
+    );
+  }
 
   get spec() {
     return this.task.spec;
@@ -99,11 +116,13 @@ export class TaskManager implements TaskContext {
     return this.task.taskId;
   }
 
-  async rehydrateWorkspace(options: {
+  async rehydrateWorkspace?(options: {
     taskId: string;
     targetPath: string;
   }): Promise<void> {
-    return this.storage.rehydrateWorkspace?.(options);
+    if (this.isWorkspaceSerializationEnabled) {
+      this.storage.rehydrateWorkspace?.(options);
+    }
   }
 
   get done() {
@@ -152,10 +171,18 @@ export class TaskManager implements TaskContext {
   }
 
   async serializeWorkspace?(options: { path: string }): Promise<void> {
-    await this.storage.serializeWorkspace?.({
-      path: options.path,
-      taskId: this.task.taskId,
-    });
+    if (this.isWorkspaceSerializationEnabled) {
+      await this.storage.serializeWorkspace?.({
+        path: options.path,
+        taskId: this.task.taskId,
+      });
+    }
+  }
+
+  async cleanWorkspace?(): Promise<void> {
+    if (this.isWorkspaceSerializationEnabled) {
+      await this.storage.cleanWorkspace?.({ taskId: this.task.taskId });
+    }
   }
 
   async complete(
@@ -338,6 +365,7 @@ export class StorageTaskBroker implements TaskBroker {
           abortController.signal,
           this.logger,
           this.auth,
+          this.config,
         );
       }
 
