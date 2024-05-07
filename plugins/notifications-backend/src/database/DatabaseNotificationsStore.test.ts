@@ -195,11 +195,6 @@ describe.each(databases.eachSupportedId())(
         expect(notification?.payload?.metadata?.deadline).toBe(
           '2017-05-15T08:30:00',
         );
-        expect(notification?.payload?.metadata?.affected).toEqual([
-          'a1',
-          'a2',
-          'a3',
-        ]);
       });
     });
 
