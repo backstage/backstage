@@ -6,42 +6,37 @@ description: Tutorial to setup OpenTelemetry metrics and traces exporters in Bac
 
 Backstage uses [OpenTelemetery](https://opentelemetry.io/) to instrument its components by reporting traces and metrics.
 
-This tutorial shows how to setup exporters in your Backstage backend package. For demonstration purposes we will use the simple console exporters.
+This tutorial shows how to setup exporters in your Backstage backend package. For demonstration purposes we will use a Prometheus exporter, but you can adjust your solution to use another one that suits your needs; see for example the article on [OTLP exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/).
 
 ## Install dependencies
 
 We will use the OpenTelemetry Node SDK and the `auto-instrumentations-node` packages.
 
-Backstage packages, such as the catalog, uses the OpenTelemetry API to send custom traces and metrics.
+Backstage packages, such as the catalog, use the OpenTelemetry API to send custom traces and metrics.
 The `auto-instrumentations-node` will automatically create spans for code called in libraries like Express.
 
 ```bash
-yarn --cwd packages/backend add @opentelemetry/sdk-node \
+yarn --cwd packages/backend add \
+    @opentelemetry/sdk-node \
     @opentelemetry/auto-instrumentations-node \
-    @opentelemetry/sdk-metrics \
-    @opentelemetry/sdk-trace-node
+    @opentelemetry/exporter-prometheus
 ```
 
 ## Configure
 
-In your `packages/backend` folder, create an `instrumentation.js` file.
+In your `packages/backend/src` folder, create an `instrumentation.js` file.
 
-```typescript
+```typescript title="in packages/backend/src/instrumentation.js"
 const { NodeSDK } = require('@opentelemetry/sdk-node');
-const { ConsoleSpanExporter } = require('@opentelemetry/sdk-trace-node');
 const {
   getNodeAutoInstrumentations,
 } = require('@opentelemetry/auto-instrumentations-node');
-const {
-  PeriodicExportingMetricReader,
-  ConsoleMetricExporter,
-} = require('@opentelemetry/sdk-metrics');
+const { PrometheusExporter } = require('@opentelemetry/exporter-prometheus');
 
+const prometheus = new PrometheusExporter();
 const sdk = new NodeSDK({
-  traceExporter: new ConsoleSpanExporter(),
-  metricReader: new PeriodicExportingMetricReader({
-    exporter: new ConsoleMetricExporter(),
-  }),
+  // You can add a traceExporter field here too
+  metricReader: prometheus,
   instrumentations: [getNodeAutoInstrumentations()],
 });
 
@@ -51,42 +46,33 @@ sdk.start();
 You probably won't need all of the instrumentation inside `getNodeAutoInstrumentations()` so make sure to
 check the [documentation](https://www.npmjs.com/package/@opentelemetry/auto-instrumentations-node) and tweak it properly.
 
-It's important to setup the NodeSDK and the automatic instrumentation **before** importing any library.
+## Local Development Setup
 
-This is why we will use the nodejs [`--require`](https://nodejs.org/api/cli.html#-r---require-module)
-flag when we start up the application.
+It's important to setup the NodeSDK and the automatic instrumentation **before**
+importing any library. This is why we will use the nodejs
+[`--require`](https://nodejs.org/api/cli.html#-r---require-module) flag when we
+start up the application.
 
-In your `Dockerfile` add the `--require` flag which points to the `instrumentation.js` file
+For local development, you can add the required flag in your `packages/backend/package.json`.
 
-```Dockerfile
-
-# We need the instrumentation file inside the Docker image so we can use it with --require
-// highlight-add-next-line
-COPY --chown=node:node packages/backend/instrumentation.js ./
-
-// highlight-remove-next-line
-CMD ["node", "packages/backend", "--config", "app-config.yaml"]
-// highlight-add-next-line
-CMD ["node", "--require", "./instrumentation.js", "packages/backend", "--config", "app-config.yaml"]
-```
-
-## Run Backstage
-
-The above configuration will only work in production once your start a Docker container from the image.
-
-To be able to test locally you can import the `./instrumentation.js` file at the top (before all imports) of your backend `index.ts` file
-
-```ts
-import '../instrumentation.js'
-// Other imports
-...
+```json title="packages/backend/package.json"
+"scripts": {
+  "start": "backstage-cli package start --require ./src/instrumentation.js",
+  ...
 ```
 
 You can now start your Backstage instance as usual, using `yarn dev`.
 
-When the backend is started, you should see in your console traces and metrics emitted by OpenTelemetry.
+## Production Setup
 
-Of course in production you probably won't use the console exporters but instead send traces and metrics to an OpenTelemetry Collector or other exporter using [OTLP exporters](https://opentelemetry.io/docs/instrumentation/js/exporters/).
+In your `Dockerfile` add the `--require` flag which points to the `instrumentation.js` file
+
+```Dockerfile
+// highlight-remove-next-line
+CMD ["node", "packages/backend", "--config", "app-config.yaml"]
+// highlight-add-next-line
+CMD ["node", "--require", "./src/instrumentation.js", "packages/backend", "--config", "app-config.yaml"]
+```
 
 If you need to disable/configure some OpenTelemetry feature there are lots of [environment variables](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/) which you can tweak.
 
