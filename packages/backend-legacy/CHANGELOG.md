@@ -1,5 +1,31 @@
 # example-backend-legacy
 
+## 0.2.98-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0-next.2
+  - @backstage/plugin-catalog-backend-module-unprocessed@0.4.5-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.24-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.0-next.2
+  - @backstage/plugin-catalog-backend@1.22.0-next.2
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-devtools-backend@0.3.4-next.2
+  - @backstage/plugin-scaffolder-backend@1.22.6-next.2
+  - @backstage/plugin-signals-backend@0.1.4-next.2
+  - @backstage/plugin-auth-backend@0.22.5-next.2
+  - @backstage/plugin-techdocs-backend@1.10.5-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+  - @backstage/integration@1.11.0-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.23-next.2
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.16-next.2
+  - @backstage/plugin-kubernetes-backend@0.17.1-next.2
+  - @backstage/plugin-search-backend@1.5.8-next.2
+  - example-app@0.2.97-next.2
+  - @backstage/plugin-scaffolder-backend-module-confluence-to-markdown@0.2.19-next.2
+  - @backstage/plugin-scaffolder-backend-module-rails@0.4.35-next.2
+
 ## 0.2.98-next.1
 
 ### Patch Changes

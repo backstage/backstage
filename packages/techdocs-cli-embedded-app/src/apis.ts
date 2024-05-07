@@ -72,7 +72,7 @@ class TechDocsDevStorageApi implements TechDocsStorageApi {
   }
 
   async getBuilder() {
-    return this.configApi.getString('techdocs.builder');
+    return this.configApi.getOptionalString('techdocs.builder') || 'local';
   }
 
   async getEntityDocs(_entityId: CompoundEntityRef, path: string) {
