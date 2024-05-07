@@ -66,11 +66,8 @@ describe('RealLogViewer', () => {
     await userEvent.keyboard('{meta>}{enter}{/meta}');
     expect(rendered.getByText('Some Log Line')).toBeInTheDocument();
 
-    // Tab down to line #2 and click
-    await userEvent.tab();
-    await userEvent.tab();
-    await userEvent.tab();
-    await userEvent.click(document.activeElement!);
+    const anchors = rendered.getAllByRole('row');
+    await userEvent.type(anchors[1], '{Tab}'); // Focus on the second row
     await userEvent.click(rendered.getByTestId('copy-button'));
 
     expect(copyToClipboard).toHaveBeenCalledWith('Derp');
