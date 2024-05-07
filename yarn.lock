@@ -7273,6 +7273,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/express": "*"
     "@types/supertest": ^2.0.8
+    "@types/ws": ^8.5.10
     express: ^4.17.1
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
@@ -7281,7 +7282,7 @@ __metadata:
     supertest: ^6.2.4
     uuid: ^9.0.0
     winston: ^3.2.1
-    ws: ^8.14.2
+    ws: ^8.17.0
     yn: ^4.0.0
   languageName: unknown
   linkType: soft
@@ -42141,9 +42142,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ws@npm:*, ws@npm:^8.11.0, ws@npm:^8.12.0, ws@npm:^8.13.0, ws@npm:^8.14.2, ws@npm:^8.16.0, ws@npm:^8.8.0":
-  version: 8.16.0
-  resolution: "ws@npm:8.16.0"
+"ws@npm:*, ws@npm:^8.11.0, ws@npm:^8.12.0, ws@npm:^8.13.0, ws@npm:^8.14.2, ws@npm:^8.16.0, ws@npm:^8.17.0, ws@npm:^8.8.0":
+  version: 8.17.0
+  resolution: "ws@npm:8.17.0"
   peerDependencies:
     bufferutil: ^4.0.1
     utf-8-validate: ">=5.0.2"
@@ -42152,7 +42153,7 @@ __metadata:
       optional: true
     utf-8-validate:
       optional: true
-  checksum: feb3eecd2bae82fa8a8beef800290ce437d8b8063bdc69712725f21aef77c49cb2ff45c6e5e7fce622248f9c7abaee506bae0a9064067ffd6935460c7357321b
+  checksum: 147ef9eab0251364e1d2c55338ad0efb15e6913923ccbfdf20f7a8a6cb8f88432bcd7f4d8f66977135bfad35575644f9983201c1a361019594a4e53977bf6d4e
   languageName: node
   linkType: hard
 
