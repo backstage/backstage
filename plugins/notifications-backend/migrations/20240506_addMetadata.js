@@ -17,13 +17,13 @@
 exports.up = async function up(knex) {
   await knex.schema.alterTable('notification', table => {
     table
-      .text('metadata')
+      .jsonb('metadata')
       .nullable()
       .comment('Additional notification payload parameters.');
   });
   await knex.schema.alterTable('broadcast', table => {
     table
-      .text('metadata')
+      .jsonb('metadata')
       .nullable()
       .comment('Additional notification payload parameters.');
   });
@@ -31,9 +31,9 @@ exports.up = async function up(knex) {
 
 exports.down = async function down(knex) {
   await knex.schema.alterTable('notification', table => {
-    table.text('metadata').notNullable().alter();
+    table.jsonb('metadata').notNullable().alter();
   });
   await knex.schema.alterTable('broadcast', table => {
-    table.text('metadata').notNullable().alter();
+    table.jsonb('metadata').notNullable().alter();
   });
 };
