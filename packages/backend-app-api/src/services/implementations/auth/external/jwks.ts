@@ -26,7 +26,7 @@ import { TokenHandler } from './types';
 export class JWKSHandler implements TokenHandler {
   #entries: Array<{
     algorithms: string[];
-    audiences: string[];
+    audiences: string[] | string;
     issuers: string[];
     uri: string;
   }> = [];
@@ -34,22 +34,18 @@ export class JWKSHandler implements TokenHandler {
   add(options: Config) {
     const algorithms = options.getOptionalStringArray('algorithms') ?? [];
     const issuers = options.getOptionalStringArray('issuers') ?? [];
-    const audiences = options.getOptionalStringArray('audiences') ?? [];
+    // if audience is unset, an empty string is valid, but an empty array is not
+    const audiences = options.getOptionalStringArray('audiences') ?? '';
     const uri = options.getString('uri');
 
     if (!uri.match(/^\S+$/)) {
-      throw new Error('Illegal token, must be a set of non-space characters');
-    }
-
-    if (!issuers.every(issuer => issuer.match(/^\S+$/))) {
-      throw new Error('Illegal issuer, must be a set of non-space characters');
+      throw new Error('Illegal URI, must be a set of non-space characters');
     }
 
     this.#entries.push({ algorithms, audiences, issuers, uri });
   }
 
   async verifyToken(token: string) {
-    // not sure if we would need to support multiple jwks entries, but implementing to match static/legacy token handlers
     for (const entry of this.#entries) {
       try {
         const jwks = createRemoteJWKSet(new URL(entry.uri));
