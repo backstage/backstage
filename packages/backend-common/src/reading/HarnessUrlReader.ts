@@ -18,12 +18,18 @@ import {
   getHarnessFileContentsUrl,
   HarnessIntegration,
   ScmIntegrations,
+  getHarnessLatestCommitUrl,
+  getHarnessArchiveUrl,
+  parseHarnessUrl,
 } from '@backstage/integration';
-import { ReadUrlOptions, ReadUrlResponse } from './types';
 import {
   ReaderFactory,
+  ReadTreeOptions,
   ReadTreeResponse,
   SearchResponse,
+  ReadTreeResponseFactory,
+  ReadUrlOptions,
+  ReadUrlResponse,
   UrlReader,
 } from './types';
 import fetch, { Response } from 'node-fetch';
@@ -42,11 +48,13 @@ import { Readable } from 'stream';
  * @public
  */
 export class HarnessUrlReader implements UrlReader {
-  static factory: ReaderFactory = ({ config }) => {
+  static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     return ScmIntegrations.fromConfig(config)
       .harness.list()
       .map(integration => {
-        const reader = new HarnessUrlReader(integration);
+        const reader = new HarnessUrlReader(integration, {
+          treeResponseFactory,
+        });
         const predicate = (url: URL) => {
           return url.host === integration.config.host;
         };
@@ -54,8 +62,12 @@ export class HarnessUrlReader implements UrlReader {
       });
   };
 
-  constructor(private readonly integration: HarnessIntegration) {}
-
+  constructor(
+    private readonly integration: HarnessIntegration,
+    private readonly deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  ) {}
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
     return response.buffer();
@@ -109,8 +121,37 @@ export class HarnessUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
-    throw new Error('HarnessUrlReader readTree not implemented.');
+  async readTree(
+    url: string,
+    options?: ReadTreeOptions,
+  ): Promise<ReadTreeResponse> {
+    const lastCommitHash = await this.getLastCommitHash(url);
+
+    if (options?.etag && options.etag === lastCommitHash) {
+      throw new NotModifiedError();
+    }
+
+    const archiveUri = getHarnessArchiveUrl(this.integration.config, url);
+
+    let response: Response;
+    try {
+      response = await fetch(archiveUri, {
+        method: 'GET',
+        ...getHarnessRequestOptions(this.integration.config),
+        signal: options?.signal as any,
+      });
+    } catch (e) {
+      throw new Error(`Unable to read ${archiveUri}, ${e}`);
+    }
+
+    const parsedUri = parseHarnessUrl(this.integration.config, url);
+
+    return this.deps.treeResponseFactory.fromZipArchive({
+      stream: Readable.from(response.body),
+      subpath: parsedUri.path,
+      etag: lastCommitHash,
+      filter: options?.filter,
+    });
   }
   search(): Promise<SearchResponse> {
     throw new Error('HarnessUrlReader search not implemented.');
@@ -121,5 +162,22 @@ export class HarnessUrlReader implements UrlReader {
     return `harness{host=${host},authed=${Boolean(
       this.integration.config.token || this.integration.config.apiKey,
     )}}`;
+  }
+  private async getLastCommitHash(url: string): Promise<string> {
+    const commitUri = getHarnessLatestCommitUrl(this.integration.config, url);
+
+    const response = await fetch(
+      commitUri,
+      getHarnessRequestOptions(this.integration.config),
+    );
+    if (!response.ok) {
+      const message = `Failed to retrieve latest commit information from ${commitUri}, ${response.status} ${response.statusText}`;
+      if (response.status === 404) {
+        throw new NotFoundError(message);
+      }
+      throw new Error(message);
+    }
+
+    return (await response.json()).latest_commit.sha;
   }
 }

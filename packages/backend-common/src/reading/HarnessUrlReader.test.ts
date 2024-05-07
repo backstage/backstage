@@ -25,6 +25,9 @@ import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
 import getRawBody from 'raw-body';
 import { HarnessUrlReader } from './HarnessUrlReader';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
+import fs from 'fs-extra';
+import path from 'path';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -47,6 +50,7 @@ const harnessProcessor = new HarnessUrlReader(
       }),
     ),
   ),
+  { treeResponseFactory },
 );
 
 const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
@@ -60,6 +64,7 @@ const responseBuffer = Buffer.from('Apache License');
 const harnessApiResponse = (content: any) => {
   return content;
 };
+const commitHash = '3bdd5457286abdf920db4b77bf2fef79a06190c2';
 
 const handlers = [
   rest.get(
@@ -91,6 +96,22 @@ const handlers = [
         ctx.status(200),
         ctx.body(harnessApiResponse(responseBuffer.toString())),
       );
+    },
+  ),
+  rest.get(
+    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName2/projectName/repoName/:path+/content?routingId=accountId&include_commit=true&git_ref=refs/heads/branchName',
+    (_req, res, ctx) => {
+      return res(
+        ctx.status(200),
+        ctx.set('Content-Type', 'application/json'),
+        ctx.json({ latest_commit: { sha: commitHash } }),
+      );
+    },
+  ),
+  rest.get(
+    'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName3/projectName/repoName/:path+/content?routingId=accountId&include_commit=true&git_ref=refs/heads/branchName',
+    (_, res, ctx) => {
+      return res(ctx.status(404));
     },
   ),
 ];
@@ -168,7 +189,7 @@ describe('HarnessUrlReader', () => {
           'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/404error.yaml',
         ),
       ).rejects.toThrow(
-        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/404error.yaml x https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/raw/404error.yaml?routingId=accountId&git_ref=refMain, 404 Not Found',
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/404error.yaml x https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/raw/404error.yaml?routingId=accountId&git_ref=refs/heads/refMain, 404 Not Found',
       );
     });
 
@@ -178,8 +199,60 @@ describe('HarnessUrlReader', () => {
           'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml',
         ),
       ).rejects.toThrow(
-        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml x https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/raw/all-apis.yaml?routingId=accountId&git_ref=refMain, 500 Internal Server Error',
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml x https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/raw/all-apis.yaml?routingId=accountId&git_ref=refs/heads/refMain, 500 Internal Server Error',
       );
+    });
+  });
+
+  describe('readTree', () => {
+    const repoBuffer = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/mock-main.zip'),
+    );
+
+    it('should be able to get archive', async () => {
+      worker.use(
+        rest.get(
+          'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName2/projectName/repoName/:path+/archive/branchName.zip',
+          (_, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/gzip'),
+              ctx.set(
+                'content-disposition',
+                'attachment; filename=backstage-mock.zip',
+              ),
+              ctx.body(repoBuffer),
+            );
+          },
+        ),
+      );
+
+      const response = await harnessProcessor.readTree(
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName2/projects/projectName/repos/repoName/files/branchName',
+      );
+      expect(response.etag).toBe(commitHash);
+
+      const files = await response.files();
+      expect(files.length).toBe(2);
+    });
+
+    it('should return not modified', async () => {
+      await expect(
+        harnessProcessor.readTree(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName2/projects/projectName/repos/repoName/files/branchName2',
+          {
+            etag: commitHash,
+          },
+        ),
+      ).rejects.toThrow(NotModifiedError);
+    });
+
+    it('should return not found', async () => {
+      await expect(
+        harnessProcessor.readTree(
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName3/projects/projectName/repos/repoName/files/branchName3',
+        ),
+      ).rejects.toThrow(NotFoundError);
     });
   });
 });
