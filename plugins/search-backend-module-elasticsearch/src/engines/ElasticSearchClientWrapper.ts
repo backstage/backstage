@@ -141,6 +141,18 @@ export class ElasticSearchClientWrapper {
     throw new Error('No client defined');
   }
 
+  listIndices(options: { index: string }) {
+    if (this.openSearchClient) {
+      return this.openSearchClient.indices.get(options);
+    }
+
+    if (this.elasticSearchClient) {
+      return this.elasticSearchClient.indices.get(options);
+    }
+
+    throw new Error('No client defined');
+  }
+
   indexExists(options: { index: string | string[] }) {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.exists(options);
@@ -172,26 +184,6 @@ export class ElasticSearchClientWrapper {
 
     if (this.elasticSearchClient) {
       return this.elasticSearchClient.indices.create(options);
-    }
-
-    throw new Error('No client defined');
-  }
-
-  getAliases(options: { aliases: string[] }) {
-    const { aliases } = options;
-
-    if (this.openSearchClient) {
-      return this.openSearchClient.cat.aliases({
-        format: 'json',
-        name: aliases,
-      });
-    }
-
-    if (this.elasticSearchClient) {
-      return this.elasticSearchClient.cat.aliases({
-        format: 'json',
-        name: aliases,
-      });
     }
 
     throw new Error('No client defined');

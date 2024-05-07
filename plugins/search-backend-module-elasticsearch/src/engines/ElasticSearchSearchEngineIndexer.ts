@@ -56,7 +56,6 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   private readonly indexPrefix: string;
   private readonly indexSeparator: string;
   private readonly alias: string;
-  private readonly removableAlias: string;
   private readonly logger: Logger | LoggerService;
   private readonly sourceStream: Readable;
   private readonly elasticSearchClientWrapper: ElasticSearchClientWrapper;
@@ -74,7 +73,6 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     this.indexSeparator = options.indexSeparator;
     this.indexName = this.constructIndexName(`${Date.now()}`);
     this.alias = options.alias;
-    this.removableAlias = `${this.alias}_removable`;
     this.elasticSearchClientWrapper = options.elasticSearchClientWrapper;
 
     // The ES client bulk helper supports stream-based indexing, but we have to
@@ -108,13 +106,13 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
   async initialize(): Promise<void> {
     this.logger.info(`Started indexing documents for index ${this.type}`);
 
-    const aliases = await this.elasticSearchClientWrapper.getAliases({
-      aliases: [this.alias, this.removableAlias],
+    const indices = await this.elasticSearchClientWrapper.listIndices({
+      index: this.constructIndexName('*'),
     });
 
-    this.removableIndices = [
-      ...new Set(aliases.body.map((r: Record<string, any>) => r.index)),
-    ] as string[];
+    for (const key of Object.keys(indices.body)) {
+      this.removableIndices.push(key);
+    }
 
     await this.elasticSearchClientWrapper.createIndex({
       index: this.indexName,
@@ -171,14 +169,6 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
         {
           remove: { index: this.constructIndexName('*'), alias: this.alias },
         },
-        this.removableIndices.length
-          ? {
-              add: {
-                indices: this.removableIndices,
-                alias: this.removableAlias,
-              },
-            }
-          : undefined,
         {
           add: { index: this.indexName, alias: this.alias },
         },
