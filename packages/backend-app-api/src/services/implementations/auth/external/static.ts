@@ -15,7 +15,8 @@
  */
 
 import { Config } from '@backstage/config';
-import { TokenHandler } from './types';
+import { readAccessRestrictionsFromConfig } from './helpers';
+import { AccessRestriptionsMap, TokenHandler } from './types';
 
 const MIN_TOKEN_LENGTH = 8;
 
@@ -25,10 +26,14 @@ const MIN_TOKEN_LENGTH = 8;
  * @internal
  */
 export class StaticTokenHandler implements TokenHandler {
-  #entries: Array<{ token: string; subject: string }> = [];
+  #entries = new Array<{
+    token: string;
+    subject: string;
+    accessRestrictions?: AccessRestriptionsMap;
+  }>();
 
-  add(options: Config) {
-    const token = options.getString('token');
+  add(config: Config) {
+    const token = config.getString('options.token');
     if (!token.match(/^\S+$/)) {
       throw new Error('Illegal token, must be a set of non-space characters');
     }
@@ -38,12 +43,18 @@ export class StaticTokenHandler implements TokenHandler {
       );
     }
 
-    const subject = options.getString('subject');
+    const subject = config.getString('options.subject');
     if (!subject.match(/^\S+$/)) {
       throw new Error('Illegal subject, must be a set of non-space characters');
     }
 
-    this.#entries.push({ token, subject });
+    const accessRestrictions = readAccessRestrictionsFromConfig(config);
+
+    this.#entries.push({
+      token,
+      subject,
+      accessRestrictions,
+    });
   }
 
   async verifyToken(token: string) {
@@ -52,6 +63,9 @@ export class StaticTokenHandler implements TokenHandler {
       return undefined;
     }
 
-    return { subject: entry.subject };
+    return {
+      subject: entry.subject,
+      accessRestrictions: entry.accessRestrictions,
+    };
   }
 }

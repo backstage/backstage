@@ -48,7 +48,9 @@ const discovery: PluginEndpointDiscovery = {
 };
 const testBasicPermission = createPermission({
   name: 'test.permission',
-  attributes: {},
+  attributes: {
+    action: 'create',
+  },
 });
 
 const testResourcePermission = createPermission({
@@ -360,6 +362,68 @@ describe('ServerPermissionClient', () => {
           }),
         );
       });
+    });
+  });
+
+  describe('with access restrictions', () => {
+    it('short circuits the response when relevant access restrictions are present', async () => {
+      const client = ServerPermissionClient.fromConfig(config, {
+        discovery,
+        tokenManager: mockServices.tokenManager(),
+        auth: mockServices.auth(),
+        pluginId: 'test',
+      });
+
+      // no restrictions for the given plugin
+      await expect(
+        client.authorize([{ permission: testBasicPermission }], {
+          credentials: mockCredentials.service('foo', {}),
+        }),
+      ).resolves.toEqual([{ result: AuthorizeResult.ALLOW }]);
+
+      // matching permission name
+      await expect(
+        client.authorize([{ permission: testBasicPermission }], {
+          credentials: mockCredentials.service('foo', {
+            permissionNames: [testBasicPermission.name, 'other'],
+          }),
+        }),
+      ).resolves.toEqual([{ result: AuthorizeResult.ALLOW }]);
+
+      // matching attributes
+      await expect(
+        client.authorize([{ permission: testBasicPermission }], {
+          credentials: mockCredentials.service('foo', {
+            permissionAttributes: {
+              action: [testBasicPermission.attributes.action!, 'other' as any],
+            },
+          }),
+        }),
+      ).resolves.toEqual([{ result: AuthorizeResult.ALLOW }]);
+
+      // matching permission name but not attributes
+      await expect(
+        client.authorize([{ permission: testBasicPermission }], {
+          credentials: mockCredentials.service('foo', {
+            permissionNames: [testBasicPermission.name],
+            permissionAttributes: {
+              action: ['other' as any],
+            },
+          }),
+        }),
+      ).resolves.toEqual([{ result: AuthorizeResult.DENY }]);
+
+      // matching attributes but not permission name
+      await expect(
+        client.authorize([{ permission: testBasicPermission }], {
+          credentials: mockCredentials.service('foo', {
+            permissionNames: ['wrong-name'],
+            permissionAttributes: {
+              action: [testBasicPermission.attributes.action!],
+            },
+          }),
+        }),
+      ).resolves.toEqual([{ result: AuthorizeResult.DENY }]);
     });
   });
 });

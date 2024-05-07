@@ -25,17 +25,35 @@ describe('LegacyTokenHandler', () => {
   const key1 = randomBytes(24);
   const key2 = randomBytes(24);
   const key3 = randomBytes(24);
+  const accessRestrictions1 = new Map(
+    Object.entries({
+      scaffolder: {},
+    }),
+  );
+  const accessRestrictions2 = new Map(
+    Object.entries({
+      catalog: { permissionNames: ['catalog.entity.read'] },
+    }),
+  );
 
   tokenHandler.add(
     new ConfigReader({
-      secret: key1.toString('base64'),
-      subject: 'key1',
+      options: {
+        secret: key1.toString('base64'),
+        subject: 'key1',
+      },
+      accessRestrictions: [{ plugin: 'scaffolder' }],
     }),
   );
   tokenHandler.add(
     new ConfigReader({
-      secret: key2.toString('base64'),
-      subject: 'key2',
+      options: {
+        secret: key2.toString('base64'),
+        subject: 'key2',
+      },
+      accessRestrictions: [
+        { plugin: 'catalog', permission: 'catalog.entity.read' },
+      ],
     }),
   );
   tokenHandler.addOld(
@@ -54,6 +72,7 @@ describe('LegacyTokenHandler', () => {
 
     await expect(tokenHandler.verifyToken(token1)).resolves.toEqual({
       subject: 'key1',
+      accessRestrictions: accessRestrictions1,
     });
 
     const token2 = await new SignJWT({
@@ -65,6 +84,7 @@ describe('LegacyTokenHandler', () => {
 
     await expect(tokenHandler.verifyToken(token2)).resolves.toEqual({
       subject: 'key2',
+      accessRestrictions: accessRestrictions2,
     });
 
     const token3 = await new SignJWT({
@@ -147,39 +167,93 @@ describe('LegacyTokenHandler', () => {
 
     // new style add, bad secrets
     expect(() =>
-      handler.add(new ConfigReader({ _missingsecret: true, subject: 'ok' })),
-    ).toThrow(/secret/);
+      handler.add(
+        new ConfigReader({ options: { _missingsecret: true, subject: 'ok' } }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Missing required config value at 'options.secret' in 'mock-config'"`,
+    );
     expect(() =>
-      handler.add(new ConfigReader({ secret: '', subject: 'ok' })),
-    ).toThrow(/secret/);
+      handler.add(new ConfigReader({ options: { secret: '', subject: 'ok' } })),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type in config for key 'options.secret' in 'mock-config', got empty-string, wanted string"`,
+    );
     expect(() =>
-      handler.add(new ConfigReader({ secret: 'has spaces', subject: 'ok' })),
-    ).toThrow(/secret/);
+      handler.add(
+        new ConfigReader({ options: { secret: 'has spaces', subject: 'ok' } }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Illegal secret, must be a valid base64 string"`,
+    );
     expect(() =>
-      handler.add(new ConfigReader({ secret: 'hasnewline\n', subject: 'ok' })),
-    ).toThrow(/secret/);
+      handler.add(
+        new ConfigReader({
+          options: { secret: 'hasnewline\n', subject: 'ok' },
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Illegal secret, must be a valid base64 string"`,
+    );
     expect(() =>
-      handler.add(new ConfigReader({ secret: 3, subject: 'ok' })),
-    ).toThrow(/secret/);
+      handler.add(new ConfigReader({ options: { secret: 3, subject: 'ok' } })),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type in config for key 'options.secret' in 'mock-config', got number, wanted string"`,
+    );
 
     // new style add, bad subjects
     expect(() =>
-      handler.add(new ConfigReader({ secret: 'b2s=', _missingsubject: true })),
-    ).toThrow(/subject/);
-    expect(() =>
-      handler.add(new ConfigReader({ secret: 'b2s=', subject: '' })),
-    ).toThrow(/subject/);
-    expect(() =>
-      handler.add(new ConfigReader({ secret: 'b2s=', subject: 'has spaces' })),
-    ).toThrow(/subject/);
+      handler.add(
+        new ConfigReader({
+          options: { secret: 'b2s=', _missingsubject: true },
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Missing required config value at 'options.subject' in 'mock-config'"`,
+    );
     expect(() =>
       handler.add(
-        new ConfigReader({ secret: 'b2s=', subject: 'hasnewline\n' }),
+        new ConfigReader({ options: { secret: 'b2s=', subject: '' } }),
       ),
-    ).toThrow(/subject/);
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type in config for key 'options.subject' in 'mock-config', got empty-string, wanted string"`,
+    );
     expect(() =>
-      handler.add(new ConfigReader({ secret: 'b2s=', subject: 3 })),
-    ).toThrow(/subject/);
+      handler.add(
+        new ConfigReader({
+          options: { secret: 'b2s=', subject: 'has spaces' },
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Illegal subject, must be a set of non-space characters"`,
+    );
+    expect(() =>
+      handler.add(
+        new ConfigReader({
+          options: { secret: 'b2s=', subject: 'hasnewline\n' },
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Illegal subject, must be a set of non-space characters"`,
+    );
+    expect(() =>
+      handler.add(
+        new ConfigReader({ options: { secret: 'b2s=', subject: 3 } }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type in config for key 'options.subject' in 'mock-config', got number, wanted string"`,
+    );
+
+    // new style add, bad access restrictions
+    expect(() =>
+      handler.add(
+        new ConfigReader({
+          options: { secret: 'b2s=', subject: 'subject' },
+          accessRestrictions: [{ plugin: ['a'] }],
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type in config for key 'accessRestrictions[0].plugin' in 'mock-config', got array, wanted string"`,
+    );
 
     // old style add
     expect(() =>
@@ -187,18 +261,28 @@ describe('LegacyTokenHandler', () => {
     ).not.toThrow();
     expect(() =>
       handler.addOld(new ConfigReader({ _missingsecret: true })),
-    ).toThrow(/secret/);
-    expect(() => handler.addOld(new ConfigReader({ secret: '' }))).toThrow(
-      /secret/,
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Missing required config value at 'secret' in 'mock-config'"`,
+    );
+    expect(() =>
+      handler.addOld(new ConfigReader({ secret: '' })),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type in config for key 'secret' in 'mock-config', got empty-string, wanted string"`,
     );
     expect(() =>
       handler.addOld(new ConfigReader({ secret: 'has spaces' })),
-    ).toThrow(/secret/);
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Illegal secret, must be a valid base64 string"`,
+    );
     expect(() =>
       handler.addOld(new ConfigReader({ secret: 'hasnewline\n' })),
-    ).toThrow(/secret/);
-    expect(() => handler.addOld(new ConfigReader({ secret: 3 }))).toThrow(
-      /secret/,
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Illegal secret, must be a valid base64 string"`,
+    );
+    expect(() =>
+      handler.addOld(new ConfigReader({ secret: 3 })),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type in config for key 'secret' in 'mock-config', got number, wanted string"`,
     );
   });
 });

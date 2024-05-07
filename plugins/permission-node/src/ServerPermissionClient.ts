@@ -33,18 +33,21 @@ import {
   AuthorizePermissionResponse,
   PolicyDecision,
   QueryPermissionRequest,
+  DefinitivePolicyDecision,
 } from '@backstage/plugin-permission-common';
 
 /**
  * A thin wrapper around
- * {@link @backstage/plugin-permission-common#PermissionClient} that allows all
- * service-to-service requests.
+ * {@link @backstage/plugin-permission-common#PermissionClient} that ensures the
+ * proper short-circuit handling of service principals.
+ *
  * @public
  */
 export class ServerPermissionClient implements PermissionsService {
   readonly #auth: AuthService;
   readonly #permissionClient: PermissionClient;
   readonly #permissionEnabled: boolean;
+  readonly #pluginId?: string;
 
   static fromConfig(
     config: Config,
@@ -52,6 +55,7 @@ export class ServerPermissionClient implements PermissionsService {
       discovery: DiscoveryService;
       tokenManager: TokenManager;
       auth?: AuthService;
+      pluginId?: string;
     },
   ) {
     const { discovery, tokenManager } = options;
@@ -74,6 +78,7 @@ export class ServerPermissionClient implements PermissionsService {
       auth,
       permissionClient,
       permissionEnabled,
+      pluginId: options.pluginId,
     });
   }
 
@@ -81,16 +86,26 @@ export class ServerPermissionClient implements PermissionsService {
     auth: AuthService;
     permissionClient: PermissionClient;
     permissionEnabled: boolean;
+    pluginId?: string;
   }) {
     this.#auth = options.auth;
     this.#permissionClient = options.permissionClient;
     this.#permissionEnabled = options.permissionEnabled;
+    this.#pluginId = options.pluginId;
   }
 
   async authorizeConditional(
     queries: QueryPermissionRequest[],
     options?: PermissionsServiceRequestOptions,
   ): Promise<PolicyDecision[]> {
+    const maybeResponse = this.#decideBasedOnPrincipalAccessRestrictions(
+      queries,
+      options,
+    );
+    if (maybeResponse) {
+      return maybeResponse;
+    }
+
     if (await this.#shouldPermissionsBeApplied(options)) {
       return this.#permissionClient.authorizeConditional(
         queries,
@@ -105,6 +120,14 @@ export class ServerPermissionClient implements PermissionsService {
     requests: AuthorizePermissionRequest[],
     options?: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
+    const maybeResponse = this.#decideBasedOnPrincipalAccessRestrictions(
+      requests,
+      options,
+    );
+    if (maybeResponse) {
+      return maybeResponse;
+    }
+
     if (await this.#shouldPermissionsBeApplied(options)) {
       return this.#permissionClient.authorize(
         requests,
@@ -128,6 +151,44 @@ export class ServerPermissionClient implements PermissionsService {
     }
 
     return options;
+  }
+
+  #decideBasedOnPrincipalAccessRestrictions(
+    requests: Array<QueryPermissionRequest | AuthorizePermissionRequest>,
+    options?: PermissionsServiceRequestOptions,
+  ): DefinitivePolicyDecision[] | undefined {
+    if (!options || !('credentials' in options)) {
+      return undefined;
+    }
+
+    // Bail out to the old behavior if
+    // - the principal is not a service
+    // - the principal was apparently unrestricted
+    // - we are in legacy mode because nobody passed in a plugin ID
+    const credentials = options.credentials;
+    if (
+      !this.#auth.isPrincipal(credentials, 'service') ||
+      !credentials.principal.accessRestrictions ||
+      !this.#pluginId
+    ) {
+      return undefined;
+    }
+
+    const { permissionNames, permissionAttributes } =
+      credentials.principal.accessRestrictions;
+
+    return requests.map(query => {
+      if (permissionNames && !permissionNames.includes(query.permission.name)) {
+        return { result: AuthorizeResult.DENY };
+      }
+      if (permissionAttributes?.action) {
+        const action = query.permission.attributes?.action;
+        if (!action || !permissionAttributes.action.includes(action)) {
+          return { result: AuthorizeResult.DENY };
+        }
+      }
+      return { result: AuthorizeResult.ALLOW };
+    });
   }
 
   async #shouldPermissionsBeApplied(

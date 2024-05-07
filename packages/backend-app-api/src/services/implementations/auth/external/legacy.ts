@@ -16,7 +16,8 @@
 
 import { Config } from '@backstage/config';
 import { base64url, decodeJwt, decodeProtectedHeader, jwtVerify } from 'jose';
-import { TokenHandler } from './types';
+import { readAccessRestrictionsFromConfig } from './helpers';
+import { AccessRestriptionsMap, TokenHandler } from './types';
 
 /**
  * Handles `type: legacy` access.
@@ -24,19 +25,32 @@ import { TokenHandler } from './types';
  * @internal
  */
 export class LegacyTokenHandler implements TokenHandler {
-  #entries: Array<{ key: Uint8Array; subject: string }> = [];
+  #entries = new Array<{
+    key: Uint8Array;
+    subject: string;
+    accessRestrictions?: AccessRestriptionsMap;
+  }>();
 
-  add(options: Config) {
-    this.#doAdd(options.getString('secret'), options.getString('subject'));
+  add(config: Config) {
+    const accessRestrictions = readAccessRestrictionsFromConfig(config);
+    this.#doAdd(
+      config.getString('options.secret'),
+      config.getString('options.subject'),
+      accessRestrictions,
+    );
   }
 
   // used only for the old backend.auth.keys array
-  addOld(options: Config) {
+  addOld(config: Config) {
     // This choice of subject is for compatibility reasons
-    this.#doAdd(options.getString('secret'), 'external:backstage-plugin');
+    this.#doAdd(config.getString('secret'), 'external:backstage-plugin');
   }
 
-  #doAdd(secret: string, subject: string) {
+  #doAdd(
+    secret: string,
+    subject: string,
+    accessRestrictions?: AccessRestriptionsMap,
+  ) {
     if (!secret.match(/^\S+$/)) {
       throw new Error('Illegal secret, must be a valid base64 string');
     }
@@ -52,7 +66,11 @@ export class LegacyTokenHandler implements TokenHandler {
       throw new Error('Illegal subject, must be a set of non-space characters');
     }
 
-    this.#entries.push({ key, subject });
+    this.#entries.push({
+      key,
+      subject,
+      accessRestrictions,
+    });
   }
 
   async verifyToken(token: string) {
@@ -79,7 +97,10 @@ export class LegacyTokenHandler implements TokenHandler {
     for (const entry of this.#entries) {
       try {
         await jwtVerify(token, entry.key);
-        return { subject: entry.subject };
+        return {
+          subject: entry.subject,
+          accessRestrictions: entry.accessRestrictions,
+        };
       } catch (e) {
         if (e.code !== 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
           throw e;

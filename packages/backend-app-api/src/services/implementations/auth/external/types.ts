@@ -14,9 +14,21 @@
  * limitations under the License.
  */
 
+import { BackstagePrincipalAccessRestrictions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+
+export type AccessRestriptionsMap = Map<
+  string, // plugin ID
+  BackstagePrincipalAccessRestrictions
+>;
 
 export interface TokenHandler {
   add(options: Config): void;
-  verifyToken(token: string): Promise<{ subject: string } | undefined>;
+  verifyToken(token: string): Promise<
+    | {
+        subject: string;
+        accessRestrictions?: AccessRestriptionsMap;
+      }
+    | undefined
+  >;
 }

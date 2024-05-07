@@ -23,7 +23,11 @@ import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
-import { AuthenticationError, ForwardedError } from '@backstage/errors';
+import {
+  AuthenticationError,
+  ForwardedError,
+  NotAllowedError,
+} from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { decodeJwt } from 'jose';
 import { ExternalTokenHandler } from './external/ExternalTokenHandler';
@@ -82,7 +86,21 @@ export class DefaultAuthService implements AuthService {
 
     const externalResult = await this.externalTokenHandler.verifyToken(token);
     if (externalResult) {
-      return createCredentialsWithServicePrincipal(externalResult.subject);
+      const restrictions = externalResult.accessRestrictions;
+      if (restrictions) {
+        if (!restrictions.has(this.pluginId)) {
+          const valid = [...restrictions.keys()].map(k => `'${k}'`).join(', ');
+          throw new NotAllowedError(
+            `This token's access is restricted to plugin(s) ${valid}`,
+          );
+        }
+      }
+
+      return createCredentialsWithServicePrincipal(
+        externalResult.subject,
+        undefined,
+        restrictions?.get(this.pluginId),
+      );
     }
 
     throw new AuthenticationError('Illegal token');

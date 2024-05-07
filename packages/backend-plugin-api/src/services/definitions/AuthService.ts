@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 
 /**
@@ -40,6 +41,54 @@ export type BackstageServicePrincipal = {
 
   // Exact format TBD, possibly 'plugin:<pluginId>' or 'external:<externalServiceId>'
   subject: string;
+
+  /**
+   * The access restrictions that apply to this principal.
+   *
+   * @remarks
+   *
+   * If no access restrictions are provided the principal is assumed to have
+   * unlimited access, at a framework level. The permissions system and
+   * individual plugins may or may not still apply additional access controls on
+   * top of this.
+   */
+  accessRestrictions?: BackstagePrincipalAccessRestrictions;
+};
+
+/**
+ * The access restrictions that apply to a given principal.
+ *
+ * @public
+ */
+export type BackstagePrincipalAccessRestrictions = {
+  /**
+   * If given, the principal is limited to only performing actions with these
+   * named permissions.
+   *
+   * Note that this only applies where permissions checks are enabled in the
+   * first place. Endpoints that are not protected by the permissions system at
+   * all, are not affected by this setting.
+   *
+   * This array always has at least one element, or is missing entirely.
+   */
+  permissionNames?: string[];
+  /**
+   * If given, the principal is limited to only performing actions whose
+   * permissions have these attributes.
+   *
+   * Note that this only applies where permissions checks are enabled in the
+   * first place. Endpoints that are not protected by the permissions system at
+   * all, are not affected by this setting.
+   *
+   * This object always has at least one key, or is missing entirely.
+   */
+  permissionAttributes?: {
+    /**
+     * Match any of these action values. This array always has at least one
+     * element, or is missing entirely.
+     */
+    action?: Array<Required<PermissionAttributes>['action']>;
+  };
 };
 
 /**
