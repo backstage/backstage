@@ -88,14 +88,6 @@ export class TaskManager implements TaskContext {
     private readonly config?: Config,
   ) {}
 
-  get isWorkspaceSerializationEnabled(): boolean {
-    return (
-      this.config?.getOptionalBoolean(
-        'scaffolder.EXPERIMENTAL_workspaceSerialization',
-      ) ?? false
-    );
-  }
-
   get spec() {
     return this.task.spec;
   }
@@ -120,7 +112,7 @@ export class TaskManager implements TaskContext {
     taskId: string;
     targetPath: string;
   }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled) {
+    if (this.isWorkspaceSerializationEnabled()) {
       this.storage.rehydrateWorkspace?.(options);
     }
   }
@@ -171,7 +163,7 @@ export class TaskManager implements TaskContext {
   }
 
   async serializeWorkspace?(options: { path: string }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled) {
+    if (this.isWorkspaceSerializationEnabled()) {
       await this.storage.serializeWorkspace?.({
         path: options.path,
         taskId: this.task.taskId,
@@ -180,7 +172,7 @@ export class TaskManager implements TaskContext {
   }
 
   async cleanWorkspace?(): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled) {
+    if (this.isWorkspaceSerializationEnabled()) {
       await this.storage.cleanWorkspace?.({ taskId: this.task.taskId });
     }
   }
@@ -217,6 +209,14 @@ export class TaskManager implements TaskContext {
         );
       }
     }, 1000);
+  }
+
+  private isWorkspaceSerializationEnabled(): boolean {
+    return (
+      this.config?.getOptionalBoolean(
+        'scaffolder.EXPERIMENTAL_workspaceSerialization',
+      ) ?? false
+    );
   }
 
   async getInitiatorCredentials(): Promise<BackstageCredentials> {

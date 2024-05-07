@@ -572,8 +572,6 @@ export class TaskManager implements TaskContext_2 {
   // (undocumented)
   getWorkspaceName(): Promise<string>;
   // (undocumented)
-  get isWorkspaceSerializationEnabled(): boolean;
-  // (undocumented)
   rehydrateWorkspace?(options: {
     taskId: string;
     targetPath: string;
