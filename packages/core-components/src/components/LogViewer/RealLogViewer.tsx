@@ -60,14 +60,12 @@ export function RealLogViewer(props: RealLogViewerProps) {
       selection.setSelection(line, false);
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
-
   const handleSelectLine = (
     line: number,
     event: { shiftKey: boolean; preventDefault: () => void },
   ) => {
     selection.setSelection(line, event.shiftKey);
   };
-
   return (
     <AutoSizer>
       {({ height, width }: { height?: number; width?: number }) => (
@@ -110,7 +108,7 @@ export function RealLogViewer(props: RealLogViewerProps) {
                     href={`#line-${lineNumber}`}
                     className={classes.lineNumber}
                     onClick={event => handleSelectLine(lineNumber, event)}
-                    onKeyPress={event => handleSelectLine(lineNumber, event)}
+                    onKeyDown={event => handleSelectLine(lineNumber, event)}
                   >
                     {lineNumber}
                   </a>
