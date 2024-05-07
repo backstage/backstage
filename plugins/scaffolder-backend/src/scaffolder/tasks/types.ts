@@ -211,6 +211,21 @@ export interface TaskStore {
   ): Promise<{ events: SerializedTaskEvent[] }>;
 
   shutdownTask?(options: TaskStoreShutDownTaskOptions): Promise<void>;
+
+  rehydrateWorkspace?(options: {
+    taskId: string;
+    targetPath: string;
+  }): Promise<void>;
+
+  cleanWorkspace?({ taskId }: { taskId: string }): Promise<void>;
+
+  serializeWorkspace?({
+    path,
+    taskId,
+  }: {
+    path: string;
+    taskId: string;
+  }): Promise<void>;
 }
 
 export type WorkflowResponse = { output: { [key: string]: JsonValue } };

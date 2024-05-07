@@ -1,5 +1,16 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.2.10-next.2
+
+### Patch Changes
+
+- b192752: Updated `README.md` to point to `packages/backend` instead of `packages/backend-next`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.22.0-next.2
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-scaffolder-node@0.4.4-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+
 ## 0.2.10-next.1
 
 ### Patch Changes
