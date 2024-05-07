@@ -151,7 +151,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
   }
 
   async getBuilder(): Promise<string> {
-    return this.configApi.getString('techdocs.builder');
+    return this.configApi.getOptionalString('techdocs.builder') || 'local';
   }
 
   /**
