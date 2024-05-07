@@ -33,7 +33,8 @@
   },
   "dependencies": {
     "@backstage/backend-app-api": "workspace:^",
-    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^"
   },
   "devDependencies": {
     "@backstage/backend-plugin-api": "workspace:^",

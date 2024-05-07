@@ -51,6 +51,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "better-sqlite3": "^9.0.0",
     "cookie": "^0.6.0",
