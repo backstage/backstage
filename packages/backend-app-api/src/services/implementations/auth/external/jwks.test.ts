@@ -28,8 +28,6 @@ interface AnyJWK extends Record<string, string> {
   kty: string;
 }
 // Simplified copy of TokenFactory in @backstage/plugin-auth-backend
-// Since this is re-used in several tests, I wonder if it should get refactored
-// into @backstage/backend-test-utils
 class FakeTokenFactory {
   private readonly keys = new Array<AnyJWK>();
 
