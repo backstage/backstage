@@ -34,7 +34,6 @@ export class JWKSHandler implements TokenHandler {
   add(options: Config) {
     const algorithms = options.getOptionalStringArray('algorithms') ?? [];
     const issuers = options.getOptionalStringArray('issuers') ?? [];
-    // if audience is unset, an empty string is valid, but an empty array is not
     const audiences = options.getOptionalStringArray('audiences') ?? '';
     const uri = options.getString('uri');
 
