@@ -30,12 +30,7 @@ import {
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import {
-  InputError,
-  NotAllowedError,
-  NotFoundError,
-  stringifyError,
-} from '@backstage/errors';
+import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import {
@@ -56,7 +51,6 @@ import {
   templateParameterReadPermission,
   templateStepReadPermission,
   scaffolderTaskPermissions,
-  actionReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -78,10 +72,7 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import {
-  AuthorizeResult,
-  PermissionRuleParams,
-} from '@backstage/plugin-permission-common';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
   createPermissionIntegrationRouter,
@@ -420,12 +411,8 @@ export async function createRouter(
         permissions: scaffolderActionPermissions,
         rules: actionRules,
       },
-      {
-        resourceType: 'basic',
-        permissions: scaffolderTaskPermissions,
-        rules: [],
-      },
     ],
+    permissions: scaffolderTaskPermissions,
   });
 
   router.use(permissionIntegrationRouter);
@@ -464,20 +451,7 @@ export async function createRouter(
         });
       },
     )
-    .get('/v2/actions', async (req, res) => {
-      const credentials = await httpAuth.credentials(req);
-      if (permissions) {
-        const authorizationResponse = (
-          await permissions.authorizeConditional(
-            [{ permission: actionReadPermission }],
-            { credentials: credentials },
-          )
-        )[0];
-        if (authorizationResponse.result === AuthorizeResult.DENY) {
-          throw new NotAllowedError();
-        }
-      }
-
+    .get('/v2/actions', async (_req, res) => {
       const actionsList = actionRegistry.list().map(action => {
         return {
           id: action.id,

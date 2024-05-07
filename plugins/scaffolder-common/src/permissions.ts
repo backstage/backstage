@@ -42,19 +42,6 @@ export const actionExecutePermission = createPermission({
   resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
 });
 
-// TODO: Figure out whether to convert this to a basic permission or remove it completely since the current rules aren't applicable to this permission
-/**
- * This permission is used to authorize actions that involve access the action registry
- *
- * @alpha
- */
-export const actionReadPermission = createPermission({
-  name: 'scaffolder.action.read',
-  attributes: {
-    action: 'read',
-  },
-  resourceType: RESOURCE_TYPE_SCAFFOLDER_ACTION,
-});
 /**
  * This permission is used to authorize actions that involve reading
  * one or more parameters from a template.
@@ -127,15 +114,6 @@ export const taskCancelPermission = createPermission({
 });
 
 /**
- * List of all the scaffolder permissions
- * @alpha
- */
-export const scaffolderPermissions = [
-  templateParameterReadPermission,
-  templateStepReadPermission,
-];
-
-/**
  * List of the scaffolder permissions that are associated with template steps and parameters.
  * @alpha
  */
@@ -148,10 +126,7 @@ export const scaffolderTemplatePermissions = [
  * List of the scaffolder permissions that are associated with scaffolder actions.
  * @alpha
  */
-export const scaffolderActionPermissions = [
-  actionExecutePermission,
-  actionReadPermission,
-];
+export const scaffolderActionPermissions = [actionExecutePermission];
 
 /**
  * List of the scaffolder permissions that are associated with scaffolder tasks.
@@ -161,4 +136,14 @@ export const scaffolderTaskPermissions = [
   taskCancelPermission,
   taskCreatePermission,
   taskReadPermission,
+];
+
+/**
+ * List of all the scaffolder permissions
+ * @alpha
+ */
+export const scaffolderPermissions = [
+  ...scaffolderTemplatePermissions,
+  ...scaffolderActionPermissions,
+  ...scaffolderTaskPermissions,
 ];
