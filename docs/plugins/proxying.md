@@ -66,6 +66,10 @@ values:
   you also add `allowedHeaders: ['Authorization']` to an endpoint configuration,
   then the Backstage token (if provided) WILL be forwarded.
 
+Note that if you have `backend.auth.dangerouslyDisableDefaultAuthPolicy` set to
+`true`, the `credentials` value does not apply; the proxy will behave as if all
+endpoints were set to `dangerously-allow-unauthenticated`.
+
 If the value is a string, it is assumed to correspond to:
 
 ```yaml

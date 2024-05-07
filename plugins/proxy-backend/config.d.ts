@@ -88,6 +88,11 @@ export interface Config {
              *   are required to access this proxy target. The target can still
              *   apply its own credentials checks, but the proxy will not help
              *   block non-Backstage-blessed callers.
+             *
+             * Note that if you have
+             * `backend.auth.dangerouslyDisableDefaultAuthPolicy` set to `true`,
+             * the `credentials` value does not apply; the proxy will behave as
+             * if all endpoints were set to `dangerously-allow-unauthenticated`.
              */
             credentials?:
               | 'require'
@@ -151,15 +156,20 @@ export interface Config {
            * The values are as follows:
            *
            * - 'require': Callers must provide Backstage user or service
-           *   credentials with each request. The credentials are not
-           *   forwarded to the proxy target.
+           *   credentials with each request. The credentials are not forwarded
+           *   to the proxy target.
            * - 'forward': Callers must provide Backstage user or service
            *   credentials with each request, and those credentials are
            *   forwarded to the proxy target.
-           * - 'dangerously-allow-unauthenticated': No Backstage credentials
-           *   are required to access this proxy target. The target can still
-           *   apply its own credentials checks, but the proxy will not help
-           *   block non-Backstage-blessed callers.
+           * - 'dangerously-allow-unauthenticated': No Backstage credentials are
+           *   required to access this proxy target. The target can still apply
+           *   its own credentials checks, but the proxy will not help block
+           *   non-Backstage-blessed callers.
+           *
+           * Note that if you have
+           * `backend.auth.dangerouslyDisableDefaultAuthPolicy` set to `true`,
+           * the `credentials` value does not apply; the proxy will behave as if
+           * all endpoints were set to `dangerously-allow-unauthenticated`.
            */
           credentials?:
             | 'require'

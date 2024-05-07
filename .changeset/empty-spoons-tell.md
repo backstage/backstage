@@ -36,7 +36,10 @@ There are three possible `credentials` settings at this point:
 The value `dangerously-allow-unauthenticated` was the old default.
 
 The value `require` is the new default, so requests that were previously
-permitted may now start resulting in `401 Unauthorized` responses.
+permitted may now start resulting in `401 Unauthorized` responses. If you have
+`backend.auth.dangerouslyDisableDefaultAuthPolicy` set to `true`, this does not
+apply; the proxy will behave as if all endpoints were set to
+`dangerously-allow-unauthenticated`.
 
 If you have proxy endpoints that require unauthenticated access still, please
 add `credentials: dangerously-allow-unauthenticated` to their declarations in
