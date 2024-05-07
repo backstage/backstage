@@ -83,9 +83,9 @@ Authorization: Bearer eZv5o+fW3KnR3kVabMW4ZcDNLPl8nmMW
 
 ## JWKS Token Auth
 
-This access method allows for external caller token authentication using configured JWKS.
-This is useful for callers that are authenticating to your instance of Backstage with
-third-party tools, such as Auth0.
+This access method allows for external caller token authentication using configured
+JSON Web Key Sets (JWKS). This is useful for callers that are authenticating to our
+instance of Backstage with third-party tools, such as Auth0.
 
 You can configure this access method by adding one or more entries of type `jwks`
 to the `backend.auth.externalAccess` app-config key:
@@ -110,8 +110,22 @@ backend:
             - https://example.com
 ```
 
+The URI should point at an unauthenticated endpoint that returns the JWKS.
+
+Issuers specifies the issuer(s) of the JWT that the authenticating app will accept.
+Passed JWTs must have an `iss` claim which matches one of the specified issuers.
+
+Algorithms specifies the algorithm(s) that are used to verify the JWT. The passed JWTs
+must have been signed using one of the listed algorithms.
+
+Audiences speficies the intended audience(s) of the JWT. The passed JWTs must have an "aud"
+claim that matches one of the audiences specified, or have no audience specified.
+
+For additional details regarding the JWKS configuration, please consult your authentication
+provider's documentation.
+
 The subject returned from the token verification will become part of the
-credentials object that the request recipients get.
+credentials object that the request recipient plugins get.
 
 ## Legacy Tokens
 
