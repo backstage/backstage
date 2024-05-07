@@ -526,13 +526,18 @@ export class GitlabUrlReader implements UrlReader {
 
 // @public
 export class HarnessUrlReader implements UrlReader {
-  constructor(integration: HarnessIntegration);
+  constructor(
+    integration: HarnessIntegration,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
+  );
   // (undocumented)
   static factory: ReaderFactory;
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(): Promise<ReadTreeResponse>;
+  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
   // (undocumented)
   readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
   // (undocumented)

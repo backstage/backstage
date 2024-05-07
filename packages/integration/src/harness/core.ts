@@ -33,31 +33,8 @@ export function getHarnessEditContentsUrl(
   config: HarnessIntegrationConfig,
   url: string,
 ) {
-  try {
-    const baseUrl = `https://${config.host}`;
-    const [
-      _blank,
-      _ng,
-      _account,
-      accountId,
-      _module,
-      _moduleName,
-      _org,
-      orgName,
-      _projects,
-      projectName,
-      _repos,
-      repoName,
-      _files,
-      _ref,
-      _branch,
-      ...path
-    ] = url.replace(baseUrl, '').split('/');
-    const pathWithoutSlash = path.join('/').replace(/^\//, '');
-    return `${baseUrl}/gateway/code/api/v1/repos/${accountId}/${orgName}/${projectName}/${repoName}/+/edit/${pathWithoutSlash}`;
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${url}, ${e}`);
-  }
+  const parsedUrl = parseHarnessUrl(config, url);
+  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/edit/${parsedUrl.path}`;
 }
 
 /**
@@ -77,35 +54,52 @@ export function getHarnessFileContentsUrl(
   config: HarnessIntegrationConfig,
   url: string,
 ) {
-  try {
-    const baseUrl = `https://${config.host}`;
-    const [
-      _blank,
-      _ng,
-      _account,
-      accountId,
-      _module,
-      _moduleName,
-      _org,
-      orgName,
-      _projects,
-      projectName,
-      _repos,
-      repoName,
-      _files,
-      _ref,
-      _branch,
-      ...path
-    ] = url.replace(baseUrl, '').split('/');
-    const urlParts = url.replace(baseUrl, '').split('/');
-    const refAndPath = urlParts.slice(13);
-    const refIndex = refAndPath.findIndex(item => item === '~');
-    const refString = refAndPath.slice(0, refIndex);
-    const pathWithoutSlash = path.join('/').replace(/^\//, '');
-    return `${baseUrl}/gateway/code/api/v1/repos/${accountId}/${orgName}/${projectName}/${repoName}/+/raw/${pathWithoutSlash}?routingId=${accountId}&git_ref=${refString}`;
-  } catch (e) {
-    throw new Error(`Incorrect URL: ${url}, ${e}`);
-  }
+  const parsedUrl = parseHarnessUrl(config, url);
+  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/raw/${parsedUrl.path}?routingId=${parsedUrl.accountId}&git_ref=refs/heads/${parsedUrl.refString}`;
+}
+
+/**
+ * Given a URL pointing to a repository/path, returns a URL
+ * for archive contents of the repository.
+ *
+ * @remarks
+ *
+ * Converts
+ * from: https://gitea.com/a/b/src/branchname
+ * to:   https://gitea.com/api/v1/repos/a/b/archive/branchname.zip
+ *
+ * @param url - A URL pointing to a repository/path
+ * @param config - The relevant provider config
+ * @public
+ */
+export function getHarnessArchiveUrl(
+  config: HarnessIntegrationConfig,
+  url: string,
+) {
+  const parsedUrl = parseHarnessUrl(config, url);
+  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/archive/${parsedUrl.branch}.zip`;
+}
+
+/**
+ * Given a URL pointing to a repository branch, returns a URL
+ * for latest commit information.
+ *
+ * @remarks
+ *
+ * Converts
+ * from: https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projectName/repos/repoName/files/branchName
+ * to:   https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projectName/repoName/+/content?routingId=accountId&include_commit=true&git_ref=refs/heads/branchName
+ *
+ * @param url - A URL pointing to a repository branch
+ * @param config - The relevant provider config
+ * @public
+ */
+export function getHarnessLatestCommitUrl(
+  config: HarnessIntegrationConfig,
+  url: string,
+) {
+  const parsedUrl = parseHarnessUrl(config, url);
+  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/content?routingId=${parsedUrl.accountId}&include_commit=true&git_ref=refs/heads/${parsedUrl.refString}`;
 }
 
 /**
@@ -129,4 +123,74 @@ export function getHarnessRequestOptions(config: HarnessIntegrationConfig): {
   return {
     headers,
   };
+}
+
+/**
+ * Return parsed git url properties.
+ *
+ * @param config - A Gitea provider config
+ * @param url - A URL pointing to a repository
+ * @public
+ */
+export function parseHarnessUrl(
+  config: HarnessIntegrationConfig,
+  url: string,
+): {
+  baseUrl: string;
+  accountId: string;
+  orgName: string;
+  projectName: string;
+  refString: string;
+  repoName: string;
+  path: string;
+  refDashStr: string;
+  branch: string;
+} {
+  const baseUrl = `https://${config.host}`;
+  try {
+    const pathUrl = new URL(url);
+    const pathSegments = pathUrl.pathname
+      .split('/')
+      .filter(segment => segment !== '');
+    const urlParts = pathUrl.pathname.split('/');
+    const [
+      _ng,
+      _account,
+      accountId,
+      _module,
+      _moduleName,
+      _org,
+      orgName,
+      _projects,
+      projectName,
+      _repos,
+      repoName,
+      _files,
+      _ref,
+      _branch,
+      ..._path
+    ] = pathSegments;
+    const refAndPath = urlParts.slice(
+      urlParts.findIndex(i => i === 'files') + 1,
+    );
+    const refIndex = refAndPath.findIndex(item => item === '~');
+    const refString = refAndPath.slice(0, refIndex).join('/');
+    const pathWithoutSlash = refAndPath
+      .slice(refIndex + 1)
+      .join('/')
+      .replace(/^\//, '');
+    return {
+      baseUrl: baseUrl,
+      accountId: accountId,
+      orgName: orgName,
+      projectName: projectName,
+      refString: refString,
+      path: pathWithoutSlash,
+      repoName: repoName,
+      refDashStr: refAndPath.slice(0, refIndex).join('-'),
+      branch: refAndPath.join('/'),
+    };
+  } catch (e) {
+    throw new Error(`Incorrect URL: ${url}, ${e}`);
+  }
 }

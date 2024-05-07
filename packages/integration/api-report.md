@@ -514,7 +514,19 @@ export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
 };
 
 // @public
+export function getHarnessArchiveUrl(
+  config: HarnessIntegrationConfig,
+  url: string,
+): string;
+
+// @public
 export function getHarnessFileContentsUrl(
+  config: HarnessIntegrationConfig,
+  url: string,
+): string;
+
+// @public
+export function getHarnessLatestCommitUrl(
   config: HarnessIntegrationConfig,
   url: string,
 ): string;
@@ -762,6 +774,21 @@ export function parseGiteaUrl(
   name: string;
   ref: string;
   path: string;
+};
+
+// @public
+export function parseHarnessUrl(
+  config: HarnessIntegrationConfig,
+  url: string,
+): {
+  baseUrl: string;
+  accountId: string;
+  orgName: string;
+  projectName: string;
+  refString: string;
+  repoName: string;
+  path: string;
+  refDashStr: string;
 };
 
 // @public

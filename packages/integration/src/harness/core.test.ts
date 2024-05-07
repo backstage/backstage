@@ -18,9 +18,12 @@ import { setupServer } from 'msw/node';
 import { setupRequestMockHandlers } from '../helpers';
 import { HarnessIntegrationConfig } from './config';
 import {
+  getHarnessArchiveUrl,
   getHarnessEditContentsUrl,
   getHarnessFileContentsUrl,
+  getHarnessLatestCommitUrl,
   getHarnessRequestOptions,
+  parseHarnessUrl,
 } from './core';
 
 describe('Harness code core', () => {
@@ -38,7 +41,7 @@ describe('Harness code core', () => {
           'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml',
         ),
       ).toEqual(
-        'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/raw/all-apis.yaml?routingId=accountId&git_ref=refMain',
+        'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/raw/all-apis.yaml?routingId=accountId&git_ref=refs/heads/refMain',
       );
     });
   });
@@ -55,6 +58,38 @@ describe('Harness code core', () => {
         ),
       ).toEqual(
         'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/edit/all-apis.yaml',
+      );
+    });
+  });
+
+  describe('getHarnessArchiveUrl', () => {
+    it('can create an url from arguments', () => {
+      const config: HarnessIntegrationConfig = {
+        host: 'app.harness.io',
+      };
+      expect(
+        getHarnessArchiveUrl(
+          config,
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projectName/repos/repoName/files/branchName',
+        ),
+      ).toEqual(
+        'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projectName/repoName/+/archive/branchName.zip',
+      );
+    });
+  });
+
+  describe('getGiteaLatestCommitUrl', () => {
+    it('can create an url from arguments', () => {
+      const config: HarnessIntegrationConfig = {
+        host: 'app.harness.io',
+      };
+      expect(
+        getHarnessLatestCommitUrl(
+          config,
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projectName/repos/repoName/files/branchName',
+        ),
+      ).toEqual(
+        'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projectName/repoName/+/content?routingId=accountId&include_commit=true&git_ref=refs/heads/branchName',
       );
     });
   });
@@ -86,6 +121,52 @@ describe('Harness code core', () => {
       expect(
         (getHarnessRequestOptions(authRequest).headers as any)['x-api-key'],
       ).toEqual('a');
+    });
+  });
+
+  describe('parseHarnessUrl', () => {
+    it('can fetch harness url', () => {
+      const config: HarnessIntegrationConfig = {
+        host: 'app.harness.io',
+      };
+      expect(
+        parseHarnessUrl(
+          config,
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projectName/repos/repoName/files/branchName',
+        ),
+      ).toEqual({
+        accountId: 'accountId',
+        baseUrl: 'https://app.harness.io',
+        orgName: 'orgName',
+        path: '',
+        projectName: 'projectName',
+        refDashStr: '',
+        refString: '',
+        repoName: 'repoName',
+        branch: 'branchName',
+      });
+    });
+
+    it('provide path without starting slash', () => {
+      const config: HarnessIntegrationConfig = {
+        host: 'app.harness.io',
+      };
+      expect(
+        parseHarnessUrl(
+          config,
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projectName/repos/repoName/files/branchName/simple/path',
+        ),
+      ).toEqual({
+        accountId: 'accountId',
+        baseUrl: 'https://app.harness.io',
+        orgName: 'orgName',
+        path: 'path',
+        projectName: 'projectName',
+        refDashStr: 'branchName-simple',
+        refString: 'branchName/simple',
+        repoName: 'repoName',
+        branch: 'branchName/simple/path',
+      });
     });
   });
 });
