@@ -1,5 +1,15 @@
 # @backstage/plugin-search-backend-module-techdocs
 
+## 0.1.23-next.2
+
+### Patch Changes
+
+- 5dc5f4f: Allow the `tokenManager` parameter to be optional when instantiating collator
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0-next.2
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-techdocs-node@1.12.4-next.2
+
 ## 0.1.23-next.1
 
 ### Patch Changes

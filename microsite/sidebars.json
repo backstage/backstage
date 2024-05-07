@@ -498,7 +498,6 @@
       "api/deprecations"
     ],
     "Tutorials": [
-      "tutorials/journey",
       "tutorials/quickstart-app-plugin",
       "tutorials/react-router-stable-migration",
       "tutorials/react18-migration",

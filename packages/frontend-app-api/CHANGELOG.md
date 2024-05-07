@@ -1,5 +1,17 @@
 # @backstage/frontend-app-api
 
+## 0.7.0-next.2
+
+### Minor Changes
+
+- ddddecb: Extensions in app-config now always affect ordering. Previously, only when enabling disabled extensions did they rise to the top.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.7-next.2
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+
 ## 0.6.5-next.1
 
 ### Patch Changes

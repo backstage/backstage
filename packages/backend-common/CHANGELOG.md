@@ -1,5 +1,14 @@
 # @backstage/backend-common
 
+## 0.22.0-next.2
+
+### Patch Changes
+
+- 2cc750d: Added `HarnessURLReader` with `readUrl` support.
+- ccc8851: Added config prop `ensureSchemaExists` to support postgres instances where user can create schemas but not databases.
+- Updated dependencies
+  - @backstage/integration@1.11.0-next.0
+
 ## 0.22.0-next.1
 
 ### Minor Changes

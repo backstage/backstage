@@ -1074,6 +1074,77 @@ describe('GithubEntityProvider', () => {
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
 
+  it('apply refresh call on modified files from push event when catalogPath contains a glob pattern', async () => {
+    const schedule = new PersistingTaskRunner();
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            catalogPath: '**/catalog-info.yaml',
+          },
+        },
+      },
+    });
+
+    const provider = GithubEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    await provider.connect(entityProviderConnection);
+
+    const event: EventParams = {
+      topic: 'github.push',
+      metadata: {
+        'x-github-event': 'push',
+      },
+      eventPayload: {
+        ref: 'refs/heads/main',
+        repository: {
+          name: 'teste-1',
+          url: 'https://github.com/test-org/test-repo',
+          default_branch: 'main',
+          stargazers: 0,
+          master_branch: 'main',
+          organization: 'test-org',
+          topics: [],
+        },
+        created: true,
+        deleted: false,
+        forced: false,
+        commits: [
+          {
+            added: ['new-file.yaml'],
+            removed: [],
+            modified: [],
+          },
+          {
+            added: [],
+            removed: [],
+            modified: ['catalog-info.yaml'],
+          },
+        ],
+      },
+    };
+
+    await provider.onEvent(event);
+
+    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
+      keys: [
+        'url:https://github.com/test-org/test-repo/tree/main/catalog-info.yaml',
+        'url:https://github.com/test-org/test-repo/blob/main/catalog-info.yaml',
+        'url:https://github.com/test-org/test-repo/tree/main/**/catalog-info.yaml',
+      ],
+    });
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+  });
+
   it('should process repository when match filters from push event', async () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader({
