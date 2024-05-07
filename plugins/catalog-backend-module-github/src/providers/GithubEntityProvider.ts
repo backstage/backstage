@@ -374,23 +374,16 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     );
 
     if (modified.length > 0) {
-      const catalogPath = this.config.catalogPath.startsWith('/')
-        ? this.config.catalogPath.substring(1)
-        : this.config.catalogPath;
-
       await this.connection.refresh({
         keys: [
-          ...new Set([
-            ...modified.map(
-              filePath =>
-                `url:${event.repository.url}/tree/${branch}/${filePath}`,
-            ),
-            ...modified.map(
-              filePath =>
-                `url:${event.repository.url}/blob/${branch}/${filePath}`,
-            ),
-            `url:${event.repository.url}/tree/${branch}/${catalogPath}`,
-          ]),
+          ...modified.map(
+            filePath =>
+              `url:${event.repository.url}/tree/${branch}/${filePath}`,
+          ),
+          ...modified.map(
+            filePath =>
+              `url:${event.repository.url}/blob/${branch}/${filePath}`,
+          ),
         ],
       });
     }

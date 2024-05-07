@@ -39,7 +39,7 @@ export const TechDocsNotFound = ({ errorMessage }: Props) => {
   }, [analyticsApi, entityRef, location]);
 
   let additionalInfo = '';
-  if (![undefined, 'local'].includes(techdocsBuilder)) {
+  if (techdocsBuilder !== 'local') {
     additionalInfo =
       "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not " +
       "generate docs if they are not found. Make sure the project's docs are generated and published by some external " +

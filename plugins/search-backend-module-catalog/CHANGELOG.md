@@ -1,15 +1,5 @@
 # @backstage/plugin-search-backend-module-catalog
 
-## 0.1.24-next.2
-
-### Patch Changes
-
-- b192752: Updated `README.md` to point to `packages/backend` instead of `packages/backend-next`.
-- 5dc5f4f: Allow the `tokenManager` parameter to be optional when instantiating collator
-- Updated dependencies
-  - @backstage/plugin-catalog-node@1.12.0-next.2
-  - @backstage/backend-common@0.22.0-next.2
-
 ## 0.1.24-next.1
 
 ### Patch Changes

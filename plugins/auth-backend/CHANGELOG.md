@@ -1,16 +1,5 @@
 # @backstage/plugin-auth-backend
 
-## 0.22.5-next.2
-
-### Patch Changes
-
-- 4a0577e: fix: Move config declarations to appropriate auth backend modules
-- Updated dependencies
-  - @backstage/plugin-catalog-node@1.12.0-next.2
-  - @backstage/backend-common@0.22.0-next.2
-  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.10-next.2
-  - @backstage/plugin-auth-backend-module-github-provider@0.1.15-next.2
-
 ## 0.22.5-next.1
 
 ### Patch Changes

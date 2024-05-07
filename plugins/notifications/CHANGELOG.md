@@ -1,13 +1,5 @@
 # @backstage/plugin-notifications
 
-## 0.2.1-next.2
-
-### Patch Changes
-
-- 42eaf63: Increase default and allow modifying notification snackbar auto hide duration
-- Updated dependencies
-  - @backstage/core-components@0.14.7-next.2
-
 ## 0.2.1-next.1
 
 ### Patch Changes

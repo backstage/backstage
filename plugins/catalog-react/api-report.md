@@ -460,7 +460,6 @@ export type EntityRefLinksProps<
 
 // @public
 export interface EntityRefPresentation {
-  promise: Promise<EntityRefPresentationSnapshot>;
   snapshot: EntityRefPresentationSnapshot;
   update$?: Observable<EntityRefPresentationSnapshot>;
 }

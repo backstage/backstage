@@ -1,25 +1,5 @@
 # @backstage/plugin-scaffolder-backend
 
-## 1.22.6-next.2
-
-### Patch Changes
-
-- e4b50ab: Scaffolder workspace serialization
-- Updated dependencies
-  - @backstage/plugin-catalog-node@1.12.0-next.2
-  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.0-next.2
-  - @backstage/backend-common@0.22.0-next.2
-  - @backstage/plugin-scaffolder-node@0.4.4-next.2
-  - @backstage/integration@1.11.0-next.0
-  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.16-next.2
-  - @backstage/plugin-scaffolder-backend-module-azure@0.1.10-next.2
-  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.8-next.2
-  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.8-next.2
-  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.8-next.2
-  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.10-next.2
-  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.8-next.2
-  - @backstage/plugin-scaffolder-backend-module-github@0.2.8-next.2
-
 ## 1.22.5-next.1
 
 ### Patch Changes

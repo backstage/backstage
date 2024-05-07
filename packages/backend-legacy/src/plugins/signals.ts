@@ -25,6 +25,5 @@ export default async function createPlugin(
     events: env.events,
     identity: env.identity,
     discovery: env.discovery,
-    config: env.config,
   });
 }

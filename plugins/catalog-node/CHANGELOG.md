@@ -1,12 +1,5 @@
 # @backstage/plugin-catalog-node
 
-## 1.12.0-next.2
-
-### Minor Changes
-
-- f2a2a83: Added `LocationAnalyzer` type, moved from `@backstage/plugin-catalog-backend`.
-- f2a2a83: Breaking change to `/alpha` API where the `catalogAnalysisExtensionPoint` has been reworked. The `addLocationAnalyzer` method has been renamed to `addScmLocationAnalyzer`, and a new `setLocationAnalyzer` method has been added which allows the full `LocationAnalyzer` implementation to be overridden.
-
 ## 1.11.2-next.1
 
 ### Patch Changes

@@ -24,7 +24,6 @@ import { createRouter } from './router';
 import { EventsService } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { UserInfoService } from '@backstage/backend-plugin-api';
-import { ConfigReader } from '@backstage/config';
 
 const eventsServiceMock: jest.Mocked<EventsService> = {
   subscribe: jest.fn(),
@@ -54,7 +53,6 @@ describe('createRouter', () => {
       events: eventsServiceMock,
       discovery,
       userInfo,
-      config: new ConfigReader({}),
     });
     app = express().use(router);
   });

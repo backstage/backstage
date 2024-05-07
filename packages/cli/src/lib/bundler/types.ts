@@ -54,12 +54,10 @@ export type BackendBundlingOptions = {
   parallelism?: number;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
-  require?: string;
 };
 
 export type BackendServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
-  require?: string;
 };

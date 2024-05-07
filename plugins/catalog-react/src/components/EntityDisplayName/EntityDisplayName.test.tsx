@@ -73,10 +73,6 @@ describe('<EntityDisplayName />', () => {
       update$: new ObservableImpl(subscriber => {
         promise.then(value => subscriber.next(value));
       }),
-      promise: Promise.resolve({
-        entityRef: 'component:default/foo',
-        primaryTitle: 'foo',
-      }),
     } as EntityRefPresentation);
 
     await renderInTestApp(

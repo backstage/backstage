@@ -5,11 +5,9 @@
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { Config } from '@backstage/config';
 import { EventsService } from '@backstage/plugin-events-node';
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { UserInfoService } from '@backstage/backend-plugin-api';
@@ -22,15 +20,11 @@ export interface RouterOptions {
   // (undocumented)
   auth?: AuthService;
   // (undocumented)
-  config: Config;
-  // (undocumented)
   discovery: PluginEndpointDiscovery;
   // (undocumented)
   events: EventsService;
   // (undocumented)
   identity: IdentityApi;
-  // (undocumented)
-  lifecycle?: LifecycleService;
   // (undocumented)
   logger: LoggerService;
   // (undocumented)

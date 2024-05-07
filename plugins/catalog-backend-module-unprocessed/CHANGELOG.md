@@ -1,14 +1,5 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
-## 0.4.5-next.2
-
-### Patch Changes
-
-- b192752: Updated `README.md` to point to `packages/backend` instead of `packages/backend-next`.
-- Updated dependencies
-  - @backstage/plugin-catalog-node@1.12.0-next.2
-  - @backstage/backend-common@0.22.0-next.2
-
 ## 0.4.5-next.1
 
 ### Patch Changes

@@ -83,7 +83,6 @@ export const defaultServiceFactories = [
   mockServices.tokenManager.factory(),
   mockServices.userInfo.factory(),
   mockServices.urlReader.factory(),
-  mockServices.events.factory(),
 ];
 
 /**

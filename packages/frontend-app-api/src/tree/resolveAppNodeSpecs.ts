@@ -184,7 +184,6 @@ export function resolveAppNodeSpecs(options: {
     );
   }
 
-  const order = new Map<string, (typeof configuredExtensions)[number]>();
   for (const overrideParam of parameters) {
     const extensionId = overrideParam.id;
 
@@ -194,10 +193,11 @@ export function resolveAppNodeSpecs(options: {
       );
     }
 
-    const existing = configuredExtensions.find(
+    const existingIndex = configuredExtensions.findIndex(
       e => e.extension.id === extensionId,
     );
-    if (existing) {
+    if (existingIndex !== -1) {
+      const existing = configuredExtensions[existingIndex];
       if (overrideParam.attachTo) {
         existing.params.attachTo = overrideParam.attachTo;
       }
@@ -209,19 +209,18 @@ export function resolveAppNodeSpecs(options: {
         Boolean(existing.params.disabled) !== Boolean(overrideParam.disabled)
       ) {
         existing.params.disabled = Boolean(overrideParam.disabled);
+        if (!existing.params.disabled) {
+          // bump
+          configuredExtensions.splice(existingIndex, 1);
+          configuredExtensions.push(existing);
+        }
       }
-      order.set(extensionId, existing);
     } else {
       throw new Error(`Extension ${extensionId} does not exist`);
     }
   }
 
-  const orderedExtensions = [
-    ...order.values(),
-    ...configuredExtensions.filter(e => !order.has(e.extension.id)),
-  ];
-
-  return orderedExtensions.map(param => ({
+  return configuredExtensions.map(param => ({
     id: param.extension.id,
     attachTo: param.params.attachTo,
     extension: param.extension,

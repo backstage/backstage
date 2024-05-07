@@ -280,7 +280,6 @@ Options:
   --check
   --inspect [host]
   --inspect-brk [host]
-  --require <path>
   -h, --help
 ```
 

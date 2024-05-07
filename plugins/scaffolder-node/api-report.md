@@ -344,8 +344,6 @@ export interface TaskContext {
   // (undocumented)
   cancelSignal: AbortSignal;
   // (undocumented)
-  cleanWorkspace?(): Promise<void>;
-  // (undocumented)
   complete(result: TaskCompletionState, metadata?: JsonObject): Promise<void>;
   // (undocumented)
   createdBy?: string;
@@ -367,14 +365,7 @@ export interface TaskContext {
   // (undocumented)
   isDryRun?: boolean;
   // (undocumented)
-  rehydrateWorkspace?(options: {
-    taskId: string;
-    targetPath: string;
-  }): Promise<void>;
-  // (undocumented)
   secrets?: TaskSecrets;
-  // (undocumented)
-  serializeWorkspace?(options: { path: string }): Promise<void>;
   // (undocumented)
   spec: TaskSpec;
   // (undocumented)

@@ -1,13 +1,5 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-server
 
-## 0.1.8-next.2
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/plugin-scaffolder-node@0.4.4-next.2
-  - @backstage/integration@1.11.0-next.0
-
 ## 0.1.8-next.1
 
 ### Patch Changes

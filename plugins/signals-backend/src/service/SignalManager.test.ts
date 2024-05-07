@@ -17,7 +17,6 @@ import { WebSocket } from 'ws';
 import { EventsServiceSubscribeOptions } from '@backstage/plugin-events-node';
 import { SignalManager } from './SignalManager';
 import { getVoidLogger } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
 
 class MockWebSocket {
   closed: boolean = false;
@@ -27,11 +26,6 @@ class MockWebSocket {
   data: any[] = [];
 
   close(_: number, __: string | Buffer): void {
-    this.readyState = WebSocket.CLOSED;
-    this.closed = true;
-  }
-
-  terminate(): void {
     this.readyState = WebSocket.CLOSED;
     this.closed = true;
   }
@@ -69,23 +63,9 @@ describe('SignalManager', () => {
     },
   };
 
-  const shutdownHooks: Function[] = [];
-  const mockLifecycle = {
-    addShutdownHook: (hook: Function) => shutdownHooks.push(hook),
-  };
-
   const manager = SignalManager.create({
     events: mockEvents,
     logger: getVoidLogger(),
-    config: new ConfigReader({}),
-    lifecycle: mockLifecycle as any,
-  });
-
-  it('should close all connections when server is closed', () => {
-    const ws = new MockWebSocket();
-    manager.addConnection(ws as unknown as WebSocket);
-    shutdownHooks.forEach(hook => hook());
-    expect(ws.closed).toBeTruthy();
   });
 
   it('should close connection on error', () => {

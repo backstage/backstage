@@ -21,10 +21,9 @@
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "start": "backstage-cli package start --require ./src/instrumentation.js",
+    "start": "backstage-cli package start",
     "test": "backstage-cli package test",
-    "build-image": "docker build ../.. -f Dockerfile --tag example-backend",
-    "start:prometheus": "docker run --mount type=bind,source=./prometheus.yml,destination=/etc/prometheus/prometheus.yml --publish published=9090,target=9090,protocol=tcp prom/prometheus"
+    "build-image": "docker build ../.. -f Dockerfile --tag example-backend"
   },
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",
@@ -57,10 +56,7 @@
     "@backstage/plugin-search-backend-module-techdocs": "workspace:^",
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-signals-backend": "workspace:^",
-    "@backstage/plugin-techdocs-backend": "workspace:^",
-    "@opentelemetry/auto-instrumentations-node": "^0.43.0",
-    "@opentelemetry/exporter-prometheus": "^0.50.0",
-    "@opentelemetry/sdk-node": "^0.50.0"
+    "@backstage/plugin-techdocs-backend": "workspace:^"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

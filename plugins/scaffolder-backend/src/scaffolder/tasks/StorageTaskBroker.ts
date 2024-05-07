@@ -64,16 +64,8 @@ export class TaskManager implements TaskContext {
     abortSignal: AbortSignal,
     logger: Logger,
     auth?: AuthService,
-    config?: Config,
   ) {
-    const agent = new TaskManager(
-      task,
-      storage,
-      abortSignal,
-      logger,
-      auth,
-      config,
-    );
+    const agent = new TaskManager(task, storage, abortSignal, logger, auth);
     agent.startTimeout();
     return agent;
   }
@@ -85,7 +77,6 @@ export class TaskManager implements TaskContext {
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
     private readonly auth?: AuthService,
-    private readonly config?: Config,
   ) {}
 
   get spec() {
@@ -106,15 +97,6 @@ export class TaskManager implements TaskContext {
 
   async getWorkspaceName() {
     return this.task.taskId;
-  }
-
-  async rehydrateWorkspace?(options: {
-    taskId: string;
-    targetPath: string;
-  }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
-      this.storage.rehydrateWorkspace?.(options);
-    }
   }
 
   get done() {
@@ -162,21 +144,6 @@ export class TaskManager implements TaskContext {
     });
   }
 
-  async serializeWorkspace?(options: { path: string }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
-      await this.storage.serializeWorkspace?.({
-        path: options.path,
-        taskId: this.task.taskId,
-      });
-    }
-  }
-
-  async cleanWorkspace?(): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
-      await this.storage.cleanWorkspace?.({ taskId: this.task.taskId });
-    }
-  }
-
   async complete(
     result: TaskCompletionState,
     metadata?: JsonObject,
@@ -209,14 +176,6 @@ export class TaskManager implements TaskContext {
         );
       }
     }, 1000);
-  }
-
-  private isWorkspaceSerializationEnabled(): boolean {
-    return (
-      this.config?.getOptionalBoolean(
-        'scaffolder.EXPERIMENTAL_workspaceSerialization',
-      ) ?? false
-    );
   }
 
   async getInitiatorCredentials(): Promise<BackstageCredentials> {
@@ -260,8 +219,6 @@ export interface CurrentClaimedTask {
    * The creator of the task.
    */
   createdBy?: string;
-
-  workspace?: Promise<Buffer>;
 }
 
 function defer() {
@@ -365,7 +322,6 @@ export class StorageTaskBroker implements TaskBroker {
           abortController.signal,
           this.logger,
           this.auth,
-          this.config,
         );
       }
 

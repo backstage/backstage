@@ -23,7 +23,6 @@ import Router from 'express-promise-router';
 import {
   AuthService,
   BackstageUserInfo,
-  LifecycleService,
   LoggerService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
@@ -34,7 +33,6 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { WebSocket, WebSocketServer } from 'ws';
 import { Duplex } from 'stream';
-import { Config } from '@backstage/config';
 
 /** @public */
 export interface RouterOptions {
@@ -42,8 +40,6 @@ export interface RouterOptions {
   events: EventsService;
   identity: IdentityApi;
   discovery: PluginEndpointDiscovery;
-  config: Config;
-  lifecycle?: LifecycleService;
   auth?: AuthService;
   userInfo?: UserInfoService;
 }
@@ -60,12 +56,16 @@ export async function createRouter(
   let apiUrl: string | undefined = undefined;
 
   const webSocketServer = new WebSocketServer({
-    noServer: true, // handle upgrade manually
-    clientTracking: false, // handle connections in SignalManager
+    noServer: true,
+    clientTracking: false,
   });
 
   webSocketServer.on('error', (error: Error) => {
-    logger.error(`WebSocket server error: ${error}`);
+    logger.error('WebSocket server error', error);
+  });
+
+  webSocketServer.on('close', () => {
+    logger.info('WebSocket server closed');
   });
 
   const handleUpgrade = async (
@@ -94,7 +94,7 @@ export async function createRouter(
         }
       }
     } catch (e) {
-      logger.error(`Failed to authenticate WebSocket connection: ${e}`);
+      logger.error('Failed to authenticate WebSocket connection', e);
       socket.write(
         'HTTP/1.1 401 Web Socket Protocol Handshake\r\n' +
           'Upgrade: WebSocket\r\n' +
@@ -115,14 +115,7 @@ export async function createRouter(
         },
       );
     } catch (e) {
-      logger.error(`Failed to handle WebSocket upgrade: ${e}`);
-      socket.write(
-        'HTTP/1.1 500 Web Socket Protocol Handshake\r\n' +
-          'Upgrade: WebSocket\r\n' +
-          'Connection: Upgrade\r\n' +
-          '\r\n',
-      );
-      socket.destroy();
+      logger.error('Failed to handle WebSocket upgrade', e);
     }
   };
 
@@ -152,6 +145,7 @@ export async function createRouter(
   router.use(upgradeMiddleware);
 
   router.get('/health', (_, response) => {
+    logger.info('PONG!');
     response.json({ status: 'ok' });
   });
 

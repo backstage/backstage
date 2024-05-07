@@ -187,7 +187,7 @@ describe('createPlugin', () => {
 
     await expect(
       screen.findByText(
-        'Names: extension-2-renamed, extension-1, extension-3:child',
+        'Names: extension-1, extension-2-renamed, extension-3:child',
       ),
     ).resolves.toBeInTheDocument();
   });

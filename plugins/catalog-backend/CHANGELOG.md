@@ -1,21 +1,5 @@
 # @backstage/plugin-catalog-backend
 
-## 1.22.0-next.2
-
-### Minor Changes
-
-- f2a2a83: Deprecated the `LocationAnalyzer` type, which has been moved to `@backstage/plugin-catalog-node`.
-- f2a2a83: The `/alpha` plugin export has had its implementation of the `catalogAnalysisExtensionPoint` updated to reflect the new API.
-
-### Patch Changes
-
-- Updated dependencies
-  - @backstage/plugin-catalog-node@1.12.0-next.2
-  - @backstage/plugin-search-backend-module-catalog@0.1.24-next.2
-  - @backstage/backend-common@0.22.0-next.2
-  - @backstage/plugin-events-node@0.3.4-next.2
-  - @backstage/integration@1.11.0-next.0
-
 ## 1.22.0-next.1
 
 ### Patch Changes

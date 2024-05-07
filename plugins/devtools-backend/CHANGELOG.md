@@ -1,13 +1,5 @@
 # @backstage/plugin-devtools-backend
 
-## 0.3.4-next.2
-
-### Patch Changes
-
-- 036feca: Added discovery property to the readme documentation to ensure that it will build when setting it up as new to a Backstage instance
-- Updated dependencies
-  - @backstage/backend-common@0.22.0-next.2
-
 ## 0.3.4-next.1
 
 ### Patch Changes
