@@ -5269,6 +5269,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-ldap@workspace:plugins/catalog-backend-module-ldap"
   dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -5282,7 +5283,6 @@ __metadata:
     ldapjs: ^2.3.3
     lodash: ^4.17.21
     uuid: ^9.0.0
-    winston: ^3.2.1
   languageName: unknown
   linkType: soft
 
