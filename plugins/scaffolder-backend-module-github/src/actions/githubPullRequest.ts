@@ -104,7 +104,7 @@ export interface CreateGithubPullRequestActionOptions {
   /**
    * An instance of {@link @backstage/config#Config} that will be used in the action.
    */
-  config: Config;
+  config?: Config;
 }
 
 type GithubPullRequest = {
@@ -351,7 +351,7 @@ export const createPublishGithubPullRequestAction = (
               files,
               commit:
                 commitMessage ??
-                config.getOptionalString('scaffolder.defaultCommitMessage') ??
+                config?.getOptionalString('scaffolder.defaultCommitMessage') ??
                 title,
             },
           ],
@@ -365,10 +365,10 @@ export const createPublishGithubPullRequestAction = (
         const gitAuthorInfo = {
           name:
             gitAuthorName ??
-            config.getOptionalString('scaffolder.defaultAuthor.name'),
+            config?.getOptionalString('scaffolder.defaultAuthor.name'),
           email:
             gitAuthorEmail ??
-            config.getOptionalString('scaffolder.defaultAuthor.email'),
+            config?.getOptionalString('scaffolder.defaultAuthor.email'),
         };
 
         if (gitAuthorInfo.name || gitAuthorInfo.email) {
