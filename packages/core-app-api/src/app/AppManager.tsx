@@ -233,8 +233,10 @@ export class AppManager implements BackstageApp {
 
     const appContext = new AppContextImpl(this);
 
-    // We only validate routes once
-    let routesHaveBeenValidated = false;
+    // We only bind and validate routes once
+    let routeBindings: ReturnType<typeof resolveRouteBindings>;
+    // Store and keep throwing the same error if we encounter one
+    let routeValidationError: Error | undefined = undefined;
 
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const needsFeatureFlagRegistrationRef = useRef(true);
@@ -243,7 +245,7 @@ export class AppManager implements BackstageApp {
         [],
       );
 
-      const { routing, featureFlags, routeBindings } = useMemo(() => {
+      const { routing, featureFlags } = useMemo(() => {
         const usesReactRouterBeta = isReactRouterBeta();
         if (usesReactRouterBeta) {
           // eslint-disable-next-line no-console
@@ -275,20 +277,8 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
         // Initialize APIs once all plugins are available
         this.getApiHolder();
-        return {
-          ...result,
-          routeBindings: resolveRouteBindings(this.bindRoutes),
-        };
+        return result;
       }, [children]);
-
-      if (!routesHaveBeenValidated) {
-        routesHaveBeenValidated = true;
-        validateRouteParameters(routing.paths, routing.parents);
-        validateRouteBindings(
-          routeBindings,
-          this.plugins as Iterable<BackstagePlugin>,
-        );
-      }
 
       const loadedConfig = useConfigLoader(
         this.configLoader,
@@ -305,6 +295,24 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
       if ('node' in loadedConfig) {
         // Loading or error
         return loadedConfig.node;
+      }
+
+      if (!routeBindings) {
+        routeBindings = resolveRouteBindings(
+          this.bindRoutes,
+          loadedConfig.api,
+          this.plugins,
+        );
+
+        try {
+          validateRouteParameters(routing.paths, routing.parents);
+          validateRouteBindings(routeBindings, this.plugins);
+        } catch (error) {
+          routeValidationError = error;
+          throw error;
+        }
+      } else if (routeValidationError) {
+        throw routeValidationError;
       }
 
       // We can't register feature flags just after the element traversal, because the
