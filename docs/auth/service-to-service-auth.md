@@ -96,7 +96,7 @@ backend:
     externalAccess:
       - type: jwks
         options:
-          uri: https://example.com/.well-known/jwks.json
+          url: https://example.com/.well-known/jwks.json
           issuers:
             - https://example.com
           algorithms:
@@ -105,12 +105,12 @@ backend:
             - example
       - type: jwks
         options:
-          uri: https://another-example.com/.well-known/jwks.json
+          url: https://another-example.com/.well-known/jwks.json
           issuers:
             - https://example.com
 ```
 
-The URI should point at an unauthenticated endpoint that returns the JWKS.
+The URL should point at an unauthenticated endpoint that returns the JWKS.
 
 Issuers specifies the issuer(s) of the JWT that the authenticating app will accept.
 Passed JWTs must have an `iss` claim which matches one of the specified issuers.

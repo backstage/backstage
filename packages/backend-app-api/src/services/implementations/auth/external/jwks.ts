@@ -28,26 +28,26 @@ export class JWKSHandler implements TokenHandler {
     algorithms: string[];
     audiences: string[] | string;
     issuers: string[];
-    uri: string;
+    url: string;
   }> = [];
 
   add(options: Config) {
     const algorithms = options.getOptionalStringArray('algorithms') ?? [];
     const issuers = options.getOptionalStringArray('issuers') ?? [];
     const audiences = options.getOptionalStringArray('audiences') ?? '';
-    const uri = options.getString('uri');
+    const url = options.getString('url');
 
-    if (!uri.match(/^\S+$/)) {
+    if (!url.match(/^\S+$/)) {
       throw new Error('Illegal URI, must be a set of non-space characters');
     }
 
-    this.#entries.push({ algorithms, audiences, issuers, uri });
+    this.#entries.push({ algorithms, audiences, issuers, url });
   }
 
   async verifyToken(token: string) {
     for (const entry of this.#entries) {
       try {
-        const jwks = createRemoteJWKSet(new URL(entry.uri));
+        const jwks = createRemoteJWKSet(new URL(entry.url));
         const {
           payload: { sub },
         } = await jwtVerify(token, jwks, {
