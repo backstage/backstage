@@ -287,6 +287,8 @@ export const createPublishGithubPullRequestAction: (
     commitMessage?: string | undefined;
     update?: boolean | undefined;
     forceFork?: boolean | undefined;
+    gitAuthorName?: string | undefined;
+    gitAuthorEmail?: string | undefined;
   },
   JsonObject
 >;
