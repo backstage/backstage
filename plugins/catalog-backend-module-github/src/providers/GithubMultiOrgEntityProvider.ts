@@ -144,6 +144,15 @@ export interface GithubMultiOrgEntityProviderOptions {
   githubCredentialsProvider?: GithubCredentialsProvider;
 
   /**
+   * Use the default namespace for groups. By default, groups will be namespaced according to their GitHub org.
+   *
+   * @remarks
+   *
+   * If set to true, groups with the same name across different orgs will be considered the same group.
+   */
+  defaultNamespace?: boolean;
+
+  /**
    * Optionally include a user transformer for transforming from GitHub users to User Entities
    */
   userTransformer?: UserTransformer;
@@ -198,6 +207,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
+      defaultNamespace: options.defaultNamespace,
     });
 
     provider.schedule(options.schedule);
@@ -216,6 +226,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       orgs?: string[];
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
+      defaultNamespace?: boolean;
     },
   ) {}
 
@@ -846,7 +857,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     const result = await defaultOrganizationTeamTransformer(team, ctx);
 
     if (result && result.spec) {
-      result.metadata.namespace = ctx.org.toLocaleLowerCase('en-US');
+      if (!this.options.defaultNamespace) {
+        result.metadata.namespace = ctx.org.toLocaleLowerCase('en-US');
+      }
+
       // Group `spec.members` inherits the namespace of it's group so need to explicitly specify refs here
       result.spec.members = team.members.map(
         user => `${DEFAULT_NAMESPACE}/${user.login}`,
