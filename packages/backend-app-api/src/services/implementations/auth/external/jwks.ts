@@ -25,20 +25,20 @@ import { TokenHandler } from './types';
  */
 export class JWKSHandler implements TokenHandler {
   #entries: Array<{
-    algorithms: string[];
-    audiences: string[] | string;
-    issuers: string[];
+    algorithms: string[] | undefined;
+    audiences: string[] | undefined;
+    issuers: string[] | undefined;
     url: string;
   }> = [];
 
   add(options: Config) {
-    const algorithms = options.getOptionalStringArray('algorithms') ?? [];
-    const issuers = options.getOptionalStringArray('issuers') ?? [];
-    const audiences = options.getOptionalStringArray('audiences') ?? '';
+    const algorithms = options.getOptionalStringArray('algorithms');
+    const issuers = options.getOptionalStringArray('issuers');
+    const audiences = options.getOptionalStringArray('audiences');
     const url = options.getString('url');
 
     if (!url.match(/^\S+$/)) {
-      throw new Error('Illegal URI, must be a set of non-space characters');
+      throw new Error('Illegal URL, must be a set of non-space characters');
     }
 
     this.#entries.push({ algorithms, audiences, issuers, url });
