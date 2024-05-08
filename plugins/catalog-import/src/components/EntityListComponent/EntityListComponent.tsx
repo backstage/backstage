@@ -149,11 +149,8 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
                         }
                       : {})}
                   >
-                    <ListItemIcon>{Icon && <Icon />}</ListItemIcon>
                     <ListItemText
-                      primary={
-                        <EntityDisplayName hideIcon entityRef={entity} />
-                      }
+                      primary={<EntityDisplayName entityRef={entity} />}
                     />
                   </ListItem>
                 );
