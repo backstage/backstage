@@ -274,6 +274,21 @@ Note that we are not importing and using the `RouteRef`s directly in the app, an
 
 Another thing to note is that this indirection in the routing is particularly useful for open source plugins that need to provide flexibility in how they are integrated. For plugins that you build internally for your own Backstage application, you can choose to use direct imports or even concrete route path strings directly. Although there can be some benefits to using the full routing system even in internal plugins: it can help you structure your routes, and as you will see further down it also helps you manage route parameters.
 
+### Default Targets for External Route References
+
+It is possible to define a default target for an external route reference, potentially removing the need to bind the route in the app. This reduces the need for configuration when installing new plugins through providing a sensible default. It is of course still possible to override the route binding in the app.
+
+The default target uses the same syntax as the route binding configuration, and will only be used if the target plugin an route exists. For example, this is how the catalog can define a default target for the create component external route in a way that removes the need for the binding in the previous example:
+
+```tsx title="plugins/catalog/src/routes.ts"
+import { createExternalRouteRef } from '@backstage/frontend-plugin-api';
+
+export const createComponentExternalRouteRef = createExternalRouteRef({
+  // highlight-next-line
+  defaultTarget: 'scaffolder.createComponent',
+});
+```
+
 ### Optional External Route References
 
 It is possible to define an `ExternalRouteRef` as optional, so it is not required to bind it in the app.
