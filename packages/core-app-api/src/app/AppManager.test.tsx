@@ -20,7 +20,7 @@ import {
   renderWithEffects,
   withLogCollector,
 } from '@backstage/test-utils';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
@@ -624,7 +624,7 @@ describe('Integration Test', () => {
     expect(capturedEvents).toHaveLength(2);
   });
 
-  it('should throw some error when the route has duplicate params', () => {
+  it('should throw some error when the route has duplicate params', async () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
@@ -641,31 +641,43 @@ describe('Integration Test', () => {
       },
     });
 
+    const expectedMessage =
+      'Parameter :thing is duplicated in path test/:thing/some/:thing';
+
     const Provider = app.getProvider();
     const Router = app.getRouter();
-    const { error: errorLogs } = withLogCollector(() => {
-      render(
-        <Provider>
-          <Router>
-            <Routes>
-              <Route path="/test/:thing" element={<ExposedComponent />}>
-                <Route path="/some/:thing" element={<HiddenComponent />} />
-              </Route>
-            </Routes>
-          </Router>
-        </Provider>,
-      );
+    const { error: errorLogs } = await withLogCollector(async () => {
+      await expect(() =>
+        renderWithEffects(
+          <Provider>
+            <Router>
+              <Routes>
+                <Route path="/test/:thing" element={<ExposedComponent />}>
+                  <Route path="/some/:thing" element={<HiddenComponent />} />
+                </Route>
+              </Routes>
+            </Router>
+          </Provider>,
+        ),
+      ).rejects.toThrow(expectedMessage);
     });
+
     expect(errorLogs).toEqual([
       expect.objectContaining({
-        message: expect.stringContaining(
-          'Parameter :thing is duplicated in path test/:thing/some/:thing',
-        ),
+        detail: new Error(expectedMessage),
+        type: 'unhandled exception',
       }),
+      expect.objectContaining({
+        detail: new Error(expectedMessage),
+        type: 'unhandled exception',
+      }),
+      expect.stringContaining(
+        'The above error occurred in the <Provider> component:',
+      ),
     ]);
   });
 
-  it('should throw an error when required external plugin routes are not bound', () => {
+  it('should throw an error when required external plugin routes are not bound', async () => {
     const app = new AppManager({
       apis: [],
       defaultApis: [],
@@ -676,25 +688,36 @@ describe('Integration Test', () => {
       configLoader: async () => [],
     });
 
+    const expectedMessage =
+      "External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route. See https://backstage.io/link?bind-routes for details.";
+
     const Provider = app.getProvider();
     const Router = app.getRouter();
-    const { error: errorLogs } = withLogCollector(() => {
-      render(
-        <Provider>
-          <Router>
-            <Routes>
-              <Route path="/test/:thing" element={<ExposedComponent />} />
-            </Routes>
-          </Router>
-        </Provider>,
-      );
+    const { error: errorLogs } = await withLogCollector(async () => {
+      await expect(() =>
+        renderWithEffects(
+          <Provider>
+            <Router>
+              <Routes>
+                <Route path="/test/:thing" element={<ExposedComponent />} />
+              </Routes>
+            </Router>
+          </Provider>,
+        ),
+      ).rejects.toThrow(expectedMessage);
     });
     expect(errorLogs).toEqual([
       expect.objectContaining({
-        message: expect.stringMatching(
-          /^External route 'extRouteRef1' of the 'blob' plugin must be bound to a target route/,
-        ),
+        detail: new Error(expectedMessage),
+        type: 'unhandled exception',
       }),
+      expect.objectContaining({
+        detail: new Error(expectedMessage),
+        type: 'unhandled exception',
+      }),
+      expect.stringContaining(
+        'The above error occurred in the <Provider> component:',
+      ),
     ]);
   });
 

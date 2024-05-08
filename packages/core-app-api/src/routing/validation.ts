@@ -66,7 +66,12 @@ export function validateRouteParameters(
 // Validates that all non-optional external routes have been bound
 export function validateRouteBindings(
   routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
-  plugins: Iterable<BackstagePlugin<{}, Record<string, ExternalRouteRef>>>,
+  plugins: Iterable<
+    Pick<
+      BackstagePlugin<{}, Record<string, ExternalRouteRef>>,
+      'getId' | 'externalRoutes'
+    >
+  >,
 ) {
   for (const plugin of plugins) {
     if (!plugin.externalRoutes) {

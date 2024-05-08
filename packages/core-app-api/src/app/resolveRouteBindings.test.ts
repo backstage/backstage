@@ -16,17 +16,23 @@
 
 import {
   createExternalRouteRef,
+  createPlugin,
   createRouteRef,
 } from '@backstage/core-plugin-api';
-import { resolveRouteBindings } from './resolveRouteBindings';
+import { collectRouteIds, resolveRouteBindings } from './resolveRouteBindings';
+import { MockConfigApi } from '@backstage/test-utils';
 
 describe('resolveRouteBindings', () => {
   it('runs happy path', () => {
     const external = { myRoute: createExternalRouteRef({ id: '1' }) };
     const ref = createRouteRef({ id: 'ref-1' });
-    const result = resolveRouteBindings(({ bind }) => {
-      bind(external, { myRoute: ref });
-    });
+    const result = resolveRouteBindings(
+      ({ bind }) => {
+        bind(external, { myRoute: ref });
+      },
+      new MockConfigApi({}),
+      [],
+    );
 
     expect(result.get(external.myRoute)).toBe(ref);
   });
@@ -35,9 +41,30 @@ describe('resolveRouteBindings', () => {
     const external = { myRoute: createExternalRouteRef({ id: '2' }) };
     const ref = createRouteRef({ id: 'ref-2' });
     expect(() =>
-      resolveRouteBindings(({ bind }) => {
-        bind(external, { someOtherRoute: ref } as any);
-      }),
+      resolveRouteBindings(
+        ({ bind }) => {
+          bind(external, { someOtherRoute: ref } as any);
+        },
+        new MockConfigApi({}),
+        [],
+      ),
     ).toThrow('Key someOtherRoute is not an existing external route');
+  });
+});
+
+describe('collectRouteIds', () => {
+  it('should assign IDs to routes', () => {
+    const ref = createRouteRef({ id: 'ignored' });
+    const extRef = createExternalRouteRef({ id: 'ignored' });
+
+    const collected = collectRouteIds([
+      createPlugin({ id: 'test', routes: { ref }, externalRoutes: { extRef } }),
+    ]);
+    expect(Object.fromEntries(collected.routes)).toEqual({
+      'test.ref': ref,
+    });
+    expect(Object.fromEntries(collected.externalRoutes)).toEqual({
+      'test.extRef': extRef,
+    });
   });
 });

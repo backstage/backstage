@@ -186,6 +186,10 @@ export function convertLegacyRouteRef(
       createExternalRouteRef<{ [key in string]: string }>({
         params: legacyRef.params as string[],
         optional: legacyRef.optional,
+        defaultTarget:
+          'getDefaultTarget' in legacyRef
+            ? (legacyRef.getDefaultTarget as () => string | undefined)()
+            : undefined,
       }),
     );
     return Object.assign(legacyRef, {
@@ -199,10 +203,8 @@ export function convertLegacyRouteRef(
       getDescription() {
         return legacyRefStr;
       },
-      getDefaultTarget() {
-        // TODO(freben): These are not yet supported in the old system; just returning undefined for now
-        return undefined;
-      },
+      // This might already be implemented in the legacy ref, but we override it just to be sure
+      getDefaultTarget: newRef.getDefaultTarget,
       setId(id: string) {
         newRef.setId(id);
       },
