@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { createUrlReaderServiceModule } from '@backstage/backend-app-api';
+import { GithubUrlReader } from '@backstage/backend-common';
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
@@ -47,5 +49,10 @@ backend.add(import('@backstage/plugin-search-backend/alpha'));
 backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
+
+const customServiceModule = createUrlReaderServiceModule(
+  ({ addReaderFactory }) => addReaderFactory(GithubUrlReader.factory),
+);
+backend.add(customServiceModule);
 
 backend.start();
