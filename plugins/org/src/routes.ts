@@ -18,4 +18,6 @@ import { createExternalRouteRef } from '@backstage/core-plugin-api';
 
 export const catalogIndexRouteRef = createExternalRouteRef({
   id: 'catalog-index',
+  optional: true,
+  defaultTarget: 'catalog.catalogIndex',
 });
