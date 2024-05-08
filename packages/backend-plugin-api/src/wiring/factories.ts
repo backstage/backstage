@@ -21,6 +21,7 @@ import {
   ExtensionPoint,
   InternalBackendModuleRegistration,
   InternalBackendPluginRegistration,
+  InternalServiceModule,
 } from './types';
 
 /**
@@ -234,4 +235,30 @@ export function createBackendModule(
   factory.$$type = '@backstage/BackendFeatureFactory';
 
   return factory;
+}
+
+type ServiceModuleConfig = {
+  register(reg: BackendPluginRegistrationPoints): void;
+};
+
+export function createServiceModuleFactory</* TService,*/ TServiceModule>(
+  _config: ServiceModuleConfig,
+): {
+  // serviceModule: ServiceRef<TService, 'plugin'>;
+  createServiceModule: (fn: (service: TServiceModule) => any) => BackendFeature;
+} {
+  return {
+    // serviceModule: createServiceRef({ id: 'asd', scope: 'plugin' }),
+    createServiceModule: () => {
+      const internal: InternalServiceModule = {
+        $$type: '@backstage/BackendFeature',
+        version: 'v1',
+        getRegistrations() {
+          // TODO(vinzscam): register stuff
+          return [];
+        },
+      };
+      return internal;
+    },
+  };
 }

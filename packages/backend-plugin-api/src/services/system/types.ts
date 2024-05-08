@@ -15,6 +15,7 @@
  */
 
 import { BackendFeature } from '../../types';
+import { ExtensionPoint } from '../../wiring';
 
 /**
  * TODO
@@ -62,10 +63,13 @@ export interface InternalServiceFactory<
 > extends ServiceFactory<TService, TScope> {
   version: 'v1';
   initialization?: 'always' | 'lazy';
+  extensionPoints?: ExtensionPointOptions<unknown>;
   deps: { [key in string]: ServiceRef<unknown> };
   createRootContext?(deps: { [key in string]: unknown }): Promise<unknown>;
   factory(
-    deps: { [key in string]: unknown },
+    deps: {
+      [key in string]: unknown;
+    },
     context: unknown,
   ): Promise<TService>;
 }
@@ -133,11 +137,28 @@ type ServiceRefsToInstances<
   [key in keyof T as T[key]['scope'] extends TScope ? key : never]: T[key]['T'];
 };
 
+type ExtensionPointsToInstances<
+  T extends { [key in string]: ExtensionPoint<unknown> },
+> = {
+  [key in keyof T]: T[key]['T'];
+};
+
+type ExtensionPointPair<TEP> = TEP extends infer TEPImpl
+  ? readonly [ExtensionPoint<TEP>, TEPImpl]
+  : never;
+
+type ExtensionPointOptions<TEPPairs> = {
+  [key in keyof TEPPairs]: ExtensionPointPair<TEPPairs[key]>;
+};
+
+type ExtensionPointDeps = ExtensionPointOptions<unknown>;
+
 /** @public */
 export interface RootServiceFactoryConfig<
   TService,
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
+  TExtensionPointDeps extends ExtensionPointDeps,
 > {
   /**
    * The initialization strategy for the service factory. This service is root scoped and will use `always` by default.
@@ -151,8 +172,12 @@ export interface RootServiceFactoryConfig<
    */
   initialization?: 'always' | 'lazy';
   service: ServiceRef<TService, 'root'>;
+  extensionPoints?: TExtensionPointDeps;
   deps: TDeps;
-  factory(deps: ServiceRefsToInstances<TDeps, 'root'>): TImpl | Promise<TImpl>;
+  factory(
+    deps: ServiceRefsToInstances<TDeps, 'root'> &
+      ExtensionPointsToInstances<TExtensionPointDeps>,
+  ): TImpl | Promise<TImpl>;
 }
 
 /** @public */
@@ -161,6 +186,7 @@ export interface PluginServiceFactoryConfig<
   TContext,
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
+  TExtensionPointDeps extends ExtensionPointDeps,
 > {
   /**
    * The initialization strategy for the service factory. This service is plugin scoped and will use `lazy` by default.
@@ -174,12 +200,14 @@ export interface PluginServiceFactoryConfig<
    */
   initialization?: 'always' | 'lazy';
   service: ServiceRef<TService, 'plugin'>;
+  extensionPoints?: TExtensionPointDeps;
   deps: TDeps;
   createRootContext?(
     deps: ServiceRefsToInstances<TDeps, 'root'>,
   ): TContext | Promise<TContext>;
   factory(
-    deps: ServiceRefsToInstances<TDeps>,
+    deps: ServiceRefsToInstances<TDeps> &
+      ExtensionPointsToInstances<TExtensionPointDeps>,
     context: TContext,
   ): TImpl | Promise<TImpl>;
 }
@@ -195,8 +223,9 @@ export function createServiceFactory<
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown, 'root'> },
   TOpts extends object | undefined = undefined,
+  TExtensionPointDeps extends ExtensionPointDeps = {},
 >(
-  config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
+  config: RootServiceFactoryConfig<TService, TImpl, TDeps, TExtensionPointDeps>,
 ): () => ServiceFactory<TService, 'root'>;
 /**
  * Creates a root scoped service factory with optional options.
@@ -209,8 +238,11 @@ export function createServiceFactory<
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown, 'root'> },
   TOpts extends object | undefined = undefined,
+  TExtensionPointDeps extends ExtensionPointDeps = {},
 >(
-  config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
+  config: (
+    options?: TOpts,
+  ) => RootServiceFactoryConfig<TService, TImpl, TDeps, TExtensionPointDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'root'>;
 /**
  * Creates a plugin scoped service factory without options.
@@ -224,8 +256,15 @@ export function createServiceFactory<
   TDeps extends { [name in string]: ServiceRef<unknown> },
   TContext = undefined,
   TOpts extends object | undefined = undefined,
+  TExtensionPointDeps extends ExtensionPointDeps = {},
 >(
-  config: PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+  config: PluginServiceFactoryConfig<
+    TService,
+    TContext,
+    TImpl,
+    TDeps,
+    TExtensionPointDeps
+  >,
 ): () => ServiceFactory<TService, 'plugin'>;
 /**
  * Creates a plugin scoped service factory with optional options.
@@ -239,10 +278,17 @@ export function createServiceFactory<
   TDeps extends { [name in string]: ServiceRef<unknown> },
   TContext = undefined,
   TOpts extends object | undefined = undefined,
+  TExtensionPointDeps extends ExtensionPointDeps = {},
 >(
   config: (
     options?: TOpts,
-  ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+  ) => PluginServiceFactoryConfig<
+    TService,
+    TContext,
+    TImpl,
+    TDeps,
+    TExtensionPointDeps
+  >,
 ): (options?: TOpts) => ServiceFactory<TService, 'plugin'>;
 export function createServiceFactory<
   TService,
@@ -250,16 +296,47 @@ export function createServiceFactory<
   TDeps extends { [name in string]: ServiceRef<unknown> },
   TContext,
   TOpts extends object | undefined = undefined,
+  TExtensionPointDeps extends ExtensionPointDeps = {},
 >(
   config:
-    | RootServiceFactoryConfig<TService, TImpl, TDeps>
-    | PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>
-    | ((options: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>)
+    | RootServiceFactoryConfig<TService, TImpl, TDeps, TExtensionPointDeps>
+    | PluginServiceFactoryConfig<
+        TService,
+        TContext,
+        TImpl,
+        TDeps,
+        TExtensionPointDeps
+      >
     | ((
         options: TOpts,
-      ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>)
-    | (() => RootServiceFactoryConfig<TService, TImpl, TDeps>)
-    | (() => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>),
+      ) => RootServiceFactoryConfig<
+        TService,
+        TImpl,
+        TDeps,
+        TExtensionPointDeps
+      >)
+    | ((
+        options: TOpts,
+      ) => PluginServiceFactoryConfig<
+        TService,
+        TContext,
+        TImpl,
+        TDeps,
+        TExtensionPointDeps
+      >)
+    | (() => RootServiceFactoryConfig<
+        TService,
+        TImpl,
+        TDeps,
+        TExtensionPointDeps
+      >)
+    | (() => PluginServiceFactoryConfig<
+        TService,
+        TContext,
+        TImpl,
+        TDeps,
+        TExtensionPointDeps
+      >),
 ): (options: TOpts) => ServiceFactory {
   const configCallback = typeof config === 'function' ? config : () => config;
   const factory = (
@@ -267,7 +344,12 @@ export function createServiceFactory<
   ): InternalServiceFactory<TService, 'plugin' | 'root'> => {
     const anyConf = configCallback(options);
     if (anyConf.service.scope === 'root') {
-      const c = anyConf as RootServiceFactoryConfig<TService, TImpl, TDeps>;
+      const c = anyConf as RootServiceFactoryConfig<
+        TService,
+        TImpl,
+        TDeps,
+        TExtensionPointDeps
+      >;
       return {
         $$type: '@backstage/BackendFeature',
         version: 'v1',
@@ -281,7 +363,8 @@ export function createServiceFactory<
       TService,
       TContext,
       TImpl,
-      TDeps
+      TDeps,
+      TExtensionPointDeps
     >;
     return {
       $$type: '@backstage/BackendFeature',
@@ -295,7 +378,9 @@ export function createServiceFactory<
           }
         : {}),
       deps: c.deps,
-      factory: async (deps: TDeps, ctx: TContext) => c.factory(deps, ctx),
+      extensionPoints: c.extensionPoints,
+      factory: async (deps: TDeps & TExtensionPointDeps, ctx: TContext) =>
+        c.factory(deps, ctx),
     };
   };
 

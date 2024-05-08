@@ -102,3 +102,5 @@ export interface InternalBackendModuleRegistration {
     func(deps: Record<string, unknown>): Promise<void>;
   };
 }
+
+export interface InternalServiceModule extends InternalBackendFeature {}

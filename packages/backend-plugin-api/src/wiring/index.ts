@@ -23,6 +23,7 @@ export {
   createBackendModule,
   createBackendPlugin,
   createExtensionPoint,
+  createServiceModuleFactory,
 } from './factories';
 export type {
   BackendModuleRegistrationPoints,
