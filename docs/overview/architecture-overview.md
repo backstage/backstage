@@ -6,149 +6,133 @@ description: Documentation on Architecture overview
 
 ## Terminology
 
-Backstage is constructed out of three parts. We separate Backstage in this way
-because we see three groups of contributors that work with Backstage in three
-different ways.
+Early on, we envisioned three primary types of contributors to a Backstage installation: core, application, and plugin
+developers.
 
-- Core - Base functionality built by core developers in the open source project.
-- App - The app is an instance of a Backstage app that is deployed and tweaked.
-  The app ties together core functionality with additional plugins. The app is
-  built and maintained by app developers, usually a productivity team within a
-  company.
-- Plugins - Additional functionality to make your Backstage app useful for your
-  company. Plugins can be specific to a company or open sourced and reusable. At
-  Spotify we have over 100 plugins built by over 50 different teams. It has been
-  very powerful to get contributions from various infrastructure teams added
-  into a single unified developer experience.
+As a result, Backstage is divided into three distinct parts that be developed independently:
 
-## Overview
+- **Core**
+  - Core functionality built by open-source developers and shared across all Backstage installations.
+  - Code found in the [open source project](https://github.com/backstage/backstage).
+- **App**
+  - An app is one secure instance of Backstage that an organization customizes and hosts behind their
+    firewall, VPN, SSN, or other secure infrastructure.
+  - An app usually is the entire Backstage codebase that is cloned to an organization's code repository and
+    modified internal to that organization only (an exception would be a hosted Backstage configuration).
+- **Plugins**
+  - A plugin is additional functionality installed onto or written into an organization's app codebase to customize it.
+  - Plugins are sandboxed so that their development is simpler and safer than contributing to Core and to keep
+    team's contributions from accidentally conflicting with other plugins or core functionality.
+  - Plugins can be open sourced and reused by other organizations.
+  - At Spotify we have over 100 internal plugins built by over 50 different teams. Getting contributions from various
+    infrastructure teams added into a single unified developer experience has been very efficient and powerful.
+  - [Click here to see over 100 available open-source plugins built by companies and individuals around the globe](https://backstage.io/plugins/).
 
-The following diagram shows how Backstage might look when deployed inside a
-company which uses the Tech Radar plugin, the Lighthouse plugin, the CircleCI
-plugin and the software catalog.
+## Example
 
-There are 3 main components in this architecture:
+The following diagram shows how Backstage might look when deployed for an organization which uses several plugins.
 
-1. The core Backstage UI
-2. The UI plugins and their backing services
-3. Databases
+![Architecture of a simple Backstage application](../assets/architecture-overview/backstage-typical-architecture-2.png)
 
-Running this architecture in a real environment typically involves
-containerising the components. Various commands are provided for accomplishing
-this.
+As discussed above, there are three main sections in this diagram which can be managed by different teams:
 
-![The architecture of a basic Backstage application](../assets/architecture-overview/backstage-typical-architecture.png)
+1. Backstage Core open-source codebase (contributions optional)
+2. An organization's Backstage App which would be managed and contributed to by an organization's development team
+3. A set of installed plugins which could be sourced from [publicly available plugins](https://backstage.io/plugins/)
+   or custom built by an organization
 
 ## User Interface
 
-The UI is a thin, client-side wrapper around a set of plugins. It provides some
-core UI components and libraries for shared activities such as config
-management. [[live demo](https://demo.backstage.io/catalog)]
+The UI contained within the Core codebase is a thin, client-side wrapper and library for all the plugins in the app.
+[See the Backstage live demo.](https://demo.backstage.io/catalog)
 
 ![UI with different components highlighted](../assets/architecture-overview/core-vs-plugin-components-highlighted.png)
 
-Each plugin typically makes itself available in the UI on a dedicated URL. For
-example, the Lighthouse plugin is registered with the UI on `/lighthouse`.
-[[learn more](https://backstage.io/blog/2020/04/06/lighthouse-plugin)]
+Each plugin typically registers itself to the app via at least one dedicated URL route. For
+example, the Lighthouse plugin is registered with the UI at, for example, `/lighthouse`.
+([Learn more about Lighthouse](https://backstage.io/blog/2020/04/06/lighthouse-plugin))
 
 ![The lighthouse plugin UI](../assets/architecture-overview/lighthouse-plugin.png)
 
-The CircleCI plugin is available on `/circleci`.
+Whereas the CircleCI plugin is available at `/circleci`.
 
 ![CircleCI Plugin UI](../assets/architecture-overview/circle-ci.png)
 
-## Plugins and plugin backends
+## Plugins and Plugin Backends
 
-Each plugin is a client side application which mounts itself on the UI. Plugins
-are written in TypeScript or JavaScript. They each live in their own directory
-in the `plugins` folder. For example, the source code for the catalog plugin
-is available at
-[plugins/catalog](https://github.com/backstage/backstage/tree/master/plugins/catalog).
+Each plugin is a client side application which mounts itself into the shared Backstage UI, typically as
+a normal React component. Plugins are written in TypeScript or JavaScript. They each live in their own directory
+in the `plugins` folder. For example, the source code for the catalog plugin is available at [plugins/catalog](https://github.com/backstage/backstage/tree/master/plugins/catalog).
 
-### Installing plugins
+### Installing Plugins
 
-Plugins are typically installed as React components in your Backstage
-application. For example,
-[here](https://github.com/backstage/backstage/blob/master/packages/app/src/App.tsx)
-is a file that imports many full-page plugins in the Backstage sample app.
+Plugins are typically installed as React components built and co-located in the same repository as your
+Backstage application. Each plugin is registered with the core Backstage application on startup.
 
-An example of one of these plugin components is the `CatalogIndexPage`, which is
-a full-page view that allows you to browse entities in the Backstage catalog. It
-is installed in the app by importing it and adding it as an element like this:
+For example, [here](https://github.com/backstage/backstage/blob/master/packages/app/src/App.tsx#L98)
+is a file that imports many full-page plugins in the Backstage sample app and then registers them
+when `createApp()` is called.
+
+An example of a common plugin is the `CatalogIndexPage`, which is a full-page view that allows you
+to browse entities in the Backstage catalog. It is installed in the app by importing it and adding it
+as an element like this:
 
 ```tsx
 import { CatalogIndexPage } from '@backstage/plugin-catalog';
 
-...
+// ...
 
 const routes = (
   <FlatRoutes>
-    ...
+    // ...
     <Route path="/catalog" element={<CatalogIndexPage />} />
-    ...
+    // ...
   </FlatRoutes>
 );
 ```
 
-Note that we use `"/catalog"` as our path to this plugin page, but we can choose
-any route we want for the page, as long as it doesn't collide with the routes
-that we choose for the other plugins in the app.
+Note the route `"/catalog"` above is customizable, as long as it doesn't collide with other routes.
 
-These components that are exported from plugins are referred to as "Plugin
-Extension Components", or "Extension Components". They are regular React
-components, but in addition to being able to be rendered by React, they also
-contain various pieces of metadata that is used to wire together the entire app.
-Extension components are created using `create*Extension` methods, which you can
-read more about in the
-[composability documentation](../plugins/composability.md).
+These components that are exported from plugins are referred to as "Plugin Extension Components", or "Extension
+Components". These are React components that are extended with Backstage metadata that is used to wire together
+the entire Backstage app. Extension components are created using `create*Extension` methods, which you can
+read more about in the [composability documentation](../plugins/composability.md).
 
-As of this moment, there is no config based install procedure for plugins. Some
-code changes are required.
+As this time there is no config-based installation for plugins and each plugin must be manually installed via code.
 
-### Plugin architecture
+### Plugin Types
 
-Architecturally, plugins can take three forms:
+Architecturally, plugins can take three types:
 
 1. Standalone
-2. Service backed
-3. Third-party backed
+2. Service-backed
+3. Third-party Backed
 
-#### Standalone plugins
+#### Standalone Plugins
 
-Standalone plugins run entirely in the browser.
-[The Tech Radar plugin](https://demo.backstage.io/tech-radar), for example,
-simply renders hard-coded information. It doesn't make any API requests to other
-services.
+Standalone plugins run entirely in the browser and do not require any backend. [The Tech Radar plugin](https://demo.backstage.io/tech-radar), for
+example, simply renders hard-coded information. It doesn't make any API requests to other services.
 
 ![tech radar plugin ui](../assets/architecture-overview/tech-radar-plugin.png)
 
-The architecture of the Tech Radar installed into a Backstage app is very
-simple.
+As a result, the architecture of the Tech Radar Plugin installed into a Backstage app is very simple.
 
-![ui and tech radar plugin connected together](../assets/architecture-overview/tech-radar-plugin-architecture.png)
+#### Service-backed Plugins
 
-#### Service backed plugins
+Service-backed plugins make API requests to a service which is within the purview of the organisation running the
+Backstage app.
 
-Service backed plugins make API requests to a service which is within the
-purview of the organisation running Backstage.
+The Lighthouse plugin, for example, makes requests to the [lighthouse-audit-service](https://github.com/spotify/lighthouse-audit-service).
 
-The Lighthouse plugin, for example, makes requests to the
-[lighthouse-audit-service](https://github.com/spotify/lighthouse-audit-service).
-The `lighthouse-audit-service` is a microservice which runs a copy of Google's
-[Lighthouse library](https://github.com/GoogleChrome/lighthouse/) and stores the
+The `lighthouse-audit-service` is a microservice which runs a copy of Google's [Lighthouse library](https://github.com/GoogleChrome/lighthouse/) and stores the
 results in a PostgreSQL database.
 
-Its architecture looks like this:
+The software catalog in Backstage is another example of a service-backed plugin. It retrieves a list of services, or
+"entities", from the Backstage Backend service and renders them in a table for the user.
 
-![lighthouse plugin backed to microservice and database](../assets/architecture-overview/lighthouse-plugin-architecture.png)
+### Third-party Backed Plugins
 
-The software catalog in Backstage is another example of a service backed plugin.
-It retrieves a list of services, or "entities", from the Backstage Backend
-service and renders them in a table for the user.
-
-### Third-party backed plugins
-
-Third-party backed plugins are similar to service backed plugins. The main
+Third-party backed plugins are similar to service-backed plugins. The main
 difference is that the service which backs the plugin is hosted outside of the
 ecosystem of the company hosting Backstage.
 

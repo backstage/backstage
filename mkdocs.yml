@@ -10,17 +10,17 @@ plugins:
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
-      - Architecture overview: 'overview/architecture-overview.md'
+      - Architecture Overview: 'overview/architecture-overview.md'
       - Project Roadmap: 'overview/roadmap.md'
       - Vision: 'overview/vision.md'
       - The Spotify Story: 'overview/background.md'
-      - Strategies for adopting: 'overview/adopting.md'
-      - Release & Versioning Policy: 'overview/versioning-policy.md'
+      - Strategies for Adopting: 'overview/adopting.md'
+      - Release and Versioning Policy: 'overview/versioning-policy.md'
       - Backstage Threat Model: 'overview/threat-model.md'
-      - Support and community: 'overview/support.md'
-      - Logo assets: 'overview/logos.md'
+      - Support and Community: 'overview/support.md'
+      - Logo Assets: 'overview/logos.md'
   - Getting Started:
-      - Installing a standalone server: 'getting-started/index.md'
+      - Installing a Standalone Server: 'getting-started/index.md'
       - Configuring Backstage:
           - Database: 'getting-started/config/database.md'
           - Authentication: 'getting-started/config/authentication.md'
@@ -29,8 +29,8 @@ nav:
           - Customizing your Homepage: 'getting-started/homepage.md'
       - Using Backstage:
           - Logging in: 'getting-started/logging-in.md'
-          - Register a component: 'getting-started/register-a-component.md'
-          - Create a component: 'getting-started/create-a-component.md'
+          - Register a Component: 'getting-started/register-a-component.md'
+          - Create a Component: 'getting-started/create-a-component.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
       - Key Concepts: 'getting-started/concepts.md'
   - Local Development:
