@@ -50,6 +50,133 @@ describe('resolveRouteBindings', () => {
       ),
     ).toThrow('Key someOtherRoute is not an existing external route');
   });
+
+  it('reads bindings from config', () => {
+    const mySource = createExternalRouteRef({ id: 'test' });
+    const myTarget = createRouteRef({ id: 'test' });
+    const result = resolveRouteBindings(
+      () => {},
+      new MockConfigApi({
+        app: { routes: { bindings: { 'test.mySource': 'test.myTarget' } } },
+      }),
+      [
+        createPlugin({
+          id: 'test',
+          routes: {
+            myTarget,
+          },
+          externalRoutes: {
+            mySource,
+          },
+        }),
+      ],
+    );
+
+    expect(result.get(mySource)).toBe(myTarget);
+  });
+
+  it('throws on invalid config', () => {
+    expect(() =>
+      resolveRouteBindings(
+        () => {},
+        new MockConfigApi({ app: { routes: { bindings: 'derp' } } }),
+        [],
+      ),
+    ).toThrow(
+      "Invalid type in config for key 'app.routes.bindings' in 'mock-config', got string, wanted object",
+    );
+
+    expect(() =>
+      resolveRouteBindings(
+        () => {},
+        new MockConfigApi({
+          app: { routes: { bindings: { 'test.mySource': true } } },
+        }),
+        [],
+      ),
+    ).toThrow(
+      "Invalid config at app.routes.bindings['test.mySource'], value must be a non-empty string",
+    );
+
+    expect(() =>
+      resolveRouteBindings(
+        () => {},
+        new MockConfigApi({
+          app: { routes: { bindings: { 'test.mySource': 'test.myTarget' } } },
+        }),
+        [],
+      ),
+    ).toThrow(
+      "Invalid config at app.routes.bindings, 'test.mySource' is not a valid external route",
+    );
+
+    expect(() =>
+      resolveRouteBindings(
+        () => {},
+        new MockConfigApi({
+          app: { routes: { bindings: { 'test.mySource': 'test.myTarget' } } },
+        }),
+        [
+          createPlugin({
+            id: 'test',
+            externalRoutes: {
+              mySource: createExternalRouteRef({ id: 'test' }),
+            },
+          }),
+        ],
+      ),
+    ).toThrow(
+      "Invalid config at app.routes.bindings['test.mySource'], 'test.myTarget' is not a valid route",
+    );
+  });
+
+  it('can have default targets, but at the lowest priority', () => {
+    const source = createExternalRouteRef({
+      id: 'test',
+      defaultTarget: 'test.target1',
+    });
+    const target1 = createRouteRef({ id: 'test' });
+    const target2 = createRouteRef({ id: 'test' });
+    const plugin = createPlugin({
+      id: 'test',
+      routes: {
+        target1,
+        target2,
+      },
+      externalRoutes: {
+        source,
+      },
+    });
+
+    // defaultTarget wins only if no bind or config matches
+    let result = resolveRouteBindings(() => {}, new MockConfigApi({}), [
+      plugin,
+    ]);
+
+    expect(result.get(source)).toBe(target1);
+
+    // config wins over defaultTarget
+    result = resolveRouteBindings(
+      () => {},
+      new MockConfigApi({
+        app: { routes: { bindings: { 'test.source': 'test.target2' } } },
+      }),
+      [plugin],
+    );
+
+    expect(result.get(source)).toBe(target2);
+
+    // bind wins over defaultTarget
+    result = resolveRouteBindings(
+      ({ bind }) => {
+        bind(plugin.externalRoutes, { source: plugin.routes.target2 });
+      },
+      new MockConfigApi({}),
+      [plugin],
+    );
+
+    expect(result.get(source)).toBe(target2);
+  });
 });
 
 describe('collectRouteIds', () => {
