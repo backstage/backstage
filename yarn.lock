@@ -17075,9 +17075,9 @@ __metadata:
   linkType: hard
 
 "@types/diff@npm:^5.0.0":
-  version: 5.2.0
-  resolution: "@types/diff@npm:5.2.0"
-  checksum: 07e20ba25d15b997758cc248628bb1e6459e7b396c868f176dee1e6a5d1dfcdf1e186fb5bf5e67128d7f55a11e989cff2ec656de089e15ed4a44e654c5c1fda3
+  version: 5.2.1
+  resolution: "@types/diff@npm:5.2.1"
+  checksum: 5983a323177bd691cb2194f5d55b960cd20a9c8fec653b4b038760c5809627cc9ea3578fdf10119ccbefefef193ea925f2817136eb97b17388f66b16c8480a8a
   languageName: node
   linkType: hard
 
@@ -17444,11 +17444,11 @@ __metadata:
   linkType: hard
 
 "@types/jquery@npm:^3.3.34":
-  version: 3.5.29
-  resolution: "@types/jquery@npm:3.5.29"
+  version: 3.5.30
+  resolution: "@types/jquery@npm:3.5.30"
   dependencies:
     "@types/sizzle": "*"
-  checksum: 5e959762d6f7050b07b4387b6507a308113384566a77cfc4f8d0f54c2fb0a79f6bc8c057706c6aa4840cde56f32ad0e5814fb53c5f078c5db9e01670a1ecd535
+  checksum: 4594d10fa9b347062883d254a23c9259ae814ef5989ce1985f093dcc7ad4475e324ac3343aef10599c478ea4951726f0e7f79d8ed471ab04de394b7e724d6d13
   languageName: node
   linkType: hard
 
