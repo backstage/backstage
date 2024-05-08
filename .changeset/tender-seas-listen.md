@@ -9,4 +9,3 @@ updated the ContextMenu, ActionsPage, OngoingTask and TemplateCard frontend comp
 - `scaffolder.task.create`
 - `scaffolder.task.cancel`
 - `scaffolder.task.read`
-- `scaffolder.action.read`
