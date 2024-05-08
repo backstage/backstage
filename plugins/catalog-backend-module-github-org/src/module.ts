@@ -113,6 +113,7 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
               logger,
               userTransformer,
               teamTransformer,
+              defaultNamespace: definition.orgs?.length === 1,
             }),
           );
         }
