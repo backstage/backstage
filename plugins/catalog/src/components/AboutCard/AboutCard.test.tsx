@@ -25,7 +25,11 @@ import {
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
-import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
+import {
+  createFromTemplateRouteRef,
+  rootRouteRef,
+  viewTechDocRouteRef,
+} from '../../routes';
 
 import { AboutCard } from './AboutCard';
 import { ConfigReader } from '@backstage/core-app-api';
@@ -104,6 +108,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -161,6 +166,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -217,6 +223,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -260,6 +267,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -321,6 +329,7 @@ describe('<AboutCard />', () => {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
           '/create/templates/:namespace/:templateName':
             createFromTemplateRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -390,6 +399,7 @@ describe('<AboutCard />', () => {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
           '/create/templates/:namespace/:templateName':
             createFromTemplateRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -441,6 +451,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -496,6 +507,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -537,6 +549,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -593,6 +606,7 @@ describe('<AboutCard />', () => {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name': viewTechDocRouteRef,
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -650,6 +664,7 @@ describe('<AboutCard />', () => {
         mountedRoutes: {
           '/docs/:namespace/:kind/:name': viewTechDocRouteRef,
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -703,6 +718,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -757,6 +773,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -806,6 +823,7 @@ describe('<AboutCard />', () => {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
           '/create/templates/:namespace/:templateName':
             createFromTemplateRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
@@ -874,6 +892,7 @@ describe('<AboutCard />', () => {
             '/catalog/:namespace/:kind/:name': entityRouteRef,
             '/create/templates/:namespace/:templateName':
               createFromTemplateRouteRef,
+            '/catalog': rootRouteRef,
           },
         },
       );
@@ -921,6 +940,7 @@ describe('<AboutCard />', () => {
       {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       },
     );
