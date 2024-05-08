@@ -25,29 +25,31 @@ import { TokenHandler } from './types';
  */
 export class JWKSHandler implements TokenHandler {
   #entries: Array<{
-    algorithms: string[] | undefined;
-    audiences: string[] | undefined;
-    issuers: string[] | undefined;
-    url: string;
+    algorithms?: string[];
+    audiences?: string[];
+    issuers?: string[];
+    subjectPrefix?: string;
+    url: URL;
   }> = [];
 
   add(options: Config) {
     const algorithms = options.getOptionalStringArray('algorithms');
     const issuers = options.getOptionalStringArray('issuers');
     const audiences = options.getOptionalStringArray('audiences');
-    const url = options.getString('url');
+    const subjectPrefix = options.getOptionalString('subjectPrefix');
+    const url = new URL(options.getString('url'));
 
-    if (!url.match(/^\S+$/)) {
+    if (!options.getString('url').match(/^\S+$/)) {
       throw new Error('Illegal URL, must be a set of non-space characters');
     }
 
-    this.#entries.push({ algorithms, audiences, issuers, url });
+    this.#entries.push({ algorithms, audiences, issuers, subjectPrefix, url });
   }
 
   async verifyToken(token: string) {
     for (const entry of this.#entries) {
       try {
-        const jwks = createRemoteJWKSet(new URL(entry.url));
+        const jwks = createRemoteJWKSet(entry.url);
         const {
           payload: { sub },
         } = await jwtVerify(token, jwks, {
@@ -57,7 +59,11 @@ export class JWKSHandler implements TokenHandler {
         });
 
         if (sub) {
-          return { subject: sub };
+          if (entry.subjectPrefix) {
+            return { subject: `external:${entry.subjectPrefix}:${sub}` };
+          }
+
+          return { subject: `external:${sub}` };
         }
       } catch {
         continue;

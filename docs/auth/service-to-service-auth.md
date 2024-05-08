@@ -103,6 +103,7 @@ backend:
             - RS256
           audiences:
             - example
+          subjectPrefix: custom-prefix
       - type: jwks
         options:
           url: https://another-example.com/.well-known/jwks.json
@@ -125,7 +126,9 @@ For additional details regarding the JWKS configuration, please consult your aut
 provider's documentation.
 
 The subject returned from the token verification will become part of the
-credentials object that the request recipient plugins get.
+credentials object that the request recipient plugins get. All subjects will have the prefix
+`external:`, but you can also provide a custom subjectPrefix which will get appended before the
+subject returned from your JWKS service (ex. `external:custom-prefix:sub`).
 
 ## Legacy Tokens
 
