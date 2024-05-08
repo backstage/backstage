@@ -100,7 +100,7 @@ describe('JWKSHandler', () => {
 
   it('verifies token with valid entry', async () => {
     const validEntry = {
-      uri: `${mockBaseUrl}/.well-known/jwks.json`,
+      url: `${mockBaseUrl}/.well-known/jwks.json`,
       algorithms: ['RS256'],
       issuers: [mockBaseUrl],
       audiences: ['backstage'],
@@ -115,19 +115,19 @@ describe('JWKSHandler', () => {
 
     const result = await jwksHandler.verifyToken(token);
 
-    expect(result).toEqual({ subject: mockSubject });
+    expect(result).toEqual({ subject: `external:${mockSubject}` });
   });
 
   it('skips invalid entry and continues verification', async () => {
     const invalidEntry = {
-      uri: `${mockBaseUrl}/.well-known/jwks.json`,
+      url: `${mockBaseUrl}/.well-known/jwks.json`,
       algorithms: ['RS256'],
       issuers: ['fakeIssuer'],
       audiences: ['fakeAud'],
     };
 
     const validEntry = {
-      uri: `${mockBaseUrl}/.well-known/jwks.json`,
+      url: `${mockBaseUrl}/.well-known/jwks.json`,
       algorithms: ['RS256'],
       issuers: ['multiple-issuers', mockBaseUrl],
       audiences: ['multiple-audiences', 'backstage'],
@@ -143,19 +143,19 @@ describe('JWKSHandler', () => {
 
     const result = await jwksHandler.verifyToken(token);
 
-    expect(result).toEqual({ subject: mockSubject });
+    expect(result).toEqual({ subject: `external:${mockSubject}` });
   });
 
   it('returns undefined if no valid entry found', async () => {
     const invalidEntry1 = {
-      uri: `${mockBaseUrl}/.well-known/jwks.json`,
+      url: `${mockBaseUrl}/.well-known/jwks.json`,
       algorithms: ['RS256'],
       issuers: [mockBaseUrl],
       audiences: [],
     };
 
     const invalidEntry2 = {
-      uri: `${mockBaseUrl}/.well-known/jwks.json`,
+      url: `${mockBaseUrl}/.well-known/jwks.json`,
       algorithms: ['HS256'],
       issuers: [],
       audiences: ['backstage'],
@@ -180,21 +180,44 @@ describe('JWKSHandler', () => {
     expect(() => {
       jwksHandler.add(
         new ConfigReader({
-          uri: 'https://exampl e.com/jwks',
+          url: 'https://exampl e.com/jwks',
         }),
       );
-    }).toThrow('Illegal URI, must be a set of non-space characters');
+    }).toThrow('Invalid URL');
     expect(() => {
       jwksHandler.add(
         new ConfigReader({
-          uri: 'https://example.com/jwks\n',
+          url: 'https://example.com/jwks\n',
         }),
       );
-    }).toThrow('Illegal URI, must be a set of non-space characters');
+    }).toThrow('Illegal URL, must be a set of non-space characters');
   });
 
   it('gracefully handles no added tokens', async () => {
     const handler = new JWKSHandler();
     await expect(handler.verifyToken('ghi')).resolves.toBeUndefined();
+  });
+
+  it('uses custom subject prefix if provided', async () => {
+    const validEntry = {
+      url: `${mockBaseUrl}/.well-known/jwks.json`,
+      algorithms: ['RS256'],
+      issuers: [mockBaseUrl],
+      audiences: ['backstage'],
+      subjectPrefix: 'custom-prefix',
+    };
+    const jwksHandler = new JWKSHandler();
+
+    jwksHandler.add(new ConfigReader(validEntry));
+
+    const token = await factory.issueToken({
+      claims: { sub: mockSubject },
+    });
+
+    const result = await jwksHandler.verifyToken(token);
+
+    expect(result).toEqual({
+      subject: `external:${validEntry.subjectPrefix}:${mockSubject}`,
+    });
   });
 });
