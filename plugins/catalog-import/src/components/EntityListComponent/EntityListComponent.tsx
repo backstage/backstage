@@ -19,7 +19,7 @@ import {
   CompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { useApi, useApp } from '@backstage/core-plugin-api';
+import { useApi } from '@backstage/core-plugin-api';
 import {
   EntityDisplayName,
   EntityRefLink,
@@ -75,7 +75,6 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
     withLinks = false,
   } = props;
 
-  const app = useApp();
   const classes = useStyles();
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const [expandedUrls, setExpandedUrls] = useState<string[]>([]);
@@ -134,9 +133,6 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
           >
             <List component="div" disablePadding dense>
               {sortEntities(r.entities).map(entity => {
-                const Icon = app.getSystemIcon(
-                  `kind:${entity.kind.toLocaleLowerCase('en-US')}`,
-                );
                 return (
                   <ListItem
                     key={stringifyEntityRef(entity)}
