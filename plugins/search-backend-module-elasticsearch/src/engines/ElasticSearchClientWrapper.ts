@@ -177,6 +177,29 @@ export class ElasticSearchClientWrapper {
     throw new Error('No client defined');
   }
 
+  /**
+   * @deprecated unused by the ElasticSearch Engine, will be removed in the future
+   */
+  getAliases(options: { aliases: string[] }) {
+    const { aliases } = options;
+
+    if (this.openSearchClient) {
+      return this.openSearchClient.cat.aliases({
+        format: 'json',
+        name: aliases,
+      });
+    }
+
+    if (this.elasticSearchClient) {
+      return this.elasticSearchClient.cat.aliases({
+        format: 'json',
+        name: aliases,
+      });
+    }
+
+    throw new Error('No client defined');
+  }
+
   createIndex(options: { index: string }) {
     if (this.openSearchClient) {
       return this.openSearchClient.indices.create(options);
