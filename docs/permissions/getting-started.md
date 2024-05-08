@@ -22,38 +22,9 @@ Like many other parts of Backstage, the permissions framework relies on informat
 
 [The IdentityResolver docs](../auth/identity-resolver.md) describe the process for resolving group membership on sign in.
 
-## Integrating the permission framework with your Backstage instance
+## Enable and test the permissions system
 
-### 1. Set up the permission backend
-
-The permissions framework uses the `permission-backend` plugin to accept authorization requests from other plugins across your Backstage deployment. The default `@backstage/create-app` template includes the permission backend, but if you need to make the change manually, these are the steps:
-
-1. Add `@backstage/plugin-permission-backend` and `@backstage/plugin-permission-backend-module-allow-all-policy` to your backend dependencies, this will add the permission backend and a policy that allows all permissions:
-
-```bash
-# From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-permission-backend @backstage/plugin-permission-backend-module-allow-all-policy
-```
-
-2. Add the following to `packages/backend/src/index.ts`. This adds the permission-backend router, and configures it with a policy which allows everything.
-
-```typescript title="packages/backend/src/index.ts"
-import { createBackend } from '@backstage/backend-defaults';
-const backend = createBackend();
-// ...
-/* highlight-add-next-line */
-backend.add(import('@backstage/plugin-permission-backend/alpha'));
-/* highlight-add-next-line */
-backend.add(
-  import('@backstage/plugin-permission-backend-module-allow-all-policy'),
-);
-// ...
-backend.start();
-```
-
-### 2. Enable and test the permissions system
-
-Now that the permission backend is running, it’s time to enable the permissions framework and make sure it’s working properly.
+All you need to do now is enable the permissions system in your Backstage instance!
 
 1. Set the property `permission.enabled` to `true` in `app-config.yaml`.
 
