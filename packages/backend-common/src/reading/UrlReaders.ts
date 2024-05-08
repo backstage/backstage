@@ -47,6 +47,22 @@ export type UrlReadersOptions = {
   factories?: ReaderFactory[];
 };
 
+export const defaultFactories = [
+  AzureUrlReader.factory,
+  BitbucketCloudUrlReader.factory,
+  BitbucketServerUrlReader.factory,
+  BitbucketUrlReader.factory,
+  GerritUrlReader.factory,
+  GithubUrlReader.factory,
+  GiteaUrlReader.factory,
+  GitlabUrlReader.factory,
+  GoogleGcsUrlReader.factory,
+  HarnessUrlReader.factory,
+  AwsS3UrlReader.factory,
+  AwsCodeCommitUrlReader.factory,
+  FetchUrlReader.factory,
+];
+
 /**
  * Helps construct {@link @backstage/backend-plugin-api#UrlReaderService}s.
  *
@@ -84,21 +100,7 @@ export class UrlReaders {
     return UrlReaders.create({
       logger,
       config,
-      factories: factories.concat([
-        AzureUrlReader.factory,
-        BitbucketCloudUrlReader.factory,
-        BitbucketServerUrlReader.factory,
-        BitbucketUrlReader.factory,
-        GerritUrlReader.factory,
-        GithubUrlReader.factory,
-        GiteaUrlReader.factory,
-        GitlabUrlReader.factory,
-        GoogleGcsUrlReader.factory,
-        HarnessUrlReader.factory,
-        AwsS3UrlReader.factory,
-        AwsCodeCommitUrlReader.factory,
-        FetchUrlReader.factory,
-      ]),
+      factories: factories.concat(defaultFactories),
     });
   }
 }

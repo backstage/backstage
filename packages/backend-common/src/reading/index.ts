@@ -44,5 +44,5 @@ export type {
   UrlReader,
   UrlReaderPredicateTuple,
 } from './types';
-export { UrlReaders } from './UrlReaders';
+export { UrlReaders, defaultFactories } from './UrlReaders';
 export type { UrlReadersOptions } from './UrlReaders';
