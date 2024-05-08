@@ -123,7 +123,7 @@ describe('GithubOrgReaderProcessor', () => {
 
       expect(mockClient).toHaveBeenCalledWith(
         expect.stringContaining('@include(if: $email)'),
-        expect.objectContaining({ email: false }),
+        expect.objectContaining({ email: true }),
       );
     });
 

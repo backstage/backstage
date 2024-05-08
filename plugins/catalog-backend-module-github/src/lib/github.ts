@@ -157,6 +157,8 @@ export async function getOrganizationUsers(
       }
     }`;
 
+  const fetchEmail = tokenType === 'token' || tokenType === 'app';
+
   // There is no user -> teams edge, so we leave the memberships empty for
   // now and let the team iteration handle it instead
 
@@ -168,7 +170,7 @@ export async function getOrganizationUsers(
     userTransformer,
     {
       org,
-      email: tokenType === 'token',
+      email: fetchEmail,
     },
   );
 
