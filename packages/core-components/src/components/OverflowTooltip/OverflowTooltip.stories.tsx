@@ -33,12 +33,16 @@ export const Default = () => (
 
 export const MultiLine = () => (
   <Box maxWidth="200px">
-    <OverflowTooltip text={text} />
+    <OverflowTooltip text={text} line={2} />
   </Box>
 );
 
 export const DifferentTitle = () => (
   <Box maxWidth="200px">
-    <OverflowTooltip title="Visit loremipsum.io for more info" text={text} />
+    <OverflowTooltip
+      title="Visit loremipsum.io for more info"
+      text={text}
+      line={2}
+    />
   </Box>
 );

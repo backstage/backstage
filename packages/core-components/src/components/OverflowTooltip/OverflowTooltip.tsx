@@ -1,4 +1,3 @@
-/* eslint-disable no-console */
 /*
  * Copyright 2020 The Backstage Authors
  *
@@ -23,6 +22,7 @@ import Typography from '@material-ui/core/Typography';
 type Props = {
   text?: string | undefined;
   title?: TooltipProps['title'];
+  line?: number | undefined;
   placement?: TooltipProps['placement'];
 };
 
@@ -35,17 +35,18 @@ const useStyles = makeStyles(
     },
     typo: {
       maxWidth: 200,
-      display: 'inline-block',
       overflow: 'hidden',
-      whiteSpace: 'nowrap',
       textOverflow: 'ellipsis',
+      display: '-webkit-box',
+      '-webkit-line-clamp': ({ line }: Props) => line,
+      '-webkit-box-orient': 'vertical',
     },
   },
   { name: 'BackstageOverflowTooltip' },
 );
 
 export function OverflowTooltip(props: Props) {
-  const classes = useStyles();
+  const classes = useStyles(props);
 
   return (
     <Tooltip
