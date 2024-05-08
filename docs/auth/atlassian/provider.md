@@ -61,7 +61,11 @@ The Atlassian provider is a structure with three configuration keys:
 - `clientSecret`: The Secret tied to the generated Key.
 - `scope`: List of scopes the app has permissions for, separated by spaces.
 
-**NOTE:** the scopes `offline_access`, `read:jira-work`, and `read:jira-user` are provided by default.
+:::note Note
+
+The scopes `offline_access`, `read:jira-work`, and `read:jira-user` are provided by default.
+
+:::
 
 ### Resolvers
 
@@ -71,7 +75,11 @@ This provider includes several resolvers out of the box that you can use:
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 - `usernameMatchingUserEntityName`: Matches the username from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
 
-> Note: The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+:::note Note
+
+The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+
+:::
 
 If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.
 
