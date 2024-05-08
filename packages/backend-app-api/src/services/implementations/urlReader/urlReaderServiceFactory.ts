@@ -14,11 +14,35 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
+import { ReaderFactory, UrlReaders } from '@backstage/backend-common';
 import {
   coreServices,
+  createExtensionPoint,
   createServiceFactory,
+  createServiceModuleFactory,
 } from '@backstage/backend-plugin-api';
+
+type ReaderFactoriesExtensionPointType = {
+  addReaderFactory(...factories: ReaderFactory[]): void;
+  readerFactories: ReaderFactory[];
+};
+
+const urlReadersFactoriesExtensionPoint =
+  createExtensionPoint<ReaderFactoriesExtensionPointType>({
+    id: 'urlreaders.factories',
+  });
+
+const { createServiceModule: createUrlReaderServiceModule } =
+  createServiceModuleFactory<ReaderFactoriesExtensionPointType>({
+    register(env) {
+      env.registerExtensionPoint(urlReadersFactoriesExtensionPoint, {
+        readerFactories: [],
+        addReaderFactory(...factories: ReaderFactory[]) {
+          this.readerFactories.push(...factories);
+        },
+      });
+    },
+  });
 
 /** @public */
 export const urlReaderServiceFactory = createServiceFactory({
@@ -27,10 +51,16 @@ export const urlReaderServiceFactory = createServiceFactory({
     config: coreServices.rootConfig,
     logger: coreServices.logger,
   },
-  async factory({ config, logger }) {
+  extensionPoints: {
+    factories: urlReadersFactoriesExtensionPoint,
+  },
+  async factory({ config, logger, factories }) {
+    console.log('factories', factories);
     return UrlReaders.default({
       config,
       logger,
     });
   },
 });
+
+export { createUrlReaderServiceModule };
