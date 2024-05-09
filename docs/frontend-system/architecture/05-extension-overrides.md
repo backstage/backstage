@@ -59,7 +59,7 @@ const apertureDarkTheme = createThemeExtension({
 });
 
 // Creating an extension overrides preset
-export createExtensionOverrides({
+export default createExtensionOverrides({
   extensions: [apertureLightTheme, apertureDarkTheme]
 });
 ```
