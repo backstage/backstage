@@ -58,7 +58,7 @@ Si vous voulez contribuer et vous impliquer dans notre communauté, voici les re
 - [RFCs](https://github.com/backstage/backstage/labels/rfc) - Contribuez à définir la direction technique
 - [FAQ](https://backstage.io/docs/FAQ)
 - [Code of Conduct](CODE_OF_CONDUCT.md) - C'est comme ça qu'on fonctionne
-- [Adopters](ADOPTERS.md) - Les entreprises utilisent déjà Backstage
+- [Adopters](ADOPTERS.md) - Les entreprises utilisant déjà Backstage
 - [Blog](https://backstage.io/blog/) - Annonces et mises à jour
 - [Newsletter](https://spoti.fi/backstagenewsletter) - Abonnez-vous à notre newsletter par mail
 - [Backstage Community Sessions](https://github.com/backstage/community) - Participez aux rencontres mensuelles et découvrez la communauté Backstage
