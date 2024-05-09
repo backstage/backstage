@@ -216,6 +216,12 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     // Ensure multiple bulk requests were made.
     expect(bulkSpy).toHaveBeenCalledTimes(2);
     expect(refreshSpy).toHaveBeenCalledTimes(1);
+    expect(refreshSpy).toHaveBeenCalledWith({
+      body: null,
+      querystring: {},
+      method: 'GET',
+      path: `/${indexer.indexName}/_refresh`,
+    });
 
     // Ensure the first and last documents were included in the payloads.
     const docLocations: string[] = [
