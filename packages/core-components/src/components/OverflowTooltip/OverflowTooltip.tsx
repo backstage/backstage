@@ -38,7 +38,7 @@ const useStyles = makeStyles(
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       display: '-webkit-box',
-      '-webkit-line-clamp': ({ line }: Props) => line,
+      '-webkit-line-clamp': ({ line }: Props) => line || 1,
       '-webkit-box-orient': 'vertical',
     },
   },

@@ -141,7 +141,7 @@ export const columnFactories = Object.freeze({
         <OverflowTooltip
           text={entity.metadata.description}
           placement="bottom-start"
-          line={1}
+          line={2}
         />
       ),
     };
