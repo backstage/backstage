@@ -85,12 +85,12 @@ describe('fetch:api', () => {
     addLocation: jest.fn(),
     removeLocationById: jest.fn(),
     validateEntity: jest.fn(),
-    getEntityByRef: async (apiRef: string) => {
-      if (apiRef === 'api:default/sampleApi') {
+    getEntityByRef: async (apiEntityRef: string) => {
+      if (apiEntityRef === 'api:default/sampleApi') {
         return sampleApi;
       }
 
-      if (apiRef === 'api:default/sampleApiFromUrl') {
+      if (apiEntityRef === 'api:default/sampleApiFromUrl') {
         return sampleApiFromUrl;
       }
       throw new Error('Entity not found');
@@ -102,9 +102,7 @@ describe('fetch:api', () => {
     search: jest.fn(),
     readUrl: async (_: string) => {
       return ReadUrlResponseFactory.fromReadable(
-        Readable.from(
-          Buffer.from(JSON.stringify(sampleOpenApiDefinition), 'utf-8'),
-        ),
+        Readable.from(Buffer.from(sampleOpenApiDefinition, 'utf-8')),
         { etag: 'etag' },
       );
     },
@@ -126,7 +124,7 @@ describe('fetch:api', () => {
     await action.handler({
       ...mockContext,
       input: {
-        apiRef: 'api:default/sampleApi',
+        apiEntityRef: 'api:default/sampleApi',
         targetPath: 'api.yaml',
       },
     });
@@ -152,7 +150,7 @@ describe('fetch:api', () => {
     await action.handler({
       ...mockContext,
       input: {
-        apiRef: 'api:default/sampleApiFromUrl',
+        apiEntityRef: 'api:default/sampleApiFromUrl',
         targetPath: 'api.yaml',
       },
     });

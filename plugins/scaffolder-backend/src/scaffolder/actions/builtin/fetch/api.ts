@@ -15,12 +15,13 @@
  */
 
 import { UrlReader, resolveSafeChildPath } from '@backstage/backend-common';
-import fs from 'fs-extra';
+import { promises as fs } from 'fs-extra';
 import { examples } from './api.examples';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 
 import { CatalogApi } from '@backstage/catalog-client';
 import path from 'path';
+import { AuthService } from '@backstage/backend-plugin-api';
 
 /**
  * Gets the definition of an API and places it in the workspace, or optionally
@@ -30,13 +31,13 @@ import path from 'path';
 export function createFetchApiAction(options: {
   reader: UrlReader;
   catalog: CatalogApi;
+  auth?: AuthService;
 }) {
-  const { reader, catalog } = options;
+  const { reader, catalog, auth } = options;
 
   return createTemplateAction<{
-    apiRef: string;
+    apiEntityRef: string;
     targetPath: string;
-    token?: string;
   }>({
     id: 'fetch:api',
     description:
@@ -45,9 +46,9 @@ export function createFetchApiAction(options: {
     schema: {
       input: {
         type: 'object',
-        required: ['apiRef', 'targetPath'],
+        required: ['apiEntityRef', 'targetPath'],
         properties: {
-          apiRef: {
+          apiEntityRef: {
             title: 'API Reference',
             description:
               'The API reference to fetch the definition for, in the format of "<kind>:<namespace>/<name>".',
@@ -57,12 +58,6 @@ export function createFetchApiAction(options: {
             title: 'Target Path',
             description:
               'Target path within the working directory to download the file as.',
-            type: 'string',
-          },
-          token: {
-            title: 'Token',
-            description:
-              'An optional token to use for authentication when reading the resources.',
             type: 'string',
           },
         },
@@ -78,30 +73,43 @@ export function createFetchApiAction(options: {
         ctx.input.targetPath,
       );
 
-      const entity = await catalog.getEntityByRef(ctx.input.apiRef);
+      const { token } = (await auth?.getPluginRequestToken({
+        onBehalfOf: await ctx.getInitiatorCredentials(),
+        targetPluginId: 'catalog',
+      })) ?? { token: ctx.secrets?.backstageToken };
+
+      const entity = await catalog.getEntityByRef(ctx.input.apiEntityRef, {
+        token,
+      });
       const definition = entity?.spec?.definition?.toString();
       if (!definition) {
         throw new Error('API definition not found in the catalog');
       }
 
       const outputDir = path.dirname(outputPath);
-      if (!fs.existsSync(outputDir)) {
-        fs.mkdirpSync(outputDir);
-      }
+      await fs.mkdir(outputDir, { recursive: true });
 
       let content: string = definition.trim();
       if (content.startsWith('$text')) {
         const pathOrUrl = content.split('$text:')[1].trim();
         if (pathOrUrl.startsWith('http')) {
           const res = await reader.readUrl(pathOrUrl);
-          content = await res.buffer().then(b => b.toString());
-          return;
+          content = await res
+            .buffer()
+            .then(b => b.toString())
+            .catch(e => {
+              throw new Error(`Failed to fetch from url ${pathOrUrl}, ${e}`);
+            });
+        } else {
+          content = await fs
+            .readFile(resolveSafeChildPath(ctx.workspacePath, pathOrUrl))
+            .then(f => f.toString())
+            .catch(e => {
+              throw new Error(`Failed to fetch file ${pathOrUrl}, ${e}`);
+            });
         }
-        content = fs
-          .readFileSync(resolveSafeChildPath(ctx.workspacePath, pathOrUrl))
-          .toString();
       }
-      fs.writeFileSync(outputPath, content);
+      await fs.writeFile(outputPath, content);
     },
   });
 }

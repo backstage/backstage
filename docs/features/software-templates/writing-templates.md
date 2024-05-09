@@ -498,7 +498,7 @@ The definition of the selected API can then be save to the project workspace, us
   input:
     values:
       targetPath: proto/${{ parameters.component_id }}.proto
-      apiRef: ${{ parameters.apiRef }}
+      apiEntityRef: ${{ parameters.apiRef }}
 ```
 
 ### The Owner Picker
