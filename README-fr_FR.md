@@ -18,7 +18,7 @@ Français \| [English](README.md) \| [한국어](README-ko_kr.md) \| [中文版]
 
 [Backstage](https://backstage.io/) est un framework open source conçu pour créer des portails à destination des développeurs. Avec l'idée de fournir un catalogue d'applications centralisé, Backstage remet de l'ordre dans vos microservices et votre infrastructure, ce qui permet à vos équipes produit de coder rapidement et de manière efficace sans perdre en autonomie.
 
-Backstage rassemble tous vos outils d'infrastructure, services et documentation pour créer un environnement de développement fluide de bout en bout.
+Backstage rassemble tous vos outils d'infrastructure, services et documentations pour créer un environnement de développement fluide de bout en bout.
 
 ![software-catalog](docs/assets/header.png)
 
