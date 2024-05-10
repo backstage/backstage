@@ -72,7 +72,7 @@ describe('systemEntityColumns', () => {
       expect(screen.getByText('my-namespace/my-system')).toBeInTheDocument();
       expect(screen.getByText('my-namespace/my-domain')).toBeInTheDocument();
       expect(screen.getByText('test')).toBeInTheDocument();
-      expect(screen.getByText(/Some/)).toBeInTheDocument();
+      expect(screen.queryAllByText(/Some/)).not.toHaveLength(0);
     });
   });
 });
@@ -126,7 +126,7 @@ describe('componentEntityColumns', () => {
       expect(screen.getByText('test')).toBeInTheDocument();
       expect(screen.getByText('production')).toBeInTheDocument();
       expect(screen.getByText('service')).toBeInTheDocument();
-      expect(screen.getByText(/Some/)).toBeInTheDocument();
+      expect(screen.queryAllByText(/Some/)).not.toHaveLength(0);
     });
   });
 });
