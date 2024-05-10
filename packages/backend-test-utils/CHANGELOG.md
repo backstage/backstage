@@ -1,5 +1,37 @@
 # @backstage/backend-test-utils
 
+## 0.3.8-next.2
+
+### Patch Changes
+
+- 7e5a50d: added `eventsServiceFactory` to `defaultServiceFactories` to resolve issue where different instances of the EventsServices could be used
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+
+## 0.3.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.2-next.1
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.3.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.1-next.0
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.3.7
 
 ### Patch Changes

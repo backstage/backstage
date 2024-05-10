@@ -1265,6 +1265,7 @@ metadata:
   description: Everything about artists
 spec:
   owner: artist-relations-team
+  subdomainOf: audio-domain
 ```
 
 In addition to the [common envelope metadata](#common-to-all-kinds-the-metadata)
@@ -1292,6 +1293,15 @@ but there will always be one ultimate owner.
 | [`kind`](#apiversion-and-kind-required)                | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                              |
 | ------------------------------------------------------ | ------------------------------------------ | ------------------------------------------------------------------------------- |
 | [`Group`](#kind-group) (default), [`User`](#kind-user) | Same as this entity, typically `default`   | [`ownerOf`, and reverse `ownedBy`](well-known-relations.md#ownedby-and-ownerof) |
+
+### `spec.subdomainOf` [optional]
+
+An [entity reference](references.md#string-references) to another domain of
+which the domain is a part, e.g. `audio`. This field is optional.
+
+| [`kind`](#apiversion-and-kind-required) | Default [`namespace`](#namespace-optional) | Generated [relation](well-known-relations.md) type                            |
+| --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
+| [`Domain`](#kind-domain) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
 ## Kind: Location
 

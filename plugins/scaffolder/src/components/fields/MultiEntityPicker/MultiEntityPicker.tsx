@@ -158,7 +158,10 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             }}
             variant="outlined"
             required={required}
-            InputProps={params.InputProps}
+            InputProps={{
+              ...params.InputProps,
+              required: formData.length === 0 && required,
+            }}
           />
         )}
       />

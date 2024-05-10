@@ -4,7 +4,7 @@ author: Phil Kuang
 authorUrl: https://github.com/kuangp
 category: Discovery
 description: Create, share, and follow custom collections of entities available in the Backstage catalog.
-documentation: https://github.com/backstage/backstage/tree/master/plugins/playlist
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/playlist/plugins/playlist
 iconUrl: /img/playlist-logo.png
-npmPackageName: '@backstage/plugin-playlist'
+npmPackageName: '@backstage-community/plugin-playlist'
 addedDate: '2022-07-02'

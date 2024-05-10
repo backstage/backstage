@@ -164,6 +164,17 @@ export type AuthResolverContext = {
 };
 
 /**
+ * Resolver interface for resolving the ownership entity references for entity
+ *
+ * @public
+ */
+export interface AuthOwnershipResolver {
+  resolveOwnershipEntityRefs(
+    entity: Entity,
+  ): Promise<{ ownershipEntityRefs: string[] }>;
+}
+
+/**
  * Any Auth provider needs to implement this interface which handles the routes in the
  * auth backend. Any auth API requests from the frontend reaches these methods.
  *

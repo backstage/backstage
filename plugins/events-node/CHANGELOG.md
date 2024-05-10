@@ -1,5 +1,25 @@
 # @backstage/plugin-events-node
 
+## 0.3.4-next.2
+
+### Patch Changes
+
+- 7e5a50d: added `eventsServiceFactory` to `defaultServiceFactories` to resolve issue where different instances of the EventsServices could be used
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.18-next.0
+
 ## 0.3.3
 
 ### Patch Changes

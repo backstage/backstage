@@ -43,7 +43,7 @@ Cloud Console and within a Backstage app required to enable this capability.
 Apps using the [new backend system](../../backend-system/index.md),
 can enable the VMware Cloud provider with a small modification like:
 
-```ts title="packages/backend-next/src/index.ts"
+```ts title="packages/backend/src/index.ts"
 import { createBackend } from '@backstage/backend-defaults';
 
 const backend = createBackend();
@@ -107,10 +107,6 @@ export default async function createPlugin(
 In the above, `commonSignInResolvers.emailLocalPartMatchingUserEntityName()`
 can be replaced with a more suitable resolver for the app in question.
 
-## Configure Sign-in Resolution
-
-See [Sign-in Identities and Resolvers](../identity-resolver.md) for details.
-
 ## Add to Sign-in Page
 
 See the [Sign-In Configuration](../index.md#sign-in-configuration) docs for
@@ -156,9 +152,15 @@ auth:
       development:
         clientId: ${APP_ID}
         organizationId: ${ORG_ID}
+        signIn:
+          resolvers:
+            # typically you would pick one of these
+            - resolver: emailMatchingUserEntityProfileEmail
+            - resolver: emailLocalPartMatchingUserEntityName
+            - resolver: vmwareCloudSignInResolvers
 ```
 
-where `APP_ID` refers to the ID retrieved when creating the OAuth App, and
+Where `APP_ID` refers to the ID retrieved when creating the OAuth App, and
 `ORG_ID` is the [long ID of the
 Organization](https://docs.vmware.com/en/VMware-Cloud-services/services/Using-VMware-Cloud-Services/GUID-CF9E9318-B811-48CF-8499-9419997DC1F8.html#view-the-organization-id-1)
 in VMware Cloud for which you wish to enable sign-in.
@@ -169,3 +171,15 @@ library used by this provider requires the use of Express session middleware to
 do this. Therefore the value `your session secret` under `auth.session.secret`
 should be replaced with a long, complex and unique string which will act as a
 key for signing session cookies set by Backstage.
+
+### Resolvers
+
+This provider includes several resolvers out of the box that you can use:
+
+- `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will throw a `NotFoundError`.
+- `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found it will throw a `NotFoundError`.
+- `vmwareCloudSignInResolvers`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found it will sign in the user without associating with a catalog user.
+
+> Note: The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+
+If these resolvers do not fit your needs you can build a custom resolver, this is covered in the [Building Custom Resolvers](../identity-resolver.md#building-custom-resolvers) section of the Sign-in Identities and Resolvers documentation.

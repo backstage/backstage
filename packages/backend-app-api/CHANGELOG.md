@@ -1,5 +1,41 @@
 # @backstage/backend-app-api
 
+## 0.7.2-next.1
+
+### Patch Changes
+
+- 09f8988: Remove explicit `alg` check for user tokens in `verifyToken`
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/plugin-permission-node@0.7.29-next.1
+  - @backstage/cli-node@0.2.5
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- 4cd5ff0: Add ability to configure the Node.js HTTP Server when configuring the root HTTP Router service
+- e8199b1: Move the JWKS registration outside of the lifecycle middleware
+- dc8c5dd: The default `TokenManager` implementation no longer requires keys to be configured in production, but it will throw an errors when generating or authenticating tokens. The default `AuthService` implementation will now also provide additional context if such an error is throw when falling back to using the `TokenManager` service to generate tokens for outgoing requests.
+- 025641b: Redact `meta` fields too with the logger
+- 5863e02: Internal refactor to only create one external token handler
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/backend-tasks@0.5.23-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.5
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-node@0.7.29-next.0
+
 ## 0.7.0
 
 ### Minor Changes

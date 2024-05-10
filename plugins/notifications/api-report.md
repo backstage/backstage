@@ -9,6 +9,7 @@ import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { FetchApi } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
@@ -73,7 +74,20 @@ export class NotificationsClient implements NotificationsApi {
 }
 
 // @public (undocumented)
-export const NotificationsPage: () => JSX_2.Element;
+export const NotificationsPage: (
+  props?: NotificationsPageProps | undefined,
+) => JSX_2.Element;
+
+// @public (undocumented)
+export type NotificationsPageProps = {
+  markAsReadOnLinkOpen?: boolean;
+  title?: string;
+  themeId?: string;
+  subtitle?: string;
+  tooltip?: string;
+  type?: string;
+  typeLink?: string;
+};
 
 // @public (undocumented)
 export const notificationsPlugin: BackstagePlugin<
@@ -87,12 +101,21 @@ export const notificationsPlugin: BackstagePlugin<
 export const NotificationsSidebarItem: (props?: {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
+  snackbarEnabled?: boolean;
+  snackbarAutoHideDuration?: number | null;
+  className?: string;
+  icon?: IconComponent;
+  text?: string;
+  disableHighlight?: boolean;
+  noTrack?: boolean;
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
 export const NotificationsTable: ({
+  markAsReadOnLinkOpen,
   isLoading,
   notifications,
+  isUnread,
   onUpdate,
   setContainsText,
   onPageChange,
@@ -107,7 +130,9 @@ export type NotificationsTableProps = Pick<
   TableProps,
   'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
 > & {
+  markAsReadOnLinkOpen?: boolean;
   isLoading?: boolean;
+  isUnread: boolean;
   notifications?: Notification_2[];
   onUpdate: () => void;
   setContainsText: (search: string) => void;
@@ -157,8 +182,9 @@ export function useTitleCounter(): {
 };
 
 // @public (undocumented)
-export function useWebNotifications(): {
+export function useWebNotifications(enabled: boolean): {
   sendWebNotification: (options: {
+    id: string;
     title: string;
     description: string;
     link?: string;

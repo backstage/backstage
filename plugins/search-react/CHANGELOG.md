@@ -1,5 +1,26 @@
 # @backstage/plugin-search-react
 
+## 1.7.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.6-next.1
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+
+## 1.7.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.4-next.0
+  - @backstage/core-components@0.14.5-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/frontend-plugin-api@0.6.5-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-search-common@1.2.11
+
 ## 1.7.10
 
 ### Patch Changes

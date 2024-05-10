@@ -15,6 +15,16 @@ can be the best choice for communicating with an API.
 
 The plugin is already added to a default Backstage project.
 
+### New Backend
+
+To add it to a project, add the following line in `packages/backend/src/index.ts`:
+
+```ts
+backend.add(import('@backstage/plugin-proxy-backend/alpha'));
+```
+
+### Old Backend
+
 In `packages/backend/src/index.ts`:
 
 ```ts

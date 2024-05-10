@@ -19,13 +19,8 @@ import {
 } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { Format, TransformableInfo } from 'logform';
-import {
-  Logger,
-  format,
-  createLogger,
-  transports,
-  transport as Transport,
-} from 'winston';
+import Transport, { TransportStreamOptions } from 'winston-transport';
+import { Logger, format, createLogger, transports } from 'winston';
 
 /**
  * Escapes a given string to be used inside a RegExp.
@@ -41,6 +36,42 @@ interface WinstonLoggerOptions {
   level: string;
   format: Format;
   transports: Transport[];
+}
+
+// This is a workaround for being able to preserve the log format of the root logger.
+// Will revisit all of this implementation once we can break the router to use only `LoggerService`.
+export class BackstageLoggerTransport extends Transport {
+  constructor(
+    private readonly backstageLogger: LoggerService,
+    opts?: TransportStreamOptions,
+  ) {
+    super(opts);
+  }
+
+  log(info: unknown, callback: VoidFunction) {
+    if (typeof info !== 'object' || info === null) {
+      callback();
+      return;
+    }
+    const { level, message, ...meta } = info as JsonObject;
+    switch (level) {
+      case 'error':
+        this.backstageLogger.error(String(message), meta);
+        break;
+      case 'warn':
+        this.backstageLogger.warn(String(message), meta);
+        break;
+      case 'info':
+        this.backstageLogger.info(String(message), meta);
+        break;
+      case 'debug':
+        this.backstageLogger.debug(String(message), meta);
+        break;
+      default:
+        this.backstageLogger.info(String(message), meta);
+    }
+    callback();
+  }
 }
 
 export class WinstonLogger implements RootLoggerService {
@@ -76,16 +107,20 @@ export class WinstonLogger implements RootLoggerService {
 
     let redactionPattern: RegExp | undefined = undefined;
 
+    const replace = (obj: TransformableInfo) => {
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          if (typeof obj[key] === 'object') {
+            obj[key] = replace(obj[key] as TransformableInfo);
+          } else if (typeof obj[key] === 'string') {
+            obj[key] = obj[key]?.replace(redactionPattern, '[REDACTED]');
+          }
+        }
+      }
+      return obj;
+    };
     return {
-      format: format(info => {
-        if (redactionPattern && typeof info.message === 'string') {
-          info.message = info.message.replace(redactionPattern, '[REDACTED]');
-        }
-        if (redactionPattern && typeof info.stack === 'string') {
-          info.stack = info.stack.replace(redactionPattern, '[REDACTED]');
-        }
-        return info;
-      })(),
+      format: format(replace)(),
       add(newRedactions) {
         let added = 0;
         for (const redactionToTrim of newRedactions) {

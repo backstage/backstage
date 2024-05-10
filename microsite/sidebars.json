@@ -240,6 +240,11 @@
       },
       {
         "type": "category",
+        "label": "Harness",
+        "items": ["integrations/harness/locations"]
+      },
+      {
+        "type": "category",
         "label": "Google GCS",
         "items": ["integrations/google-cloud-storage/locations"]
       },
@@ -493,7 +498,6 @@
       "api/deprecations"
     ],
     "Tutorials": [
-      "tutorials/journey",
       "tutorials/quickstart-app-plugin",
       "tutorials/react-router-stable-migration",
       "tutorials/react18-migration",

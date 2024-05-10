@@ -43,7 +43,7 @@ class PersistingTaskRunner implements TaskRunner {
 
 type Project = {
   key: string;
-  repos: [string];
+  repos: { name: string; archived?: true }[];
 };
 
 function pagedResponse(values: any): BitbucketServerPagedResponse<any> {
@@ -82,14 +82,15 @@ function setupStubs(projects: Project[], baseUrl: string) {
           const response = [];
           for (const repo of project.repos) {
             response.push({
-              slug: repo,
+              slug: repo.name,
               links: {
                 self: [
                   {
-                    href: `${baseUrl}/projects/${project.key}/repos/${repo}/browse`,
+                    href: `${baseUrl}/projects/${project.key}/repos/${repo.name}/browse`,
                   },
                 ],
               },
+              archived: repo.archived ?? false,
             });
           }
           return res(ctx.json(pagedResponse(response)));
@@ -216,6 +217,7 @@ describe('BitbucketServerEntityProvider', () => {
               filters: {
                 projectKey: 'project-.*',
                 repoSlug: 'repo-.*',
+                skipArchivedRepos: true,
               },
             },
           },
@@ -237,8 +239,14 @@ describe('BitbucketServerEntityProvider', () => {
 
     setupStubs(
       [
-        { key: 'project-test', repos: ['repo-test'] },
-        { key: 'other-project', repos: ['other-repo'] },
+        {
+          key: 'project-test',
+          repos: [
+            { name: 'repo-test' },
+            { name: 'repo-archived', archived: true },
+          ],
+        },
+        { key: 'other-project', repos: [{ name: 'other-repo' }] },
       ],
       `https://${host}`,
     );
@@ -313,8 +321,8 @@ describe('BitbucketServerEntityProvider', () => {
 
     setupStubs(
       [
-        { key: 'project-test', repos: ['repo-test'] },
-        { key: 'other-project', repos: ['other-repo'] },
+        { key: 'project-test', repos: [{ name: 'repo-test' }] },
+        { key: 'other-project', repos: [{ name: 'other-repo' }] },
       ],
       `https://${host}`,
     );
@@ -472,8 +480,8 @@ describe('BitbucketServerEntityProvider', () => {
 
     setupStubs(
       [
-        { key: 'project-test', repos: ['repo-test'] },
-        { key: 'other-project', repos: ['other-repo'] },
+        { key: 'project-test', repos: [{ name: 'repo-test' }] },
+        { key: 'other-project', repos: [{ name: 'other-repo' }] },
       ],
       `https://${host}`,
     );

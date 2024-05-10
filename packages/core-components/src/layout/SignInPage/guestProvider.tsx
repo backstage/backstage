@@ -60,7 +60,11 @@ const Component: ProviderComponent = ({
       discoveryApi,
     });
 
-    const identityResponse = await getIdentity(identity);
+    const identityResponse = await getIdentity(identity).catch(error => {
+      // eslint-disable-next-line no-console
+      console.warn(`Failed to sign in as a guest, ${error}`);
+      return undefined;
+    });
 
     if (!identityResponse) {
       // eslint-disable-next-line no-alert
@@ -108,7 +112,11 @@ const loader: ProviderLoader = async apis => {
     provider: 'guest',
     discoveryApi: apis.get(discoveryApiRef)!,
   });
-  const identityResponse = await getIdentity(identity);
+  const identityResponse = await getIdentity(identity).catch(error => {
+    // eslint-disable-next-line no-console
+    console.warn(`Failed to sign in as a guest, ${error}`);
+    return undefined;
+  });
 
   if (!identityResponse && !useLegacyGuestToken) {
     return undefined;

@@ -31,7 +31,7 @@ jobs:
     name: E2E Windows ${{ matrix.node-version }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        uses: step-security/harden-runner@a4aa98b93cab29d9b1101a6143fb8bce00e2eac4 # v2.7.1
         with:
           egress-policy: audit
 
@@ -42,7 +42,7 @@ jobs:
           git config --global core.autocrlf false
           git config --global core.eol lf
 
-      - uses: actions/checkout@b4ffde65f46336ab88eb53be808477a3936bae11 # v4.1.1
+      - uses: actions/checkout@0ad4b8fadaa221de15dcec353f45205ec38ea70b # v4.1.4
 
       - name: Configure Git
         run: |
@@ -78,7 +78,7 @@ jobs:
         uses: browser-actions/setup-chrome@803ef6dfb4fdf22089c9563225d95e4a515820a0 # latest
 
       - name: yarn install
-        uses: backstage/actions/yarn-install@caa4901322ee3b5af18814ffc837bd052f150073 # v0.6.6
+        uses: backstage/actions/yarn-install@af61233abb88019335b07ab855873d991f43d25a # v0.6.7
         with:
           cache-prefix: ${{ runner.os }}-v${{ matrix.node-version }}
 

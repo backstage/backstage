@@ -1,5 +1,25 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.3.5-next.1
+
+### Patch Changes
+
+- 3102a99: add the namespace label to CronJobDrawer & IngressDrawer.
+- Updated dependencies
+  - @backstage/core-components@0.14.6-next.1
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/core-components@0.14.5-next.0
+  - @backstage/plugin-kubernetes-common@0.7.6-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.3.4
 
 ### Patch Changes

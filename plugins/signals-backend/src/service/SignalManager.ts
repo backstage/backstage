@@ -20,8 +20,10 @@ import { v4 as uuid } from 'uuid';
 import { JsonObject } from '@backstage/types';
 import {
   BackstageUserInfo,
+  LifecycleService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 
 /**
  * @internal
@@ -32,6 +34,7 @@ export type SignalConnection = {
   ws: WebSocket;
   ownershipEntityRefs: string[];
   subscriptions: Set<string>;
+  isAlive: boolean;
 };
 
 /**
@@ -39,7 +42,9 @@ export type SignalConnection = {
  */
 export type SignalManagerOptions = {
   events: EventsService;
+  config: Config;
   logger: LoggerService;
+  lifecycle?: LifecycleService;
 };
 
 /** @internal */
@@ -50,6 +55,7 @@ export class SignalManager {
   >();
   private events: EventsService;
   private logger: LoggerService;
+  private pingInterval: ReturnType<typeof setInterval> | undefined;
 
   static create(options: SignalManagerOptions) {
     return new SignalManager(options);
@@ -64,11 +70,43 @@ export class SignalManager {
       onEvent: (params: EventParams) =>
         this.onEventBrokerEvent(params.eventPayload as SignalPayload),
     });
+
+    options.lifecycle?.addShutdownHook(() => this.onShutdown());
+  }
+
+  private ping() {
+    this.connections.forEach(conn => {
+      if (!conn.isAlive) {
+        this.logger.debug(`Connection ${conn.id} is not alive, terminating`);
+        conn.ws.terminate();
+        return;
+      }
+
+      conn.isAlive = false;
+      conn.ws.ping();
+    });
+  }
+
+  private onShutdown() {
+    if (this.pingInterval) {
+      clearInterval(this.pingInterval);
+    }
+
+    // TODO: Unsubscribe from events?
+
+    this.connections.forEach(conn => {
+      conn.ws.terminate();
+    });
+    this.connections.clear();
   }
 
   addConnection(ws: WebSocket, identity?: BackstageUserInfo) {
-    const id = uuid();
+    // Start pinging on first connection
+    if (!this.pingInterval) {
+      this.pingInterval = setInterval(() => this.ping(), 30000);
+    }
 
+    const id = uuid();
     const conn = {
       id,
       user: identity?.userEntityRef ?? 'user:default/guest',
@@ -77,23 +115,35 @@ export class SignalManager {
         'user:default/guest',
       ],
       subscriptions: new Set<string>(),
+      isAlive: true,
     };
 
     this.connections.set(id, conn);
 
+    this.logger.debug(`Connection ${id} connected`);
     ws.on('error', (err: Error) => {
       this.logger.error(
         `Error occurred with connection ${id}: ${err}, closing connection`,
       );
-      ws.close();
+      ws.terminate();
       this.connections.delete(id);
     });
 
     ws.on('close', (code: number, reason: Buffer) => {
-      this.logger.info(
+      this.logger.debug(
         `Connection ${id} closed with code ${code}, reason: ${reason}`,
       );
+      ws.terminate();
       this.connections.delete(id);
+    });
+
+    ws.on('ping', () => {
+      conn.isAlive = true;
+      ws.pong();
+    });
+
+    ws.on('pong', () => {
+      conn.isAlive = true;
     });
 
     ws.on('message', (data: RawData, isBinary: boolean) => {
@@ -114,12 +164,12 @@ export class SignalManager {
 
   private handleMessage(connection: SignalConnection, message: JsonObject) {
     if (message.action === 'subscribe' && message.channel) {
-      this.logger.info(
+      this.logger.debug(
         `Connection ${connection.id} subscribed to ${message.channel}`,
       );
       connection.subscriptions.add(message.channel as string);
     } else if (message.action === 'unsubscribe' && message.channel) {
-      this.logger.info(
+      this.logger.debug(
         `Connection ${connection.id} unsubscribed from ${message.channel}`,
       );
       connection.subscriptions.delete(message.channel as string);

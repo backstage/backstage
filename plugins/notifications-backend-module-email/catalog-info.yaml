@@ -1,0 +1,12 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-notifications-backend-module-email
+  title: '@backstage/plugin-notifications-backend-module-email'
+  description: >-
+    The email-notification-processor backend module for the notifications
+    plugin.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

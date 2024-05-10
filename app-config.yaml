@@ -9,6 +9,9 @@ app:
   #  applicationId: qwerty
   #   site: # datadoghq.eu default = datadoghq.com
   #   env: # optional
+  #   sessionSampleRate: 100
+  #   sessionReplaySampleRate: 0
+
   support:
     url: https://github.com/backstage/backstage/issues # Used by common ErrorPage
     items: # Used by common SupportButton component
@@ -246,7 +249,6 @@ catalog:
       plugins:
         - catalog
         - search
-        - todo
 
   processors:
     ldapOrg:

@@ -393,7 +393,7 @@ There are other more specific search results layout components that also accept 
 
 Recently, the Backstage maintainers [announced the new Backend System](https://backstage.io/blog/2023/02/15/backend-system-alpha). The search plugins are now migrated to support the new backend system. In this guide you will learn how to update your backend set up.
 
-In "packages/backend-next/index.ts", install the search plugin [1], the search engine [2], and the search collators/decorators modules [3]:
+In "packages/backend/index.ts", install the search plugin [1], the search engine [2], and the search collators/decorators modules [3]:
 
 ```ts
 import { searchPlugin } from '@backstage/plugin-search-backend/alpha';

@@ -19,7 +19,8 @@ import {
   createComponentExtension,
   coreComponentRefs,
 } from '@backstage/frontend-plugin-api';
-import { Box, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import { Button } from '@backstage/core-components';
 
 export function CustomNotFoundErrorPage() {

@@ -31,12 +31,13 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../../identity/types';
-import { CatalogIdentityClient } from '../catalog';
 import {
+  AuthOwnershipResolver,
   AuthResolverCatalogUserQuery,
   AuthResolverContext,
   TokenParams,
 } from '@backstage/plugin-auth-node';
+import { CatalogIdentityClient } from '../catalog';
 
 /**
  * Uses the default ownership resolution logic to return an array
@@ -69,6 +70,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     discovery: DiscoveryService;
     auth: AuthService;
     httpAuth: HttpAuthService;
+    ownershipResolver?: AuthOwnershipResolver;
   }): CatalogAuthResolverContext {
     const catalogIdentityClient = new CatalogIdentityClient({
       catalogApi: options.catalogApi,
@@ -84,6 +86,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
       catalogIdentityClient,
       options.catalogApi,
       options.auth,
+      options.ownershipResolver,
     );
   }
 
@@ -93,6 +96,7 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     public readonly catalogIdentityClient: CatalogIdentityClient,
     private readonly catalogApi: CatalogApi,
     private readonly auth: AuthService,
+    private readonly ownershipResolver?: AuthOwnershipResolver,
   ) {}
 
   async issueToken(params: TokenParams) {
@@ -160,12 +164,19 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
 
   async signInWithCatalogUser(query: AuthResolverCatalogUserQuery) {
     const { entity } = await this.findCatalogUser(query);
-    const ownershipRefs = getDefaultOwnershipEntityRefs(entity);
+    let ent: string[];
+    if (this.ownershipResolver) {
+      const { ownershipEntityRefs } =
+        await this.ownershipResolver.resolveOwnershipEntityRefs(entity);
+      ent = ownershipEntityRefs;
+    } else {
+      ent = getDefaultOwnershipEntityRefs(entity);
+    }
 
     const token = await this.tokenIssuer.issueToken({
       claims: {
         sub: stringifyEntityRef(entity),
-        ent: ownershipRefs,
+        ent,
       },
     });
     return { token };

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs-addons-test-utils",
-  "version": "1.0.31",
+  "version": "1.0.32-next.2",
   "backstage": {
     "role": "web-library"
   },

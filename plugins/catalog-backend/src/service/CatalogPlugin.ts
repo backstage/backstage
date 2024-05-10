@@ -20,7 +20,6 @@ import {
 import { Entity, Validators } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
-  CatalogAnalysisExtensionPoint,
   catalogAnalysisExtensionPoint,
   CatalogModelExtensionPoint,
   catalogModelExtensionPoint,
@@ -33,11 +32,13 @@ import {
   CatalogProcessor,
   CatalogProcessorParser,
   EntityProvider,
+  LocationAnalyzer,
   PlaceholderResolver,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
 import { Permission } from '@backstage/plugin-permission-common';
+import { ForwardedError } from '@backstage/errors';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -93,20 +94,6 @@ class CatalogProcessingExtensionPointImpl
 
   get onProcessingErrorHandler() {
     return this.#onProcessingErrorHandler;
-  }
-}
-
-class CatalogAnalysisExtensionPointImpl
-  implements CatalogAnalysisExtensionPoint
-{
-  #locationAnalyzers = new Array<ScmLocationAnalyzer>();
-
-  addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void {
-    this.#locationAnalyzers.push(analyzer);
-  }
-
-  get locationAnalyzers() {
-    return this.#locationAnalyzers;
   }
 }
 
@@ -178,11 +165,29 @@ export const catalogPlugin = createBackendPlugin({
       processingExtensions,
     );
 
-    const analysisExtensions = new CatalogAnalysisExtensionPointImpl();
-    env.registerExtensionPoint(
-      catalogAnalysisExtensionPoint,
-      analysisExtensions,
-    );
+    let locationAnalyzerFactory:
+      | ((options: {
+          scmLocationAnalyzers: ScmLocationAnalyzer[];
+        }) => Promise<{ locationAnalyzer: LocationAnalyzer }>)
+      | undefined = undefined;
+    const scmLocationAnalyzers = new Array<ScmLocationAnalyzer>();
+    env.registerExtensionPoint(catalogAnalysisExtensionPoint, {
+      setLocationAnalyzer(analyzerOrFactory) {
+        if (locationAnalyzerFactory) {
+          throw new Error('LocationAnalyzer has already been set');
+        }
+        if (typeof analyzerOrFactory === 'function') {
+          locationAnalyzerFactory = analyzerOrFactory;
+        } else {
+          locationAnalyzerFactory = async () => ({
+            locationAnalyzer: analyzerOrFactory,
+          });
+        }
+      },
+      addScmLocationAnalyzer(analyzer: ScmLocationAnalyzer) {
+        scmLocationAnalyzers.push(analyzer);
+      },
+    });
 
     const permissionExtensions = new CatalogPermissionExtensionPointImpl();
     env.registerExtensionPoint(
@@ -201,7 +206,7 @@ export const catalogPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
-        lifecycle: coreServices.lifecycle,
+        lifecycle: coreServices.rootLifecycle,
         scheduler: coreServices.scheduler,
         discovery: coreServices.discovery,
         auth: coreServices.auth,
@@ -246,14 +251,25 @@ export const catalogPlugin = createBackendPlugin({
         Object.entries(processingExtensions.placeholderResolvers).forEach(
           ([key, resolver]) => builder.setPlaceholderResolver(key, resolver),
         );
-        builder.addLocationAnalyzers(...analysisExtensions.locationAnalyzers);
+        if (locationAnalyzerFactory) {
+          const { locationAnalyzer } = await locationAnalyzerFactory({
+            scmLocationAnalyzers,
+          }).catch(e => {
+            throw new ForwardedError('Failed to create LocationAnalyzer', e);
+          });
+          builder.setLocationAnalyzer(locationAnalyzer);
+        } else {
+          builder.addLocationAnalyzers(...scmLocationAnalyzers);
+        }
         builder.addPermissions(...permissionExtensions.permissions);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
 
         const { processingEngine, router } = await builder.build();
 
-        await processingEngine.start();
+        lifecycle.addStartupHook(async () => {
+          await processingEngine.start();
+        });
         lifecycle.addShutdownHook(() => processingEngine.stop());
         httpRouter.use(router);
       },

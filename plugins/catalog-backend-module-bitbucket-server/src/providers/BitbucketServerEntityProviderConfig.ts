@@ -30,6 +30,7 @@ export type BitbucketServerEntityProviderConfig = {
   filters?: {
     projectKey?: RegExp;
     repoSlug?: RegExp;
+    skipArchivedRepos?: boolean;
   };
   schedule?: TaskScheduleDefinition;
 };
@@ -64,6 +65,9 @@ function readProviderConfig(
     config.getOptionalString('catalogPath') ?? DEFAULT_CATALOG_PATH;
   const projectKeyPattern = config.getOptionalString('filters.projectKey');
   const repoSlugPattern = config.getOptionalString('filters.repoSlug');
+  const skipArchivedReposFlag = config.getOptionalBoolean(
+    'filters.skipArchivedRepos',
+  );
 
   const schedule = config.has('schedule')
     ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
@@ -76,6 +80,7 @@ function readProviderConfig(
     filters: {
       projectKey: projectKeyPattern ? new RegExp(projectKeyPattern) : undefined,
       repoSlug: repoSlugPattern ? new RegExp(repoSlugPattern) : undefined,
+      skipArchivedRepos: skipArchivedReposFlag,
     },
     schedule,
   };

@@ -43,5 +43,6 @@ export type {
   SignInInfo,
   SignInResolver,
   TokenParams,
+  AuthOwnershipResolver,
 } from './types';
 export { tokenTypes } from './types';

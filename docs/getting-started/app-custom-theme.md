@@ -19,7 +19,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
   }),
@@ -28,7 +28,11 @@ const myTheme = createUnifiedTheme({
 });
 ```
 
-> Note: we recommend creating a `theme` folder in `packages/app/src` to place your theme file to keep things nicely organized.
+:::note Note
+
+we recommend creating a `theme` folder in `packages/app/src` to place your theme file to keep things nicely organized.
+
+:::
 
 You can also create a theme from scratch that matches the `BackstageTheme` type exported by [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme). See the
 [Material UI docs on theming](https://material-ui.com/customization/theming/) for more information about how that can be done.
@@ -73,7 +77,7 @@ import {
   shapes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: {
       ...palettes.light,
@@ -158,7 +162,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
     typography: {
@@ -210,7 +214,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
     typography: {
@@ -248,10 +252,11 @@ const myCustomFont = {
     local('My-Custom-Font'),
     url(${MyCustomFont}) format('woff2'),
   `,
-},
+};
 
 export const myTheme = createUnifiedTheme({
   fontFamily: 'My-Custom-Font',
+  palette: palettes.light,
   components: {
     MuiCssBaseline: {
       styleOverrides: {
@@ -259,7 +264,7 @@ export const myTheme = createUnifiedTheme({
       },
     },
   },
-};
+});
 ```
 
 If you want to utilize different or multiple fonts, then you can set the top level `fontFamily` to what you want for your body, and then override `fontFamily` in `typography` to control fonts for various headings.
@@ -277,7 +282,7 @@ const myCustomFont = {
     local('My-Custom-Font'),
     url(${MyCustomFont}) format('woff2'),
   `,
-},
+};
 
 const myAwesomeFont = {
   fontFamily: 'My-Awesome-Font',
@@ -288,7 +293,7 @@ const myAwesomeFont = {
     local('My-Awesome-Font'),
     url(${myAwesomeFont}) format('woff2'),
   `,
-},
+};
 
 export const myTheme = createUnifiedTheme({
   fontFamily: 'My-Custom-Font',
@@ -314,7 +319,7 @@ export const myTheme = createUnifiedTheme({
     },
     defaultPageTheme: 'home',
   }),
-};
+});
 ```
 
 ## Overriding Backstage and Material UI components styles
@@ -345,7 +350,7 @@ import {
   palettes,
 } from '@backstage/theme';
 
-const myTheme = createUnifiedTheme({
+export const myTheme = createUnifiedTheme({
   ...createBaseThemeOptions({
     palette: palettes.light,
   }),
@@ -405,8 +410,6 @@ You can change the following [icons](https://github.com/backstage/backstage/blob
 #### Create React Component
 
 In your front-end application, locate the `src` folder. We suggest creating the `assets/icons` directory and `CustomIcons.tsx` file.
-
-> Another example [here](https://github.com/backstage/backstage/blob/master/plugins/azure-devops/src/components/AzurePipelinesIcon/AzurePipelinesIcon.tsx), if you want to ensure proper behavior in light and dark themes.
 
 ```tsx title="customIcons.tsx"
 import { SvgIcon, SvgIconProps } from '@material-ui/core';
@@ -505,7 +508,11 @@ You can add more icons, if the [default icons](https://github.com/backstage/back
 
    You might want to use this method if you have an icon you want to use in several locations.
 
-Note: If the icon is not available as one of the default icons or one you've added then it will fall back to Material UI's `LanguageIcon`
+:::note Note
+
+If the icon is not available as one of the default icons or one you've added then it will fall back to Material UI's `LanguageIcon`
+
+:::
 
 ## Custom Sidebar
 

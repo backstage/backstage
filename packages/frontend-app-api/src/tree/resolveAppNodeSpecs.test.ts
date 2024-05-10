@@ -111,16 +111,16 @@ describe('resolveAppNodeSpecs', () => {
       }),
     ).toEqual([
       {
+        id: 'b',
+        extension: b,
+        attachTo: { id: 'derp', input: 'default' },
+        disabled: false,
+      },
+      {
         id: 'test/a',
         extension: makeExt('test/a'),
         attachTo: { id: 'root', input: 'default' },
         source: pluginA,
-        disabled: false,
-      },
-      {
-        id: 'b',
-        extension: b,
-        attachTo: { id: 'derp', input: 'default' },
         disabled: false,
       },
     ]);
@@ -202,6 +202,70 @@ describe('resolveAppNodeSpecs', () => {
         extension: a,
         attachTo: { id: 'root', input: 'default' },
         disabled: false,
+      },
+    ]);
+  });
+
+  it('should place config-mentioned instances in the order that they were listed, irrespective of if the extension was enabled or not originally', () => {
+    const a = makeExt('a', 'disabled');
+    const b = makeExt('b', 'enabled');
+    const c = makeExt('c', 'disabled');
+    const d = makeExt('d', 'enabled');
+    const e = makeExt('e', 'disabled');
+    const f = makeExt('f', 'enabled');
+    const g = makeExt('g', 'disabled');
+    expect(
+      resolveAppNodeSpecs({
+        features: [createPlugin({ id: 'empty', extensions: [] })],
+        builtinExtensions: [a, b, c, d, e, f, g],
+        parameters: [
+          { id: 'e', disabled: false },
+          { id: 'd', disabled: false },
+          { id: 'c', disabled: false },
+        ],
+      }),
+    ).toEqual([
+      {
+        id: 'e',
+        extension: e,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: false,
+      },
+      {
+        id: 'd',
+        extension: d,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: false,
+      },
+      {
+        id: 'c',
+        extension: c,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: false,
+      },
+      {
+        id: 'a',
+        extension: a,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: true,
+      },
+      {
+        id: 'b',
+        extension: b,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: false,
+      },
+      {
+        id: 'f',
+        extension: f,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: false,
+      },
+      {
+        id: 'g',
+        extension: g,
+        attachTo: { id: 'root', input: 'default' },
+        disabled: true,
       },
     ]);
   });

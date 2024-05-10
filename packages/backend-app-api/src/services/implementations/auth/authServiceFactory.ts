@@ -39,8 +39,19 @@ export const authServiceFactory = createServiceFactory({
     // new auth services in the new backend system.
     tokenManager: coreServices.tokenManager,
   },
-
-  async factory({ config, discovery, plugin, tokenManager, logger, database }) {
+  async createRootContext({ config, logger }) {
+    const externalTokens = ExternalTokenHandler.create({
+      config,
+      logger,
+    });
+    return {
+      externalTokens,
+    };
+  },
+  async factory(
+    { config, discovery, plugin, tokenManager, logger, database },
+    { externalTokens },
+  ) {
     const disableDefaultAuthPolicy = Boolean(
       config.getOptionalBoolean(
         'backend.auth.dangerouslyDisableDefaultAuthPolicy',
@@ -57,14 +68,10 @@ export const authServiceFactory = createServiceFactory({
     });
     const pluginTokens = PluginTokenHandler.create({
       ownPluginId: plugin.getId(),
-      keyDurationSeconds: 60 * 60,
+      keyDuration: { hours: 1 },
       logger,
       publicKeyStore,
       discovery,
-    });
-    const externalTokens = ExternalTokenHandler.create({
-      config,
-      logger,
     });
 
     return new DefaultAuthService(

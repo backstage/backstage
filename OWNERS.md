@@ -1,5 +1,5 @@
 - See [CONTRIBUTING.md](CONTRIBUTING.md) for general contribution guidelines.
-- See [GOVERNANCE.md](GOVERNANCE.md) for governance guidelines and responsibilities.
+- See [GOVERNANCE.md](https://github.com/backstage/community/blob/main/GOVERNANCE.md) for governance guidelines and responsibilities.
 
 ## Core Maintainers
 
@@ -117,6 +117,16 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 | André Wanlin         | Spotify      | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
 | Philipp Hugenroth    | Spotify      | [tudi2d](https://github.com/tudi2d)         | `tudi2d`     |
 | Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
+
+### Events
+
+Team: @backstage/events-maintainers
+
+Scope: The Events plugin and library, along with events modules in the main repository
+
+| Name               | Organization              | GitHub                                        | Discord       |
+| ------------------ | ------------------------- | --------------------------------------------- | ------------- |
+| Patrick Jungermann | Bonial International GmbH | [pjungermann](https://github.com/pjungermann) | `pjungermann` |
 
 ### Notifications
 

@@ -14,223 +14,38 @@
  * limitations under the License.
  */
 
-/*
- * Hi!
- *
- * Note that this is an EXAMPLE Backstage backend. Please check the README.
- *
- * Happy hacking!
- */
+import { createBackend } from '@backstage/backend-defaults';
 
-import Router from 'express-promise-router';
-import {
-  CacheManager,
-  createServiceBuilder,
-  DatabaseManager,
-  getRootLogger,
-  HostDiscovery,
-  loadBackendConfig,
-  notFoundHandler,
-  ServerTokenManager,
-  UrlReaders,
-  useHotMemoize,
-} from '@backstage/backend-common';
-import { TaskScheduler } from '@backstage/backend-tasks';
-import { Config } from '@backstage/config';
-import healthcheck from './plugins/healthcheck';
-import { metricsHandler, metricsInit } from './metrics';
-import auth from './plugins/auth';
-import azureDevOps from './plugins/azure-devops';
-import catalog from './plugins/catalog';
-import codeCoverage from './plugins/codecoverage';
-import entityFeedback from './plugins/entityFeedback';
-import events from './plugins/events';
-import explore from './plugins/explore';
-import kubernetes from './plugins/kubernetes';
-import kafka from './plugins/kafka';
-import rollbar from './plugins/rollbar';
-import scaffolder from './plugins/scaffolder';
-import proxy from './plugins/proxy';
-import search from './plugins/search';
-import techdocs from './plugins/techdocs';
-import techInsights from './plugins/techInsights';
-import todo from './plugins/todo';
-import app from './plugins/app';
-import badges from './plugins/badges';
-import jenkins from './plugins/jenkins';
-import permission from './plugins/permission';
-import playlist from './plugins/playlist';
-import adr from './plugins/adr';
-import lighthouse from './plugins/lighthouse';
-import linguist from './plugins/linguist';
-import devTools from './plugins/devtools';
-import nomad from './plugins/nomad';
-import signals from './plugins/signals';
-import { PluginEnvironment } from './types';
-import { ServerPermissionClient } from '@backstage/plugin-permission-node';
-import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
-import { DefaultEventBroker } from '@backstage/plugin-events-backend';
-import { DefaultEventsService } from '@backstage/plugin-events-node';
-import { PrometheusExporter } from '@opentelemetry/exporter-prometheus';
-import { MeterProvider } from '@opentelemetry/sdk-metrics';
-import { metrics } from '@opentelemetry/api';
-import { DefaultSignalsService } from '@backstage/plugin-signals-node';
+const backend = createBackend();
 
-// Expose opentelemetry metrics using a Prometheus exporter on
-// http://localhost:9464/metrics . See prometheus.yml in packages/backend for
-// more information on how to scrape it.
-const exporter = new PrometheusExporter();
-const meterProvider = new MeterProvider();
-metrics.setGlobalMeterProvider(meterProvider);
-meterProvider.addMetricReader(exporter);
+backend.add(import('@backstage/plugin-auth-backend'));
+backend.add(import('./authModuleGithubProvider'));
+backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
 
-function makeCreateEnv(config: Config) {
-  const root = getRootLogger();
-  const reader = UrlReaders.default({ logger: root, config });
-  const discovery = HostDiscovery.fromConfig(config);
-  const tokenManager = ServerTokenManager.fromConfig(config, { logger: root });
-  const permissions = ServerPermissionClient.fromConfig(config, {
-    discovery,
-    tokenManager,
-  });
-  const databaseManager = DatabaseManager.fromConfig(config, { logger: root });
-  const cacheManager = CacheManager.fromConfig(config);
-  const taskScheduler = TaskScheduler.fromConfig(config, { databaseManager });
-  const identity = DefaultIdentityClient.create({
-    discovery,
-  });
+backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
+);
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(import('@backstage/plugin-devtools-backend'));
+backend.add(import('@backstage/plugin-kubernetes-backend/alpha'));
+backend.add(
+  import('@backstage/plugin-permission-backend-module-allow-all-policy'),
+);
+backend.add(import('@backstage/plugin-permission-backend/alpha'));
+backend.add(import('@backstage/plugin-proxy-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
+backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-explore/alpha'));
+backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
+backend.add(
+  import('@backstage/plugin-catalog-backend-module-backstage-openapi'),
+);
+backend.add(import('@backstage/plugin-search-backend/alpha'));
+backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+backend.add(import('@backstage/plugin-signals-backend'));
+backend.add(import('@backstage/plugin-notifications-backend'));
 
-  const eventsService = DefaultEventsService.create({ logger: root });
-  const eventBroker = new DefaultEventBroker(
-    root.child({ type: 'plugin' }),
-    eventsService,
-  );
-  const signalsService = DefaultSignalsService.create({
-    events: eventsService,
-  });
-
-  root.info(`Created UrlReader ${reader}`);
-
-  return (plugin: string): PluginEnvironment => {
-    const logger = root.child({ type: 'plugin', plugin });
-    const database = databaseManager.forPlugin(plugin);
-    const cache = cacheManager.forPlugin(plugin);
-    const scheduler = taskScheduler.forPlugin(plugin);
-
-    return {
-      logger,
-      cache,
-      database,
-      config,
-      reader,
-      eventBroker,
-      events: eventsService,
-      discovery,
-      tokenManager,
-      permissions,
-      scheduler,
-      identity,
-      signals: signalsService,
-    };
-  };
-}
-
-async function main() {
-  metricsInit();
-  const logger = getRootLogger();
-
-  logger.info(
-    `You are running an example backend, which is supposed to be mainly used for contributing back to Backstage. ` +
-      `Do NOT deploy this to production. Read more here https://backstage.io/docs/getting-started/`,
-  );
-
-  const config = await loadBackendConfig({
-    argv: process.argv,
-    logger,
-  });
-
-  const createEnv = makeCreateEnv(config);
-
-  const healthcheckEnv = useHotMemoize(module, () => createEnv('healthcheck'));
-  const catalogEnv = useHotMemoize(module, () => createEnv('catalog'));
-  const codeCoverageEnv = useHotMemoize(module, () =>
-    createEnv('code-coverage'),
-  );
-  const scaffolderEnv = useHotMemoize(module, () => createEnv('scaffolder'));
-  const authEnv = useHotMemoize(module, () => createEnv('auth'));
-  const azureDevOpsEnv = useHotMemoize(module, () => createEnv('azure-devops'));
-  const proxyEnv = useHotMemoize(module, () => createEnv('proxy'));
-  const rollbarEnv = useHotMemoize(module, () => createEnv('rollbar'));
-  const searchEnv = useHotMemoize(module, () => createEnv('search'));
-  const techdocsEnv = useHotMemoize(module, () => createEnv('techdocs'));
-  const todoEnv = useHotMemoize(module, () => createEnv('todo'));
-  const kubernetesEnv = useHotMemoize(module, () => createEnv('kubernetes'));
-  const kafkaEnv = useHotMemoize(module, () => createEnv('kafka'));
-  const appEnv = useHotMemoize(module, () => createEnv('app'));
-  const badgesEnv = useHotMemoize(module, () => createEnv('badges'));
-  const jenkinsEnv = useHotMemoize(module, () => createEnv('jenkins'));
-  const adrEnv = useHotMemoize(module, () => createEnv('adr'));
-  const techInsightsEnv = useHotMemoize(module, () =>
-    createEnv('tech-insights'),
-  );
-  const permissionEnv = useHotMemoize(module, () => createEnv('permission'));
-  const playlistEnv = useHotMemoize(module, () => createEnv('playlist'));
-  const entityFeedbackEnv = useHotMemoize(module, () =>
-    createEnv('entityFeedback'),
-  );
-  const eventsEnv = useHotMemoize(module, () => createEnv('events'));
-  const exploreEnv = useHotMemoize(module, () => createEnv('explore'));
-  const lighthouseEnv = useHotMemoize(module, () => createEnv('lighthouse'));
-  const linguistEnv = useHotMemoize(module, () => createEnv('linguist'));
-  const devToolsEnv = useHotMemoize(module, () => createEnv('devtools'));
-  const nomadEnv = useHotMemoize(module, () => createEnv('nomad'));
-  const signalsEnv = useHotMemoize(module, () => createEnv('signals'));
-
-  const apiRouter = Router();
-  apiRouter.use('/catalog', await catalog(catalogEnv));
-  apiRouter.use('/code-coverage', await codeCoverage(codeCoverageEnv));
-  apiRouter.use('/events', await events(eventsEnv));
-  apiRouter.use('/rollbar', await rollbar(rollbarEnv));
-  apiRouter.use('/scaffolder', await scaffolder(scaffolderEnv));
-  apiRouter.use('/tech-insights', await techInsights(techInsightsEnv));
-  apiRouter.use('/auth', await auth(authEnv));
-  apiRouter.use('/azure-devops', await azureDevOps(azureDevOpsEnv));
-  apiRouter.use('/search', await search(searchEnv));
-  apiRouter.use('/techdocs', await techdocs(techdocsEnv));
-  apiRouter.use('/todo', await todo(todoEnv));
-  apiRouter.use('/kubernetes', await kubernetes(kubernetesEnv));
-  apiRouter.use('/kafka', await kafka(kafkaEnv));
-  apiRouter.use('/proxy', await proxy(proxyEnv));
-  apiRouter.use('/badges', await badges(badgesEnv));
-  apiRouter.use('/jenkins', await jenkins(jenkinsEnv));
-  apiRouter.use('/permission', await permission(permissionEnv));
-  apiRouter.use('/playlist', await playlist(playlistEnv));
-  apiRouter.use('/explore', await explore(exploreEnv));
-  apiRouter.use('/entity-feedback', await entityFeedback(entityFeedbackEnv));
-  apiRouter.use('/adr', await adr(adrEnv));
-  apiRouter.use('/linguist', await linguist(linguistEnv));
-  apiRouter.use('/devtools', await devTools(devToolsEnv));
-  apiRouter.use('/nomad', await nomad(nomadEnv));
-  apiRouter.use('/signals', await signals(signalsEnv));
-  apiRouter.use(notFoundHandler());
-
-  await lighthouse(lighthouseEnv);
-
-  const service = createServiceBuilder(module)
-    .loadConfig(config)
-    .addRouter('', await healthcheck(healthcheckEnv))
-    .addRouter('', metricsHandler())
-    .addRouter('/api', apiRouter)
-    .addRouter('', await app(appEnv));
-
-  await service.start().catch(err => {
-    logger.error(err);
-    process.exit(1);
-  });
-}
-
-module.hot?.accept();
-main().catch(error => {
-  console.error('Backend failed to start up', error);
-  process.exit(1);
-});
+backend.start();
