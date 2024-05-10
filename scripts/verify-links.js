@@ -137,6 +137,16 @@ async function verifyFile(filePath, docPages) {
     }
   }
 
+  const multiLineLinks =
+    content.match(/\[[^\]\n]+?\n[^\]\n]*?(?:\n[^\]\n]*?)?\]\(/g) || [];
+  badUrls.push(
+    ...multiLineLinks.map(url => ({
+      url,
+      basePath: filePath,
+      problem: 'multi-line',
+    })),
+  );
+
   return badUrls;
 }
 
@@ -226,7 +236,7 @@ async function main() {
         console.error(`  From: ${basePath}`);
         console.error(`  To: ${url}`);
         if (suggestion) {
-          console.error(`  Replace With: ${suggestion}`);
+          console.error(`  Replace with: ${suggestion}`);
         }
       } else if (problem === 'not-relative') {
         console.error('Links within /docs/ must be relative');
@@ -238,6 +248,10 @@ async function main() {
         );
         console.error(`  From: ${basePath}`);
         console.error(`  To: ${url}`);
+      } else if (problem === 'multi-line') {
+        console.error(`Links are not allowed to span multiple lines:`);
+        console.error(`  From: ${basePath}`);
+        console.error(`  To: ${url.replace(/\n/g, '\n      ')}`);
       }
     }
     process.exit(1);

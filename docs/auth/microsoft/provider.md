@@ -103,6 +103,5 @@ hosts:
 - `login.microsoftonline.com`, to get and exchange authorization codes and access
   tokens
 - `graph.microsoft.com`, to fetch user profile information (as seen
-  in [this source
-  code](https://github.com/seanfisher/passport-microsoft/blob/0456aa9bce05579c18e77f51330176eb26373658/lib/strategy.js#L93-L95)).
+  in [this source code](https://github.com/seanfisher/passport-microsoft/blob/0456aa9bce05579c18e77f51330176eb26373658/lib/strategy.js#L93-L95)).
   If this host is unreachable, users may see an `Authentication failed, failed to fetch user profile` error when they attempt to log in.

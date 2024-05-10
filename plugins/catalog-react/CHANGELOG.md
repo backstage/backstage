@@ -2945,8 +2945,7 @@
   `CatalogPage` component in your `App.tsx` routing allows you to adjust the
   layout, header, and which filters are available.
 
-  See the documentation added on [Catalog
-  Customization](https://backstage.io/docs/features/software-catalog/catalog-customization)
+  See the documentation added on [Catalog Customization](https://backstage.io/docs/features/software-catalog/catalog-customization)
   for instructions.
 
 ### Patch Changes
