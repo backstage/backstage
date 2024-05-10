@@ -3574,8 +3574,7 @@
   `packages/backend/src/plugins/catalog.ts` creates the catalog builder using
   `CatalogBuilder.create`. If you instead call `new CatalogBuilder`, you are on
   the old implementation and will experience breakage if you upgrade to this
-  version. If you are still on the old version, see [the relevant change log
-  entry](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/CHANGELOG.md#patch-changes-27)
+  version. If you are still on the old version, see [the relevant change log entry](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/CHANGELOG.md#patch-changes-27)
   for migration instructions.
 
   The minimal `packages/backend/src/plugins/catalog.ts` file is now:
@@ -3668,8 +3667,7 @@
   `packages/backend/src/plugins/catalog.ts` creates the catalog builder using
   `CatalogBuilder.create`. If you instead call `new CatalogBuilder`, you are on
   the old implementation and will experience breakage if you upgrade to this
-  version. If you are still on the old version, see [the relevant change log
-  entry](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/CHANGELOG.md#patch-changes-27)
+  version. If you are still on the old version, see [the relevant change log entry](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/CHANGELOG.md#patch-changes-27)
   for migration instructions.
 
   The minimal `packages/backend/src/plugins/catalog.ts` file is now:

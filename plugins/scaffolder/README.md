@@ -1,7 +1,6 @@
 # Scaffolder Frontend
 
-This is the React frontend for the default Backstage [software
-templates](https://backstage.io/docs/features/software-templates/).
+This is the React frontend for the default Backstage [software templates](https://backstage.io/docs/features/software-templates/).
 This package supplies interfaces related to showing available templates in the
 Backstage catalog and the workflow to create software using those templates.
 
