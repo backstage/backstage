@@ -1,5 +1,4 @@
 ---
-'@backstage/plugin-catalog-react': patch
 '@backstage/core-components': patch
 ---
 
