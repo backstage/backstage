@@ -47,7 +47,7 @@ describe('readHelmetOptions', () => {
       csp: {
         key: ['value'],
         'img-src': false,
-        'script-src-attr': ['custom'],
+        scriptSrcAttr: ['custom'],
       },
     });
     expect(readHelmetOptions(config)).toEqual({
