@@ -27,6 +27,7 @@ import {
   catalogApiRef,
   entityPresentationApiRef,
   EntityDisplayName,
+  EntityRefPresentationSnapshot,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
@@ -70,8 +71,22 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     const { items } = await catalogApi.getEntities(
       catalogFilter ? { filter: catalogFilter } : undefined,
     );
-
-    return items;
+    const entityRefToPresentation = new Map<
+      string,
+      EntityRefPresentationSnapshot
+    >(
+      await Promise.all(
+        items.map(async item => {
+          const presentation = await entityPresentationApi.forEntity(item)
+            .promise;
+          return [stringifyEntityRef(item), presentation] as [
+            string,
+            EntityRefPresentationSnapshot,
+          ];
+        }),
+      ),
+    );
+    return { entities: items, entityRefToPresentation };
   });
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
@@ -115,8 +130,8 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   );
 
   useEffect(() => {
-    if (entities?.length === 1) {
-      onChange([stringifyEntityRef(entities[0])]);
+    if (entities?.entities?.length === 1) {
+      onChange([stringifyEntityRef(entities?.entities[0])]);
     }
   }, [entities, onChange]);
 
@@ -129,20 +144,18 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
       <Autocomplete
         multiple
         filterSelectedOptions
-        disabled={entities?.length === 1}
+        disabled={entities?.entities?.length === 1}
         id={idSchema?.$id}
         loading={loading}
         onChange={onSelect}
-        options={entities || []}
+        options={entities?.entities || []}
         renderOption={option => <EntityDisplayName entityRef={option} />}
         getOptionLabel={option =>
           // option can be a string due to freeSolo.
           typeof option === 'string'
             ? option
-            : entityPresentationApi.forEntity(option, {
-                defaultKind,
-                defaultNamespace,
-              }).snapshot.entityRef!
+            : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+                ?.entityRef!
         }
         autoSelect
         freeSolo={allowArbitraryValues}
