@@ -22,7 +22,7 @@ In order to override an app extension, you must create a new extension and add i
 
 In the example below, we create a file that exports custom extensions for the app's `light` and `dark` themes:
 
-```tsx title="packages/app/src/themes.ts"
+```tsx title="packages/app/src/themes.tsx"
 import {
   createThemeExtension,
   createExtensionOverrides,
@@ -96,8 +96,11 @@ We recommend that plugin developers share the extension IDs in their plugin docu
 
 Imagine you have a plugin with the ID `'search'`, and the plugin provides a page extension that you want to fully override with your own custom component. To do so, you need to create your page extension with an explicit `namespace` option that matches that of the plugin that you want to override, in this case `'search'`. If the existing extension also has an explicit `name` you'd need to set the `name` of your override extension to the same value as well.
 
-```tsx title="packages/app/src/search.ts"
-import { createPageExtension } from '@backstage/frontend-plugin-api';
+```tsx title="packages/app/src/search.tsx"
+import {
+  createPageExtension,
+  createExtensionOverrides,
+} from '@backstage/frontend-plugin-api';
 
 // Creating a custom search page extension
 const customSearchPage = createPageExtension({
@@ -137,7 +140,7 @@ Sometimes you just need to quickly create a new extension and not overwrite an a
 
 Imagine you want to create a page that is currently only used by your application, like an Institutional page, for example. You can use overrides to extend the Backstage app to render it. To do so, simply create a page extension and pass it to the app as an override:
 
-```tsx title="packages/app/src/App.ts"
+```tsx title="packages/app/src/App.tsx"
 import { createApp } from '@backstage/frontend-app-api';
 import {
   createPageExtension,
