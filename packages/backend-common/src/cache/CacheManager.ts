@@ -27,6 +27,8 @@ import { getRootLogger } from '../logging';
 import { DefaultCacheClient } from './CacheClient';
 import { CacheManagerOptions, PluginCacheManager } from './types';
 
+type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
+
 /**
  * Implements a Cache Manager which will automatically create new cache clients
  * for plugins when requested. All requested cache clients are created with the
@@ -40,17 +42,10 @@ export class CacheManager {
    * that return Keyv instances appropriate to the store.
    */
   private readonly storeFactories = {
-    redis: this.getRedisClient,
-    memcache: this.getMemcacheClient,
-    memory: this.getMemoryClient,
+    redis: this.createRedisStoreFactory(),
+    memcache: this.createMemcacheStoreFactory(),
+    memory: this.createMemoryStoreFactory(),
   };
-
-  /**
-   * Shared memory store for the in-memory cache client. Sharing the same Map
-   * instance ensures get/set/delete operations hit the same store, regardless
-   * of where/when a client is instantiated.
-   */
-  private readonly memoryStore = new Map();
 
   private readonly logger: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
@@ -148,41 +143,46 @@ export class CacheManager {
   }
 
   private getClientWithTtl(pluginId: string, ttl: number | undefined): Keyv {
-    return this.storeFactories[this.store].call(this, pluginId, ttl);
+    return this.storeFactories[this.store](pluginId, ttl);
   }
 
-  private getRedisClient(
-    pluginId: string,
-    defaultTtl: number | undefined,
-  ): Keyv {
-    return new Keyv({
-      namespace: pluginId,
-      ttl: defaultTtl,
-      store: new KeyvRedis(this.connection),
-      useRedisSets: this.useRedisSets,
-    });
+  private createRedisStoreFactory(): StoreFactory {
+    let store: KeyvRedis | undefined;
+    return (pluginId, defaultTtl) => {
+      if (!store) {
+        store = new KeyvRedis(this.connection);
+      }
+      return new Keyv({
+        namespace: pluginId,
+        ttl: defaultTtl,
+        store,
+        useRedisSets: this.useRedisSets,
+      });
+    };
   }
 
-  private getMemcacheClient(
-    pluginId: string,
-    defaultTtl: number | undefined,
-  ): Keyv {
-    return new Keyv({
-      namespace: pluginId,
-      ttl: defaultTtl,
-      store: new KeyvMemcache(this.connection),
-    });
+  private createMemcacheStoreFactory(): StoreFactory {
+    let store: KeyvMemcache | undefined;
+    return (pluginId, defaultTtl) => {
+      if (!store) {
+        store = new KeyvMemcache(this.connection);
+      }
+      return new Keyv({
+        namespace: pluginId,
+        ttl: defaultTtl,
+        store,
+      });
+    };
   }
 
-  private getMemoryClient(
-    pluginId: string,
-    defaultTtl: number | undefined,
-  ): Keyv {
-    return new Keyv({
-      namespace: pluginId,
-      ttl: defaultTtl,
-      store: this.memoryStore,
-    });
+  private createMemoryStoreFactory(): StoreFactory {
+    const store = new Map();
+    return (pluginId, defaultTtl) =>
+      new Keyv({
+        namespace: pluginId,
+        ttl: defaultTtl,
+        store,
+      });
   }
 }
 

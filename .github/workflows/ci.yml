@@ -187,6 +187,15 @@ jobs:
           --health-retries 5
         ports:
           - 3306/tcp
+      redis:
+        image: redis
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 6379/tcp
 
     env:
       CI: true
@@ -231,6 +240,7 @@ jobs:
           BACKSTAGE_TEST_DATABASE_POSTGRES16_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres16.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_POSTGRES12_CONNECTION_STRING: postgresql://postgres:postgres@localhost:${{ job.services.postgres12.ports[5432] }}
           BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING: mysql://root:root@localhost:${{ job.services.mysql8.ports[3306] }}/ignored
+          BACKSTAGE_TEST_CACHE_REDIS_CONNECTION_STRING: redis://localhost:${{ job.services.redis.ports[6379] }}
 
       # We run the test cases before verifying the specs to prevent any failing tests from causing errors.
       - name: verify openapi specs against test cases
