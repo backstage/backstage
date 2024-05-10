@@ -31,6 +31,7 @@ import {
 } from '@backstage/plugin-catalog-backend-module-github';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { GithubOrgEntityCleanerProvider } from './GithubOrgEntityCleanerProvider';
 
 /**
  * Interface for {@link githubOrgEntityProviderTransformsExtensionPoint}.
@@ -99,8 +100,14 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },
+
       async init({ catalog, config, events, logger, scheduler }) {
-        for (const definition of readDefinitionsFromConfig(config)) {
+        const definitions = readDefinitionsFromConfig(config);
+
+        for (const definition of definitions) {
+          catalog.addEntityProvider(
+            new GithubOrgEntityCleanerProvider({ id: definition.id }),
+          );
           catalog.addEntityProvider(
             GithubMultiOrgEntityProvider.fromConfig(config, {
               id: definition.id,
@@ -113,7 +120,8 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
               logger,
               userTransformer,
               teamTransformer,
-              defaultNamespace: definition.orgs?.length === 1,
+              defaultNamespace:
+                definitions.length === 1 && definition.orgs?.length === 1,
             }),
           );
         }
