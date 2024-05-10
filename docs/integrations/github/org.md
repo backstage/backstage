@@ -45,7 +45,7 @@ Next add the basic configuration to `app-config.yaml`
 catalog:
   providers:
     githubOrg:
-      id: github
+      id: production
       githubUrl: https://github.com
       orgs: ['organization-1', 'organization-2', 'organization-3']
       schedule:
