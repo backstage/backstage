@@ -137,7 +137,8 @@ async function verifyFile(filePath, docPages) {
     }
   }
 
-  const multiLineLinks = content.match(/\[[^\]\n]+?\n[^\]\n]*?\]\(/g) || [];
+  const multiLineLinks =
+    content.match(/\[[^\]\n]+?\n[^\]\n]*?(?:\n[^\]\n]*?)?\]\(/g) || [];
   badUrls.push(
     ...multiLineLinks.map(url => ({
       url,
