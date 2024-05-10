@@ -189,11 +189,9 @@ export const ImportInfoCard: (
 // @public
 export interface ImportInfoCardProps {
   // (undocumented)
-  exampleAzureRepositoryUrl?: string;
-  // (undocumented)
-  exampleGitRepositoryUrl?: string;
-  // (undocumented)
   exampleLocationUrl?: string;
+  // (undocumented)
+  exampleRepositoryUrl?: string;
 }
 
 // Warning: (ae-forgotten-export) The symbol "State" needs to be exported by the entry point index.d.ts
