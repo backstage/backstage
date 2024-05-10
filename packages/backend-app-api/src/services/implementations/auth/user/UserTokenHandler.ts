@@ -137,7 +137,6 @@ export class UserTokenHandler {
       base64url.encode(
         JSON.stringify({
           sub: payload.sub,
-          ent: payload.ent,
           iat: payload.iat,
           exp: payload.exp,
         }),

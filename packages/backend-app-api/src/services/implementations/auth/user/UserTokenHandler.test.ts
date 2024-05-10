@@ -346,7 +346,6 @@ describe('UserTokenHandler', () => {
           header: { typ: 'vnd.backstage.limited-user', alg: 'ES256' },
           payload: {
             sub: 'mock',
-            ent: ['mock'],
             iat: 1,
             exp: 2,
           },
@@ -384,7 +383,6 @@ describe('UserTokenHandler', () => {
         new TextEncoder().encode(
           JSON.stringify({
             sub: parts.payload.sub,
-            ent: parts.payload.ent,
             iat: parts.payload.iat,
             exp: parts.payload.exp,
           }),

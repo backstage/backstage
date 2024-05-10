@@ -49,8 +49,12 @@ export class DefaultAuthService implements AuthService {
     private readonly publicKeyStore: KeyStore,
   ) {}
 
-  // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
-  async authenticate(token: string): Promise<BackstageCredentials> {
+  async authenticate(
+    token: string,
+    options?: {
+      allowLimitedAccess?: boolean;
+    },
+  ): Promise<BackstageCredentials> {
     const pluginResult = await this.pluginTokenHandler.verifyToken(token);
     if (pluginResult) {
       if (pluginResult.limitedUserToken) {
@@ -73,6 +77,13 @@ export class DefaultAuthService implements AuthService {
 
     const userResult = await this.userTokenHandler.verifyToken(token);
     if (userResult) {
+      if (
+        !options?.allowLimitedAccess &&
+        this.userTokenHandler.isLimitedUserToken(token)
+      ) {
+        throw new AuthenticationError('Illegal limited user token');
+      }
+
       return createCredentialsWithUserPrincipal(
         userResult.userEntityRef,
         token,

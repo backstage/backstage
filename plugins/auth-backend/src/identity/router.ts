@@ -20,6 +20,7 @@ import { TokenIssuer } from './types';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { decodeJwt } from 'jose';
 import { AuthenticationError, InputError } from '@backstage/errors';
+import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
 
 export function bindOidcRouter(
   targetRouter: express.Router,
@@ -27,9 +28,10 @@ export function bindOidcRouter(
     baseUrl: string;
     auth: AuthService;
     tokenIssuer: TokenIssuer;
+    userInfoDatabaseHandler: UserInfoDatabaseHandler;
   },
 ) {
-  const { baseUrl, auth, tokenIssuer } = options;
+  const { baseUrl, auth, tokenIssuer, userInfoDatabaseHandler } = options;
 
   const router = Router();
   targetRouter.use(router);
@@ -91,21 +93,30 @@ export function bindOidcRouter(
       );
     }
 
-    const { sub: userEntityRef, ent: ownershipEntityRefs = [] } =
-      decodeJwt(token);
+    const { sub: userEntityRef, ent: ownershipEntityRefs } = decodeJwt(token);
 
     if (typeof userEntityRef !== 'string') {
       throw new Error('Invalid user token, user entity ref must be a string');
     }
+
+    // Return user info if it's already available in the token (ie. it is a full token)
     if (
-      !Array.isArray(ownershipEntityRefs) ||
-      ownershipEntityRefs.some(ref => typeof ref !== 'string')
+      Array.isArray(ownershipEntityRefs) &&
+      ownershipEntityRefs.every(ref => typeof ref === 'string')
     ) {
-      throw new Error(
-        'Invalid user token, ownership entity refs must be an array of strings',
-      );
+      res.json({ sub: userEntityRef, ent: ownershipEntityRefs });
+      return;
     }
 
-    res.json({ sub: userEntityRef, ent: ownershipEntityRefs });
+    const userInfo = await userInfoDatabaseHandler.getUserInfo(userEntityRef);
+    if (!userInfo) {
+      res.status(404).send('User info not found');
+      return;
+    }
+
+    res.json({
+      sub: userInfo.userEntityRef,
+      ent: userInfo.ownershipEntityRefs,
+    });
   });
 }

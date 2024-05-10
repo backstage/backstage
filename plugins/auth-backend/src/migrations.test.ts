@@ -71,4 +71,30 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20240510120825_user_info.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(knex, '20240510120825_user_info.js');
+      await migrateUpOnce(knex);
+
+      const user_info = JSON.stringify({
+        ownershipEntityRefs: ['group:default/group1', 'group:default/group2'],
+      });
+
+      await knex
+        .insert({ user_entity_ref: 'user:default/backstage-user', user_info })
+        .into('user_info');
+
+      await expect(knex('user_info')).resolves.toEqual([
+        { user_entity_ref: 'user:default/backstage-user', user_info },
+      ]);
+
+      await migrateDownOnce(knex);
+
+      await knex.destroy();
+    },
+  );
 });

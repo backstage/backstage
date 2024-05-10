@@ -19,13 +19,24 @@ import {
   BackstageUserInfo,
   coreServices,
   createServiceFactory,
+  DiscoveryService,
   BackstageCredentials,
 } from '@backstage/backend-plugin-api';
+import { ResponseError } from '@backstage/errors';
 import { decodeJwt } from 'jose';
 import { toInternalBackstageCredentials } from '../auth/helpers';
 
-// TODO: The intention is for this to eventually be replaced by a call to the auth-backend
+type Options = {
+  discovery: DiscoveryService;
+};
+
 export class DefaultUserInfoService implements UserInfoService {
+  private readonly discovery: DiscoveryService;
+
+  constructor(options: Options) {
+    this.discovery = options.discovery;
+  }
+
   async getUserInfo(
     credentials: BackstageCredentials,
   ): Promise<BackstageUserInfo> {
@@ -36,29 +47,48 @@ export class DefaultUserInfoService implements UserInfoService {
     if (!internalCredentials.token) {
       throw new Error('User credentials is unexpectedly missing token');
     }
-    const { sub: userEntityRef, ent: ownershipEntityRefs = [] } = decodeJwt(
+    const { sub: userEntityRef, ent: ownershipEntityRefs } = decodeJwt(
       internalCredentials.token,
     );
 
     if (typeof userEntityRef !== 'string') {
       throw new Error('User entity ref must be a string');
     }
+
+    // Return user info if it's already available in the token (ie. it is a full token)
     if (
-      !Array.isArray(ownershipEntityRefs) ||
-      ownershipEntityRefs.some(ref => typeof ref !== 'string')
+      Array.isArray(ownershipEntityRefs) &&
+      ownershipEntityRefs.every(ref => typeof ref === 'string')
     ) {
-      throw new Error('Ownership entity refs must be an array of strings');
+      return { userEntityRef, ownershipEntityRefs };
     }
 
-    return { userEntityRef, ownershipEntityRefs };
+    const userInfoResp = await fetch(
+      `${await this.discovery.getBaseUrl('auth')}/v1/userinfo`,
+      {
+        headers: {
+          Authorization: `Bearer ${internalCredentials.token}`,
+        },
+      },
+    );
+
+    if (!userInfoResp.ok) {
+      throw await ResponseError.fromResponse(userInfoResp);
+    }
+
+    const { sub, ent } = await userInfoResp.json();
+
+    return { userEntityRef: sub, ownershipEntityRefs: ent };
   }
 }
 
 /** @public */
 export const userInfoServiceFactory = createServiceFactory({
   service: coreServices.userInfo,
-  deps: {},
-  async factory() {
-    return new DefaultUserInfoService();
+  deps: {
+    discovery: coreServices.discovery,
+  },
+  async factory({ discovery }) {
+    return new DefaultUserInfoService({ discovery });
   },
 });

@@ -24,6 +24,7 @@ import {
 } from 'jose';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
+import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 
 const logger = getVoidLogger();
@@ -43,6 +44,10 @@ const entityRef = stringifyEntityRef({
 });
 
 describe('TokenFactory', () => {
+  const mockUserInfoDatabaseHandler = {
+    addUserInfo: jest.fn().mockResolvedValue(undefined),
+  } as unknown as UserInfoDatabaseHandler;
+
   it('should issue valid tokens signed by a listed key', async () => {
     const keyDurationSeconds = 5;
     const factory = new TokenFactory({
@@ -50,6 +55,7 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds,
       logger,
+      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     await expect(factory.listPublicKeys()).resolves.toEqual({ keys: [] });
@@ -81,6 +87,11 @@ describe('TokenFactory', () => {
       verifyResult.payload.iat! + keyDurationSeconds,
     );
 
+    expect(mockUserInfoDatabaseHandler.addUserInfo).toHaveBeenCalledWith({
+      userEntityRef: entityRef,
+      ownershipEntityRefs: [entityRef],
+    });
+
     // Emulate the reconstruction of a limited user token
     const limitedUserToken = [
       base64url.encode(
@@ -93,7 +104,6 @@ describe('TokenFactory', () => {
       base64url.encode(
         JSON.stringify({
           sub: verifyResult.payload.sub,
-          ent: verifyResult.payload.ent,
           iat: verifyResult.payload.iat,
           exp: verifyResult.payload.exp,
         }),
@@ -107,7 +117,6 @@ describe('TokenFactory', () => {
     );
     expect(verifyProofResult.payload).toEqual({
       sub: entityRef,
-      ent: [entityRef],
       iat: expect.any(Number),
       exp: expect.any(Number),
     });
@@ -125,6 +134,7 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds: 5,
       logger,
+      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     const token1 = await factory.issueToken({
@@ -170,6 +180,7 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds,
       logger,
+      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     await expect(() => {
@@ -187,6 +198,7 @@ describe('TokenFactory', () => {
       keyDurationSeconds,
       logger,
       algorithm: '',
+      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     await expect(() => {
@@ -202,6 +214,7 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds: 5,
       logger,
+      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     await expect(() => {
@@ -220,6 +233,7 @@ describe('TokenFactory', () => {
       keyStore: new MemoryKeyStore(),
       keyDurationSeconds,
       logger,
+      userInfoDatabaseHandler: mockUserInfoDatabaseHandler,
     });
 
     const token = await factory.issueToken({
