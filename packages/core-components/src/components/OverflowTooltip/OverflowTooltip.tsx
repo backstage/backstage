@@ -34,7 +34,6 @@ const useStyles = makeStyles(
       overflow: 'visible !important',
     },
     typo: {
-      maxWidth: 200,
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       display: '-webkit-box',
