@@ -21,7 +21,6 @@ import {
   IdentityApi,
 } from '@backstage/core-plugin-api';
 import {
-  AzureIntegration,
   GithubIntegration,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
@@ -208,7 +207,6 @@ the component will become available.\n\nFor more information, read an \
       }
       case 'azure': {
         return submitAzurePrToRepo(
-          provider as AzureIntegration,
           {
             repositoryUrl,
             fileContent,
