@@ -14,4 +14,22 @@
  * limitations under the License.
  */
 
-export type { LocationAnalyzer } from './types';
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.up = async function up(knex) {
+  await knex.schema.alterTable('tasks', table => {
+    table.binary('workspace').nullable().comment('A snapshot of the workspace');
+  });
+};
+
+/**
+ * @param {import('knex').Knex} knex
+ */
+exports.down = async function down(knex) {
+  await knex.schema.alterTable('tasks', table => {
+    table.dropColumn('workspace');
+  });
+};

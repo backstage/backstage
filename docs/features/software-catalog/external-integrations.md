@@ -55,7 +55,7 @@ Some defining traits of entity providers:
 
 The recommended way of instantiating the catalog backend classes is to use the
 `CatalogBuilder`, as illustrated in the
-[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
+[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend-legacy/src/plugins/catalog.ts).
 We will create a new
 [`EntityProvider`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/provider.ts)
 subclass that can be added to this catalog builder.
@@ -531,7 +531,7 @@ does so!
 
 The recommended way of instantiating the catalog backend classes is to use the
 `CatalogBuilder`, as illustrated in the
-[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
+[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend-legacy/src/plugins/catalog.ts).
 We will create a new
 [`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/processor.ts)
 subclass that can be added to this catalog builder.

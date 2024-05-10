@@ -1,5 +1,12 @@
 # @backstage/core-components
 
+## 0.14.7-next.2
+
+### Patch Changes
+
+- a2ee4df: Add `alignGauge` prop to the `GaugeCard`, and a small size version. When `alignGauge` is `'bottom'` the gauge will vertically align the gauge in the cards, even when the card titles span across multiple lines.
+  Add `alignContent` prop to the `InfoCard`, defaulting to `'normal'` with the option of `'bottom'` which vertically aligns the content to the bottom of the card.
+
 ## 0.14.6-next.1
 
 ### Patch Changes

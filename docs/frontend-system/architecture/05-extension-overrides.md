@@ -108,7 +108,7 @@ const customSearchPage = createPageExtension({
   loader: () => import('./SearchPage').then(m => m.<SearchPage/>),
 });
 
-export createExtensionOverrides({
+export default createExtensionOverrides({
   extensions: [customSearchPage]
 });
 ```

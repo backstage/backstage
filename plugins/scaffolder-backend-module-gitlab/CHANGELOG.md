@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.4.0-next.2
+
+### Minor Changes
+
+- 18f736f: Add examples for `gitlab:projectVariable:create` scaffolder action & improve related tests
+
+### Patch Changes
+
+- 8fa8a00: Add merge method and squash option for project creation
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-scaffolder-node@0.4.4-next.2
+  - @backstage/integration@1.11.0-next.0
+
 ## 0.3.4-next.1
 
 ### Patch Changes

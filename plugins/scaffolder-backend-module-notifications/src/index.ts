@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,20 +14,10 @@
  * limitations under the License.
  */
 
-import {
-  AnalyzeLocationRequest,
-  AnalyzeLocationResponse,
-} from '@backstage/plugin-catalog-common';
-
-/** @public */
-export type LocationAnalyzer = {
-  /**
-   * Generates an entity configuration for given git repository. It's used for
-   * importing new component to the backstage app.
-   *
-   * @param location - Git repository to analyze and generate config for.
-   */
-  analyzeLocation(
-    location: AnalyzeLocationRequest,
-  ): Promise<AnalyzeLocationResponse>;
-};
+/**
+ * The notifications backend module for the scaffolder plugin.
+ *
+ * @packageDocumentation
+ */
+export * from './actions';
+export { scaffolderModuleNotifications as default } from './module';
