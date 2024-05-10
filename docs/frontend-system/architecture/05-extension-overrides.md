@@ -25,7 +25,7 @@ In the example below, we create a file that exports custom extensions for the ap
 ```tsx title="packages/app/src/themes.ts"
 import {
   createThemeExtension,
-  createExtensionOverrides
+  createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 import { apertureThemes } from './themes';
 import { ApertureLightIcon, ApertureDarkIcon } from './icons';
@@ -60,7 +60,7 @@ const apertureDarkTheme = createThemeExtension({
 
 // Creating an extension overrides preset
 export default createExtensionOverrides({
-  extensions: [apertureLightTheme, apertureDarkTheme]
+  extensions: [apertureLightTheme, apertureDarkTheme],
 });
 ```
 
