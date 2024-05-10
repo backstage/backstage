@@ -28,11 +28,19 @@ restoring the plugin, if you previously removed it.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend
 ```
 
-### Adding the plugin to your `packages/backend`
+Then add the plugin to your backend, typically in `packages/backend/src/index.ts`:
 
-You'll need to add the plugin to the router in your `backend` package. You can
-do this by creating a file called `packages/backend/src/plugins/catalog.ts` with
-contents matching [catalog.ts in the create-app template](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/packages/backend/src/plugins/catalog.ts).
+```ts
+const backend = createBackend();
+// ...
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+```
+
+#### Old backend system
+
+In the old backend system there's a bit more wiring required. You'll need to
+create a file called `packages/backend/src/plugins/catalog.ts` with contents
+matching [catalog.ts in the create-app template](https://github.com/backstage/backstage/blob/ad9314d3a7e0405719ba93badf96e97adde8ef83/packages/create-app/templates/default-app/packages/backend/src/plugins/catalog.ts).
 
 With the `catalog.ts` router setup in place, add the router to
 `packages/backend/src/index.ts`:
