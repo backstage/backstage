@@ -106,14 +106,14 @@ After the change, you should no longer see the button.
 
 ## Previewing and Executing Previous Template Tasks
 
-Each execution of a template is treated as a unique task, identifiable by its own unique ID. To view a list of previously executed template tasks, navigate to the `Create` page and access the `Task List` from the context menu (represented by the vertical ellipsis, or 'kebab menu', icon in the upper right corner).
+Each execution of a template is treated as a unique task, identifiable by its own unique ID. To view a list of previously executed template tasks, navigate to the "Create" page and access the "Task List" from the context menu (represented by the vertical ellipsis, or 'kebab menu', icon in the upper right corner).
 
 ![Template Task List](../../assets/software-templates/template-task-list.png)
 
-If you wish to re-run a previously executed template, navigate to the template tasks page. Locate the desired task and select the `Start Over` option from the context menu.
+If you wish to re-run a previously executed template, navigate to the template tasks page. Locate the desired task and select the "Start Over" option from the context menu.
 
 ![Template Start Over](../../assets/software-templates/template-start-over.png)
 
 This action will initiate a new execution of the selected template, pre-populated with the same parameters as the previous run, but these parameters can be edited before re-execution.
 
-In the event of a failed template execution, the `Start Over` option can be used to re-execute the template. The parameters from the original run will be pre-filled, but they can be adjusted as needed before retrying the template.
+In the event of a failed template execution, the "Start Over" option can be used to re-execute the template. The parameters from the original run will be pre-filled, but they can be adjusted as needed before retrying the template.
