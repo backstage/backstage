@@ -31,7 +31,7 @@ addHook(
         },
       },
     });
-    if (filename.includes('backend-next')) {
+    if (filename.includes('backend')) {
       console.log(transformed.code);
     }
     process.send?.({ type: 'watch', path: filename });

@@ -17,7 +17,7 @@
     "directory": "plugins/catalog-backend-module-unprocessed"
   },
   "license": "Apache-2.0",
-  "main": "src/index.ts",
+  "main": "dist/index.cjs.js",
   "types": "src/index.ts",
   "files": [
     "dist"
