@@ -11,8 +11,8 @@ import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
-export function createConfigSecretEnumerator(options: {
-  logger: LoggerService;
+export function createConfigSecretEnumerator(options?: {
+  logger?: LoggerService;
   dir?: string;
   schema?: ConfigSchema;
 }): Promise<(config: Config) => Iterable<string>>;
