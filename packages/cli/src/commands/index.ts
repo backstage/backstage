@@ -29,7 +29,9 @@ export function registerOnboardCommand(program: Command) {
   program
     .command('onboard', { hidden: true })
     .description('Get help setting up your Backstage App.')
-    .action(lazy(() => import('./onboard').then(m => m.command)));
+    .action(
+      lazy(() => Promise.resolve(require('./onboard')).then(m => m.command)),
+    );
 }
 
 export function registerRepoCommand(program: Command) {
@@ -50,7 +52,9 @@ export function registerRepoCommand(program: Command) {
       '--since <ref>',
       'Only build packages and their dev dependents that changed since the specified ref',
     )
-    .action(lazy(() => import('./repo/build').then(m => m.command)));
+    .action(
+      lazy(() => Promise.resolve(require('./repo/build')).then(m => m.command)),
+    );
 
   command
     .command('lint')
@@ -65,7 +69,9 @@ export function registerRepoCommand(program: Command) {
       'Only lint packages that changed since the specified ref',
     )
     .option('--fix', 'Attempt to automatically fix violations')
-    .action(lazy(() => import('./repo/lint').then(m => m.command)));
+    .action(
+      lazy(() => Promise.resolve(require('./repo/lint')).then(m => m.command)),
+    );
 
   command
     .command('fix')
@@ -74,19 +80,27 @@ export function registerRepoCommand(program: Command) {
       '--check',
       'Fail if any packages would have been changed by the command',
     )
-    .action(lazy(() => import('./repo/fix').then(m => m.command)));
+    .action(
+      lazy(() => Promise.resolve(require('./repo/fix')).then(m => m.command)),
+    );
 
   command
     .command('clean')
     .description('Delete cache and output directories')
-    .action(lazy(() => import('./repo/clean').then(m => m.command)));
+    .action(
+      lazy(() => Promise.resolve(require('./repo/clean')).then(m => m.command)),
+    );
 
   command
     .command('list-deprecations')
     .description('List deprecations')
     .option('--json', 'Output as JSON')
     .action(
-      lazy(() => import('./repo/list-deprecations').then(m => m.command)),
+      lazy(() =>
+        Promise.resolve(require('./repo/list-deprecations')).then(
+          m => m.command,
+        ),
+      ),
     );
 
   command
@@ -101,7 +115,9 @@ export function registerRepoCommand(program: Command) {
       'Show help for Jest CLI options, which are passed through',
     )
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
-    .action(lazy(() => import('./repo/test').then(m => m.command)));
+    .action(
+      lazy(() => Promise.resolve(require('./repo/test')).then(m => m.command)),
+    );
 }
 
 export function registerScriptCommand(program: Command) {
@@ -121,7 +137,9 @@ export function registerScriptCommand(program: Command) {
       'Enable debugger in Node.js environments, breaking before code starts',
     )
     .option('--require <path>', 'Add a --require argument to the node process')
-    .action(lazy(() => import('./start').then(m => m.command)));
+    .action(
+      lazy(() => Promise.resolve(require('./start')).then(m => m.command)),
+    );
 
   command
     .command('build')
@@ -145,7 +163,9 @@ export function registerScriptCommand(program: Command) {
       (opt: string, opts: string[]) => (opts ? [...opts, opt] : [opt]),
       Array<string>(),
     )
-    .action(lazy(() => import('./build').then(m => m.command)));
+    .action(
+      lazy(() => Promise.resolve(require('./build')).then(m => m.command)),
+    );
 
   command
     .command('lint [directories...]')
@@ -156,29 +176,37 @@ export function registerScriptCommand(program: Command) {
     )
     .option('--fix', 'Attempt to automatically fix violations')
     .description('Lint a package')
-    .action(lazy(() => import('./lint').then(m => m.default)));
+    .action(
+      lazy(() => Promise.resolve(require('./lint')).then(m => m.default)),
+    );
 
   command
     .command('test')
     .allowUnknownOption(true) // Allows the command to run, but we still need to parse raw args
     .helpOption(', --backstage-cli-help') // Let Jest handle help
     .description('Run tests, forwarding args to Jest, defaulting to watch mode')
-    .action(lazy(() => import('./test').then(m => m.default)));
+    .action(
+      lazy(() => Promise.resolve(require('./test')).then(m => m.default)),
+    );
 
   command
     .command('clean')
     .description('Delete cache directories')
-    .action(lazy(() => import('./clean/clean').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./clean/clean')).then(m => m.default),
+      ),
+    );
 
   command
     .command('prepack')
     .description('Prepares a package for packaging before publishing')
-    .action(lazy(() => import('./pack').then(m => m.pre)));
+    .action(lazy(() => Promise.resolve(require('./pack')).then(m => m.pre)));
 
   command
     .command('postpack')
     .description('Restores the changes made by the prepack command')
-    .action(lazy(() => import('./pack').then(m => m.post)));
+    .action(lazy(() => Promise.resolve(require('./pack')).then(m => m.post)));
 }
 
 export function registerMigrateCommand(program: Command) {
@@ -189,20 +217,32 @@ export function registerMigrateCommand(program: Command) {
   command
     .command('package-roles')
     .description(`Add package role field to packages that don't have it`)
-    .action(lazy(() => import('./migrate/packageRole').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./migrate/packageRole')).then(m => m.default),
+      ),
+    );
 
   command
     .command('package-scripts')
     .description('Set package scripts according to each package role')
     .action(
-      lazy(() => import('./migrate/packageScripts').then(m => m.command)),
+      lazy(() =>
+        Promise.resolve(require('./migrate/packageScripts')).then(
+          m => m.command,
+        ),
+      ),
     );
 
   command
     .command('package-exports')
     .description('Synchronize package subpath export definitions')
     .action(
-      lazy(() => import('./migrate/packageExports').then(m => m.command)),
+      lazy(() =>
+        Promise.resolve(require('./migrate/packageExports')).then(
+          m => m.command,
+        ),
+      ),
     );
 
   command
@@ -211,7 +251,11 @@ export function registerMigrateCommand(program: Command) {
       'Migrates all packages to use @backstage/cli/config/eslint-factory',
     )
     .action(
-      lazy(() => import('./migrate/packageLintConfigs').then(m => m.command)),
+      lazy(() =>
+        Promise.resolve(require('./migrate/packageLintConfigs')).then(
+          m => m.command,
+        ),
+      ),
     );
 
   command
@@ -220,7 +264,11 @@ export function registerMigrateCommand(program: Command) {
       'Migrates the react-router dependencies for all packages to be peer dependencies',
     )
     .action(
-      lazy(() => import('./migrate/reactRouterDeps').then(m => m.command)),
+      lazy(() =>
+        Promise.resolve(require('./migrate/reactRouterDeps')).then(
+          m => m.command,
+        ),
+      ),
     );
 }
 
@@ -251,7 +299,9 @@ export function registerCommands(program: Command) {
       'The version to use for any new packages (default: 0.1.0)',
     )
     .option('--no-private', 'Do not mark new packages as private')
-    .action(lazy(() => import('./new/new').then(m => m.default)));
+    .action(
+      lazy(() => Promise.resolve(require('./new/new')).then(m => m.default)),
+    );
 
   program
     .command('create', { hidden: true })
@@ -275,7 +325,9 @@ export function registerCommands(program: Command) {
       'The package registry to use for new packages',
     )
     .option('--no-private', 'Do not mark new packages as private')
-    .action(lazy(() => import('./new/new').then(m => m.default)));
+    .action(
+      lazy(() => Promise.resolve(require('./new/new')).then(m => m.default)),
+    );
 
   program
     .command('create-plugin', { hidden: true })
@@ -288,7 +340,11 @@ export function registerCommands(program: Command) {
     .option('--npm-registry <URL>', 'npm registry URL')
     .option('--no-private', 'Public npm package')
     .action(
-      lazy(() => import('./create-plugin/createPlugin').then(m => m.default)),
+      lazy(() =>
+        Promise.resolve(require('./create-plugin/createPlugin')).then(
+          m => m.default,
+        ),
+      ),
     );
 
   program
@@ -298,7 +354,11 @@ export function registerCommands(program: Command) {
     .description(
       'Diff an existing plugin with the creation template [DEPRECATED]',
     )
-    .action(lazy(() => import('./plugin/diff').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./plugin/diff')).then(m => m.default),
+      ),
+    );
 
   // TODO(Rugvip): Deprecate in favor of package variant
   program
@@ -308,7 +368,9 @@ export function registerCommands(program: Command) {
     .description(
       'Run tests, forwarding args to Jest, defaulting to watch mode [DEPRECATED]',
     )
-    .action(lazy(() => import('./test').then(m => m.default)));
+    .action(
+      lazy(() => Promise.resolve(require('./test')).then(m => m.default)),
+    );
 
   program
     .command('config:docs')
@@ -317,7 +379,11 @@ export function registerCommands(program: Command) {
       'Only include the schema that applies to the given package',
     )
     .description('Browse the configuration reference documentation')
-    .action(lazy(() => import('./config/docs').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./config/docs')).then(m => m.default),
+      ),
+    );
 
   program
     .command('config:print')
@@ -334,7 +400,11 @@ export function registerCommands(program: Command) {
     )
     .option(...configOption)
     .description('Print the app configuration for the current package')
-    .action(lazy(() => import('./config/print').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./config/print')).then(m => m.default),
+      ),
+    );
 
   program
     .command('config:check')
@@ -353,7 +423,11 @@ export function registerCommands(program: Command) {
     .description(
       'Validate that the given configuration loads and matches schema',
     )
-    .action(lazy(() => import('./config/validate').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./config/validate')).then(m => m.default),
+      ),
+    );
 
   program
     .command('config:schema')
@@ -368,7 +442,11 @@ export function registerCommands(program: Command) {
     .option('--merge', 'Print the config schemas merged', true)
     .option('--no-merge', 'Print the config schemas not merged')
     .description('Print configuration schema')
-    .action(lazy(() => import('./config/schema').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./config/schema')).then(m => m.default),
+      ),
+    );
 
   registerRepoCommand(program);
   registerScriptCommand(program);
@@ -389,13 +467,21 @@ export function registerCommands(program: Command) {
     .option('--skip-install', 'Skips yarn install step')
     .option('--skip-migrate', 'Skips migration of any moved packages')
     .description('Bump Backstage packages to the latest versions')
-    .action(lazy(() => import('./versions/bump').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./versions/bump')).then(m => m.default),
+      ),
+    );
 
   program
     .command('versions:check')
     .option('--fix', 'Fix any auto-fixable versioning problems')
     .description('Check Backstage package versioning')
-    .action(lazy(() => import('./versions/lint').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./versions/lint')).then(m => m.default),
+      ),
+    );
 
   program
     .command('versions:migrate')
@@ -416,7 +502,11 @@ export function registerCommands(program: Command) {
   program
     .command('clean')
     .description('Delete cache directories [DEPRECATED]')
-    .action(lazy(() => import('./clean/clean').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./clean/clean')).then(m => m.default),
+      ),
+    );
 
   program
     .command('build-workspace <workspace-dir> [packages...]')
@@ -425,17 +515,27 @@ export function registerCommands(program: Command) {
       'Force workspace output to be a result of running `yarn pack` on each package (warning: very slow)',
     )
     .description('Builds a temporary dist workspace from the provided packages')
-    .action(lazy(() => import('./buildWorkspace').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./buildWorkspace')).then(m => m.default),
+      ),
+    );
 
   program
     .command('create-github-app <github-org>')
     .description('Create new GitHub App in your organization.')
-    .action(lazy(() => import('./create-github-app').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./create-github-app')).then(m => m.default),
+      ),
+    );
 
   program
     .command('info')
     .description('Show helpful information for debugging and reporting bugs')
-    .action(lazy(() => import('./info').then(m => m.default)));
+    .action(
+      lazy(() => Promise.resolve(require('./info')).then(m => m.default)),
+    );
 
   program
     .command('install [plugin-id]', { hidden: true })
@@ -444,7 +544,11 @@ export function registerCommands(program: Command) {
       'Install from a local package.json containing the installation recipe',
     )
     .description('Install a Backstage plugin [EXPERIMENTAL]')
-    .action(lazy(() => import('./install/install').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./install/install')).then(m => m.default),
+      ),
+    );
 }
 
 // Wraps an action function so that it always exits and handles errors

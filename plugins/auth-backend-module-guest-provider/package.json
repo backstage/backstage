@@ -16,7 +16,13 @@
     "directory": "plugins/auth-backend-module-guest-provider"
   },
   "license": "Apache-2.0",
-  "main": "src/index.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.cjs.js",
+      "require": "./dist/index.cjs.js",
+      "types": "./src/index.ts"
+    }
+  },
   "types": "src/index.ts",
   "files": [
     "dist",

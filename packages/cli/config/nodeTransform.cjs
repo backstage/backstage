@@ -22,7 +22,7 @@ addHook(
     const transformed = transformSync(code, {
       filename,
       // sourceMaps: 'inline',
-      module: { type: 'commonjs' },
+      module: { type: 'commonjs', ignoreDynamic: true },
       jsc: {
         target: 'es2022',
         parser: {
