@@ -40,7 +40,9 @@ function registerPackageCommand(program: Command) {
     )
     .action(
       lazy(() =>
-        import('./package/schema/openapi/init').then(m => m.singleCommand),
+        Promise.resolve(require('./package/schema/openapi/init')).then(
+          m => m.singleCommand,
+        ),
       ),
     );
 
@@ -56,7 +58,9 @@ function registerPackageCommand(program: Command) {
     )
     .action(
       lazy(() =>
-        import('./package/schema/openapi/generate').then(m => m.command),
+        Promise.resolve(require('./package/schema/openapi/generate')).then(
+          m => m.command,
+        ),
       ),
     );
 
@@ -109,7 +113,9 @@ function registerRepoCommand(program: Command) {
     )
     .action(
       lazy(() =>
-        import('./repo/schema/openapi/verify').then(m => m.bulkCommand),
+        Promise.resolve(require('./repo/schema/openapi/verify')).then(
+          m => m.bulkCommand,
+        ),
       ),
     );
 
@@ -121,7 +127,11 @@ function registerRepoCommand(program: Command) {
       'Fail on any linting severity messages, not just errors.',
     )
     .action(
-      lazy(() => import('./repo/schema/openapi/lint').then(m => m.bulkCommand)),
+      lazy(() =>
+        Promise.resolve(require('./repo/schema/openapi/lint')).then(
+          m => m.bulkCommand,
+        ),
+      ),
     );
 
   openApiCommand
@@ -129,7 +139,11 @@ function registerRepoCommand(program: Command) {
     .description('Test OpenAPI schemas against written tests')
     .option('--update', 'Update the spec on failure.')
     .action(
-      lazy(() => import('./repo/schema/openapi/test').then(m => m.bulkCommand)),
+      lazy(() =>
+        Promise.resolve(require('./repo/schema/openapi/test')).then(
+          m => m.bulkCommand,
+        ),
+      ),
     );
 
   openApiCommand
@@ -194,14 +208,20 @@ export function registerCommands(program: Command) {
     .description('Generate an API report for selected packages')
     .action(
       lazy(() =>
-        import('./api-reports/api-reports').then(m => m.buildApiReports),
+        Promise.resolve(require('./api-reports/api-reports')).then(
+          m => m.buildApiReports,
+        ),
       ),
     );
 
   program
     .command('type-deps')
     .description('Find inconsistencies in types of all packages and plugins')
-    .action(lazy(() => import('./type-deps/type-deps').then(m => m.default)));
+    .action(
+      lazy(() =>
+        Promise.resolve(require('./type-deps/type-deps')).then(m => m.default),
+      ),
+    );
 
   program
     .command('generate-catalog-info')
@@ -216,9 +236,9 @@ export function registerCommands(program: Command) {
     .description('Create or fix info yaml files for all backstage packages')
     .action(
       lazy(() =>
-        import('./generate-catalog-info/generate-catalog-info').then(
-          m => m.default,
-        ),
+        Promise.resolve(
+          require('./generate-catalog-info/generate-catalog-info'),
+        ).then(m => m.default),
       ),
     );
 
@@ -228,7 +248,9 @@ export function registerCommands(program: Command) {
     .description('Generate a knip report for selected packages')
     .action(
       lazy(() =>
-        import('./knip-reports/knip-reports').then(m => m.buildKnipReports),
+        Promise.resolve(require('./knip-reports/knip-reports')).then(
+          m => m.buildKnipReports,
+        ),
       ),
     );
 
