@@ -106,6 +106,13 @@ export class OAuthCookieManager {
     });
   }
 
+  removeGrantedScopes(res: Response, origin?: string) {
+    res.cookie(this.grantedScopeCookie, '', {
+      maxAge: 0,
+      ...this.getConfig(origin),
+    });
+  }
+
   setGrantedScopes(res: Response, scope: string, origin?: string) {
     res.cookie(this.grantedScopeCookie, scope, {
       maxAge: THOUSAND_DAYS_MS,
@@ -113,15 +120,15 @@ export class OAuthCookieManager {
     });
   }
 
-  getNonce(req: Request) {
+  getNonce(req: Request): string | undefined {
     return req.cookies[this.nonceCookie];
   }
 
-  getRefreshToken(req: Request) {
+  getRefreshToken(req: Request): string | undefined {
     return req.cookies[this.refreshTokenCookie];
   }
 
-  getGrantedScopes(req: Request) {
+  getGrantedScopes(req: Request): string | undefined {
     return req.cookies[this.grantedScopeCookie];
   }
 }
