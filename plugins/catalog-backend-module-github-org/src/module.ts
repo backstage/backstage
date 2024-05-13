@@ -106,7 +106,7 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
 
         for (const definition of definitions) {
           catalog.addEntityProvider(
-            new GithubOrgEntityCleanerProvider({ id: definition.id }),
+            new GithubOrgEntityCleanerProvider({ id: definition.id, logger }),
           );
           catalog.addEntityProvider(
             GithubMultiOrgEntityProvider.fromConfig(config, {

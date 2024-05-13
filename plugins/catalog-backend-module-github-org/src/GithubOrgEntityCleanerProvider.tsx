@@ -13,13 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 
 export class GithubOrgEntityCleanerProvider implements EntityProvider {
-  constructor(private readonly options: { id: string }) {}
+  logger: LoggerService;
+  constructor(private readonly options: { id: string; logger: LoggerService }) {
+    this.logger = options.logger.child({ target: this.getProviderName() });
+  }
 
   getProviderName() {
     return `GithubOrgEntityProvider:${this.options.id}`;
@@ -32,7 +36,7 @@ export class GithubOrgEntityCleanerProvider implements EntityProvider {
         entities: [],
       })
       .catch(error => {
-        console.error('Failed to clean up entities', error);
+        this.logger.error('Failed to clean up entities', error);
       });
   }
 }
