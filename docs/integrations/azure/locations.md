@@ -68,11 +68,15 @@ integrations:
 
 If you do not specify the `organizations` field the credential will be used for all organizations for which no other credential is configured.
 
-> Note: An Azure DevOps provider is added automatically at startup for
-> convenience, so you only need to list it if you want to supply a
-> [personalAccessToken](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate),
-> a [service principal](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/service-principal-managed-identity),
-> or a [managed identity](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/service-principal-managed-identity)
+:::note Note
+
+An Azure DevOps provider is added automatically at startup for
+convenience, so you only need to list it if you want to supply a
+[personalAccessToken](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/use-personal-access-tokens-to-authenticate),
+a [service principal](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/service-principal-managed-identity),
+or a [managed identity](https://learn.microsoft.com/en-us/azure/devops/integrate/get-started/authentication/service-principal-managed-identity)
+
+:::
 
 The configuration is a structure with these elements:
 
