@@ -47,7 +47,8 @@ describe('readHelmetOptions', () => {
       csp: {
         key: ['value'],
         'img-src': false,
-        'script-src-attr': ['custom'],
+        scriptSrcAttr: ['custom'],
+        'object-src': ['asd'],
       },
     });
     expect(readHelmetOptions(config)).toEqual({
@@ -58,7 +59,7 @@ describe('readHelmetOptions', () => {
           'base-uri': ["'self'"],
           'font-src': ["'self'", 'https:', 'data:'],
           'frame-ancestors': ["'self'"],
-          'object-src': ["'none'"],
+          'object-src': ['asd'],
           'script-src': ["'self'", "'unsafe-eval'"],
           'style-src': ["'self'", 'https:', "'unsafe-inline'"],
           'script-src-attr': ['custom'],
