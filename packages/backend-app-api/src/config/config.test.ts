@@ -15,7 +15,7 @@
  */
 
 import { loadConfigSchema } from '@backstage/config-loader';
-import { createConfigSecretEnumerator } from './config';
+import { createConfigSecretEnumerator, findRootPath } from './config';
 import { mockServices } from '@backstage/backend-test-utils';
 import path from 'path';
 import { createMockDirectory } from '@backstage/backend-test-utils';
@@ -289,5 +289,99 @@ describe('createConfigSecretEnumerator', () => {
       }),
     );
     expect(Array.from(secrets)).toEqual(['my-secret']);
+  });
+});
+
+describe('findRootPath', () => {
+  const mockDir = createMockDirectory();
+
+  beforeEach(() => {
+    process.chdir(__dirname);
+  });
+
+  afterEach(() => {
+    mockDir.clear();
+  });
+
+  it('should find the root package.json', () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        name: 'root',
+      }),
+      a: {
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+          }),
+        },
+      },
+    });
+
+    const rootPath = findRootPath(path.join(mockDir.path));
+
+    expect(rootPath).toBe(path.join(mockDir.path));
+  });
+
+  it('should find the current package.json', () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        name: 'root',
+      }),
+      a: {
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+          }),
+        },
+      },
+    });
+
+    const rootPath = findRootPath(path.join(mockDir.path, 'a', 'b'));
+
+    expect(rootPath).toBe(path.join(mockDir.path, 'a', 'b'));
+  });
+
+  it('should be able to navigate up to the root package.json', () => {
+    mockDir.setContent({
+      'package.json': JSON.stringify({
+        name: 'root',
+      }),
+      a: {
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+          }),
+          src: {
+            'index.ts': 'console.log("Hello, world!")',
+          },
+        },
+      },
+    });
+
+    const rootPath = findRootPath(path.join(mockDir.path, 'a', 'b', 'src'));
+
+    expect(rootPath).toBe(path.join(mockDir.path, 'a', 'b'));
+  });
+
+  it('should return undefined if no package.json found', () => {
+    mockDir.setContent({
+      'not-package.json': JSON.stringify({
+        name: 'root',
+      }),
+      a: {
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+          }),
+          src: {
+            'index.ts': 'console.log("Hello, world!")',
+          },
+        },
+      },
+    });
+
+    const rootPath = findRootPath(path.join(mockDir.path, 'a'));
+
+    expect(rootPath).toBe(undefined);
   });
 });

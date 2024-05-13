@@ -3471,7 +3471,6 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
-    "@manypkg/find-root": ^2.2.1
     "@manypkg/get-packages": ^1.1.3
     "@types/compression": ^1.7.0
     "@types/cors": ^2.8.6
@@ -10704,17 +10703,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@manypkg/find-root@npm:^2.2.1":
-  version: 2.2.1
-  resolution: "@manypkg/find-root@npm:2.2.1"
-  dependencies:
-    "@manypkg/tools": ^1.1.0
-    find-up: ^4.1.0
-    fs-extra: ^8.1.0
-  checksum: 7f31120c3ef0711f6e65857ea232fb4f7caf4db388080e738f82d979d7f72572dae60519c8fcd45c431a8e94095b6628257fbf7373b34401359def00687bab13
-  languageName: node
-  linkType: hard
-
 "@manypkg/get-packages@npm:^1.1.3":
   version: 1.1.3
   resolution: "@manypkg/get-packages@npm:1.1.3"
@@ -10726,18 +10714,6 @@ __metadata:
     globby: ^11.0.0
     read-yaml-file: ^1.1.0
   checksum: f5a756e5a659e0e1c33f48852d56826d170d5b10a3cdea89ce4fcaa77678d8799aa4004b30e1985c87b73dbc390b95bb6411b78336dd1e0db87c08c74b5c0e74
-  languageName: node
-  linkType: hard
-
-"@manypkg/tools@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@manypkg/tools@npm:1.1.0"
-  dependencies:
-    fs-extra: ^8.1.0
-    globby: ^11.0.0
-    jju: ^1.4.0
-    read-yaml-file: ^1.1.0
-  checksum: f0228435c0b12b4dec59a57c683f1431a3a0dea71640c73b231de27742ccaf5bb2f48d425184bdf330d24e940cb9ea7ecfc8b4ed5d3d6031f8132e251e728e80
   languageName: node
   linkType: hard
 
@@ -31268,7 +31244,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"jju@npm:^1.4.0, jju@npm:~1.4.0":
+"jju@npm:~1.4.0":
   version: 1.4.0
   resolution: "jju@npm:1.4.0"
   checksum: 3790481bd2b7827dd6336e6e3dc2dcc6d425679ba7ebde7b679f61dceb4457ea0cda330972494de608571f4973c6dfb5f70fab6f3c5037dbab19ac449a60424f
