@@ -14,8 +14,30 @@
  * limitations under the License.
  */
 
-export {
-  overridePackagePathResolution,
-  type OverridePackagePathResolutionOptions,
-  type PackagePathResolutionOverride,
-} from './deprecated';
+import {
+  overridePackagePathResolution as _overridePackagePathResolution,
+  OverridePackagePathResolutionOptions as _OverridePackagePathResolutionOptions,
+  PackagePathResolutionOverride as _PackagePathResolutionOverride,
+} from '@backstage/backend-plugin-api/testUtils';
+
+/**
+ * @public
+ * @deprecated This function is deprecated and will be removed in future release, see https://github.com/backstage/backstage/issues/24493.
+ * Please use the `overridePackagePathResolution` function from the `@backstage/backend-plugin-api/testUtils` package instead.
+ */
+export const overridePackagePathResolution = _overridePackagePathResolution;
+
+/**
+ * @public
+ * @deprecated This type is deprecated and will be removed in a future release, see https://github.com/backstage/backstage/issues/24493.
+ * Please use the `OverridePackagePathResolutionOptions` type from the `@backstage/backend-plugin-api/testUtils` package instead.
+ */
+export type OverridePackagePathResolutionOptions =
+  _OverridePackagePathResolutionOptions;
+
+/**
+ * @public
+ * @deprecated This type is deprecated and will be removed in a future release, see https://github.com/backstage/backstage/issues/24493.
+ * Please use the `PackagePathResolutionOverride` type from the `@backstage/backend-plugin-api/testUtils` package instead.
+ */
+export type PackagePathResolutionOverride = _PackagePathResolutionOverride;

@@ -25,11 +25,7 @@ export type { LegacyCreateRouter } from './legacy';
 export * from './auth';
 export * from './cache';
 export { loadBackendConfig } from './config';
-export {
-  resolvePackagePath,
-  resolveSafeChildPath,
-  isChildPath,
-} from './deprecated';
+export * from './deprecated';
 export * from './database';
 export * from './discovery';
 export * from './hot';
