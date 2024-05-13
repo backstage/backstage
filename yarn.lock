@@ -18896,13 +18896,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@useoptic/json-pointer-helpers@npm:0.54.8":
-  version: 0.54.8
-  resolution: "@useoptic/json-pointer-helpers@npm:0.54.8"
+"@useoptic/json-pointer-helpers@npm:0.54.13":
+  version: 0.54.13
+  resolution: "@useoptic/json-pointer-helpers@npm:0.54.13"
   dependencies:
     jsonpointer: ^5.0.1
     minimatch: 9.0.3
-  checksum: 4eddabb6dce3ca8160dcd4904299b6964945c3fe47d39bfeca6c68b9a50b058b901a6fb10ab168295475d651df3349149faa5f27f77293e15b6eee8d4417432e
+  checksum: ad987e9bbec82606bd5995f4ffea7eb708549573e8a94a201ed266e4efc854423804671c3772be714457c417641da69d6689a1e61164bd0cfb8f83a1561facdb
   languageName: node
   linkType: hard
 
@@ -18961,10 +18961,10 @@ __metadata:
   linkType: hard
 
 "@useoptic/openapi-utilities@npm:^0.54.8":
-  version: 0.54.8
-  resolution: "@useoptic/openapi-utilities@npm:0.54.8"
+  version: 0.54.13
+  resolution: "@useoptic/openapi-utilities@npm:0.54.13"
   dependencies:
-    "@useoptic/json-pointer-helpers": 0.54.8
+    "@useoptic/json-pointer-helpers": 0.54.13
     ajv: ^8.6.0
     ajv-errors: ~3.0.0
     ajv-formats: ~2.1.0
@@ -18981,7 +18981,7 @@ __metadata:
     ts-invariant: ^0.9.3
     url-join: ^4.0.1
     yaml-ast-parser: ^0.0.43
-  checksum: fa9e9f430c77687591aaf8b43b7b31a7c2f80fe9c140aaa978f1948f84d3e974181c91c3d8ec3e06efca9735c7826290baf4be72063bf733887aa632b40c3c4a
+  checksum: d02eabba96af29632557cdb5532edcc4a629860471fe6cd02990c54ad8014c980d07e3dde8d04ed644a0bd3c2218a93fc50fe9904ee317ef6189b2db41bc7505
   languageName: node
   linkType: hard
 
