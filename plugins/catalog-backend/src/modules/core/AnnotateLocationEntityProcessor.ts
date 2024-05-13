@@ -53,14 +53,14 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
     let viewUrl;
     let editUrl;
     let sourceLocation;
-    const gitCommitBranchURLPattern = /\b[0-9a-f]{40,}\b/;
+    const commitHashRegExp = /\b[0-9a-f]{40,}\b/;
 
     if (location.type === 'url') {
       const scmIntegration = integrations.byUrl(location.target);
 
       viewUrl = location.target;
 
-      if (!gitCommitBranchURLPattern.test(location.target)) {
+      if (!commitHashRegExp.test(location.target)) {
         editUrl = scmIntegration?.resolveEditUrl(location.target);
       }
 
