@@ -45,13 +45,7 @@ import {
   SearchResponse,
   UrlReader,
 } from './types';
-import { StaticAuthOptions, AuthCallbackOptions, Git } from './git';
-
-export function isAuthCallbackOptions(
-  options: StaticAuthOptions | AuthCallbackOptions,
-): options is AuthCallbackOptions {
-  return 'onAuth' in options;
-}
+import { Git } from './git';
 
 const pipeline = promisify(pipelineCb);
 

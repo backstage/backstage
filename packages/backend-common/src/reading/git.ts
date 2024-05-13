@@ -18,7 +18,6 @@ import fs from 'fs-extra';
 import isomorphicGit, { ProgressCallback, AuthCallback } from 'isomorphic-git';
 import http from 'isomorphic-git/http/node';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { isAuthCallbackOptions } from './GerritUrlReader';
 
 /**
  * Configure static credential for authentication
@@ -41,6 +40,12 @@ export type AuthCallbackOptions = {
   onAuth: AuthCallback;
   logger?: LoggerService;
 };
+
+function isAuthCallbackOptions(
+  options: StaticAuthOptions | AuthCallbackOptions,
+): options is AuthCallbackOptions {
+  return 'onAuth' in options;
+}
 
 /*
 provider          username         password
