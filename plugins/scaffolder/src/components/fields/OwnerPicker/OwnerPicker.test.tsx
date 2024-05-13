@@ -99,7 +99,12 @@ describe('<OwnerPicker />', () => {
           filter: {
             kind: ['Group', 'User'],
           },
-          fields: ['metadata.name', 'metadata.namespace', 'kind'],
+          fields: [
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+            'kind',
+          ],
         }),
       );
     });
@@ -132,7 +137,12 @@ describe('<OwnerPicker />', () => {
           filter: {
             kind: ['User'],
           },
-          fields: ['metadata.name', 'metadata.namespace', 'kind'],
+          fields: [
+            'metadata.name',
+            'metadata.namespace',
+            'metadata.title',
+            'kind',
+          ],
         }),
       );
     });
