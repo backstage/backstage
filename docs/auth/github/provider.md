@@ -48,7 +48,7 @@ auth:
             - resolver: usernameMatchingUserEntityName
 ```
 
-The GitHub provider is a structure with five configuration keys:
+The GitHub provider is a structure with these configuration keys:
 
 - `clientId`: The client ID that you generated on GitHub, e.g.
   `b59241722e3c3b4816e2`
