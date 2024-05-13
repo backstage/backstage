@@ -165,7 +165,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   });
 
   if (process.env.EXPERIMENTAL_VITE) {
-    const vite = import('vite');
+    const vite = await import('vite');
     const { default: viteReact } = await import('@vitejs/plugin-react');
     const { nodePolyfills: viteNodePolyfills } = await import(
       'vite-plugin-node-polyfills'
