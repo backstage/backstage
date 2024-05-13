@@ -23,6 +23,7 @@ import {
 import { OAuthCookieManager } from './OAuthCookieManager';
 import { OAuthState } from './state';
 import { CookieScopeManager } from './CookieScopeManager';
+import { ConfigReader } from '@backstage/config';
 
 function makeReq(scope?: string): express.Request {
   return {
@@ -31,6 +32,11 @@ function makeReq(scope?: string): express.Request {
     get: _name => 'https://example.com',
   } as express.Request<any, any, any, any>;
 }
+
+const baseOpts = {
+  authenticator: {} as OAuthAuthenticator<any, any>,
+  cookieManager: {} as OAuthCookieManager,
+};
 
 describe('CookieScopeManager', () => {
   it('should work with minimal config', async () => {
@@ -71,8 +77,7 @@ describe('CookieScopeManager', () => {
   it('should include additional scopes', async () => {
     const manager = CookieScopeManager.create({
       additionalScopes: ['a', 'b'],
-      authenticator: {} as OAuthAuthenticator<any, any>,
-      cookieManager: {} as OAuthCookieManager,
+      ...baseOpts,
     });
 
     await expect(manager.start(makeReq())).resolves.toEqual({
@@ -93,6 +98,31 @@ describe('CookieScopeManager', () => {
         session: { scope: 'y,z a' },
       } as OAuthAuthenticatorResult<any>),
     ).resolves.toEqual('y z a');
+  });
+
+  it('should include additional scopes from config', async () => {
+    await expect(
+      CookieScopeManager.create({
+        additionalScopes: ['a'],
+        ...baseOpts,
+      }).start(makeReq()),
+    ).resolves.toEqual({ scope: 'a' });
+
+    await expect(
+      CookieScopeManager.create({
+        config: new ConfigReader({ additionalScopes: 'a,b' }),
+        additionalScopes: ['c'],
+        ...baseOpts,
+      }).start(makeReq()),
+    ).resolves.toEqual({ scope: 'a b c' });
+
+    await expect(
+      CookieScopeManager.create({
+        config: new ConfigReader({ additionalScopes: ['a', 'b'] }),
+        additionalScopes: ['c'],
+        ...baseOpts,
+      }).start(makeReq()),
+    ).resolves.toEqual({ scope: 'a b c' });
   });
 
   it('should persist scopes', async () => {

@@ -113,12 +113,10 @@ export function createOAuthRouteHandlers<TProfile>(
   });
 
   const scopeManager = CookieScopeManager.create({
+    config,
     authenticator,
     cookieManager,
-    additionalScopes: [
-      ...(options.additionalScopes ?? []),
-      ...(config.getOptionalStringArray('additionalScopes') ?? []),
-    ],
+    additionalScopes: options.additionalScopes,
   });
 
   return {

@@ -23,6 +23,7 @@ import {
 import { OAuthCookieManager } from './OAuthCookieManager';
 import { OAuthState } from './state';
 import { AuthenticationError } from '@backstage/errors';
+import { Config } from '@backstage/config';
 
 function reqRes(req: express.Request): express.Response {
   const res = req.res;
@@ -47,19 +48,25 @@ function splitScope(scope?: string): Iterable<string> {
 
 export class CookieScopeManager {
   static create(options: {
+    config?: Config;
     additionalScopes?: string[];
     authenticator: OAuthAuthenticator<any, any>;
     cookieManager: OAuthCookieManager;
   }) {
-    const { authenticator } = options;
+    const { authenticator, config } = options;
 
     const shouldPersistScopes =
       authenticator.scopes?.persist ??
       authenticator.shouldPersistScopes ??
       false;
 
+    const configScopes =
+      typeof config?.getOptional('additionalScopes') === 'string'
+        ? splitScope(config.getString('additionalScopes'))
+        : config?.getOptionalStringArray('additionalScopes') ?? [];
+
     const transform = authenticator?.scopes?.transform ?? defaultTransform;
-    const additional = options.additionalScopes ?? [];
+    const additional = [...configScopes, ...(options.additionalScopes ?? [])];
     const required = authenticator?.scopes?.required ?? [];
 
     return new CookieScopeManager(
