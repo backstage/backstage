@@ -33,8 +33,8 @@ function reqRes(req: express.Request): express.Response {
 }
 
 const defaultTransform: Required<OAuthAuthenticatorScopeOptions>['transform'] =
-  ({ required, additional, requested, granted }) => {
-    return new Set([...required, ...requested, ...additional, ...granted]);
+  ({ requested, granted, required, additional }) => {
+    return [...requested, ...granted, ...required, ...additional];
   };
 
 function splitScope(scope?: string): Iterable<string> {
@@ -42,12 +42,12 @@ function splitScope(scope?: string): Iterable<string> {
     return [];
   }
 
-  return new Set(scope.split(/[\s|,]/).filter(Boolean));
+  return scope.split(/[\s|,]/).filter(Boolean);
 }
 
 export class CookieScopeManager {
   static create(options: {
-    additionalScopes: string[];
+    additionalScopes?: string[];
     authenticator: OAuthAuthenticator<any, any>;
     cookieManager: OAuthCookieManager;
   }) {
@@ -59,13 +59,13 @@ export class CookieScopeManager {
       false;
 
     const transform = authenticator?.scopes?.transform ?? defaultTransform;
-    const additional = options.additionalScopes;
+    const additional = options.additionalScopes ?? [];
     const required = authenticator?.scopes?.required ?? [];
 
     return new CookieScopeManager(
       (requested, granted) =>
         Array.from(
-          transform({ required, additional, requested, granted }),
+          new Set(transform({ required, additional, requested, granted })),
         ).join(' '),
       shouldPersistScopes ? options.cookieManager : undefined,
     );
@@ -83,8 +83,9 @@ export class CookieScopeManager {
     req: express.Request,
   ): Promise<{ scopeState?: Partial<OAuthState>; scope: string }> {
     const requestScope = splitScope(req.query.scope?.toString());
+    const grantedScope = splitScope(this.cookieManager?.getGrantedScopes(req));
 
-    const scope = this.scopeTransform(requestScope, []);
+    const scope = this.scopeTransform(requestScope, grantedScope);
 
     if (this.cookieManager) {
       // If scopes are persisted then we pass them through the state so that we
@@ -107,7 +108,7 @@ export class CookieScopeManager {
   ): Promise<string> {
     // If we are not persisting scopes we can forward the scope from the result
     if (!this.cookieManager) {
-      return ctx.result.session.scope;
+      return Array.from(splitScope(ctx.result.session.scope)).join(' ');
     }
 
     const scope = ctx.state.scope;
@@ -149,7 +150,7 @@ export class CookieScopeManager {
           return scope;
         }
 
-        return result.session.scope;
+        return Array.from(splitScope(result.session.scope)).join(' ');
       },
     };
   }
