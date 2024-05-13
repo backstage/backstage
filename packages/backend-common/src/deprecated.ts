@@ -15,6 +15,12 @@
  */
 
 import {
+  resolvePackagePath as _resolvePackagePath,
+  resolveSafeChildPath as _resolveSafeChildPath,
+  isChildPath as _isChildPath,
+} from '@backstage/backend-plugin-api';
+
+import {
   overridePackagePathResolution as _overridePackagePathResolution,
   OverridePackagePathResolutionOptions as _OverridePackagePathResolutionOptions,
   PackagePathResolutionOverride as _PackagePathResolutionOverride,
@@ -41,3 +47,24 @@ export type OverridePackagePathResolutionOptions =
  * Please use the `PackagePathResolutionOverride` type from the `@backstage/backend-plugin-api/testUtils` package instead.
  */
 export type PackagePathResolutionOverride = _PackagePathResolutionOverride;
+
+/**
+ * @public
+ * @deprecated This type is deprecated and will be removed in a future release, see https://github.com/backstage/backstage/issues/24493.
+ * Please use the `resolvePackagePath` function from the `@backstage/backend-plugin-api` package instead.
+ */
+export const resolvePackagePath = _resolvePackagePath;
+
+/**
+ * @public
+ * @deprecated This type is deprecated and will be removed in a future release, see
+ * Please use the `resolveSafeChildPath` function from the `@backstage/backend-plugin-api` package instead.
+ */
+export const resolveSafeChildPath = _resolveSafeChildPath;
+
+/**
+ * @public
+ * @deprecated This type is deprecated and will be removed in a future release, see
+ * Please use the `isChildPath` function from the `@backstage/cli-common` package instead.
+ */
+export const isChildPath = _isChildPath;

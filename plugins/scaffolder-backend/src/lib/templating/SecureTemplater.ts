@@ -15,7 +15,7 @@
  */
 
 import { Isolate } from 'isolated-vm';
-import { resolvePackagePath } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import {
   TemplateFilter as _TemplateFilter,
   TemplateGlobal as _TemplateGlobal,
