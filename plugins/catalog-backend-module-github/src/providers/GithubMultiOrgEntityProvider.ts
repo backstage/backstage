@@ -150,7 +150,7 @@ export interface GithubMultiOrgEntityProviderOptions {
    *
    * If set to true, groups with the same name across different orgs will be considered the same group.
    */
-  defaultNamespace?: boolean;
+  alwaysUseDefaultNamespace?: boolean;
 
   /**
    * Optionally include a user transformer for transforming from GitHub users to User Entities
@@ -207,7 +207,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
-      defaultNamespace: options.defaultNamespace,
+      alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
     });
 
     provider.schedule(options.schedule);
@@ -226,7 +226,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       orgs?: string[];
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
-      defaultNamespace?: boolean;
+      alwaysUseDefaultNamespace?: boolean;
     },
   ) {}
 
@@ -857,7 +857,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     const result = await defaultOrganizationTeamTransformer(team, ctx);
 
     if (result && result.spec) {
-      if (!this.options.defaultNamespace) {
+      if (!this.options.alwaysUseDefaultNamespace) {
         result.metadata.namespace = ctx.org.toLocaleLowerCase('en-US');
       }
 

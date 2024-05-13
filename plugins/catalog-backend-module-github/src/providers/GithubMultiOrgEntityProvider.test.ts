@@ -647,7 +647,7 @@ describe('GithubMultiOrgEntityProvider', () => {
       });
     });
 
-    it('should use the default namespace if options.defaultNamespace is provided', async () => {
+    it('should use the default namespace if options.alwaysUseDefaultNamespace is provided', async () => {
       mockClient
         .mockResolvedValueOnce({
           organization: {
@@ -764,7 +764,7 @@ describe('GithubMultiOrgEntityProvider', () => {
         githubUrl: 'https://github.com',
         logger,
         orgs: ['orgA', 'orgB'],
-        defaultNamespace: true,
+        alwaysUseDefaultNamespace: true,
       });
 
       await entityProvider.connect(entityProviderConnection);

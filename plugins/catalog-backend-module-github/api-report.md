@@ -150,7 +150,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     orgs?: string[];
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
-    defaultNamespace?: boolean;
+    alwaysUseDefaultNamespace?: boolean;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -166,7 +166,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
 // @public
 export interface GithubMultiOrgEntityProviderOptions {
-  defaultNamespace?: boolean;
+  alwaysUseDefaultNamespace?: boolean;
   events?: EventsService;
   githubCredentialsProvider?: GithubCredentialsProvider;
   githubUrl: string;
