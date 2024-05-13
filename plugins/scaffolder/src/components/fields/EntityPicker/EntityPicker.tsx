@@ -67,7 +67,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const catalogApi = useApi(catalogApiRef);
 
   const { value: entities, loading } = useAsync(async () => {
-    const fields = ['metadata.name', 'metadata.namespace', 'kind'];
+    const fields = [
+      'metadata.name',
+      'metadata.namespace',
+      'metadata.title',
+      'kind',
+    ];
     const { items } = await catalogApi.getEntities(
       catalogFilter
         ? { filter: catalogFilter, fields }
@@ -138,6 +143,20 @@ export const EntityPicker = (props: EntityPickerProps) => {
     }
   }, [entities, onChange, selectedEntity]);
 
+  const getOptionLabel = (option: Entity): string => {
+    // option can be a string due to freeSolo.
+    if (typeof option === 'string') return option;
+
+    const entityRef = humanizeEntityRef(option, {
+      defaultKind,
+      defaultNamespace,
+    });
+
+    if (allowArbitraryValues) return entityRef;
+
+    return option.metadata.title ?? entityRef;
+  };
+
   return (
     <FormControl
       margin="normal"
@@ -151,12 +170,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
         loading={loading}
         onChange={onSelect}
         options={entities || []}
-        getOptionLabel={option =>
-          // option can be a string due to freeSolo.
-          typeof option === 'string'
-            ? option
-            : humanizeEntityRef(option, { defaultKind, defaultNamespace })!
-        }
+        getOptionLabel={getOptionLabel}
         autoSelect
         freeSolo={allowArbitraryValues}
         renderInput={params => (
