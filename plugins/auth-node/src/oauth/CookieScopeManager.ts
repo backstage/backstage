@@ -119,7 +119,7 @@ export class CookieScopeManager {
     }
 
     const scope = ctx.state.scope;
-    if (!scope) {
+    if (scope === undefined) {
       throw new AuthenticationError('No scope found in OAuth state');
     }
 
