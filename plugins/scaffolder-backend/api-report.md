@@ -302,7 +302,10 @@ export const createPublishGitlabMergeRequestAction: (options: {
 }) => TemplateAction_2<
   {
     repoUrl: string;
-    title: string;
+    title: string
+    /**
+     * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-github instead
+     */;
     description: string;
     branchName: string;
     targetBranchName?: string | undefined;
