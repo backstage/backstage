@@ -21,4 +21,4 @@
 '@backstage/plugin-app-backend': patch
 ---
 
-Extract path utilities from `backend-common` to the `backend-plugin-api` package.
+Move path utilities from `backend-common` to the `backend-plugin-api` package.
