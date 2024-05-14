@@ -22,8 +22,6 @@
 
 export { legacyPlugin, makeLegacyPlugin } from './legacy';
 export type { LegacyCreateRouter } from './legacy';
-export { Git } from './deprecated';
-export type { StaticAuthOptions, AuthCallbackOptions } from './deprecated';
 export * from './auth';
 export * from './cache';
 export { loadBackendConfig } from './config';
