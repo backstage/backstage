@@ -88,13 +88,17 @@ export function readAwsCodeCommitIntegrationConfigs(
   // First read all the explicit integrations
   const result = configs.map(readAwsCodeCommitIntegrationConfig);
 
-  // If no explicit console.aws.amazon.com integration was added, put one in the list as
-  // a convenience
-  if (!result.some(c => !c.host)) {
+  if (result.length === 0) {
     result.push({
       host: AMAZON_AWS_CODECOMMIT_HOST,
     });
   }
+
+  result.forEach(c => {
+    if (!c.hasOwnProperty('host')) {
+      c.host = AMAZON_AWS_CODECOMMIT_HOST;
+    }
+  });
 
   return result;
 }
