@@ -50,7 +50,17 @@ The motivation behind this BEP stems from the pressing need to enhance the user 
 
 ## Proposal
 
-One potential solution is to prioritize trust in manual entries. Since a user invests their time to manually register a component, it's likely to be accurate. For other entity providers not handling manual imports, we can implement a system where the latest import run overrides the location. For instance, if the GitHub entity provider imports a component with a GitHub location URL, and then the next day the GitLab entity provider attempts to import the same component, the location URL of that entity will be overwritten by the GitLab import.
+The catalog discovery feature is not functioning correctly, resulting in users updating their catalog-info.yaml file without any effect. This issue may arise due to conflicts between old and new providers, providers sourced from different origins, or a manually registered location that is no longer being processed conflicting with a provider.
+
+Where is this in the code: 
+
+Starting point for entity provider mutations in the catalog codebase is [applyMutation](https://github.com/backstage/backstage/blob/89035a0f58c50d4ae540fd7ced43fbfb383c1015/plugins/catalog-backend/src/processing/connectEntityProviders.ts#L40), then [replaceUnprocessedEntities](https://github.com/backstage/backstage/blob/d5a1fe189b6a8a7471935ccf5f5ed7be650fe649/plugins/catalog-backend/src/database/DefaultProviderDatabase.ts#L75), with conflicts being detected [here](https://github.com/backstage/backstage/blob/d5a1fe189b6a8a7471935ccf5f5ed7be650fe649/plugins/catalog-backend/src/database/DefaultProviderDatabase.ts#L182-L186), but the DB logic for not writing on conflict being in [updateUnprocessedEntity](https://github.com/backstage/backstage/blob/f9f4f87a78f0b4ab6d6d0a4080f9cc00dda00ef8/plugins/catalog-backend/src/database/operations/refreshState/updateUnprocessedEntity.ts#L51-L56) and [insertUnprocessedEntity](https://github.com/backstage/backstage/blob/d5a1fe189b6a8a7471935ccf5f5ed7be650fe649/plugins/catalog-backend/src/database/operations/refreshState/insertUnprocessedEntity.ts#L57).
+
+Some possible solutions:
+
+* Users have the option to set various priorities for individual entity providers.
+* We can implement functionality enabling users to perform manual conflict resolution. Specifically, we can establish a rule prioritizing trust in manual entries, ensuring that once a manual entry exists, its location cannot be overridden regardless of when it was made.
+* Furthermore, we can integrate logic to remove entities from unknown providers. For instance, if a company decides to migrate and no longer utilize EntityProvider X, we can remove entities associated with that provider before migrating to the new one.
 
 ## Design Details
 
