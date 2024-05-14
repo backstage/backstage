@@ -1,5 +1,15 @@
 # @backstage/backend-plugin-api
 
+## 0.6.18
+
+### Patch Changes
+
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- 1fedf0c: Removed explicit `toString()` method from `ServiceRef` type.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-auth-node@0.4.13
+
 ## 0.6.18-next.1
 
 ### Patch Changes

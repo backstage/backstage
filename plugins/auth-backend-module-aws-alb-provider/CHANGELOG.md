@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.1.10
+
+### Patch Changes
+
+- 4a0577e: fix: Move config declarations to appropriate auth backend modules
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-auth-backend@0.22.5
+  - @backstage/plugin-auth-node@0.4.13
+
 ## 0.1.10-next.2
 
 ### Patch Changes

@@ -1,5 +1,23 @@
 # @backstage/cli
 
+## 0.26.5
+
+### Patch Changes
+
+- b8f1fc2: The `build-workspace` command no longer manually runs `yarn postpack`, relying instead on the fact that running `yarn pack` will automatically invoke the `postpack` script. No action is necessary if you are running the latest version of yarn 1, 3, or 4.
+- fcd3462: Both the target and types library have been bumped from ES2021 to ES2022 in `@backstage/cli/config/tsconfig.json`.
+- 0cc5ed3: Add support for `versions:migrate` to do code changes. Can be skipped with `--no-code-changes`
+- f97ad04: Add preserveModules to rollup, which allows better async loading and tree-shaking in webpack
+- 2a6f10d: The `versions:bump` command will no longer exit with a non-zero status if the version bump fails due to forbidden duplicate package installations. It will now also provide more information about how to troubleshoot such an error. The set of forbidden duplicates has also been expanded to include all `@backstage/*-app-api` packages.
+- c5d7b40: Allow passing a `--require` argument through to the Node process during `package start`
+- cc3c518: Fixed an issue causing the `repo fix` command to set an incorrect `workspace` property using Windows
+- 812dff0: Add previously-missing semicolon in file templated by `backstage-cli new --select plugin`.
+- f185603: Fixed the dynamic import of vite.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/integration@1.11.0
+
 ## 0.26.5-next.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/test-utils
 
+## 1.5.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.4
+  - @backstage/core-app-api@1.12.5
+
 ## 1.5.5-next.0
 
 ### Patch Changes

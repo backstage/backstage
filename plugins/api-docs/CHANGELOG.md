@@ -1,5 +1,20 @@
 # @backstage/plugin-api-docs
 
+## 0.11.5
+
+### Patch Changes
+
+- 5d99272: Update local development dependencies.
+- 725ff0b: Fix dark mode text color inside tables in `description:` from OpenAPI definitions
+- Updated dependencies
+  - @backstage/plugin-catalog@1.20.0
+  - @backstage/core-compat-api@0.2.5
+  - @backstage/core-components@0.14.7
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/frontend-plugin-api@0.6.5
+  - @backstage/plugin-catalog-common@1.0.23
+
 ## 0.11.5-next.2
 
 ### Patch Changes
