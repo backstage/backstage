@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.6.1-next.2
+
+### Patch Changes
+
+- 0b50143: GitHub push events now schedule a refresh on entities that have a `refresh_key` matching the `catalogPath` config itself.
+  This allows to support a `catalogPath` configuration that uses glob patterns.
+- f2a2a83: Updated to use the new `catalogAnalysisExtensionPoint` API.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0-next.2
+  - @backstage/plugin-catalog-backend@1.22.0-next.2
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+  - @backstage/integration@1.11.0-next.0
+
 ## 0.6.1-next.1
 
 ### Patch Changes

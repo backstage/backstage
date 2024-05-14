@@ -23,10 +23,11 @@ import {
 import { DefaultEntityPresentationApi } from './DefaultEntityPresentationApi';
 
 describe('DefaultEntityPresentationApi', () => {
-  it('works in local mode', () => {
+  it('works in local mode', async () => {
     const api = DefaultEntityPresentationApi.createLocal();
 
-    expect(api.forEntity('component:default/test')).toEqual({
+    let presentation = api.forEntity('component:default/test');
+    expect(presentation).toEqual({
       snapshot: {
         entityRef: 'component:default/test',
         entity: undefined,
@@ -35,11 +36,14 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
+      promise: expect.any(Promise),
     });
+    await expect(presentation.promise).resolves.toEqual(presentation.snapshot);
 
-    expect(
-      api.forEntity('component:default/test', { defaultKind: 'Other' }),
-    ).toEqual({
+    presentation = api.forEntity('component:default/test', {
+      defaultKind: 'Other',
+    });
+    expect(presentation).toEqual({
       snapshot: {
         entityRef: 'component:default/test',
         entity: undefined,
@@ -48,13 +52,14 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
+      promise: expect.any(Promise),
     });
+    await expect(presentation.promise).resolves.toEqual(presentation.snapshot);
 
-    expect(
-      api.forEntity('component:default/test', {
-        defaultNamespace: 'other',
-      }),
-    ).toEqual({
+    presentation = api.forEntity('component:default/test', {
+      defaultNamespace: 'other',
+    });
+    expect(presentation).toEqual({
       snapshot: {
         entityRef: 'component:default/test',
         entity: undefined,
@@ -63,7 +68,9 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
+      promise: expect.any(Promise),
     });
+    await expect(presentation.promise).resolves.toEqual(presentation.snapshot);
 
     const entity: Entity = {
       apiVersion: 'backstage.io/v1alpha1',
@@ -77,7 +84,8 @@ describe('DefaultEntityPresentationApi', () => {
       },
     };
 
-    expect(api.forEntity(entity)).toEqual({
+    presentation = api.forEntity(entity);
+    expect(presentation).toEqual({
       snapshot: {
         entityRef: 'component:default/test',
         primaryTitle: 'test',
@@ -85,7 +93,9 @@ describe('DefaultEntityPresentationApi', () => {
         Icon: expect.anything(),
       },
       update$: undefined,
+      promise: expect.any(Promise),
     });
+    await expect(presentation.promise).resolves.toEqual(presentation.snapshot);
   });
 
   it('works in catalog mode', async () => {
@@ -114,34 +124,38 @@ describe('DefaultEntityPresentationApi', () => {
     });
 
     // return simple presentation, call catalog, return full presentation
-    await expect(
-      consumePresentation(api.forEntity('component:default/test')),
-    ).resolves.toEqual([
+    let presentation = api.forEntity('component:default/test');
+    let expected: EntityRefPresentationSnapshot = {
+      entityRef: 'component:default/test',
+      primaryTitle: 'test',
+      secondaryTitle: 'component:default/test | service',
+      Icon: expect.anything(),
+    };
+    await expect(consumePresentation(presentation)).resolves.toEqual([
+      // first the dummy snapshot
       {
         entityRef: 'component:default/test',
         primaryTitle: 'test',
         secondaryTitle: 'component:default/test',
         Icon: expect.anything(),
       },
-      {
-        entityRef: 'component:default/test',
-        primaryTitle: 'test',
-        secondaryTitle: 'component:default/test | service',
-        Icon: expect.anything(),
-      },
+      expected,
     ]);
+    await expect(presentation.promise).resolves.toEqual(expected);
 
     // use cached entity, immediately return full presentation
-    await expect(
-      consumePresentation(api.forEntity('component:default/test')),
-    ).resolves.toEqual([
-      {
-        entityRef: 'component:default/test',
-        primaryTitle: 'test',
-        secondaryTitle: 'component:default/test | service',
-        Icon: expect.anything(),
-      },
+    presentation = api.forEntity('component:default/test');
+    expected = {
+      entityRef: 'component:default/test',
+      primaryTitle: 'test',
+      secondaryTitle: 'component:default/test | service',
+      Icon: expect.anything(),
+    };
+    expect(presentation.snapshot).toEqual(expected);
+    await expect(consumePresentation(presentation)).resolves.toEqual([
+      expected,
     ]);
+    await expect(presentation.promise).resolves.toEqual(presentation.snapshot);
 
     expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledTimes(1);
     expect(catalogApi.getEntitiesByRefs).toHaveBeenCalledWith(

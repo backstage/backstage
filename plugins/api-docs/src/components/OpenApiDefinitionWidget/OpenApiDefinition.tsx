@@ -34,7 +34,9 @@ const useStyles = makeStyles(theme => ({
       [`& .opblock-tag,
           .opblock-tag small,
           table thead tr td,
-          table thead tr th`]: {
+          table thead tr th,
+          table tbody tr td,
+          table tbody tr th`]: {
         fontFamily: theme.typography.fontFamily,
         color: theme.palette.text.primary,
         borderColor: theme.palette.divider,

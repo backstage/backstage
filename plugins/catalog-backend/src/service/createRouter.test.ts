@@ -42,7 +42,7 @@ import { decodeCursor, encodeCursor } from './util';
 import { wrapInOpenApiTestServer } from '@backstage/backend-openapi-utils';
 import { Server } from 'http';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-import { LocationAnalyzer } from '../ingestion';
+import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 
 describe('createRouter readonly disabled', () => {
   let entitiesCatalog: jest.Mocked<EntitiesCatalog>;

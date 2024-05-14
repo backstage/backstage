@@ -12,7 +12,7 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GroupEntity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { SearchEntry } from 'ldapjs';
 import { SearchOptions } from 'ldapjs';
 import { TaskRunner } from '@backstage/backend-tasks';
@@ -76,10 +76,10 @@ export const LDAP_UUID_ANNOTATION = 'backstage.io/ldap-uuid';
 
 // @public
 export class LdapClient {
-  constructor(client: Client, logger: Logger);
+  constructor(client: Client, logger: LoggerService);
   // (undocumented)
   static create(
-    logger: Logger,
+    logger: LoggerService,
     target: string,
     bind?: BindConfig,
     tls?: TLSConfig,
@@ -99,7 +99,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
   constructor(options: {
     id: string;
     provider: LdapProviderConfig;
-    logger: Logger;
+    logger: LoggerService;
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
   });
@@ -112,14 +112,14 @@ export class LdapOrgEntityProvider implements EntityProvider {
   ): LdapOrgEntityProvider;
   // (undocumented)
   getProviderName(): string;
-  read(options?: { logger?: Logger }): Promise<void>;
+  read(options?: { logger?: LoggerService }): Promise<void>;
 }
 
 // @public
 export interface LdapOrgEntityProviderOptions {
   groupTransformer?: GroupTransformer;
   id: string;
-  logger: Logger;
+  logger: LoggerService;
   schedule: 'manual' | TaskRunner;
   target: string;
   userTransformer?: UserTransformer;
@@ -129,7 +129,7 @@ export interface LdapOrgEntityProviderOptions {
 export class LdapOrgReaderProcessor implements CatalogProcessor {
   constructor(options: {
     providers: LdapProviderConfig[];
-    logger: Logger;
+    logger: LoggerService;
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
   });
@@ -137,7 +137,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
   static fromConfig(
     configRoot: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       groupTransformer?: GroupTransformer;
       userTransformer?: UserTransformer;
     },
@@ -187,7 +187,7 @@ export function readLdapOrg(
   options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
-    logger: Logger;
+    logger: LoggerService;
   },
 ): Promise<{
   users: UserEntity[];

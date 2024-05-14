@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.27.0-next.1",
+  "version": "1.27.0-next.2",
   "private": true,
   "repository": {
     "type": "git",
@@ -24,7 +24,7 @@
     "clean": "backstage-cli repo clean",
     "create-plugin": "echo \"use 'yarn new' instead\"",
     "dev": "yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
-    "dev:next": "yarn workspaces foreach -A --include example-backend-next --include example-app-next --parallel -v -i run start",
+    "dev:next": "yarn workspaces foreach -A --include example-backend --include example-app-next --parallel -v -i run start",
     "docker-build": "yarn tsc && yarn workspace example-backend build && yarn workspace example-backend build-image",
     "fix": "backstage-cli repo fix",
     "postinstall": "husky || true",
@@ -41,8 +41,8 @@
     "snyk:test:package": "yarn snyk:test --include",
     "start": "yarn workspace example-app start",
     "start-backend": "yarn workspace example-backend start",
-    "start-backend:next": "yarn workspace example-backend-next start",
-    "start:lighthouse": "yarn workspaces foreach -A --include example-backend-next --include example-app --parallel -v -i run start",
+    "start-backend:legacy": "yarn workspace example-backend-legacy start",
+    "start:lighthouse": "yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
     "start:microsite": "cd microsite/ && yarn start",
     "start:next": "yarn workspace example-app-next start",
     "storybook": "yarn --cwd storybook && yarn --cwd storybook start",
@@ -84,6 +84,7 @@
   },
   "prettier": "@spotify/prettier-config",
   "resolutions": {
+    "@changesets/assemble-release-plan@^6.0.0": "patch:@changesets/assemble-release-plan@npm%3A6.0.0#./.yarn/patches/@changesets-assemble-release-plan-npm-6.0.0-f7b3005037.patch",
     "@material-ui/pickers@^3.2.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@material-ui/pickers@^3.3.10": "patch:@material-ui/pickers@npm%3A3.3.11#./.yarn/patches/@material-ui-pickers-npm-3.3.11-1c8f68ea20.patch",
     "@types/react": "^18",

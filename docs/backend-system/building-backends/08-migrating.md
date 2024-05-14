@@ -452,7 +452,7 @@ catalog:
         /* highlight-add-end */
 ```
 
-To migrate `GithubMultiOrgEntityProvider` and `GithubOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github-org`.
+To migrate `GithubMultiOrgEntityProvider` or `GithubOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github-org`.
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));
@@ -461,20 +461,79 @@ backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 /* highlight-add-end */
 ```
 
-If you were providing a `schedule` in code, this now needs to be set via configuration.
-All other Github configuration in `app-config.yaml` remains the same.
+##### GithubOrgEntityProvider
+
+If you were using `GithubOrgEntityProvider` you might have been configured in code like this:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+// The org URL below needs to match a configured integrations.github entry
+// specified in your app-config.
+builder.addEntityProvider(
+  GithubOrgEntityProvider.fromConfig(env.config, {
+    id: 'production',
+    orgUrl: 'https://github.com/backstage',
+    logger: env.logger,
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 60 },
+      timeout: { minutes: 15 },
+    }),
+  }),
+);
+```
+
+This now needs to be set via configuration. The options defined above are now set in `app-config.yaml` instead as shown below:
 
 ```yaml title="app-config.yaml"
 catalog:
+  /* highlight-add-start */
   providers:
     githubOrg:
-      yourProviderId:
-        # ...
-        /* highlight-add-start */
+      - id: production
+        githubUrl: 'https://github.com',
+        orgs: ['backstage']
         schedule:
           frequency: PT30M
-          timeout: PT3M
-        /* highlight-add-end */
+          timeout: PT15M
+          /* highlight-add-end */
+```
+
+##### GithubMultiOrgEntityProvider
+
+If you were using `GithubMultiOrgEntityProvider` you might have been configured in code like this:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+// The GitHub URL below needs to match a configured integrations.github entry
+// specified in your app-config.
+builder.addEntityProvider(
+  GithubMultiOrgEntityProvider.fromConfig(env.config, {
+    id: 'production',
+    githubUrl: 'https://github.com',
+    // Set the following to list the GitHub orgs you wish to ingest from. You can
+    // also omit this option to ingest all orgs accessible by your GitHub integration
+    orgs: ['org-a', 'org-b'],
+    logger: env.logger,
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 60 },
+      timeout: { minutes: 15 },
+    }),
+  }),
+);
+```
+
+This now needs to be set via configuration. The options defined above are now set in `app-config.yaml` instead as shown below:
+
+```yaml title="app-config.yaml"
+catalog:
+  /* highlight-add-start */
+  providers:
+    githubOrg:
+      - id: production
+        githubUrl: 'https://github.com',
+        orgs: ['org-a', 'org-b'],
+        schedule:
+          frequency: PT30M
+          timeout: PT15M
+          /* highlight-add-end */
 ```
 
 If you were providing transformers, these can be configured by extending `githubOrgEntityProviderTransformsExtensionPoint`

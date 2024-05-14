@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-import",
-  "version": "0.10.11-next.1",
+  "version": "0.10.11-next.2",
   "description": "A Backstage plugin the helps you import entities into your catalog",
   "backstage": {
     "role": "frontend-plugin"
@@ -78,6 +78,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/plugin-catalog": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",

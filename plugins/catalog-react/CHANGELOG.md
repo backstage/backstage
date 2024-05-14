@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-react
 
+## 1.12.0-next.2
+
+### Minor Changes
+
+- 8834daf: Updated the presentation API to return a promise, in addition to the snapshot and observable that were there before. This makes it much easier to consume the API in a non-React context.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.7-next.2
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+  - @backstage/integration-react@1.1.27-next.0
+
 ## 1.11.4-next.1
 
 ### Patch Changes
@@ -2932,8 +2945,7 @@
   `CatalogPage` component in your `App.tsx` routing allows you to adjust the
   layout, header, and which filters are available.
 
-  See the documentation added on [Catalog
-  Customization](https://backstage.io/docs/features/software-catalog/catalog-customization)
+  See the documentation added on [Catalog Customization](https://backstage.io/docs/features/software-catalog/catalog-customization)
   for instructions.
 
 ### Patch Changes

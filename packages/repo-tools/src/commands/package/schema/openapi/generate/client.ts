@@ -24,7 +24,7 @@ import { paths as cliPaths } from '../../../../../lib/paths';
 import { mkdirpSync } from 'fs-extra';
 import fs from 'fs-extra';
 import { exec } from '../../../../../lib/exec';
-import { resolvePackagePath } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
 
 async function generate(outputDirectory: string) {

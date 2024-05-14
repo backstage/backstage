@@ -47,7 +47,7 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
 });
 
 const cloneMock = jest.fn(() => Promise.resolve());
-jest.mock('../scm', () => ({
+jest.mock('./git', () => ({
   Git: {
     fromAuth: () => ({
       clone: cloneMock,

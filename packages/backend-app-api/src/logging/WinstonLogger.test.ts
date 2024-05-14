@@ -22,6 +22,17 @@ function msg(info: TransformableInfo): TransformableInfo {
 }
 
 describe('WinstonLogger', () => {
+  it('creates a winston logger instance with default options', () => {
+    const logger = WinstonLogger.create({});
+    expect(logger).toBeInstanceOf(WinstonLogger);
+  });
+
+  it('creates a child logger', () => {
+    const logger = WinstonLogger.create({});
+    const childLogger = logger.child({ plugin: 'test-plugin' });
+    expect(childLogger).toBeInstanceOf(WinstonLogger);
+  });
+
   it('redacter should redact and escape regex', () => {
     const redacter = WinstonLogger.redacter();
     const log = {
@@ -44,6 +55,26 @@ describe('WinstonLogger', () => {
         ...log,
         message: '[REDACTED] [REDACTED])',
         stack: '[REDACTED] [REDACTED]) from this file',
+      }),
+    );
+  });
+
+  it('redacter should redact nested object', () => {
+    const redacter = WinstonLogger.redacter();
+    const log = {
+      level: 'error',
+      message: {
+        nested: 'hello (world) from nested object',
+      },
+    };
+
+    redacter.add(['hello']);
+    expect(redacter.format.transform(msg(log))).toEqual(
+      msg({
+        ...log,
+        message: {
+          nested: '[REDACTED] (world) from nested object',
+        },
       }),
     );
   });

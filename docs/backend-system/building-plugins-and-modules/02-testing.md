@@ -21,8 +21,7 @@ collective term for backend [plugins](../architecture/04-plugins.md) and
 
 The function returns an HTTP server instance which can be used together with
 e.g. `supertest` to easily test the actual REST service surfaces of plugins who
-register routes with [the HTTP router service
-API](../core-services/01-index.md).
+register routes with [the HTTP router service API](../core-services/01-index.md).
 
 ```ts
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';

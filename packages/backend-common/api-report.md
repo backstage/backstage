@@ -30,10 +30,11 @@ import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
+import { HarnessIntegration } from '@backstage/integration';
 import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
-import { isChildPath } from '@backstage/cli-common';
+import { isChildPath as isChildPath_2 } from '@backstage/backend-plugin-api';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
@@ -54,6 +55,8 @@ import { ReadTreeResponseFile } from '@backstage/backend-plugin-api';
 import { ReadUrlOptions } from '@backstage/backend-plugin-api';
 import { ReadUrlResponse } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
+import { resolvePackagePath as resolvePackagePath_2 } from '@backstage/backend-plugin-api';
+import { resolveSafeChildPath as resolveSafeChildPath_2 } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -70,7 +73,7 @@ import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
 
-// @public
+// @public @deprecated
 export type AuthCallbackOptions = {
   onAuth: AuthCallback;
   logger?: LoggerService;
@@ -369,7 +372,7 @@ export function getRootLogger(): winston.Logger;
 // @public
 export function getVoidLogger(): winston.Logger;
 
-// @public
+// @public @deprecated
 export class Git {
   // (undocumented)
   add(options: { dir: string; filepath: string }): Promise<void>;
@@ -513,9 +516,27 @@ export class GitlabUrlReader implements UrlReader {
 }
 
 // @public
+export class HarnessUrlReader implements UrlReader {
+  constructor(integration: HarnessIntegration);
+  // (undocumented)
+  static factory: ReaderFactory;
+  // (undocumented)
+  read(url: string): Promise<Buffer>;
+  // (undocumented)
+  readTree(): Promise<ReadTreeResponse>;
+  // (undocumented)
+  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  // (undocumented)
+  search(): Promise<SearchResponse>;
+  // (undocumented)
+  toString(): string;
+}
+
+// @public
 export const HostDiscovery: typeof HostDiscovery_2;
 
-export { isChildPath };
+// @public @deprecated (undocumented)
+export const isChildPath: typeof isChildPath_2;
 
 // @public
 export function isDatabaseConflictError(e: unknown): boolean;
@@ -720,11 +741,11 @@ export type RequestLoggingHandlerFactory = (
   logger?: LoggerService,
 ) => RequestHandler;
 
-// @public
-export function resolvePackagePath(name: string, ...paths: string[]): string;
+// @public @deprecated (undocumented)
+export const resolvePackagePath: typeof resolvePackagePath_2;
 
-// @public
-export function resolveSafeChildPath(base: string, path: string): string;
+// @public @deprecated (undocumented)
+export const resolveSafeChildPath: typeof resolveSafeChildPath_2;
 
 // @public
 export type RunContainerOptions = {
@@ -800,7 +821,7 @@ export function setRootLogger(newLogger: winston.Logger): void;
 // @public @deprecated
 export const SingleHostDiscovery: typeof HostDiscovery_2;
 
-// @public
+// @public @deprecated
 export type StaticAuthOptions = {
   username?: string;
   password?: string;

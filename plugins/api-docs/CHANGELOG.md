@@ -1,5 +1,17 @@
 # @backstage/plugin-api-docs
 
+## 0.11.5-next.2
+
+### Patch Changes
+
+- 725ff0b: Fix dark mode text color inside tables in `description:` from OpenAPI definitions
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.0-next.2
+  - @backstage/plugin-catalog@1.20.0-next.2
+  - @backstage/core-components@0.14.7-next.2
+  - @backstage/core-compat-api@0.2.5-next.1
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+
 ## 0.11.5-next.1
 
 ### Patch Changes
@@ -1337,8 +1349,7 @@
 ### Patch Changes
 
 - 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
-- 811ff4bcf4: Updated `swagger-ui-react` to 4.11.1 in order to address a [XSS
-  vulnerability](https://github.com/advisories/GHSA-hqq7-2q2v-82xq) in `@braintree/sanitize-url`
+- 811ff4bcf4: Updated `swagger-ui-react` to 4.11.1 in order to address a [XSS vulnerability](https://github.com/advisories/GHSA-hqq7-2q2v-82xq) in `@braintree/sanitize-url`
 - Updated dependencies
   - @backstage/plugin-catalog@1.3.0
   - @backstage/plugin-catalog-react@1.1.1
