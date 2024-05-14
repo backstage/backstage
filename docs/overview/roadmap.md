@@ -22,7 +22,7 @@ This includes ensuring that all documentation is up to date, and includes API
 reviews and refactoring efforts to ensure that what is released is both stable
 and evolvable. You can follow along with this work in the [meta issue](https://github.com/backstage/backstage/issues/24493).
 
-As part of this initiative, there will also be and exploration on how to
+As part of this initiative, there will also be an exploration on how to
 simplify extension of backend services. It is not currently possible to augment
 backend services through declarative integration, they are instead only
 customizable through complete replacement. This also limits the ability to
@@ -61,7 +61,7 @@ foundation for an evolvable plugin metadata system.
 Material-UI v4 is still the officially supported version of MUI in Backstage.
 While we have heard that adopters have had success using MUI 5, this is still an
 untested path with known bugs. The goal of this initiative is to iron out any
-remaining issues of gaps, and then provide a green light for migration to MUI 5.
+remaining issues or gaps, and then provide a green light for migration to MUI 5.
 
 ### Configuration Improvements
 
