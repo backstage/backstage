@@ -10,6 +10,7 @@ import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common
 import { Config } from '@backstage/config';
 import { Handler } from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
+import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
@@ -351,6 +352,8 @@ export interface HttpRouterServiceAuthPolicy {
 // @public (undocumented)
 export interface IdentityService extends IdentityApi {}
 
+export { isChildPath };
+
 // @public (undocumented)
 export interface LifecycleService {
   addShutdownHook(
@@ -495,6 +498,12 @@ export type ReadUrlResponse = {
   etag?: string;
   lastModifiedAt?: Date;
 };
+
+// @public
+export function resolvePackagePath(name: string, ...paths: string[]): string;
+
+// @public
+export function resolveSafeChildPath(base: string, path: string): string;
 
 // @public (undocumented)
 export interface RootConfigService extends Config {}
