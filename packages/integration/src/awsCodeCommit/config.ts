@@ -64,7 +64,7 @@ export function readAwsCodeCommitIntegrationConfig(
   const secretAccessKey = config.getOptionalString('secretAccessKey')?.trim();
   const roleArn = config.getOptionalString('roleArn');
   const externalId = config.getOptionalString('externalId');
-  const host = AMAZON_AWS_CODECOMMIT_HOST;
+  const host = config.getOptionalString('host') || AMAZON_AWS_CODECOMMIT_HOST;
 
   return {
     host,
@@ -90,7 +90,7 @@ export function readAwsCodeCommitIntegrationConfigs(
 
   // If no explicit console.aws.amazon.com integration was added, put one in the list as
   // a convenience
-  if (!result.some(c => c.host === AMAZON_AWS_CODECOMMIT_HOST)) {
+  if (!result.some(c => !c.host)) {
     result.push({
       host: AMAZON_AWS_CODECOMMIT_HOST,
     });
