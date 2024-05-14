@@ -1,5 +1,5 @@
 ---
-'@backstage/core-components': minor
+'@backstage/core-components': patch
 ---
 
 Extending possibilities of the CodeSnippet component:

@@ -55,15 +55,15 @@ export interface CodeSnippetProps {
    */
   showCopyCodeButton?: boolean;
   /**
-   * Style - choose any hightlighter style from {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/ | react-syntax-highlighter}
+   * Choose any hightlighter style from {@link https://react-syntax-highlighter.github.io/react-syntax-highlighter/demo/ | react-syntax-highlighter}
    */
-  style?: { [key: string]: React.CSSProperties } | undefined;
+  highlighterStyle?: { [key: string]: React.CSSProperties } | undefined;
   /**
    * Array of line numbers to highlight
    */
   highlightedNumbers?: number[];
   /**
-   * Line number to scroll to
+   * Line number to scroll to. It uses a parent container (e.g. whole page) to scroll to given line.
    */
   scrollToLine?: number;
   /**
@@ -97,16 +97,16 @@ export function CodeSnippet(props: CodeSnippetProps) {
     language,
     showLineNumbers = false,
     highlightedNumbers,
-    style,
+    highlighterStyle,
     customStyle,
     scrollToLine,
     showCopyCodeButton = false,
   } = props;
   const theme = useTheme();
 
-  let mode: typeof style;
-  if (style) {
-    mode = style;
+  let mode: typeof highlighterStyle;
+  if (highlighterStyle) {
+    mode = highlighterStyle;
   } else {
     mode = theme.palette.type === 'dark' ? lioshi : docco;
   }
