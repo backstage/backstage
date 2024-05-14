@@ -99,7 +99,7 @@ export function getHarnessLatestCommitUrl(
   url: string,
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
-  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/content?routingId=${parsedUrl.accountId}&include_commit=true&git_ref=refs/heads/${parsedUrl.refString}`;
+  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/content?routingId=${parsedUrl.accountId}&include_commit=true&git_ref=refs/heads/${parsedUrl.branch}`;
 }
 
 /**
@@ -175,10 +175,13 @@ export function parseHarnessUrl(
     );
     const refIndex = refAndPath.findIndex(item => item === '~');
     const refString = refAndPath.slice(0, refIndex).join('/');
-    const pathWithoutSlash = refAndPath
-      .slice(refIndex + 1)
-      .join('/')
-      .replace(/^\//, '');
+    const pathWithoutSlash =
+      refIndex !== -1
+        ? refAndPath
+            .slice(refIndex + 1)
+            .join('/')
+            .replace(/^\//, '')
+        : '';
     return {
       baseUrl: baseUrl,
       accountId: accountId,
@@ -188,7 +191,10 @@ export function parseHarnessUrl(
       path: pathWithoutSlash,
       repoName: repoName,
       refDashStr: refAndPath.slice(0, refIndex).join('-'),
-      branch: refAndPath.join('/'),
+      branch:
+        refIndex !== -1
+          ? refAndPath.slice(0, refIndex).join('/')
+          : refAndPath.join('/'),
     };
   } catch (e) {
     throw new Error(`Incorrect URL: ${url}, ${e}`);

@@ -78,7 +78,7 @@ describe('Harness code core', () => {
     });
   });
 
-  describe('getGiteaLatestCommitUrl', () => {
+  describe('getHarnessLatestCommitUrl', () => {
     it('can create an url from arguments', () => {
       const config: HarnessIntegrationConfig = {
         host: 'app.harness.io',
@@ -154,7 +154,7 @@ describe('Harness code core', () => {
       expect(
         parseHarnessUrl(
           config,
-          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projectName/repos/repoName/files/branchName/simple/path',
+          'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projectName/repos/repoName/files/branchName/simple/~/path',
         ),
       ).toEqual({
         accountId: 'accountId',
@@ -165,7 +165,7 @@ describe('Harness code core', () => {
         refDashStr: 'branchName-simple',
         refString: 'branchName/simple',
         repoName: 'repoName',
-        branch: 'branchName/simple/path',
+        branch: 'branchName/simple',
       });
     });
   });
