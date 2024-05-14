@@ -87,11 +87,15 @@ export class WinstonLogger implements RootLoggerService {
 
     const replace = (obj: TransformableInfo) => {
       for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
+        if (Object.hasOwn(obj, key)) {
           if (typeof obj[key] === 'object') {
             obj[key] = replace(obj[key] as TransformableInfo);
           } else if (typeof obj[key] === 'string') {
-            obj[key] = obj[key]?.replace(redactionPattern, '[REDACTED]');
+            try {
+              obj[key] = obj[key]?.replace(redactionPattern, '[REDACTED]');
+            } catch {
+              /* ignore read only properties */
+            }
           }
         }
       }
