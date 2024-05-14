@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.4.4
+
+### Patch Changes
+
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- e4b50ab: Scaffolder workspace serialization
+- f633efa: To remove the dependency on the soon-to-be-deprecated `backend-common` package, this package now maintains its own isomorphic Git class implementation.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.2
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/integration@1.11.0
+
 ## 0.4.4-next.2
 
 ### Patch Changes

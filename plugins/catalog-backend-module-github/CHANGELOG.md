@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.6.1
+
+### Patch Changes
+
+- 0b50143: GitHub push events now schedule a refresh on entities that have a `refresh_key` matching the `catalogPath` config itself.
+  This allows to support a `catalogPath` configuration that uses glob patterns.
+- f2a2a83: Updated to use the new `catalogAnalysisExtensionPoint` API.
+- 5bdeaa7: Added `alwaysUseDefaultNamespace` option to `GithubMultiOrgEntityProvider`.
+
+  If set to true, the provider will use `default` as the namespace for all group entities. Groups with the same name across different orgs will be considered the same group.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0
+  - @backstage/plugin-catalog-backend@1.22.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-events-node@0.3.4
+  - @backstage/integration@1.11.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-catalog-common@1.0.23
+
 ## 0.6.1-next.2
 
 ### Patch Changes

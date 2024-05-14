@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-github-provider
 
+## 0.1.15
+
+### Patch Changes
+
+- 4a0577e: fix: Move config declarations to appropriate auth backend modules
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-auth-node@0.4.13
+
 ## 0.1.15-next.2
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend-module-explore
 
+## 0.1.24
+
+### Patch Changes
+
+- ca6e2e0: Migrate search collator to use the new auth services.
+- 5d99272: Update README.md to point to explore plugin in community-plugins repository.
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-search-backend-node@1.2.22
+
 ## 0.1.24-next.1
 
 ### Patch Changes

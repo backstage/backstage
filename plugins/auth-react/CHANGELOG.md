@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-react
 
+## 0.1.2
+
+### Patch Changes
+
+- c297afd: When using `CookieAuthRefreshProvider` or `useCookieAuthRefresh`, a 404 response from the cookie endpoint will now be treated as if cookie auth is disabled and is not needed.
+- Updated dependencies
+  - @backstage/core-components@0.14.7
+
 ## 0.1.2-next.1
 
 ### Patch Changes

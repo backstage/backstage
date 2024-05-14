@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.4.5
+
+### Patch Changes
+
+- b192752: Updated `README.md` to point to `packages/backend` instead of `packages/backend-next`.
+- 6f5a3a3: Correctly convert owner to string in case owner has not been provided
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-auth-node@0.4.13
+
 ## 0.4.5-next.2
 
 ### Patch Changes

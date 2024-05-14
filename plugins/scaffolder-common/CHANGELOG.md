@@ -1,5 +1,13 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.5.2
+
+### Patch Changes
+
+- 9156654: Capturing more event clicks for scaffolder
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+
 ## 1.5.2-next.1
 
 ### Patch Changes

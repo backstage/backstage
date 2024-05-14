@@ -1,6 +1,6 @@
 {
   "name": "@internal/plugin-todo-list",
-  "version": "1.0.27-next.1",
+  "version": "1.0.27",
   "backstage": {
     "role": "frontend-plugin"
   },
