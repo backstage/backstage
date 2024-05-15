@@ -35,6 +35,7 @@ import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath as isChildPath_2 } from '@backstage/backend-plugin-api';
+import { isDatabaseConflictError as isDatabaseConflictError_2 } from '@backstage/backend-plugin-api';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
@@ -538,8 +539,8 @@ export const HostDiscovery: typeof HostDiscovery_2;
 // @public @deprecated (undocumented)
 export const isChildPath: typeof isChildPath_2;
 
-// @public
-export function isDatabaseConflictError(e: unknown): boolean;
+// @public @deprecated (undocumented)
+export const isDatabaseConflictError: typeof isDatabaseConflictError_2;
 
 // @public
 export class KubernetesContainerRunner implements ContainerRunner {
