@@ -117,7 +117,7 @@ describe('<EntityPicker />', () => {
         'ui:options': {
           allowArbitraryValues: false,
           optionLabelSchema:
-            '${{kind}} - ${{metadata.name}}: ${{ metadata.title }}',
+            '@{{kind}} - @{{metadata.name}}: @{{ metadata.title }}',
         },
       };
       props = {

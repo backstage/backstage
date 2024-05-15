@@ -55,7 +55,7 @@ export const EntityPickerFieldSchema = makeFieldSchemaFromZod(
       .string()
       .optional()
       .describe(
-        'Option label schema to be used. For example "${{metadata.title}} (${{metadata.name}})". Does not work with allowArbitraryValues enabled.',
+        'Option label schema to be used. For example "@{{metadata.title}} (@{{metadata.name}})". Does not work with allowArbitraryValues enabled.',
       ),
     defaultNamespace: z
       .union([z.string(), z.literal(false)])

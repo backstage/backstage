@@ -13,7 +13,7 @@ entity:
   ui:field: EntityPicker
   ui:options:
     allowArbitraryValues: false
-    optionLabelSchema: ${{metadata.title}} (${{metadata.name}})
+    optionLabelSchema: @{{metadata.title}} (@{{metadata.name}})
 ```
 
 This does not work if `allowArbitraryValues` is set to `true`.

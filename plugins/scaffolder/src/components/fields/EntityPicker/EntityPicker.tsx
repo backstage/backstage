@@ -48,14 +48,14 @@ const getOptionLabelFields = (optionLabelSchema?: string): string[] => {
   if (!optionLabelSchema) {
     return [];
   }
-  const matches = optionLabelSchema.match(/\${{([^}]+)}}/g);
+  const matches = optionLabelSchema.match(/@{{([^}]+)}}/g);
   if (!matches) {
     return [];
   }
   return matches.map(res =>
     res
       .trim()
-      .replace(/\${{|}}/g, '')
+      .replace(/@{{|}}/g, '')
       .trim(),
   );
 };
@@ -125,7 +125,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     if (optionLabelSchema && additionalFields.length > 0) {
       let out = optionLabelSchema;
       for (const field of additionalFields) {
-        out = out.replace(`\${{${field}}}`, lodash.get(option, field));
+        out = out.replace(`@{{${field}}}`, lodash.get(option, field));
       }
       return out;
     }

@@ -37,7 +37,7 @@ export const OwnerPickerFieldSchema = makeFieldSchemaFromZod(
       .string()
       .optional()
       .describe(
-        'Option label schema to be used. For example "${{metadata.title}} (${{metadata.name}})". Does not work with allowArbitraryValues enabled.',
+        'Option label schema to be used. For example "@{{metadata.title}} (@{{metadata.name}})". Does not work with allowArbitraryValues enabled.',
       ),
     allowArbitraryValues: z
       .boolean()
