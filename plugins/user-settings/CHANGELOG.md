@@ -1,5 +1,18 @@
 # @backstage/plugin-user-settings
 
+## 0.8.6
+
+### Patch Changes
+
+- 131e5cb: Fix broken links in README.
+- Updated dependencies
+  - @backstage/core-compat-api@0.2.5
+  - @backstage/core-components@0.14.7
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/theme@0.5.4
+  - @backstage/core-app-api@1.12.5
+  - @backstage/frontend-plugin-api@0.6.5
+
 ## 0.8.6-next.2
 
 ### Patch Changes

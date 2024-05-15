@@ -1,5 +1,11 @@
 # @backstage/core-app-api
 
+## 1.12.5
+
+### Patch Changes
+
+- 1bed9a3: The Backstage identity session expiration check will no longer fall back to using the provider expiration. This was introduced to smooth out the rollout of Backstage release 1.18, and is no longer needed.
+
 ## 1.12.4
 
 ### Patch Changes

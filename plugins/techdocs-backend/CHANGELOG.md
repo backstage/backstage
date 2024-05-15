@@ -1,5 +1,20 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.10.5
+
+### Patch Changes
+
+- 5863cf7: The `techdocs.builder` config is now optional and it will default to `local`.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-techdocs-node@1.12.4
+  - @backstage/integration@1.11.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.23
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-catalog-common@1.0.23
+
 ## 1.10.5-next.2
 
 ### Patch Changes

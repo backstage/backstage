@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { TransformableInfo } from 'logform';
+import { format } from 'logform';
 import { WinstonLogger } from './WinstonLogger';
-
-function msg(info: TransformableInfo): TransformableInfo {
-  return { message: info.message, level: info.level, stack: info.stack };
-}
+import Transport from 'winston-transport';
+import { MESSAGE } from 'triple-beam';
 
 describe('WinstonLogger', () => {
   it('creates a winston logger instance with default options', () => {
@@ -33,49 +31,66 @@ describe('WinstonLogger', () => {
     expect(childLogger).toBeInstanceOf(WinstonLogger);
   });
 
-  it('redacter should redact and escape regex', () => {
-    const redacter = WinstonLogger.redacter();
-    const log = {
-      level: 'error',
-      message: 'hello (world)',
-      stack: 'hello (world) from this file',
-    };
-    expect(redacter.format.transform(msg(log))).toEqual(msg(log));
-    redacter.add(['hello\n']);
-    expect(redacter.format.transform(msg(log))).toEqual(
-      msg({
-        ...log,
-        message: '[REDACTED] (world)',
-        stack: '[REDACTED] (world) from this file',
+  it('should redact and escape regex', () => {
+    const mockTransport = new Transport({
+      log: jest.fn(),
+      logv: jest.fn(),
+    });
+
+    const logger = WinstonLogger.create({
+      format: format.json(),
+      transports: [mockTransport],
+    });
+
+    logger.addRedactions(['hello (world']);
+
+    logger.error('hello (world) from this file');
+
+    expect(mockTransport.log).toHaveBeenCalledWith(
+      expect.objectContaining({
+        [MESSAGE]: JSON.stringify({
+          level: 'error',
+          message: '[REDACTED]) from this file',
+        }),
       }),
-    );
-    redacter.add(['(world']);
-    expect(redacter.format.transform(msg(log))).toEqual(
-      msg({
-        ...log,
-        message: '[REDACTED] [REDACTED])',
-        stack: '[REDACTED] [REDACTED]) from this file',
-      }),
+      expect.any(Function),
     );
   });
 
-  it('redacter should redact nested object', () => {
-    const redacter = WinstonLogger.redacter();
-    const log = {
-      level: 'error',
-      message: {
-        nested: 'hello (world) from nested object',
-      },
-    };
+  it('should redact nested object', () => {
+    const mockTransport = new Transport({
+      log: jest.fn(),
+      logv: jest.fn(),
+    });
 
-    redacter.add(['hello']);
-    expect(redacter.format.transform(msg(log))).toEqual(
-      msg({
-        ...log,
-        message: {
-          nested: '[REDACTED] (world) from nested object',
-        },
+    const logger = WinstonLogger.create({
+      format: format.json(),
+      transports: [mockTransport],
+    });
+
+    logger.addRedactions(['hello']);
+
+    logger.error('something went wrong', {
+      null: null,
+      nested: 'hello (world) from nested object',
+      nullProto: Object.create(null, {
+        foo: { value: 'hello foo', enumerable: true },
       }),
+    });
+
+    expect(mockTransport.log).toHaveBeenCalledWith(
+      expect.objectContaining({
+        [MESSAGE]: JSON.stringify({
+          level: 'error',
+          message: 'something went wrong',
+          nested: '[REDACTED] (world) from nested object',
+          null: null,
+          nullProto: {
+            foo: '[REDACTED] foo',
+          },
+        }),
+      }),
+      expect.any(Function),
     );
   });
 });

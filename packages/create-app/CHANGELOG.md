@@ -1,5 +1,15 @@
 # @backstage/create-app
 
+## 0.5.15
+
+### Patch Changes
+
+- c066c88: Removed `packages/backend/src/types.ts` from the template as it is unused. It was mistakenly left in after moving the template to the new backend system.
+- 5d99272: Update local development dependencies.
+- 0478509: Bumped create-app version.
+- d85dd88: Bumped create-app version.
+- 8105aad: Removed the Tech Radar and GitHub Actions plugins from the template, which have been moved to the community plugins repository.
+
 ## 0.5.15-next.2
 
 ### Patch Changes
