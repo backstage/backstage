@@ -201,10 +201,14 @@ const legacyPlugin = makeLegacyPlugin(
 After this, your backend will know how to instantiate your thing on demand and
 place it in the legacy plugin environment.
 
-> NOTE: If you happen to be dealing with a service ref that does NOT have a
-> default implementation, but rather has a separate service factory, then you
-> will also need to import that factory and pass it to the `services` array
-> argument of `createBackend`.
+:::note Note
+
+If you happen to be dealing with a service ref that does NOT have a
+default implementation, but rather has a separate service factory, then you
+will also need to import that factory and pass it to the `services` array
+argument of `createBackend`.
+
+:::
 
 ## Cleaning Up the Plugins Folder
 
@@ -216,10 +220,14 @@ maintained by the Backstage maintainers, you may find that they have already
 been migrated to the new backend system. This section describes some specific
 such migrations you can make.
 
-> NOTE: For each of these, note that your backend still needs to have a
-> dependency (e.g. in `packages/backend/package.json`) to those plugin packages,
-> and they still need to be configured properly in your app-config. Those
-> mechanisms still work just the same as they used to in the old backend system.
+:::note Note
+
+For each of these, note that your backend still needs to have a
+dependency (e.g. in `packages/backend/package.json`) to those plugin packages,
+and they still need to be configured properly in your app-config. Those
+mechanisms still work just the same as they used to in the old backend system.
+
+:::
 
 ### The App Plugin
 
@@ -880,7 +888,11 @@ auth:
             - resolver: emailMatchingUserEntityAnnotation
 ```
 
-> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+:::note Note
+
+The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+
+:::
 
 #### Auth Plugin Modules and Their Resolvers
 
@@ -1137,7 +1149,11 @@ backend.add(import('@backstage/plugin-search-backend/alpha'));
 /* highlight-add-end */
 ```
 
-> Note: this will use the Lunr search engine which stores its index in memory
+:::note Note
+
+This will use the Lunr search engine which stores its index in memory.
+
+:::
 
 #### Search Engines
 
@@ -1226,7 +1242,11 @@ backend.add(
 /* highlight-add-end */
 ```
 
-> Note: The above example includes a default allow-all policy. If that is not what you want, do not add the second line and instead investigate one of the options below.
+:::note Note
+
+The above example includes a default allow-all policy. If that is not what you want, do not add the second line and instead investigate one of the options below.
+
+:::
 
 #### Custom Permission Policy
 
