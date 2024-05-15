@@ -81,7 +81,6 @@ catalog:
       - id: ghe
         githubUrl: https://ghe.mycompany.com
         orgs: ['internal-1', 'internal-2', 'internal-3']
-        alwaysUseDefaultNamespace: false
         schedule:
           initialDelay: { seconds: 30 }
           frequency: { hours: 1 }
