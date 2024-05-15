@@ -73,6 +73,7 @@ catalog:
       - id: github
         githubUrl: https://github.com
         orgs: ['organization-1', 'organization-2', 'organization-3']
+        alwaysUseDefaultNamespace: true
         schedule:
           initialDelay: { seconds: 30 }
           frequency: { hours: 1 }
@@ -80,6 +81,7 @@ catalog:
       - id: ghe
         githubUrl: https://ghe.mycompany.com
         orgs: ['internal-1', 'internal-2', 'internal-3']
+        alwaysUseDefaultNamespace: false
         schedule:
           initialDelay: { seconds: 30 }
           frequency: { hours: 1 }
@@ -91,6 +93,7 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 - `id`: A stable id for this provider. Entities from this provider will be associated with this ID, so you should take care not to change it over time since that may lead to orphaned entities and/or conflicts.
 - `githubUrl`: The target that this provider should consume
 - `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
+- `alwaysUseDefaultNamespace` (optional): If set to `true`, the provider will always use the `default` namespace for the generated group entities. Groups with the same name across different orgs will be considered the same group. Defaults to `false`.
 - `schedule`: The refresh schedule to use, matches the structure of [`TaskScheduleDefinitionConfig`](https://backstage.io/docs/reference/backend-tasks.taskscheduledefinitionconfig/)
 
 ### Events Support
