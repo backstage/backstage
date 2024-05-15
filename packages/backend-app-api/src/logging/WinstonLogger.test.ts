@@ -80,7 +80,7 @@ describe('WinstonLogger', () => {
           nested: '[REDACTED] (world) from nested object',
           null: null,
           nullProto: {
-            foo: 'hello foo', // read only prop is not redacted
+            foo: '[REDACTED] foo',
           },
         },
       }),
