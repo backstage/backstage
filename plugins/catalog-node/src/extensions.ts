@@ -48,6 +48,12 @@ export interface CatalogProcessingExtensionPoint {
       errors: Error[];
     }) => Promise<void> | void,
   ): void;
+  /**
+   * Processing interval determines how often entities should be processed.
+   * Seconds provided will be multiplied by 1.5
+   * The default processing interval is 100-150 seconds.
+   * setting this too low will potentially deplete request quotas to upstream services.
+   */
   setProcessingIntervalSeconds(interval: number): void;
 }
 
