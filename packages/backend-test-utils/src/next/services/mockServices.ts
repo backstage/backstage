@@ -60,7 +60,7 @@ import {
 /** @internal */
 function createLoggerMock() {
   return {
-    child: jest.fn().mockImplementation(() => createLoggerMock()),
+    child: jest.fn().mockImplementation(createLoggerMock),
     debug: jest.fn(),
     error: jest.fn(),
     info: jest.fn(),

@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { DatabaseStore } from '../database';
+import { VoidLogger } from '@backstage/backend-app-api';
 
 /** @public */
 export type PgSearchEngineIndexerOptions = {
@@ -41,7 +42,7 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
     super({ batchSize: options.batchSize });
     this.store = options.databaseStore;
     this.type = options.type;
-    this.logger = options.logger || getVoidLogger();
+    this.logger = options.logger || loggerToWinstonLogger(VoidLogger.create());
   }
 
   async initialize(): Promise<void> {

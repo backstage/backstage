@@ -348,6 +348,22 @@ export const userInfoServiceFactory: () => ServiceFactory<
 >;
 
 // @public
+export class VoidLogger implements RootLoggerService {
+  // (undocumented)
+  child(_meta: JsonObject): LoggerService;
+  // (undocumented)
+  static create(): VoidLogger;
+  // (undocumented)
+  debug(_message: string, _meta?: JsonObject): void;
+  // (undocumented)
+  error(_message: string, _meta?: JsonObject): void;
+  // (undocumented)
+  info(_message: string, _meta?: JsonObject): void;
+  // (undocumented)
+  warn(_message: string, _meta?: JsonObject): void;
+}
+
+// @public
 export class WinstonLogger implements RootLoggerService {
   // (undocumented)
   addRedactions(redactions: Iterable<string>): void;
