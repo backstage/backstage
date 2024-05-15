@@ -31,6 +31,7 @@ import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
+import { createInitializationLogger } from './createInitializationLogger';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -226,6 +227,11 @@ export class BackendInitializer {
 
     const allPluginIds = [...pluginInits.keys()];
 
+    const initLogger = createInitializationLogger(
+      allPluginIds,
+      await this.#serviceRegistry.get(coreServices.rootLogger, 'root'),
+    );
+
     // All plugins are initialized in parallel
     await Promise.all(
       allPluginIds.map(async pluginId => {
@@ -289,6 +295,8 @@ export class BackendInitializer {
           });
         }
 
+        initLogger.onPluginStarted(pluginId);
+
         // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
         const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
         await lifecycleService.startup();
@@ -298,6 +306,8 @@ export class BackendInitializer {
     // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
     const lifecycleService = await this.#getRootLifecycleImpl();
     await lifecycleService.startup();
+
+    initLogger.onAllStarted();
 
     // Once the backend is started, any uncaught errors or unhandled rejections are caught
     // and logged, in order to avoid crashing the entire backend on local failures.

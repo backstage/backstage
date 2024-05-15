@@ -145,7 +145,7 @@ from `@backstage/core-plugin-api`.
 
 In the old backend system plugins, the configuration is passed in via options from the main
 backend package. See for example
-[packages/backend/src/plugins/auth.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/backend/src/plugins/auth.ts#L23).
+[packages/backend-legacy/src/plugins/auth.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/backend/src/plugins/auth.ts#L23).
 
 ### New Backend System
 

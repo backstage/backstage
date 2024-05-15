@@ -1,5 +1,39 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.5.26
+
+### Patch Changes
+
+- 49eab29: Fixed disabling of user photo fetching. Previously, the config value wasn't propagated properly, so user photos was still being fetched despite disabled by config.
+- 6e370e6: Handle fetching huge amounts of users from Azure without crashing
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-catalog-common@1.0.23
+
+## 0.5.26-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0-next.2
+  - @backstage/backend-common@0.22.0-next.2
+
+## 0.5.26-next.1
+
+### Patch Changes
+
+- 49eab29: Fixed disabling of user photo fetching. Previously, the config value wasn't propagated properly, so user photos was still being fetched despite disabled by config.
+- 6e370e6: Handle fetching huge amounts of users from Azure without crashing
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/plugin-catalog-node@1.11.2-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 0.5.26-next.0
 
 ### Patch Changes

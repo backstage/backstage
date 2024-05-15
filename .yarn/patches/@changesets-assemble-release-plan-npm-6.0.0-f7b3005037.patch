@@ -1,0 +1,32 @@
+diff --git a/dist/changesets-assemble-release-plan.cjs.js b/dist/changesets-assemble-release-plan.cjs.js
+index ee5c0f67fabadeb112e9f238d8b144a4d125830f..9b0e1a156dd88cee35f82faf718d82a8a8f80325 100644
+--- a/dist/changesets-assemble-release-plan.cjs.js
++++ b/dist/changesets-assemble-release-plan.cjs.js
+@@ -179,12 +179,23 @@ function getDependencyVersionRanges(dependentPkgJSON, dependencyRelease) {
+     if (!versionRange) continue;
+ 
+     if (versionRange.startsWith("workspace:")) {
++      // intentionally keep other workspace ranges untouched
++      // this has to be fixed but this should only be done when adding appropriate tests
++      let workspaceRange = versionRange.replace(/^workspace:/, "");
++      switch (workspaceRange) {
++        case "*":
++          // workspace:* actually means the current exact version, and not a wildcard similar to a reguler * range
++          workspaceRange = dependencyRelease.oldVersion;
++          break;
++        case "~":
++        case "^":
++          // Use ^oldVersion for workspace:^ or ~oldVersion for workspace:~.
++          // The version range might have changed in dependent package, but that should have its own changeset bumping that package.
++          workspaceRange += dependencyRelease.oldVersion;
++      }
+       dependencyVersionRanges.push({
+         depType: type,
+-        versionRange: // intentionally keep other workspace ranges untouched
+-        // this has to be fixed but this should only be done when adding appropriate tests
+-        versionRange === "workspace:*" ? // workspace:* actually means the current exact version, and not a wildcard similar to a reguler * range
+-        dependencyRelease.oldVersion : versionRange.replace(/^workspace:/, "")
++        versionRange: workspaceRange,
+       });
+     } else {
+       dependencyVersionRanges.push({

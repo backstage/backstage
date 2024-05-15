@@ -1,5 +1,52 @@
 # @backstage/plugin-techdocs
 
+## 1.10.5
+
+### Patch Changes
+
+- d2cc139: Update path in Readme for Plugin Techdocs to show the correct setup information.
+- 5863cf7: The `techdocs.builder` config is now optional and it will default to `local`.
+- Updated dependencies
+  - @backstage/core-compat-api@0.2.5
+  - @backstage/core-components@0.14.7
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-auth-react@0.1.2
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/theme@0.5.4
+  - @backstage/integration@1.11.0
+  - @backstage/frontend-plugin-api@0.6.5
+  - @backstage/integration-react@1.1.27
+  - @backstage/plugin-search-react@1.7.11
+  - @backstage/plugin-techdocs-react@1.2.4
+
+## 1.10.5-next.2
+
+### Patch Changes
+
+- 5863cf7: The `techdocs.builder` config is now optional and it will default to `local`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.0-next.2
+  - @backstage/core-components@0.14.7-next.2
+  - @backstage/integration@1.11.0-next.0
+  - @backstage/core-compat-api@0.2.5-next.1
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+  - @backstage/plugin-search-react@1.7.11-next.1
+  - @backstage/integration-react@1.1.27-next.0
+
+## 1.10.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.6-next.1
+  - @backstage/plugin-catalog-react@1.11.4-next.1
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+  - @backstage/integration-react@1.1.26
+  - @backstage/plugin-auth-react@0.1.2-next.1
+  - @backstage/plugin-search-react@1.7.11-next.1
+  - @backstage/plugin-techdocs-react@1.2.4-next.1
+  - @backstage/core-compat-api@0.2.5-next.1
+
 ## 1.10.5-next.0
 
 ### Patch Changes

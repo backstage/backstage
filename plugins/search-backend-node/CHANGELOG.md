@@ -1,5 +1,24 @@
 # @backstage/plugin-search-backend-node
 
+## 1.2.22
+
+### Patch Changes
+
+- c6cb568: Add lifecycle monitoring for the search index registry
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+
+## 1.2.22-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 1.2.22-next.0
 
 ### Patch Changes

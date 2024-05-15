@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-import { renderInTestApp } from '@backstage/test-utils';
+import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { act, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { AnalyzeResult } from '../../api';
 import { StepPrepareSelectLocations } from './StepPrepareSelectLocations';
+import {
+  CatalogApi,
+  catalogApiRef,
+  entityPresentationApiRef,
+} from '@backstage/plugin-catalog-react';
+import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
+import { Entity } from '@backstage/catalog-model';
 
 describe('<StepPrepareSelectLocations />', () => {
+  let entities: Entity[];
   const analyzeResult = {
     type: 'locations',
     locations: [
@@ -53,17 +61,43 @@ describe('<StepPrepareSelectLocations />', () => {
     ],
   } as Extract<AnalyzeResult, { type: 'locations' }>;
 
+  const catalogApi: jest.Mocked<CatalogApi> = {
+    getLocationById: jest.fn(),
+    getEntityByName: jest.fn(),
+    getEntities: jest.fn(async () => ({ items: entities })),
+    addLocation: jest.fn(),
+    getLocationByRef: jest.fn(),
+    removeEntityByUid: jest.fn(),
+  } as any;
+  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+
   beforeEach(() => {
     jest.resetAllMocks();
+    catalogApi.getEntities.mockResolvedValue({ items: entities });
+    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApi],
+          [
+            entityPresentationApiRef,
+            DefaultEntityPresentationApi.create({ catalogApi }),
+          ],
+        ]}
+      >
+        {children}
+      </TestApiProvider>
+    );
   });
 
   it('renders display locations to be added', async () => {
     await renderInTestApp(
-      <StepPrepareSelectLocations
-        analyzeResult={analyzeResult}
-        onPrepare={() => undefined}
-        onGoBack={() => undefined}
-      />,
+      <Wrapper>
+        <StepPrepareSelectLocations
+          analyzeResult={analyzeResult}
+          onPrepare={() => undefined}
+          onGoBack={() => undefined}
+        />
+      </Wrapper>,
     );
 
     expect(screen.getByText('url-1')).toBeInTheDocument();
@@ -96,11 +130,13 @@ describe('<StepPrepareSelectLocations />', () => {
     } as Extract<AnalyzeResult, { type: 'locations' }>;
 
     await renderInTestApp(
-      <StepPrepareSelectLocations
-        analyzeResult={analyzeResultWithExistingLocation}
-        onPrepare={() => undefined}
-        onGoBack={() => undefined}
-      />,
+      <Wrapper>
+        <StepPrepareSelectLocations
+          analyzeResult={analyzeResultWithExistingLocation}
+          onPrepare={() => undefined}
+          onGoBack={() => undefined}
+        />
+      </Wrapper>,
     );
 
     expect(screen.getByText(/my-target/)).toBeInTheDocument();
@@ -112,11 +148,13 @@ describe('<StepPrepareSelectLocations />', () => {
 
   it('should select and deselect all', async () => {
     await renderInTestApp(
-      <StepPrepareSelectLocations
-        analyzeResult={analyzeResult}
-        onPrepare={() => undefined}
-        onGoBack={() => undefined}
-      />,
+      <Wrapper>
+        <StepPrepareSelectLocations
+          analyzeResult={analyzeResult}
+          onPrepare={() => undefined}
+          onGoBack={() => undefined}
+        />
+      </Wrapper>,
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -144,15 +182,17 @@ describe('<StepPrepareSelectLocations />', () => {
 
   it('should preselect prepared locations', async () => {
     await renderInTestApp(
-      <StepPrepareSelectLocations
-        analyzeResult={analyzeResult}
-        prepareResult={{
-          ...analyzeResult,
-          locations: [...analyzeResult.locations.slice(0, 1)],
-        }}
-        onPrepare={() => undefined}
-        onGoBack={() => undefined}
-      />,
+      <Wrapper>
+        <StepPrepareSelectLocations
+          analyzeResult={analyzeResult}
+          prepareResult={{
+            ...analyzeResult,
+            locations: [...analyzeResult.locations.slice(0, 1)],
+          }}
+          onPrepare={() => undefined}
+          onGoBack={() => undefined}
+        />
+      </Wrapper>,
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -164,11 +204,13 @@ describe('<StepPrepareSelectLocations />', () => {
 
   it('should select items', async () => {
     await renderInTestApp(
-      <StepPrepareSelectLocations
-        analyzeResult={analyzeResult}
-        onPrepare={() => undefined}
-        onGoBack={() => undefined}
-      />,
+      <Wrapper>
+        <StepPrepareSelectLocations
+          analyzeResult={analyzeResult}
+          onPrepare={() => undefined}
+          onGoBack={() => undefined}
+        />
+      </Wrapper>,
     );
 
     const checkboxes = screen.getAllByRole('checkbox');
@@ -193,11 +235,13 @@ describe('<StepPrepareSelectLocations />', () => {
     const onGoBack = jest.fn();
 
     await renderInTestApp(
-      <StepPrepareSelectLocations
-        analyzeResult={analyzeResult}
-        onPrepare={() => undefined}
-        onGoBack={onGoBack}
-      />,
+      <Wrapper>
+        <StepPrepareSelectLocations
+          analyzeResult={analyzeResult}
+          onPrepare={() => undefined}
+          onGoBack={onGoBack}
+        />
+      </Wrapper>,
     );
 
     await act(async () => {
@@ -211,11 +255,13 @@ describe('<StepPrepareSelectLocations />', () => {
     const onPrepare = jest.fn();
 
     await renderInTestApp(
-      <StepPrepareSelectLocations
-        analyzeResult={analyzeResult}
-        onPrepare={onPrepare}
-        onGoBack={() => undefined}
-      />,
+      <Wrapper>
+        <StepPrepareSelectLocations
+          analyzeResult={analyzeResult}
+          onPrepare={onPrepare}
+          onGoBack={() => undefined}
+        />
+      </Wrapper>,
     );
 
     const checkboxes = screen.getAllByRole('checkbox');

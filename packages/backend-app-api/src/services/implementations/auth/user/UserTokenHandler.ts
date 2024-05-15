@@ -34,18 +34,14 @@ import { JwksClient } from '../JwksClient';
  */
 export class UserTokenHandler {
   static create(options: { discovery: DiscoveryService }): UserTokenHandler {
-    const algorithms = ['ES256']; // TODO: configurable?
     const jwksClient = new JwksClient(async () => {
       const url = await options.discovery.getBaseUrl('auth');
       return new URL(`${url}/.well-known/jwks.json`);
     });
-    return new UserTokenHandler(algorithms, jwksClient);
+    return new UserTokenHandler(jwksClient);
   }
 
-  constructor(
-    private readonly algorithms: string[],
-    private readonly jwksClient: JwksClient,
-  ) {}
+  constructor(private readonly jwksClient: JwksClient) {}
 
   async verifyToken(token: string) {
     const verifyOpts = this.#getTokenVerificationOptions(token);
@@ -79,7 +75,6 @@ export class UserTokenHandler {
 
       if (typ === tokenTypes.user.typParam) {
         return {
-          algorithms: this.algorithms,
           requiredClaims: ['iat', 'exp', 'sub'],
           typ: tokenTypes.user.typParam,
         };
@@ -87,7 +82,6 @@ export class UserTokenHandler {
 
       if (typ === tokenTypes.limitedUser.typParam) {
         return {
-          algorithms: this.algorithms,
           requiredClaims: ['iat', 'exp', 'sub'],
           typ: tokenTypes.limitedUser.typParam,
         };
@@ -96,7 +90,6 @@ export class UserTokenHandler {
       const { aud } = decodeJwt(token);
       if (aud === tokenTypes.user.audClaim) {
         return {
-          algorithms: this.algorithms,
           audience: tokenTypes.user.audClaim,
         };
       }

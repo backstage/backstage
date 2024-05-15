@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-plugin-api",
-  "version": "0.6.18-next.0",
+  "version": "0.6.18",
   "description": "Core API used by Backstage backend plugins",
   "backstage": {
     "role": "node-library"
@@ -21,6 +21,7 @@
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
+    "./testUtils": "./src/testUtils.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -29,6 +30,9 @@
     "*": {
       "alpha": [
         "src/alpha.ts"
+      ],
+      "testUtils": [
+        "src/testUtils.ts"
       ],
       "package.json": [
         "package.json"
@@ -49,7 +53,9 @@
   },
   "dependencies": {
     "@backstage/backend-tasks": "workspace:^",
+    "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/types": "workspace:^",
@@ -58,6 +64,7 @@
     "knex": "^3.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^"
   }
 }

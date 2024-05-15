@@ -1,5 +1,43 @@
 # @backstage/plugin-search-backend-module-techdocs
 
+## 0.1.23
+
+### Patch Changes
+
+- 5dc5f4f: Allow the `tokenManager` parameter to be optional when instantiating collator
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-techdocs-node@1.12.4
+  - @backstage/plugin-search-backend-node@1.2.22
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-catalog-common@1.0.23
+
+## 0.1.23-next.2
+
+### Patch Changes
+
+- 5dc5f4f: Allow the `tokenManager` parameter to be optional when instantiating collator
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0-next.2
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-techdocs-node@1.12.4-next.2
+
+## 0.1.23-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/plugin-search-backend-node@1.2.22-next.1
+  - @backstage/plugin-techdocs-node@1.12.4-next.1
+  - @backstage/plugin-catalog-node@1.11.2-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 0.1.23-next.0
 
 ### Patch Changes

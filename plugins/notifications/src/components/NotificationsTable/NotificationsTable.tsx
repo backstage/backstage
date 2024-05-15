@@ -28,8 +28,8 @@ import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Link,
   Table,
-  TableProps,
   TableColumn,
+  TableProps,
 } from '@backstage/core-components';
 
 import { notificationsApiRef } from '../../api';
@@ -43,7 +43,7 @@ const ThrottleDelayMs = 1000;
 const useStyles = makeStyles({
   description: {
     maxHeight: '5rem',
-    overflow: 'scroll',
+    overflow: 'auto',
   },
   severityItem: {
     alignContent: 'center',
@@ -55,6 +55,7 @@ export type NotificationsTableProps = Pick<
   TableProps,
   'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
 > & {
+  markAsReadOnLinkOpen?: boolean;
   isLoading?: boolean;
   isUnread: boolean;
   notifications?: Notification[];
@@ -65,6 +66,7 @@ export type NotificationsTableProps = Pick<
 
 /** @public */
 export const NotificationsTable = ({
+  markAsReadOnLinkOpen,
   isLoading,
   notifications = [],
   isUnread,
@@ -213,7 +215,14 @@ export const NotificationsTable = ({
                 <Box>
                   <Typography variant="subtitle2">
                     {notification.payload.link ? (
-                      <Link to={notification.payload.link}>
+                      <Link
+                        to={notification.payload.link}
+                        onClick={() => {
+                          if (markAsReadOnLinkOpen && !notification.read) {
+                            onSwitchReadStatus([notification.id], true);
+                          }
+                        }}
+                      >
                         {notification.payload.title}
                       </Link>
                     ) : (
@@ -267,6 +276,7 @@ export const NotificationsTable = ({
       },
     ],
     [
+      markAsReadOnLinkOpen,
       selectedNotifications,
       notifications,
       isUnread,

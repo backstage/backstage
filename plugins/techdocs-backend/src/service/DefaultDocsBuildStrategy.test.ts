@@ -17,12 +17,6 @@
 import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import { ConfigReader } from '@backstage/config';
 
-const MockedConfigReader = ConfigReader as jest.MockedClass<
-  typeof ConfigReader
->;
-
-jest.mock('@backstage/config');
-
 describe('DefaultDocsBuildStrategy', () => {
   const entity = {
     apiVersion: 'backstage.io/v1alpha1',
@@ -33,32 +27,40 @@ describe('DefaultDocsBuildStrategy', () => {
     },
   };
 
-  const config = new ConfigReader({});
-
-  beforeEach(() => {
-    jest.resetAllMocks();
-  });
-
   describe('shouldBuild', () => {
-    it('should return true when techdocs.build is set to local', async () => {
-      const defaultDocsBuildStrategy =
-        DefaultDocsBuildStrategy.fromConfig(config);
-
-      MockedConfigReader.prototype.getString.mockReturnValue('local');
+    it('should return true when techdocs.builder is set to local', async () => {
+      const defaultDocsBuildStrategy = DefaultDocsBuildStrategy.fromConfig(
+        new ConfigReader({
+          techdocs: {
+            builder: 'local',
+          },
+        }),
+      );
 
       const result = await defaultDocsBuildStrategy.shouldBuild({ entity });
 
       expect(result).toBe(true);
     });
 
-    it('should return false when techdocs.build is set to external', async () => {
-      const defaultDocsBuildStrategy =
-        DefaultDocsBuildStrategy.fromConfig(config);
-
-      MockedConfigReader.prototype.getString.mockReturnValue('external');
+    it('should return true when techdocs.builder is not set', async () => {
+      const defaultDocsBuildStrategy = DefaultDocsBuildStrategy.fromConfig(
+        new ConfigReader({ techdocs: {} }),
+      );
 
       const result = await defaultDocsBuildStrategy.shouldBuild({ entity });
+      expect(result).toBe(true);
+    });
 
+    it('should return false when techdocs.builder is set to external', async () => {
+      const defaultDocsBuildStrategy = DefaultDocsBuildStrategy.fromConfig(
+        new ConfigReader({
+          techdocs: {
+            builder: 'external',
+          },
+        }),
+      );
+
+      const result = await defaultDocsBuildStrategy.shouldBuild({ entity });
       expect(result).toBe(false);
     });
   });

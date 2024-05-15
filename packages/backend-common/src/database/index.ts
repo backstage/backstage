@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-export * from './DatabaseManager';
-
-/*
- * Undocumented API surface from connection is being reduced for future deprecation.
- * Avoid exporting additional symbols.
- */
-export {
-  createDatabaseClient,
-  ensureDatabaseExists,
-  dropDatabase,
-} from './connection';
+export { DatabaseManager, dropDatabase } from './DatabaseManager';
+export type {
+  DatabaseManagerOptions,
+  LegacyRootDatabaseService,
+} from './DatabaseManager';
 
 export type { PluginDatabaseManager } from './types';
 export { isDatabaseConflictError } from './util';

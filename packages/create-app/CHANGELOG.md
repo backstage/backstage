@@ -1,5 +1,27 @@
 # @backstage/create-app
 
+## 0.5.15
+
+### Patch Changes
+
+- c066c88: Removed `packages/backend/src/types.ts` from the template as it is unused. It was mistakenly left in after moving the template to the new backend system.
+- 5d99272: Update local development dependencies.
+- 0478509: Bumped create-app version.
+- d85dd88: Bumped create-app version.
+- 8105aad: Removed the Tech Radar and GitHub Actions plugins from the template, which have been moved to the community plugins repository.
+
+## 0.5.15-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.5.15-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
 ## 0.5.15-next.0
 
 ### Patch Changes
@@ -1122,8 +1144,7 @@
 
   Migrating to the stable version of `react-router` is optional for the time
   being. But if you want to do the same for your existing repository, please
-  follow [this
-  guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+  follow [this guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
 
 - e05e0f021b: Update versions of packages used in the create-app template, to match those in the main repo
 - 01dff06be4: Leverage cache mounts in Dockerfile during `yarn install ...` and `apt-get ...` commands to speed up repeated builds.
@@ -1170,8 +1191,7 @@
 
   Migrating to the stable version of `react-router` is optional for the time
   being. But if you want to do the same for your existing repository, please
-  follow [this
-  guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
+  follow [this guide](https://backstage.io/docs/tutorials/react-router-stable-migration).
 
 - e05e0f021b: Update versions of packages used in the create-app template, to match those in the main repo
 - 52f25858a8: Added `*.session.sql` Visual Studio Code database functionality files to `.gitignore` in the default template. This is optional but potentially helpful if your developers use Visual Studio Code; you can add a line with that exact value to your own root `.gitignore` if you want the same.
@@ -3154,8 +3174,7 @@
 
   The old `sqlite3` NPM library has been abandoned by its maintainers, which has
   led to unhandled security reports and other issues. Therefore, in the `knex` 1.x
-  release line they have instead switched over to the [`@vscode/sqlite3`
-  library](https://github.com/microsoft/vscode-node-sqlite3) by default, which is
+  release line they have instead switched over to the [`@vscode/sqlite3` library](https://github.com/microsoft/vscode-node-sqlite3) by default, which is
   actively maintained by Microsoft.
 
   This means that as you update to this version of Backstage, there are two
@@ -3224,8 +3243,7 @@
 
   The old `sqlite3` NPM library has been abandoned by its maintainers, which has
   led to unhandled security reports and other issues. Therefore, in the `knex` 1.x
-  release line they have instead switched over to the [`@vscode/sqlite3`
-  library](https://github.com/microsoft/vscode-node-sqlite3) by default, which is
+  release line they have instead switched over to the [`@vscode/sqlite3` library](https://github.com/microsoft/vscode-node-sqlite3) by default, which is
   actively maintained by Microsoft.
 
   This means that as you update to this version of Backstage, there are two

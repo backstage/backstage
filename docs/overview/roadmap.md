@@ -10,8 +10,7 @@ Backstage is currently under rapid development. This page details the project's
 public roadmap, the result of ongoing collaboration between the core maintainers
 and the broader Backstage community.
 
-The Backstage roadmap lays out both [“what's next”](#whats-next) and ["future
-work"](#future-work). With "next" we mean features planned for release within
+The Backstage roadmap lays out both [“what's next”](#whats-next) and ["future work"](#future-work). With "next" we mean features planned for release within
 the ongoing quarter from July through September 2022. With "future" we mean
 features on the radar, but not yet scheduled.
 
@@ -52,8 +51,7 @@ the platform. The benefit for the adopters is clear: we want Backstage to be as
 secure as possible, and we want to make it reliable through a specific
 initiative.
 
-This initiative is done together with, and with the support of, the [Cloud
-Native Computing Foundation (CNCF)](https://www.cncf.io/).
+This initiative is done together with, and with the support of, the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io/).
 
 ### Backstage Threat Model
 

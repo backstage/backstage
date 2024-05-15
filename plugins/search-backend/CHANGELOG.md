@@ -1,5 +1,38 @@
 # @backstage/plugin-search-backend
 
+## 1.5.8
+
+### Patch Changes
+
+- c6cb568: Add lifecycle monitoring for the search index registry
+- Updated dependencies
+  - @backstage/repo-tools@0.9.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-search-backend-node@1.2.22
+  - @backstage/backend-openapi-utils@0.1.11
+  - @backstage/plugin-permission-node@0.7.29
+
+## 1.5.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/repo-tools@0.9.0-next.2
+
+## 1.5.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/repo-tools@0.8.1-next.1
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-permission-node@0.7.29-next.1
+  - @backstage/plugin-search-backend-node@1.2.22-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+  - @backstage/backend-openapi-utils@0.1.11-next.1
+
 ## 1.5.8-next.0
 
 ### Patch Changes

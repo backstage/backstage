@@ -1,5 +1,11 @@
 # @backstage/core-app-api
 
+## 1.12.5
+
+### Patch Changes
+
+- 1bed9a3: The Backstage identity session expiration check will no longer fall back to using the provider expiration. This was introduced to smooth out the rollout of Backstage release 1.18, and is no longer needed.
+
 ## 1.12.4
 
 ### Patch Changes
@@ -539,8 +545,7 @@
 
   This change makes the dependence explicit, and removes the burden on
   OAuth2-based providers which require an ID token (e.g. this is done by various
-  default [auth
-  handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  default [auth handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
   `openid` to their default scopes. _That_ could carry another indirect benefit:
   by removing `openid` from the default scopes for a provider, grants for
   resource-specific access tokens can avoid requesting excess ID token-related
@@ -568,8 +573,7 @@
 
   This change makes the dependence explicit, and removes the burden on
   OAuth2-based providers which require an ID token (e.g. this is done by various
-  default [auth
-  handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  default [auth handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
   `openid` to their default scopes. _That_ could carry another indirect benefit:
   by removing `openid` from the default scopes for a provider, grants for
   resource-specific access tokens can avoid requesting excess ID token-related

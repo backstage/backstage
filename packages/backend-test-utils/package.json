@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-test-utils",
-  "version": "0.3.8-next.0",
+  "version": "0.3.8",
   "description": "Test helpers library for Backstage backends",
   "backstage": {
     "role": "node-library"
@@ -51,6 +51,7 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "better-sqlite3": "^9.0.0",
     "cookie": "^0.6.0",

@@ -38,7 +38,7 @@ export function DefaultRenderLabel({
   return (
     <text className={classes.text} textAnchor="middle">
       {relations.map((r, i) => (
-        <tspan key={r} className={classNames(i > 0 && classes.secondary)}>
+        <tspan key={r} className={classNames(i % 2 !== 0 && classes.secondary)}>
           {i > 0 && <tspan> / </tspan>}
           {r}
         </tspan>
