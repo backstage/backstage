@@ -1,6 +1,6 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
-## 0.3.15
+## 0.3.16
 
 ### Patch Changes
 
