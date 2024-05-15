@@ -32,20 +32,21 @@ export const searchIndexRegistryExtensionPoint: ExtensionPoint<SearchIndexRegist
 
 // @alpha
 export interface SearchIndexService {
+  build(options: SearchIndexServiceBuildOptions): void;
   getDocumentTypes(): Record<string, DocumentTypeInfo>;
-  start(options: SearchIndexServiceStartOptions): Promise<void>;
+  start(): Promise<void>;
   stop(): Promise<void>;
 }
 
 // @alpha
-export const searchIndexServiceRef: ServiceRef<SearchIndexService, 'plugin'>;
-
-// @alpha
-export type SearchIndexServiceStartOptions = {
+export type SearchIndexServiceBuildOptions = {
   searchEngine: SearchEngine;
   collators: RegisterCollatorParameters[];
   decorators: RegisterDecoratorParameters[];
 };
+
+// @alpha
+export const searchIndexServiceRef: ServiceRef<SearchIndexService, 'plugin'>;
 
 // (No @packageDocumentation comment for this package)
 ```
