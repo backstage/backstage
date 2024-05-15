@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.7
+
+### Patch Changes
+
+- 9adca24: Fixing issue with log meta fields possibly being circular refs
+
 ## 1.22.6
 
 ### Patch Changes
