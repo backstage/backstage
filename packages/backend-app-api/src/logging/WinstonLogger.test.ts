@@ -65,6 +65,10 @@ describe('WinstonLogger', () => {
       level: 'error',
       message: {
         nested: 'hello (world) from nested object',
+        null: null,
+        nullProto: Object.create(null, {
+          foo: { value: 'hello foo', enumerable: true },
+        }),
       },
     };
 
@@ -74,6 +78,10 @@ describe('WinstonLogger', () => {
         ...log,
         message: {
           nested: '[REDACTED] (world) from nested object',
+          null: null,
+          nullProto: {
+            foo: 'hello foo', // read only prop is not redacted
+          },
         },
       }),
     );
