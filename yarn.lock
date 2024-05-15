@@ -3304,7 +3304,6 @@ __metadata:
     "@types/express": ^4.17.6
     "@types/fs-extra": ^11.0.0
     "@types/http-errors": ^2.0.0
-    "@types/json-stringify-safe": ^5.0.3
     "@types/minimist": ^1.2.0
     "@types/morgan": ^1.9.0
     "@types/node-forge": ^1.3.0
@@ -3318,7 +3317,6 @@ __metadata:
     helmet: ^6.0.0
     http-errors: ^2.0.0
     jose: ^5.0.0
-    json-stringify-safe: ^5.0.1
     knex: ^3.0.0
     lodash: ^4.17.21
     logform: ^2.3.2
@@ -3332,6 +3330,7 @@ __metadata:
     selfsigned: ^2.0.0
     stoppable: ^1.1.0
     supertest: ^6.1.3
+    triple-beam: ^1.4.1
     uuid: ^9.0.0
     winston: ^3.2.1
     winston-transport: ^4.5.0
@@ -6663,7 +6662,6 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     "@types/fs-extra": ^11.0.0
-    "@types/json-stringify-safe": ^5.0.3
     "@types/luxon": ^3.0.0
     "@types/nunjucks": ^3.1.4
     "@types/supertest": ^2.0.8
@@ -6689,6 +6687,7 @@ __metadata:
     strip-ansi: ^7.1.0
     supertest: ^6.1.3
     tar: ^6.1.12
+    triple-beam: ^1.4.1
     uuid: ^9.0.0
     wait-for-expect: ^3.0.2
     winston: ^3.2.1
@@ -17313,13 +17312,6 @@ __metadata:
   version: 7.0.15
   resolution: "@types/json-schema@npm:7.0.15"
   checksum: 97ed0cb44d4070aecea772b7b2e2ed971e10c81ec87dd4ecc160322ffa55ff330dace1793489540e3e318d90942064bb697cc0f8989391797792d919737b3b98
-  languageName: node
-  linkType: hard
-
-"@types/json-stringify-safe@npm:^5.0.3":
-  version: 5.0.3
-  resolution: "@types/json-stringify-safe@npm:5.0.3"
-  checksum: 66826a59b53ce5a5becc9c05cd0bdadb7e2032e02803a9dd13137de134a0882a6c67ae334371ccff07a20b1d2b2c23fa3a81b5e23f40b27cfcf553c7cce06e35
   languageName: node
   linkType: hard
 
@@ -41491,10 +41483,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"triple-beam@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "triple-beam@npm:1.3.0"
-  checksum: 7d7b77d8625fb252c126c24984a68de462b538a8fcd1de2abd0a26421629cf3527d48e23b3c2264f08f4a6c3bc40a478a722176f4d7b6a1acc154cb70c359f2b
+"triple-beam@npm:^1.3.0, triple-beam@npm:^1.4.1":
+  version: 1.4.1
+  resolution: "triple-beam@npm:1.4.1"
+  checksum: 2e881a3e8e076b6f2b85b9ec9dd4a900d3f5016e6d21183ed98e78f9abcc0149e7d54d79a3f432b23afde46b0885bdcdcbff789f39bc75de796316961ec07f61
   languageName: node
   linkType: hard
 

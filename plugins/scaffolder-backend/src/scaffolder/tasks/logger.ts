@@ -21,7 +21,7 @@ import { JsonObject } from '@backstage/types';
 import { Format, TransformableInfo } from 'logform';
 import Transport, { TransportStreamOptions } from 'winston-transport';
 import { Logger, format, createLogger, transports } from 'winston';
-import stringify from 'json-stringify-safe';
+import { MESSAGE } from 'triple-beam';
 
 /**
  * Escapes a given string to be used inside a RegExp.
@@ -108,26 +108,17 @@ export class WinstonLogger implements RootLoggerService {
 
     let redactionPattern: RegExp | undefined = undefined;
 
-    const replace = (obj: TransformableInfo) => {
-      if (!redactionPattern) {
-        return obj;
-      }
-
-      const stringifiedFields = stringify(obj);
-      const redacted = JSON.parse(
-        stringifiedFields.replace(redactionPattern, '[REDACTED]'),
-      );
-
-      for (const key in redacted) {
-        if (obj && Object.hasOwn(obj, key)) {
-          obj[key] = redacted[key];
-        }
-      }
-
-      return obj;
-    };
     return {
-      format: format(replace)(),
+      format: format((obj: TransformableInfo) => {
+        if (!redactionPattern || !obj) {
+          return obj;
+        }
+
+        obj[MESSAGE] = obj[MESSAGE]?.replace?.(redactionPattern, '[REDACTED]');
+        obj.message = obj.message?.replace?.(redactionPattern, '[REDACTED]');
+
+        return obj;
+      })(),
       add(newRedactions) {
         let added = 0;
         for (const redactionToTrim of newRedactions) {
