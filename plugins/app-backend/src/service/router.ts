@@ -113,6 +113,7 @@ export async function createRouter(
     staticFallbackHandler,
     auth,
     httpAuth,
+    schema,
   } = options;
 
   const disableConfigInjection =
@@ -143,6 +144,7 @@ export async function createRouter(
         config,
         appDistDir,
         env: process.env,
+        schema,
       });
 
   const assetStore =
