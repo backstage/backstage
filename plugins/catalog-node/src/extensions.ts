@@ -48,6 +48,7 @@ export interface CatalogProcessingExtensionPoint {
       errors: Error[];
     }) => Promise<void> | void,
   ): void;
+  setProcessingIntervalSeconds(interval: number): void;
 }
 
 /** @alpha */

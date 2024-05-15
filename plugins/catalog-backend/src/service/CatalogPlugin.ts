@@ -50,6 +50,7 @@ class CatalogProcessingExtensionPointImpl
     unprocessedEntity: Entity;
     errors: Error[];
   }) => Promise<void> | void;
+  #processingIntervalSeconds?: number;
 
   addProcessor(
     ...processors: Array<CatalogProcessor | Array<CatalogProcessor>>
@@ -80,6 +81,10 @@ class CatalogProcessingExtensionPointImpl
     this.#onProcessingErrorHandler = handler;
   }
 
+  setProcessingIntervalSeconds(interval: number): void {
+    this.#processingIntervalSeconds = interval;
+  }
+
   get processors() {
     return this.#processors;
   }
@@ -94,6 +99,10 @@ class CatalogProcessingExtensionPointImpl
 
   get onProcessingErrorHandler() {
     return this.#onProcessingErrorHandler;
+  }
+
+  get processingIntervalSeconds() {
+    return this.#processingIntervalSeconds;
   }
 }
 
@@ -264,6 +273,11 @@ export const catalogPlugin = createBackendPlugin({
         builder.addPermissions(...permissionExtensions.permissions);
         builder.addPermissionRules(...permissionExtensions.permissionRules);
         builder.setFieldFormatValidators(modelExtensions.fieldValidators);
+        if (processingExtensions.processingIntervalSeconds) {
+          builder.setProcessingIntervalSeconds(
+            processingExtensions.processingIntervalSeconds,
+          );
+        }
 
         const { processingEngine, router } = await builder.build();
 
