@@ -27,6 +27,7 @@ import {
   transports,
   transport as Transport,
 } from 'winston';
+import stringify from 'json-stringify-safe';
 import { escapeRegExp } from '../lib/escapeRegExp';
 
 /**
@@ -86,9 +87,13 @@ export class WinstonLogger implements RootLoggerService {
     let redactionPattern: RegExp | undefined = undefined;
 
     const replace = (obj: TransformableInfo) => {
-      const stringifiedFields = JSON.stringify(obj, null);
+      if (!redactionPattern) {
+        return obj;
+      }
+
+      const stringifiedFields = stringify(obj);
       const redacted = JSON.parse(
-        stringifiedFields.replace(redactionPattern!, '[REDACTED]'),
+        stringifiedFields.replace(redactionPattern, '[REDACTED]'),
       );
 
       for (const key in redacted) {
