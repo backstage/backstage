@@ -17,9 +17,13 @@ is a hierarchy of
 [`Group`](../../features/software-catalog/descriptor-format.md#kind-group) kind
 entities that mirror your org setup.
 
-> Note: This adds `User` and `Group` entities to the catalog, but does not
-> provide authentication. See the
-> [GitHub auth provider](../../auth/github/provider.md) for that.
+:::note Note
+
+This adds `User` and `Group` entities to the catalog, but does not
+provide authentication. See the
+[GitHub auth provider](../../auth/github/provider.md) for that.
+
+:::
 
 ## Permissions
 

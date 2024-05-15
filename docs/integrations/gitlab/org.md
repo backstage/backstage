@@ -158,7 +158,11 @@ amount of data, this can take significant time and resources.
 The token used must have the `read_api` scope, and the Users and Groups fetched
 will be those visible to the account which provisioned the token.
 
-> > NOTE: if you are using the New Backend System, the `schedule` has to be setup in the config, as shown below.
+:::note Note
+
+If you are using the New Backend System, the `schedule` has to be setup in the config, as shown below.
+
+:::
 
 ```yaml
 catalog:
