@@ -43,6 +43,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^9.0.0",

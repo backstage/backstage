@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
@@ -26,6 +25,7 @@ import { AwsS3EntityProvider } from './AwsS3EntityProvider';
 import { mockClient } from 'aws-sdk-client-mock';
 import 'aws-sdk-client-mock-jest';
 import { ListObjectsV2Command, S3Client } from '@aws-sdk/client-s3';
+import { mockServices } from '@backstage/backend-test-utils';
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -40,7 +40,7 @@ class PersistingTaskRunner implements TaskRunner {
   }
 }
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('AwsS3EntityProvider', () => {
   const createObjectList = (keys: string[]) => {
@@ -79,7 +79,7 @@ describe('AwsS3EntityProvider', () => {
   });
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     process.env.AWS_REGION = undefined;
   });
 

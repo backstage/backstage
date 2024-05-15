@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  getVoidLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import express from 'express';
 import request from 'supertest';
 
@@ -25,6 +22,7 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const eventsServiceMock: jest.Mocked<EventsService> = {
   subscribe: jest.fn(),
@@ -49,7 +47,7 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const router = await createRouter({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       identity: identityApiMock,
       events: eventsServiceMock,
       discovery,

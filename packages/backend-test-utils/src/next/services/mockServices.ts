@@ -58,6 +58,17 @@ import {
 } from '@backstage/plugin-events-node';
 
 /** @internal */
+function createLoggerMock() {
+  return {
+    child: jest.fn().mockImplementation(() => createLoggerMock()),
+    debug: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+  };
+}
+
+/** @internal */
 function simpleFactory<
   TService,
   TScope extends 'root' | 'plugin',
@@ -358,13 +369,10 @@ export namespace mockServices {
 
   export namespace logger {
     export const factory = loggerServiceFactory;
-    export const mock = simpleMock(coreServices.logger, () => ({
-      child: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-    }));
+
+    export const mock = simpleMock(coreServices.logger, () =>
+      createLoggerMock(),
+    );
   }
 
   export namespace permissions {

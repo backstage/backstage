@@ -16,9 +16,10 @@
 
 import 'buffer';
 import { resolve as resolvePath } from 'path';
-import { errorHandler, getVoidLogger } from '@backstage/backend-common';
+import { errorHandler } from '@backstage/backend-common';
 import {
   createMockDirectory,
+  mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
@@ -70,7 +71,7 @@ describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
   let authStrategy: jest.Mocked<AuthenticationStrategy>;
   const worker = setupServer();
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
 
   const clusterSupplier: jest.Mocked<KubernetesClustersSupplier> = {
     getClusters: jest.fn<
@@ -549,7 +550,7 @@ describe('KubernetesProxy', () => {
     };
 
     proxy = new KubernetesProxy({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       clusterSupplier: clusterSupplier,
       authStrategy: strategy,
       discovery: mockDisocveryApi,
@@ -671,7 +672,7 @@ describe('KubernetesProxy', () => {
 
   it('returns a response with a localKubectlProxy auth provider configuration', async () => {
     proxy = new KubernetesProxy({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
       authStrategy: new AnonymousStrategy(),
       discovery: mockDisocveryApi,

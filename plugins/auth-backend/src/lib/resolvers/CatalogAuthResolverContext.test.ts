@@ -15,7 +15,6 @@
  */
 
 import { CatalogAuthResolverContext } from './CatalogAuthResolverContext';
-import { getVoidLogger } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { mockServices } from '@backstage/backend-test-utils';
 import { TokenIssuer } from '../../identity/types';
@@ -32,7 +31,7 @@ describe('CatalogAuthResolverContext', () => {
 
   it('adds kind to filter when missing', async () => {
     const context = CatalogAuthResolverContext.create({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       catalogApi: mockCatalogApi as CatalogApi,
       tokenIssuer: {} as TokenIssuer,
       tokenManager: mockServices.tokenManager(),

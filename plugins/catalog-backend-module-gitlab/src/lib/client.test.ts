@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { readGitLabIntegrationConfig } from '@backstage/integration';
 import { setupServer } from 'msw/node';
@@ -34,14 +36,14 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       expect(client.isSelfManaged()).toBeTruthy();
     });
     it('returns false if gitlab.com', () => {
       const client = new GitLabClient({
         config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       expect(client.isSelfManaged()).toBeFalsy();
     });
@@ -53,7 +55,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const { items } = await client.pagedRequest(mock.paged_endpoint);
@@ -66,7 +68,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const requestedPage = 2;
@@ -87,7 +89,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const { items, nextPage } = await client.pagedRequest(
@@ -106,7 +108,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       // non-200 status code should throw
       await expect(() =>
@@ -122,7 +124,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const groupProjectsGen = paginated(
@@ -146,7 +148,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const instanceProjects = paginated(
@@ -167,7 +169,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const allUsers: GitLabUser[] = [];
@@ -188,7 +190,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const allGroups: GitLabGroup[] = [];
@@ -207,7 +209,7 @@ describe('GitLabClient', () => {
     it('gets all users under group', async () => {
       const client = new GitLabClient({
         config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       const saasMembers = (
         await client.getGroupMembers('saas-multi-user-group', [
@@ -221,7 +223,7 @@ describe('GitLabClient', () => {
     it('gets all users with token without full permissions', async () => {
       const client = new GitLabClient({
         config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       const saasMembers = (
         await client.getGroupMembers('', ['DIRECT, DESCENDANTS'])
@@ -231,7 +233,7 @@ describe('GitLabClient', () => {
     it('rejects when GraphQL returns errors', async () => {
       const client = new GitLabClient({
         config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       await expect(() =>
         client.getGroupMembers('error-group', ['DIRECT, DESCENDANTS']),
@@ -244,7 +246,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       const saasMembers = (
         await client.getGroupMembers('multi-page-saas', ['DIRECT, DESCENDANTS'])
@@ -262,7 +264,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const allGroups = (await client.listDescendantGroups('group-with-parent'))
@@ -277,7 +279,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const allGroups = (
@@ -292,7 +294,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       await expect(() =>
@@ -306,7 +308,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const saasGroups = (await client.listDescendantGroups('root')).items;
@@ -323,7 +325,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const members = await client.getGroupMembers('group1', ['DIRECT']);
@@ -346,7 +348,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const members = await client.getGroupMembers('non-existing-group', [
@@ -362,7 +364,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       await expect(() =>
@@ -377,7 +379,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const members = await client.getGroupMembers('multi-page', ['DIRECT']);
@@ -393,7 +395,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const group = await client.getGroupById(1);
@@ -405,7 +407,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       await expect(() => client.getGroupById(42)).rejects.toThrow(
@@ -420,7 +422,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const project = await client.getProjectById(1);
@@ -432,7 +434,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       await expect(() => client.getProjectById(42)).rejects.toThrow(
@@ -447,7 +449,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const user = await client.getUserById(1);
@@ -459,7 +461,7 @@ describe('GitLabClient', () => {
         config: readGitLabIntegrationConfig(
           new ConfigReader(mock.config_self_managed),
         ),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       await expect(() => client.getUserById(42)).rejects.toThrow(
@@ -475,7 +477,7 @@ describe('paginated', () => {
       config: readGitLabIntegrationConfig(
         new ConfigReader(mock.config_self_managed),
       ),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
     });
 
     const paginatedItems = paginated(
@@ -499,7 +501,7 @@ describe('hasFile', () => {
       config: readGitLabIntegrationConfig(
         new ConfigReader(mock.config_self_managed),
       ),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
     });
   });
 
@@ -528,7 +530,7 @@ describe('pagedRequest search params', () => {
       config: readGitLabIntegrationConfig(
         new ConfigReader(mock.config_self_managed),
       ),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
     });
 
     const { items } = await client.pagedRequest<{ endpoint: string }>(
@@ -546,7 +548,7 @@ describe('pagedRequest search params', () => {
       config: readGitLabIntegrationConfig(
         new ConfigReader(mock.config_self_managed),
       ),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
     });
 
     const { items } = await client.pagedRequest<{ endpoint: string }>(
@@ -567,7 +569,7 @@ describe('pagedRequest search params', () => {
       config: readGitLabIntegrationConfig(
         new ConfigReader(mock.config_self_managed),
       ),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
     });
 
     const { items } = await client.pagedRequest<{ endpoint: string }>(
@@ -588,7 +590,7 @@ describe('pagedRequest search params', () => {
       config: readGitLabIntegrationConfig(
         new ConfigReader(mock.config_self_managed),
       ),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
     });
 
     const { items } = await client.pagedRequest<{ endpoint: string }>(

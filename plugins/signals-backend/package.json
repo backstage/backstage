@@ -46,6 +46,7 @@
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^",

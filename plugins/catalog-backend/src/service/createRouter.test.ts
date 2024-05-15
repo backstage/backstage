@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import type { Location } from '@backstage/catalog-client';
@@ -78,7 +77,7 @@ describe('createRouter readonly disabled', () => {
       entitiesCatalog,
       locationService,
       orchestrator,
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       refreshService,
       config: new ConfigReader(undefined),
       permissionIntegrationRouter: express.Router(),
@@ -869,7 +868,7 @@ describe('createRouter readonly enabled', () => {
     const router = await createRouter({
       entitiesCatalog,
       locationService,
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       config: new ConfigReader({
         catalog: {
           readonly: true,
@@ -1079,7 +1078,7 @@ describe('NextRouter permissioning', () => {
     const router = await createRouter({
       entitiesCatalog,
       locationService,
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       refreshService,
       config: new ConfigReader(undefined),
       permissionIntegrationRouter: createPermissionIntegrationRouter({

@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import path, { resolve as resolvePath } from 'path';
 import { ParsedLocationAnnotation } from '../../helpers';
@@ -35,6 +37,7 @@ import {
   patchMkdocsYmlWithPlugins,
 } from './mkdocsPatchers';
 import yaml from 'js-yaml';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 const mockEntity = {
   apiVersion: 'version',
@@ -90,7 +93,7 @@ const mkdocsYmlWithAdditionalPluginsWithConfig = fs.readFileSync(
 const mkdocsYmlWithEnvTag = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_env_tag.yml'),
 );
-const mockLogger = getVoidLogger();
+const mockLogger = loggerToWinstonLogger(mockServices.logger.mock());
 const warn = jest.spyOn(mockLogger, 'warn');
 
 const scmIntegrations = ScmIntegrations.fromConfig(new ConfigReader({}));

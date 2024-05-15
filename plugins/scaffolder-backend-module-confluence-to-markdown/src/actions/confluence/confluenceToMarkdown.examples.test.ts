@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import { createConfluenceToMarkdownAction } from './confluenceToMarkdown';
-import { getVoidLogger } from '@backstage/backend-common';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReader, loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   createMockDirectory,
+  mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
@@ -57,7 +57,7 @@ describe('confluence:transform:markdown examples', () => {
     repoUrl: string;
   }>;
 
-  const logger = getVoidLogger();
+  const logger = loggerToWinstonLogger(mockServices.logger.mock());
   jest.spyOn(logger, 'info');
 
   const mockDir = createMockDirectory();

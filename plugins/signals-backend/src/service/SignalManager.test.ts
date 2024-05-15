@@ -16,8 +16,8 @@
 import { WebSocket } from 'ws';
 import { EventsServiceSubscribeOptions } from '@backstage/plugin-events-node';
 import { SignalManager } from './SignalManager';
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
 
 class MockWebSocket {
   closed: boolean = false;
@@ -76,7 +76,7 @@ describe('SignalManager', () => {
 
   const manager = SignalManager.create({
     events: mockEvents,
-    logger: getVoidLogger(),
+    logger: mockServices.logger.mock(),
     config: new ConfigReader({}),
     lifecycle: mockLifecycle as any,
   });

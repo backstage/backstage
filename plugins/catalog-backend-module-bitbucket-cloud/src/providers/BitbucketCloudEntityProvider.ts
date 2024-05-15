@@ -146,6 +146,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       return schedule.run({
         id: taskId,
         fn: async () => {
+          console.log('---> child', this.logger);
           const logger = this.logger.child({
             class: BitbucketCloudEntityProvider.prototype.constructor.name,
             taskId,
