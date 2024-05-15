@@ -121,13 +121,14 @@ export default createBackendPlugin({
 
         const collators = searchIndexRegistry.getCollators();
         const decorators = searchIndexRegistry.getDecorators();
+        searchIndexService.build({
+          searchEngine: searchEngine!,
+          collators,
+          decorators,
+        });
 
         lifecycle.addStartupHook(async () => {
-          await searchIndexService.start({
-            searchEngine: searchEngine!,
-            collators,
-            decorators,
-          });
+          await searchIndexService.start();
         });
 
         lifecycle.addShutdownHook(async () => {
