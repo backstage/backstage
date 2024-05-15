@@ -93,7 +93,6 @@ export class WinstonLogger implements RootLoggerService {
         }
 
         obj[MESSAGE] = obj[MESSAGE]?.replace?.(redactionPattern, '[REDACTED]');
-        obj.message = obj.message.replace?.(redactionPattern, '[REDACTED]');
 
         return obj;
       })(),
