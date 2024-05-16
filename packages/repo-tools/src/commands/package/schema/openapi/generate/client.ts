@@ -27,12 +27,18 @@ import { exec } from '../../../../../lib/exec';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
 
-async function generate(outputDirectory: string) {
+async function generate(
+  outputDirectory: string,
+  additionalProperties?: string,
+) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
   const resolvedOutputDirectory = cliPaths.resolveTargetRoot(
     outputDirectory,
     OUTPUT_PATH,
   );
+  const openapiProperties = additionalProperties
+    ? `--additional-properties=${additionalProperties}`
+    : '';
   mkdirpSync(resolvedOutputDirectory);
 
   await fs.mkdirp(resolvedOutputDirectory);
@@ -60,6 +66,7 @@ async function generate(outputDirectory: string) {
       ),
       '--generator-key',
       'v3.0',
+      openapiProperties,
     ],
     {
       maxBuffer: Number.MAX_VALUE,
@@ -87,9 +94,12 @@ async function generate(outputDirectory: string) {
   });
 }
 
-export async function command(outputPackage: string): Promise<void> {
+export async function command(
+  outputPackage: string,
+  additionalProperties?: string,
+): Promise<void> {
   try {
-    await generate(outputPackage);
+    await generate(outputPackage, additionalProperties);
     console.log(
       chalk.green(`Generated client in ${outputPackage}/${OUTPUT_PATH}`),
     );
