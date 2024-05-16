@@ -1,5 +1,11 @@
 # @backstage/plugin-search-backend-node
 
+## 1.2.23
+
+### Patch Changes
+
+- f4ba235: Split backend search plugin startup into "init" and "start" stages to ensure necessary initialization has happened before startup
+
 ## 1.2.22
 
 ### Patch Changes

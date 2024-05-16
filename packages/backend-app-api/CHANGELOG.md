@@ -1,5 +1,11 @@
 # @backstage/backend-app-api
 
+## 0.7.5
+
+### Patch Changes
+
+- da155d1: Fixing issue with log meta fields possibly being circular refs
+
 ## 0.7.4
 
 ### Patch Changes
