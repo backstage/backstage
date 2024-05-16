@@ -27,11 +27,13 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { CustomErrorBase, InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-common';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from './helpers';
 import { examples } from './githubPullRequest.examples';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 export type Encoding = 'utf-8' | 'base64';

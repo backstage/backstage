@@ -23,7 +23,7 @@ import { Types } from '@gitbeaker/core';
 import path from 'path';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createGitlabApi } from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
 

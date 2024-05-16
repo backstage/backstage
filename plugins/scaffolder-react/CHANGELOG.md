@@ -1,5 +1,22 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.8.5
+
+### Patch Changes
+
+- 9156654: Capturing more event clicks for scaffolder
+- 0040ec2: Updated dependency `@rjsf/utils` to `5.18.2`.
+  Updated dependency `@rjsf/core` to `5.18.2`.
+  Updated dependency `@rjsf/material-ui` to `5.18.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.18.2`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.2
+  - @backstage/core-components@0.14.7
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/theme@0.5.4
+  - @backstage/catalog-client@1.6.5
+
 ## 1.8.5-next.2
 
 ### Patch Changes

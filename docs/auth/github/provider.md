@@ -43,13 +43,12 @@ auth:
         # enterpriseInstanceUrl: ${AUTH_GITHUB_ENTERPRISE_INSTANCE_URL}
         signIn:
           resolvers:
-            # typically you would pick one of these
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
+            # Matches the GitHub username with the Backstage user entity name.
+            # See https://backstage.io/docs/auth/github/provider#resolvers for more resolvers.
             - resolver: usernameMatchingUserEntityName
 ```
 
-The GitHub provider is a structure with three configuration keys:
+The GitHub provider is a structure with these configuration keys:
 
 - `clientId`: The client ID that you generated on GitHub, e.g.
   `b59241722e3c3b4816e2`
@@ -60,6 +59,9 @@ The GitHub provider is a structure with three configuration keys:
   initiating an OAuth flow, e.g.
   `https://your-intermediate-service.com/handler`. Only needed if Backstage is
   not the immediate receiver (e.g. one OAuth app for many backstage instances).
+- `signIn`: The configuration for the sign-in process, including the **resolvers**
+  that should be used to match the user from the auth provider with the user
+  entity in the Backstage catalog (typically a single resolver is sufficient).
 
 ### Resolvers
 
