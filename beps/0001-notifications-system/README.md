@@ -148,7 +148,7 @@ The link is a relative or absolute URL. As an example, it can be used:
 - by an external system to request an action within an asynchronous task
 - by a BE plugin to provide link to other part of the Backstage UI (i.e. to the Catalog)
 
-The metadata is a flexible JSON like field, where an additional payload can be stored.
+The metadata is an opaque JSON field, where an additional payload can be stored. The format of this data is owned by the notification sender and is tied to the notification topic, i.e. notifications sent from the source on the same topic should use a compatible metadata format. The primary purpose of this field is to allow for custom processing and rendering based on the additional metadata.
 
 The additional links are an array of title-URL pairs. They can represent immediate actions on the notification (i.e. yes-no) or lead the user to additional details.
 
