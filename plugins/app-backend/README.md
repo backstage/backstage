@@ -13,7 +13,19 @@ yarn --cwd packages/backend add @backstage/plugin-app-backend app
 
 By adding the app package as a dependency we ensure that it is built as part of the backend, and that it can be resolved at runtime.
 
-Now add the plugin router to your app, creating it for example like this:
+Now add the plugin to your app, creating it for example like this:
+
+### New Backend
+
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+
+const backend = createBackend();
+backend.add(import('@backstage/plugin-app-backend/alpha'));
+backend.start();
+```
+
+### Old Backend
 
 ```ts
 const router = await createRouter({

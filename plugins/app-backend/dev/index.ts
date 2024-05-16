@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,8 @@
  * limitations under the License.
  */
 
-import { getRootLogger } from '@backstage/backend-common';
-import { startStandaloneServer } from './service/standaloneServer';
+import { createBackend } from '@backstage/backend-defaults';
 
-const logger = getRootLogger();
-
-startStandaloneServer({ logger }).catch(err => {
-  logger.error(err);
-  process.exit(1);
-});
-
-process.on('SIGINT', () => {
-  logger.info('CTRL+C pressed; exiting.');
-  process.exit(0);
-});
-
-module.hot?.accept();
+const backend = createBackend();
+backend.add(import('../src/alpha'));
+backend.start();
