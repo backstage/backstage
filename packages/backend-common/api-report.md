@@ -218,7 +218,7 @@ export function cacheToPluginCacheManager(
   cache: CacheClient,
 ): PluginCacheManager;
 
-// @public
+// @public @deprecated
 export const coloredFormat: winston.Logform.Format;
 
 // @public
@@ -259,7 +259,7 @@ export function createLegacyAuthAdapters<
       : {}),
 >(options: TOptions): TAdapters;
 
-// @public
+// @public @deprecated
 export function createRootLogger(
   options?: winston.LoggerOptions,
   env?: NodeJS.ProcessEnv,
@@ -366,10 +366,10 @@ export class GerritUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export function getRootLogger(): winston.Logger;
 
-// @public
+// @public @deprecated
 export function getVoidLogger(): winston.Logger;
 
 // @public @deprecated
@@ -815,7 +815,7 @@ export type ServiceBuilder = {
   start(): Promise<Server>;
 };
 
-// @public
+// @public @deprecated
 export function setRootLogger(newLogger: winston.Logger): void;
 
 // @public @deprecated

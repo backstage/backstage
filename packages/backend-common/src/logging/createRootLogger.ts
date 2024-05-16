@@ -59,6 +59,8 @@ const colorizer = format.colorize();
  * Creates a pretty printed winston log formatter.
  *
  * @public
+ * @deprecated As we are going to deprecate the legacy backend, this formatter utility will be removed in the future.
+ * If you need to format logs in the new system, please use the `WinstonLogger.colorFormat()` from `@backstage/backend-app-api` instead.
  */
 export const coloredFormat = format.combine(
   format.timestamp(),
@@ -96,6 +98,9 @@ export const coloredFormat = format.combine(
  * instances passed to plugins etc, in a given backend.
  *
  * @public
+ * @deprecated As we are going to deprecate the legacy backend, this function will be removed in the future.
+ * If you need to create the root logger in the new system, please check out this documentation:
+ * https://backstage.io/docs/backend-system/core-services/logger
  */
 export function createRootLogger(
   options: winston.LoggerOptions = {},
