@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-import { DatabaseService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  DatabaseService,
+  LoggerService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import { DateTime } from 'luxon';
 import { Knex } from 'knex';
 import { JsonObject } from '@backstage/types';
-import { resolvePackagePath } from '@backstage/backend-common';
 import { KeyStore } from './types';
 
 const MIGRATIONS_TABLE = 'backstage_backend_public_keys__knex_migrations';

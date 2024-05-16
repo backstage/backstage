@@ -17,7 +17,7 @@ import {
   getVoidLogger,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { overridePackagePathResolution } from '@backstage/backend-common/testUtils';
+import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';

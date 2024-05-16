@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import * as yaml from 'yaml';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { z } from 'zod';
 import { examples } from './write.examples';
 

@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.5.34
+
+### Patch Changes
+
+- 7699967: Remove dependency to Winston Logger and use Backstage LoggerService instead
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-catalog-common@1.0.23
+
+## 0.5.34-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0-next.2
+
 ## 0.5.34-next.1
 
 ### Patch Changes

@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-backend-module-backstage-openapi
 
+## 0.2.1
+
+### Patch Changes
+
+- f3f0281: Fix incorrect dependency import.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/backend-openapi-utils@0.1.11
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0-next.2
+
 ## 0.2.1-next.1
 
 ### Patch Changes

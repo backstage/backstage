@@ -25,7 +25,9 @@ import {
 import { useApi } from '@backstage/core-plugin-api';
 import {
   catalogApiRef,
-  humanizeEntityRef,
+  entityPresentationApiRef,
+  EntityDisplayName,
+  EntityRefPresentationSnapshot,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
@@ -64,32 +66,30 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
     uiSchema['ui:options']?.defaultNamespace || undefined;
 
   const catalogApi = useApi(catalogApiRef);
-
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const { value: entities, loading } = useAsync(async () => {
     const { items } = await catalogApi.getEntities(
       catalogFilter ? { filter: catalogFilter } : undefined,
     );
-    return items;
+    const entityRefToPresentation = new Map<
+      string,
+      EntityRefPresentationSnapshot
+    >(
+      await Promise.all(
+        items.map(async item => {
+          const presentation = await entityPresentationApi.forEntity(item)
+            .promise;
+          return [stringifyEntityRef(item), presentation] as [
+            string,
+            EntityRefPresentationSnapshot,
+          ];
+        }),
+      ),
+    );
+    return { entities: items, entityRefToPresentation };
   });
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
-
-  const getLabel = useCallback(
-    (ref: string) => {
-      try {
-        return humanizeEntityRef(
-          parseEntityRef(ref, { defaultKind, defaultNamespace }),
-          {
-            defaultKind,
-            defaultNamespace,
-          },
-        );
-      } catch (err) {
-        return ref;
-      }
-    },
-    [defaultKind, defaultNamespace],
-  );
 
   const onSelect = useCallback(
     (_: any, refs: (string | Entity)[], reason: AutocompleteChangeReason) => {
@@ -130,8 +130,8 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
   );
 
   useEffect(() => {
-    if (entities?.length === 1) {
-      onChange([stringifyEntityRef(entities[0])]);
+    if (entities?.entities?.length === 1) {
+      onChange([stringifyEntityRef(entities?.entities[0])]);
     }
   }, [entities, onChange]);
 
@@ -144,23 +144,18 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
       <Autocomplete
         multiple
         filterSelectedOptions
-        disabled={entities?.length === 1}
+        disabled={entities?.entities?.length === 1}
         id={idSchema?.$id}
-        value={
-          // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
-          //  back to the given value.
-          entities?.filter(
-            e => formData && formData.includes(stringifyEntityRef(e)),
-          ) ?? (allowArbitraryValues && formData ? formData.map(getLabel) : [])
-        }
         loading={loading}
         onChange={onSelect}
-        options={entities || []}
+        options={entities?.entities || []}
+        renderOption={option => <EntityDisplayName entityRef={option} />}
         getOptionLabel={option =>
           // option can be a string due to freeSolo.
           typeof option === 'string'
             ? option
-            : humanizeEntityRef(option, { defaultKind, defaultNamespace })!
+            : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+                ?.entityRef!
         }
         autoSelect
         freeSolo={allowArbitraryValues}
@@ -170,10 +165,16 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             label={title}
             margin="dense"
             helperText={description}
-            FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
+            FormHelperTextProps={{
+              margin: 'dense',
+              style: { marginLeft: 0 },
+            }}
             variant="outlined"
             required={required}
-            InputProps={params.InputProps}
+            InputProps={{
+              ...params.InputProps,
+              required: formData.length === 0 && required,
+            }}
           />
         )}
       />

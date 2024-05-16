@@ -1,5 +1,49 @@
 # @backstage/plugin-catalog-backend
 
+## 1.22.0
+
+### Minor Changes
+
+- f2a2a83: Deprecated the `LocationAnalyzer` type, which has been moved to `@backstage/plugin-catalog-node`.
+- f2a2a83: The `/alpha` plugin export has had its implementation of the `catalogAnalysisExtensionPoint` updated to reflect the new API.
+- 8d14475: Emit well known relationships for the Domain entity kind.
+
+### Patch Changes
+
+- 131e5cb: Fix broken links in README.
+- c6cb568: Add lifecycle monitoring for the catalog processing
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- 8479a0b: Fixed bug in stitching queue gauge that included entities that are scheduled in the future.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.24
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-events-node@0.3.4
+  - @backstage/integration@1.11.0
+  - @backstage/backend-openapi-utils@0.1.11
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-permission-node@0.7.29
+
+## 1.22.0-next.2
+
+### Minor Changes
+
+- f2a2a83: Deprecated the `LocationAnalyzer` type, which has been moved to `@backstage/plugin-catalog-node`.
+- f2a2a83: The `/alpha` plugin export has had its implementation of the `catalogAnalysisExtensionPoint` updated to reflect the new API.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0-next.2
+  - @backstage/plugin-search-backend-module-catalog@0.1.24-next.2
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+  - @backstage/integration@1.11.0-next.0
+
 ## 1.22.0-next.1
 
 ### Patch Changes
@@ -3558,8 +3602,7 @@
   `packages/backend/src/plugins/catalog.ts` creates the catalog builder using
   `CatalogBuilder.create`. If you instead call `new CatalogBuilder`, you are on
   the old implementation and will experience breakage if you upgrade to this
-  version. If you are still on the old version, see [the relevant change log
-  entry](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/CHANGELOG.md#patch-changes-27)
+  version. If you are still on the old version, see [the relevant change log entry](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/CHANGELOG.md#patch-changes-27)
   for migration instructions.
 
   The minimal `packages/backend/src/plugins/catalog.ts` file is now:
@@ -3652,8 +3695,7 @@
   `packages/backend/src/plugins/catalog.ts` creates the catalog builder using
   `CatalogBuilder.create`. If you instead call `new CatalogBuilder`, you are on
   the old implementation and will experience breakage if you upgrade to this
-  version. If you are still on the old version, see [the relevant change log
-  entry](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/CHANGELOG.md#patch-changes-27)
+  version. If you are still on the old version, see [the relevant change log entry](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend/CHANGELOG.md#patch-changes-27)
   for migration instructions.
 
   The minimal `packages/backend/src/plugins/catalog.ts` file is now:

@@ -27,7 +27,6 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 import {
   GroupTransformer,
   LdapClient,
@@ -37,6 +36,7 @@ import {
   readLdapOrg,
   UserTransformer,
 } from '../ldap';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Options for {@link LdapOrgEntityProvider}.
@@ -64,7 +64,7 @@ export interface LdapOrgEntityProviderOptions {
   /**
    * The logger to use.
    */
-  logger: Logger;
+  logger: LoggerService;
 
   /**
    * The refresh schedule to use.
@@ -143,7 +143,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
     private options: {
       id: string;
       provider: LdapProviderConfig;
-      logger: Logger;
+      logger: LoggerService;
       userTransformer?: UserTransformer;
       groupTransformer?: GroupTransformer;
     },
@@ -164,7 +164,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
    * Runs one single complete ingestion. This is only necessary if you use
    * manual scheduling.
    */
-  async read(options?: { logger?: Logger }) {
+  async read(options?: { logger?: LoggerService }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -237,7 +237,7 @@ export class LdapOrgEntityProvider implements EntityProvider {
 }
 
 // Helps wrap the timing and logging behaviors
-function trackProgress(logger: Logger) {
+function trackProgress(logger: LoggerService) {
   let timestamp = Date.now();
   let summary: string;
 

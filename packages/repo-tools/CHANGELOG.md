@@ -1,5 +1,30 @@
 # @backstage/repo-tools
 
+## 0.9.0
+
+### Minor Changes
+
+- 683870a: Adds 2 new commands `repo schema openapi diff` and `package schema openapi diff`. `repo schema openapi diff` is intended to power a new breaking changes check on pull requests and the package level command allows plugin developers to quickly see new API breaking changes. They're intended to be used in complement with the existing `repo schema openapi verify` command to validate your OpenAPI spec against a variety of things.
+
+### Patch Changes
+
+- 9ae9bb2: Update the paths logic in the api reports command to support complex subpaths
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-plugin-api@0.6.18
+
+## 0.9.0-next.2
+
+### Minor Changes
+
+- 683870a: Adds 2 new commands `repo schema openapi diff` and `package schema openapi diff`. `repo schema openapi diff` is intended to power a new breaking changes check on pull requests and the package level command allows plugin developers to quickly see new API breaking changes. They're intended to be used in complement with the existing `repo schema openapi verify` command to validate your OpenAPI spec against a variety of things.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+
 ## 0.8.1-next.1
 
 ### Patch Changes

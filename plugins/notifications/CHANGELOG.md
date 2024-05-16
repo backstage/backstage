@@ -1,5 +1,32 @@
 # @backstage/plugin-notifications
 
+## 0.2.1
+
+### Patch Changes
+
+- e6bf85f: Allow overriding `NotificationsPage` page properties
+- f730c0b: The user can newly mark all unread messages as read at one click.
+- bfcb2f1: Allow showing notifications as snackbars in the UI
+- e49a810: Show all notifications by default to match the sidebar item status
+- 42eaf63: Increase default and allow modifying notification snackbar auto hide duration
+- a42a19b: Empty descriptions are not rendered to improve the look&feel.
+- 1bc3b86: Fix to show web notifications even when browser is on foreground. Fix duplicate notifications with multiple tabs.
+- f793112: Allow defining `className` and additional properties for `NotificationsSideBarItem`
+- e1c7d6e: Fix infinite loop in the notification title counter
+- fcda449: The rendered size of a notification is limited for very long descriptions.
+- f6633ca: Add option to set the notification as read automatically when the notification link is opened
+- Updated dependencies
+  - @backstage/core-components@0.14.7
+  - @backstage/theme@0.5.4
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- 42eaf63: Increase default and allow modifying notification snackbar auto hide duration
+- Updated dependencies
+  - @backstage/core-components@0.14.7-next.2
+
 ## 0.2.1-next.1
 
 ### Patch Changes

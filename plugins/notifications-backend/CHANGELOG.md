@@ -1,5 +1,33 @@
 # @backstage/plugin-notifications-backend
 
+## 0.2.1
+
+### Patch Changes
+
+- d541ff6: Fixed email processor `esm` issue and config reading
+- 295c05d: Support for filtering entities from notification recipients after resolving them from the recipients
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- cba628a: Add possibility to generate random notifications on the fly in local development
+- ee09dfc: Updated documentation for sending messages by external services.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/plugin-notifications-node@0.1.4
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-events-node@0.3.4
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-signals-node@0.1.4
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- d541ff6: Fixed email processor `esm` issue and config reading
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+
 ## 0.2.1-next.1
 
 ### Patch Changes

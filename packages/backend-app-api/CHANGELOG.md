@@ -1,5 +1,32 @@
 # @backstage/backend-app-api
 
+## 0.7.3
+
+### Patch Changes
+
+- 4cd5ff0: Add ability to configure the Node.js HTTP Server when configuring the root HTTP Router service
+- e8199b1: Move the JWKS registration outside of the lifecycle middleware
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- dc8c5dd: The default `TokenManager` implementation no longer requires keys to be configured in production, but it will throw an errors when generating or authenticating tokens. The default `AuthService` implementation will now also provide additional context if such an error is throw when falling back to using the `TokenManager` service to generate tokens for outgoing requests.
+- 025641b: Redact `meta` fields too with the logger
+- 09f8988: Remove explicit `alg` check for user tokens in `verifyToken`
+- 5863e02: Internal refactor to only create one external token handler
+- a1dc547: Added support for camel case CSP directives in app-config. For example:
+
+  ```yaml
+  backend:
+    csp:
+      upgradeInsecureRequests: false
+  ```
+
+- 329cc34: Added logging of all plugins being initialized, periodic status, and completion.
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/plugin-permission-node@0.7.29
+
 ## 0.7.2-next.1
 
 ### Patch Changes

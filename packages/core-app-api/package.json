@@ -1,7 +1,7 @@
 {
   "name": "@backstage/core-app-api",
   "description": "Core app API used by Backstage apps",
-  "version": "1.12.4",
+  "version": "1.12.5",
   "publishConfig": {
     "access": "public"
   },

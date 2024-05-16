@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.2.8
+
+### Patch Changes
+
+- 5d99272: Update local development dependencies.
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- 52ab241: Adding support to change the default commit author for `publish:github:pull-request`
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-scaffolder-node@0.4.4
+  - @backstage/integration@1.11.0
+
+## 0.2.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-scaffolder-node@0.4.4-next.2
+  - @backstage/integration@1.11.0-next.0
+
 ## 0.2.8-next.1
 
 ### Patch Changes

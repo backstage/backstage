@@ -28,7 +28,6 @@ import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
 import { EntitiesCatalog } from '../catalog/types';
-import { LocationAnalyzer } from '../ingestion';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import {
@@ -55,6 +54,7 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 
 /**
  * Options used by {@link createRouter}.
