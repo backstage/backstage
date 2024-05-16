@@ -19,8 +19,8 @@ import { ServiceBuilder } from './types';
 
 /**
  * Creates a new service builder.
- *
  * @public
+ * @deprecated We are going to deprecated this old way of creating services in a near future, if you are using this service helper, please checkout the migration guide and make sure you migrate your backend to use the new system: https://backstage.io/docs/backend-system/building-backends/migrating.
  */
 export function createServiceBuilder(_module: NodeModule): ServiceBuilder {
   return new ServiceBuilderImpl(_module);

@@ -265,7 +265,7 @@ export function createRootLogger(
   env?: NodeJS.ProcessEnv,
 ): winston.Logger;
 
-// @public
+// @public @deprecated
 export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
 // @public
