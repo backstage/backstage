@@ -121,7 +121,7 @@ class DefaultSearchIndexService implements SearchIndexService {
 
   async start(): Promise<void> {
     if (!this.indexBuilder) {
-      throw new Error('IndexBuilder is not initialized, call build first');
+      throw new Error('IndexBuilder is not initialized, call init first');
     }
     const { scheduler } = await this.indexBuilder.build();
     this.scheduler = scheduler;
