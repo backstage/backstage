@@ -121,7 +121,7 @@ export default createBackendPlugin({
 
         const collators = searchIndexRegistry.getCollators();
         const decorators = searchIndexRegistry.getDecorators();
-        searchIndexService.build({
+        searchIndexService.init({
           searchEngine: searchEngine!,
           collators,
           decorators,

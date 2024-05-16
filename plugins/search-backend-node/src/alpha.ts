@@ -32,9 +32,9 @@ import {
 
 /**
  * @alpha
- * Options for build method on {@link SearchIndexService}.
+ * Options for the init method on {@link SearchIndexService}.
  */
-export type SearchIndexServiceBuildOptions = {
+export type SearchIndexServiceInitOptions = {
   searchEngine: SearchEngine;
   collators: RegisterCollatorParameters[];
   decorators: RegisterDecoratorParameters[];
@@ -48,7 +48,7 @@ export interface SearchIndexService {
   /**
    * Initializes state in preparation for starting the search index service
    */
-  build(options: SearchIndexServiceBuildOptions): void;
+  init(options: SearchIndexServiceInitOptions): void;
 
   /**
    * Starts indexing process
@@ -104,7 +104,7 @@ class DefaultSearchIndexService implements SearchIndexService {
     return new DefaultSearchIndexService(options);
   }
 
-  build(options: SearchIndexServiceBuildOptions): void {
+  init(options: SearchIndexServiceInitOptions): void {
     this.indexBuilder = new IndexBuilder({
       logger: this.logger,
       searchEngine: options.searchEngine,
