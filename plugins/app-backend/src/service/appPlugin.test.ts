@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { appPlugin } from './appPlugin';
 import { createRootLogger } from '@backstage/backend-common';
-import { overridePackagePathResolution } from '@backstage/backend-common/testUtils';
+import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 
 const mockDir = createMockDirectory();
 overridePackagePathResolution({

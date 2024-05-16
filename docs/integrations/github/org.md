@@ -45,7 +45,7 @@ Next add the basic configuration to `app-config.yaml`
 catalog:
   providers:
     githubOrg:
-      id: github
+      id: production
       githubUrl: https://github.com
       orgs: ['organization-1', 'organization-2', 'organization-3']
       schedule:
@@ -90,7 +90,7 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 
 - `id`: A stable id for this provider. Entities from this provider will be associated with this ID, so you should take care not to change it over time since that may lead to orphaned entities and/or conflicts.
 - `githubUrl`: The target that this provider should consume
-- `orgs` (optional): The list of the GitHub orgs to consume. By default wil consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
+- `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
 - `schedule`: The refresh schedule to use, matches the structure of [`TaskScheduleDefinitionConfig`](https://backstage.io/docs/reference/backend-tasks.taskscheduledefinitionconfig/)
 
 ### Events Support

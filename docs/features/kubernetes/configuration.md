@@ -198,8 +198,7 @@ in namespace `NAMESPACE` and it has adequate
 [permissions](#role-based-access-control), here are some sample procedures to
 procure a long-lived service account token for use with this provider:
 
-- On versions of Kubernetes [prior to
-  1.24](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#no-really-you-must-read-this-before-you-upgrade-1),
+- On versions of Kubernetes [prior to 1.24](https://github.com/kubernetes/kubernetes/blob/master/CHANGELOG/CHANGELOG-1.24.md#no-really-you-must-read-this-before-you-upgrade-1),
   you could get an (automatically-generated) token for a service account with:
 
   ```sh
@@ -209,8 +208,7 @@ procure a long-lived service account token for use with this provider:
   | base64 --decode
   ```
 
-- For Kubernetes 1.24+, as described in [this
-  guide](https://kubernetes.io/docs/concepts/configuration/secret/#service-account-token-secrets),
+- For Kubernetes 1.24+, as described in [this guide](https://kubernetes.io/docs/concepts/configuration/secret/#service-account-token-secrets),
   you can obtain a long-lived token by creating a secret:
 
   ```sh
@@ -235,8 +233,7 @@ procure a long-lived service account token for use with this provider:
 If a cluster has `authProvider: serviceAccount` and the `serviceAccountToken`
 field is omitted, Backstage will ignore the configured URL and certificate data,
 instead attempting to access the Kubernetes API via an in-cluster client as in
-[this
-example](https://github.com/kubernetes-client/javascript/blob/master/examples/in-cluster.js).
+[this example](https://github.com/kubernetes-client/javascript/blob/master/examples/in-cluster.js).
 
 ##### `clusters.\*.oidcTokenProvider` (optional)
 

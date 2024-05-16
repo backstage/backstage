@@ -372,12 +372,6 @@ describe('useEntityRelationNodesAndEdges', () => {
         to: 'b:d/c1',
       },
       {
-        from: 'b:d/c',
-        label: 'visible',
-        relations: [RELATION_HAS_PART, RELATION_PART_OF],
-        to: 'b:d/c1',
-      },
-      {
         from: 'b:d/c1',
         label: 'visible',
         relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
@@ -388,24 +382,6 @@ describe('useEntityRelationNodesAndEdges', () => {
         label: 'visible',
         relations: [RELATION_HAS_PART, RELATION_PART_OF],
         to: 'b:d/c2',
-      },
-      {
-        from: 'b:d/c1',
-        label: 'visible',
-        relations: [RELATION_HAS_PART, RELATION_PART_OF],
-        to: 'b:d/c2',
-      },
-      {
-        from: 'b:d/c',
-        label: 'visible',
-        relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
-        to: 'k:d/a1',
-      },
-      {
-        from: 'b:d/c1',
-        label: 'visible',
-        relations: [RELATION_OWNER_OF, RELATION_OWNED_BY],
-        to: 'k:d/a1',
       },
     ]);
   });

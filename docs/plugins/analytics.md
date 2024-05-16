@@ -69,8 +69,7 @@ installed, may be captured.
 | `discover`  | The title of the search result that was clicked on                                                                                                                 | The `value` is the result rank. A `to` attribute is also provided.                                                                                                                                                                                                                                  |
 | `not-found` | The path of the resource that resulted in a not found page                                                                                                         | Fired by at least TechDocs.                                                                                                                                                                                                                                                                         |
 
-If there is an event you'd like to see captured, please [open an
-issue](https://github.com/backstage/backstage/issues/new?assignees=&labels=enhancement&template=feature_template.md&title=[Analytics%20Event]:%20THE+EVENT+TO+CAPTURE) describing the event you want to see and the questions it
+If there is an event you'd like to see captured, please [open an issue](https://github.com/backstage/backstage/issues/new?assignees=&labels=enhancement&template=feature_template.md&title=[Analytics%20Event]:%20THE+EVENT+TO+CAPTURE) describing the event you want to see and the questions it
 would help you answer. Or jump to [Capturing Events](#capturing-events) to learn how
 to contribute the instrumentation yourself!
 

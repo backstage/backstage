@@ -1,5 +1,17 @@
 # @backstage/plugin-signals-backend
 
+## 0.1.4
+
+### Patch Changes
+
+- 845d56a: Improved signal lifecycle management and added server side pinging of connections
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-events-node@0.3.4
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/plugin-signals-node@0.1.4
+
 ## 0.1.4-next.2
 
 ### Patch Changes

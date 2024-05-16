@@ -17,7 +17,7 @@
 import { promises as fs } from 'fs';
 import globby from 'globby';
 import limiterFactory from 'p-limit';
-import { resolveSafeChildPath } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { SerializedFile } from './types';
 import { isError } from '@backstage/errors';
 

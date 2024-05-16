@@ -33,9 +33,11 @@ import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from '../tasks/NunjucksWorkflowRunner';
 import { DecoratedActionsRegistry } from './DecoratedActionsRegistry';
 import fs from 'fs-extra';
-import { resolveSafeChildPath } from '@backstage/backend-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import {
+  BackstageCredentials,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
 
 interface DryRunInput {
   spec: TaskSpec;

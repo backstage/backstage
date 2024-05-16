@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder
 
+## 1.20.0
+
+### Minor Changes
+
+- 4268696: `MultiEntityPicker` uses `EntityDisplayName` instead of `humanizeEntityRef` to display entity.
+
+### Patch Changes
+
+- 9156654: Capturing more event clicks for scaffolder
+- 131e5cb: Fix broken links in README.
+- 0040ec2: Updated dependency `@rjsf/utils` to `5.18.2`.
+  Updated dependency `@rjsf/core` to `5.18.2`.
+  Updated dependency `@rjsf/material-ui` to `5.18.2`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.18.2`.
+- 762141c: Fixed a bug where the `MultiEntityPicker` was not able to be set as required
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.2
+  - @backstage/plugin-scaffolder-react@1.8.5
+  - @backstage/core-compat-api@0.2.5
+  - @backstage/core-components@0.14.7
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/integration@1.11.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/frontend-plugin-api@0.6.5
+  - @backstage/integration-react@1.1.27
+  - @backstage/plugin-catalog-common@1.0.23
+
 ## 1.19.4-next.2
 
 ### Patch Changes

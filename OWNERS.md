@@ -187,6 +187,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Miklós Kiss                    | Roadie.io                 | [kissmikijr](https://github.com/kissmikijr)           | `Miklos#7416`                  |
 | Patrick Jungermann             | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)         | `pjungermann#6933`             |
 | Phil Kuang                     | FactSet Research Systems  | [kuangp](https://github.com/kuangp)                   | `pkuang#3202`                  |
+| Sebastian Poxhofer             | N26                       | [secustor](https://github.com/secustor)               | `secustor`                     |
 | Taras Mankovski                | Frontside                 | [taras](https://github.com/taras)                     | `tarasm#1256`                  |
 
 ## Emeritus Core Maintainers

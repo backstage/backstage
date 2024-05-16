@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { Git, getVoidLogger } from '@backstage/backend-common';
+import { getVoidLogger } from '@backstage/backend-common';
+import { Git } from '../scm';
 import {
   commitAndPushRepo,
   initRepoAndPush,
@@ -24,7 +25,7 @@ import {
   cloneRepo,
 } from './gitHelpers';
 
-jest.mock('@backstage/backend-common', () => ({
+jest.mock('../scm', () => ({
   Git: {
     fromAuth: jest.fn().mockReturnValue({
       init: jest.fn(),

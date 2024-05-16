@@ -65,13 +65,19 @@ You can now start your Backstage instance as usual, using `yarn dev`.
 
 ## Production Setup
 
-In your `Dockerfile` add the `--require` flag which points to the `instrumentation.js` file
+In your `Dockerfile`, copy `instrumentation.js` file into the root of the working directory.
+
+```Dockerfile
+COPY --chown=${NOT_ROOT_USER}:${NOT_ROOT_USER} packages/backend/src/instrumentation.js ./
+```
+
+And then add the `--require` flag that points to the file to the CMD array.
 
 ```Dockerfile
 // highlight-remove-next-line
 CMD ["node", "packages/backend", "--config", "app-config.yaml"]
 // highlight-add-next-line
-CMD ["node", "--require", "./src/instrumentation.js", "packages/backend", "--config", "app-config.yaml"]
+CMD ["node", "--require", "./instrumentation.js", "packages/backend", "--config", "app-config.yaml"]
 ```
 
 If you need to disable/configure some OpenTelemetry feature there are lots of [environment variables](https://opentelemetry.io/docs/specs/otel/configuration/sdk-environment-variables/) which you can tweak.

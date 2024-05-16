@@ -1,5 +1,15 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.27
+
+### Patch Changes
+
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-search-backend-node@1.2.22
+
 ## 0.5.27-next.1
 
 ### Patch Changes

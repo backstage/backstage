@@ -43,7 +43,7 @@ const ThrottleDelayMs = 1000;
 const useStyles = makeStyles({
   description: {
     maxHeight: '5rem',
-    overflow: 'scroll',
+    overflow: 'auto',
   },
   severityItem: {
     alignContent: 'center',

@@ -308,8 +308,7 @@ const githubOrgProvider = GithubOrgEntityProvider.fromConfig(env.config, {
 });
 ```
 
-Once you have imported the emails you can resolve users in your [sign-in
-resolver](../../auth/github/provider.md) using the catalog entity search via email
+Once you have imported the emails you can resolve users in your [sign-in resolver](../../auth/github/provider.md) using the catalog entity search via email
 
 ```typescript title="packages/backend/src/plugins/auth.ts"
 ctx.signInWithCatalogUser({
