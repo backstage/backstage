@@ -304,7 +304,7 @@ export class MysqlConnector implements Connector {
     const pluginDivisionMode = this.getPluginDivisionModeConfig();
     if (pluginDivisionMode !== 'database') {
       throw new Error(
-        `The MySQL driver does not suppoert plugin division mode '${pluginDivisionMode}'`,
+        `The MySQL driver does not support plugin division mode '${pluginDivisionMode}'`,
       );
     }
 

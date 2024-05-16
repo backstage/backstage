@@ -141,8 +141,12 @@ browser at `http://localhost:7007`
 
 ## Multi-stage Build
 
-> NOTE: The `.dockerignore` is different in this setup, read on for more
-> details.
+:::note Note
+
+The `.dockerignore` is different in this setup, read on for more
+details.
+
+:::
 
 This section describes how to set up a multi-stage Docker build that builds the
 entire project within Docker. This is typically slower than a host build, but is
@@ -293,10 +297,14 @@ browser at `http://localhost:7007`
 
 ## Separate Frontend
 
-> NOTE: This is an optional step, and you will lose out on the features of the
-> `@backstage/plugin-app-backend` plugin. Most notably the frontend configuration
-> will no longer be injected by the backend, you will instead need to use the
-> correct configuration when building the frontend bundle.
+:::note Note
+
+This is an optional step, and you will lose out on the features of the
+`@backstage/plugin-app-backend` plugin. Most notably the frontend configuration
+will no longer be injected by the backend, you will instead need to use the
+correct configuration when building the frontend bundle.
+
+:::
 
 It is sometimes desirable to serve the frontend separately from the backend,
 either from a separate image or for example a static file serving provider. The

@@ -107,10 +107,14 @@ $ echo -n "backstage" | base64
 YmFja3N0YWdl
 ```
 
-> Note: Secrets are base64-encoded, but not encrypted. Be sure to enable
-> [Encryption at Rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/)
-> for the cluster. For storing secrets in Git, consider
-> [SealedSecrets or other solutions](https://learnk8s.io/kubernetes-secrets-in-git).
+:::note Note
+
+Secrets are base64-encoded, but not encrypted. Be sure to enable
+[Encryption at Rest](https://kubernetes.io/docs/tasks/administer-cluster/encrypt-data/)
+for the cluster. For storing secrets in Git, consider
+[SealedSecrets or other solutions](https://learnk8s.io/kubernetes-secrets-in-git).
+
+:::
 
 The secrets can now be applied to the Kubernetes cluster:
 
