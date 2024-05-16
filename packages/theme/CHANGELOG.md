@@ -1,5 +1,11 @@
 # @backstage/theme
 
+## 0.5.5
+
+### Patch Changes
+
+- a894e49: Internal refactor to fix an issue where the MUI 5 `v5-` class prefixing gets removed by tree shaking.
+
 ## 0.5.4
 
 ### Patch Changes
