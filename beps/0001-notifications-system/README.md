@@ -92,7 +92,7 @@ If the notification status is updated, the signal service shall emit a signal wi
 
 The role of the notifications plugin is to manage the lifecycle of notifications. The backend plugin provides an API for other backends to send notifications, as well as an accompanying [backend service](https://backstage.io/docs/backend-system/architecture/services). It also provides a separate API for the frontend plugin to read notifications for an individual user and manage the read status of notifications.
 
-The notification backend stores notification using the [database service](https://backstage.io/docs/backend-system/core-services/index#database). In particular it needs to store the following information for each notification:
+The notification backend stores notification using the [database service](https://backstage.io/docs/backend-system/core-services/index#database). In particular, it needs to store the following information for each notification:
 
 - ID
 - Recipients
@@ -112,7 +112,7 @@ The notification backend stores notification using the [database service](https:
   - Icon (optional)
   - Metadata (optional)
 
-The recipients is **not** a list of users, but rather a filter that describes who should receive the notification. It must be possible to evaluate this filter in a database query, so that we can efficiently fetch all notifications for a given user. The same filter will also be used by the signal backend to determine which users should receive a signal.
+The recipients are **not** a list of users, but rather a filter that describes who should receive the notification. It must be possible to evaluate this filter in a database query, so that we can efficiently fetch all notifications for a given user. The same filter will also be used by the signal backend to determine which users should receive a signal.
 
 The read date is a timestamp of marking the notifications as read by the user. If missing, the notification is still unread.
 
@@ -209,12 +209,16 @@ export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 export type NotificationPayload = {
   title: string;
   description?: string;
-  link: string;
+  link?: string;
   additionalLinks?: string[];
-  severity: NotificationSeverity;
+  severity?: NotificationSeverity;
   topic?: string;
   scope?: string;
   icon?: string;
+  metadata?: Array<{
+    type: string;
+    value: JsonValue;
+  }>;
 };
 
 export type Notification = {
@@ -239,7 +243,8 @@ interface NotificationService {
 }
 ```
 
-Each notification contains a human readable `title`, `origin` and optionally `link` for additional details. The `created`, `id`, `read` and `saved` properties are handled by the backend based and cannot be passed during the notification creation.
+Each notification contains a human-readable `title`, `origin` and optionally `link` for additional details. The `created`, `id`, `read` and `saved` properties are handled by the backend based and cannot be passed during the notification creation.
+Any optional additional details could be stored in `metadata`. We advise to provide the name to the type which contains the information about the context and the version, for example: 'core.icon.v1'.
 
 Calling `sendNotification` should never throw an error so that it doesn't block the current processing. Notifications should be considered as second-level citizens that are not critical if not delivered.
 
