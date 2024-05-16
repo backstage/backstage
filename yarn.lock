@@ -3622,7 +3622,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     "@manypkg/get-packages": ^1.1.3
-    "@yarnpkg/parsers": ^3.0.0-rc.4
+    "@yarnpkg/parsers": ^3.0.0
     fs-extra: ^11.2.0
     semver: ^7.5.3
     zod: ^3.22.4
@@ -3696,7 +3696,7 @@ __metadata:
     "@typescript-eslint/parser": ^6.7.2
     "@vitejs/plugin-react": ^4.0.4
     "@yarnpkg/lockfile": ^1.1.0
-    "@yarnpkg/parsers": ^3.0.0-rc.4
+    "@yarnpkg/parsers": ^3.0.0
     bfj: ^8.0.0
     buffer: ^6.0.3
     chalk: ^4.0.0
@@ -5604,7 +5604,7 @@ __metadata:
     "@types/supertest": ^2.0.8
     "@types/yarnpkg__lockfile": ^1.1.4
     "@yarnpkg/lockfile": ^1.1.0
-    "@yarnpkg/parsers": ^3.0.0-rc.4
+    "@yarnpkg/parsers": ^3.0.0
     express: ^4.18.1
     express-promise-router: ^4.1.0
     fs-extra: ^11.0.0
@@ -19136,13 +19136,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@yarnpkg/parsers@npm:^3.0.0-rc.4":
-  version: 3.0.0-rc.21
-  resolution: "@yarnpkg/parsers@npm:3.0.0-rc.21"
+"@yarnpkg/parsers@npm:^3.0.0":
+  version: 3.0.0
+  resolution: "@yarnpkg/parsers@npm:3.0.0"
   dependencies:
     js-yaml: ^3.10.0
     tslib: ^2.4.0
-  checksum: c0741ef01089a7d452dfb75b8c24a82ddcc3e218dac22b794a06f2e50c7070378c460f63f63fb7ed0f62f634114e448e3d85a75ccd4db84e1526242ae9b4a7d5
+  checksum: fefe5ecafb5bfa2b678ac9ba9259810fdda40142afd9d0b7e0e5cc1cce1fd824dffc52217c5e429807481d8fd18ead074bd317e64fd626335d3c9f1a320bade2
   languageName: node
   linkType: hard
 
