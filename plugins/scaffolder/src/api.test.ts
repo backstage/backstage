@@ -35,13 +35,13 @@ describe('api', () => {
   const mockBaseUrl = 'http://backstage/api';
 
   const discoveryApi = { getBaseUrl: async () => mockBaseUrl };
-  const fetchApi = new MockFetchApi();
   const identityApi = {
     getBackstageIdentity: jest.fn(),
     getProfileInfo: jest.fn(),
     getCredentials: jest.fn(),
     signOut: jest.fn(),
   };
+  const fetchApi = new MockFetchApi({ injectIdentityAuth: { identityApi } });
 
   const scmIntegrationsApi = ScmIntegrations.fromConfig(
     new ConfigReader({
@@ -120,7 +120,7 @@ describe('api', () => {
           'http://backstage/api/v2/tasks/a-random-task-id/eventstream',
           {
             withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
+            headers: { authorization: `Bearer ${token}` },
           },
         );
         expect(MockedEventSource.prototype.close).toHaveBeenCalled();

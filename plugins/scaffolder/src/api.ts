@@ -228,9 +228,9 @@ export class ScaffolderClient implements ScaffolderApi {
 
       Promise.all([
         this.discoveryApi.getBaseUrl('scaffolder'),
-        this.identityApi?.getCredentials(),
+        this.fetchApi.headers ? this.fetchApi.headers() : Promise.resolve({}),
       ]).then(
-        ([baseUrl, credentials]) => {
+        ([baseUrl, headers]) => {
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,
           )}/eventstream`;
@@ -247,9 +247,7 @@ export class ScaffolderClient implements ScaffolderApi {
 
           const eventSource = new EventSourcePolyfill(url, {
             withCredentials: true,
-            headers: credentials?.token
-              ? { Authorization: `Bearer ${credentials.token}` }
-              : {},
+            headers,
           });
           eventSource.addEventListener('log', processEvent);
           eventSource.addEventListener('recovered', processEvent);
