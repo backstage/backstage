@@ -27,6 +27,7 @@ export type FetchApi = {
    * The `fetch` implementation.
    */
   fetch: typeof fetch;
+  headers?: () => Promise<Record<string, string>>;
 };
 
 /**

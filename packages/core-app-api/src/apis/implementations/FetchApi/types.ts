@@ -27,4 +27,9 @@ export interface FetchMiddleware {
    *               call out to as part of the request cycle.
    */
   apply(next: typeof fetch): typeof fetch;
+
+  /**
+   * Returns optional headers to be applied on the fetch request.
+   */
+  headers?(): Promise<Record<string, string>>;
 }

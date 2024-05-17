@@ -42,5 +42,12 @@ export function createFetchApi(options: {
 
   return {
     fetch: result,
+    headers: () => {
+      return Promise.all(
+        middleware.map(m => (m.headers ? m.headers() : Promise.resolve({}))),
+      ).then(headersList => {
+        return Object.assign({}, ...headersList);
+      });
+    },
   };
 }

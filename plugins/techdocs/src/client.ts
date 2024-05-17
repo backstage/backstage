@@ -16,11 +16,7 @@
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import {
-  DiscoveryApi,
-  FetchApi,
-  IdentityApi,
-} from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { NotFoundError, ResponseError } from '@backstage/errors';
 import {
   SyncResult,
@@ -124,18 +120,15 @@ export class TechDocsClient implements TechDocsApi {
 export class TechDocsStorageClient implements TechDocsStorageApi {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
-  public identityApi: IdentityApi;
   private fetchApi: FetchApi;
 
   constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
     fetchApi: FetchApi;
   }) {
     this.configApi = options.configApi;
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
     this.fetchApi = options.fetchApi;
   }
 
@@ -213,13 +206,15 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 
     const apiOrigin = await this.getApiOrigin();
     const url = `${apiOrigin}/sync/${namespace}/${kind}/${name}`;
-    const { token } = await this.identityApi.getCredentials();
+    const headers: HeadersInit = this.fetchApi.headers
+      ? await this.fetchApi.headers()
+      : {};
 
     return new Promise((resolve, reject) => {
       // Polyfill is used to add support for custom headers and auth
       const source = new EventSourcePolyfill(url, {
         withCredentials: true,
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
+        headers: headers,
       });
 
       source.addEventListener('log', (e: any) => {

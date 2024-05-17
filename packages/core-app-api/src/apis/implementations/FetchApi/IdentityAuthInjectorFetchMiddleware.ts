@@ -75,6 +75,16 @@ export class IdentityAuthInjectorFetchMiddleware implements FetchMiddleware {
       return next(request);
     };
   }
+
+  async headers(): Promise<Record<string, string>> {
+    const { token } = await this.identityApi.getCredentials();
+    if (!token) {
+      return {};
+    }
+    return {
+      [this.headerName]: this.headerValue(token),
+    };
+  }
 }
 
 function buildMatcher(options: {
