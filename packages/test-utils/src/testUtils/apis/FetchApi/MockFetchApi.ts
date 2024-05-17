@@ -106,6 +106,10 @@ export class MockFetchApi implements FetchApi {
   get fetch(): typeof crossFetch {
     return this.implementation.fetch;
   }
+
+  get headers() {
+    return this.implementation.headers;
+  }
 }
 
 //

@@ -55,11 +55,10 @@ export const techdocsPlugin = createPlugin({
         identityApi: identityApiRef,
         fetchApi: fetchApiRef,
       },
-      factory: ({ configApi, discoveryApi, identityApi, fetchApi }) =>
+      factory: ({ configApi, discoveryApi, fetchApi }) =>
         new TechDocsStorageClient({
           configApi,
           discoveryApi,
-          identityApi,
           fetchApi,
         }),
     }),

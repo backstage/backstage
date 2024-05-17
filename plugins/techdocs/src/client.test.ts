@@ -51,7 +51,6 @@ describe('TechDocsStorageClient', () => {
     const storageApi = new TechDocsStorageClient({
       configApi,
       discoveryApi,
-      identityApi,
       fetchApi,
     });
 
@@ -72,7 +71,6 @@ describe('TechDocsStorageClient', () => {
     const storageApi = new TechDocsStorageClient({
       configApi,
       discoveryApi,
-      identityApi,
       fetchApi,
     });
 
@@ -88,7 +86,6 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
 
@@ -113,7 +110,6 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
 
@@ -130,7 +126,7 @@ describe('TechDocsStorageClient', () => {
 
       expect(MockedEventSource).toHaveBeenCalledWith(
         'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
-        { withCredentials: true, headers: { Authorization: 'Bearer token' } },
+        { withCredentials: true, headers: { authorization: 'Bearer token' } },
       );
     });
 
@@ -138,7 +134,6 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
 
@@ -160,7 +155,6 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
 
@@ -182,7 +176,6 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
 
@@ -212,7 +205,6 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
 
@@ -239,7 +231,6 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
 
