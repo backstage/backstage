@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog-backend': patch
 ---
 
-Start using the `isDatabaseConflictError` helper from the `backend-plugin-api` package in order to avoid dependency with the soon to deprecate `backend-common` package.
+Start using the `isDatabaseConflictError` helper from the `@backstage/backend-plugin-api` package in order to avoid dependency with the soon to deprecate `@backstage/backend-common` package.
