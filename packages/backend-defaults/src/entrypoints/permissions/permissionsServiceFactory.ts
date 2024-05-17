@@ -14,26 +14,28 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 /**
  * @public
- * @deprecated Please import from `@backstage/backend-defaults/urlReader` instead.
  */
-export const urlReaderServiceFactory = createServiceFactory({
-  service: coreServices.urlReader,
+export const permissionsServiceFactory = createServiceFactory({
+  service: coreServices.permissions,
   deps: {
+    auth: coreServices.auth,
     config: coreServices.rootConfig,
-    logger: coreServices.logger,
+    discovery: coreServices.discovery,
+    tokenManager: coreServices.tokenManager,
   },
-  async factory({ config, logger }) {
-    return UrlReaders.default({
-      config,
-      logger,
+  async factory({ auth, config, discovery, tokenManager }) {
+    return ServerPermissionClient.fromConfig(config, {
+      auth,
+      discovery,
+      tokenManager,
     });
   },
 });

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
+import { CacheManager } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
@@ -22,18 +22,17 @@ import {
 
 /**
  * @public
- * @deprecated Please import from `@backstage/backend-defaults/urlReader` instead.
  */
-export const urlReaderServiceFactory = createServiceFactory({
-  service: coreServices.urlReader,
+export const cacheServiceFactory = createServiceFactory({
+  service: coreServices.cache,
   deps: {
     config: coreServices.rootConfig,
-    logger: coreServices.logger,
+    plugin: coreServices.pluginMetadata,
   },
-  async factory({ config, logger }) {
-    return UrlReaders.default({
-      config,
-      logger,
-    });
+  async createRootContext({ config }) {
+    return CacheManager.fromConfig(config);
+  },
+  async factory({ plugin }, manager) {
+    return manager.forPlugin(plugin.getId()).getClient();
   },
 });

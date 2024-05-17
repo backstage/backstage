@@ -14,26 +14,19 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { HostDiscovery } from './HostDiscovery';
 
-/**
- * @public
- * @deprecated Please import from `@backstage/backend-defaults/urlReader` instead.
- */
-export const urlReaderServiceFactory = createServiceFactory({
-  service: coreServices.urlReader,
+/** @public */
+export const discoveryServiceFactory = createServiceFactory({
+  service: coreServices.discovery,
   deps: {
     config: coreServices.rootConfig,
-    logger: coreServices.logger,
   },
-  async factory({ config, logger }) {
-    return UrlReaders.default({
-      config,
-      logger,
-    });
+  async factory({ config }) {
+    return HostDiscovery.fromConfig(config);
   },
 });
