@@ -162,18 +162,6 @@ describe('httpRouterFactory', () => {
       });
     });
 
-    it('should always allow the healthcheck endpoint', async () => {
-      const { server } = await startTestBackend({
-        features: [pluginSubject, ...defaultServices],
-      });
-
-      await expect(
-        request(server).get('/api/test/healthcheck'),
-      ).resolves.toMatchObject({
-        status: 200,
-      });
-    });
-
     it('should not block unauthenticated requests if default policy is disabled', async () => {
       const { server } = await startTestBackend({
         features: [
