@@ -25,7 +25,6 @@ import { createLifecycleMiddleware } from './createLifecycleMiddleware';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
 import { createAuthIntegrationRouter } from './createAuthIntegrationRouter';
 import { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
-import { createHealthcheck } from './createHealthcheck';
 
 /**
  * @public
@@ -76,9 +75,6 @@ export const httpRouterServiceFactory = createServiceFactory(
         config,
       });
 
-      const healthCheck = createHealthcheck();
-      router.use(healthCheck.router);
-
       router.use(createAuthIntegrationRouter({ auth }));
       router.use(createLifecycleMiddleware({ lifecycle }));
       router.use(credentialsBarrier.middleware);
@@ -87,11 +83,6 @@ export const httpRouterServiceFactory = createServiceFactory(
       return {
         use(handler: Handler): void {
           router.use(handler);
-        },
-        healthCheckConfig(healthCheckOptions: {
-          handler: () => Promise<any>;
-        }): void {
-          healthCheck.addHandler(healthCheckOptions.handler);
         },
         addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
           credentialsBarrier.addAuthPolicy(policy);

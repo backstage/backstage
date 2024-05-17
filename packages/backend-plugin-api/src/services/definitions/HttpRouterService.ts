@@ -26,11 +26,6 @@ export interface HttpRouterServiceAuthPolicy {
   allow: 'unauthenticated' | 'user-cookie';
 }
 
-/** @public */
-export interface HttpRouterHealthCheckConfig {
-  handler: () => Promise<any>;
-}
-
 /**
  * Allows plugins to register HTTP routes.
  *
