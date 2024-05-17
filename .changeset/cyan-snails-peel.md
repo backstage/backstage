@@ -9,4 +9,4 @@
 '@backstage/plugin-app-backend': patch
 ---
 
-Migrate the `dev` server to use the new backend system.
+Updated local development setup.
