@@ -26,7 +26,7 @@ export async function command(opts: OptionValues) {
     process.exit(1);
   }
   if (opts.clientPackage) {
-    await generateClient(opts.clientPackage, opts.additionalProperties);
+    await generateClient(opts.clientPackage, opts.clientAdditionalProperties);
   }
   if (opts.server) {
     await generateServer();

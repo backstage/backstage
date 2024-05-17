@@ -54,7 +54,7 @@ function registerPackageCommand(program: Command) {
     .description(
       'Command to generate a client and/or a server stub from an OpenAPI spec.',
     )
-    .option('--additional-properties [properties]')
+    .option('--client-additional-properties [properties]')
     .description(
       'Additional properties that can be passed to @openapitools/openapi-generator-cli',
     )
