@@ -35,6 +35,7 @@ export type { DiscoveryService } from './DiscoveryService';
 export type {
   HttpRouterService,
   HttpRouterServiceAuthPolicy,
+  HttpRouterHealthCheckConfig,
 } from './HttpRouterService';
 export type { HttpAuthService } from './HttpAuthService';
 export type {
