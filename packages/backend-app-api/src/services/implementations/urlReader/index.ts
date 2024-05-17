@@ -17,4 +17,5 @@
 export {
   urlReaderServiceFactory,
   createUrlReaderServiceModule,
+  defaultUrlFactoriesServiceRef,
 } from './urlReaderServiceFactory';

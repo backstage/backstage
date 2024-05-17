@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-import { ReaderFactory, UrlReaders } from '@backstage/backend-common';
 import {
+  ReaderFactory,
+  UrlReaders,
+  defaultFactories,
+} from '@backstage/backend-common';
+import {
+  ServiceRef,
   coreServices,
   createExtensionPoint,
   createServiceFactory,
   createServiceModuleFactory,
+  createServiceRef,
 } from '@backstage/backend-plugin-api';
 
 type ReaderFactoriesExtensionPointType = {
   addReaderFactory(...factories: ReaderFactory[]): void;
-  readerFactories: ReaderFactory[];
 };
 
 const urlReadersFactoriesExtensionPoint =
@@ -35,12 +40,15 @@ const urlReadersFactoriesExtensionPoint =
 const { createServiceModule: createUrlReaderServiceModule } =
   createServiceModuleFactory<ReaderFactoriesExtensionPointType>({
     register(env) {
+      const readerFactories = [] as ReaderFactory[];
+
       env.registerExtensionPoint(urlReadersFactoriesExtensionPoint, {
-        readerFactories: [],
         addReaderFactory(...factories: ReaderFactory[]) {
-          this.readerFactories.push(...factories);
+          readerFactories.push(...factories);
         },
       });
+
+      return { readerFactories };
     },
   });
 
@@ -55,12 +63,46 @@ export const urlReaderServiceFactory = createServiceFactory({
     factories: urlReadersFactoriesExtensionPoint,
   },
   async factory({ config, logger, factories }) {
-    console.log('factories', factories);
     return UrlReaders.default({
       config,
       logger,
+      factories: factories.factories,
     });
   },
 });
+
+// export const defaultUrlFactoriesServiceRef = createServiceRef<{
+//   getFactories(): ReaderFactory[];
+// }>({
+//   id: 'core.urlReader.factories',
+//   scope: 'plugin',
+//   async defaultFactory(service) {
+//     return createServiceFactory({
+//       service,
+//       deps: {},
+//       factory() {
+//         return {
+//           getFactories: () => defaultFactories,
+//         };
+//       },
+//     });
+//   },
+// });
+
+// export const urlReaderServiceFactory = createServiceFactory({
+//   service: coreServices.urlReader,
+//   deps: {
+//     config: coreServices.rootConfig,
+//     logger: coreServices.logger,
+//     customizableService: defaultUrlFactoriesServiceRef,
+//   },
+//   async factory({ config, logger, customizableService }) {
+//     console.log('result', customizableService.foo());
+//     return UrlReaders.default({
+//       config,
+//       logger,
+//     });
+//   },
+// });
 
 export { createUrlReaderServiceModule };

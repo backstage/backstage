@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { ServiceRef } from '../services';
+import { ServiceRefsToInstances } from '../services/system/types';
 import { BackendFeature, BackendFeatureFactory } from '../types';
 import {
   BackendModuleRegistrationPoints,
@@ -244,11 +246,17 @@ type ServiceModuleConfig = {
 export function createServiceModuleFactory</* TService,*/ TServiceModule>(
   _config: ServiceModuleConfig,
 ): {
-  // serviceModule: ServiceRef<TService, 'plugin'>;
-  createServiceModule: (fn: (service: TServiceModule) => any) => BackendFeature;
+  createServiceModule: <
+    TDeps extends { [name in string]: ServiceRef<unknown> },
+  >(options: {
+    deps?: TDeps;
+    factory: (
+      service: TServiceModule,
+      deps: ServiceRefsToInstances<TDeps>,
+    ) => any;
+  }) => BackendFeature;
 } {
   return {
-    // serviceModule: createServiceRef({ id: 'asd', scope: 'plugin' }),
     createServiceModule: () => {
       const internal: InternalServiceModule = {
         $$type: '@backstage/BackendFeature',
