@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * Common distributed task management library for Backstage backends
- *
- * @packageDocumentation
- */
+export const DB_MIGRATIONS_TABLE = 'backstage_backend_tasks__knex_migrations';
+export const DB_TASKS_TABLE = 'backstage_backend_tasks__tasks';
 
-export * from './deprecated';
+export type DbTasksRow = {
+  id: string;
+  settings_json: string;
+  next_run_start_at: Date;
+  current_run_ticket?: string;
+  current_run_started_at?: Date | string;
+  current_run_expires_at?: Date | string;
+};

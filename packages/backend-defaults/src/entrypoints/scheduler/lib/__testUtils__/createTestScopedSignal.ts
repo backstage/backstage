@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-/**
- * Common distributed task management library for Backstage backends
- *
- * @packageDocumentation
- */
+export function createTestScopedSignal(): () => AbortSignal {
+  let testAbortController = new AbortController();
 
-export * from './deprecated';
+  beforeEach(() => {
+    testAbortController = new AbortController();
+  });
+  afterEach(() => {
+    testAbortController.abort();
+  });
+
+  return () => testAbortController.signal;
+}

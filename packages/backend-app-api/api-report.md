@@ -326,7 +326,7 @@ export const rootLoggerServiceFactory: () => ServiceFactory<
   'root'
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const schedulerServiceFactory: () => ServiceFactory<
   SchedulerService,
   'plugin'

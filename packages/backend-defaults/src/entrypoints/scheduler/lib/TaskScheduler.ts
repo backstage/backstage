@@ -20,24 +20,23 @@ import {
   LegacyRootDatabaseService,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
-import { Config } from '@backstage/config';
+import {
+  LoggerService,
+  RootConfigService,
+  SchedulerService,
+} from '@backstage/backend-plugin-api';
 import { once } from 'lodash';
 import { Duration } from 'luxon';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
 import { PluginTaskSchedulerJanitor } from './PluginTaskSchedulerJanitor';
-import { PluginTaskScheduler } from './types';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Deals with the scheduling of distributed tasks.
- *
- * @public
- * @deprecated Please migrate to the new backend system, and depend on `coreServices.scheduler` from  `@backstage/backend-plugin-api` instead.
  */
 export class TaskScheduler {
   static fromConfig(
-    config: Config,
+    config: RootConfigService,
     options?: {
       databaseManager?: LegacyRootDatabaseService;
       logger?: LoggerService;
@@ -60,9 +59,9 @@ export class TaskScheduler {
    * Instantiates a task manager instance for the given plugin.
    *
    * @param pluginId - The unique ID of the plugin, for example "catalog"
-   * @returns A {@link PluginTaskScheduler} instance
+   * @returns A {@link SchedulerService} instance
    */
-  forPlugin(pluginId: string): PluginTaskScheduler {
+  forPlugin(pluginId: string): SchedulerService {
     return TaskScheduler.forPlugin({
       pluginId,
       databaseManager: this.databaseManager.forPlugin(pluginId),
@@ -74,7 +73,7 @@ export class TaskScheduler {
     pluginId: string;
     databaseManager: PluginDatabaseManager;
     logger: LoggerService;
-  }): PluginTaskScheduler {
+  }): SchedulerService {
     const databaseFactory = once(async () => {
       const knex = await opts.databaseManager.getClient();
 
