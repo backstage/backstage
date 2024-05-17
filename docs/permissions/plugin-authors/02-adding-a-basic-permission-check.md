@@ -39,7 +39,7 @@ For this tutorial, we've automatically exported all permissions from this file (
 
 :::note Note
 
-We use a separate `todo-list-common` package since all permissions authorized by your plugin should be exported from a ["common-library" package](https://backstage.io/docs/local-dev/cli-build-system#package-roles). This allows Backstage integrators to reference them in frontend components as well as permission policies.
+We use a separate `todo-list-common` package since all permissions authorized by your plugin should be exported from a ["common-library" package](https://backstage.io/docs/tooling/cli/build-system#package-roles). This allows Backstage integrators to reference them in frontend components as well as permission policies.
 
 :::
 

@@ -1,5 +1,5 @@
 ---
-id: cli-commands
+id: commands
 title: Commands
 description: Descriptions of all commands available in the CLI.
 ---
@@ -102,7 +102,7 @@ Options:
 
 ## package start
 
-Starts the package for local development. See the frontend and backend development parts in the build system [bundling](./cli-build-system.md#bundling) section for more details.
+Starts the package for local development. See the frontend and backend development parts in the build system [bundling](./02-build-system.md#bundling) section for more details.
 
 ```text
 Usage: backstage-cli package start [options]
@@ -119,7 +119,7 @@ Options:
 
 ## package build
 
-Build an individual package based on its role. See the build system [building](./cli-build-system.md#building) and [bundling](./cli-build-system.md#bundling) sections for more details.
+Build an individual package based on its role. See the build system [building](./02-build-system.md#building) and [bundling](./02-build-system.md#bundling) sections for more details.
 
 ```text
 Usage: backstage-cli package build [options]
@@ -139,7 +139,7 @@ Options:
 Lint a package. In addition to the default `eslint` behavior, this command will
 include TypeScript files, treat warnings as errors, and default to linting the
 entire directory if no specific files are listed. For more information, see the
-build system [linting](./cli-build-system.md#linting) section.
+build system [linting](./02-build-system.md#linting) section.
 
 ```text
 Usage: backstage-cli package lint [options]
@@ -165,7 +165,7 @@ a yarn workspaces monorepo by automatically creating one grouped configuration
 that includes all packages that have `backstage-cli test` in their package
 `test` script.
 
-For more information about configuration overrides and editor support, see the [Jest Configuration section](./cli-build-system.md#jest-configuration) in the build system documentation.
+For more information about configuration overrides and editor support, see the [Jest Configuration section](./02-build-system.md#jest-configuration) in the build system documentation.
 
 ```text
 Usage: backstage-cli package test [options]
@@ -190,7 +190,7 @@ Delete cache directories
 
 This command should be added as `scripts.prepack` in all packages. It enables
 packaging- and publish-time overrides for fields inside `packages.json`.
-For more details, see the build system [publishing](./cli-build-system.md#publishing) section.
+For more details, see the build system [publishing](./02-build-system.md#publishing) section.
 
 ```text
 Usage: backstage-cli package prepack [options]
@@ -369,8 +369,8 @@ Usage: backstage-cli build-workspace [options] <workspace-dir>
 ## create-github-app
 
 Creates a GitHub App in your GitHub organization. This is an alternative to
-token-based [GitHub integration](../integrations/github/locations.md). See
-[GitHub Apps for Backstage Authentication](../integrations/github/github-apps.md).
+token-based [GitHub integration](../../integrations/github/locations.md). See
+[GitHub Apps for Backstage Authentication](../../integrations/github/github-apps.md).
 
 Launches a browser to create the App through GitHub and saves the result as a
 YAML file that can be referenced in the GitHub integration configuration.
