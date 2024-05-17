@@ -12,7 +12,11 @@ This is done in your `app-config.yaml` by adding
 [Backstage integrations](https://backstage.io/docs/integrations/) for the
 appropriate source code repository for your organization.
 
-> Note: Integrations may already be set up as part of your `app-config.yaml`.
+:::note Note
+
+Integrations may already be set up as part of your `app-config.yaml`.
+
+:::
 
 The next step is to [add templates](http://backstage.io/docs/features/software-templates/adding-templates)
 to your Backstage app.
