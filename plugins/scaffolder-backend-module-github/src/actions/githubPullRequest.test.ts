@@ -231,6 +231,18 @@ describe('createPublishGithubPullRequestAction', () => {
       );
       expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 123);
     });
+
+    it('sets correct outputs during dry run', async () => {
+      ctx.isDryRun = true;
+      await instance.handler(ctx);
+
+      expect(ctx.output).toHaveBeenCalledWith('targetBranchName', 'new-app');
+      expect(ctx.output).toHaveBeenCalledWith(
+        'remoteUrl',
+        'github.com?owner=myorg&repo=myrepo',
+      );
+      expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 43);
+    });
   });
 
   describe('with sourcePath', () => {
