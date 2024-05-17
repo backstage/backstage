@@ -1,5 +1,5 @@
 ---
-id: cli-build-system
+id: build-system
 title: Build System
 description: A deep dive into the Backstage build system
 ---
@@ -74,7 +74,7 @@ implemented in a typical Backstage app.
 
 ## Package Roles
 
-> Package roles were introduced in March 2022. To migrate existing projects, see the [migration guide](../tutorials/package-role-migration.md).
+> Package roles were introduced in March 2022. To migrate existing projects, see the [migration guide](../../tutorials/package-role-migration.md).
 
 The Backstage build system uses the concept of package roles in order to help keep
 configuration lean, provide utility and tooling, and enable optimizations. A package
@@ -258,7 +258,7 @@ When building CommonJS or ESM output, the build commands will always use
 `src/index.ts` as the entrypoint. All non-relative modules imports are considered
 external, meaning the Rollup build will only compile the source code of the package
 itself. All import statements of external dependencies, even within the same
-[monorepo](../references/glossary.md#monorepo), will stay intact.
+[monorepo](../../references/glossary.md#monorepo), will stay intact.
 
 The build of the type definitions works quite differently. The entrypoint of the
 type definition build is the relative location of the package within the
@@ -308,7 +308,7 @@ support for them instead.
 ### Frontend Production
 
 The frontend production bundling creates your typical web content
-[bundle](../references/glossary.md#bundle), all contained within a single
+[bundle](../../references/glossary.md#bundle), all contained within a single
 folder, ready for static serving. It is used when building packages with the
 `'frontend'` role, and unlike the development bundling there is no way to
 build a production bundle of an individual plugin.

@@ -1,5 +1,5 @@
 ---
-id: cli-overview
+id: overview
 title: Overview
 description: Overview of the Backstage CLI
 ---
@@ -7,12 +7,12 @@ description: Overview of the Backstage CLI
 ## Introduction
 
 A goal of Backstage is to provide a delightful developer experience in and
-around the project. Creating new [apps](../references/glossary.md#app) and
-[plugins](../references/glossary.md#plugin) should be simple, iteration
+around the project. Creating new [apps](../../references/glossary.md#app) and
+[plugins](../../references/glossary.md#plugin) should be simple, iteration
 speed should be fast, and the overhead of maintaining custom tooling should be
 minimal. As a part of accomplishing this goal, Backstage provides its own build
 system and tooling, delivered primarily through the
-[`@backstage/cli`](https://www.npmjs.com/package/@backstage/cli) [package](../references/glossary.md#package). When
+[`@backstage/cli`](https://www.npmjs.com/package/@backstage/cli) [package](../../references/glossary.md#package). When
 creating an app using
 [`@backstage/create-app`](https://www.npmjs.com/package/@backstage/create-app),
 you receive a project that's already prepared with a typical setup and package
@@ -23,8 +23,8 @@ Under the hood the CLI uses [Webpack](https://webpack.js.org/) for bundling,
 [Jest](https://jestjs.io/) for testing, and [eslint](https://eslint.org/) for
 linting. It also includes tooling for working within Backstage apps, for example
 for keeping the app up to date and verifying static configuration. For a more
-in-depth look into the tooling, see the [build system](./cli-build-system.md)
-page, and for a list of commands, see the [commands](./cli-commands.md) page.
+in-depth look into the tooling, see the [build system](./02-build-system.md)
+page, and for a list of commands, see the [commands](./03-commands.md) page.
 
 While the Backstage tooling is opinionated in how it works, it is also possible
 to use your own tooling either partially or fully. For example, the CLI provides
