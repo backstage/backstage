@@ -13,7 +13,7 @@
     "uid": "a34c90e1-8e8f-407f-b4c5-b4543bd56c1b"
   },
   "spec": {
-    "maxReplicas": 2,
+    "maxReplicas": 10,
     "metrics": [
       {
         "resource": {

@@ -13,7 +13,7 @@
     "uid": "a34c90e1-8e8f-407f-b4c5-b4543bd56c1b"
   },
   "spec": {
-    "maxReplicas": 2,
+    "maxReplicas": 10,
     "metrics": [
       {
         "resource": {
@@ -70,8 +70,8 @@
         "type": "Resource"
       }
     ],
-    "currentReplicas": 2,
-    "desiredReplicas": 2,
+    "currentReplicas": 10,
+    "desiredReplicas": 10,
     "lastScaleTime": "2024-02-13T20:14:23Z"
   }
 }
