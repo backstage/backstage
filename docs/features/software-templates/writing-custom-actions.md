@@ -13,6 +13,25 @@ by writing custom actions which can be used alongside our
 > If you want to continue using the builtin actions, include them in the actions
 > array when registering your custom actions, as seen below.
 
+## Streamlining Custom Action Creation with Backstage CLI
+
+The creation of custom actions in Backstage has never been easier thanks to the Backstage CLI. This tool streamlines the setup process, allowing you to focus on your actions' unique functionality.
+
+Start by using the `yarn backstage-cli new` command to generate a scaffolder module. This command sets up the necessary boilerplate code, providing a smooth start:
+
+```
+$ yarn backstage-cli new
+? What do you want to create?
+  plugin-common - A new isomorphic common plugin package
+  plugin-node - A new Node.js library plugin package
+  plugin-react - A new web library plugin package
+> scaffolder-module - An module exporting custom actions for @backstage/plugin-scaffolder-backend
+```
+
+You can find a [list](https://backstage.io/docs/local-dev/cli-commands/) of all commands provided by the Backstage CLI.
+
+When prompted, select the option to generate a scaffolder module. This creates a solid foundation for your custom action. Enter the name of the module you wish to create, and the CLI will generate the required files and directory structure.
+
 ## Writing your Custom Action
 
 Your custom action can live where you choose, but simplest is to include it
