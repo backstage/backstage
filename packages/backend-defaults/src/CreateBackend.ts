@@ -26,6 +26,7 @@ import {
   rootLoggerServiceFactory,
   tokenManagerServiceFactory,
   userInfoServiceFactory,
+  healthServiceFactory,
 } from '@backstage/backend-app-api';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
@@ -58,6 +59,7 @@ export const defaultServiceFactories = [
   userInfoServiceFactory(),
   urlReaderServiceFactory(),
   eventsServiceFactory(),
+  healthServiceFactory(),
 ];
 
 /**
