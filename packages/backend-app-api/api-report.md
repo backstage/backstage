@@ -17,6 +17,7 @@ import { ErrorRequestHandler } from 'express';
 import { Express as Express_2 } from 'express';
 import { Format } from 'logform';
 import { Handler } from 'express';
+import { HealthService } from '@backstage/backend-plugin-api';
 import { HelmetOptions } from 'helmet';
 import * as http from 'http';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
@@ -136,6 +137,9 @@ export interface ExtendedHttpServer extends http.Server {
   // (undocumented)
   stop(): Promise<void>;
 }
+
+// @public (undocumented)
+export const healthServiceFactory: () => ServiceFactory<HealthService, 'root'>;
 
 // @public @deprecated
 export class HostDiscovery implements DiscoveryService {

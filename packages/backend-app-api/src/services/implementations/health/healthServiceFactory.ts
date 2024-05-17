@@ -20,6 +20,9 @@ import {
 } from '@backstage/backend-plugin-api';
 import { createHealthRouter } from './createHealthRouter';
 
+/**
+ * @public
+ */
 export const healthServiceFactory = createServiceFactory({
   service: coreServices.health,
   deps: {
