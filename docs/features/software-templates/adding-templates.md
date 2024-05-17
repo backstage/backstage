@@ -86,12 +86,17 @@ contains more information about the required fields.
 Once we have a `template.yaml` ready, we can then add it to the software catalog
 for use by the scaffolder.
 
-> Note: When you add or modify a template, you will need to refresh the location entity.
-> Otherwise, Backstage won't display the template in the available templates,
-> or it will keep showing the old template. You can refresh the location instance by
-> going into `Catalog` web page, choosing `Locations` instead of `Components`, and selecting the correct location entity.
-> From there, you can click on the refresh icon representing "Scheduled entity refresh" action.
-> Afterwards, you should see your template updated.
+:::note Note
+
+When you add or modify a template, you will need to refresh the location entity.
+Otherwise, Backstage won't display the template in the available templates,
+or it will keep showing the old template. You can refresh the location instance by
+going into `Catalog` web page, choosing `Locations` instead of `Components`, and selecting the correct
+location entity.
+From there, you can click on the refresh icon representing "Scheduled entity refresh" action.
+Afterwards, you should see your template updated.
+
+:::
 
 You can add the template files to the catalog through
 [static location configuration](../software-catalog/configuration.md#static-location-configuration),
