@@ -214,3 +214,44 @@ The above module can then be installed by the integrator alongside the kubernete
 backend.add(import('@backstage/plugin-kubernetes-backend'));
 backend.add(import('@internal/gke-cluster-supplier'));
 ```
+
+### Dev Server
+
+Follow the steps below to run your migrated plugin on a local development server:
+
+1. First, delete the `src/run.js` and `src/service/standaloneServer.js` files in case they exist (the `backstage-cli` previously used these files to run legacy backend plugins locally, but they are no longer required).
+
+2. Next, create a new development backend in the `dev/index.js` file. The dev server is a lite version of a backend app that is mainly used to run your plugin locally, so a simple `kubernetes` backend local development server would look like this:
+
+```ts title="in dev/index.js"
+// This package should be installed as a `dev` dependency
+import { createBackend } from '@backstage/backend-defaults';
+
+const backend = createBackend();
+// Path to the file where the plugin is export as default
+backend.add(import('../src'));
+backend.start();
+```
+
+The development server created above will be automatically configured with the default dependency factories, but if you need to mock some of the services your plugin relies on, such as the `rootConfig` service, you can use one of the `mockServices` factories:
+
+```ts title="in dev/index.js"
+//...
+// This package should be installed as `devDependecies`
+import { mockServices } from '@backstage/backend-test-utils';
+
+const backend = createBackend();
+// ...
+backend.add(
+  mockServices.rootConfig.factory({
+    data: {
+      // your config mocked values goes here
+    },
+  }),
+);
+// ...
+```
+
+Checkout the [custom service implementations](https://backstage.io/docs/backend-system/building-backends/index#custom-service-implementations) documentation and also the [core service configurations](https://backstage.io/docs/backend-system/core-services/index) page in case you'd like to create your own custom mock factory for one or more services.
+
+3. Now you can finally start your plugin locally by running `yarn start` from the root folder of your plugin.

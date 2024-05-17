@@ -15,7 +15,13 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const backend = createBackend();
+backend.add(
+  mockServices.rootConfig.factory({
+    data: { app: { packageName: 'example-app' } },
+  }),
+);
 backend.add(import('../src/alpha'));
 backend.start();

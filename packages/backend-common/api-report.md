@@ -599,7 +599,7 @@ export type LegacyRootDatabaseService = {
   forPlugin(pluginId: string): PluginDatabaseManager;
 };
 
-// @public
+// @public @deprecated
 export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;

@@ -15,35 +15,9 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import {
-  coreServices,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
-import { IdentityApi } from '@backstage/plugin-auth-node';
-
-const identityMock: IdentityApi = {
-  async getIdentity({ request }) {
-    const token = request.headers.authorization?.split(' ')[1];
-    return {
-      identity: {
-        type: 'user',
-        ownershipEntityRefs: [],
-        userEntityRef: token || 'user:default/john_doe',
-      },
-      token: token || 'no-token',
-    };
-  },
-};
+import { mockServices } from '@backstage/backend-test-utils';
 
 const backend = createBackend();
-backend.add(
-  createServiceFactory(() => ({
-    service: coreServices.identity,
-    deps: {},
-    async factory() {
-      return identityMock;
-    },
-  })),
-);
+backend.add(mockServices.identity.factory());
 backend.add(import('../src/alpha'));
 backend.start();
