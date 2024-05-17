@@ -1,7 +1,7 @@
 ---
 '@backstage/backend-plugin-api': patch
-'@backstage/backend-test-utils': patch
+'@backstage/backend-defaults': patch
 '@backstage/backend-app-api': patch
 ---
 
-Added a default `/healthcheck` endpoint to the HTTP Router.
+Added a new health service which adds new endpoints for health checks.
