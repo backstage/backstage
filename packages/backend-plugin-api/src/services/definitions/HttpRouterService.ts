@@ -40,8 +40,6 @@ export interface HttpRouterService {
    */
   use(handler: Handler): void;
 
-  healthCheckConfig(healthCheckOptions: HttpRouterHealthCheckConfig): void;
-
   /**
    * Adds an auth policy to the router. This is used to allow unauthenticated or
    * cookie based access to parts of a plugin's API.

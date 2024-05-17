@@ -24,6 +24,7 @@ import { authServiceFactory } from '@backstage/backend-defaults/auth';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { discoveryServiceFactory } from '@backstage/backend-defaults/discovery';
+import { rootHealthServiceFactory } from './entrypoints/rootHealth';
 import { httpAuthServiceFactory } from '@backstage/backend-defaults/httpAuth';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
@@ -58,6 +59,7 @@ export const defaultServiceFactories = [
   userInfoServiceFactory(),
   urlReaderServiceFactory(),
   eventsServiceFactory(),
+  rootHealthServiceFactory(),
 ];
 
 /**
