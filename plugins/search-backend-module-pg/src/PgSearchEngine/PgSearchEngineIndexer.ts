@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { DatabaseStore } from '../database';
-import { VoidLogger } from '@backstage/backend-app-api';
 
 /** @public */
 export type PgSearchEngineIndexerOptions = {
@@ -32,7 +30,7 @@ export type PgSearchEngineIndexerOptions = {
 
 /** @public */
 export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
-  private logger: Logger;
+  private logger?: Logger;
   private store: DatabaseStore;
   private type: string;
   private tx: Knex.Transaction | undefined;
@@ -42,7 +40,7 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
     super({ batchSize: options.batchSize });
     this.store = options.databaseStore;
     this.type = options.type;
-    this.logger = options.logger || loggerToWinstonLogger(VoidLogger.create());
+    this.logger = options.logger;
   }
 
   async initialize(): Promise<void> {
@@ -61,7 +59,7 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
     this.numRecords += documents.length;
 
     const refs = [...new Set(documents.map(d => d.authorization?.resourceRef))];
-    this.logger.debug(
+    this.logger?.debug(
       `Attempting to index the following entities: ${refs.toString()}`,
     );
 
@@ -80,7 +78,7 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
     // and do not continue. This ensures that collators that return empty sets
     // of documents do not cause the index to be deleted.
     if (this.numRecords === 0) {
-      this.logger.warn(
+      this.logger?.warn(
         `Index for ${this.type} was not replaced: indexer received 0 documents`,
       );
       this.tx!.rollback!();

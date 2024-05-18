@@ -14,6 +14,5 @@
  * limitations under the License.
  */
 
-export { VoidLogger } from './VoidLogger';
 export { WinstonLogger } from './WinstonLogger';
 export type { WinstonLoggerOptions } from './WinstonLogger';
