@@ -29,7 +29,9 @@ describe('readAwsCodeCommitIntegrationConfig', () => {
   }
 
   it('reads all values (default)', () => {
-    const output = readAwsCodeCommitIntegrationConfig(buildConfig({}));
+    const output = readAwsCodeCommitIntegrationConfig(
+      buildConfig({ region: 'us-east-1' }),
+    );
     expect(output).toEqual({
       host: `us-east-1.${AMAZON_AWS_CODECOMMIT_HOST}`,
       region: `us-east-1`,

@@ -69,7 +69,7 @@ export function readAwsCodeCommitIntegrationConfig(
   const secretAccessKey = config.getOptionalString('secretAccessKey')?.trim();
   const roleArn = config.getOptionalString('roleArn');
   const externalId = config.getOptionalString('externalId');
-  const region = config.getOptionalString('region') || 'us-east-1';
+  const region = config.getString('region');
   const host =
     config.getOptionalString('host') ||
     `${region}.${AMAZON_AWS_CODECOMMIT_HOST}`;

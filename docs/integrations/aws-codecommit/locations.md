@@ -39,3 +39,7 @@ integrations:
       roleArn: 'arn:aws:iam::xxxxxxxxxxxx:role/example-role'
       externalId: 'some-id' # optional
 ```
+
+Each entry is a structure with the following required elements:
+
+- `region`: The AWS region to connect to, to communicate with the CodeCommit services. If no host is provided, this value will be used to determine the host url.
