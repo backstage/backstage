@@ -31,7 +31,8 @@ describe('readAwsCodeCommitIntegrationConfig', () => {
   it('reads all values (default)', () => {
     const output = readAwsCodeCommitIntegrationConfig(buildConfig({}));
     expect(output).toEqual({
-      host: AMAZON_AWS_CODECOMMIT_HOST,
+      host: `us-east-1.${AMAZON_AWS_CODECOMMIT_HOST}`,
+      region: `us-east-1`,
     });
   });
 
@@ -42,14 +43,16 @@ describe('readAwsCodeCommitIntegrationConfig', () => {
         secretAccessKey: 'fake-secret-key',
         externalId: 'fake-external-id',
         roleArn: 'fake-role-arn',
+        region: 'fake-region',
       }),
     );
     expect(output).toEqual({
-      host: AMAZON_AWS_CODECOMMIT_HOST,
+      host: `fake-region.${AMAZON_AWS_CODECOMMIT_HOST}`,
       accessKeyId: 'fake-key',
       secretAccessKey: 'fake-secret-key',
       externalId: 'fake-external-id',
       roleArn: 'fake-role-arn',
+      region: 'fake-region',
     });
   });
 });
@@ -70,6 +73,7 @@ describe('readAwsCodeCommitIntegrationConfigs', () => {
           secretAccessKey: 'secret',
           externalId: 'external-id',
           roleArn: 'role-arn',
+          region: 'region',
         },
       ]),
     );
@@ -79,15 +83,12 @@ describe('readAwsCodeCommitIntegrationConfigs', () => {
       secretAccessKey: 'secret',
       externalId: 'external-id',
       roleArn: 'role-arn',
+      region: 'region',
     });
   });
 
   it('adds a default entry when missing', () => {
     const output = readAwsCodeCommitIntegrationConfigs(buildConfig([]));
-    expect(output).toEqual([
-      {
-        host: AMAZON_AWS_CODECOMMIT_HOST,
-      },
-    ]);
+    expect(output).toEqual([]);
   });
 });
