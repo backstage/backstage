@@ -546,7 +546,7 @@ describe('<AboutCard />', () => {
     ).not.toBeInTheDocument();
   });
 
-  it('renders techdocs lin when 3rdparty', async () => {
+  it('renders techdocs link when 3rdparty', async () => {
     const entity = {
       apiVersion: 'v1',
       kind: 'Component',
