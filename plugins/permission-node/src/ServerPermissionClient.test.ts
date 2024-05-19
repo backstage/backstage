@@ -371,7 +371,6 @@ describe('ServerPermissionClient', () => {
         discovery,
         tokenManager: mockServices.tokenManager(),
         auth: mockServices.auth(),
-        pluginId: 'test',
       });
 
       // no restrictions for the given plugin

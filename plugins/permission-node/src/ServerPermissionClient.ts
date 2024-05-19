@@ -47,7 +47,6 @@ export class ServerPermissionClient implements PermissionsService {
   readonly #auth: AuthService;
   readonly #permissionClient: PermissionClient;
   readonly #permissionEnabled: boolean;
-  readonly #pluginId?: string;
 
   static fromConfig(
     config: Config,
@@ -55,7 +54,6 @@ export class ServerPermissionClient implements PermissionsService {
       discovery: DiscoveryService;
       tokenManager: TokenManager;
       auth?: AuthService;
-      pluginId?: string;
     },
   ) {
     const { discovery, tokenManager } = options;
@@ -78,7 +76,6 @@ export class ServerPermissionClient implements PermissionsService {
       auth,
       permissionClient,
       permissionEnabled,
-      pluginId: options.pluginId,
     });
   }
 
@@ -86,12 +83,10 @@ export class ServerPermissionClient implements PermissionsService {
     auth: AuthService;
     permissionClient: PermissionClient;
     permissionEnabled: boolean;
-    pluginId?: string;
   }) {
     this.#auth = options.auth;
     this.#permissionClient = options.permissionClient;
     this.#permissionEnabled = options.permissionEnabled;
-    this.#pluginId = options.pluginId;
   }
 
   async authorizeConditional(
@@ -164,12 +159,10 @@ export class ServerPermissionClient implements PermissionsService {
     // Bail out to the old behavior if
     // - the principal is not a service
     // - the principal was apparently unrestricted
-    // - we are in legacy mode because nobody passed in a plugin ID
     const credentials = options.credentials;
     if (
       !this.#auth.isPrincipal(credentials, 'service') ||
-      !credentials.principal.accessRestrictions ||
-      !this.#pluginId
+      !credentials.principal.accessRestrictions
     ) {
       return undefined;
     }

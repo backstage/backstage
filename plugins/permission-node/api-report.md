@@ -291,7 +291,6 @@ export class ServerPermissionClient implements PermissionsService {
       discovery: DiscoveryService;
       tokenManager: TokenManager;
       auth?: AuthService;
-      pluginId?: string;
     },
   ): ServerPermissionClient;
 }

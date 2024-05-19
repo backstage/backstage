@@ -31,14 +31,12 @@ export const permissionsServiceFactory = createServiceFactory({
     config: coreServices.rootConfig,
     discovery: coreServices.discovery,
     tokenManager: coreServices.tokenManager,
-    pluginMetadata: coreServices.pluginMetadata,
   },
-  async factory({ auth, config, discovery, tokenManager, pluginMetadata }) {
+  async factory({ auth, config, discovery, tokenManager }) {
     return ServerPermissionClient.fromConfig(config, {
       auth,
       discovery,
       tokenManager,
-      pluginId: pluginMetadata.getId(),
     });
   },
 });
