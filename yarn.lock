@@ -6138,6 +6138,7 @@ __metadata:
   resolution: "@backstage/plugin-events-backend@workspace:plugins/events-backend"
   dependencies:
     "@backstage/backend-common": ^0.25.0
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
