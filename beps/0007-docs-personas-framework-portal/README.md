@@ -1,12 +1,12 @@
 ---
-title: Enhancing Backstage Documentation, Personas, Framework, and Developer Portal
+title: Improved Backstage Documentation with Personas
 status: provisional
 authors:
   - '@waldirmontoya25'
   - '@aramissennyeyd'
 owners:
 project-areas:
-  - Documentation
+  - core
 creation-date: 2024-03-18
 ---
 
@@ -67,7 +67,7 @@ The proposed restructuring of the Backstage documentation revolves around two co
 
 2. Defining the personas participating in Backstage adoption journeys to improve documentation navigation. The identified personas are:
 
-   - **User**: A person who uses Backstage to find information, use plugins, and consume the developer portal.
+   - **End User**: A person who uses Backstage to find information, use plugins, and consume the developer portal.
    - **Administrator/Operator**: A person who configures, secures, and deploys the developer portal, manages plugins, and oversees the general administration of the developer portal.
    - **Integrator/Builder**: A person who builds plugins, customizes the code and design, and creates custom-built developer portals based on the Backstage framework. This includes developers and designers and anyone adding new functionality to their own Backstage instance.
    - **Product Manager/Business stakeholders**: A person who defines the strategy for adopting Backstage, identifies use cases, communicates the value proposition for adopting Backstage and connects the developer portal to the business strategy.
