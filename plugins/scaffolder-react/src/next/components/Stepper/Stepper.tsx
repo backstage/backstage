@@ -20,7 +20,6 @@ import MuiStep from '@material-ui/core/Step';
 import MuiStepLabel from '@material-ui/core/StepLabel';
 import Button from '@material-ui/core/Button';
 import LinearProgress from '@material-ui/core/LinearProgress';
-import { makeStyles } from '@material-ui/core/styles';
 import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
 import React, {
@@ -49,6 +48,8 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { ErrorListTemplate } from './ErrorListTemplate';
+import { makeStyles } from '@material-ui/core/styles';
+import { SecretWidget } from '../SecretWidget';
 
 const useStyles = makeStyles(theme => ({
   backButton: {
@@ -232,6 +233,7 @@ export const Stepper = (stepperProps: StepperProps) => {
             showErrorList="top"
             templates={{ ErrorListTemplate }}
             onChange={handleChange}
+            widgets={{ password: SecretWidget }}
             experimental_defaultFormStateBehavior={{
               allOf: 'populateDefaults',
             }}
