@@ -309,7 +309,7 @@ export function dropDatabase(
   ...databaseNames: string[]
 ): Promise<void>;
 
-// @public
+// @public @deprecated
 export function errorHandler(
   options?: ErrorHandlerOptions,
 ): ErrorRequestHandler;
@@ -532,7 +532,7 @@ export class HarnessUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export const HostDiscovery: typeof HostDiscovery_2;
 
 // @public @deprecated (undocumented)
@@ -733,7 +733,7 @@ export function redactWinstonLogLine(
   info: winston.Logform.TransformableInfo,
 ): winston.Logform.TransformableInfo;
 
-// @public
+// @public @deprecated
 export function requestLoggingHandler(logger?: LoggerService): RequestHandler;
 
 // @public

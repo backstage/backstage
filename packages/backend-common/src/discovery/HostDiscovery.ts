@@ -27,6 +27,7 @@ export type { DiscoveryService as PluginEndpointDiscovery } from '@backstage/bac
  * resolved to the same host, so there won't be any balancing of internal traffic.
  *
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/discovery` instead.
  */
 export const HostDiscovery = _HostDiscovery;
 

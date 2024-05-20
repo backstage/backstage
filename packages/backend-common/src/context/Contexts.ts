@@ -24,6 +24,7 @@ import { ValueContext } from './ValueContext';
  * Common context decorators.
  *
  * @alpha
+ * @deprecated This class is not used in the new Backend system, so it is going to be removed in a near future.
  */
 export class Contexts {
   /**
