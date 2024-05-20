@@ -66,6 +66,12 @@ export class LegacyTokenHandler implements TokenHandler {
       throw new Error('Illegal secret, must be a valid base64 string');
     }
 
+    if (this.#entries.some(e => e.key === key)) {
+      throw new Error(
+        'Legacy externalAccess token was declared more than once',
+      );
+    }
+
     this.#entries.push({
       key,
       result: {
