@@ -28,6 +28,7 @@ import {
 } from '@backstage/plugin-events-node';
 import Router from 'express-promise-router';
 import { HttpPostIngressEventPublisher } from './http';
+import { EventHub } from './hub';
 
 class EventsExtensionPointImpl implements EventsExtensionPoint {
   #httpPostIngresses: HttpPostIngressOptions[] = [];
@@ -93,6 +94,10 @@ export const eventsPlugin = createBackendPlugin({
         });
         const eventsRouter = Router();
         http.bind(eventsRouter);
+
+        const hub = await EventHub.create({ logger });
+        eventsRouter.use('/hub', hub.handler());
+
         router.use(eventsRouter);
         router.addAuthPolicy({
           allow: 'unauthenticated',

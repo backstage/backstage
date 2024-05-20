@@ -19,6 +19,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import { WebSocket } from 'ws';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 const backend = createBackend();
@@ -35,14 +36,14 @@ backend.add(
           logger: coreServices.logger,
         },
         async init({ events, logger }) {
-          setInterval(() => {
-            logger.info(`Publishing event to topic 'test'`);
-            events.publish({
-              eventPayload: { foo: 'bar' },
-              topic: 'test',
-              metadata: { meta: 'baz' },
-            });
-          }, 5000);
+          // setInterval(() => {
+          //   logger.info(`Publishing event to topic 'test'`);
+          //   events.publish({
+          //     eventPayload: { foo: 'bar' },
+          //     topic: 'test',
+          //     metadata: { meta: 'baz' },
+          //   });
+          // }, 5000);
         },
       });
     },
@@ -57,14 +58,33 @@ backend.add(
         deps: {
           events: eventsServiceRef,
           logger: coreServices.logger,
+          discovery: coreServices.discovery,
+          rootLifecycle: coreServices.rootLifecycle,
         },
-        async init({ events, logger }) {
+        async init({ events, logger, discovery, rootLifecycle }) {
           events.subscribe({
             id: 'test-1',
             topics: ['test'],
             async onEvent(event) {
               logger.info(`Received event: ${JSON.stringify(event, null, 2)}`);
             },
+          });
+
+          rootLifecycle.addStartupHook(async () => {
+            logger.info('Started!');
+            const baseUrl = await discovery.getBaseUrl('events');
+            console.log(`DEBUG: baseUrl=`, baseUrl);
+            const ws = new WebSocket(`${baseUrl}/hub/connect`);
+            ws.onopen = () => {
+              console.log('DEBUG: ws.onopen');
+              ws.send('derp!');
+            };
+            ws.onmessage = event => {
+              console.log(`DEBUG: event=`, event.data);
+            };
+            ws.onerror = error => {
+              console.log(`Client error`, String(error));
+            };
           });
         },
       });

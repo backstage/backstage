@@ -6150,6 +6150,7 @@ __metadata:
     express-promise-router: ^4.1.0
     supertest: ^7.0.0
     winston: ^3.2.1
+    ws: ^8.17.0
   languageName: unknown
   linkType: soft
 
