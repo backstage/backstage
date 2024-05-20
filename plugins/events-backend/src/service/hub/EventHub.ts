@@ -17,7 +17,73 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Handler } from 'express';
 import Router from 'express-promise-router';
+import { Socket } from 'net';
 import { WebSocketServer, type WebSocket } from 'ws';
+
+/**
+ * Manages a single WebSocket connection.
+ *
+ * @internal
+ */
+class EventClientConnection {
+  static create(options: {
+    ws: WebSocket;
+    socket: Socket;
+    logger: LoggerService;
+  }) {
+    const { ws } = options;
+
+    const id = Math.random().toString(36).slice(2, 10);
+    const logger = options.logger.child({ connection: id });
+
+    ws.addListener('ping', () => {
+      ws.pong();
+    });
+
+    ws.onmessage = event => {
+      logger.debug(`Message from client: ${JSON.stringify(event.data)}`);
+    };
+    ws.send('hello there!');
+
+    const conn = new EventClientConnection(id, ws, options.socket, logger);
+
+    logger.info(`New ${conn}`);
+
+    return conn;
+  }
+
+  readonly #id: string;
+  readonly #ws: WebSocket;
+  readonly #socket: Socket;
+  readonly #logger: LoggerService;
+
+  constructor(
+    id: string,
+    ws: WebSocket,
+    socket: Socket,
+    logger: LoggerService,
+  ) {
+    this.#id = id;
+    this.#ws = ws;
+    this.#socket = socket;
+    this.#logger = logger;
+  }
+
+  get id() {
+    return this.#id;
+  }
+
+  close() {
+    this.#ws.close();
+    this.#logger.info(`Closed ${this}`);
+  }
+
+  toString() {
+    return `EventClientConnection{id=${this.#id},addr=${
+      this.#socket.remoteAddress
+    }}`;
+  }
+}
 
 export class EventHub {
   static async create(options: { logger: LoggerService }) {
@@ -43,7 +109,7 @@ export class EventHub {
   readonly #handler: Handler;
   readonly #logger: LoggerService;
 
-  #connections = new Set<WebSocket>();
+  #connections = new Map<string, EventClientConnection>();
 
   private constructor(
     server: WebSocketServer,
@@ -60,22 +126,19 @@ export class EventHub {
   }
 
   #handleGetConnect: Handler = (req, _res) => {
-    this.#server.handleUpgrade(req, req.socket, Buffer.alloc(0), conn => {
-      const id = Math.random().toString(36).slice(2, 10);
-      const logger = this.#logger.child({ connection: id });
-
-      logger.info(`New connection from '${req.socket.remoteAddress}'`);
-      this.#connections.add(conn);
-
-      conn.onmessage = event => {
-        logger.debug(`Message from client: ${JSON.stringify(event.data)}`);
-      };
-      conn.send('hello there!');
-
-      conn.addListener('ping', () => {
-        conn.pong();
-      });
-    });
+    this.#server.handleUpgrade(
+      req,
+      req.socket,
+      Buffer.alloc(0),
+      (ws, { socket }) => {
+        const conn = EventClientConnection.create({
+          ws,
+          socket,
+          logger: this.#logger,
+        });
+        this.#connections.set(conn.id, conn);
+      },
+    );
   };
 
   close() {
