@@ -50,7 +50,7 @@ describe('WinstonLogger', () => {
       expect.objectContaining({
         [MESSAGE]: JSON.stringify({
           level: 'error',
-          message: '[REDACTED]) from this file',
+          message: '***) from this file',
         }),
       }),
       expect.any(Function),
@@ -83,10 +83,10 @@ describe('WinstonLogger', () => {
         [MESSAGE]: JSON.stringify({
           level: 'error',
           message: 'something went wrong',
-          nested: '[REDACTED] (world) from nested object',
+          nested: '*** (world) from nested object',
           null: null,
           nullProto: {
-            foo: '[REDACTED] foo',
+            foo: '*** foo',
           },
         }),
       }),

@@ -272,10 +272,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       if (task.isDryRun) {
         const redactedSecrets = Object.fromEntries(
-          Object.entries(task.secrets ?? {}).map(secret => [
-            secret[0],
-            '[REDACTED]',
-          ]),
+          Object.entries(task.secrets ?? {}).map(secret => [secret[0], '***']),
         );
         const debugInput =
           (step.input &&
