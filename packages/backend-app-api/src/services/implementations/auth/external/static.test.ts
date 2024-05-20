@@ -45,11 +45,11 @@ describe('StaticTokenHandler', () => {
 
     await expect(handler.verifyToken('abcabcabc')).resolves.toEqual({
       subject: 'one',
-      accessRestrictions: accessRestrictionsOne,
+      allAccessRestrictions: accessRestrictionsOne,
     });
     await expect(handler.verifyToken('defdefdef')).resolves.toEqual({
       subject: 'two',
-      accessRestrictions: accessRestrictionsTwo,
+      allAccessRestrictions: accessRestrictionsTwo,
     });
     await expect(handler.verifyToken('ghighighi')).resolves.toBeUndefined();
   });

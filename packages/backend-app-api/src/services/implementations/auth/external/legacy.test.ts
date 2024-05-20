@@ -72,7 +72,7 @@ describe('LegacyTokenHandler', () => {
 
     await expect(tokenHandler.verifyToken(token1)).resolves.toEqual({
       subject: 'key1',
-      accessRestrictions: accessRestrictions1,
+      allAccessRestrictions: accessRestrictions1,
     });
 
     const token2 = await new SignJWT({
@@ -84,7 +84,7 @@ describe('LegacyTokenHandler', () => {
 
     await expect(tokenHandler.verifyToken(token2)).resolves.toEqual({
       subject: 'key2',
-      accessRestrictions: accessRestrictions2,
+      allAccessRestrictions: accessRestrictions2,
     });
 
     const token3 = await new SignJWT({

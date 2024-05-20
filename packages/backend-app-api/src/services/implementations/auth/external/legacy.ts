@@ -27,16 +27,18 @@ import { AccessRestriptionsMap, TokenHandler } from './types';
 export class LegacyTokenHandler implements TokenHandler {
   #entries = new Array<{
     key: Uint8Array;
-    subject: string;
-    accessRestrictions?: AccessRestriptionsMap;
+    result: {
+      subject: string;
+      allAccessRestrictions?: AccessRestriptionsMap;
+    };
   }>();
 
   add(config: Config) {
-    const accessRestrictions = readAccessRestrictionsFromConfig(config);
+    const allAccessRestrictions = readAccessRestrictionsFromConfig(config);
     this.#doAdd(
       config.getString('options.secret'),
       config.getString('options.subject'),
-      accessRestrictions,
+      allAccessRestrictions,
     );
   }
 
@@ -49,10 +51,12 @@ export class LegacyTokenHandler implements TokenHandler {
   #doAdd(
     secret: string,
     subject: string,
-    accessRestrictions?: AccessRestriptionsMap,
+    allAccessRestrictions?: AccessRestriptionsMap,
   ) {
     if (!secret.match(/^\S+$/)) {
       throw new Error('Illegal secret, must be a valid base64 string');
+    } else if (!subject.match(/^\S+$/)) {
+      throw new Error('Illegal subject, must be a set of non-space characters');
     }
 
     let key: Uint8Array;
@@ -62,14 +66,12 @@ export class LegacyTokenHandler implements TokenHandler {
       throw new Error('Illegal secret, must be a valid base64 string');
     }
 
-    if (!subject.match(/^\S+$/)) {
-      throw new Error('Illegal subject, must be a set of non-space characters');
-    }
-
     this.#entries.push({
       key,
-      subject,
-      accessRestrictions,
+      result: {
+        subject,
+        allAccessRestrictions,
+      },
     });
   }
 
@@ -94,13 +96,10 @@ export class LegacyTokenHandler implements TokenHandler {
       return undefined;
     }
 
-    for (const entry of this.#entries) {
+    for (const { key, result } of this.#entries) {
       try {
-        await jwtVerify(token, entry.key);
-        return {
-          subject: entry.subject,
-          accessRestrictions: entry.accessRestrictions,
-        };
+        await jwtVerify(token, key);
+        return result;
       } catch (e) {
         if (e.code !== 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
           throw e;

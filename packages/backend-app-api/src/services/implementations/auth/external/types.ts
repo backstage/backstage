@@ -27,7 +27,7 @@ export interface TokenHandler {
   verifyToken(token: string): Promise<
     | {
         subject: string;
-        accessRestrictions?: AccessRestriptionsMap;
+        allAccessRestrictions?: AccessRestriptionsMap;
       }
     | undefined
   >;
