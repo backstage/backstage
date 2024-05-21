@@ -219,9 +219,9 @@ backend.add(import('@internal/gke-cluster-supplier'));
 
 Follow the steps below to run your migrated plugin on a local development server:
 
-1. First, delete the `src/run.js` and `src/service/standaloneServer.js` files in case they exist (the `backstage-cli` previously used these files to run legacy backend plugins locally, but they are no longer required).
+1. First, delete the `src/run.ts` and `src/service/standaloneServer.ts` files in case they exist (the `backstage-cli` previously used these files to run legacy backend plugins locally, but they are no longer required).
 
-2. Next, create a new development backend in the `dev/index.js` file. The dev server is a lite version of a backend app that is mainly used to run your plugin locally, so a simple `kubernetes` backend local development server would look like this:
+2. Next, create a new development backend in the `dev/index.ts` file. The dev server is a lite version of a backend app that is mainly used to run your plugin locally, so a simple `kubernetes` backend local development server would look like this:
 
 ```ts title="in dev/index.js"
 // This package should be installed as a `dev` dependency
