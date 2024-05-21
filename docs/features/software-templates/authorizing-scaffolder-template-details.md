@@ -1,7 +1,7 @@
 ---
-id: authorizing-scaffolder-tasks-parameters-steps-and-actions
-title: 'Authorizing scaffolder tasks parameters, steps and actions'
-description: How to authorize part of a template and authorize scaffolder task access
+id: authorizing-scaffolder-template-details
+title: 'Authorizing scaffolder tasks, parameters, steps, and actions'
+description: How to authorize parts of a template and authorize scaffolder task access
 ---
 
 The scaffolder plugin integrates with the Backstage [permission framework](../../permissions/overview.md), which allows you to control access to certain parameters and steps in your templates based on the user executing the template. It also allows you to control access to scaffolder tasks.

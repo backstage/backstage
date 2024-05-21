@@ -130,7 +130,7 @@
           "features/software-templates/writing-tests-for-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
-          "features/software-templates/authorizing-scaffolder-tasks-parameters-steps-and-actions",
+          "features/software-templates/authorizing-scaffolder-template-details",
           "features/software-templates/migrating-to-rjsf-v5",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
