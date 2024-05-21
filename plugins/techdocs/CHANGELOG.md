@@ -1,5 +1,30 @@
 # @backstage/plugin-techdocs
 
+## 1.10.6-next.0
+
+### Patch Changes
+
+- 654af4a: mkdocs-material have updated their CSS variable template, and a few are unset in Backstage. This patch adds the missing variables to ensure coverage.
+- 96cd13e: `TechDocsIndexPage` now accepts an optional `ownerPickerMode` for toggling the behavior of the `EntityOwnerPicker`, exposing a new mode `<TechDocsIndexPage ownerPickerMode="all" />` particularly suitable for larger catalogs. In this new mode, `EntityOwnerPicker` will display all the users and groups present in the catalog.
+- e40bd9a: Fixed bug in CopyToClipboardButton component where positioning of the "Copy to clipboard" button in techdocs code snippets was broken in some cases
+- 1256d88: Fix weird opening behaviour of the <TechDocsSearch /> component.
+- Updated dependencies
+  - @backstage/theme@0.5.6-next.0
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/plugin-search-react@1.7.12-next.0
+  - @backstage/plugin-techdocs-react@1.2.5-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/core-compat-api@0.2.6-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.6-next.0
+  - @backstage/integration@1.11.0
+  - @backstage/integration-react@1.1.27
+  - @backstage/plugin-auth-react@0.1.3-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+  - @backstage/plugin-search-common@1.2.11
+
 ## 1.10.5
 
 ### Patch Changes

@@ -1,5 +1,27 @@
 # @backstage/plugin-scaffolder
 
+## 1.20.1-next.0
+
+### Patch Changes
+
+- 612a453: Change owner to project for azure host
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.8.6-next.0
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-compat-api@0.2.6-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.6-next.0
+  - @backstage/integration@1.11.0
+  - @backstage/integration-react@1.1.27
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+  - @backstage/plugin-permission-react@0.4.22
+  - @backstage/plugin-scaffolder-common@1.5.2
+
 ## 1.20.0
 
 ### Minor Changes

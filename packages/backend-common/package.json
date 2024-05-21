@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-common",
-  "version": "0.22.0",
+  "version": "0.22.1-next.0",
   "description": "Common functionality library for Backstage backends",
   "backstage": {
     "role": "node-library"

@@ -1,5 +1,20 @@
 # @backstage/backend-test-utils
 
+## 0.3.9-next.0
+
+### Patch Changes
+
+- 6a576dc: Fix the logger service mock to prevent returning `undefined` from the `child` method.
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.3.8
 
 ### Patch Changes

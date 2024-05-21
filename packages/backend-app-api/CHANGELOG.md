@@ -1,5 +1,30 @@
 # @backstage/backend-app-api
 
+## 0.7.6-next.0
+
+### Patch Changes
+
+- b7de623: Fixed a potential crash when passing an object with a `null` prototype as log meta.
+- 7d30d95: Fixing issue with log meta fields possibly being circular refs
+- 6a576dc: Stop using `getVoidLogger` in tests to reduce the dependency on the soon-to-deprecate `backstage-common` package.
+- 6551b3d: Deprecated core service factories and implementations and moved them over to
+  subpath exports on `@backstage/backend-defaults` instead. E.g.
+  `@backstage/backend-defaults/scheduler` is where the service factory and default
+  implementation of `coreServices.scheduler` now lives.
+- d617103: Updating the logger redaction message to something less dramatic
+- Updated dependencies
+  - @backstage/cli-node@0.2.6-next.0
+  - @backstage/backend-tasks@0.5.24-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+  - @backstage/plugin-permission-node@0.7.30-next.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.7.3
 
 ### Patch Changes

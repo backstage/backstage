@@ -1,5 +1,21 @@
 # @backstage/plugin-api-docs
 
+## 0.11.6-next.0
+
+### Patch Changes
+
+- 96cd13e: `DefaultApiExplorerPage` now accepts an optional `ownerPickerMode` for toggling the behavior of the `EntityOwnerPicker`, exposing a new mode `<DefaultApiExplorerPage ownerPickerMode="all" />` particularly suitable for larger catalogs. In this new mode, `EntityOwnerPicker` will display all the users and groups present in the catalog.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-compat-api@0.2.6-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/frontend-plugin-api@0.6.6-next.0
+  - @backstage/plugin-catalog@1.20.1-next.0
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+  - @backstage/plugin-permission-react@0.4.22
+
 ## 0.11.5
 
 ### Patch Changes
