@@ -1,5 +1,33 @@
 # @backstage/plugin-catalog-backend
 
+## 1.23.0-next.0
+
+### Minor Changes
+
+- c7528b0: Pass through `EventsService` too in the new backend system
+
+### Patch Changes
+
+- 8869b8e: Updated local development setup.
+- 1779188: Start using the `isDatabaseConflictError` helper from the `@backstage/backend-plugin-api` package in order to avoid dependency with the soon to deprecate `@backstage/backend-common` package.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.24-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.25-next.0
+  - @backstage/plugin-permission-node@0.7.30-next.0
+  - @backstage/backend-openapi-utils@0.1.12-next.0
+  - @backstage/plugin-catalog-node@1.12.1-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.11.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 1.22.0
 
 ### Minor Changes

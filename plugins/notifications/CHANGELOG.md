@@ -1,5 +1,19 @@
 # @backstage/plugin-notifications
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- 7f02684: Do not always show scrollbars in notification description
+- Updated dependencies
+  - @backstage/theme@0.5.6-next.0
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-notifications-common@0.0.3
+  - @backstage/plugin-signals-react@0.0.3
+
 ## 0.2.1
 
 ### Patch Changes

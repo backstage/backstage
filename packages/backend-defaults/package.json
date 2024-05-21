@@ -1,7 +1,7 @@
 {
   "name": "@backstage/backend-defaults",
   "description": "Backend defaults used by Backstage backend apps",
-  "version": "0.2.18",
+  "version": "0.2.19-next.0",
   "backstage": {
     "role": "node-library"
   },

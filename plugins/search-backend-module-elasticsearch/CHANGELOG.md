@@ -1,5 +1,18 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.4.2-next.0
+
+### Patch Changes
+
+- 6a576dc: Replace the usage of `getVoidLogger` with `mockServices.logger.mock` in order to remove the dependency with the soon-to-be-deprecated `backend-common` package.
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-search-backend-node@1.2.24-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.11
+
 ## 1.4.1
 
 ### Patch Changes

@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.8-next.0
+
+### Patch Changes
+
+- 7d30d95: Fixing issue with log meta fields possibly being circular refs
+- d617103: Updating the logger redaction message to something less dramatic
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.24-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.9-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+  - @backstage/plugin-permission-node@0.7.30-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.1-next.0
+  - @backstage/plugin-scaffolder-node@0.4.5-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.9-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.17-next.0
+  - @backstage/plugin-catalog-node@1.12.1-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.11.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-scaffolder-common@1.5.2
+
 ## 1.22.6
 
 ### Patch Changes
