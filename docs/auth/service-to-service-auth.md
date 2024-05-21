@@ -119,7 +119,7 @@ Passed JWTs must have an `iss` claim which matches one of the specified issuers.
 Algorithms specifies the algorithm(s) that are used to verify the JWT. The passed JWTs
 must have been signed using one of the listed algorithms.
 
-Audiences speficies the intended audience(s) of the JWT. The passed JWTs must have an "aud"
+Audiences specify the intended audience(s) of the JWT. The passed JWTs must have an "aud"
 claim that matches one of the audiences specified, or have no audience specified.
 
 For additional details regarding the JWKS configuration, please consult your authentication
