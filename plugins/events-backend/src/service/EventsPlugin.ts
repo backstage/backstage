@@ -76,9 +76,10 @@ export const eventsPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         events: eventsServiceRef,
         logger: coreServices.logger,
+        httpAuth: coreServices.httpAuth,
         router: coreServices.httpRouter,
       },
-      async init({ config, events, logger, router }) {
+      async init({ config, events, logger, httpAuth, router }) {
         const ingresses = Object.fromEntries(
           extensionPoint.httpPostIngresses.map(ingress => [
             ingress.topic,
@@ -95,7 +96,7 @@ export const eventsPlugin = createBackendPlugin({
         const eventsRouter = Router();
         http.bind(eventsRouter);
 
-        const hub = await EventHub.create({ logger });
+        const hub = await EventHub.create({ logger, httpAuth });
         eventsRouter.use('/hub', hub.handler());
 
         router.use(eventsRouter);

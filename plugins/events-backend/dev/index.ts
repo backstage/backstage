@@ -59,9 +59,10 @@ backend.add(
           events: eventsServiceRef,
           logger: coreServices.logger,
           discovery: coreServices.discovery,
+          auth: coreServices.auth,
           rootLifecycle: coreServices.rootLifecycle,
         },
-        async init({ events, logger, discovery, rootLifecycle }) {
+        async init({ events, logger, discovery, rootLifecycle, auth }) {
           events.subscribe({
             id: 'test-1',
             topics: ['test'],
@@ -74,7 +75,15 @@ backend.add(
             logger.info('Started!');
             const baseUrl = await discovery.getBaseUrl('events');
             console.log(`DEBUG: baseUrl=`, baseUrl);
-            const ws = new WebSocket(`${baseUrl}/hub/connect`);
+            const { token } = await auth.getPluginRequestToken({
+              onBehalfOf: await auth.getOwnServiceCredentials(),
+              targetPluginId: 'events',
+            });
+            const ws = new WebSocket(`${baseUrl}/hub/connect`, {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            });
             ws.onopen = () => {
               console.log('DEBUG: ws.onopen');
               ws.send('derp!');
@@ -82,8 +91,8 @@ backend.add(
             ws.onmessage = event => {
               console.log(`DEBUG: event=`, event.data);
             };
-            ws.onerror = error => {
-              console.log(`Client error`, String(error));
+            ws.onerror = event => {
+              console.log(`Client error`, event.error);
             };
           });
         },
