@@ -14,7 +14,7 @@ import { PluginDatabaseManager } from '@backstage/backend-common';
 // @public @deprecated
 export type HumanDuration = HumanDuration_2;
 
-// @public
+// @public @deprecated
 export interface PluginTaskScheduler {
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
   getScheduledTasks(): Promise<TaskDescriptor[]>;
@@ -24,12 +24,12 @@ export interface PluginTaskScheduler {
   triggerTask(id: string): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export function readTaskScheduleDefinitionFromConfig(
   config: Config,
 ): TaskScheduleDefinition;
 
-// @public
+// @public @deprecated
 export type TaskDescriptor = {
   id: string;
   scope: 'global' | 'local';
@@ -38,24 +38,24 @@ export type TaskDescriptor = {
   } & JsonObject;
 };
 
-// @public
+// @public @deprecated
 export type TaskFunction =
   | ((abortSignal: AbortSignal) => void | Promise<void>)
   | (() => void | Promise<void>);
 
-// @public
+// @public @deprecated
 export interface TaskInvocationDefinition {
   fn: TaskFunction;
   id: string;
   signal?: AbortSignal;
 }
 
-// @public
+// @public @deprecated
 export interface TaskRunner {
   run(task: TaskInvocationDefinition): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export interface TaskScheduleDefinition {
   frequency:
     | {
@@ -68,7 +68,7 @@ export interface TaskScheduleDefinition {
   timeout: Duration | HumanDuration_2;
 }
 
-// @public
+// @public @deprecated
 export interface TaskScheduleDefinitionConfig {
   frequency:
     | {
@@ -81,7 +81,7 @@ export interface TaskScheduleDefinitionConfig {
   timeout: string | HumanDuration_2;
 }
 
-// @public
+// @public @deprecated
 export class TaskScheduler {
   constructor(
     databaseManager: LegacyRootDatabaseService,

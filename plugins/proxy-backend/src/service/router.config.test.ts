@@ -27,7 +27,7 @@ import request from 'supertest';
 import { createRouter } from './router';
 
 // this test is stored in its own file to work around the mocked
-// http-proxy-middleware module used in the rest of the tests
+// http-proxy-middleware module used in the main test file
 
 describe('createRouter reloadable configuration', () => {
   const server = setupServer(

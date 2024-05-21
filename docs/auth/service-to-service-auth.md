@@ -156,8 +156,12 @@ payload:
 - `sub`: the exact string "backstage-server"
 - `exp`: one hour from the time it was generated, in epoch seconds
 
-> NOTE: The JWT must encode the `alg` header as a protected header, such as with
-> [setProtectedHeader](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#setprotectedheader).
+:::note Note
+
+The JWT must encode the `alg` header as a protected header, such as with
+[setProtectedHeader](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#setprotectedheader).
+
+:::
 
 The caller then passes along the JWT token with requests in the `Authorization`
 header:

@@ -181,6 +181,7 @@ const config: Config = {
         hideIcon: true,
         customFont: true,
         buttonStyle: 'dark',
+        ratingMode: 'stars',
       },
     ],
   ],

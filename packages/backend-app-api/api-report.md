@@ -65,7 +65,7 @@ export interface Backend {
   stop(): Promise<void>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const cacheServiceFactory: () => ServiceFactory<CacheClient, 'plugin'>;
 
 // @public (undocumented)
@@ -100,7 +100,7 @@ export interface CreateSpecializedBackendOptions {
   defaultServiceFactories: ServiceFactoryOrFunction[];
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const databaseServiceFactory: () => ServiceFactory<
   PluginDatabaseManager,
   'plugin'
@@ -121,7 +121,7 @@ export interface DefaultRootHttpRouterOptions {
   indexPath?: string | false;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const discoveryServiceFactory: () => ServiceFactory<
   DiscoveryService,
   'plugin'
@@ -137,7 +137,7 @@ export interface ExtendedHttpServer extends http.Server {
   stop(): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export class HostDiscovery implements DiscoveryService {
   static fromConfig(
     config: Config,
@@ -190,13 +190,13 @@ export type HttpServerOptions = {
   };
 };
 
-// @public
+// @public @deprecated
 export type IdentityFactoryOptions = {
   issuer?: string;
   algorithms?: string[];
 };
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const identityServiceFactory: (
   options?: IdentityFactoryOptions | undefined,
 ) => ServiceFactory<IdentityService, 'plugin'>;
@@ -208,7 +208,7 @@ export interface LifecycleMiddlewareOptions {
   startupRequestPauseTimeout?: HumanDuration;
 }
 
-// @public
+// @public @deprecated
 export const lifecycleServiceFactory: () => ServiceFactory<
   LifecycleService,
   'plugin'
@@ -255,7 +255,7 @@ export interface MiddlewareFactoryOptions {
   logger: LoggerService;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const permissionsServiceFactory: () => ServiceFactory<
   PermissionsService,
   'plugin'
@@ -270,7 +270,7 @@ export function readHelmetOptions(config?: Config): HelmetOptions;
 // @public
 export function readHttpServerOptions(config?: Config): HttpServerOptions;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface RootConfigFactoryOptions {
   argv?: string[];
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
@@ -278,7 +278,7 @@ export interface RootConfigFactoryOptions {
   watch?: boolean;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const rootConfigServiceFactory: (
   options?: RootConfigFactoryOptions | undefined,
 ) => ServiceFactory<RootConfigService, 'root'>;
@@ -314,7 +314,7 @@ export const rootHttpRouterServiceFactory: (
   options?: RootHttpRouterFactoryOptions | undefined,
 ) => ServiceFactory<RootHttpRouterService, 'root'>;
 
-// @public
+// @public @deprecated
 export const rootLifecycleServiceFactory: () => ServiceFactory<
   RootLifecycleService,
   'root'
@@ -326,19 +326,19 @@ export const rootLoggerServiceFactory: () => ServiceFactory<
   'root'
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const schedulerServiceFactory: () => ServiceFactory<
   SchedulerService,
   'plugin'
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const tokenManagerServiceFactory: () => ServiceFactory<
   TokenManagerService,
   'plugin'
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const urlReaderServiceFactory: () => ServiceFactory<UrlReader, 'plugin'>;
 
 // @public (undocumented)

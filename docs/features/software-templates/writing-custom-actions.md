@@ -8,10 +8,14 @@ If you want to extend the functionality of the Scaffolder, you can do so
 by writing custom actions which can be used alongside our
 [built-in actions](./builtin-actions.md).
 
-> Note: When adding custom actions, the actions array will **replace the
-> built-in actions too**. Meaning, you will no longer be able to use them.
-> If you want to continue using the builtin actions, include them in the actions
-> array when registering your custom actions, as seen below.
+:::note Note
+
+When adding custom actions, the actions array will **replace the
+built-in actions too**. Meaning, you will no longer be able to use them.
+If you want to continue using the builtin actions, include them in the actions
+array when registering your custom actions, as seen below.
+
+:::
 
 ## Writing your Custom Action
 

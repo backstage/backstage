@@ -33,6 +33,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
  * Deals with the scheduling of distributed tasks.
  *
  * @public
+ * @deprecated Please migrate to the new backend system, and depend on `coreServices.scheduler` from  `@backstage/backend-plugin-api` instead.
  */
 export class TaskScheduler {
   static fromConfig(
