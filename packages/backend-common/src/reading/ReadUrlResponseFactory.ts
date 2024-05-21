@@ -27,6 +27,7 @@ import {
  * instances from common response primitives.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class ReadUrlResponseFactory {
   /**

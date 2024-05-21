@@ -55,6 +55,7 @@ const parseURL = (
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files on Google GCS.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class GoogleGcsUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, logger }) => {

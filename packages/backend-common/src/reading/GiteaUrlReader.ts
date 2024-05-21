@@ -46,6 +46,7 @@ import { parseLastModified } from './util';
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for the Gitea v1 api.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class GiteaUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {

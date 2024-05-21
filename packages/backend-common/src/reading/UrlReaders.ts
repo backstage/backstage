@@ -37,6 +37,7 @@ import { HarnessUrlReader } from './HarnessUrlReader';
  * Creation options for {@link @backstage/backend-plugin-api#UrlReaderService}.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export type UrlReadersOptions = {
   /** Root config object */
@@ -51,6 +52,7 @@ export type UrlReadersOptions = {
  * Helps construct {@link @backstage/backend-plugin-api#UrlReaderService}s.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class UrlReaders {
   /**

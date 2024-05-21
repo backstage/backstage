@@ -38,8 +38,8 @@ import { Readable } from 'stream';
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for the Harness code v1 api.
  *
- *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class HarnessUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config }) => {

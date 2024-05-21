@@ -131,6 +131,7 @@ export function parseUrl(
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for AWS S3 buckets.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class AwsS3UrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {

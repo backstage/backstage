@@ -117,6 +117,7 @@ export function parseUrl(
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for AWS CodeCommit.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class AwsCodeCommitUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {

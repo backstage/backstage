@@ -40,6 +40,7 @@ export type {
  * given URL.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export type UrlReaderPredicateTuple = {
   predicate: (url: URL) => boolean;
@@ -51,6 +52,7 @@ export type UrlReaderPredicateTuple = {
  * {@link @backstage/backend-plugin-api#UrlReaderService}s along with a predicate for when it should be used.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export type ReaderFactory = (options: {
   config: Config;
@@ -62,6 +64,7 @@ export type ReaderFactory = (options: {
  * An options object for {@link ReadUrlResponseFactory} factory methods.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
@@ -72,6 +75,7 @@ export type ReadUrlResponseFactoryFromStreamOptions = {
  * Options that control execution of {@link ReadTreeResponseFactory} methods.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export type ReadTreeResponseFactoryOptions = {
   // A binary stream of a tar archive.
@@ -90,6 +94,7 @@ export type ReadTreeResponseFactoryOptions = {
  * execution.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export type FromReadableArrayOptions = Array<{
   /**
@@ -113,6 +118,7 @@ export type FromReadableArrayOptions = Array<{
  * complex responses such as archive data.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export interface ReadTreeResponseFactory {
   fromTarArchive(

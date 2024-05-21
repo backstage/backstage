@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { UrlReaders } from './lib/UrlReaders';
 
 /** @public */
 export const urlReaderServiceFactory = createServiceFactory({

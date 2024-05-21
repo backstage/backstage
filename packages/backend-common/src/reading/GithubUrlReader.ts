@@ -57,6 +57,7 @@ export type GhBlobResponse =
  * the one exposed by GitHub itself.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class GithubUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {

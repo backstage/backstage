@@ -67,6 +67,7 @@ const parsePortPredicate = (port: string | undefined) => {
  * A {@link @backstage/backend-plugin-api#UrlReaderService} that does a plain fetch of the URL.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class FetchUrlReader implements UrlReader {
   /**

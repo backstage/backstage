@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
 import { Knex } from 'knex';
 import { DB_MIGRATIONS_TABLE } from './tables';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 
 export async function migrateBackendTasks(knex: Knex): Promise<void> {
   const migrationsDir = resolvePackagePath(

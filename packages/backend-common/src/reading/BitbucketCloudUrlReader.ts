@@ -46,6 +46,7 @@ import { parseLastModified } from './util';
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Cloud.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class BitbucketCloudUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {

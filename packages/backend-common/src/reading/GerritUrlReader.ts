@@ -77,6 +77,7 @@ const createTemporaryDirectory = async (workDir: string): Promise<string> =>
  * not point to the API host.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class GerritUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {

@@ -44,6 +44,7 @@ import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for Azure repos.
  *
  * @public
+ * @deprecated import from `@backstage/backend-defaults/urlReader` instead
  */
 export class AzureUrlReader implements UrlReader {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {

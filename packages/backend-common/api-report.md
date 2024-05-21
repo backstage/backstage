@@ -79,7 +79,7 @@ export type AuthCallbackOptions = {
   logger?: LoggerService;
 };
 
-// @public
+// @public @deprecated
 export class AwsS3UrlReader implements UrlReader {
   constructor(
     credsManager: AwsCredentialsManager,
@@ -102,7 +102,7 @@ export class AwsS3UrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export class AzureUrlReader implements UrlReader {
   constructor(
     integration: AzureIntegration,
@@ -125,7 +125,7 @@ export class AzureUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export class BitbucketCloudUrlReader implements UrlReader {
   constructor(
     integration: BitbucketCloudIntegration,
@@ -147,7 +147,7 @@ export class BitbucketCloudUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export class BitbucketServerUrlReader implements UrlReader {
   constructor(
     integration: BitbucketServerIntegration,
@@ -321,7 +321,7 @@ export type ErrorHandlerOptions = {
   logClientErrors?: boolean;
 };
 
-// @public
+// @public @deprecated
 export class FetchUrlReader implements UrlReader {
   static factory: ReaderFactory;
   // (undocumented)
@@ -336,14 +336,14 @@ export class FetchUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export type FromReadableArrayOptions = Array<{
   data: Readable;
   path: string;
   lastModifiedAt?: Date;
 }>;
 
-// @public
+// @public @deprecated
 export class GerritUrlReader implements UrlReader {
   constructor(
     integration: GerritIntegration,
@@ -448,7 +448,7 @@ export class Git {
   resolveRef(options: { dir: string; ref: string }): Promise<string>;
 }
 
-// @public
+// @public @deprecated
 export class GiteaUrlReader implements UrlReader {
   constructor(
     integration: GiteaIntegration,
@@ -470,7 +470,7 @@ export class GiteaUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export class GithubUrlReader implements UrlReader {
   constructor(
     integration: GithubIntegration,
@@ -493,7 +493,7 @@ export class GithubUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export class GitlabUrlReader implements UrlReader {
   constructor(
     integration: GitLabIntegration,
@@ -515,7 +515,7 @@ export class GitlabUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export class HarnessUrlReader implements UrlReader {
   constructor(integration: HarnessIntegration);
   // (undocumented)
@@ -661,7 +661,7 @@ export interface PullOptions {
   };
 }
 
-// @public
+// @public @deprecated
 export type ReaderFactory = (options: {
   config: Config;
   logger: LoggerService;
@@ -674,7 +674,7 @@ export { ReadTreeResponse };
 
 export { ReadTreeResponseDirOptions };
 
-// @public
+// @public @deprecated
 export interface ReadTreeResponseFactory {
   // (undocumented)
   fromReadableArray(
@@ -692,7 +692,7 @@ export interface ReadTreeResponseFactory {
   ): Promise<ReadTreeResponse>;
 }
 
-// @public
+// @public @deprecated
 export type ReadTreeResponseFactoryOptions = {
   stream: Readable;
   subpath?: string;
@@ -711,7 +711,7 @@ export { ReadUrlOptions };
 
 export { ReadUrlResponse };
 
-// @public
+// @public @deprecated
 export class ReadUrlResponseFactory {
   static fromNodeJSReadable(
     oldStyleStream: NodeJS.ReadableStream,
@@ -723,7 +723,7 @@ export class ReadUrlResponseFactory {
   ): Promise<ReadUrlResponse>;
 }
 
-// @public
+// @public @deprecated
 export type ReadUrlResponseFactoryFromStreamOptions = {
   etag?: string;
   lastModifiedAt?: Date;
@@ -847,19 +847,19 @@ export { TokenManager };
 
 export { UrlReader };
 
-// @public
+// @public @deprecated
 export type UrlReaderPredicateTuple = {
   predicate: (url: URL) => boolean;
   reader: UrlReader;
 };
 
-// @public
+// @public @deprecated
 export class UrlReaders {
   static create(options: UrlReadersOptions): UrlReader;
   static default(options: UrlReadersOptions): UrlReader;
 }
 
-// @public
+// @public @deprecated
 export type UrlReadersOptions = {
   config: Config;
   logger: LoggerService;
