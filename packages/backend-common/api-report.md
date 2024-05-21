@@ -265,7 +265,7 @@ export function createRootLogger(
   env?: NodeJS.ProcessEnv,
 ): winston.Logger;
 
-// @public
+// @public @deprecated
 export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
 // @public
@@ -599,7 +599,7 @@ export type LegacyRootDatabaseService = {
   forPlugin(pluginId: string): PluginDatabaseManager;
 };
 
-// @public
+// @public @deprecated
 export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
