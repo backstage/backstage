@@ -130,8 +130,12 @@ catalog:
 
 This provider supports multiple organizations via unique provider IDs.
 
-> **Note:** It is possible but certainly not recommended to skip the provider ID level.
-> If you do so, `default` will be used as provider ID.
+:::note Note
+
+It is possible but certainly not recommended to skip the provider ID level.
+If you do so, `default` will be used as provider ID.
+
+:::
 
 - **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.

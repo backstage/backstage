@@ -219,7 +219,11 @@ backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
 backend.start();
 ```
 
-> Note: The above is a very simplified example, you may have more content then this in your version.
+:::note Note
+
+The above is a very simplified example, you may have more content then this in your version.
+
+:::
 
 ## Setting the configuration
 

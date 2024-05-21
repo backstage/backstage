@@ -73,6 +73,7 @@
     "winston": "^3.2.1"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/dockerode": "^3.3.0",

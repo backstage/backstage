@@ -79,7 +79,7 @@ describe('FetchUrlReader', () => {
 
     worker.use(
       rest.get('https://backstage.io/error', (_req, res, ctx) => {
-        return res(ctx.status(500), ctx.body('An internal error occured'));
+        return res(ctx.status(500), ctx.body('An internal error occurred'));
       }),
     );
   });

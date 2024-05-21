@@ -229,4 +229,8 @@ backend.add(customPermissionBackendModule);
 /* highlight-add-end */
 ```
 
-> Note: the `ExamplePermissionPolicy` here could be the one from the [Authorizing parameters and steps](#authorizing-parameters-and-steps) example or from the [Authorizing actions](#authorizing-actions) example. It would work the same way for both of them.
+:::note Note
+
+The `ExamplePermissionPolicy` here could be the one from the [Authorizing parameters and steps](#authorizing-parameters-and-steps) example or from the [Authorizing actions](#authorizing-actions) example. It would work the same way for both of them.
+
+:::

@@ -21,4 +21,3 @@ export type {
 } from './DatabaseManager';
 
 export type { PluginDatabaseManager } from './types';
-export { isDatabaseConflictError } from './util';

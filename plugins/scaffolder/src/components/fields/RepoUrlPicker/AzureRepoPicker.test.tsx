@@ -44,18 +44,18 @@ describe('AzureRepoPicker', () => {
     });
   });
 
-  describe('owner field', () => {
-    it('calls onChange when the owner changes', () => {
+  describe('project field', () => {
+    it('calls onChange when the project changes', () => {
       const onChange = jest.fn();
       const { getAllByRole } = render(
         <AzureRepoPicker onChange={onChange} rawErrors={[]} state={{}} />,
       );
 
-      const ownerInput = getAllByRole('textbox')[1];
+      const projectInput = getAllByRole('textbox')[1];
 
-      fireEvent.change(ownerInput, { target: { value: 'owner' } });
+      fireEvent.change(projectInput, { target: { value: 'project' } });
 
-      expect(onChange).toHaveBeenCalledWith({ owner: 'owner' });
+      expect(onChange).toHaveBeenCalledWith({ project: 'project' });
     });
   });
 });

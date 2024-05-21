@@ -149,6 +149,7 @@ export const createPublishGithubPullRequestAction = (
   }>({
     id: 'publish:github:pull-request',
     examples,
+    supportsDryRun: true,
     schema: {
       input: {
         required: ['repoUrl', 'title', 'description', 'branchName'],
@@ -342,6 +343,16 @@ export const createPublishGithubPullRequestAction = (
           },
         ]),
       );
+
+      // If this is a dry run, log and return
+      if (ctx.isDryRun) {
+        ctx.logger.info(`Performing dry run of creating pull request`);
+        ctx.output('targetBranchName', branchName);
+        ctx.output('remoteUrl', repoUrl);
+        ctx.output('pullRequestNumber', 43);
+        ctx.logger.info(`Dry run complete`);
+        return;
+      }
 
       try {
         const createOptions: createPullRequest.Options = {

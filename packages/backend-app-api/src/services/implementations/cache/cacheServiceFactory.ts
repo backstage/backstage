@@ -20,7 +20,10 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/cache` instead.
+ */
 export const cacheServiceFactory = createServiceFactory({
   service: coreServices.cache,
   deps: {

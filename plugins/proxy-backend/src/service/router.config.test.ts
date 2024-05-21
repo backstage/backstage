@@ -31,7 +31,7 @@ import { createRouter } from './router';
 import { mockServices } from '@backstage/backend-test-utils';
 
 // this test is stored in its own file to work around the mocked
-// http-proxy-middleware module used in the rest of the tests
+// http-proxy-middleware module used in the main test file
 
 describe('createRouter reloadable configuration', () => {
   const server = setupServer(

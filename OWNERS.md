@@ -22,14 +22,15 @@ Team: @backstage/catalog-maintainers
 
 Scope: The catalog plugin and catalog model
 
-| Name            | Organization | Team      | GitHub                                    | Discord             |
-| --------------- | ------------ | --------- | ----------------------------------------- | ------------------- |
-| Rickard Dybeck  | Spotify      | Chipmunks | [alde](https://github.com/alde)           | `rdybeck#8083`      |
-| Mike Blockley   | Spotify      | Chipmunks | [mikeyhc](https://github.com/mikeyhc)     | `mikey-spot#5363`   |
-| Elon Jefferson  | Spotify      | Chipmunks | [Edje-C](https://github.com/Edje-C)       | `elon-spotty#6086 ` |
-| Nurit Izrailov  | Spotify      | Chipmunks | [nuritizra](https://github.com/nuritizra) | -                   |
-| Hunter Dougless | Spotify      | Chipmunks | [hntrdglss](https://github.com/hntrdglss) | `hntrdglss#1849`    |
-| Seve Kim        | Spotify      | Chipmunks | [sevedkim](https://github.com/sevedkim)   | `seve#9951`         |
+| Name                 | Organization | Team          | GitHub                                          | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
+| Johan Haals          | Spotify      | Cubic Belugas | [jhaals](https://github.com/jhaals)             | `Johan#0679`    |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
 
 ### Discoverability
 
@@ -73,14 +74,15 @@ Team: @backstage/permission-maintainers
 
 Scope: The Permission Framework and plugins integrating with the permission framework
 
-| Name                 | Organization | Team            | GitHub                                     | Discord       |
-| -------------------- | ------------ | --------------- | ------------------------------------------ | ------------- |
-| Ainhoa Larumbe       | Spotify      | Imaginary Goats | [ainhoaL](http://github.com/ainhoaL)       | ainhoa#8085   |
-| Eric Peterson        | Spotify      | Imaginary Goats | [iamEAP](http://github.com/iamEAP)         | iamEAP#3058   |
-| Harry Hogg           | Spotify      | Imaginary Goats | [HHogg](http://github.com/HHogg)           | simplex#3451  |
-| Joon Park            | Spotify      | Imaginary Goats | [Joonpark13](http://github.com/Joonpark13) | Sixpool#5060  |
-| Mike Lewis           | Spotify      | Imaginary Goats | [mtlewis](http://github.com/mtlewis)       | mtlewis#3658  |
-| Vincenzo Scamporlino | Spotify      | Imaginary Goats | [vinzscam](http://github.com/vinzscam)     | vinzscam#6944 |
+| Name                 | Organization | Team          | GitHub                                          | Discord         |
+| -------------------- | ------------ | ------------- | ----------------------------------------------- | --------------- |
+| Ben Lambert          | Spotify      | Cubic Belugas | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`     |
+| Camila Loiola        | Spotify      | Cubic Belugas | [camilaibs](http://github.com/camilaibs)        | `camilal#0226`  |
+| Fredrik Adelöw       | Spotify      | Cubic Belugas | [freben](https://github.com/freben)             | `freben#3926`   |
+| Johan Haals          | Spotify      | Cubic Belugas | [jhaals](https://github.com/jhaals)             | `Johan#0679`    |
+| Mihai Tabara         | Spotify      | Cubic Belugas | [MihaiTabara](http://github.com/MihaiTabara)    | `mihait#3107`   |
+| Patrik Oldsberg      | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019`   |
+| Vincenzo Scamporlino | Spotify      | Cubic Belugas | [vinzscam](http://github.com/vinzscam)          | `vinzscam#6944` |
 
 ### TechDocs
 
