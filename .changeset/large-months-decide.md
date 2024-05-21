@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-notifications-node': major
+'@backstage/plugin-notifications-node': minor
 ---
 
 add notifications filtering by processors
