@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/config';
-import { CacheManager } from './CacheManager';
+import { mockServices } from '@backstage/backend-test-utils';
 import KeyvRedis from '@keyv/redis';
+import { CacheManager } from './CacheManager';
 
 // This test is in a separate file because the main test file uses other mocking
 // that might interfere with this one.
@@ -24,24 +24,27 @@ import KeyvRedis from '@keyv/redis';
 // Contrived code because it's hard to spy on a default export
 jest.mock('@keyv/redis', () => {
   const ActualKeyvRedis = jest.requireActual('@keyv/redis');
-  return jest
-    .fn()
-    .mockImplementation((...args: any[]) => new ActualKeyvRedis(...args));
+  return jest.fn((...args: any[]) => {
+    return new ActualKeyvRedis(...args);
+  });
 });
 
 describe('CacheManager integration', () => {
   describe('redis', () => {
     it('only creates one underlying connection', async () => {
+      const connection =
+        process.env.BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING;
+      if (!connection) {
+        return;
+      }
+
       const manager = CacheManager.fromConfig(
-        new ConfigReader({
-          backend: {
-            cache: {
-              store: 'redis',
-              // no actual connection errors will be seen since we don't interact with it
-              connection: 'redis://localhost:6379',
-            },
+        mockServices.rootConfig({
+          data: {
+            backend: { cache: { store: 'redis', connection } },
           },
         }),
+        { onError: e => expect(e).not.toBeDefined() },
       );
 
       manager.forPlugin('p1').getClient();
@@ -56,20 +59,18 @@ describe('CacheManager integration', () => {
       // TODO(freben): This could be frameworkified as TestCaches just like
       // TestDatabases, but that will have to come some other day
       const connection =
-        process.env.BACKSTAGE_TEST_CACHE_REDIS_CONNECTION_STRING;
+        process.env.BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING;
       if (!connection) {
         return;
       }
 
       const manager = CacheManager.fromConfig(
-        new ConfigReader({
-          backend: {
-            cache: {
-              store: 'redis',
-              connection,
-            },
+        mockServices.rootConfig({
+          data: {
+            backend: { cache: { store: 'redis', connection } },
           },
         }),
+        { onError: e => expect(e).not.toBeDefined() },
       );
 
       const plugin1 = manager.forPlugin('p1').getClient();

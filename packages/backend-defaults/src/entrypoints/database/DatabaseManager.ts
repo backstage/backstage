@@ -41,7 +41,7 @@ function pluginPath(pluginId: string): string {
  * @public
  */
 export type DatabaseManagerOptions = {
-  migrations?: PluginDatabaseManager['migrations'];
+  migrations?: DatabaseService['migrations'];
   logger?: LoggerService;
 };
 

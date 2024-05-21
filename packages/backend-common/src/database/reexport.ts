@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,24 @@
  * limitations under the License.
  */
 
-export { databaseServiceFactory } from './databaseServiceFactory';
-export {
+/*
+ * NOTE(freben): This is a temporary hack. We use cross-package imports so that
+ * we do not have to maintain double implementations for the time being, until
+ * backend-common is properly removed. When it is, the impleemntation should be
+ * moved into this part of the repo instead.
+ */
+
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
   DatabaseManager,
+  dropDatabase,
   type DatabaseManagerOptions,
   type LegacyRootDatabaseService,
+} from '../../../backend-defaults/src/entrypoints/database/DatabaseManager';
+
+export {
+  DatabaseManager,
   dropDatabase,
-} from './DatabaseManager';
+  type DatabaseManagerOptions,
+  type LegacyRootDatabaseService,
+};

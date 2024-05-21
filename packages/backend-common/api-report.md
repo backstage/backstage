@@ -17,11 +17,12 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
-import { CacheService as CacheClient } from '@backstage/backend-plugin-api';
-import { CacheServiceOptions as CacheClientOptions } from '@backstage/backend-plugin-api';
-import { CacheServiceSetOptions as CacheClientSetOptions } from '@backstage/backend-plugin-api';
+import { CacheService } from '@backstage/backend-plugin-api';
+import { CacheServiceOptions } from '@backstage/backend-plugin-api';
+import type { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import cors from 'cors';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
@@ -44,7 +45,6 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
-import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
@@ -193,18 +193,26 @@ export class BitbucketUrlReader implements UrlReader {
   toString(): string;
 }
 
-export { CacheClient };
+// @public @deprecated (undocumented)
+export type CacheClient = CacheService;
 
-export { CacheClientOptions };
+// @public @deprecated (undocumented)
+export type CacheClientOptions = CacheServiceOptions;
 
-export { CacheClientSetOptions };
+// @public @deprecated (undocumented)
+export type CacheClientSetOptions = CacheServiceSetOptions;
 
 // @public
 export class CacheManager {
-  forPlugin(pluginId: string): PluginCacheManager;
+  forPlugin(pluginId: string): {
+    getClient(options?: CacheServiceOptions): CacheService;
+  };
   static fromConfig(
     config: Config,
-    options?: CacheManagerOptions,
+    options?: {
+      logger?: LoggerService;
+      onError?: (err: Error) => void;
+    },
   ): CacheManager;
 }
 
@@ -214,10 +222,10 @@ export type CacheManagerOptions = {
   onError?: (err: Error) => void;
 };
 
-// @public (undocumented)
-export function cacheToPluginCacheManager(
-  cache: CacheClient,
-): PluginCacheManager;
+// @public
+export function cacheToPluginCacheManager(cache: CacheService): {
+  getClient(options?: CacheServiceOptions): CacheService;
+};
 
 // @public @deprecated
 export const coloredFormat: winston.Logform.Format;
@@ -575,10 +583,10 @@ export const legacyPlugin: (
     default: LegacyCreateRouter<
       TransformedEnv<
         {
-          cache: CacheClient;
+          cache: CacheService;
           config: RootConfigService;
           database: PluginDatabaseManager;
-          discovery: PluginEndpointDiscovery;
+          discovery: DiscoveryService;
           logger: LoggerService;
           permissions: PermissionsService;
           scheduler: SchedulerService;
@@ -588,7 +596,9 @@ export const legacyPlugin: (
         },
         {
           logger: (log: LoggerService) => Logger;
-          cache: (cache: CacheClient) => PluginCacheManager;
+          cache: (cache: CacheService) => {
+            getClient(options?: CacheServiceOptions | undefined): CacheService;
+          };
         }
       >
     >;
@@ -639,12 +649,13 @@ export function notFoundHandler(): RequestHandler;
 // @public (undocumented)
 export interface PluginCacheManager {
   // (undocumented)
-  getClient(options?: CacheClientOptions): CacheClient;
+  getClient(options?: CacheServiceOptions): CacheService;
 }
 
 export { PluginDatabaseManager };
 
-export { PluginEndpointDiscovery };
+// @public @deprecated (undocumented)
+export type PluginEndpointDiscovery = DiscoveryService;
 
 // @public
 export interface PullOptions {
