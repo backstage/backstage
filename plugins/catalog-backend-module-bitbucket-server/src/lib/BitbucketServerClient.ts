@@ -20,6 +20,7 @@ import {
   getBitbucketServerRequestOptions,
 } from '@backstage/integration';
 import { BitbucketServerProject, BitbucketServerRepository } from './types';
+import Bottleneck from 'bottleneck';
 
 /**
  * A client for interacting with a Bitbucket Server instance
@@ -28,6 +29,7 @@ import { BitbucketServerProject, BitbucketServerRepository } from './types';
  */
 export class BitbucketServerClient {
   private readonly config: BitbucketServerIntegrationConfig;
+  private readonly limiter: Bottleneck;
 
   static fromConfig(options: {
     config: BitbucketServerIntegrationConfig;
@@ -37,6 +39,9 @@ export class BitbucketServerClient {
 
   constructor(options: { config: BitbucketServerIntegrationConfig }) {
     this.config = options.config;
+    this.limiter = new Bottleneck({
+      minTime: this.config.rateLimit,
+    });
   }
 
   async listProjects(options: {
@@ -118,16 +123,18 @@ export class BitbucketServerClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, getBitbucketServerRequestOptions(this.config)).then(
-      (response: Response) => {
+    console.log('Requesting', req.url);
+
+    return this.limiter
+      .schedule(() => fetch(req, getBitbucketServerRequestOptions(this.config)))
+      .then((response: Response) => {
         if (!response.ok) {
           throw new Error(
             `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
           );
         }
         return response;
-      },
-    );
+      });
   }
 }
 

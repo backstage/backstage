@@ -59,6 +59,7 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@types/node-fetch": "^2.5.12",
+    "bottleneck": "^2.19.5",
     "node-fetch": "^2.6.7",
     "uuid": "^9.0.0"
   },

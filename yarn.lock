@@ -5359,6 +5359,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/node-fetch": ^2.5.12
+    bottleneck: ^2.19.5
     luxon: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
@@ -39798,6 +39799,7 @@ __metadata:
     "@types/webpack": ^5.28.0
     "@useoptic/optic": ^0.50.10
     array-to-table: ^1.0.1
+    bottleneck: ^2.19.5
     command-exists: ^1.2.9
     cross-env: ^7.0.0
     e2e-test: "workspace:*"

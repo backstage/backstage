@@ -64,6 +64,12 @@ export type BitbucketServerIntegrationConfig = {
    * See https://developer.atlassian.com/server/bitbucket/how-tos/command-line-rest/#authentication
    */
   password?: string;
+
+  /**
+   * How long to wait in milliseconds between requests to the Bitbucket Server API.
+   * Defaults to undefined, which means no rate limiting.
+   */
+  rateLimit?: number;
 };
 
 /**
@@ -80,6 +86,7 @@ export function readBitbucketServerIntegrationConfig(
   const token = config.getOptionalString('token')?.trim();
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password');
+  const rateLimit = config.getOptionalNumber('rateLimit');
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -99,6 +106,7 @@ export function readBitbucketServerIntegrationConfig(
     token,
     username,
     password,
+    rateLimit,
   };
 }
 
