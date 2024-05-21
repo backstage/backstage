@@ -34,7 +34,8 @@ import { HarnessIntegration } from '@backstage/integration';
 import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
-import { isChildPath } from '@backstage/cli-common';
+import { isChildPath as isChildPath_2 } from '@backstage/backend-plugin-api';
+import { isDatabaseConflictError as isDatabaseConflictError_2 } from '@backstage/backend-plugin-api';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
@@ -55,6 +56,8 @@ import { ReadTreeResponseFile } from '@backstage/backend-plugin-api';
 import { ReadUrlOptions } from '@backstage/backend-plugin-api';
 import { ReadUrlResponse } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
+import { resolvePackagePath as resolvePackagePath_2 } from '@backstage/backend-plugin-api';
+import { resolveSafeChildPath as resolveSafeChildPath_2 } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -71,7 +74,7 @@ import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
 
-// @public
+// @public @deprecated
 export type AuthCallbackOptions = {
   onAuth: AuthCallback;
   logger?: LoggerService;
@@ -216,7 +219,7 @@ export function cacheToPluginCacheManager(
   cache: CacheClient,
 ): PluginCacheManager;
 
-// @public
+// @public @deprecated
 export const coloredFormat: winston.Logform.Format;
 
 // @public
@@ -257,13 +260,13 @@ export function createLegacyAuthAdapters<
       : {}),
 >(options: TOptions): TAdapters;
 
-// @public
+// @public @deprecated
 export function createRootLogger(
   options?: winston.LoggerOptions,
   env?: NodeJS.ProcessEnv,
 ): winston.Logger;
 
-// @public
+// @public @deprecated
 export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
 // @public
@@ -307,7 +310,7 @@ export function dropDatabase(
   ...databaseNames: string[]
 ): Promise<void>;
 
-// @public
+// @public @deprecated
 export function errorHandler(
   options?: ErrorHandlerOptions,
 ): ErrorRequestHandler;
@@ -364,13 +367,13 @@ export class GerritUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export function getRootLogger(): winston.Logger;
 
-// @public
+// @public @deprecated
 export function getVoidLogger(): winston.Logger;
 
-// @public
+// @public @deprecated
 export class Git {
   // (undocumented)
   add(options: { dir: string; filepath: string }): Promise<void>;
@@ -530,13 +533,14 @@ export class HarnessUrlReader implements UrlReader {
   toString(): string;
 }
 
-// @public
+// @public @deprecated
 export const HostDiscovery: typeof HostDiscovery_2;
 
-export { isChildPath };
+// @public @deprecated (undocumented)
+export const isChildPath: typeof isChildPath_2;
 
-// @public
-export function isDatabaseConflictError(e: unknown): boolean;
+// @public @deprecated (undocumented)
+export const isDatabaseConflictError: typeof isDatabaseConflictError_2;
 
 // @public
 export class KubernetesContainerRunner implements ContainerRunner {
@@ -596,7 +600,7 @@ export type LegacyRootDatabaseService = {
   forPlugin(pluginId: string): PluginDatabaseManager;
 };
 
-// @public
+// @public @deprecated
 export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
@@ -730,7 +734,7 @@ export function redactWinstonLogLine(
   info: winston.Logform.TransformableInfo,
 ): winston.Logform.TransformableInfo;
 
-// @public
+// @public @deprecated
 export function requestLoggingHandler(logger?: LoggerService): RequestHandler;
 
 // @public
@@ -738,11 +742,11 @@ export type RequestLoggingHandlerFactory = (
   logger?: LoggerService,
 ) => RequestHandler;
 
-// @public
-export function resolvePackagePath(name: string, ...paths: string[]): string;
+// @public @deprecated (undocumented)
+export const resolvePackagePath: typeof resolvePackagePath_2;
 
-// @public
-export function resolveSafeChildPath(base: string, path: string): string;
+// @public @deprecated (undocumented)
+export const resolveSafeChildPath: typeof resolveSafeChildPath_2;
 
 // @public
 export type RunContainerOptions = {
@@ -812,13 +816,13 @@ export type ServiceBuilder = {
   start(): Promise<Server>;
 };
 
-// @public
+// @public @deprecated
 export function setRootLogger(newLogger: winston.Logger): void;
 
 // @public @deprecated
 export const SingleHostDiscovery: typeof HostDiscovery_2;
 
-// @public
+// @public @deprecated
 export type StaticAuthOptions = {
   username?: string;
   password?: string;

@@ -1,47 +1,109 @@
 {
   "name": "@backstage/backend-defaults",
   "description": "Backend defaults used by Backstage backend apps",
-  "version": "0.2.18-next.2",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "types": "dist/index.d.ts"
-  },
+  "version": "0.2.18",
   "backstage": {
     "role": "node-library"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
   "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
     "directory": "packages/backend-defaults"
   },
-  "keywords": [
-    "backstage"
-  ],
   "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./cache": "./src/entrypoints/cache/index.ts",
+    "./database": "./src/entrypoints/database/index.ts",
+    "./discovery": "./src/entrypoints/discovery/index.ts",
+    "./lifecycle": "./src/entrypoints/lifecycle/index.ts",
+    "./permissions": "./src/entrypoints/permissions/index.ts",
+    "./rootConfig": "./src/entrypoints/rootConfig/index.ts",
+    "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
+    "./scheduler": "./src/entrypoints/scheduler/index.ts",
+    "./urlReader": "./src/entrypoints/urlReader/index.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "cache": [
+        "src/entrypoints/cache/index.ts"
+      ],
+      "database": [
+        "src/entrypoints/database/index.ts"
+      ],
+      "discovery": [
+        "src/entrypoints/discovery/index.ts"
+      ],
+      "lifecycle": [
+        "src/entrypoints/lifecycle/index.ts"
+      ],
+      "permissions": [
+        "src/entrypoints/permissions/index.ts"
+      ],
+      "rootConfig": [
+        "src/entrypoints/rootConfig/index.ts"
+      ],
+      "rootLifecycle": [
+        "src/entrypoints/rootLifecycle/index.ts"
+      ],
+      "scheduler": [
+        "src/entrypoints/scheduler/index.ts"
+      ],
+      "urlReader": [
+        "src/entrypoints/urlReader/index.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "config.d.ts",
+    "dist",
+    "migrations"
+  ],
   "scripts": {
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-common": "workspace:^",
-    "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/config-loader": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-permission-node": "workspace:^",
+    "@backstage/types": "workspace:^",
+    "@opentelemetry/api": "^1.3.0",
+    "cron": "^3.0.0",
+    "knex": "^3.0.0",
+    "lodash": "^4.17.21",
+    "luxon": "^3.0.0",
+    "uuid": "^9.0.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "wait-for-expect": "^3.0.2"
   },
-  "files": [
-    "dist"
-  ]
+  "configSchema": "config.d.ts"
 }

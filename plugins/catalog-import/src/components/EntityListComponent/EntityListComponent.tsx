@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
-import { useApp } from '@backstage/core-plugin-api';
 import {
+  Entity,
+  CompoundEntityRef,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
+import { useApi } from '@backstage/core-plugin-api';
+import {
+  EntityDisplayName,
   EntityRefLink,
-  humanizeEntityRef,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import Collapse from '@material-ui/core/Collapse';
 import IconButton from '@material-ui/core/IconButton';
@@ -37,12 +42,6 @@ const useStyles = makeStyles(theme => ({
     paddingLeft: theme.spacing(4),
   },
 }));
-
-function sortEntities(entities: Array<CompoundEntityRef | Entity>) {
-  return entities.sort((a, b) =>
-    humanizeEntityRef(a).localeCompare(humanizeEntityRef(b)),
-  );
-}
 
 /**
  * Props for {@link EntityListComponent}.
@@ -76,9 +75,8 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
     withLinks = false,
   } = props;
 
-  const app = useApp();
   const classes = useStyles();
-
+  const entityPresentationApi = useApi(entityPresentationApiRef);
   const [expandedUrls, setExpandedUrls] = useState<string[]>([]);
 
   const handleClick = (url: string) => {
@@ -86,6 +84,17 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
       urls.includes(url) ? urls.filter(u => u !== url) : urls.concat(url),
     );
   };
+
+  function sortEntities(entities: Array<CompoundEntityRef | Entity>) {
+    return entities.sort((a, b) =>
+      entityPresentationApi
+        .forEntity(stringifyEntityRef(a))
+        .snapshot.entityRef.localeCompare(
+          entityPresentationApi.forEntity(stringifyEntityRef(b)).snapshot
+            .entityRef,
+        ),
+    );
+  }
 
   return (
     <List>
@@ -124,12 +133,9 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
           >
             <List component="div" disablePadding dense>
               {sortEntities(r.entities).map(entity => {
-                const Icon = app.getSystemIcon(
-                  `kind:${entity.kind.toLocaleLowerCase('en-US')}`,
-                );
                 return (
                   <ListItem
-                    key={humanizeEntityRef(entity)}
+                    key={stringifyEntityRef(entity)}
                     className={classes.nested}
                     {...(withLinks
                       ? {
@@ -139,8 +145,9 @@ export const EntityListComponent = (props: EntityListComponentProps) => {
                         }
                       : {})}
                   >
-                    <ListItemIcon>{Icon && <Icon />}</ListItemIcon>
-                    <ListItemText primary={humanizeEntityRef(entity)} />
+                    <ListItemText
+                      primary={<EntityDisplayName entityRef={entity} />}
+                    />
                   </ListItem>
                 );
               })}

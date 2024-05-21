@@ -1,6 +1,6 @@
 {
   "name": "@internal/plugin-todo-list-backend",
-  "version": "1.0.27-next.1",
+  "version": "1.0.27",
   "backstage": {
     "role": "backend-plugin"
   },
@@ -43,6 +43,8 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",
     "@types/uuid": "^9.0.0",

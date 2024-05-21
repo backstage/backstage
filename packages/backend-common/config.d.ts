@@ -191,6 +191,11 @@ export interface Config {
           connection: string;
           /** An optional default TTL (in milliseconds). */
           defaultTtl?: number;
+          /**
+           * Whether or not [useRedisSets](https://github.com/jaredwray/keyv/tree/main/packages/redis#useredissets) should be configured to this redis cache.
+           * Defaults to true if unspecified.
+           */
+          useRedisSets?: boolean;
         }
       | {
           store: 'memcache';

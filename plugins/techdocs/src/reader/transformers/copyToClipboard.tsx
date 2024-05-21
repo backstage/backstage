@@ -67,7 +67,7 @@ const CopyToClipboardButton = ({ text }: CopyToClipboardButtonProps) => {
       leaveDelay={1000}
     >
       <IconButton
-        style={{ color: 'inherit' }}
+        style={{ color: 'inherit', position: 'absolute' }}
         className="md-clipboard md-icon"
         onClick={handleClick}
       >

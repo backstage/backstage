@@ -1,5 +1,13 @@
 # @backstage/core-compat-api
 
+## 0.2.5
+
+### Patch Changes
+
+- 5d99272: Update local development dependencies.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.6.5
+
 ## 0.2.5-next.1
 
 ### Patch Changes

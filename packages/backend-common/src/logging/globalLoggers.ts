@@ -21,6 +21,8 @@ import { createRootLogger } from './createRootLogger';
  * A logger that just throws away all messages.
  *
  * @public
+ * @deprecated As we are going to deprecate the legacy backend, this function will be removed in the future.
+ * If you need to mock the root logger in the new system, please use `mockServices.logger.mock()` from `@backstage/test-utils` instead.
  */
 export function getVoidLogger(): winston.Logger {
   return winston.createLogger({
@@ -34,6 +36,9 @@ let rootLogger: winston.Logger;
  * Gets the current root logger.
  *
  * @public
+ * @deprecated As we are going to deprecate the legacy backend, this function will be removed in the future.
+ * If you need to get the root logger in the new system, please check out this documentation:
+ * https://backstage.io/docs/backend-system/core-services/logger
  */
 export function getRootLogger(): winston.Logger {
   if (!rootLogger) {
@@ -55,6 +60,9 @@ export function getRootLogger(): winston.Logger {
  * behavior, you would instead call {@link createRootLogger}.
  *
  * @public
+ * @deprecated As we are going to deprecate the legacy backend, this function will be removed in the future.
+ * If you need to set the root logger in the new system, please check out this documentation:
+ * https://backstage.io/docs/backend-system/core-services/logger
  */
 export function setRootLogger(newLogger: winston.Logger) {
   rootLogger = newLogger;

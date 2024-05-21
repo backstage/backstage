@@ -27,7 +27,23 @@
  */
 
 const KNOWN_STYLES = [
-  // TODO: add exports from colorManipulator and transitions
+  // colorManipulator
+  'hexToRgb',
+  'rgbToHex',
+  'hslToRgb',
+  'decomposeColor',
+  'recomposeColor',
+  'getContrastRatio',
+  'getLuminance',
+  'emphasize',
+  'fade',
+  'alpha',
+  'darken',
+  'lighten',
+  // transitions
+  'easing',
+  'duration',
+  // styles
   'createTheme',
   'unstable_createMuiStrictModeTheme',
   'createMuiTheme',
@@ -139,7 +155,11 @@ module.exports = {
               const value = s.imported.name;
               const alias = s.local.name === value ? undefined : s.local.name;
 
-              const propsMatch = /^([A-Z]\w+)Props$/.exec(value);
+              const propsMatch =
+                /^([A-Z]\w+)Props$/.exec(value) ??
+                (node.source.value === '@material-ui/pickers'
+                  ? /^Keyboard([A-Z]\w+Picker)$/.exec(value)
+                  : null);
 
               const emitProp = propsMatch !== null;
               const emitComponent = !emitProp;
@@ -188,7 +208,7 @@ module.exports = {
             if (specifier.emitProp && !specifier.emitComponent) {
               const replacement = `import { ${getNamedImportValue(
                 specifier,
-              )} } from '@material-ui/core/${specifier.componentValue}';`;
+              )} } from '${node.source.value}/${specifier.componentValue}';`;
               replacements.push(replacement);
             }
 
@@ -197,9 +217,9 @@ module.exports = {
               replacements.push(
                 `import ${
                   specifier.componentAlias ?? specifier.componentValue
-                }, { ${getNamedImportValue(
-                  specifier,
-                )} } from '@material-ui/core/${specifier.componentValue}';`,
+                }, { ${getNamedImportValue(specifier)} } from '${
+                  node.source.value
+                }/${specifier.componentValue}';`,
               );
             }
           }

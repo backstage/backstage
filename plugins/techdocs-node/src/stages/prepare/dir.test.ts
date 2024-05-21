@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger, UrlReader } from '@backstage/backend-common';
+import { UrlReader, loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DirectoryPreparer } from './dir';
+import { mockServices } from '@backstage/backend-test-utils';
 
 function normalizePath(path: string) {
   return path
@@ -28,7 +29,7 @@ jest.mock('../../helpers', () => ({
   ...jest.requireActual<{}>('../../helpers'),
 }));
 
-const logger = getVoidLogger();
+const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
 const createMockEntity = (annotations: {}) => {
   return {

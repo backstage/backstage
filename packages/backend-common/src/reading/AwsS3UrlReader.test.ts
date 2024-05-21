@@ -16,7 +16,6 @@
 
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import { getVoidLogger } from '../logging';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { DEFAULT_REGION, AwsS3UrlReader, parseUrl } from './AwsS3UrlReader';
 import {
@@ -37,6 +36,7 @@ import {
 } from '@aws-sdk/client-s3';
 import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
 import fs from 'fs';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -166,7 +166,7 @@ describe('AwsS3UrlReader', () => {
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return AwsS3UrlReader.factory({
       config: new ConfigReader(config),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       treeResponseFactory,
     });
   };

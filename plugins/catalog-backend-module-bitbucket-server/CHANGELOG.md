@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-bitbucket-server
 
+## 0.1.32
+
+### Patch Changes
+
+- 062ffb1: Allow skipping archived repositories (`skipArchivedRepos` flag) on Bitbucket.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/integration@1.11.0
+
 ## 0.1.32-next.2
 
 ### Patch Changes

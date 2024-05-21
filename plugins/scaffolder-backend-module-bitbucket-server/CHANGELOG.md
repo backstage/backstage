@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-server
 
+## 0.1.8
+
+### Patch Changes
+
+- 24dd655: Add examples for `publish:bitbucketServer:pull-request` scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-scaffolder-node@0.4.4
+  - @backstage/integration@1.11.0
+
 ## 0.1.8-next.2
 
 ### Patch Changes

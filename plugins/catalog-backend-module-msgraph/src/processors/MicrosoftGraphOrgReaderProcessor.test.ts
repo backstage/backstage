@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { MicrosoftGraphClient, readMicrosoftGraphOrg } from '../microsoftGraph';
 import { MicrosoftGraphOrgReaderProcessor } from './MicrosoftGraphOrgReaderProcessor';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../microsoftGraph', () => {
   return {
@@ -45,7 +45,7 @@ describe('MicrosoftGraphOrgReaderProcessor', () => {
           clientSecret: 'clientsecret',
         },
       ],
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
     });
 
     jest

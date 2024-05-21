@@ -181,6 +181,7 @@ const config: Config = {
         hideIcon: true,
         customFont: true,
         buttonStyle: 'dark',
+        ratingMode: 'stars',
       },
     ],
   ],
@@ -216,7 +217,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: 'docs/releases/v1.26.0',
+          to: 'docs/releases/v1.27.0',
           label: 'Releases',
           position: 'left',
         },

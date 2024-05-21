@@ -29,6 +29,7 @@ import { setRootLoggerRedactionList } from './logging/createRootLogger';
  * This function should only be called once, during the initialization of the backend.
  *
  * @public
+ * @deprecated Use {@link @backstage/backend-app-api#loadBackendConfig} instead.
  */
 export async function loadBackendConfig(options: {
   logger: LoggerService;

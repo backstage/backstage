@@ -18,6 +18,7 @@ import { Config } from '@backstage/config';
 import helmet from 'helmet';
 import { HelmetOptions } from 'helmet';
 import { ContentSecurityPolicyOptions } from 'helmet/dist/types/middlewares/content-security-policy';
+import kebabCase from 'lodash/kebabCase';
 
 /**
  * Attempts to read Helmet options from the backend configuration object.
@@ -97,10 +98,11 @@ export function applyCspDirectives(
 
   if (directives) {
     for (const [key, value] of Object.entries(directives)) {
+      const kebabCaseKey = kebabCase(key);
       if (value === false) {
-        delete result[key];
+        delete result[kebabCaseKey];
       } else {
-        result[key] = value;
+        result[kebabCaseKey] = value;
       }
     }
   }

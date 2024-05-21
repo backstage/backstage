@@ -22,10 +22,18 @@ integrations:
       appPassword: ${BITBUCKET_CLOUD_PASSWORD}
 ```
 
-> Note: A public Bitbucket Cloud provider is added automatically at startup for
-> convenience, so you only need to list it if you want to supply credentials.
+:::note Note
 
-> Note: The credential used for this is type [App Password](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/). An Atlassian Account API key will not work
+A public Bitbucket Cloud provider is added automatically at startup for
+convenience, so you only need to list it if you want to supply credentials.
+
+:::
+
+:::note Note
+
+The credential used for this is type [App Password](https://support.atlassian.com/bitbucket-cloud/docs/app-passwords/). An Atlassian Account API key will not work.
+
+:::
 
 Directly under the `bitbucketCloud` key is a list of provider configurations, where
 you can list the Bitbucket Cloud providers you want to fetch data from.

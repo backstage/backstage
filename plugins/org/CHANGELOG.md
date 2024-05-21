@@ -1,5 +1,18 @@
 # @backstage/plugin-org
 
+## 0.6.25
+
+### Patch Changes
+
+- 99e6105: Fix ownership card sometimes locking up for complex org structures
+- Updated dependencies
+  - @backstage/core-compat-api@0.2.5
+  - @backstage/core-components@0.14.7
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/frontend-plugin-api@0.6.5
+  - @backstage/plugin-catalog-common@1.0.23
+
 ## 0.6.25-next.2
 
 ### Patch Changes

@@ -23,3 +23,5 @@ import { HumanDuration as TypesHumanDuration } from '@backstage/types';
  * @deprecated Import from `@backstage/types` instead
  */
 export type HumanDuration = TypesHumanDuration;
+
+export * from './tasks';

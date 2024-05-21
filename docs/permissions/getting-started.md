@@ -8,7 +8,11 @@ If you prefer to watch a video instead, you can start with this video introducti
 
 <iframe width="560" height="315" src="https://www.youtube.com/embed/EQr9tFClgG0" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
 
-> Note: This video was recorded in the January 2022 Contributors Session using `@backstage/create-app@0.4.14`. Some aspects of the demo may have changed in later releases.
+:::note Note
+
+This video was recorded in the January 2022 Contributors Session using `@backstage/create-app@0.4.14`. Some aspects of the demo may have changed in later releases.
+
+:::
 
 Backstage integrators control permissions by writing a policy. In general terms, a policy is simply an async function which receives a request to authorize a specific action for a user and (optional) resource, and returns a decision on whether to authorize that permission. Integrators can implement their own policies from scratch, or adopt reusable policies written by others.
 

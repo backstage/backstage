@@ -29,7 +29,6 @@ import {
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import {
-  getVoidLogger,
   PluginEndpointDiscovery,
   ServerTokenManager,
 } from '@backstage/backend-common';
@@ -62,7 +61,7 @@ const config = new ConfigReader({
   permission: { enabled: true },
   backend: { auth: { keys: [{ secret: 'a-secret-key' }] } },
 });
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('ServerPermissionClient', () => {
   setupRequestMockHandlers(server);

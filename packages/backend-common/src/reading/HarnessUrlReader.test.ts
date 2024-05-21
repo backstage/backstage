@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { HarnessIntegration, readHarnessConfig } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { getVoidLogger } from '../logging';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
 import getRawBody from 'raw-body';
@@ -30,7 +32,7 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
-jest.mock('../scm', () => ({
+jest.mock('./git', () => ({
   Git: {
     fromAuth: () => ({
       clone: jest.fn(() => Promise.resolve({})),
@@ -52,7 +54,7 @@ const harnessProcessor = new HarnessUrlReader(
 const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
   return HarnessUrlReader.factory({
     config: new ConfigReader(config),
-    logger: getVoidLogger(),
+    logger: mockServices.logger.mock(),
     treeResponseFactory,
   });
 };

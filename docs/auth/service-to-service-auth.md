@@ -6,8 +6,7 @@ description: This section describes service to service authentication works, bot
 ---
 
 :::info
-This documentation is written for [the new backend
-system](../backend-system/index.md) which is the default since Backstage
+This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage
 [version 1.24](../releases/v1.24.0.md). If you are still on the old backend
 system, you may want to read [its own article](./service-to-service-auth--old.md)
 instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
@@ -206,8 +205,12 @@ payload:
 - `sub`: the exact string "backstage-server"
 - `exp`: one hour from the time it was generated, in epoch seconds
 
-> NOTE: The JWT must encode the `alg` header as a protected header, such as with
-> [setProtectedHeader](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#setprotectedheader).
+:::note Note
+
+The JWT must encode the `alg` header as a protected header, such as with
+[setProtectedHeader](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#setprotectedheader).
+
+:::
 
 The caller then passes along the JWT token with requests in the `Authorization`
 header:

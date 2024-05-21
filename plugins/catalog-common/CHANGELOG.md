@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-common
 
+## 1.0.23
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+
 ## 1.0.23-next.0
 
 ### Patch Changes
