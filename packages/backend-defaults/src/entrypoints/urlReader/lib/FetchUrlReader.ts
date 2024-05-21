@@ -15,10 +15,10 @@
  */
 
 import {
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
@@ -121,8 +121,8 @@ export class FetchUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     let response: Response;
     try {
       response = await fetch(url, {
@@ -165,11 +165,11 @@ export class FetchUrlReader implements UrlReaderService {
     throw new Error(message);
   }
 
-  async readTree(): Promise<ReadTreeResponse> {
+  async readTree(): Promise<UrlReaderReadTreeResponse> {
     throw new Error('FetchUrlReader does not implement readTree');
   }
 
-  async search(): Promise<SearchResponse> {
+  async search(): Promise<UrlReaderSearchResponse> {
     throw new Error('FetchUrlReader does not implement search');
   }
 

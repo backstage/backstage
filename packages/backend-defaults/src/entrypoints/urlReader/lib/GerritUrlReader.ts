@@ -38,11 +38,11 @@ import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { Git } from './git';
 import {
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 
@@ -121,8 +121,8 @@ export class GerritUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     const apiUrl = getGerritFileContentsApiUrl(this.integration.config, url);
     let response: Response;
     try {
@@ -166,8 +166,8 @@ export class GerritUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const apiUrl = getGerritBranchApiUrl(this.integration.config, url);
     let response: Response;
     try {
@@ -203,7 +203,7 @@ export class GerritUrlReader implements UrlReaderService {
     return this.readTreeFromGitClone(url, branchInfo.revision, options);
   }
 
-  async search(): Promise<SearchResponse> {
+  async search(): Promise<UrlReaderSearchResponse> {
     throw new Error('GerritReader does not implement search');
   }
 
@@ -215,7 +215,7 @@ export class GerritUrlReader implements UrlReaderService {
   private async readTreeFromGitClone(
     url: string,
     revision: string,
-    options?: ReadTreeOptions,
+    options?: UrlReaderReadTreeOptions,
   ) {
     const { filePath } = parseGerritGitilesUrl(this.integration.config, url);
 
@@ -258,7 +258,7 @@ export class GerritUrlReader implements UrlReaderService {
   private async readTreeFromGitiles(
     url: string,
     revision: string,
-    options?: ReadTreeOptions,
+    options?: UrlReaderReadTreeOptions,
   ) {
     const { branch, filePath, project } = parseGerritGitilesUrl(
       this.integration.config,

@@ -65,6 +65,16 @@ export type {
 } from './SchedulerService';
 export type { TokenManagerService } from './TokenManagerService';
 export type {
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadTreeResponseDirOptions,
+  UrlReaderReadTreeResponseFile,
+  UrlReaderReadUrlResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderSearchOptions,
+  UrlReaderSearchResponse,
+  UrlReaderSearchResponseFile,
+  UrlReaderService,
   ReadTreeOptions,
   ReadTreeResponse,
   ReadTreeResponseDirOptions,
@@ -74,7 +84,6 @@ export type {
   SearchOptions,
   SearchResponse,
   SearchResponseFile,
-  UrlReaderService,
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
 export type { IdentityService } from './IdentityService';

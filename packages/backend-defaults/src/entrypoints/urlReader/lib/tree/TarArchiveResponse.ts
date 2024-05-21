@@ -15,9 +15,9 @@
  */
 
 import {
-  ReadTreeResponse,
-  ReadTreeResponseDirOptions,
-  ReadTreeResponseFile,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadTreeResponseDirOptions,
+  UrlReaderReadTreeResponseFile,
 } from '@backstage/backend-plugin-api';
 import concatStream from 'concat-stream';
 import fs from 'fs-extra';
@@ -35,7 +35,7 @@ const pipeline = promisify(pipelineCb);
 /**
  * Wraps a tar archive stream into a tree response reader.
  */
-export class TarArchiveResponse implements ReadTreeResponse {
+export class TarArchiveResponse implements UrlReaderReadTreeResponse {
   private read = false;
 
   constructor(
@@ -68,10 +68,10 @@ export class TarArchiveResponse implements ReadTreeResponse {
     this.read = true;
   }
 
-  async files(): Promise<ReadTreeResponseFile[]> {
+  async files(): Promise<UrlReaderReadTreeResponseFile[]> {
     this.onlyOnce();
 
-    const files = Array<ReadTreeResponseFile>();
+    const files = Array<UrlReaderReadTreeResponseFile>();
     const parser = new TarParseStream();
 
     parser.on('entry', (entry: ReadEntry & Readable) => {
@@ -142,7 +142,7 @@ export class TarArchiveResponse implements ReadTreeResponse {
     }
   }
 
-  async dir(options?: ReadTreeResponseDirOptions): Promise<string> {
+  async dir(options?: UrlReaderReadTreeResponseDirOptions): Promise<string> {
     this.onlyOnce();
 
     const dir =

@@ -30,12 +30,12 @@ import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchOptions,
-  SearchResponse,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchOptions,
+  UrlReaderSearchResponse,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 
@@ -74,8 +74,8 @@ export class AzureUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     // TODO: etag is not implemented yet.
     const { signal } = options ?? {};
 
@@ -113,8 +113,8 @@ export class AzureUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const { etag, filter, signal } = options ?? {};
 
     // TODO: Support filepath based reading tree feature like other providers
@@ -179,7 +179,10 @@ export class AzureUrlReader implements UrlReaderService {
     });
   }
 
-  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+  async search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse> {
     const treeUrl = new URL(url);
 
     const path = treeUrl.searchParams.get('path');

@@ -18,22 +18,68 @@ import { Readable } from 'stream';
 import { Config } from '@backstage/config';
 import {
   UrlReaderService,
-  ReadTreeResponse,
   LoggerService,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadTreeResponseDirOptions,
+  UrlReaderReadTreeResponseFile,
+  UrlReaderReadUrlResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderSearchOptions,
+  UrlReaderSearchResponse,
+  UrlReaderSearchResponseFile,
 } from '@backstage/backend-plugin-api';
 
-export type {
-  UrlReaderService as UrlReader,
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadTreeResponseDirOptions,
-  ReadTreeResponseFile,
-  ReadUrlResponse,
-  ReadUrlOptions,
-  SearchOptions,
-  SearchResponse,
-  SearchResponseFile,
-} from '@backstage/backend-plugin-api';
+/**
+ * @public
+ * @deprecated Use `UrlReaderService` from `@backstage/backend-plugin-api` instead
+ */
+export type UrlReader = UrlReaderService;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadTreeOptions` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadTreeOptions = UrlReaderReadTreeOptions;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadTreeResponse` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadTreeResponse = UrlReaderReadTreeResponse;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadTreeResponseDirOptions` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadTreeResponseDirOptions = UrlReaderReadTreeResponseDirOptions;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadTreeResponseFile` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadTreeResponseFile = UrlReaderReadTreeResponseFile;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadUrlResponse` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadUrlResponse = UrlReaderReadUrlResponse;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadUrlOptions` from `@backstage/backend-plugin-api` instead
+ */
+export type ReadUrlOptions = UrlReaderReadUrlOptions;
+/**
+ * @public
+ * @deprecated Use `UrlReaderSearchOptions` from `@backstage/backend-plugin-api` instead
+ */
+export type SearchOptions = UrlReaderSearchOptions;
+/**
+ * @public
+ * @deprecated Use `UrlReaderSearchResponse` from `@backstage/backend-plugin-api` instead
+ */
+export type SearchResponse = UrlReaderSearchResponse;
+/**
+ * @public
+ * @deprecated Use `UrlReaderSearchResponseFile` from `@backstage/backend-plugin-api` instead
+ */
+export type SearchResponseFile = UrlReaderSearchResponseFile;
 
 /**
  * A predicate that decides whether a specific {@link @backstage/backend-plugin-api#UrlReaderService} can handle a
@@ -129,11 +175,11 @@ export interface ReadTreeResponseFactory {
        */
       stripFirstDirectory?: boolean;
     },
-  ): Promise<ReadTreeResponse>;
+  ): Promise<UrlReaderReadTreeResponse>;
   fromZipArchive(
     options: ReadTreeResponseFactoryOptions,
-  ): Promise<ReadTreeResponse>;
+  ): Promise<UrlReaderReadTreeResponse>;
   fromReadableArray(
     options: FromReadableArrayOptions,
-  ): Promise<ReadTreeResponse>;
+  ): Promise<UrlReaderReadTreeResponse>;
 }

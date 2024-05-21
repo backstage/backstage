@@ -42,7 +42,7 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
@@ -339,7 +339,10 @@ export const tokenManagerServiceFactory: () => ServiceFactory<
 >;
 
 // @public @deprecated (undocumented)
-export const urlReaderServiceFactory: () => ServiceFactory<UrlReader, 'plugin'>;
+export const urlReaderServiceFactory: () => ServiceFactory<
+  UrlReaderService,
+  'plugin'
+>;
 
 // @public (undocumented)
 export const userInfoServiceFactory: () => ServiceFactory<

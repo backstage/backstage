@@ -17,12 +17,12 @@
 import { NotAllowedError } from '@backstage/errors';
 import { UrlReaderPredicateTuple } from './types';
 import {
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchOptions,
-  SearchResponse,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchOptions,
+  UrlReaderSearchResponse,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 
@@ -47,8 +47,8 @@ export class UrlReaderPredicateMux implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {
@@ -62,8 +62,8 @@ export class UrlReaderPredicateMux implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {
@@ -75,7 +75,10 @@ export class UrlReaderPredicateMux implements UrlReaderService {
     throw new NotAllowedError(notAllowedMessage(url));
   }
 
-  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+  async search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {

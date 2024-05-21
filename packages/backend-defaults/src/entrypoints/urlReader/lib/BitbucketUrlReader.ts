@@ -16,12 +16,12 @@
 
 import {
   LoggerService,
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchOptions,
-  SearchResponse,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchOptions,
+  UrlReaderSearchResponse,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
@@ -94,8 +94,8 @@ export class BitbucketUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     const { etag, lastModifiedAfter, signal } = options ?? {};
     const bitbucketUrl = getBitbucketFileFetchUrl(url, this.integration.config);
     const requestOptions = getBitbucketRequestOptions(this.integration.config);
@@ -144,8 +144,8 @@ export class BitbucketUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const { filepath } = parseGitUrl(url);
 
     const lastCommitShortHash = await this.getLastCommitShortHash(url);
@@ -177,7 +177,10 @@ export class BitbucketUrlReader implements UrlReaderService {
     });
   }
 
-  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+  async search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse> {
     const { filepath } = parseGitUrl(url);
     const matcher = new Minimatch(filepath);
 

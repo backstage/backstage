@@ -48,26 +48,26 @@ import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
-import { ReadTreeOptions } from '@backstage/backend-plugin-api';
-import { ReadTreeResponse } from '@backstage/backend-plugin-api';
-import { ReadTreeResponseDirOptions } from '@backstage/backend-plugin-api';
-import { ReadTreeResponseFile } from '@backstage/backend-plugin-api';
-import { ReadUrlOptions } from '@backstage/backend-plugin-api';
-import { ReadUrlResponse } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { resolvePackagePath as resolvePackagePath_2 } from '@backstage/backend-plugin-api';
 import { resolveSafeChildPath as resolveSafeChildPath_2 } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
-import { SearchOptions } from '@backstage/backend-plugin-api';
-import { SearchResponse } from '@backstage/backend-plugin-api';
-import { SearchResponseFile } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
-import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
+import { UrlReaderReadTreeOptions } from '@backstage/backend-plugin-api';
+import { UrlReaderReadTreeResponse } from '@backstage/backend-plugin-api';
+import { UrlReaderReadTreeResponseDirOptions } from '@backstage/backend-plugin-api';
+import { UrlReaderReadTreeResponseFile } from '@backstage/backend-plugin-api';
+import { UrlReaderReadUrlOptions } from '@backstage/backend-plugin-api';
+import { UrlReaderReadUrlResponse } from '@backstage/backend-plugin-api';
+import { UrlReaderSearchOptions } from '@backstage/backend-plugin-api';
+import { UrlReaderSearchResponse } from '@backstage/backend-plugin-api';
+import { UrlReaderSearchResponseFile } from '@backstage/backend-plugin-api';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
@@ -582,7 +582,7 @@ export const legacyPlugin: (
           permissions: PermissionsService;
           scheduler: SchedulerService;
           tokenManager: TokenManager;
-          reader: UrlReader;
+          reader: UrlReaderService;
           identity: IdentityService;
         },
         {
@@ -668,28 +668,31 @@ export type ReaderFactory = (options: {
   treeResponseFactory: ReadTreeResponseFactory;
 }) => UrlReaderPredicateTuple[];
 
-export { ReadTreeOptions };
+// @public @deprecated (undocumented)
+export type ReadTreeOptions = UrlReaderReadTreeOptions;
 
-export { ReadTreeResponse };
+// @public @deprecated (undocumented)
+export type ReadTreeResponse = UrlReaderReadTreeResponse;
 
-export { ReadTreeResponseDirOptions };
+// @public @deprecated (undocumented)
+export type ReadTreeResponseDirOptions = UrlReaderReadTreeResponseDirOptions;
 
 // @public @deprecated
 export interface ReadTreeResponseFactory {
   // (undocumented)
   fromReadableArray(
     options: FromReadableArrayOptions,
-  ): Promise<ReadTreeResponse>;
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
   fromTarArchive(
     options: ReadTreeResponseFactoryOptions & {
       stripFirstDirectory?: boolean;
     },
-  ): Promise<ReadTreeResponse>;
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
   fromZipArchive(
     options: ReadTreeResponseFactoryOptions,
-  ): Promise<ReadTreeResponse>;
+  ): Promise<UrlReaderReadTreeResponse>;
 }
 
 // @public @deprecated
@@ -705,11 +708,14 @@ export type ReadTreeResponseFactoryOptions = {
   ) => boolean;
 };
 
-export { ReadTreeResponseFile };
+// @public @deprecated (undocumented)
+export type ReadTreeResponseFile = UrlReaderReadTreeResponseFile;
 
-export { ReadUrlOptions };
+// @public @deprecated (undocumented)
+export type ReadUrlOptions = UrlReaderReadUrlOptions;
 
-export { ReadUrlResponse };
+// @public @deprecated (undocumented)
+export type ReadUrlResponse = UrlReaderReadUrlResponse;
 
 // @public @deprecated
 export class ReadUrlResponseFactory {
@@ -762,11 +768,14 @@ export type RunContainerOptions = {
   pullOptions?: PullOptions;
 };
 
-export { SearchOptions };
+// @public @deprecated (undocumented)
+export type SearchOptions = UrlReaderSearchOptions;
 
-export { SearchResponse };
+// @public @deprecated (undocumented)
+export type SearchResponse = UrlReaderSearchResponse;
 
-export { SearchResponseFile };
+// @public @deprecated (undocumented)
+export type SearchResponseFile = UrlReaderSearchResponseFile;
 
 // @public
 export class ServerTokenManager implements TokenManager {
@@ -845,18 +854,19 @@ export interface StatusCheckHandlerOptions {
 
 export { TokenManager };
 
-export { UrlReader };
+// @public @deprecated (undocumented)
+export type UrlReader = UrlReaderService;
 
 // @public @deprecated
 export type UrlReaderPredicateTuple = {
   predicate: (url: URL) => boolean;
-  reader: UrlReader;
+  reader: UrlReaderService;
 };
 
 // @public @deprecated
 export class UrlReaders {
   static create(options: UrlReadersOptions): UrlReader;
-  static default(options: UrlReadersOptions): UrlReader;
+  static default(options: UrlReadersOptions): UrlReaderService;
 }
 
 // @public @deprecated

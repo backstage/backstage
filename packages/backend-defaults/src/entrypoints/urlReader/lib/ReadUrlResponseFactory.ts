@@ -18,7 +18,7 @@ import { ConflictError } from '@backstage/errors';
 import getRawBody from 'raw-body';
 import { Readable } from 'stream';
 import { ReadUrlResponseFactoryFromStreamOptions } from './types';
-import { ReadUrlResponse } from '@backstage/backend-plugin-api';
+import { UrlReaderReadUrlResponse } from '@backstage/backend-plugin-api';
 
 /**
  * Utility class for UrlReader implementations to create valid ReadUrlResponse
@@ -33,7 +33,7 @@ export class ReadUrlResponseFactory {
   static async fromReadable(
     stream: Readable,
     options?: ReadUrlResponseFactoryFromStreamOptions,
-  ): Promise<ReadUrlResponse> {
+  ): Promise<UrlReaderReadUrlResponse> {
     // Reference to eventual buffer enables callers to call buffer() multiple
     // times without consequence.
     let buffer: Promise<Buffer>;
@@ -69,7 +69,7 @@ export class ReadUrlResponseFactory {
   static async fromNodeJSReadable(
     oldStyleStream: NodeJS.ReadableStream,
     options?: ReadUrlResponseFactoryFromStreamOptions,
-  ): Promise<ReadUrlResponse> {
+  ): Promise<UrlReaderReadUrlResponse> {
     const readable = Readable.from(oldStyleStream);
     return ReadUrlResponseFactory.fromReadable(readable, options);
   }

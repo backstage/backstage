@@ -15,10 +15,10 @@
  */
 
 import {
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import {
@@ -65,8 +65,8 @@ export class HarnessUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     let response: Response;
     const blobUrl = getHarnessFileContentsUrl(this.integration.config, url);
 
@@ -111,10 +111,10 @@ export class HarnessUrlReader implements UrlReaderService {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
+  readTree(): Promise<UrlReaderReadTreeResponse> {
     throw new Error('HarnessUrlReader readTree not implemented.');
   }
-  search(): Promise<SearchResponse> {
+  search(): Promise<UrlReaderSearchResponse> {
     throw new Error('HarnessUrlReader search not implemented.');
   }
 

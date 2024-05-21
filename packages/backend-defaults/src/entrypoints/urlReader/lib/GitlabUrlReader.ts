@@ -31,12 +31,12 @@ import { trimEnd, trimStart } from 'lodash';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
 import {
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchOptions,
-  SearchResponse,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchOptions,
+  UrlReaderSearchResponse,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 
@@ -69,8 +69,8 @@ export class GitlabUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     const { etag, lastModifiedAfter, signal } = options ?? {};
     const builtUrl = await this.getGitlabFetchUrl(url);
 
@@ -118,8 +118,8 @@ export class GitlabUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const { etag, signal } = options ?? {};
     const { ref, full_name, filepath } = parseGitUrl(url);
 
@@ -235,7 +235,10 @@ export class GitlabUrlReader implements UrlReaderService {
     });
   }
 
-  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+  async search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse> {
     const { filepath } = parseGitUrl(url);
     const staticPart = this.getStaticPart(filepath);
     const matcher = new Minimatch(filepath);

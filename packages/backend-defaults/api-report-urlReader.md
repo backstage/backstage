@@ -21,13 +21,13 @@ import { GitLabIntegration } from '@backstage/integration';
 import { HarnessIntegration } from '@backstage/integration';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
-import { ReadTreeOptions } from '@backstage/backend-plugin-api';
-import { ReadTreeResponse } from '@backstage/backend-plugin-api';
-import { ReadUrlOptions } from '@backstage/backend-plugin-api';
-import { ReadUrlResponse } from '@backstage/backend-plugin-api';
-import { SearchOptions } from '@backstage/backend-plugin-api';
-import { SearchResponse } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
+import { UrlReaderReadTreeOptions } from '@backstage/backend-plugin-api';
+import { UrlReaderReadTreeResponse } from '@backstage/backend-plugin-api';
+import { UrlReaderReadUrlOptions } from '@backstage/backend-plugin-api';
+import { UrlReaderReadUrlResponse } from '@backstage/backend-plugin-api';
+import { UrlReaderSearchOptions } from '@backstage/backend-plugin-api';
+import { UrlReaderSearchResponse } from '@backstage/backend-plugin-api';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public
@@ -44,11 +44,17 @@ export class AwsS3UrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(): Promise<SearchResponse>;
+  search(): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -67,11 +73,20 @@ export class AzureUrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -89,11 +104,20 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -111,11 +135,20 @@ export class BitbucketServerUrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -134,11 +167,20 @@ export class BitbucketUrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -149,11 +191,14 @@ export class FetchUrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(): Promise<ReadTreeResponse>;
+  readTree(): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(): Promise<SearchResponse>;
+  search(): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -179,11 +224,17 @@ export class GerritUrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(): Promise<SearchResponse>;
+  search(): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -201,11 +252,17 @@ export class GiteaUrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(): Promise<SearchResponse>;
+  search(): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -224,11 +281,20 @@ export class GithubUrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -246,11 +312,20 @@ export class GitlabUrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -263,11 +338,14 @@ export class HarnessUrlReader implements UrlReaderService {
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)
-  readTree(): Promise<ReadTreeResponse>;
+  readTree(): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
   // (undocumented)
-  search(): Promise<SearchResponse>;
+  search(): Promise<UrlReaderSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -284,17 +362,17 @@ export interface ReadTreeResponseFactory {
   // (undocumented)
   fromReadableArray(
     options: FromReadableArrayOptions,
-  ): Promise<ReadTreeResponse>;
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
   fromTarArchive(
     options: ReadTreeResponseFactoryOptions & {
       stripFirstDirectory?: boolean;
     },
-  ): Promise<ReadTreeResponse>;
+  ): Promise<UrlReaderReadTreeResponse>;
   // (undocumented)
   fromZipArchive(
     options: ReadTreeResponseFactoryOptions,
-  ): Promise<ReadTreeResponse>;
+  ): Promise<UrlReaderReadTreeResponse>;
 }
 
 // @public
@@ -315,11 +393,11 @@ export class ReadUrlResponseFactory {
   static fromNodeJSReadable(
     oldStyleStream: NodeJS.ReadableStream,
     options?: ReadUrlResponseFactoryFromStreamOptions,
-  ): Promise<ReadUrlResponse>;
+  ): Promise<UrlReaderReadUrlResponse>;
   static fromReadable(
     stream: Readable,
     options?: ReadUrlResponseFactoryFromStreamOptions,
-  ): Promise<ReadUrlResponse>;
+  ): Promise<UrlReaderReadUrlResponse>;
 }
 
 // @public

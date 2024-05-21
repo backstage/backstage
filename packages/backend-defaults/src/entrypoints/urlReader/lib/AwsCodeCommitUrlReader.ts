@@ -38,11 +38,11 @@ import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { relative } from 'path/posix';
 import { AbortController } from '@aws-sdk/abort-controller';
 import {
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 
@@ -221,8 +221,8 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     // etag and lastModifiedAfter are not supported by the CodeCommit API
     try {
       const { path, repositoryName, region, commitSpecifier } = parseUrl(
@@ -325,8 +325,8 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     // url: https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/test-stijn-delete-techdocs/browse?region=eu-west-1
     try {
       const { path, repositoryName, region, commitSpecifier } = parseUrl(url);
@@ -379,7 +379,7 @@ export class AwsCodeCommitUrlReader implements UrlReaderService {
     }
   }
 
-  async search(): Promise<SearchResponse> {
+  async search(): Promise<UrlReaderSearchResponse> {
     throw new Error('AwsCodeCommitReader does not implement search');
   }
 

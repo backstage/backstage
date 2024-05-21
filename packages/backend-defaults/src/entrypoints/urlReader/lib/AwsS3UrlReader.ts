@@ -25,11 +25,11 @@ import {
 import { fromTemporaryCredentials } from '@aws-sdk/credential-providers';
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
 import {
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import { ForwardedError, NotModifiedError } from '@backstage/errors';
@@ -252,8 +252,8 @@ export class AwsS3UrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     const { etag, lastModifiedAfter } = options ?? {};
 
     try {
@@ -299,8 +299,8 @@ export class AwsS3UrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     try {
       const { path, bucket, region } = parseUrl(url, this.integration.config);
       const s3Client = await this.buildS3Client(
@@ -356,7 +356,7 @@ export class AwsS3UrlReader implements UrlReaderService {
     }
   }
 
-  async search(): Promise<SearchResponse> {
+  async search(): Promise<UrlReaderSearchResponse> {
     throw new Error('AwsS3Reader does not implement search');
   }
 

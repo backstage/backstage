@@ -33,11 +33,11 @@ import {
 import { Readable } from 'stream';
 import { parseLastModified } from './util';
 import {
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
   UrlReaderService,
 } from '@backstage/backend-plugin-api';
 
@@ -73,8 +73,8 @@ export class GiteaUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     let response: Response;
     const blobUrl = getGiteaFileContentsUrl(this.integration.config, url);
 
@@ -125,8 +125,8 @@ export class GiteaUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const lastCommitHash = await this.getLastCommitHash(url);
     if (options?.etag && options.etag === lastCommitHash) {
       throw new NotModifiedError();
@@ -155,7 +155,7 @@ export class GiteaUrlReader implements UrlReaderService {
     });
   }
 
-  search(): Promise<SearchResponse> {
+  search(): Promise<UrlReaderSearchResponse> {
     throw new Error('GiteaUrlReader search not implemented.');
   }
 
