@@ -24,13 +24,17 @@ import {
 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
+  EntityDisplayName,
+  EntityRefPresentationSnapshot,
   catalogApiRef,
   humanizeEntityRef,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete, {
   AutocompleteChangeReason,
+  createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/esm/useAsync';
@@ -65,15 +69,26 @@ export const EntityPicker = (props: EntityPickerProps) => {
     uiSchema['ui:options']?.defaultNamespace || undefined;
 
   const catalogApi = useApi(catalogApiRef);
+  const entityPresentationApi = useApi(entityPresentationApiRef);
 
   const { value: entities, loading } = useAsync(async () => {
-    const fields = ['metadata.name', 'metadata.namespace', 'kind'];
-    const { items } = await catalogApi.getEntities(
-      catalogFilter
-        ? { filter: catalogFilter, fields }
-        : { filter: undefined, fields },
+    const { items } = await catalogApi.getEntities({ filter: catalogFilter });
+    const entityRefToPresentation = new Map<
+      string,
+      EntityRefPresentationSnapshot
+    >(
+      await Promise.all(
+        items.map(async item => {
+          const presentation = await entityPresentationApi.forEntity(item)
+            .promise;
+          return [stringifyEntityRef(item), presentation] as [
+            string,
+            EntityRefPresentationSnapshot,
+          ];
+        }),
+      ),
     );
-    return items;
+    return { entities: items, entityRefToPresentation };
   });
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
@@ -129,12 +144,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
   // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
   // back to the given value.
   const selectedEntity =
-    entities?.find(e => stringifyEntityRef(e) === formData) ??
+    entities?.entities.find(e => stringifyEntityRef(e) === formData) ??
     (allowArbitraryValues && formData ? getLabel(formData) : '');
 
   useEffect(() => {
-    if (entities?.length === 1 && selectedEntity === '') {
-      onChange(stringifyEntityRef(entities[0]));
+    if (entities?.entities.length === 1 && selectedEntity === '') {
+      onChange(stringifyEntityRef(entities.entities[0]));
     }
   }, [entities, onChange, selectedEntity]);
 
@@ -145,17 +160,18 @@ export const EntityPicker = (props: EntityPickerProps) => {
       error={rawErrors?.length > 0 && !formData}
     >
       <Autocomplete
-        disabled={entities?.length === 1}
+        disabled={entities?.entities.length === 1}
         id={idSchema?.$id}
         value={selectedEntity}
         loading={loading}
         onChange={onSelect}
-        options={entities || []}
+        options={entities?.entities || []}
         getOptionLabel={option =>
           // option can be a string due to freeSolo.
           typeof option === 'string'
             ? option
-            : humanizeEntityRef(option, { defaultKind, defaultNamespace })!
+            : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+                ?.entityRef!
         }
         autoSelect
         freeSolo={allowArbitraryValues}
@@ -171,6 +187,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
             InputProps={params.InputProps}
           />
         )}
+        renderOption={option => <EntityDisplayName entityRef={option} />}
+        filterOptions={createFilterOptions<Entity>({
+          stringify: option =>
+            entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+              ?.primaryTitle!,
+        })}
       />
     </FormControl>
   );
