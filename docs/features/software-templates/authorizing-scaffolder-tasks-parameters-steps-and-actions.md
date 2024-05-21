@@ -176,7 +176,7 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 
 ### Authorizing scaffolder tasks
 
-The scaffolder plugin also exposes permissions that can restrict access to tasks, task logs, task creation, and task cancellation. This can be useful if you want to control who has access to the scaffolder.
+The scaffolder plugin also exposes permissions that can restrict access to tasks, task logs, task creation, and task cancellation. This can be useful if you want to control who has access to these areas of the scaffolder.
 
 ```ts title="packages/src/backend/plugins/permissions.ts"
 /* highlight-add-start */
