@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-auth-backend-module-onelogin-provider': patch
+'@backstage/plugin-auth-backend-module-onelogin-provider': minor
 ---
 
-Initial changeset to introduce onelogin provider
+Separate out the OneLogin provider into its own module

@@ -76,7 +76,7 @@ export default class OneLoginAuth {
       oauthRequestApi,
       provider,
       environment,
-      defaultScopes: ['openid', 'email', 'profile'],
+      defaultScopes: ['openid', 'email', 'profile', 'offline_access'],
       scopeTransform(scopes) {
         return scopes.map(scope => {
           if (OIDC_SCOPES.has(scope)) {

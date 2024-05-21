@@ -58,7 +58,6 @@ export const oneLoginAuthenticator = createOAuthAuthenticator({
   },
 
   async start(input, helper) {
-    input.scope = 'openid email profile';
     return helper.start(input, {
       accessType: 'offline',
       prompt: 'consent',

@@ -57,6 +57,7 @@
     "@backstage/plugin-auth-backend-module-oauth2-proxy-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-oidc-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-okta-provider": "workspace:^",
+    "@backstage/plugin-auth-backend-module-onelogin-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
