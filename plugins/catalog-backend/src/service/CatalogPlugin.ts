@@ -17,6 +17,10 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
+import {
+  DefaultEventsService,
+  eventsServiceRef,
+} from '@backstage/plugin-events-node';
 import { Entity, Validators } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
@@ -39,6 +43,7 @@ import {
 import { merge } from 'lodash';
 import { Permission } from '@backstage/plugin-permission-common';
 import { ForwardedError } from '@backstage/errors';
+import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
@@ -211,6 +216,7 @@ export const catalogPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
+        events: eventsServiceRef,
       },
       async init({
         logger,
@@ -224,6 +230,7 @@ export const catalogPlugin = createBackendPlugin({
         discovery,
         auth,
         httpAuth,
+        events,
       }) {
         const builder = await CatalogBuilder.create({
           config,
@@ -236,6 +243,9 @@ export const catalogPlugin = createBackendPlugin({
           auth,
           httpAuth,
         });
+
+        builder.setEventBroker(events);
+
         if (processingExtensions.onProcessingErrorHandler) {
           builder.subscribe({
             onProcessingError: processingExtensions.onProcessingErrorHandler,
