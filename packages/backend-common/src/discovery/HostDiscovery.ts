@@ -15,8 +15,13 @@
  */
 
 import { HostDiscovery as _HostDiscovery } from '@backstage/backend-app-api';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
-export type { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
+/**
+ * @public
+ * @deprecated Use `DiscoveryService` from `@backstage/backend-plugin-api` instead
+ */
+export type PluginEndpointDiscovery = DiscoveryService;
 
 /**
  * HostDiscovery is a basic PluginEndpointDiscovery implementation
@@ -40,6 +45,6 @@ export const HostDiscovery = _HostDiscovery;
  * resolved to the same host, so there won't be any balancing of internal traffic.
  *
  * @public
- * @deprecated Use {@link HostDiscovery} instead
+ * @deprecated Use `HostDiscovery` from `@backstage/backend-defaults/discovery` instead
  */
 export const SingleHostDiscovery = _HostDiscovery;

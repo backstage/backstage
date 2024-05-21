@@ -22,6 +22,7 @@ import { CacheServiceOptions as CacheClientOptions } from '@backstage/backend-pl
 import { CacheServiceSetOptions as CacheClientSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import cors from 'cors';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
@@ -43,7 +44,6 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
-import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
@@ -577,7 +577,7 @@ export const legacyPlugin: (
           cache: CacheClient;
           config: RootConfigService;
           database: PluginDatabaseManager;
-          discovery: PluginEndpointDiscovery;
+          discovery: DiscoveryService;
           logger: LoggerService;
           permissions: PermissionsService;
           scheduler: SchedulerService;
@@ -643,7 +643,8 @@ export interface PluginCacheManager {
 
 export { PluginDatabaseManager };
 
-export { PluginEndpointDiscovery };
+// @public @deprecated (undocumented)
+export type PluginEndpointDiscovery = DiscoveryService;
 
 // @public
 export interface PullOptions {
