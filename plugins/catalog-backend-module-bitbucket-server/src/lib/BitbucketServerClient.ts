@@ -123,8 +123,6 @@ export class BitbucketServerClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    console.log('Requesting', req.url);
-
     return this.limiter
       .schedule(() => fetch(req, getBitbucketServerRequestOptions(this.config)))
       .then((response: Response) => {
