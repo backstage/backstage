@@ -86,7 +86,14 @@ backend.add(
             });
             ws.onopen = () => {
               console.log('DEBUG: ws.onopen');
-              ws.send('derp!');
+              ws.send(
+                JSON.stringify([
+                  'req',
+                  1,
+                  'subscribe',
+                  { id: 'derp', topics: ['test'] },
+                ]),
+              );
             };
             ws.onmessage = event => {
               console.log(`DEBUG: event=`, event.data);
