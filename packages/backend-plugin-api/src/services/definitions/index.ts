@@ -29,6 +29,7 @@ export type {
   CacheServiceSetOptions,
 } from './CacheService';
 export type { RootConfigService } from './RootConfigService';
+export { isDatabaseConflictError } from './DatabaseService';
 export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
 export type {

@@ -42,3 +42,23 @@ export interface DatabaseService {
     skip?: boolean;
   };
 }
+
+/**
+ * Tries to deduce whether a thrown error is a database conflict.
+ *
+ * @public
+ * @param e - A thrown error
+ * @returns True if the error looks like it was a conflict error thrown by a
+ *          known database engine
+ */
+export function isDatabaseConflictError(e: unknown) {
+  const message = (e as any)?.message;
+
+  return (
+    typeof message === 'string' &&
+    (/SQLITE_CONSTRAINT(?:_UNIQUE)?: UNIQUE/.test(message) ||
+      /UNIQUE constraint failed:/.test(message) ||
+      /unique constraint/.test(message) ||
+      /Duplicate entry/.test(message)) // MySQL uniqueness error msg
+  );
+}

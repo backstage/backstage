@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-export { databaseServiceFactory } from './databaseServiceFactory';
-export {
-  DatabaseManager,
-  type DatabaseManagerOptions,
-  type LegacyRootDatabaseService,
-  dropDatabase,
-} from './DatabaseManager';
+import defaultNameOverride from './defaultNameOverride';
+
+describe('defaultNameOverride()', () => {
+  it('returns a partial knex static connection config with database name', () => {
+    const testDatabaseName = 'testdatabase';
+    expect(defaultNameOverride(testDatabaseName)).toHaveProperty(
+      'connection.database',
+      testDatabaseName,
+    );
+  });
+});

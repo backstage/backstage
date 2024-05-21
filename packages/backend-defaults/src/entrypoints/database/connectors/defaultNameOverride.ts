@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,22 @@
  * limitations under the License.
  */
 
-export { databaseServiceFactory } from './databaseServiceFactory';
-export {
-  DatabaseManager,
-  type DatabaseManagerOptions,
-  type LegacyRootDatabaseService,
-  dropDatabase,
-} from './DatabaseManager';
+import { Knex } from 'knex';
+
+/**
+ * Provides a partial knex config with database name override.
+ *
+ * Default override for knex database drivers which accept ConnectionConfig
+ * with `connection.database` as the database name field.
+ *
+ * @param name - database name to get config override for
+ */
+export default function defaultNameOverride(
+  name: string,
+): Partial<Knex.Config> {
+  return {
+    connection: {
+      database: name,
+    },
+  };
+}

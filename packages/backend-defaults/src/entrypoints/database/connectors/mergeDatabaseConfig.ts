@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2020 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,15 @@
  * limitations under the License.
  */
 
-export { databaseServiceFactory } from './databaseServiceFactory';
-export {
-  DatabaseManager,
-  type DatabaseManagerOptions,
-  type LegacyRootDatabaseService,
-  dropDatabase,
-} from './DatabaseManager';
+import { merge } from 'lodash';
+
+/**
+ * Merges database objects together
+ *
+ * @public
+ * @param config - The base config. The input is not modified
+ * @param overrides - Any additional overrides
+ */
+export function mergeDatabaseConfig(config: any, ...overrides: any[]) {
+  return merge({}, config, ...overrides);
+}

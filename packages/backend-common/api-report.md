@@ -275,7 +275,7 @@ export function createStatusCheckRouter(options: {
   statusCheck?: StatusCheck;
 }): Promise<express.Router>;
 
-// @public
+// @public @deprecated
 export class DatabaseManager implements LegacyRootDatabaseService {
   forPlugin(
     pluginId: string,
@@ -290,7 +290,7 @@ export class DatabaseManager implements LegacyRootDatabaseService {
   ): DatabaseManager;
 }
 
-// @public
+// @public @deprecated
 export type DatabaseManagerOptions = {
   migrations?: PluginDatabaseManager['migrations'];
   logger?: LoggerService;
@@ -303,7 +303,7 @@ export class DockerContainerRunner implements ContainerRunner {
   runContainer(options: RunContainerOptions): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export function dropDatabase(
   dbConfig: Config,
   ...databaseNames: string[]
@@ -538,7 +538,7 @@ export const HostDiscovery: typeof HostDiscovery_2;
 // @public @deprecated (undocumented)
 export const isChildPath: typeof isChildPath_2;
 
-// @public
+// @public @deprecated
 export function isDatabaseConflictError(e: unknown): boolean;
 
 // @public
@@ -594,7 +594,7 @@ export const legacyPlugin: (
   }>,
 ) => BackendFeature;
 
-// @public
+// @public @deprecated
 export type LegacyRootDatabaseService = {
   forPlugin(pluginId: string): PluginDatabaseManager;
 };

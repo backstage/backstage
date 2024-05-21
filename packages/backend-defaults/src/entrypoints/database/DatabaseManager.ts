@@ -39,17 +39,15 @@ function pluginPath(pluginId: string): string {
  * Creation options for {@link DatabaseManager}.
  *
  * @public
- * @deprecated import from `@backstage/backend-defaults/database` instead
  */
 export type DatabaseManagerOptions = {
-  migrations?: PluginDatabaseManager['migrations'];
+  migrations?: DatabaseService['migrations'];
   logger?: LoggerService;
 };
 
 /**
  * An interface that represents the legacy global DatabaseManager implementation.
  * @public
- * @deprecated import from `@backstage/backend-defaults/database` instead
  */
 export type LegacyRootDatabaseService = {
   forPlugin(pluginId: string): DatabaseService;
@@ -178,7 +176,6 @@ export class DatabaseManagerImpl implements LegacyRootDatabaseService {
  * Manages database connections for Backstage backend plugins.
  *
  * @public
- * @deprecated import from `@backstage/backend-defaults/database` instead
  * @remarks
  *
  * The database manager allows the user to set connection and client settings on
@@ -240,7 +237,6 @@ export class DatabaseManager implements LegacyRootDatabaseService {
  * Helper for deleting databases, only exists for backend-test-utils for now.
  *
  * @public
- * @deprecated import from `@backstage/backend-defaults/database` instead
  */
 export async function dropDatabase(
   dbConfig: Config,
