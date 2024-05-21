@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { jwtVerify, createRemoteJWKSet } from 'jose';
+import { jwtVerify, createRemoteJWKSet, JWTVerifyGetKey } from 'jose';
 import { Config } from '@backstage/config';
 import { TokenHandler } from './types';
 
@@ -30,6 +30,7 @@ export class JWKSHandler implements TokenHandler {
     issuers?: string[];
     subjectPrefix?: string;
     url: URL;
+    jwks: JWTVerifyGetKey;
   }> = [];
 
   add(options: Config) {
@@ -38,21 +39,28 @@ export class JWKSHandler implements TokenHandler {
     const audiences = options.getOptionalStringArray('audiences');
     const subjectPrefix = options.getOptionalString('subjectPrefix');
     const url = new URL(options.getString('url'));
+    const jwks = createRemoteJWKSet(url);
 
     if (!options.getString('url').match(/^\S+$/)) {
       throw new Error('Illegal URL, must be a set of non-space characters');
     }
 
-    this.#entries.push({ algorithms, audiences, issuers, subjectPrefix, url });
+    this.#entries.push({
+      algorithms,
+      audiences,
+      issuers,
+      jwks,
+      subjectPrefix,
+      url,
+    });
   }
 
   async verifyToken(token: string) {
     for (const entry of this.#entries) {
       try {
-        const jwks = createRemoteJWKSet(entry.url);
         const {
           payload: { sub },
-        } = await jwtVerify(token, jwks, {
+        } = await jwtVerify(token, entry.jwks, {
           algorithms: entry.algorithms,
           issuer: entry.issuers,
           audience: entry.audiences,
