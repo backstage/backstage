@@ -20,17 +20,10 @@ import {
   CacheServiceOptions,
 } from '@backstage/backend-plugin-api';
 
-export type {
-  CacheService as CacheClient,
-  CacheServiceSetOptions as CacheClientSetOptions,
-  CacheServiceOptions as CacheClientOptions,
-} from '@backstage/backend-plugin-api';
-
 /**
  * Options given when constructing a {@link CacheManager}.
  *
  * @public
- * @deprecated import from `@backstage/backend-defaults/cache` instead
  */
 export type CacheManagerOptions = {
   /**
@@ -47,7 +40,6 @@ export type CacheManagerOptions = {
 
 /**
  * @public
- * @deprecated import from `@backstage/backend-defaults/cache` instead
  */
 export interface PluginCacheManager {
   getClient(options?: CacheServiceOptions): CacheService;

@@ -198,7 +198,7 @@ export { CacheClientOptions };
 
 export { CacheClientSetOptions };
 
-// @public
+// @public @deprecated
 export class CacheManager {
   forPlugin(pluginId: string): PluginCacheManager;
   static fromConfig(
@@ -207,7 +207,7 @@ export class CacheManager {
   ): CacheManager;
 }
 
-// @public
+// @public @deprecated
 export type CacheManagerOptions = {
   logger?: LoggerService;
   onError?: (err: Error) => void;
@@ -635,7 +635,7 @@ export function makeLegacyPlugin<
 // @public
 export function notFoundHandler(): RequestHandler;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export interface PluginCacheManager {
   // (undocumented)
   getClient(options?: CacheClientOptions): CacheClient;

@@ -19,11 +19,9 @@ import Keyv from 'keyv';
 import KeyvMemcache from '@keyv/memcache';
 import KeyvRedis from '@keyv/redis';
 import {
-  CacheService,
   CacheServiceOptions,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { getRootLogger } from '../logging';
 import { DefaultCacheClient } from './CacheClient';
 import { CacheManagerOptions, PluginCacheManager } from './types';
 
@@ -35,7 +33,6 @@ type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
  * connection details provided.
  *
  * @public
- * @deprecated import from `@backstage/backend-defaults/cache` instead
  */
 export class CacheManager {
   /**
@@ -48,7 +45,7 @@ export class CacheManager {
     memory: this.createMemoryStoreFactory(),
   };
 
-  private readonly logger: LoggerService;
+  private readonly logger?: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
   private readonly useRedisSets: boolean;
@@ -73,15 +70,15 @@ export class CacheManager {
       config.getOptionalString('backend.cache.connection') || '';
     const useRedisSets =
       config.getOptionalBoolean('backend.cache.useRedisSets') ?? true;
-    const logger = (options.logger || getRootLogger()).child({
+    const logger = options.logger?.child({
       type: 'cacheManager',
     });
     return new CacheManager(
       store,
       connectionString,
       useRedisSets,
-      logger,
       options.onError,
+      logger,
       defaultTtl,
     );
   }
@@ -90,8 +87,8 @@ export class CacheManager {
     store: string,
     connectionString: string,
     useRedisSets: boolean,
-    logger: LoggerService,
     errorHandler: CacheManagerOptions['onError'],
+    logger?: LoggerService,
     defaultTtl?: number,
   ) {
     if (!this.storeFactories.hasOwnProperty(store)) {
@@ -123,7 +120,7 @@ export class CacheManager {
           // Always provide an error handler to avoid stopping the process.
           concreteClient.on('error', (err: Error) => {
             // In all cases, just log the error.
-            this.logger.error('Failed to create cache client', err);
+            this.logger?.error('Failed to create cache client', err);
 
             // Invoke any custom error handler if provided.
             if (typeof this.errorHandler === 'function') {
@@ -185,13 +182,4 @@ export class CacheManager {
         store,
       });
   }
-}
-
-/** @public */
-export function cacheToPluginCacheManager(
-  cache: CacheService,
-): PluginCacheManager {
-  return {
-    getClient: (opts: CacheServiceOptions) => cache.withOptions(opts),
-  };
 }
