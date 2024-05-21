@@ -17,10 +17,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import {
-  DefaultEventsService,
-  eventsServiceRef,
-} from '@backstage/plugin-events-node';
+import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Entity, Validators } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
@@ -43,7 +40,6 @@ import {
 import { merge } from 'lodash';
 import { Permission } from '@backstage/plugin-permission-common';
 import { ForwardedError } from '@backstage/errors';
-import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 
 class CatalogProcessingExtensionPointImpl
   implements CatalogProcessingExtensionPoint
