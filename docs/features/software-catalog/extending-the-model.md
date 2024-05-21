@@ -590,7 +590,7 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
 
 #### New Backend
 
-To them use your custom processor, you'll need to add the module to your backend as well as integrate your module with the catalog plugin.
+To use your custom processor, you'll need to add the module to your backend as well as integrate your module with the catalog plugin.
 
 ```ts title="plugins/catalog-backend-module-foobar/src/index.ts"
 import {
