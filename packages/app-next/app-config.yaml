@@ -7,10 +7,32 @@ app:
       catalog.viewTechDoc: techdocs.docRoot
       catalog.createComponent: catalog-import.importPage
       org.catalogIndex: catalog.catalogIndex
+      scaffolder.registerComponent: catalog-import.importPage
 
   extensions:
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true
+    - nav-item:scaffolder/new: true
+    - nav-item:scaffolder/register: true
+    - app/nav:
+        config:
+          pinner: true
+          discoveredItemsGroup:
+            position: -1
+          groups:
+            - nav-item:search
+            - nav-item:techdocs
+            - title: 'Entities'
+              icon: 'catalog'
+              spacer: true
+              items:
+                - nav-item:catalog
+                - nav-item:scaffolder
+            - title: 'Admin'
+              icon: 'user'
+              items:
+                - nav-item:app-visualizer
+                - nav-item:user-settings
 
     # Entity page cards
     - entity-card:catalog/about

@@ -14,13 +14,46 @@
  * limitations under the License.
  */
 
-import { useMemo } from 'react';
+import { useCallback } from 'react';
 import { useLocation } from 'react-router-dom';
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { RouteFunc, routeResolutionApiRef, useApi } from '../apis';
+
+/**
+ * Returns a function that can be used to resolve a route ref to a URL.
+ * @public
+ */
+export function useRouteRefResolver<TParams extends AnyRouteRefParams>() {
+  const { pathname } = useLocation();
+  const routeResolutionApi = useApi(routeResolutionApiRef);
+
+  return useCallback(
+    (
+      routeRef?:
+        | RouteRef<TParams>
+        | SubRouteRef<TParams>
+        | ExternalRouteRef<TParams, any>,
+    ): RouteFunc<TParams> | undefined => {
+      if (!routeRef) return undefined;
+
+      const routeFunc = routeResolutionApi.resolve(routeRef, {
+        sourcePath: pathname,
+      });
+
+      const isOptional = 'optional' in routeRef && routeRef.optional;
+
+      if (!routeFunc && !isOptional) {
+        throw new Error(`No path for ${routeRef}`);
+      }
+
+      return routeFunc;
+    },
+    [routeResolutionApi, pathname],
+  );
+}
 
 /**
  * React hook for constructing URLs to routes.
@@ -72,18 +105,6 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
     | SubRouteRef<TParams>
     | ExternalRouteRef<TParams, any>,
 ): RouteFunc<TParams> | undefined {
-  const { pathname } = useLocation();
-  const routeResolutionApi = useApi(routeResolutionApiRef);
-
-  const routeFunc = useMemo(
-    () => routeResolutionApi.resolve(routeRef, { sourcePath: pathname }),
-    [routeResolutionApi, routeRef, pathname],
-  );
-
-  const isOptional = 'optional' in routeRef && routeRef.optional;
-  if (!routeFunc && !isOptional) {
-    throw new Error(`No path for ${routeRef}`);
-  }
-
-  return routeFunc;
+  const resolveRouteRef = useRouteRefResolver<TParams>();
+  return resolveRouteRef(routeRef);
 }

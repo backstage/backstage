@@ -588,11 +588,19 @@ export function createExternalRouteRef<
 
 // @public
 export function createNavItemExtension(options: {
+  type?: 'drawer' | 'dropdown' | 'collapse';
   namespace?: string;
   name?: string;
-  routeRef: RouteRef<undefined>;
+  attachTo?: {
+    id: string;
+    input: string;
+  };
+  disabled?: boolean;
+  routeRef: RouteRef<undefined> | ExternalRouteRef<undefined>;
   title: string;
   icon: IconComponent_2;
+  secondary?: (props: { active: boolean; toggle: () => void }) => JSX.Element;
+  featureFlag?: string;
 }): ExtensionDefinition<{
   title: string;
 }>;
@@ -601,11 +609,27 @@ export function createNavItemExtension(options: {
 export namespace createNavItemExtension {
   const // (undocumented)
     targetDataRef: ConfigurableExtensionDataRef<
-      {
-        title: string;
-        icon: IconComponent_2;
-        routeRef: RouteRef<undefined>;
-      },
+      | {
+          title: string;
+          icon: IconComponent_2;
+          to: string | RouteRef<undefined> | ExternalRouteRef<undefined>;
+          featureFlag?: string | undefined;
+        }
+      | {
+          title: string;
+          icon: IconComponent_2;
+          secondary: (props: {
+            active: boolean;
+            toggle: () => void;
+          }) => JSX.Element;
+          featureFlag?: string | undefined;
+        }
+      | {
+          type: 'drawer' | 'dropdown' | 'collapse';
+          title: string;
+          icon: IconComponent_2;
+          featureFlag?: string | undefined;
+        },
       {}
     >;
 }
@@ -1166,6 +1190,14 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
 export function useRouteRefParams<Params extends AnyRouteRefParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params;
+
+// @public
+export function useRouteRefResolver<TParams extends AnyRouteRefParams>(): (
+  routeRef?:
+    | RouteRef<TParams>
+    | SubRouteRef<TParams>
+    | ExternalRouteRef<TParams, any>,
+) => RouteFunc<TParams> | undefined;
 
 export { useTranslationRef };
 

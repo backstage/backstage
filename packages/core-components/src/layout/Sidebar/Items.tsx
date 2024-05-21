@@ -27,7 +27,6 @@ import {
   StyledComponentProps,
 } from '@material-ui/core/styles/withStyles';
 import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import ArrowDropDown from '@material-ui/icons/ArrowDropDown';
 import ArrowDropUp from '@material-ui/icons/ArrowDropUp';
@@ -67,16 +66,18 @@ import { SidebarSubmenu, SidebarSubmenuProps } from './SidebarSubmenu';
 import { SidebarSubmenuItemProps } from './SidebarSubmenuItem';
 import { isLocationMatch } from './utils';
 import Button from '@material-ui/core/Button';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction';
+import ListItemText from '@material-ui/core/ListItemText';
 
 /** @public */
 export type SidebarItemClassKey =
   | 'root'
-  | 'buttonItem'
   | 'closed'
   | 'open'
   | 'highlightable'
   | 'highlighted'
-  | 'label'
   | 'iconContainer'
   | 'searchRoot'
   | 'searchField'
@@ -94,25 +95,11 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
     theme => ({
       root: {
         color: theme.palette.navigation.color,
-        display: 'flex',
-        flexFlow: 'row nowrap',
-        alignItems: 'center',
-        height: 48,
+        minHeight: 48,
         cursor: 'pointer',
-      },
-      buttonItem: {
-        background: 'none',
-        border: 'none',
-        width: '100%',
-        margin: 0,
-        padding: 0,
-        textAlign: 'inherit',
-        font: 'inherit',
-        textTransform: 'none',
       },
       closed: {
         width: sidebarConfig.drawerWidthClosed,
-        justifyContent: 'center',
       },
       open: {
         [theme.breakpoints.up('sm')]: {
@@ -129,25 +116,9 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         background:
           theme.palette.navigation.navItem?.hoverBackground ?? '#404040',
       },
-      label: {
-        // XXX (@koroeskohr): I can't seem to achieve the desired font-weight from the designs
-        fontWeight: 'bold',
-        whiteSpace: 'nowrap',
-        lineHeight: 'auto',
-        flex: '3 1 auto',
-        width: '110px',
-        overflow: 'hidden',
-        'text-overflow': 'ellipsis',
-      },
       iconContainer: {
-        boxSizing: 'border-box',
-        height: '100%',
-        width: sidebarConfig.iconContainerWidth,
+        color: theme.palette.navigation.color,
         marginRight: -theme.spacing(2),
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        lineHeight: '0',
       },
       searchRoot: {
         marginBottom: 12,
@@ -164,9 +135,7 @@ const makeSidebarStyles = (sidebarConfig: SidebarConfig) =>
         width: sidebarConfig.drawerWidthOpen - sidebarConfig.iconContainerWidth,
       },
       secondaryAction: {
-        width: theme.spacing(6),
-        textAlign: 'center',
-        marginRight: theme.spacing(1),
+        display: 'flex',
       },
       closedItemIcon: {
         width: '100%',
@@ -265,6 +234,7 @@ const useLocationMatch = (
 type SidebarItemBaseProps = {
   icon: IconComponent;
   text?: string;
+  secondaryText?: string;
   hasNotifications?: boolean;
   hasSubmenu?: boolean;
   disableHighlight?: boolean;
@@ -348,8 +318,9 @@ export const WorkaroundNavLink = React.forwardRef<
   const ariaCurrent = isActive ? ariaCurrentProp : undefined;
 
   return (
-    <Link
+    <ListItem
       {...rest}
+      component={Link}
       to={to}
       ref={ref}
       aria-current={ariaCurrent}
@@ -372,6 +343,7 @@ const SidebarItemBase = forwardRef<
   const {
     icon: Icon,
     text,
+    secondaryText,
     hasNotifications = false,
     hasSubmenu = false,
     disableHighlight = false,
@@ -390,11 +362,11 @@ const SidebarItemBase = forwardRef<
 
   const divStyle =
     !isOpen && hasSubmenu
-      ? { display: 'flex', marginLeft: '20px' }
-      : { lineHeight: '0' };
+      ? { color: 'inherit', display: 'flex', marginLeft: '20px' }
+      : { color: 'inherit', lineHeight: '0' };
 
   const displayItemIcon = (
-    <Box style={divStyle}>
+    <Box component="span" style={divStyle}>
       <Icon fontSize="small" />
       {!isOpen && hasSubmenu ? <ArrowRightIcon fontSize="small" /> : <></>}
     </Box>
@@ -414,19 +386,27 @@ const SidebarItemBase = forwardRef<
 
   const openContent = (
     <>
-      <Box data-testid="login-button" className={classes.iconContainer}>
+      <ListItemIcon
+        data-testid="login-button"
+        className={classes.iconContainer}
+      >
         {itemIcon}
-      </Box>
-      {text && (
-        <Typography
-          variant="subtitle2"
-          component="span"
-          className={classes.label}
-        >
-          {text}
-        </Typography>
-      )}
-      <div className={classes.secondaryAction}>{children}</div>
+      </ListItemIcon>
+      <ListItemText
+        primary={text}
+        primaryTypographyProps={{
+          variant: 'subtitle2',
+          noWrap: true,
+        }}
+        secondary={secondaryText}
+        secondaryTypographyProps={{
+          variant: 'caption',
+          noWrap: true,
+        }}
+      />
+      <ListItemSecondaryAction className={classes.secondaryAction}>
+        {children}
+      </ListItemSecondaryAction>
     </>
   );
 
@@ -438,7 +418,6 @@ const SidebarItemBase = forwardRef<
       className,
       classes.root,
       isOpen ? classes.open : classes.closed,
-      isButtonItem(props) && classes.buttonItem,
       { [classes.highlightable]: !disableHighlight },
     ),
   };
@@ -449,7 +428,11 @@ const SidebarItemBase = forwardRef<
   );
 
   const handleClick = useCallback(
-    (event: React.MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => {
+    (
+      event: React.MouseEvent<
+        HTMLAnchorElement | HTMLButtonElement | HTMLDivElement
+      >,
+    ) => {
       if (!noTrack) {
         const action = 'click';
         const subject = text ?? 'Sidebar Item';
@@ -463,15 +446,16 @@ const SidebarItemBase = forwardRef<
 
   if (isButtonItem(props)) {
     return (
-      <Button
-        role="button"
+      <ListItem
+        button
         aria-label={text}
         {...childProps}
         ref={ref}
         onClick={handleClick}
+        disableRipple
       >
         {content}
-      </Button>
+      </ListItem>
     );
   }
 
@@ -502,7 +486,7 @@ const SidebarItemWithSubmenu = ({
   const location = useLocation();
   const isActive = useLocationMatch(children, location);
   const isSmallScreen = useMediaQuery((theme: Theme) =>
-    theme.breakpoints.down('sm'),
+    theme.breakpoints.down('xs'),
   );
 
   const handleMouseEnter = () => {
@@ -515,16 +499,12 @@ const SidebarItemWithSubmenu = ({
   const arrowIcon = () => {
     if (isSmallScreen) {
       return isHoveredOn ? (
-        <ArrowDropUp fontSize="small" className={classes.submenuArrow} />
+        <ArrowDropUp fontSize="small" />
       ) : (
-        <ArrowDropDown fontSize="small" className={classes.submenuArrow} />
+        <ArrowDropDown fontSize="small" />
       );
     }
-    return (
-      !isHoveredOn && (
-        <ArrowRightIcon fontSize="small" className={classes.submenuArrow} />
-      )
-    );
+    return !isHoveredOn && <ArrowRightIcon fontSize="small" />;
   };
 
   return (
@@ -540,6 +520,7 @@ const SidebarItemWithSubmenu = ({
         onTouchStart={isHoveredOn ? handleMouseLeave : handleMouseEnter}
         onMouseEnter={handleMouseEnter}
         className={classnames(isHoveredOn && classes.highlighted)}
+        style={{ width: '100%' }}
       >
         <SidebarItemBase
           hasSubmenu

@@ -114,8 +114,9 @@ export const Modal = ({ toggleModal }: SearchModalChildrenProps) => {
   });
 
   const handleSearchResultClick = useCallback(() => {
+    toggleModal();
     setTimeout(focusContent, transitions.duration.leavingScreen);
-  }, [focusContent, transitions]);
+  }, [toggleModal, focusContent, transitions]);
 
   // This handler is called when "enter" is pressed
   const handleSearchBarSubmit = useCallback(() => {

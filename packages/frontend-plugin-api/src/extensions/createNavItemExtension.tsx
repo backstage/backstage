@@ -16,50 +16,116 @@
 
 import { IconComponent } from '@backstage/core-plugin-api';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
-import { createExtension, createExtensionDataRef } from '../wiring';
-import { RouteRef } from '../routing';
+import {
+  createExtension,
+  createExtensionDataRef,
+  createExtensionInput,
+} from '../wiring';
+import { ExternalRouteRef, RouteRef } from '../routing';
 
 /**
  * Helper for creating extensions for a nav item.
  * @public
  */
 export function createNavItemExtension(options: {
+  type?: 'drawer' | 'dropdown' | 'collapse';
   namespace?: string;
   name?: string;
-  routeRef: RouteRef<undefined>;
+  attachTo?: { id: string; input: string };
+  disabled?: boolean;
+  routeRef: RouteRef<undefined> | ExternalRouteRef<undefined>;
   title: string;
+  subtitle?: string;
   icon: IconComponent;
+  secondaryAction?: (props: {
+    active: boolean;
+    toggle: () => void;
+  }) => JSX.Element;
+  featureFlag?: { with: string } | { without: string };
 }) {
-  const { routeRef, title, icon, namespace, name } = options;
+  const {
+    type,
+    icon,
+    title,
+    subtitle,
+    name,
+    namespace,
+    secondaryAction,
+    featureFlag,
+    routeRef,
+    attachTo,
+    disabled,
+  } = options;
   return createExtension({
     namespace,
     name,
+    disabled,
     kind: 'nav-item',
-    attachTo: { id: 'app/nav', input: 'items' },
+    attachTo: attachTo ?? { id: 'app/nav', input: 'items' },
     configSchema: createSchemaFromZod(z =>
       z.object({
         title: z.string().default(title),
+        subtitle: z.string().optional(),
+        icon: z.string().optional(),
+        featureFlag: z
+          .union([
+            z.object({ with: z.string() }),
+            z.object({ without: z.string() }),
+          ])
+          .optional(),
       }),
     ),
+    inputs: {
+      items: createExtensionInput({
+        target: createNavItemExtension.targetDataRef.optional(),
+      }),
+    },
     output: {
       navTarget: createNavItemExtension.targetDataRef,
     },
-    factory: ({ config }) => ({
-      navTarget: {
-        title: config.title,
-        icon,
-        routeRef,
-      },
-    }),
+    factory: ({ config }) => {
+      return {
+        navTarget: {
+          to: routeRef,
+          title: config.title,
+          subtitle: config.subtitle ?? subtitle,
+          icon: config.icon ?? icon,
+          featureFlag: config.featureFlag ?? featureFlag,
+          type,
+          secondaryAction,
+        },
+      };
+    },
   });
 }
 
 /** @public */
 export namespace createNavItemExtension {
   // TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
-  export const targetDataRef = createExtensionDataRef<{
-    title: string;
-    icon: IconComponent;
-    routeRef: RouteRef<undefined>;
-  }>('core.nav-item.target');
+  export const targetDataRef = createExtensionDataRef<
+    | {
+        title: string;
+        subtitle?: string;
+        icon: IconComponent;
+        to: string | RouteRef<undefined> | ExternalRouteRef<undefined>;
+        featureFlag?: { with: string } | { without: string };
+      }
+    | {
+        title: string;
+        subtitle?: string;
+        icon: IconComponent;
+        secondaryAction: (props: {
+          active: boolean;
+          toggle: () => void;
+        }) => JSX.Element;
+        featureFlag?: { with: string } | { without: string };
+      }
+    | {
+        type: 'drawer' | 'dropdown' | 'collapse';
+        title: string;
+        subtitle?: string;
+        icon: IconComponent;
+        featureFlag?: { with: string } | { without: string };
+      }
+  >('core.nav-item.target');
 }

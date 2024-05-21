@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-export type { AnyRouteRefParams } from './types';
-export { createRouteRef, type RouteRef } from './RouteRef';
-export { createSubRouteRef, type SubRouteRef } from './SubRouteRef';
-export {
-  createExternalRouteRef,
-  type ExternalRouteRef,
-} from './ExternalRouteRef';
-export { useRouteRef, useRouteRefResolver } from './useRouteRef';
-export { useRouteRefParams } from './useRouteRefParams';
+import React from 'react';
+import { iconsApiRef, useApi } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
+
+export function SidebarIcon(props: { id?: string | IconComponent }) {
+  const { id = null } = props;
+  const iconsApi = useApi(iconsApiRef);
+  const Component = typeof id === 'string' ? iconsApi.getIcon(id) : id;
+  return Component ? <Component /> : null;
+}
