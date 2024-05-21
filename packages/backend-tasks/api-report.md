@@ -94,7 +94,7 @@ export class TaskScheduler {
     databaseManager: PluginDatabaseManager;
     logger: LoggerService;
   }): PluginTaskScheduler;
-  // (undocumented)
+  // @deprecated (undocumented)
   static fromConfig(
     config: Config,
     options?: {

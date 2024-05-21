@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
   TaskRunner,
 } from '@backstage/backend-tasks';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
@@ -31,7 +33,7 @@ import { GitlabDiscoveryEntityProvider } from './GitlabDiscoveryEntityProvider';
 
 const server = setupServer(...handlers);
 setupRequestMockHandlers(server);
-afterEach(() => jest.resetAllMocks());
+afterEach(() => jest.clearAllMocks());
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -46,7 +48,7 @@ class PersistingTaskRunner implements TaskRunner {
   }
 }
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('GitlabDiscoveryEntityProvider - configuration', () => {
   it('should not instantiate providers when no config found', () => {

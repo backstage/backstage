@@ -72,6 +72,8 @@ export class CacheManager {
       config.getOptionalString('backend.cache.connection') || '';
     const useRedisSets =
       config.getOptionalBoolean('backend.cache.useRedisSets') ?? true;
+
+    // TODO: Make logger required and remove the default logger after moving this class to the `backstage-defaults`package
     const logger = (options.logger || getRootLogger()).child({
       type: 'cacheManager',
     });

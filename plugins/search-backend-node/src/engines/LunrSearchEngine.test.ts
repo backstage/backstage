@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import lunr from 'lunr';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import {
@@ -27,6 +26,7 @@ import {
 import { LunrSearchEngineIndexer } from './LunrSearchEngineIndexer';
 import { SearchEngine } from '../types';
 import { TestPipeline } from '../test-utils';
+import { mockServices } from '@backstage/backend-test-utils';
 
 /**
  * Just used to test the default translator shipped with LunrSearchEngine.
@@ -77,7 +77,9 @@ describe('LunrSearchEngine', () => {
   let testLunrSearchEngine: SearchEngine;
 
   beforeEach(() => {
-    testLunrSearchEngine = new LunrSearchEngine({ logger: getVoidLogger() });
+    testLunrSearchEngine = new LunrSearchEngine({
+      logger: mockServices.logger.mock(),
+    });
     jest.clearAllMocks();
   });
 
@@ -107,7 +109,7 @@ describe('LunrSearchEngine', () => {
 
     it('should return translated query', async () => {
       const inspectableSearchEngine = new LunrSearchEngineForTests({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       const translatorUnderTest = inspectableSearchEngine.getTranslator();
 
@@ -149,7 +151,7 @@ describe('LunrSearchEngine', () => {
 
     it('should have default offset and limit', async () => {
       const inspectableSearchEngine = new LunrSearchEngineForTests({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       const translatorUnderTest = inspectableSearchEngine.getTranslator();
 
@@ -190,7 +192,7 @@ describe('LunrSearchEngine', () => {
 
     it('should return translated query with 1 filter', async () => {
       const inspectableSearchEngine = new LunrSearchEngineForTests({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       const translatorUnderTest = inspectableSearchEngine.getTranslator();
 
@@ -235,7 +237,7 @@ describe('LunrSearchEngine', () => {
 
     it('should handle single-item array filter as scalar value', async () => {
       const inspectableSearchEngine = new LunrSearchEngineForTests({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       const translatorUnderTest = inspectableSearchEngine.getTranslator();
 
@@ -266,7 +268,7 @@ describe('LunrSearchEngine', () => {
 
     it('should return translated query with multiple filters', async () => {
       const inspectableSearchEngine = new LunrSearchEngineForTests({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       const translatorUnderTest = inspectableSearchEngine.getTranslator();
 
@@ -315,7 +317,7 @@ describe('LunrSearchEngine', () => {
 
     it('should throw if translated query references missing field', async () => {
       const inspectableSearchEngine = new LunrSearchEngineForTests({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       const translatorUnderTest = inspectableSearchEngine.getTranslator();
 
@@ -477,7 +479,7 @@ describe('LunrSearchEngine', () => {
 
     it('should perform search query and return highlight metadata on match', async () => {
       const inspectableSearchEngine = new LunrSearchEngineForTests({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       const mockDocuments = [
@@ -1012,7 +1014,7 @@ describe('LunrSearchEngine', () => {
 
       // Set up an inspectable search engine to pre-set some data.
       const inspectableSearchEngine = new LunrSearchEngineForTests({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       inspectableSearchEngine.setDocStore({ 'existing-location': doc });
 
@@ -1047,7 +1049,7 @@ describe('LunrSearchEngine', () => {
       // Set up an inspectable search engine to pre-set some data.
       const doc = { title: 'A doc', text: 'test', location: 'some-location' };
       const inspectableSearchEngine = new LunrSearchEngineForTests({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       inspectableSearchEngine.setDocStore({ 'existing-location': doc });
 
@@ -1073,7 +1075,7 @@ describe('LunrSearchEngine', () => {
       // Set up an inspectable search engine to pre-set some data.
       const doc = { title: 'A doc', text: 'test', location: 'some-location' };
       const inspectableSearchEngine = new LunrSearchEngineForTests({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
       inspectableSearchEngine.setDocStore({ 'existing-location': doc });
 
@@ -1178,7 +1180,9 @@ describe('stopword testing', () => {
   let testLunrSearchEngine: SearchEngine;
 
   beforeEach(() => {
-    testLunrSearchEngine = new LunrSearchEngine({ logger: getVoidLogger() });
+    testLunrSearchEngine = new LunrSearchEngine({
+      logger: mockServices.logger.mock(),
+    });
     jest.clearAllMocks();
   });
 

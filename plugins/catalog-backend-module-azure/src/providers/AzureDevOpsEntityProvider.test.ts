@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
@@ -25,6 +24,7 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { CodeSearchResultItem } from '../lib';
 import { AzureDevOpsEntityProvider } from './AzureDevOpsEntityProvider';
 import { codeSearch } from '../lib';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../lib');
 const mockCodeSearch = codeSearch as jest.MockedFunction<typeof codeSearch>;
@@ -42,7 +42,7 @@ class PersistingTaskRunner implements TaskRunner {
   }
 }
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('AzureDevOpsEntityProvider', () => {
   afterEach(() => {

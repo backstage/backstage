@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
   TaskRunner,
 } from '@backstage/backend-tasks';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { rest } from 'msw';
@@ -53,7 +55,7 @@ function pagedResponse(values: any): BitbucketServerPagedResponse<any> {
   } as BitbucketServerPagedResponse<any>;
 }
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 const server = setupServer();
 
@@ -102,7 +104,9 @@ function setupStubs(projects: Project[], baseUrl: string) {
 
 describe('BitbucketServerEntityProvider', () => {
   setupRequestMockHandlers(server);
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => {
+    jest.clearAllMocks();
+  });
 
   it('no provider config', () => {
     const schedule = new PersistingTaskRunner();

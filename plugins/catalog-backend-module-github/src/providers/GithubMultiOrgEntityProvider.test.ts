@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -29,6 +28,7 @@ import {
   withLocations,
 } from './GithubMultiOrgEntityProvider';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('@octokit/graphql');
 
@@ -60,7 +60,7 @@ describe('GithubMultiOrgEntityProvider', () => {
         refresh: jest.fn(),
       };
 
-      logger = getVoidLogger();
+      logger = mockServices.logger.mock();
 
       gitHubConfig = { host: 'github.com' };
 
@@ -1016,7 +1016,7 @@ describe('GithubMultiOrgEntityProvider', () => {
     };
 
     beforeEach(async () => {
-      const logger = getVoidLogger();
+      const logger = mockServices.logger.mock();
       events = DefaultEventsService.create({ logger });
       const config = new ConfigReader({
         integrations: {
