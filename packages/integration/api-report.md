@@ -35,6 +35,7 @@ export type AwsCodeCommitIntegrationConfig = {
   secretAccessKey?: string;
   roleArn?: string;
   externalId?: string;
+  region: string;
 };
 
 // @public
