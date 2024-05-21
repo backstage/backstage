@@ -131,6 +131,47 @@ export interface Config {
               subject: string;
             };
           }
+        | {
+            /**
+             * This access method consists of a JWKS endpoint that can be used to
+             * verify JWT tokens.
+             *
+             * Callers generate JWT tokens via 3rd party tooling
+             * and pass them in the Authorization header:
+             *
+             * ```
+             * Authorization: Bearer eZv5o+fW3KnR3kVabMW4ZcDNLPl8nmMW
+             * ```
+             */
+            type: 'jwks';
+            options: {
+              /**
+               * Sets the algorithms that should be used to verify the JWT tokens.
+               * The passed JWTs must have been signed using one of the listed algorithms.
+               */
+              algorithms?: string[];
+              /**
+               * Sets the issuers that should be used to verify the JWT tokens.
+               * Passed JWTs must have an `iss` claim which matches one of the specified issuers.
+               */
+              issuers?: string[];
+              /**
+               * Sets the audiences that should be used to verify the JWT tokens.
+               * The passed JWTs must have an "aud" claim that matches one of the audiences specified,
+               * or have no audience specified.
+               */
+              audiences?: string[];
+              /**
+               * Sets an optional subject prefix. Passes the subject to called plugins.
+               * Useful for debugging and tracking purposes.
+               */
+              subjectPrefix?: string;
+              /**
+               * Sets the URL containing the JWKS endpoint.
+               */
+              url: string;
+            };
+          }
       >;
     };
   };
