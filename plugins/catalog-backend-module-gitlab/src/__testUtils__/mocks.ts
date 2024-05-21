@@ -162,7 +162,7 @@ export const config_github_host: MockObject = {
   },
 };
 
-export const config_single_integration_branch: MockObject = {
+export const config_single_integration: MockObject = {
   integrations: {
     gitlab: [
       {
@@ -178,7 +178,6 @@ export const config_single_integration_branch: MockObject = {
         'test-id': {
           host: 'example.com',
           group: 'group1',
-          branch: 'main',
           skipForkedRepos: false,
           schedule: {
             frequency: 'PT30M',
@@ -724,7 +723,7 @@ export const all_users_response: GitLabUser[] = [
     avatar_url: 'https://secure.gravatar.com/',
     web_url: 'https://gitlab.example/luigi_mario',
   },
-  // malfomed email address
+  // malformed email address
   {
     id: 5,
     username: 'MarioMario',
@@ -1338,7 +1337,7 @@ export const push_modif_event: EventParams = {
  * Expected Backstage entities
  */
 
-// includes only projects that have a default branch (for when the branch and default branch were not set in the config)
+// includes only projects that have a default branch (for when the branch and fallback branch were not set in the config)
 export const expected_location_entities_default_branch: MockObject[] =
   all_projects_response
     .filter(project => project.default_branch)
