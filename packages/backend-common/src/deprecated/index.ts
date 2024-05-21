@@ -17,6 +17,7 @@
 export * from './scm';
 
 import {
+  isDatabaseConflictError as _isDatabaseConflictError,
   resolvePackagePath as _resolvePackagePath,
   resolveSafeChildPath as _resolveSafeChildPath,
   isChildPath as _isChildPath,
@@ -24,21 +25,28 @@ import {
 
 /**
  * @public
- * @deprecated This type is deprecated and will be removed in a future release, see https://github.com/backstage/backstage/issues/24493.
+ * @deprecated This function is deprecated and will be removed in a future release, see https://github.com/backstage/backstage/issues/24493.
+ * Please use the `isDatabaseConflictError` function from the `@backstage/backend-plugin-api` package instead.
+ */
+export const isDatabaseConflictError = _isDatabaseConflictError;
+
+/**
+ * @public
+ * @deprecated This function is deprecated and will be removed in a future release, see https://github.com/backstage/backstage/issues/24493.
  * Please use the `resolvePackagePath` function from the `@backstage/backend-plugin-api` package instead.
  */
 export const resolvePackagePath = _resolvePackagePath;
 
 /**
  * @public
- * @deprecated This type is deprecated and will be removed in a future release, see
+ * @deprecated This function is deprecated and will be removed in a future release, see https://github.com/backstage/backstage/issues/24493.
  * Please use the `resolveSafeChildPath` function from the `@backstage/backend-plugin-api` package instead.
  */
 export const resolveSafeChildPath = _resolveSafeChildPath;
 
 /**
  * @public
- * @deprecated This type is deprecated and will be removed in a future release, see
+ * @deprecated This function is deprecated and will be removed in a future release, see https://github.com/backstage/backstage/issues/24493.
  * Please use the `isChildPath` function from the `@backstage/cli-common` package instead.
  */
 export const isChildPath = _isChildPath;

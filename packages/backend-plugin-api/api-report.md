@@ -357,6 +357,9 @@ export interface IdentityService extends IdentityApi {}
 
 export { isChildPath };
 
+// @public
+export function isDatabaseConflictError(e: unknown): boolean;
+
 // @public (undocumented)
 export interface LifecycleService {
   addShutdownHook(
