@@ -36,8 +36,8 @@ export type checkPermissionOptions = {
 export async function checkPermission(options: checkPermissionOptions) {
   const { permissions, permissionService, credentials } = options;
   if (permissionService) {
-    const permissionRequest = permissions.map(resourcePermission => ({
-      permission: resourcePermission,
+    const permissionRequest = permissions.map(permission => ({
+      permission,
     }));
     const authorizationResponses = await permissionService.authorize(
       permissionRequest,
