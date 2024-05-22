@@ -6958,6 +6958,7 @@ __metadata:
     "@material-ui/core": ^4.12.2
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
+    "@microsoft/fetch-event-source": ^2.0.1
     "@react-hookz/web": ^24.0.0
     "@rjsf/core": 5.18.2
     "@rjsf/material-ui": 5.18.2
@@ -6967,13 +6968,11 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
     "@testing-library/user-event": ^14.0.0
-    "@types/event-source-polyfill": ^1.0.0
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     "@uiw/react-codemirror": ^4.9.3
     classnames: ^2.2.6
-    event-source-polyfill: ^1.0.31
     git-url-parse: ^14.0.0
     humanize-duration: ^3.25.1
     json-schema: ^0.4.0
@@ -17134,13 +17133,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/event-source-polyfill@npm:^1.0.0":
-  version: 1.0.5
-  resolution: "@types/event-source-polyfill@npm:1.0.5"
-  checksum: f506b68710162f2ade1bccbc5691b8c67e5a703e565df2bc0b7b5be2637ba838ef81ec6c10b03248fe4d054386d95a6e827c7aace6e924986c2b9985f77b55de
-  languageName: node
-  linkType: hard
-
 "@types/expect@npm:^1.20.4":
   version: 1.20.4
   resolution: "@types/expect@npm:1.20.4"
@@ -25495,13 +25487,6 @@ __metadata:
     d: 1
     es5-ext: ~0.10.14
   checksum: 27c1399557d9cd7e0aa0b366c37c38a4c17293e3a10258e8b692a847dd5ba9fb90429c3a5a1eeff96f31f6fa03ccbd31d8ad15e00540b22b22f01557be706030
-  languageName: node
-  linkType: hard
-
-"event-source-polyfill@npm:^1.0.31":
-  version: 1.0.31
-  resolution: "event-source-polyfill@npm:1.0.31"
-  checksum: 973f226404e2a1b14ed7ef15c718b89e213b41d7cfeeb1c10937fd09229f13904f3d7c3075ab28ccf858c213007559908eecdd577577330352f53a351383dd75
   languageName: node
   linkType: hard
 

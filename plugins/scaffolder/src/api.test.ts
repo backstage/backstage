@@ -20,13 +20,12 @@ import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './api';
-import { EventSourcePolyfill } from 'event-source-polyfill';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 
-const MockedEventSource = EventSourcePolyfill as jest.MockedClass<
-  typeof EventSourcePolyfill
+jest.mock('@microsoft/fetch-event-source');
+const mockFetchEventSource = fetchEventSource as jest.MockedFunction<
+  typeof fetchEventSource
 >;
-
-jest.mock('event-source-polyfill');
 
 const server = setupServer();
 
@@ -87,26 +86,23 @@ describe('api', () => {
   describe('streamEvents', () => {
     describe('eventsource', () => {
       it('should work', async () => {
-        MockedEventSource.prototype.addEventListener.mockImplementation(
-          (type, fn) => {
-            if (typeof fn !== 'function') {
-              return;
-            }
-
-            if (type === 'log') {
-              fn({
-                data: '{"id":1,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}',
-              } as any);
-            } else if (type === 'completion') {
-              fn({
-                data: '{"id":2,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}',
-              } as any);
-            }
-          },
-        );
-
-        const token = 'fake-token';
-        identityApi.getCredentials.mockResolvedValue({ token: token });
+        mockFetchEventSource.mockImplementation(async (_url, options) => {
+          const { onopen, onmessage } = options;
+          await Promise.resolve();
+          await onopen?.({ ok: true } as Response);
+          await Promise.resolve();
+          onmessage?.({
+            id: '',
+            event: 'log',
+            data: '{"id":1,"taskId":"a-random-id","type":"log","createdAt":"","body":{"message":"My log message"}}',
+          });
+          await Promise.resolve();
+          onmessage?.({
+            id: '',
+            event: 'completion',
+            data: '{"id":2,"taskId":"a-random-id","type":"completion","createdAt":"","body":{"message":"Finished!"}}',
+          });
+        });
 
         const next = jest.fn();
 
@@ -116,14 +112,14 @@ describe('api', () => {
             .subscribe({ next, complete });
         });
 
-        expect(MockedEventSource).toHaveBeenCalledWith(
+        expect(mockFetchEventSource).toHaveBeenCalledWith(
           'http://backstage/api/v2/tasks/a-random-task-id/eventstream',
           {
-            withCredentials: true,
-            headers: { Authorization: `Bearer ${token}` },
+            fetch: fetchApi.fetch,
+            onmessage: expect.any(Function),
+            onerror: expect.any(Function),
           },
         );
-        expect(MockedEventSource.prototype.close).toHaveBeenCalled();
 
         expect(next).toHaveBeenCalledTimes(2);
         expect(next).toHaveBeenCalledWith({
