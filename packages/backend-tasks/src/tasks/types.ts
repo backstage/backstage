@@ -157,7 +157,7 @@ export interface TaskScheduleDefinition {
  * that control the scheduling of a task.
  *
  * @public
- * @deprecated Please import `SchedulerServiceTaskDefinitionConfig` from `@backstage/backend-plugin-api` instead
+ * @deprecated Please import `SchedulerServiceTaskScheduleDefinitionConfig` from `@backstage/backend-plugin-api` instead
  */
 export interface TaskScheduleDefinitionConfig {
   /**
