@@ -47,6 +47,7 @@ import {
   useAsyncEntity,
 } from '@backstage/plugin-catalog-react';
 import Box from '@material-ui/core/Box';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import { TabProps } from '@material-ui/core/Tab';
 import Alert from '@material-ui/lab/Alert';
 import React, { useEffect, useState } from 'react';
@@ -63,6 +64,25 @@ export type EntityLayoutRouteProps = {
   tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
 };
 
+const useStyles = makeStyles({
+  header: {
+    display: 'inline-flex',
+    alignItems: 'center',
+    minHeight: '1em',
+    maxWidth: '95%',
+  },
+  box: {
+    display: 'flex',
+    flexWrap: 'nowrap',
+    gap: '1em',
+    paddingLeft: '15px',
+    paddingTop: '20px',
+  },
+  labels: {
+    minWidth: '5em',
+  },
+});
+
 const dataKey = 'plugin.catalog.entityLayoutRoute';
 
 const Route: (props: EntityLayoutRouteProps) => null = () => null;
@@ -73,15 +93,11 @@ function EntityLayoutTitle(props: {
   title: string;
   entity: Entity | undefined;
 }) {
+  const classes = useStyles();
   const { entity, title } = props;
   return (
-    <Box display="inline-flex" alignItems="center" height="1em" maxWidth="100%">
-      <Box
-        component="span"
-        textOverflow="ellipsis"
-        whiteSpace="nowrap"
-        overflow="hidden"
-      >
+    <Box className={classes.header}>
+      <Box component="span">
         {entity ? <EntityDisplayName entityRef={entity} hideIcon /> : title}
       </Box>
       {entity && <FavoriteEntity entity={entity} />}
@@ -116,27 +132,32 @@ function headerProps(
 
 function EntityLabels(props: { entity: Entity }) {
   const { entity } = props;
+  const classes = useStyles();
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
   return (
     <>
       {ownedByRelations.length > 0 && (
-        <HeaderLabel
-          label="Owner"
-          contentTypograpyRootComponent="p"
-          value={
-            <EntityRefLinks
-              entityRefs={ownedByRelations}
-              defaultKind="Group"
-              color="inherit"
-            />
-          }
-        />
+        <div className={classes.labels}>
+          <HeaderLabel
+            label="Owner"
+            contentTypograpyRootComponent="p"
+            value={
+              <EntityRefLinks
+                entityRefs={ownedByRelations}
+                defaultKind="Group"
+                color="inherit"
+              />
+            }
+          />
+        </div>
       )}
       {entity.spec?.lifecycle && (
-        <HeaderLabel
-          label="Lifecycle"
-          value={entity.spec.lifecycle?.toString()}
-        />
+        <div className={classes.labels}>
+          <HeaderLabel
+            label="Lifecycle"
+            value={entity.spec.lifecycle?.toString()}
+          />
+        </div>
       )}
     </>
   );
@@ -193,6 +214,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const { kind, namespace, name } = useRouteRefParams(entityRouteRef);
   const { entity, loading, error } = useAsyncEntity();
   const location = useLocation();
+  const classes = useStyles();
   const routes = useElementFilter(
     children,
     elements =>
@@ -259,7 +281,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         type={headerType}
       >
         {entity && (
-          <>
+          <Box className={classes.box}>
             <EntityLabels entity={entity} />
             <EntityContextMenu
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
@@ -267,7 +289,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
               onUnregisterEntity={() => setConfirmationDialogOpen(true)}
               onInspectEntity={() => setInspectionDialogOpen(true)}
             />
-          </>
+          </Box>
         )}
       </Header>
 
