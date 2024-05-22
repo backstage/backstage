@@ -94,9 +94,20 @@ backend.add(
                   { id: 'derp', topics: ['test'] },
                 ]),
               );
+              setTimeout(() => {
+                console.log(`DEBUG: publish!`);
+                ws.send(
+                  JSON.stringify([
+                    'req',
+                    1,
+                    'publish',
+                    { topic: 'test', payload: { foo: 'bar' } },
+                  ]),
+                );
+              }, 1000);
             };
             ws.onmessage = event => {
-              console.log(`DEBUG: event=`, event.data);
+              console.log(`DEBUG: client event=`, event.data);
             };
             ws.onerror = event => {
               console.log(`Client error`, event.error);

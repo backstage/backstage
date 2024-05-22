@@ -29,6 +29,7 @@ import { z, ZodError } from 'zod';
 import { fromZodError } from 'zod-validation-error';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { serializeError } from '@backstage/errors';
+import { EventParams } from '@backstage/plugin-events-node';
 
 /*
 
@@ -85,8 +86,13 @@ const publishParamsSchema = z.object({
   payload: z.any(),
 });
 const eventParamsSchema = z.object({
-  topic: z.string().min(1),
-  payload: z.any(),
+  events: z.array(
+    z.object({
+      topic: z.string().min(1),
+      payload: z.any(),
+      metadata: z.any().optional(),
+    }),
+  ),
 });
 
 function errorToJson(error: Error): JsonObject {
@@ -94,6 +100,106 @@ function errorToJson(error: Error): JsonObject {
     return serializeError(fromZodError(error as ZodError));
   }
   return serializeError(error);
+}
+
+type EventHubStore = {
+  publish(options: {
+    params: EventParams;
+    subscriberIds: string[];
+  }): Promise<void>;
+
+  upsertSubscription(id: string, topics: string[]): Promise<void>;
+
+  readSubscription(id: string): Promise<{ events: EventParams[] }>;
+
+  listen(
+    topicIds: string[],
+    onNotify: (topicId: string) => void,
+  ): Promise<() => void>;
+};
+
+const MAX_BATCH_SIZE = 5;
+
+class MemoryEventHubStore implements EventHubStore {
+  #events = new Array<EventParams & { seq: number }>();
+  #subscribers = new Map<
+    string,
+    { id: string; seq: number; topics: Set<string> }
+  >();
+  #listeners = new Set<{
+    topics: Set<string>;
+    notify(topicId: string): void;
+  }>();
+
+  async publish(options: {
+    params: EventParams;
+    subscriberIds: string[];
+  }): Promise<void> {
+    const topicId = options.params.topic;
+
+    let hasOtherSubscribers = false;
+    for (const sub of this.#subscribers.values()) {
+      if (sub.topics.has(topicId) && !options.subscriberIds.includes(sub.id)) {
+        hasOtherSubscribers = true;
+        break;
+      }
+    }
+    if (!hasOtherSubscribers) {
+      return;
+    }
+
+    const nextSeq = this.#getMaxSeq() + 1;
+    this.#events.push({ ...options.params, seq: nextSeq });
+
+    for (const listener of this.#listeners) {
+      if (listener.topics.has(topicId)) {
+        listener.notify(topicId);
+      }
+    }
+  }
+
+  #getMaxSeq() {
+    return this.#events[this.#events.length - 1]?.seq ?? 0;
+  }
+
+  async upsertSubscription(id: string, topics: string[]): Promise<void> {
+    const existing = this.#subscribers.get(id);
+    if (existing) {
+      existing.topics = new Set(topics);
+      return;
+    }
+    const sub = {
+      id: id,
+      seq: this.#getMaxSeq(),
+      topics: new Set(topics),
+    };
+    this.#subscribers.set(id, sub);
+  }
+
+  async readSubscription(id: string): Promise<{ events: EventParams[] }> {
+    const sub = this.#subscribers.get(id);
+    if (!sub) {
+      throw new Error(`Subscription not found`);
+    }
+    const events = this.#events
+      .filter(event => event.seq > sub.seq && sub.topics.has(event.topic))
+      .slice(0, MAX_BATCH_SIZE);
+
+    sub.seq = events[events.length - 1]?.seq ?? sub.seq;
+
+    return { events: events.map(event => ({ ...event, req: undefined })) };
+  }
+
+  async listen(
+    topicIds: string[],
+    onNotify: (topicId: string) => void,
+  ): Promise<() => void> {
+    const listener = { topics: new Set(topicIds), notify: onNotify };
+    this.#listeners.add(listener);
+    return () => {
+      this.#listeners.delete(listener);
+    };
+  }
 }
 
 /**
@@ -230,7 +336,7 @@ class EventClientConnection {
     this.#requestHandlers.set(method, { schema, handler });
   }
 
-  async request<TReq extends JsonObject, TRes extends JsonObject>(
+  async request<TReq extends JsonObject, TRes extends JsonObject | void>(
     method: string,
     params: TReq,
   ): Promise<TRes> {
@@ -293,6 +399,7 @@ export class EventHub {
   readonly #handler: Handler;
   readonly #logger: LoggerService;
   readonly #httpAuth: HttpAuthService;
+  readonly #store: EventHubStore;
 
   #connections = new Map<string, EventClientConnection>();
 
@@ -306,13 +413,14 @@ export class EventHub {
     this.#handler = handler;
     this.#logger = logger;
     this.#httpAuth = httpAuth;
+    this.#store = new MemoryEventHubStore();
   }
 
   handler(): Handler {
     return this.#handler;
   }
 
-  #handleGetConnect: Handler = async (req, _res, next) => {
+  #handleGetConnect: Handler = async (req, _res) => {
     try {
       const credentials = await this.#httpAuth.credentials(req, {
         allow: ['service'],
@@ -333,14 +441,60 @@ export class EventHub {
             'subscribe',
             subscribeParamsSchema,
             async params => {
-              console.log(`DEBUG: subscribe req`, params);
+              await this.#store.upsertSubscription(params.id, params.topics);
+
+              this.#logger.info(
+                `New subscription '${params.id}' topics='${params.topics.join(
+                  "', '",
+                )}'`,
+              );
+
+              const read = () =>
+                this.#store.readSubscription(params.id).then(
+                  ({ events }) => {
+                    if (events.length > 0) {
+                      conn
+                        .request<z.TypeOf<typeof eventParamsSchema>, void>(
+                          'events',
+                          { events },
+                        )
+                        .catch(error => {
+                          this.#logger.error(
+                            `Failed to send events to subscription ${params.id}`,
+                            error,
+                          );
+                        });
+                    }
+                  },
+                  error => {
+                    this.#logger.error(
+                      `Failed to read subscription ${params.id}`,
+                      error,
+                    );
+                  },
+                );
+
+              const removeListener = await this.#store.listen(
+                params.topics,
+                read,
+              );
+              ws.addListener('close', removeListener);
+
+              await read();
             },
           );
           conn.addRequestHandler(
             'publish',
             publishParamsSchema,
             async params => {
-              console.log(`DEBUG: publish req`, params);
+              await this.#store.publish({
+                params: {
+                  topic: params.topic,
+                  eventPayload: params.payload,
+                },
+                subscriberIds: [],
+              });
+              this.#logger.info(`Published event to '${params.topic}'`);
             },
           );
           this.#connections.set(conn.id, conn);
