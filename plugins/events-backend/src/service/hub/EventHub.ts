@@ -399,8 +399,10 @@ export class EventHub {
 
     router.use(express.json());
 
+    router.post('/events', hub.#handlePostEvents);
+
     // Long-polling
-    router.get('/subscriptions/:id', hub.#handleGetSubscription);
+    router.get('/subscriptions/:id/events', hub.#handleGetSubscription);
     router.put('/subscriptions/:id', hub.#handlePutSubscription);
 
     return hub;
@@ -524,6 +526,23 @@ export class EventHub {
       req.socket.destroy();
       this.#logger.info('WebSocket upgrade failed', error);
     }
+  };
+
+  #handlePostEvents: Handler = async (req, res) => {
+    const credentials = await this.#httpAuth.credentials(req, {
+      allow: ['service'],
+    });
+    await this.#store.publish({
+      params: {
+        topic: req.body.topic,
+        eventPayload: req.body.payload,
+      },
+      subscriberIds: [],
+    });
+    this.#logger.info(`Published event to '${req.body.topic}'`, {
+      subject: credentials.principal.subject,
+    });
+    res.status(201).end();
   };
 
   #handleGetSubscription: Handler = async (req, res) => {

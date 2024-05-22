@@ -95,12 +95,15 @@ backend.add(
             );
 
             const poll = async () => {
-              const res = await fetch(`${baseUrl}/hub/subscriptions/123`, {
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json',
+              const res = await fetch(
+                `${baseUrl}/hub/subscriptions/123/events`,
+                {
+                  headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json',
+                  },
                 },
-              });
+              );
 
               const data = res.status === 200 && (await res.json());
               console.log(
@@ -109,8 +112,22 @@ backend.add(
               );
               poll();
             };
-
             poll();
+
+            setTimeout(() => {
+              console.log(`DEBUG: publishing!`);
+              fetch(`${baseUrl}/hub/events`, {
+                method: 'POST',
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                  topic: 'test',
+                  payload: { herp: 'derp' },
+                }),
+              });
+            }, 500);
 
             const ws = new WebSocket(`${baseUrl}/hub/connect`, {
               headers: {
