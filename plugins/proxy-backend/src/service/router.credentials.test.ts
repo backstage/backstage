@@ -21,7 +21,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
-import { rest } from 'msw';
+import { http, HttpResponse, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
 import fetch from 'node-fetch';
 import portFinder from 'portfinder';
@@ -82,13 +82,12 @@ describe('credentials', () => {
     };
 
     worker.use(
-      rest.all(`${baseUrl}/*`, req => req.passthrough()),
-      rest.get('http://target.com/*', (req, res, ctx) => {
-        const auth = req.headers.get('authorization');
-        return res(
-          ctx.status(200),
-          ctx.json({ payload: { forwardedAuthorization: auth ?? false } }),
-        );
+      http.all(`${baseUrl}/*`, () => passthrough()),
+      http.get('http://target.com/*', req => {
+        const auth = req.request.headers.get('authorization');
+        return HttpResponse.json({
+          payload: { forwardedAuthorization: auth ?? false },
+        });
       }),
     );
 

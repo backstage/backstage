@@ -6471,7 +6471,7 @@ __metadata:
     express-promise-router: ^4.1.0
     http-proxy-middleware: ^2.0.0
     morgan: ^1.10.0
-    msw: ^1.0.0
+    msw: ^2.0.0
     node-fetch: ^2.6.7
     portfinder: ^1.0.32
     supertest: ^6.1.3

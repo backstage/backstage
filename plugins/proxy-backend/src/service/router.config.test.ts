@@ -24,7 +24,7 @@ import {
   StaticConfigSource,
 } from '@backstage/config-loader';
 import express from 'express';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';
 import { createRouter } from './router';
@@ -35,14 +35,11 @@ import { mockServices } from '@backstage/backend-test-utils';
 
 describe('createRouter reloadable configuration', () => {
   const server = setupServer(
-    rest.get('https://non-existing-example.com/', (req, res, ctx) =>
-      res(
-        ctx.status(200),
-        ctx.json({
-          url: req.url.toString(),
-          headers: req.headers.all(),
-        }),
-      ),
+    http.get('https://non-existing-example.com/', req =>
+      HttpResponse.json({
+        url: req.request.url.toString(),
+        headers: req.request.headers,
+      }),
     ),
   );
 
