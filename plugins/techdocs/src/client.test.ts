@@ -17,15 +17,14 @@
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { IdentityApi } from '@backstage/core-plugin-api';
 import { NotFoundError } from '@backstage/errors';
-import { EventSourcePolyfill } from 'event-source-polyfill';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 import { MockConfigApi, MockFetchApi } from '@backstage/test-utils';
 import { TechDocsStorageClient } from './client';
 
-const MockedEventSource = EventSourcePolyfill as jest.MockedClass<
-  typeof EventSourcePolyfill
+jest.mock('@microsoft/fetch-event-source');
+const mockFetchEventSource = fetchEventSource as jest.MockedFunction<
+  typeof fetchEventSource
 >;
-
-jest.mock('event-source-polyfill');
 
 const mockEntity = {
   kind: 'Component',
@@ -51,7 +50,6 @@ describe('TechDocsStorageClient', () => {
     const storageApi = new TechDocsStorageClient({
       configApi,
       discoveryApi,
-      identityApi,
       fetchApi,
     });
 
@@ -72,7 +70,6 @@ describe('TechDocsStorageClient', () => {
     const storageApi = new TechDocsStorageClient({
       configApi,
       discoveryApi,
-      identityApi,
       fetchApi,
     });
 
@@ -84,71 +81,49 @@ describe('TechDocsStorageClient', () => {
   });
 
   describe('syncEntityDocs', () => {
-    it('should create eventsource without headers', async () => {
+    it('should create eventsource with fetch', async () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
 
-      MockedEventSource.prototype.addEventListener.mockImplementation(
-        (type, fn) => {
-          if (type === 'finish' && typeof fn === 'function') {
-            fn({ data: '{"updated": false}' } as any);
-          }
-        },
-      );
-
+      mockFetchEventSource.mockImplementation(async (_url, options) => {
+        const { onopen, onmessage } = options;
+        await Promise.resolve();
+        await onopen?.({ ok: true } as Response);
+        await Promise.resolve();
+        onmessage?.({ id: '', event: 'finish', data: '{"updated": false}' });
+      });
       identityApi.getCredentials.mockResolvedValue({});
       await storageApi.syncEntityDocs(mockEntity);
 
-      expect(MockedEventSource).toHaveBeenCalledWith(
+      expect(mockFetchEventSource).toHaveBeenCalledWith(
         'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
-        { withCredentials: true, headers: {} },
-      );
-    });
-
-    it('should create eventsource with headers', async () => {
-      const storageApi = new TechDocsStorageClient({
-        configApi,
-        discoveryApi,
-        identityApi,
-        fetchApi,
-      });
-
-      MockedEventSource.prototype.addEventListener.mockImplementation(
-        (type, fn) => {
-          if (type === 'finish' && typeof fn === 'function') {
-            fn({ data: '{"updated": false}' } as any);
-          }
+        {
+          fetch: fetchApi.fetch,
+          onerror: expect.any(Function),
+          onmessage: expect.any(Function),
         },
-      );
-
-      identityApi.getCredentials.mockResolvedValue({ token: 'token' });
-      await storageApi.syncEntityDocs(mockEntity);
-
-      expect(MockedEventSource).toHaveBeenCalledWith(
-        'http://backstage:9191/api/techdocs/sync/default/Component/test-component',
-        { withCredentials: true, headers: { Authorization: 'Bearer token' } },
       );
     });
 
     it('should resolve to cached', async () => {
+      const myFetchApi = new MockFetchApi({
+        injectIdentityAuth: { identityApi },
+      });
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
-        fetchApi,
+        fetchApi: myFetchApi,
       });
-
-      MockedEventSource.prototype.addEventListener.mockImplementation(
-        (type, fn) => {
-          if (type === 'finish' && typeof fn === 'function') {
-            fn({ data: '{"updated": false}' } as any);
-          }
-        },
-      );
+      mockFetchEventSource.mockImplementation(async (_url, options) => {
+        const { onopen, onmessage } = options;
+        await Promise.resolve();
+        await onopen?.({ ok: true } as Response);
+        await Promise.resolve();
+        onmessage?.({ id: '', event: 'finish', data: '{"updated": false}' });
+      });
 
       identityApi.getCredentials.mockResolvedValue({});
       await expect(storageApi.syncEntityDocs(mockEntity)).resolves.toEqual(
@@ -160,17 +135,15 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
-
-      MockedEventSource.prototype.addEventListener.mockImplementation(
-        (type, fn) => {
-          if (type === 'finish' && typeof fn === 'function') {
-            fn({ data: '{"updated": true}' } as any);
-          }
-        },
-      );
+      mockFetchEventSource.mockImplementation(async (_url, options) => {
+        const { onopen, onmessage } = options;
+        await Promise.resolve();
+        await onopen?.({ ok: true } as Response);
+        await Promise.resolve();
+        onmessage?.({ id: '', event: 'finish', data: '{"updated": true}' });
+      });
 
       identityApi.getCredentials.mockResolvedValue({});
       await expect(storageApi.syncEntityDocs(mockEntity)).resolves.toEqual(
@@ -182,21 +155,18 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
 
-      MockedEventSource.prototype.addEventListener.mockImplementation(
-        (type, fn) => {
-          if (type === 'log' && typeof fn === 'function') {
-            fn({ data: '"A log message"' } as any);
-          }
-
-          if (type === 'finish' && typeof fn === 'function') {
-            fn({ data: '{"updated": false}' } as any);
-          }
-        },
-      );
+      mockFetchEventSource.mockImplementation(async (_url, options) => {
+        const { onopen, onmessage } = options;
+        await Promise.resolve();
+        await onopen?.({ ok: true } as Response);
+        await Promise.resolve();
+        onmessage?.({ id: '', event: 'log', data: '"A log message"' });
+        await Promise.resolve();
+        onmessage?.({ id: '', event: 'finish', data: '{"updated": false}' });
+      });
 
       identityApi.getCredentials.mockResolvedValue({});
       const logHandler = jest.fn();
@@ -212,24 +182,17 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
+      });
+
+      mockFetchEventSource.mockImplementation(async (_url, options) => {
+        const { onerror } = options;
+        onerror?.(new NotFoundError('Some not found warning'));
       });
 
       // we await later after we emitted the error
       identityApi.getCredentials.mockResolvedValue({});
       const promise = storageApi.syncEntityDocs(mockEntity).then();
-
-      // flush the event loop
-      await new Promise(r => setTimeout(r));
-
-      const instance = MockedEventSource.mock
-        .instances[0] as jest.Mocked<EventSource>;
-
-      instance.onerror?.({
-        status: 404,
-        message: 'Some not found warning',
-      } as any);
 
       await expect(promise).rejects.toThrow(NotFoundError);
       await expect(promise).rejects.toThrow('Some not found warning');
@@ -239,7 +202,6 @@ describe('TechDocsStorageClient', () => {
       const storageApi = new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       });
 
@@ -247,16 +209,10 @@ describe('TechDocsStorageClient', () => {
       identityApi.getCredentials.mockResolvedValue({});
       const promise = storageApi.syncEntityDocs(mockEntity).then();
 
-      // flush the event loop
-      await new Promise(r => setTimeout(r));
-
-      const instance = MockedEventSource.mock
-        .instances[0] as jest.Mocked<EventSource>;
-
-      instance.onerror?.({
-        type: 'error',
-        data: 'Some other error',
-      } as any);
+      mockFetchEventSource.mockImplementation(async (_url, options) => {
+        const { onerror } = options;
+        onerror?.(new Error('Some other error'));
+      });
 
       await expect(promise).rejects.toThrow(Error);
       await expect(promise).rejects.toThrow('Some other error');

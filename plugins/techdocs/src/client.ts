@@ -209,24 +209,22 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 
     return new Promise((resolve, reject) => {
       fetchEventSource(url, {
-        withCredentials: true,
         fetch: this.fetchApi.fetch,
         onmessage(e: any) {
-          if (e.data) {
+          if (e.event === 'log') {
             logHandler(JSON.parse(e.data));
+          } else if (e.event === 'finish') {
+            let updated: boolean = false;
+            if (e.data) {
+              ({ updated } = JSON.parse(e.data));
+            }
+            resolve(updated ? 'updated' : 'cached');
+          } else if (e.event === 'error') {
+            reject(new Error(e.data));
           }
         },
-        onclose(e: any) {
-          let updated: boolean = false;
-
-          if (e.data) {
-            ({ updated } = JSON.parse(e.data));
-          }
-
-          resolve(updated ? 'updated' : 'cached');
-        },
-        onerror(e: any) {
-          reject(e);
+        onerror(err) {
+          reject(err);
         },
       });
     });
