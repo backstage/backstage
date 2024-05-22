@@ -7535,6 +7535,7 @@ __metadata:
     "@material-ui/icons": ^4.9.1
     "@material-ui/lab": 4.0.0-alpha.61
     "@material-ui/styles": ^4.10.0
+    "@microsoft/fetch-event-source": ^2.0.1
     "@testing-library/dom": ^10.0.0
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
@@ -10504,6 +10505,13 @@ __metadata:
   bin:
     api-extractor: bin/api-extractor
   checksum: 92559325cf2407fa27cb9675772956511fa35005f295cdb4dc47abd7ef9c77ba61b0f684c2e952301a76dd2cfa9e398840c8f3d9117d621300e12b0ecfbf8147
+  languageName: node
+  linkType: hard
+
+"@microsoft/fetch-event-source@npm:^2.0.1":
+  version: 2.0.1
+  resolution: "@microsoft/fetch-event-source@npm:2.0.1"
+  checksum: a50e1c0f33220206967266d0a4bbba0703e2793b079d9f6e6bfd48f71b2115964a803e14cf6e902c6fab321edc084f26022334f5eaacc2cec87f174715d41852
   languageName: node
   linkType: hard
 

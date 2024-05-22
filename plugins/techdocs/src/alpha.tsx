@@ -29,7 +29,6 @@ import {
   createApiFactory,
   discoveryApiRef,
   fetchApiRef,
-  identityApiRef,
 } from '@backstage/core-plugin-api';
 import {
   compatWrapper,
@@ -55,14 +54,12 @@ const techDocsStorageApi = createApiExtension({
     deps: {
       configApi: configApiRef,
       discoveryApi: discoveryApiRef,
-      identityApi: identityApiRef,
       fetchApi: fetchApiRef,
     },
-    factory: ({ configApi, discoveryApi, identityApi, fetchApi }) =>
+    factory: ({ configApi, discoveryApi, fetchApi }) =>
       new TechDocsStorageClient({
         configApi,
         discoveryApi,
-        identityApi,
         fetchApi,
       }),
   }),
