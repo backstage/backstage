@@ -6967,6 +6967,7 @@ __metadata:
     "@testing-library/jest-dom": ^6.0.0
     "@testing-library/react": ^15.0.0
     "@testing-library/user-event": ^14.0.0
+    "@types/event-source-polyfill": ^1.0.0
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
@@ -7541,11 +7542,9 @@ __metadata:
     "@testing-library/react": ^15.0.0
     "@testing-library/user-event": ^14.0.0
     "@types/dompurify": ^3.0.0
-    "@types/event-source-polyfill": ^1.0.0
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
     canvas: ^2.10.2
     dompurify: ^3.0.0
-    event-source-polyfill: 1.0.25
     git-url-parse: ^14.0.0
     jss: ~10.10.0
     lodash: ^4.17.21
@@ -25496,13 +25495,6 @@ __metadata:
     d: 1
     es5-ext: ~0.10.14
   checksum: 27c1399557d9cd7e0aa0b366c37c38a4c17293e3a10258e8b692a847dd5ba9fb90429c3a5a1eeff96f31f6fa03ccbd31d8ad15e00540b22b22f01557be706030
-  languageName: node
-  linkType: hard
-
-"event-source-polyfill@npm:1.0.25":
-  version: 1.0.25
-  resolution: "event-source-polyfill@npm:1.0.25"
-  checksum: ed30428cc80eadfd693d267ba4a72dceaae938174cd116081ce38ad62bfd95f199430be7e8341e6f8f1e29489bbd5cfd4b3f6c8d6d463435623f7f91ae5f71b1
   languageName: node
   linkType: hard
 
