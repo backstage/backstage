@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
-import { Notification } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  NotificationSeverity,
+} from '@backstage/plugin-notifications-common';
 import { NotificationSendOptions } from './service';
 
 /**
@@ -90,6 +93,11 @@ export interface NotificationProcessor {
     notification: Notification,
     options: NotificationSendOptions,
   ): Promise<void>;
+
+  /**
+   * notification filters are used to call the processor only in certain conditions
+   */
+  getNotificationFilters?(): NotificationProcessorFilters;
 }
 
 /**
@@ -108,3 +116,12 @@ export const notificationsProcessingExtensionPoint =
   createExtensionPoint<NotificationsProcessingExtensionPoint>({
     id: 'notifications.processing',
   });
+
+/**
+ * @public
+ */
+export type NotificationProcessorFilters = {
+  minSeverity?: NotificationSeverity;
+  maxSeverity?: NotificationSeverity;
+  excludedTopics?: string[];
+};

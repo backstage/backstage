@@ -15,6 +15,7 @@
  */
 import {
   NotificationProcessor,
+  NotificationProcessorFilters,
   NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
 import {
@@ -28,7 +29,11 @@ import {
   CATALOG_FILTER_EXISTS,
   CatalogClient,
 } from '@backstage/catalog-client';
-import { Notification } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  notificationSeverities,
+  NotificationSeverity,
+} from '@backstage/plugin-notifications-common';
 import {
   createSendmailTransport,
   createSesTransport,
@@ -51,6 +56,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
   private readonly frontendBaseUrl: string;
+  private readonly filter: NotificationProcessorFilters;
 
   constructor(
     private readonly logger: LoggerService,
@@ -80,6 +86,30 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       ? durationToMilliseconds(readDurationFromConfig(cacheConfig))
       : 3_600_000;
     this.frontendBaseUrl = config.getString('app.baseUrl');
+    this.filter = {};
+    const minSeverity = emailProcessorConfig.getOptionalString(
+      'filter.minSeverity',
+    ) as NotificationSeverity;
+    if (minSeverity) {
+      if (notificationSeverities.includes(minSeverity)) {
+        this.filter.minSeverity = minSeverity;
+      } else {
+        throw new Error(`Invalid minSeverity: ${minSeverity}`);
+      }
+    }
+    const maxSeverity = emailProcessorConfig.getOptionalString(
+      'filter.maxSeverity',
+    ) as NotificationSeverity;
+    if (maxSeverity) {
+      if (notificationSeverities.includes(maxSeverity)) {
+        this.filter.maxSeverity = maxSeverity;
+      } else {
+        throw new Error(`Invalid maxSeverity: ${maxSeverity}`);
+      }
+    }
+    this.filter.excludedTopics = emailProcessorConfig.getOptionalStringArray(
+      'filter.excludedTopics',
+    );
   }
 
   private async getTransporter() {
@@ -311,5 +341,9 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     }
 
     await this.sendTemplateEmail(notification, emails);
+  }
+
+  getNotificationFilters(): NotificationProcessorFilters {
+    return this.filter;
   }
 }
