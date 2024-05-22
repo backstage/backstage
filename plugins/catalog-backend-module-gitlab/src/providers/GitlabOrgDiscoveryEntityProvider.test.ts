@@ -75,16 +75,16 @@ describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
     }).toThrow('No gitlab integration found that matches host example.com');
   });
 
-  it('should throw error when org configuration not found', () => {
+  it('should log a message and return when org configuration not found', () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader(mock.config_no_org_integration);
 
-    expect(() => {
-      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-        logger,
-        schedule,
-      });
-    }).toThrow('Org not enabled for test-id');
+    GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    });
+
+    expect(logger.info).toHaveBeenCalledWith('Org not enabled for test-id.');
   });
 
   it('should throw error when saas without group configuration', () => {
