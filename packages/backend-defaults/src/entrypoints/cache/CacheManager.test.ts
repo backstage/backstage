@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockServices, TestCaches } from '@backstage/backend-test-utils';
 import KeyvRedis from '@keyv/redis';
+import KeyvMemcache from '@keyv/memcache';
 import { CacheManager } from './CacheManager';
 
 // This test is in a separate file because the main test file uses other mocking
@@ -23,28 +24,32 @@ import { CacheManager } from './CacheManager';
 
 // Contrived code because it's hard to spy on a default export
 jest.mock('@keyv/redis', () => {
-  const ActualKeyvRedis = jest.requireActual('@keyv/redis');
+  const Actual = jest.requireActual('@keyv/redis');
   return jest.fn((...args: any[]) => {
-    return new ActualKeyvRedis(...args);
+    return new Actual(...args);
+  });
+});
+jest.mock('@keyv/memcache', () => {
+  const Actual = jest.requireActual('@keyv/memcache');
+  return jest.fn((...args: any[]) => {
+    return new Actual(...args);
   });
 });
 
 describe('CacheManager integration', () => {
-  describe('redis', () => {
-    it('only creates one underlying connection', async () => {
-      const connection =
-        process.env.BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING;
-      if (!connection) {
-        return;
-      }
+  const caches = TestCaches.create();
+
+  afterEach(jest.clearAllMocks);
+
+  it.each(caches.eachSupportedId())(
+    'only creates one underlying connection, %p',
+    async cacheId => {
+      const { store, connection } = await caches.init(cacheId);
 
       const manager = CacheManager.fromConfig(
         mockServices.rootConfig({
-          data: {
-            backend: { cache: { store: 'redis', connection } },
-          },
+          data: { backend: { cache: { store, connection } } },
         }),
-        { onError: e => expect(e).not.toBeDefined() },
       );
 
       manager.forPlugin('p1').getClient();
@@ -52,25 +57,27 @@ describe('CacheManager integration', () => {
       manager.forPlugin('p2').getClient();
       manager.forPlugin('p3').getClient({});
 
-      expect(KeyvRedis).toHaveBeenCalledTimes(1);
-    });
-
-    it('interacts correctly with redis', async () => {
-      // TODO(freben): This could be frameworkified as TestCaches just like
-      // TestDatabases, but that will have to come some other day
-      const connection =
-        process.env.BACKSTAGE_TEST_CACHE_REDIS7_CONNECTION_STRING;
-      if (!connection) {
-        return;
+      if (store === 'redis') {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(KeyvRedis).toHaveBeenCalledTimes(1);
+      } else if (store === 'memcache') {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(KeyvMemcache).toHaveBeenCalledTimes(1);
       }
+    },
+  );
+
+  it.each(caches.eachSupportedId())(
+    'interacts correctly with store, %p',
+    async cacheId => {
+      const { store, connection } = await caches.init(cacheId);
 
       const manager = CacheManager.fromConfig(
         mockServices.rootConfig({
           data: {
-            backend: { cache: { store: 'redis', connection } },
+            backend: { cache: { store, connection } },
           },
         }),
-        { onError: e => expect(e).not.toBeDefined() },
       );
 
       const plugin1 = manager.forPlugin('p1').getClient();
@@ -84,6 +91,6 @@ describe('CacheManager integration', () => {
       await expect(plugin1.get('a')).resolves.toBe('plugin1');
       await expect(plugin2a.get('a')).resolves.toBe('plugin2b');
       await expect(plugin2b.get('a')).resolves.toBe('plugin2b');
-    });
-  });
+    },
+  );
 });
