@@ -6139,6 +6139,7 @@ __metadata:
   dependencies:
     "@backstage/backend-common": ^0.25.0
     "@backstage/backend-defaults": "workspace:^"
+    "@backstage/backend-openapi-utils": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -6146,6 +6147,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
+    "@backstage/repo-tools": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": ^4.17.6
     express: ^4.17.1

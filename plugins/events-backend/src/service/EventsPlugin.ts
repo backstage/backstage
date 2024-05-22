@@ -97,7 +97,7 @@ export const eventsPlugin = createBackendPlugin({
         http.bind(eventsRouter);
 
         const hub = await EventHub.create({ logger, httpAuth });
-        eventsRouter.use('/hub', hub.handler());
+        router.use(hub.handler());
 
         router.use(eventsRouter);
         router.addAuthPolicy({

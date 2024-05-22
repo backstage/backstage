@@ -20,7 +20,7 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import express, { Handler } from 'express';
+import { Handler } from 'express';
 import Router from 'express-promise-router';
 import { Socket } from 'net';
 import { STATUS_CODES } from 'http';
@@ -30,6 +30,8 @@ import { fromZodError } from 'zod-validation-error';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { serializeError } from '@backstage/errors';
 import { EventParams } from '@backstage/plugin-events-node';
+import { spec, createOpenApiRouter } from '../../schema/openapi.generated';
+import { internal } from '@backstage/backend-openapi-utils';
 
 /*
 
@@ -395,15 +397,23 @@ export class EventHub {
     const hub = new EventHub(server, router, logger, httpAuth);
 
     // WS
-    router.get('/connect', hub.#handleGetConnect);
+    router.get('/hub/connect', hub.#handleGetConnect);
 
-    router.use(express.json());
+    const apiRouter = await createOpenApiRouter();
 
-    router.post('/events', hub.#handlePostEvents);
+    router.use(apiRouter);
+
+    apiRouter.post('/hub/events', hub.#handlePostEvents);
 
     // Long-polling
-    router.get('/subscriptions/:id/events', hub.#handleGetSubscription);
-    router.put('/subscriptions/:id', hub.#handlePutSubscription);
+    apiRouter.get(
+      '/hub/subscriptions/:subscriptionId/events',
+      hub.#handleGetSubscription,
+    );
+    apiRouter.put(
+      '/hub/subscriptions/:subscriptionId',
+      hub.#handlePutSubscription,
+    );
 
     return hub;
   }
@@ -528,14 +538,18 @@ export class EventHub {
     }
   };
 
-  #handlePostEvents: Handler = async (req, res) => {
+  #handlePostEvents: internal.DocRequestHandler<
+    typeof spec,
+    '/hub/events',
+    'post'
+  > = async (req, res) => {
     const credentials = await this.#httpAuth.credentials(req, {
       allow: ['service'],
     });
     await this.#store.publish({
       params: {
-        topic: req.body.topic,
-        eventPayload: req.body.payload,
+        topic: req.body.event.topic,
+        eventPayload: req.body.event.payload,
       },
       subscriberIds: [],
     });
@@ -545,11 +559,15 @@ export class EventHub {
     res.status(201).end();
   };
 
-  #handleGetSubscription: Handler = async (req, res) => {
+  #handleGetSubscription: internal.DocRequestHandler<
+    typeof spec,
+    '/hub/subscriptions/{subscriptionId}/events',
+    'get'
+  > = async (req, res) => {
     const credentials = await this.#httpAuth.credentials(req, {
       allow: ['service'],
     });
-    const id = req.params.id;
+    const id = req.params.subscriptionId;
 
     const { events } = await this.#store.readSubscription(id);
 
@@ -568,11 +586,15 @@ export class EventHub {
     });
   };
 
-  #handlePutSubscription: Handler = async (req, res) => {
+  #handlePutSubscription: internal.DocRequestHandler<
+    typeof spec,
+    '/hub/subscriptions/{subscriptionId}',
+    'put'
+  > = async (req, res) => {
     const credentials = await this.#httpAuth.credentials(req, {
       allow: ['service'],
     });
-    const id = req.params.id;
+    const id = req.params.subscriptionId;
 
     await this.#store.upsertSubscription(id, req.body.topics);
 
