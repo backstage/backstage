@@ -101,9 +101,9 @@ describe('JWKSHandler', () => {
   it('verifies token with valid entry', async () => {
     const validEntry = {
       url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['RS256'],
-      issuers: [mockBaseUrl],
-      audiences: ['backstage'],
+      algorithm: 'RS256',
+      issuer: mockBaseUrl,
+      audience: 'backstage',
     };
     const jwksHandler = new JWKSHandler();
 
@@ -121,16 +121,16 @@ describe('JWKSHandler', () => {
   it('skips invalid entry and continues verification', async () => {
     const invalidEntry = {
       url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['RS256'],
-      issuers: ['fakeIssuer'],
-      audiences: ['fakeAud'],
+      algorithm: 'RS256',
+      issuer: ['fakeIssuer'],
+      audience: ['fakeAud'],
     };
 
     const validEntry = {
       url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['RS256'],
-      issuers: ['multiple-issuers', mockBaseUrl],
-      audiences: ['multiple-audiences', 'backstage'],
+      algorithm: 'RS256',
+      issuer: ['multiple-issuers', mockBaseUrl],
+      audience: ['multiple-audiences', 'backstage'],
     };
     const jwksHandler = new JWKSHandler();
 
@@ -149,16 +149,14 @@ describe('JWKSHandler', () => {
   it('returns undefined if no valid entry found', async () => {
     const invalidEntry1 = {
       url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['RS256'],
-      issuers: [mockBaseUrl],
-      audiences: [],
+      algorithm: 'RS256',
+      issuer: 'wrong',
     };
 
     const invalidEntry2 = {
       url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['HS256'],
-      issuers: [],
-      audiences: ['backstage'],
+      algorithm: ['HS256'],
+      audience: 'wrong',
     };
     const jwksHandler = new JWKSHandler();
 
@@ -201,9 +199,9 @@ describe('JWKSHandler', () => {
   it('uses custom subject prefix if provided', async () => {
     const validEntry = {
       url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['RS256'],
-      issuers: [mockBaseUrl],
-      audiences: ['backstage'],
+      algorithm: 'RS256',
+      issuer: mockBaseUrl,
+      audience: 'backstage',
       subjectPrefix: 'custom-prefix',
     };
     const jwksHandler = new JWKSHandler();

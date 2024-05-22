@@ -16,6 +16,7 @@
 
 import { jwtVerify, createRemoteJWKSet, JWTVerifyGetKey } from 'jose';
 import { Config } from '@backstage/config';
+import { readStringOrStringArrayFromConfig } from './helpers';
 import { TokenHandler } from './types';
 
 /**
@@ -34,9 +35,9 @@ export class JWKSHandler implements TokenHandler {
   }> = [];
 
   add(options: Config) {
-    const algorithms = options.getOptionalStringArray('algorithms');
-    const issuers = options.getOptionalStringArray('issuers');
-    const audiences = options.getOptionalStringArray('audiences');
+    const algorithms = readStringOrStringArrayFromConfig(options, 'algorithm');
+    const issuers = readStringOrStringArrayFromConfig(options, 'issuer');
+    const audiences = readStringOrStringArrayFromConfig(options, 'audience');
     const subjectPrefix = options.getOptionalString('subjectPrefix');
     const url = new URL(options.getString('url'));
     const jwks = createRemoteJWKSet(url);

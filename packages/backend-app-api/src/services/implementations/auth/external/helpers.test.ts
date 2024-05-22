@@ -15,8 +15,74 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readAccessRestrictionsFromConfig } from './helpers';
+import {
+  readAccessRestrictionsFromConfig,
+  readStringOrStringArrayFromConfig,
+} from './helpers';
 import { JsonObject } from '@backstage/types';
+import { mockServices } from '@backstage/backend-test-utils';
+
+describe('readStringOrStringArrayFromConfig', () => {
+  it('handles all cases correctly', () => {
+    const config = mockServices.rootConfig({
+      data: {
+        wrongType: 1,
+        wrongTypeInArray: [1],
+        singleString: 'a',
+        spaceSeparatedString: 'a b c',
+        commaSeparatedString: 'a,b,c',
+        mixedSeparatorsString: 'a b,c  ,, d',
+        emptyString: '',
+        emptyArray: [],
+        simpleArray: ['a', 'b', 'c'],
+        arrayWithSeparators: ['a b', 'c,d', 'e'],
+        complexDuplicates: ['a', 'a b', 'a', 'b, a'],
+      },
+    });
+
+    expect(() =>
+      readStringOrStringArrayFromConfig(config, 'wrongType'),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type in config for key 'wrongType' in 'mock-config', got number, wanted string"`,
+    );
+    expect(() =>
+      readStringOrStringArrayFromConfig(config, 'wrongTypeInArray'),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type in config for key 'wrongTypeInArray[0]' in 'mock-config', got number, wanted string-array"`,
+    );
+    expect(readStringOrStringArrayFromConfig(config, 'singleString')).toEqual([
+      'a',
+    ]);
+    expect(
+      readStringOrStringArrayFromConfig(config, 'spaceSeparatedString'),
+    ).toEqual(['a', 'b', 'c']);
+    expect(
+      readStringOrStringArrayFromConfig(config, 'commaSeparatedString'),
+    ).toEqual(['a', 'b', 'c']);
+    expect(
+      readStringOrStringArrayFromConfig(config, 'mixedSeparatorsString'),
+    ).toEqual(['a', 'b', 'c', 'd']);
+    expect(() =>
+      readStringOrStringArrayFromConfig(config, 'emptyString'),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid type in config for key 'emptyString' in 'mock-config', got empty-string, wanted string"`,
+    );
+    expect(
+      readStringOrStringArrayFromConfig(config, 'emptyArray'),
+    ).toBeUndefined();
+    expect(readStringOrStringArrayFromConfig(config, 'simpleArray')).toEqual([
+      'a',
+      'b',
+      'c',
+    ]);
+    expect(
+      readStringOrStringArrayFromConfig(config, 'arrayWithSeparators'),
+    ).toEqual(['a', 'b', 'c', 'd', 'e']);
+    expect(
+      readStringOrStringArrayFromConfig(config, 'complexDuplicates'),
+    ).toEqual(['a', 'b']);
+  });
+});
 
 describe('readAccessRestrictionsFromConfig', () => {
   function r(config: JsonObject) {

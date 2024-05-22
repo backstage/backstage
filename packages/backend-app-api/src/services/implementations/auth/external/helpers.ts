@@ -66,8 +66,10 @@ export function readAccessRestrictionsFromConfig(
  * splits by comma/space into a string array. Can also validate against a known
  * set of values. Returns undefined if the key didn't exist or if the array
  * would have ended up being empty.
+ *
+ * @internal
  */
-function stringOrStringArray<T extends string>(
+export function readStringOrStringArrayFromConfig<T extends string>(
   root: Config,
   key: string,
   validValues?: readonly T[],
@@ -108,7 +110,10 @@ function stringOrStringArray<T extends string>(
 }
 
 function readPermissionNames(externalAccessEntryConfig: Config) {
-  return stringOrStringArray(externalAccessEntryConfig, 'permission');
+  return readStringOrStringArrayFromConfig(
+    externalAccessEntryConfig,
+    'permission',
+  );
 }
 
 function readPermissionAttributes(externalAccessEntryConfig: Config) {
@@ -129,7 +134,7 @@ function readPermissionAttributes(externalAccessEntryConfig: Config) {
     }
   }
 
-  const action = stringOrStringArray(config, 'action', [
+  const action = readStringOrStringArrayFromConfig(config, 'action', [
     'create',
     'read',
     'update',
