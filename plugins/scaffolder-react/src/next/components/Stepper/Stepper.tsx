@@ -214,7 +214,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           );
         })}
         <MuiStep>
-          <MuiStepLabel>${reviewLabel}</MuiStepLabel>
+          <MuiStepLabel>{reviewLabel}</MuiStepLabel>
         </MuiStep>
       </MuiStepper>
       <div className={styles.formWrapper}>
