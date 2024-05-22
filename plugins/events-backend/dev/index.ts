@@ -21,6 +21,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { WebSocket } from 'ws';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { DefaultApiClient } from '../../events-node/src/generated';
 
 const backend = createBackend();
 
@@ -73,6 +74,8 @@ backend.add(
 
           rootLifecycle.addStartupHook(async () => {
             logger.info('Started!');
+
+            const client = new DefaultApiClient({ discoveryApi: discovery });
             const baseUrl = await discovery.getBaseUrl('events');
             console.log(`DEBUG: baseUrl=`, baseUrl);
             const { token } = await auth.getPluginRequestToken({
@@ -80,29 +83,23 @@ backend.add(
               targetPluginId: 'events',
             });
 
-            const subRes = await fetch(`${baseUrl}/hub/subscriptions/123`, {
-              method: 'PUT',
-              headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
+            const subRes = await client.putSubscription(
+              {
+                path: { subscriptionId: '123' },
+                body: { topics: ['test'] },
               },
-              body: JSON.stringify({
-                topics: ['test'],
-              }),
-            });
+              { token },
+            );
             console.log(
               `DEBUG: sub create req = ${subRes.status} ${subRes.statusText}`,
             );
 
             const poll = async () => {
-              const res = await fetch(
-                `${baseUrl}/hub/subscriptions/123/events`,
+              const res = await client.getSubscriptionEvents(
                 {
-                  headers: {
-                    Authorization: `Bearer ${token}`,
-                    'Content-Type': 'application/json',
-                  },
+                  path: { subscriptionId: '123' },
                 },
+                { token },
               );
 
               const data = res.status === 200 && (await res.json());
@@ -116,52 +113,10 @@ backend.add(
 
             setTimeout(() => {
               console.log(`DEBUG: publishing!`);
-              fetch(`${baseUrl}/hub/events`, {
-                method: 'POST',
-                headers: {
-                  Authorization: `Bearer ${token}`,
-                  'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({
-                  topic: 'test',
-                  payload: { herp: 'derp' },
-                }),
+              client.postEvent({
+                body: { event: { topic: 'test', payload: { foo: 'bar' } } },
               });
             }, 500);
-
-            const ws = new WebSocket(`${baseUrl}/hub/connect`, {
-              headers: {
-                Authorization: `Bearer ${token}`,
-              },
-            });
-            ws.onopen = () => {
-              console.log('DEBUG: ws.onopen');
-              // ws.send(
-              //   JSON.stringify([
-              //     'req',
-              //     1,
-              //     'subscribe',
-              //     { id: 'derp', topics: ['test'] },
-              //   ]),
-              // );
-              setTimeout(() => {
-                console.log(`DEBUG: publish!`);
-                ws.send(
-                  JSON.stringify([
-                    'req',
-                    1,
-                    'publish',
-                    { topic: 'test', payload: { foo: 'bar' } },
-                  ]),
-                );
-              }, 1000);
-            };
-            ws.onmessage = event => {
-              console.log(`DEBUG: client event=`, event.data);
-            };
-            ws.onerror = event => {
-              console.log(`Client error`, event.error);
-            };
           });
         },
       });
