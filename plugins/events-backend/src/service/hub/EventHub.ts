@@ -20,7 +20,7 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { Handler } from 'express';
+import express, { Handler } from 'express';
 import Router from 'express-promise-router';
 import { Socket } from 'net';
 import { STATUS_CODES } from 'http';
@@ -113,7 +113,7 @@ type EventHubStore = {
   readSubscription(id: string): Promise<{ events: EventParams[] }>;
 
   listen(
-    topicIds: string[],
+    subscriptionId: string,
     onNotify: (topicId: string) => void,
   ): Promise<() => void>;
 };
@@ -191,10 +191,14 @@ class MemoryEventHubStore implements EventHubStore {
   }
 
   async listen(
-    topicIds: string[],
+    subscriptionId: string,
     onNotify: (topicId: string) => void,
   ): Promise<() => void> {
-    const listener = { topics: new Set(topicIds), notify: onNotify };
+    const sub = this.#subscribers.get(subscriptionId);
+    if (!sub) {
+      throw new Error(`Subscription not found`);
+    }
+    const listener = { topics: sub.topics, notify: onNotify };
     this.#listeners.add(listener);
     return () => {
       this.#listeners.delete(listener);
@@ -390,7 +394,14 @@ export class EventHub {
 
     const hub = new EventHub(server, router, logger, httpAuth);
 
+    // WS
     router.get('/connect', hub.#handleGetConnect);
+
+    router.use(express.json());
+
+    // Long-polling
+    router.get('/subscriptions/:id', hub.#handleGetSubscription);
+    router.put('/subscriptions/:id', hub.#handlePutSubscription);
 
     return hub;
   }
@@ -474,10 +485,7 @@ export class EventHub {
                   },
                 );
 
-              const removeListener = await this.#store.listen(
-                params.topics,
-                read,
-              );
+              const removeListener = await this.#store.listen(params.id, read);
               ws.addListener('close', removeListener);
 
               await read();
@@ -516,6 +524,45 @@ export class EventHub {
       req.socket.destroy();
       this.#logger.info('WebSocket upgrade failed', error);
     }
+  };
+
+  #handleGetSubscription: Handler = async (req, res) => {
+    const credentials = await this.#httpAuth.credentials(req, {
+      allow: ['service'],
+    });
+    const id = req.params.id;
+
+    const { events } = await this.#store.readSubscription(id);
+
+    this.#logger.info(
+      `Reading subscription '${id}' resulted in ${events.length} events`,
+      { subject: credentials.principal.subject },
+    );
+
+    if (events.length > 0) {
+      res.json({ events });
+      return;
+    }
+
+    this.#store.listen(id, () => {
+      res.status(204).end();
+    });
+  };
+
+  #handlePutSubscription: Handler = async (req, res) => {
+    const credentials = await this.#httpAuth.credentials(req, {
+      allow: ['service'],
+    });
+    const id = req.params.id;
+
+    await this.#store.upsertSubscription(id, req.body.topics);
+
+    this.#logger.info(
+      `New subscription '${id}' topics='${req.body.topics.join("', '")}'`,
+      { subject: credentials.principal.subject },
+    );
+
+    res.status(201).end();
   };
 
   close() {

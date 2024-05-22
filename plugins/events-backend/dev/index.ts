@@ -79,6 +79,39 @@ backend.add(
               onBehalfOf: await auth.getOwnServiceCredentials(),
               targetPluginId: 'events',
             });
+
+            const subRes = await fetch(`${baseUrl}/hub/subscriptions/123`, {
+              method: 'PUT',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                topics: ['test'],
+              }),
+            });
+            console.log(
+              `DEBUG: sub create req = ${subRes.status} ${subRes.statusText}`,
+            );
+
+            const poll = async () => {
+              const res = await fetch(`${baseUrl}/hub/subscriptions/123`, {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                  'Content-Type': 'application/json',
+                },
+              });
+
+              const data = res.status === 200 && (await res.json());
+              console.log(
+                `DEBUG: sub poll req = ${res.status} ${res.statusText}`,
+                data,
+              );
+              poll();
+            };
+
+            poll();
+
             const ws = new WebSocket(`${baseUrl}/hub/connect`, {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -86,14 +119,14 @@ backend.add(
             });
             ws.onopen = () => {
               console.log('DEBUG: ws.onopen');
-              ws.send(
-                JSON.stringify([
-                  'req',
-                  1,
-                  'subscribe',
-                  { id: 'derp', topics: ['test'] },
-                ]),
-              );
+              // ws.send(
+              //   JSON.stringify([
+              //     'req',
+              //     1,
+              //     'subscribe',
+              //     { id: 'derp', topics: ['test'] },
+              //   ]),
+              // );
               setTimeout(() => {
                 console.log(`DEBUG: publish!`);
                 ws.send(
