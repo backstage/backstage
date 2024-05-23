@@ -14,9 +14,44 @@
  * limitations under the License.
  */
 
-import { parseEntityRef } from './ref';
+import { getCompoundEntityRef, parseEntityRef } from './ref';
 
 describe('ref', () => {
+  describe('getCompoundEntityRef', () => {
+    it('should normalize to lowercase', () => {
+      expect(
+        getCompoundEntityRef({
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            namespace: 'NameSpace',
+            name: 'MyComponent',
+          },
+        }),
+      ).toEqual({
+        kind: 'component',
+        name: 'mycomponent',
+        namespace: 'namespace',
+      });
+    });
+
+    it('should handle omissions', () => {
+      expect(
+        getCompoundEntityRef({
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: {
+            name: 'my-component',
+          },
+        }),
+      ).toEqual({
+        kind: 'component',
+        name: 'my-component',
+        namespace: 'default',
+      });
+    });
+  });
+
   describe('parseEntityRef', () => {
     it('handles some omissions', () => {
       expect(parseEntityRef('a:b/c')).toEqual({

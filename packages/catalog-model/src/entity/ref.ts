@@ -54,9 +54,11 @@ function parseRefString(ref: string): {
  */
 export function getCompoundEntityRef(entity: Entity): CompoundEntityRef {
   return {
-    kind: entity.kind,
-    namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-    name: entity.metadata.name,
+    kind: entity.kind.toLocaleLowerCase('en-US'),
+    namespace:
+      entity.metadata.namespace?.toLocaleLowerCase('en-US') ||
+      DEFAULT_NAMESPACE,
+    name: entity.metadata.name.toLocaleLowerCase('en-US'),
   };
 }
 
