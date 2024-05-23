@@ -25,17 +25,26 @@ export interface UrlReaderService {
   /**
    * Reads a single file and return its content.
    */
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
 
   /**
    * Reads a full or partial file tree.
    */
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
 
   /**
    * Searches for a file in a tree using a glob pattern.
    */
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse>;
 }
 
 /**
@@ -43,7 +52,7 @@ export interface UrlReaderService {
  *
  * @public
  */
-export type ReadUrlOptions = {
+export type UrlReaderReadUrlOptions = {
   /**
    * An ETag which can be provided to check whether a
    * {@link UrlReaderService.readUrl} response has changed from a previous execution.
@@ -111,7 +120,7 @@ export type ReadUrlOptions = {
  *
  * @public
  */
-export type ReadUrlResponse = {
+export type UrlReaderReadUrlResponse = {
   /**
    * Returns the data that was read from the remote URL.
    */
@@ -146,7 +155,7 @@ export type ReadUrlResponse = {
  *
  * @public
  */
-export type ReadTreeOptions = {
+export type UrlReaderReadTreeOptions = {
   /**
    * A filter that can be used to select which files should be included.
    *
@@ -206,11 +215,11 @@ export type ReadTreeOptions = {
 };
 
 /**
- * Options that control {@link ReadTreeResponse.dir} execution.
+ * Options that control {@link UrlReaderReadTreeResponse.dir} execution.
  *
  * @public
  */
-export type ReadTreeResponseDirOptions = {
+export type UrlReaderReadTreeResponseDirOptions = {
   /**
    * The directory to write files to.
    *
@@ -226,12 +235,12 @@ export type ReadTreeResponseDirOptions = {
  *
  * @public
  */
-export type ReadTreeResponse = {
+export type UrlReaderReadTreeResponse = {
   /**
    * Returns an array of all the files inside the tree, and corresponding
    * functions to read their content.
    */
-  files(): Promise<ReadTreeResponseFile[]>;
+  files(): Promise<UrlReaderReadTreeResponseFile[]>;
 
   /**
    * Returns the tree contents as a binary archive, using a stream.
@@ -244,7 +253,7 @@ export type ReadTreeResponse = {
    *
    * **NOTE**: It is the responsibility of the caller to remove the directory after use.
    */
-  dir(options?: ReadTreeResponseDirOptions): Promise<string>;
+  dir(options?: UrlReaderReadTreeResponseDirOptions): Promise<string>;
 
   /**
    * Etag returned by content provider.
@@ -261,7 +270,7 @@ export type ReadTreeResponse = {
  *
  * @public
  */
-export type ReadTreeResponseFile = {
+export type UrlReaderReadTreeResponseFile = {
   /**
    * The filepath of the data.
    */
@@ -283,7 +292,7 @@ export type ReadTreeResponseFile = {
  *
  * @public
  */
-export type SearchOptions = {
+export type UrlReaderSearchOptions = {
   /**
    * An etag can be provided to check whether the search response has changed from a previous execution.
    *
@@ -324,11 +333,11 @@ export type SearchOptions = {
  *
  * @public
  */
-export type SearchResponse = {
+export type UrlReaderSearchResponse = {
   /**
    * The files that matched the search query.
    */
-  files: SearchResponseFile[];
+  files: UrlReaderSearchResponseFile[];
 
   /**
    * A unique identifier of the current remote tree, usually the commit SHA or etag from the target.
@@ -341,7 +350,7 @@ export type SearchResponse = {
  *
  * @public
  */
-export type SearchResponseFile = {
+export type UrlReaderSearchResponseFile = {
   /**
    * The full URL to the file.
    */
@@ -357,3 +366,49 @@ export type SearchResponseFile = {
    */
   lastModifiedAt?: Date;
 };
+
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadTreeOptions` instead
+ */
+export type ReadTreeOptions = UrlReaderReadTreeOptions;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadTreeResponse` instead
+ */
+export type ReadTreeResponse = UrlReaderReadTreeResponse;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadTreeResponseDirOptions` instead
+ */
+export type ReadTreeResponseDirOptions = UrlReaderReadTreeResponseDirOptions;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadTreeResponseFile` instead
+ */
+export type ReadTreeResponseFile = UrlReaderReadTreeResponseFile;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadUrlResponse` instead
+ */
+export type ReadUrlResponse = UrlReaderReadUrlResponse;
+/**
+ * @public
+ * @deprecated Use `UrlReaderReadUrlOptions` instead
+ */
+export type ReadUrlOptions = UrlReaderReadUrlOptions;
+/**
+ * @public
+ * @deprecated Use `UrlReaderSearchOptions` instead
+ */
+export type SearchOptions = UrlReaderSearchOptions;
+/**
+ * @public
+ * @deprecated Use `UrlReaderSearchResponse` instead
+ */
+export type SearchResponse = UrlReaderSearchResponse;
+/**
+ * @public
+ * @deprecated Use `UrlReaderSearchResponseFile` instead
+ */
+export type SearchResponseFile = UrlReaderSearchResponseFile;

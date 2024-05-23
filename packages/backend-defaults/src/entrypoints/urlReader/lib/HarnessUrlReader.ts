@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {
+  UrlReaderService,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
+} from '@backstage/backend-plugin-api';
 import {
   getHarnessRequestOptions,
   getHarnessFileContentsUrl,
   HarnessIntegration,
   ScmIntegrations,
 } from '@backstage/integration';
-import { ReadUrlOptions, ReadUrlResponse } from './types';
-import {
-  ReaderFactory,
-  ReadTreeResponse,
-  SearchResponse,
-  UrlReader,
-} from './types';
+import { ReaderFactory } from './types';
 import fetch, { Response } from 'node-fetch';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
@@ -41,7 +43,7 @@ import { Readable } from 'stream';
  *
  * @public
  */
-export class HarnessUrlReader implements UrlReader {
+export class HarnessUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config }) => {
     return ScmIntegrations.fromConfig(config)
       .harness.list()
@@ -63,8 +65,8 @@ export class HarnessUrlReader implements UrlReader {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     let response: Response;
     const blobUrl = getHarnessFileContentsUrl(this.integration.config, url);
 
@@ -109,10 +111,10 @@ export class HarnessUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  readTree(): Promise<ReadTreeResponse> {
+  readTree(): Promise<UrlReaderReadTreeResponse> {
     throw new Error('HarnessUrlReader readTree not implemented.');
   }
-  search(): Promise<SearchResponse> {
+  search(): Promise<UrlReaderSearchResponse> {
     throw new Error('HarnessUrlReader search not implemented.');
   }
 

@@ -19,7 +19,7 @@ import { JsonObject } from '@backstage/types';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { GoogleGcsUrlReader } from './GoogleGcsUrlReader';
 import { UrlReaderPredicateTuple } from './types';
-import packageinfo from '../../package.json';
+import packageinfo from '@backstage/backend-defaults/package.json';
 import { mockServices } from '@backstage/backend-test-utils';
 
 const bucketGetFilesMock = jest.fn();
@@ -80,7 +80,7 @@ describe('GcsUrlReader', () => {
   });
   it('check if userAgent has been called with this key value', async () => {
     const getStorage: any = {
-      userAgent: `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
+      userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
     };
     jest.mock('@google-cloud/storage', () => {
       return {
@@ -89,7 +89,7 @@ describe('GcsUrlReader', () => {
     });
     const getUserAgent = getStorage.userAgent.toString();
     expect(getUserAgent).toBe(
-      `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
+      `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
     );
   });
 

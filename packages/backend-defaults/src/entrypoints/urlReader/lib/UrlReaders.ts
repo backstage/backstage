@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { LoggerService, UrlReaderService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { ReaderFactory, UrlReader } from './types';
+import { ReaderFactory } from './types';
 import { UrlReaderPredicateMux } from './UrlReaderPredicateMux';
 import { AzureUrlReader } from './AzureUrlReader';
 import { BitbucketCloudUrlReader } from './BitbucketCloudUrlReader';
@@ -56,7 +56,7 @@ export class UrlReaders {
   /**
    * Creates a custom {@link @backstage/backend-plugin-api#UrlReaderService} wrapper for your own set of factories.
    */
-  static create(options: UrlReadersOptions): UrlReader {
+  static create(options: UrlReadersOptions): UrlReaderService {
     const { logger, config, factories } = options;
     const mux = new UrlReaderPredicateMux();
     const treeResponseFactory = DefaultReadTreeResponseFactory.create({

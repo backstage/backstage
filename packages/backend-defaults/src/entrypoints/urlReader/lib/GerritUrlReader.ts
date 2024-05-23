@@ -14,6 +14,14 @@
  * limitations under the License.
  */
 
+import {
+  UrlReaderService,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
+} from '@backstage/backend-plugin-api';
 import { Base64Decode } from 'base64-stream';
 import concatStream from 'concat-stream';
 import fs from 'fs-extra';
@@ -35,16 +43,7 @@ import {
   parseGerritJsonResponse,
 } from '@backstage/integration';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import {
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadTreeResponseFactory,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  ReaderFactory,
-  SearchResponse,
-  UrlReader,
-} from './types';
+import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { Git } from './git';
 
 const pipeline = promisify(pipelineCb);
@@ -78,7 +77,7 @@ const createTemporaryDirectory = async (workDir: string): Promise<string> =>
  *
  * @public
  */
-export class GerritUrlReader implements UrlReader {
+export class GerritUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
     if (!integrations.gerrit) {
@@ -121,8 +120,8 @@ export class GerritUrlReader implements UrlReader {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     const apiUrl = getGerritFileContentsApiUrl(this.integration.config, url);
     let response: Response;
     try {
@@ -166,8 +165,8 @@ export class GerritUrlReader implements UrlReader {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const apiUrl = getGerritBranchApiUrl(this.integration.config, url);
     let response: Response;
     try {
@@ -203,7 +202,7 @@ export class GerritUrlReader implements UrlReader {
     return this.readTreeFromGitClone(url, branchInfo.revision, options);
   }
 
-  async search(): Promise<SearchResponse> {
+  async search(): Promise<UrlReaderSearchResponse> {
     throw new Error('GerritReader does not implement search');
   }
 
@@ -215,7 +214,7 @@ export class GerritUrlReader implements UrlReader {
   private async readTreeFromGitClone(
     url: string,
     revision: string,
-    options?: ReadTreeOptions,
+    options?: UrlReaderReadTreeOptions,
   ) {
     const { filePath } = parseGerritGitilesUrl(this.integration.config, url);
 
@@ -258,7 +257,7 @@ export class GerritUrlReader implements UrlReader {
   private async readTreeFromGitiles(
     url: string,
     revision: string,
-    options?: ReadTreeOptions,
+    options?: UrlReaderReadTreeOptions,
   ) {
     const { branch, filePath, project } = parseGerritGitilesUrl(
       this.integration.config,
