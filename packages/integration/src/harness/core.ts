@@ -34,7 +34,7 @@ export function getHarnessEditContentsUrl(
   url: string,
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
-  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/edit/${parsedUrl.path}`;
+  return `${parsedUrl.baseUrl}/ng/account/${parsedUrl.accountId}/module/code/orgs/${parsedUrl.orgName}/projects/${parsedUrl.projectName}/${parsedUrl.repoName}/files/${parsedUrl.branch}/~/${parsedUrl.path}`;
 }
 
 /**
@@ -77,7 +77,7 @@ export function getHarnessArchiveUrl(
   url: string,
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
-  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/archive/${parsedUrl.branch}.zip`;
+  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/archive/${parsedUrl.branch}.zip?routingId=${parsedUrl.accountId}`;
 }
 
 /**
