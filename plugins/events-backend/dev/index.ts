@@ -93,6 +93,16 @@ backend.add(
             console.log(
               `DEBUG: sub create req = ${subRes.status} ${subRes.statusText}`,
             );
+            const subRes2 = await client.putSubscription(
+              {
+                path: { subscriptionId: 'abc' },
+                body: { topics: ['test'] },
+              },
+              { token },
+            );
+            console.log(
+              `DEBUG: sub create req = ${subRes2.status} ${subRes2.statusText}`,
+            );
 
             const poll = async () => {
               const res = await client.getSubscriptionEvents(
@@ -111,11 +121,34 @@ backend.add(
             };
             poll();
 
+            const poll2 = async () => {
+              const res = await client.getSubscriptionEvents(
+                {
+                  path: { subscriptionId: 'abc' },
+                },
+                { token },
+              );
+
+              const data = res.status === 200 && (await res.json());
+              console.log(
+                `DEBUG: sub poll2 req = ${res.status} ${res.statusText}`,
+                data,
+              );
+              poll2();
+            };
+            poll2();
+
             setTimeout(() => {
               console.log(`DEBUG: publishing!`);
-              client.postEvent({
-                body: { event: { topic: 'test', payload: { foo: 'bar' } } },
-              });
+              client.postEvent(
+                {
+                  body: {
+                    event: { topic: 'test', payload: { foo: 'bar' } },
+                    subscriptionIds: ['123'],
+                  },
+                },
+                { token },
+              );
             }, 500);
           });
         },

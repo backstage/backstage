@@ -123,7 +123,9 @@ type EventHubStore = {
 const MAX_BATCH_SIZE = 5;
 
 class MemoryEventHubStore implements EventHubStore {
-  #events = new Array<EventParams & { seq: number }>();
+  #events = new Array<
+    EventParams & { seq: number; subscriberIds: Set<string> }
+  >();
   #subscribers = new Map<
     string,
     { id: string; seq: number; topics: Set<string> }
@@ -138,10 +140,11 @@ class MemoryEventHubStore implements EventHubStore {
     subscriberIds: string[];
   }): Promise<void> {
     const topicId = options.params.topic;
+    const subscriberIds = new Set(options.subscriberIds);
 
     let hasOtherSubscribers = false;
     for (const sub of this.#subscribers.values()) {
-      if (sub.topics.has(topicId) && !options.subscriberIds.includes(sub.id)) {
+      if (sub.topics.has(topicId) && !subscriberIds.has(sub.id)) {
         hasOtherSubscribers = true;
         break;
       }
@@ -151,7 +154,7 @@ class MemoryEventHubStore implements EventHubStore {
     }
 
     const nextSeq = this.#getMaxSeq() + 1;
-    this.#events.push({ ...options.params, seq: nextSeq });
+    this.#events.push({ ...options.params, subscriberIds, seq: nextSeq });
 
     for (const listener of this.#listeners) {
       if (listener.topics.has(topicId)) {
@@ -184,12 +187,17 @@ class MemoryEventHubStore implements EventHubStore {
       throw new Error(`Subscription not found`);
     }
     const events = this.#events
-      .filter(event => event.seq > sub.seq && sub.topics.has(event.topic))
+      .filter(
+        event =>
+          event.seq > sub.seq &&
+          sub.topics.has(event.topic) &&
+          !event.subscriberIds.has(id),
+      )
       .slice(0, MAX_BATCH_SIZE);
 
     sub.seq = events[events.length - 1]?.seq ?? sub.seq;
 
-    return { events: events.map(event => ({ ...event, req: undefined })) };
+    return { events: events.map(event => ({ ...event, seq: undefined })) };
   }
 
   async listen(
@@ -551,9 +559,9 @@ export class EventHub {
         topic: req.body.event.topic,
         eventPayload: req.body.event.payload,
       },
-      subscriberIds: [],
+      subscriberIds: req.body.subscriptionIds ?? [],
     });
-    this.#logger.info(`Published event to '${req.body.topic}'`, {
+    this.#logger.info(`Published event to '${req.body.event.topic}'`, {
       subject: credentials.principal.subject,
     });
     res.status(201).end();
