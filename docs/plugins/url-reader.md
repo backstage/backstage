@@ -19,7 +19,7 @@ files before generating a documentation site.
 
 Since, the requirement for reading files is so essential for Backstage plugins,
 the
-[`coreServices.urlReader`](../reference/backend-plugin-api.coreservices.urlreader/)
+[`coreServices.urlReader`](../reference/backend-plugin-api.coreservices.urlreader.md)
 package provides a dedicated API for reading from such URL based remote
 locations like GitHub, GitLab, Bitbucket, Google Cloud Storage, etc. This is
 commonly referred to as "URL Reader". It takes care of making authenticated

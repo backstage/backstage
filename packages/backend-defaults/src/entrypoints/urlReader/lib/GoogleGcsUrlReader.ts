@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import * as GoogleCloud from '@google-cloud/storage';
 import {
   UrlReaderService,
   UrlReaderReadTreeResponse,
@@ -21,7 +22,6 @@ import {
   UrlReaderReadUrlResponse,
   UrlReaderSearchResponse,
 } from '@backstage/backend-plugin-api';
-import { Storage } from '@google-cloud/storage';
 import { ReaderFactory } from './types';
 import getRawBody from 'raw-body';
 import {
@@ -30,7 +30,7 @@ import {
 } from '@backstage/integration';
 import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import packageinfo from '@backstage/backend-defaults/package.json';
+import packageinfo from '../../../../package.json';
 
 const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 
@@ -64,21 +64,21 @@ export class GoogleGcsUrlReader implements UrlReaderService {
     const gcsConfig = readGoogleGcsIntegrationConfig(
       config.getConfig('integrations.googleGcs'),
     );
-    let storage: Storage;
+    let storage: GoogleCloud.Storage;
     if (!gcsConfig.clientEmail || !gcsConfig.privateKey) {
       logger.info(
         'googleGcs credentials not found in config. Using default credentials provider.',
       );
-      storage = new Storage({
-        userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
+      storage = new GoogleCloud.Storage({
+        userAgent: `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
       });
     } else {
-      storage = new Storage({
+      storage = new GoogleCloud.Storage({
         credentials: {
           client_email: gcsConfig.clientEmail || undefined,
           private_key: gcsConfig.privateKey || undefined,
         },
-        userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
+        userAgent: `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
       });
     }
     const reader = new GoogleGcsUrlReader(gcsConfig, storage);
@@ -88,7 +88,7 @@ export class GoogleGcsUrlReader implements UrlReaderService {
 
   constructor(
     private readonly integration: GoogleGcsIntegrationConfig,
-    private readonly storage: Storage,
+    private readonly storage: GoogleCloud.Storage,
   ) {}
 
   private readStreamFromUrl(url: string): Readable {
