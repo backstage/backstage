@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
+import {
+  UrlReaderService,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchOptions,
+  UrlReaderSearchResponse,
+} from '@backstage/backend-plugin-api';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
-  BitbucketCloudIntegration,
-  getBitbucketCloudDefaultBranch,
-  getBitbucketCloudDownloadUrl,
-  getBitbucketCloudFileFetchUrl,
-  getBitbucketCloudRequestOptions,
+  BitbucketServerIntegration,
+  getBitbucketServerDownloadUrl,
+  getBitbucketServerFileFetchUrl,
+  getBitbucketServerRequestOptions,
   ScmIntegrations,
 } from '@backstage/integration';
 import fetch, { Response } from 'node-fetch';
@@ -28,30 +36,20 @@ import parseGitUrl from 'git-url-parse';
 import { trimEnd } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
-import {
-  ReaderFactory,
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadTreeResponseFactory,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchOptions,
-  SearchResponse,
-  UrlReader,
-} from './types';
+import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
 
 /**
- * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Cloud.
+ * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Server APIs.
  *
  * @public
  */
-export class BitbucketCloudUrlReader implements UrlReader {
+export class BitbucketServerUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
-    return integrations.bitbucketCloud.list().map(integration => {
-      const reader = new BitbucketCloudUrlReader(integration, {
+    return integrations.bitbucketServer.list().map(integration => {
+      const reader = new BitbucketServerUrlReader(integration, {
         treeResponseFactory,
       });
       const predicate = (url: URL) => url.host === integration.config.host;
@@ -60,17 +58,9 @@ export class BitbucketCloudUrlReader implements UrlReader {
   };
 
   constructor(
-    private readonly integration: BitbucketCloudIntegration,
+    private readonly integration: BitbucketServerIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {
-    const { host, username, appPassword } = integration.config;
-
-    if (username && !appPassword) {
-      throw new Error(
-        `Bitbucket Cloud integration for '${host}' has configured a username but is missing a required appPassword.`,
-      );
-    }
-  }
+  ) {}
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -79,14 +69,14 @@ export class BitbucketCloudUrlReader implements UrlReader {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     const { etag, lastModifiedAfter, signal } = options ?? {};
-    const bitbucketUrl = getBitbucketCloudFileFetchUrl(
+    const bitbucketUrl = getBitbucketServerFileFetchUrl(
       url,
       this.integration.config,
     );
-    const requestOptions = getBitbucketCloudRequestOptions(
+    const requestOptions = getBitbucketServerRequestOptions(
       this.integration.config,
     );
 
@@ -134,8 +124,8 @@ export class BitbucketCloudUrlReader implements UrlReader {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const { filepath } = parseGitUrl(url);
 
     const lastCommitShortHash = await this.getLastCommitShortHash(url);
@@ -143,13 +133,13 @@ export class BitbucketCloudUrlReader implements UrlReader {
       throw new NotModifiedError();
     }
 
-    const downloadUrl = await getBitbucketCloudDownloadUrl(
+    const downloadUrl = await getBitbucketServerDownloadUrl(
       url,
       this.integration.config,
     );
     const archiveResponse = await fetch(
       downloadUrl,
-      getBitbucketCloudRequestOptions(this.integration.config),
+      getBitbucketServerRequestOptions(this.integration.config),
     );
     if (!archiveResponse.ok) {
       const message = `Failed to read tree from ${url}, ${archiveResponse.status} ${archiveResponse.statusText}`;
@@ -167,7 +157,10 @@ export class BitbucketCloudUrlReader implements UrlReader {
     });
   }
 
-  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+  async search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse> {
     const { filepath } = parseGitUrl(url);
     const matcher = new Minimatch(filepath);
 
@@ -197,46 +190,53 @@ export class BitbucketCloudUrlReader implements UrlReader {
   }
 
   toString() {
-    const { host, username, appPassword } = this.integration.config;
-    const authed = Boolean(username && appPassword);
-    return `bitbucketCloud{host=${host},authed=${authed}}`;
+    const { host, token } = this.integration.config;
+    const authed = Boolean(token);
+    return `bitbucketServer{host=${host},authed=${authed}}`;
   }
 
   private async getLastCommitShortHash(url: string): Promise<string> {
-    const { name: repoName, owner: project, ref } = parseGitUrl(url);
+    const { name: repoName, owner: project, ref: branch } = parseGitUrl(url);
 
-    let branch = ref;
-    if (!branch) {
-      branch = await getBitbucketCloudDefaultBranch(
-        url,
-        this.integration.config,
-      );
-    }
+    // If a branch is provided use that otherwise fall back to the default branch
+    const branchParameter = branch
+      ? `?filterText=${encodeURIComponent(branch)}`
+      : '/default';
 
-    const commitsApiUrl = `${this.integration.config.apiBaseUrl}/repositories/${project}/${repoName}/commits/${branch}`;
+    // https://docs.atlassian.com/bitbucket-server/rest/7.9.0/bitbucket-rest.html#idp211 (branches docs)
+    const branchListUrl = `${this.integration.config.apiBaseUrl}/projects/${project}/repos/${repoName}/branches${branchParameter}`;
 
-    const commitsResponse = await fetch(
-      commitsApiUrl,
-      getBitbucketCloudRequestOptions(this.integration.config),
+    const branchListResponse = await fetch(
+      branchListUrl,
+      getBitbucketServerRequestOptions(this.integration.config),
     );
-    if (!commitsResponse.ok) {
-      const message = `Failed to retrieve commits from ${commitsApiUrl}, ${commitsResponse.status} ${commitsResponse.statusText}`;
-      if (commitsResponse.status === 404) {
+    if (!branchListResponse.ok) {
+      const message = `Failed to retrieve branch list from ${branchListUrl}, ${branchListResponse.status} ${branchListResponse.statusText}`;
+      if (branchListResponse.status === 404) {
         throw new NotFoundError(message);
       }
       throw new Error(message);
     }
 
-    const commits = await commitsResponse.json();
-    if (
-      commits &&
-      commits.values &&
-      commits.values.length > 0 &&
-      commits.values[0].hash
-    ) {
-      return commits.values[0].hash.substring(0, 12);
+    const branchMatches = await branchListResponse.json();
+
+    if (branchMatches && branchMatches.size > 0) {
+      const exactBranchMatch = branchMatches.values.filter(
+        (branchDetails: { displayId: string }) =>
+          branchDetails.displayId === branch,
+      )[0];
+      return exactBranchMatch.latestCommit.substring(0, 12);
     }
 
-    throw new Error(`Failed to read response from ${commitsApiUrl}`);
+    // Handle when no branch is provided using the default as the fallback
+    if (!branch && branchMatches) {
+      return branchMatches.latestCommit.substring(0, 12);
+    }
+
+    throw new Error(
+      `Failed to find Last Commit using ${
+        branch ? `branch "${branch}"` : 'default branch'
+      } in response from ${branchListUrl}`,
+    );
   }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
+import { UrlReaders } from './lib/UrlReaders';
 import {
   coreServices,
   createServiceFactory,

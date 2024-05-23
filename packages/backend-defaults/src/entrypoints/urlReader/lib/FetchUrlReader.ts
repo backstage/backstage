@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
+import {
+  UrlReaderService,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
+} from '@backstage/backend-plugin-api';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import fetch, { Response } from 'node-fetch';
-import {
-  ReaderFactory,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
-  UrlReader,
-} from './types';
+import { ReaderFactory } from './types';
 import path from 'path';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
@@ -68,7 +68,7 @@ const parsePortPredicate = (port: string | undefined) => {
  *
  * @public
  */
-export class FetchUrlReader implements UrlReader {
+export class FetchUrlReader implements UrlReaderService {
   /**
    * The factory creates a single reader that will be used for reading any URL that's listed
    * in configuration at `backend.reading.allow`. The allow list contains a list of objects describing
@@ -121,8 +121,8 @@ export class FetchUrlReader implements UrlReader {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     let response: Response;
     try {
       response = await fetch(url, {
@@ -165,11 +165,11 @@ export class FetchUrlReader implements UrlReader {
     throw new Error(message);
   }
 
-  async readTree(): Promise<ReadTreeResponse> {
+  async readTree(): Promise<UrlReaderReadTreeResponse> {
     throw new Error('FetchUrlReader does not implement readTree');
   }
 
-  async search(): Promise<SearchResponse> {
+  async search(): Promise<UrlReaderSearchResponse> {
     throw new Error('FetchUrlReader does not implement search');
   }
 

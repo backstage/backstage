@@ -15,6 +15,15 @@
  */
 
 import {
+  UrlReaderService,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchOptions,
+  UrlReaderSearchResponse,
+} from '@backstage/backend-plugin-api';
+import {
   getAzureCommitsUrl,
   getAzureDownloadUrl,
   getAzureFileFetchUrl,
@@ -27,17 +36,7 @@ import fetch, { Response } from 'node-fetch';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import {
-  ReadTreeResponseFactory,
-  ReaderFactory,
-  ReadTreeOptions,
-  ReadTreeResponse,
-  SearchOptions,
-  SearchResponse,
-  UrlReader,
-  ReadUrlOptions,
-  ReadUrlResponse,
-} from './types';
+import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 
 /**
@@ -45,7 +44,7 @@ import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
  *
  * @public
  */
-export class AzureUrlReader implements UrlReader {
+export class AzureUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
     const credentialProvider =
@@ -75,8 +74,8 @@ export class AzureUrlReader implements UrlReader {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     // TODO: etag is not implemented yet.
     const { signal } = options ?? {};
 
@@ -114,8 +113,8 @@ export class AzureUrlReader implements UrlReader {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const { etag, filter, signal } = options ?? {};
 
     // TODO: Support filepath based reading tree feature like other providers
@@ -180,7 +179,10 @@ export class AzureUrlReader implements UrlReader {
     });
   }
 
-  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+  async search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse> {
     const treeUrl = new URL(url);
 
     const path = treeUrl.searchParams.get('path');

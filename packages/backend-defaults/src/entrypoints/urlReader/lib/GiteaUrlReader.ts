@@ -13,6 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {
+  UrlReaderService,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
+} from '@backstage/backend-plugin-api';
 import {
   getGiteaFileContentsUrl,
   getGiteaArchiveUrl,
@@ -22,16 +31,7 @@ import {
   GiteaIntegration,
   ScmIntegrations,
 } from '@backstage/integration';
-import {
-  ReaderFactory,
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadTreeResponseFactory,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
-  UrlReader,
-} from './types';
+import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import fetch, { Response } from 'node-fetch';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
@@ -47,7 +47,7 @@ import { parseLastModified } from './util';
  *
  * @public
  */
-export class GiteaUrlReader implements UrlReader {
+export class GiteaUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     return ScmIntegrations.fromConfig(config)
       .gitea.list()
@@ -74,8 +74,8 @@ export class GiteaUrlReader implements UrlReader {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     let response: Response;
     const blobUrl = getGiteaFileContentsUrl(this.integration.config, url);
 
@@ -126,8 +126,8 @@ export class GiteaUrlReader implements UrlReader {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const lastCommitHash = await this.getLastCommitHash(url);
     if (options?.etag && options.etag === lastCommitHash) {
       throw new NotModifiedError();
@@ -156,7 +156,7 @@ export class GiteaUrlReader implements UrlReader {
     });
   }
 
-  search(): Promise<SearchResponse> {
+  search(): Promise<UrlReaderSearchResponse> {
     throw new Error('GiteaUrlReader search not implemented.');
   }
 

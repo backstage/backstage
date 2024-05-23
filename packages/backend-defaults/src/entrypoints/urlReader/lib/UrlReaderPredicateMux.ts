@@ -14,17 +14,17 @@
  * limitations under the License.
  */
 
-import { NotAllowedError } from '@backstage/errors';
 import {
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchOptions,
-  SearchResponse,
-  UrlReader,
-  UrlReaderPredicateTuple,
-} from './types';
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchOptions,
+  UrlReaderSearchResponse,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
+import { NotAllowedError } from '@backstage/errors';
+import { UrlReaderPredicateTuple } from './types';
 
 function notAllowedMessage(url: string) {
   return (
@@ -35,10 +35,10 @@ function notAllowedMessage(url: string) {
 }
 
 /**
- * A UrlReader implementation that selects from a set of UrlReaders
+ * A UrlReaderService implementation that selects from a set of readers
  * based on a predicate tied to each reader.
  */
-export class UrlReaderPredicateMux implements UrlReader {
+export class UrlReaderPredicateMux implements UrlReaderService {
   private readonly readers: UrlReaderPredicateTuple[] = [];
 
   register(tuple: UrlReaderPredicateTuple): void {
@@ -47,8 +47,8 @@ export class UrlReaderPredicateMux implements UrlReader {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {
@@ -62,8 +62,8 @@ export class UrlReaderPredicateMux implements UrlReader {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {
@@ -75,7 +75,10 @@ export class UrlReaderPredicateMux implements UrlReader {
     throw new NotAllowedError(notAllowedMessage(url));
   }
 
-  async search(url: string, options?: SearchOptions): Promise<SearchResponse> {
+  async search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse> {
     const parsed = new URL(url);
 
     for (const { predicate, reader } of this.readers) {

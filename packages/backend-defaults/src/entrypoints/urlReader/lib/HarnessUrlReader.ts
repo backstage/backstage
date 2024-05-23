@@ -13,6 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {
+  UrlReaderService,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
+  UrlReaderReadTreeOptions,
+} from '@backstage/backend-plugin-api';
 import {
   getHarnessRequestOptions,
   getHarnessFileContentsUrl,
@@ -22,16 +31,7 @@ import {
   getHarnessArchiveUrl,
   parseHarnessUrl,
 } from '@backstage/integration';
-import {
-  ReaderFactory,
-  ReadTreeOptions,
-  ReadTreeResponse,
-  SearchResponse,
-  ReadTreeResponseFactory,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  UrlReader,
-} from './types';
+import { ReadTreeResponseFactory, ReaderFactory } from './types';
 import fetch, { Response } from 'node-fetch';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import {
@@ -47,7 +47,7 @@ import { Readable } from 'stream';
  *
  * @public
  */
-export class HarnessUrlReader implements UrlReader {
+export class HarnessUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     return ScmIntegrations.fromConfig(config)
       .harness.list()
@@ -75,8 +75,8 @@ export class HarnessUrlReader implements UrlReader {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     let response: Response;
     const blobUrl = getHarnessFileContentsUrl(this.integration.config, url);
 
@@ -123,8 +123,8 @@ export class HarnessUrlReader implements UrlReader {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     const lastCommitHash = await this.getLastCommitHash(url);
 
     if (options?.etag && options.etag === lastCommitHash) {
@@ -153,7 +153,8 @@ export class HarnessUrlReader implements UrlReader {
       filter: options?.filter,
     });
   }
-  search(): Promise<SearchResponse> {
+
+  search(): Promise<UrlReaderSearchResponse> {
     throw new Error('HarnessUrlReader search not implemented.');
   }
 

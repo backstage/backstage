@@ -466,54 +466,23 @@ export function readSchedulerServiceTaskScheduleDefinitionFromConfig(
   config: Config,
 ): SchedulerServiceTaskScheduleDefinition;
 
-// @public
-export type ReadTreeOptions = {
-  filter?(
-    path: string,
-    info?: {
-      size: number;
-    },
-  ): boolean;
-  etag?: string;
-  signal?: AbortSignal;
-  token?: string;
-};
+// @public @deprecated (undocumented)
+export type ReadTreeOptions = UrlReaderReadTreeOptions;
 
-// @public
-export type ReadTreeResponse = {
-  files(): Promise<ReadTreeResponseFile[]>;
-  archive(): Promise<NodeJS.ReadableStream>;
-  dir(options?: ReadTreeResponseDirOptions): Promise<string>;
-  etag: string;
-};
+// @public @deprecated (undocumented)
+export type ReadTreeResponse = UrlReaderReadTreeResponse;
 
-// @public
-export type ReadTreeResponseDirOptions = {
-  targetDir?: string;
-};
+// @public @deprecated (undocumented)
+export type ReadTreeResponseDirOptions = UrlReaderReadTreeResponseDirOptions;
 
-// @public
-export type ReadTreeResponseFile = {
-  path: string;
-  content(): Promise<Buffer>;
-  lastModifiedAt?: Date;
-};
+// @public @deprecated (undocumented)
+export type ReadTreeResponseFile = UrlReaderReadTreeResponseFile;
 
-// @public
-export type ReadUrlOptions = {
-  etag?: string;
-  lastModifiedAfter?: Date;
-  signal?: AbortSignal;
-  token?: string;
-};
+// @public @deprecated (undocumented)
+export type ReadUrlOptions = UrlReaderReadUrlOptions;
 
-// @public
-export type ReadUrlResponse = {
-  buffer(): Promise<Buffer>;
-  stream?(): Readable;
-  etag?: string;
-  lastModifiedAt?: Date;
-};
+// @public @deprecated (undocumented)
+export type ReadUrlResponse = UrlReaderReadUrlResponse;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
@@ -617,25 +586,14 @@ export interface SchedulerServiceTaskScheduleDefinitionConfig {
   timeout: string | HumanDuration;
 }
 
-// @public
-export type SearchOptions = {
-  etag?: string;
-  signal?: AbortSignal;
-  token?: string;
-};
+// @public @deprecated (undocumented)
+export type SearchOptions = UrlReaderSearchOptions;
 
-// @public
-export type SearchResponse = {
-  files: SearchResponseFile[];
-  etag: string;
-};
+// @public @deprecated (undocumented)
+export type SearchResponse = UrlReaderSearchResponse;
 
-// @public
-export type SearchResponseFile = {
-  url: string;
-  content(): Promise<Buffer>;
-  lastModifiedAt?: Date;
-};
+// @public @deprecated (undocumented)
+export type SearchResponseFile = UrlReaderSearchResponseFile;
 
 // @public (undocumented)
 export interface ServiceFactory<
@@ -681,10 +639,88 @@ export interface TokenManagerService {
 }
 
 // @public
+export type UrlReaderReadTreeOptions = {
+  filter?(
+    path: string,
+    info?: {
+      size: number;
+    },
+  ): boolean;
+  etag?: string;
+  signal?: AbortSignal;
+  token?: string;
+};
+
+// @public
+export type UrlReaderReadTreeResponse = {
+  files(): Promise<UrlReaderReadTreeResponseFile[]>;
+  archive(): Promise<NodeJS.ReadableStream>;
+  dir(options?: UrlReaderReadTreeResponseDirOptions): Promise<string>;
+  etag: string;
+};
+
+// @public
+export type UrlReaderReadTreeResponseDirOptions = {
+  targetDir?: string;
+};
+
+// @public
+export type UrlReaderReadTreeResponseFile = {
+  path: string;
+  content(): Promise<Buffer>;
+  lastModifiedAt?: Date;
+};
+
+// @public
+export type UrlReaderReadUrlOptions = {
+  etag?: string;
+  lastModifiedAfter?: Date;
+  signal?: AbortSignal;
+  token?: string;
+};
+
+// @public
+export type UrlReaderReadUrlResponse = {
+  buffer(): Promise<Buffer>;
+  stream?(): Readable;
+  etag?: string;
+  lastModifiedAt?: Date;
+};
+
+// @public
+export type UrlReaderSearchOptions = {
+  etag?: string;
+  signal?: AbortSignal;
+  token?: string;
+};
+
+// @public
+export type UrlReaderSearchResponse = {
+  files: UrlReaderSearchResponseFile[];
+  etag: string;
+};
+
+// @public
+export type UrlReaderSearchResponseFile = {
+  url: string;
+  content(): Promise<Buffer>;
+  lastModifiedAt?: Date;
+};
+
+// @public
 export interface UrlReaderService {
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse>;
+  search(
+    url: string,
+    options?: UrlReaderSearchOptions,
+  ): Promise<UrlReaderSearchResponse>;
 }
 
 // @public
