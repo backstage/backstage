@@ -17,121 +17,11 @@
 import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
 import { Handler } from 'express';
 import Router from 'express-promise-router';
-import { EventParams } from '@backstage/plugin-events-node';
 import { spec, createOpenApiRouter } from '../../schema/openapi.generated';
 import { internal } from '@backstage/backend-openapi-utils';
-
-type EventHubStore = {
-  publish(options: {
-    params: EventParams;
-    subscriberIds: string[];
-  }): Promise<void>;
-
-  upsertSubscription(id: string, topics: string[]): Promise<void>;
-
-  readSubscription(id: string): Promise<{ events: EventParams[] }>;
-
-  listen(
-    subscriptionId: string,
-    onNotify: (topicId: string) => void,
-  ): Promise<() => void>;
-};
-
-const MAX_BATCH_SIZE = 5;
-
-class MemoryEventHubStore implements EventHubStore {
-  #events = new Array<
-    EventParams & { seq: number; subscriberIds: Set<string> }
-  >();
-  #subscribers = new Map<
-    string,
-    { id: string; seq: number; topics: Set<string> }
-  >();
-  #listeners = new Set<{
-    topics: Set<string>;
-    notify(topicId: string): void;
-  }>();
-
-  async publish(options: {
-    params: EventParams;
-    subscriberIds: string[];
-  }): Promise<void> {
-    const topicId = options.params.topic;
-    const subscriberIds = new Set(options.subscriberIds);
-
-    let hasOtherSubscribers = false;
-    for (const sub of this.#subscribers.values()) {
-      if (sub.topics.has(topicId) && !subscriberIds.has(sub.id)) {
-        hasOtherSubscribers = true;
-        break;
-      }
-    }
-    if (!hasOtherSubscribers) {
-      return;
-    }
-
-    const nextSeq = this.#getMaxSeq() + 1;
-    this.#events.push({ ...options.params, subscriberIds, seq: nextSeq });
-
-    for (const listener of this.#listeners) {
-      if (listener.topics.has(topicId)) {
-        listener.notify(topicId);
-      }
-    }
-  }
-
-  #getMaxSeq() {
-    return this.#events[this.#events.length - 1]?.seq ?? 0;
-  }
-
-  async upsertSubscription(id: string, topics: string[]): Promise<void> {
-    const existing = this.#subscribers.get(id);
-    if (existing) {
-      existing.topics = new Set(topics);
-      return;
-    }
-    const sub = {
-      id: id,
-      seq: this.#getMaxSeq(),
-      topics: new Set(topics),
-    };
-    this.#subscribers.set(id, sub);
-  }
-
-  async readSubscription(id: string): Promise<{ events: EventParams[] }> {
-    const sub = this.#subscribers.get(id);
-    if (!sub) {
-      throw new Error(`Subscription not found`);
-    }
-    const events = this.#events
-      .filter(
-        event =>
-          event.seq > sub.seq &&
-          sub.topics.has(event.topic) &&
-          !event.subscriberIds.has(id),
-      )
-      .slice(0, MAX_BATCH_SIZE);
-
-    sub.seq = events[events.length - 1]?.seq ?? sub.seq;
-
-    return { events: events.map(event => ({ ...event, seq: undefined })) };
-  }
-
-  async listen(
-    subscriptionId: string,
-    onNotify: (topicId: string) => void,
-  ): Promise<() => void> {
-    const sub = this.#subscribers.get(subscriptionId);
-    if (!sub) {
-      throw new Error(`Subscription not found`);
-    }
-    const listener = { topics: sub.topics, notify: onNotify };
-    this.#listeners.add(listener);
-    return () => {
-      this.#listeners.delete(listener);
-    };
-  }
-}
+import { MemoryEventHubStore } from './MemoryEventHubStore';
+import { EventHubStore } from './types';
+import { EventParams } from '@backstage/plugin-events-node';
 
 export class EventHub {
   static async create(options: {
@@ -141,8 +31,9 @@ export class EventHub {
     const { httpAuth } = options;
     const logger = options.logger.child({ type: 'EventHub' });
     const router = Router();
+    const store = new MemoryEventHubStore();
 
-    const hub = new EventHub(router, logger, httpAuth);
+    const hub = new EventHub(router, logger, httpAuth, store);
 
     const apiRouter = await createOpenApiRouter();
 
@@ -172,11 +63,12 @@ export class EventHub {
     handler: Handler,
     logger: LoggerService,
     httpAuth: HttpAuthService,
+    store: EventHubStore,
   ) {
     this.#handler = handler;
     this.#logger = logger;
     this.#httpAuth = httpAuth;
-    this.#store = new MemoryEventHubStore();
+    this.#store = store;
   }
 
   handler(): Handler {
@@ -195,7 +87,7 @@ export class EventHub {
       params: {
         topic: req.body.event.topic,
         eventPayload: req.body.event.payload,
-      },
+      } as EventParams,
       subscriberIds: req.body.subscriptionIds ?? [],
     });
     this.#logger.info(`Published event to '${req.body.event.topic}'`, {
