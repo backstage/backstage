@@ -98,6 +98,7 @@ export function renderTemplateString<T, TContext>(
             return JSON.parse(templated);
           }
         } catch (ex) {
+          console.log(ex.message, ex.stack, ex);
           logger.error(
             `Failed to parse template string: ${value} with error ${ex.message}`,
           );

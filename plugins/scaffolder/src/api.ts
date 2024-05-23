@@ -121,6 +121,7 @@ export class ScaffolderClient implements ScaffolderApi {
 
   async getTemplateParameterSchema(
     templateRef: string,
+    formData?: any,
   ): Promise<TemplateParameterSchema> {
     const { namespace, kind, name } = parseEntityRef(templateRef, {
       defaultKind: 'template',
@@ -131,7 +132,8 @@ export class ScaffolderClient implements ScaffolderApi {
       .map(s => encodeURIComponent(s))
       .join('/');
 
-    const url = `${baseUrl}/v2/templates/${templatePath}/parameter-schema`;
+    const query = formData ? qs.stringify({ formData }) : '';
+    const url = `${baseUrl}/v2/templates/${templatePath}/parameter-schema?${query}`;
 
     const response = await this.fetchApi.fetch(url);
     if (!response.ok) {

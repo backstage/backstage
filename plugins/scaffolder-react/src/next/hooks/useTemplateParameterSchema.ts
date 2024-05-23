@@ -22,11 +22,14 @@ import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 /**
  * @alpha
  */
-export const useTemplateParameterSchema = (templateRef: string) => {
+export const useTemplateParameterSchema = (
+  templateRef: string,
+  formData?: any,
+) => {
   const scaffolderApi = useApi(scaffolderApiRef);
   const { value, loading, error } = useAsync(
-    () => scaffolderApi.getTemplateParameterSchema(templateRef),
-    [scaffolderApi, templateRef],
+    () => scaffolderApi.getTemplateParameterSchema(templateRef, formData),
+    [scaffolderApi, templateRef, formData],
   );
 
   return {

@@ -29,6 +29,7 @@ import React, {
   useState,
   type ReactNode,
   ComponentType,
+  useEffect,
 } from 'react';
 import {
   createAsyncValidators,
@@ -81,6 +82,7 @@ export type StepperProps = {
   formProps?: FormProps;
   initialState?: Record<string, JsonValue>;
   onCreate: (values: Record<string, JsonValue>) => Promise<void>;
+  onFormStateChange: (formState: Record<string, JsonValue>) => void;
   components?: {
     ReviewStepComponent?: ComponentType<ReviewStepProps>;
     ReviewStateComponent?: (props: ReviewStateProps) => JSX.Element;
@@ -96,7 +98,12 @@ export type StepperProps = {
  * @alpha
  */
 export const Stepper = (stepperProps: StepperProps) => {
-  const { layouts = [], components = {}, ...props } = stepperProps;
+  const {
+    layouts = [],
+    components = {},
+    onFormStateChange,
+    ...props
+  } = stepperProps;
   const {
     ReviewStateComponent = ReviewState,
     ReviewStepComponent,
@@ -106,10 +113,10 @@ export const Stepper = (stepperProps: StepperProps) => {
   } = components;
   const analytics = useAnalytics();
   const { presentation, steps } = useTemplateSchema(props.manifest);
+  const [formState, setFormState] = useFormDataFromQuery(props.initialState);
   const apiHolder = useApiHolder();
   const [activeStep, setActiveStep] = useState(0);
   const [isValidating, setIsValidating] = useState(false);
-  const [formState, setFormState] = useFormDataFromQuery(props.initialState);
 
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
@@ -153,6 +160,10 @@ export const Stepper = (stepperProps: StepperProps) => {
       setFormState(current => ({ ...current, ...e.formData })),
     [setFormState],
   );
+
+  useEffect(() => {
+    onFormStateChange(formState);
+  }, [onFormStateChange, formState]);
 
   const handleCreate = useCallback(() => {
     props.onCreate(formState);

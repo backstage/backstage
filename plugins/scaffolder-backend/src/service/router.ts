@@ -94,6 +94,10 @@ import {
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
+import { SecureTemplater } from '../lib/templating/SecureTemplater';
+import { renderTemplateString } from '../lib/templating/helpers';
+import { createDefaultFilters } from '../lib/templating/filters';
+import _ from 'lodash';
 
 /**
  *
@@ -435,6 +439,24 @@ export async function createRouter(
         );
 
         const parameters = [template.spec.parameters ?? []].flat();
+        const secureTemplater = await SecureTemplater.loadRenderer({
+          templateFilters: {
+            ...createDefaultFilters({ integrations }),
+            ...additionalTemplateFilters,
+          },
+          templateGlobals: additionalTemplateGlobals,
+        });
+
+        const templatedParameters = parameters.map(parameter =>
+          renderTemplateString(
+            parameter,
+            {
+              parameters: req.query.formData,
+            },
+            secureTemplater,
+            logger,
+          ),
+        );
 
         const presentation = template.spec.presentation;
 
@@ -443,7 +465,7 @@ export async function createRouter(
           ...(presentation ? { presentation } : {}),
           description: template.metadata.description,
           'ui:options': template.metadata['ui:options'],
-          steps: parameters.map(schema => ({
+          steps: templatedParameters.map(schema => ({
             title: schema.title ?? 'Please enter the following information',
             description: schema.description,
             schema,

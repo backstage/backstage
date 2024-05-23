@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback, useEffect } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {
   Content,
   InfoCard,
@@ -73,6 +73,8 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
   const { title, description, namespace, templateName, onCreate, ...props } =
     workflowProps;
 
+  const [formState, setFormState] = useState<Record<string, JsonValue>>({});
+
   const analytics = useAnalytics();
   const styles = useStyles();
   const templateRef = stringifyEntityRef({
@@ -83,18 +85,20 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
 
   const errorApi = useApi(errorApiRef);
 
-  const { loading, manifest, error } = useTemplateParameterSchema(templateRef);
+  const { loading, manifest, error } = useTemplateParameterSchema(
+    templateRef,
+    formState,
+  );
 
   const sortedManifest = useFilteredSchemaProperties(manifest);
 
   const minutesSaved = useTemplateTimeSavedMinutes(templateRef);
 
   const workflowOnCreate = useCallback(
-    async (formState: Record<string, JsonValue>) => {
-      onCreate(formState);
+    async (state: Record<string, JsonValue>) => {
+      onCreate(state);
 
-      const name =
-        typeof formState.name === 'string' ? formState.name : undefined;
+      const name = typeof state.name === 'string' ? state.name : undefined;
       analytics.captureEvent('create', name ?? templateName ?? 'unknown', {
         value: minutesSaved,
       });
@@ -130,6 +134,7 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
           titleTypographyProps={{ component: 'h2' }}
         >
           <Stepper
+            onFormStateChange={setFormState}
             manifest={sortedManifest}
             onCreate={workflowOnCreate}
             {...props}
