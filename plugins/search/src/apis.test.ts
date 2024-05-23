@@ -58,19 +58,6 @@ describe('apis', () => {
     );
   });
 
-  // it('Sets Authorization if token is available', async () => {
-  //   identityApi.getCredentials.mockResolvedValue({ token: 'token' });
-  //   await client.query(query);
-  //   expect(getBaseUrl).toHaveBeenLastCalledWith('search');
-  //   expect(mockFetch).toHaveBeenLastCalledWith(
-  //     expect.objectContaining({
-  //       agent: undefined,
-  //       query: 'term=',
-  //       headers: { authorization: ["Bearer token"] }
-  //     })
-  //   );
-  // });
-
   it('Resolves JSON from fetch response', async () => {
     const result = { loading: false, error: '', value: {} };
     json.mockReturnValueOnce(result);
