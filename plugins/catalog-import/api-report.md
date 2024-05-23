@@ -13,8 +13,8 @@ import { ConfigApi } from '@backstage/core-plugin-api';
 import { Controller } from 'react-hook-form';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { FieldErrors } from 'react-hook-form';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { default as React_2 } from 'react';
@@ -102,7 +102,7 @@ export class CatalogImportClient implements CatalogImportApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     scmAuthApi: ScmAuthApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     catalogApi: CatalogApi;
     configApi: ConfigApi;

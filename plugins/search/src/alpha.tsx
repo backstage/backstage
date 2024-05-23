@@ -32,7 +32,6 @@ import {
 import {
   useApi,
   DiscoveryApi,
-  IdentityApi,
   discoveryApiRef,
   identityApiRef,
   FetchApi,
