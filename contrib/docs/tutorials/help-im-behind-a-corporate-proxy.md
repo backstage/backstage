@@ -56,6 +56,7 @@ There are however some ways to get this to work without too much effort.
 
    ```sh
    export GLOBAL_AGENT_HTTP_PROXY=http://username:password@proxy.example.net:8888
+   export GLOBAL_AGENT_NO_PROXY='localhost:7007' # calls to local backend do not use http proxy e.g. fetching jwks
    yarn start
    ```
 

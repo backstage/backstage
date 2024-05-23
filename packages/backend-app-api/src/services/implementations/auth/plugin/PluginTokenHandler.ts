@@ -31,6 +31,7 @@ import { jwtVerify } from 'jose';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { JwksClient } from '../JwksClient';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
+import fetch from 'node-fetch';
 
 /**
  * The margin for how many times longer we make the public key available
