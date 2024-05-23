@@ -125,10 +125,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
       const { requestUserCredentials } = uiSchema?.['ui:options'] ?? {};
 
       const workspace = state.owner ? state.owner : state.project;
-      if (
-        !requestUserCredentials ||
-        !(state.host && workspace && state.repoName)
-      ) {
+      if (!requestUserCredentials) {
         return;
       }
 
