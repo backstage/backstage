@@ -15,3 +15,5 @@
  */
 
 export { cacheServiceFactory } from './cacheServiceFactory';
+export { CacheManager } from './CacheManager';
+export type { CacheManagerOptions, PluginCacheManager } from './types';

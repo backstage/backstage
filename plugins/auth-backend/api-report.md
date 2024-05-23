@@ -14,7 +14,7 @@ import { AwsAlbResult as AwsAlbResult_2 } from '@backstage/plugin-auth-backend-m
 import { AzureEasyAuthResult } from '@backstage/plugin-auth-backend-module-azure-easyauth-provider';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
-import { CacheClient } from '@backstage/backend-common';
+import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ClientAuthResponse } from '@backstage/plugin-auth-node';
 import { cloudflareAccessSignInResolvers } from '@backstage/plugin-auth-backend-module-cloudflare-access-provider';
@@ -452,7 +452,7 @@ export const providers: Readonly<{
       signIn: {
         resolver: SignInResolver_2<CloudflareAccessResult>;
       };
-      cache?: CacheClient | undefined;
+      cache?: CacheService | undefined;
     }) => AuthProviderFactory_2;
     resolvers: Readonly<cloudflareAccessSignInResolvers>;
   }>;

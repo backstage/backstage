@@ -14,20 +14,24 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
-import Keyv from 'keyv';
-import KeyvMemcache from '@keyv/memcache';
-import KeyvRedis from '@keyv/redis';
 import {
   CacheService,
   CacheServiceOptions,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import { getRootLogger } from '../logging';
+import { Config } from '@backstage/config';
+import Keyv from 'keyv';
 import { DefaultCacheClient } from './CacheClient';
-import { CacheManagerOptions, PluginCacheManager } from './types';
+import { CacheManagerOptions } from './types';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
+
+/*
+ * TODO(freben): This class intentionally inlines the CacheManagerOptions and
+ * PluginCacheManager types, to not break the api reports in backend-common
+ * which re-exports it. When backend-common is deprecated, we can stop inlining
+ * those types.
+ */
 
 /**
  * Implements a Cache Manager which will automatically create new cache clients
@@ -47,7 +51,7 @@ export class CacheManager {
     memory: this.createMemoryStoreFactory(),
   };
 
-  private readonly logger: LoggerService;
+  private readonly logger?: LoggerService;
   private readonly store: keyof CacheManager['storeFactories'];
   private readonly connection: string;
   private readonly useRedisSets: boolean;
@@ -62,7 +66,18 @@ export class CacheManager {
    */
   static fromConfig(
     config: Config,
-    options: CacheManagerOptions = {},
+    options: {
+      /**
+       * An optional logger for use by the PluginCacheManager.
+       */
+      logger?: LoggerService;
+
+      /**
+       * An optional handler for connection errors emitted from the underlying data
+       * store.
+       */
+      onError?: (err: Error) => void;
+    } = {},
   ): CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
     // with an in-memory cache client.
@@ -72,27 +87,26 @@ export class CacheManager {
       config.getOptionalString('backend.cache.connection') || '';
     const useRedisSets =
       config.getOptionalBoolean('backend.cache.useRedisSets') ?? true;
-
-    // TODO: Make logger required and remove the default logger after moving this class to the `backstage-defaults`package
-    const logger = (options.logger || getRootLogger()).child({
+    const logger = options.logger?.child({
       type: 'cacheManager',
     });
     return new CacheManager(
       store,
       connectionString,
       useRedisSets,
-      logger,
       options.onError,
+      logger,
       defaultTtl,
     );
   }
 
-  private constructor(
+  /** @internal */
+  constructor(
     store: string,
     connectionString: string,
     useRedisSets: boolean,
-    logger: LoggerService,
     errorHandler: CacheManagerOptions['onError'],
+    logger?: LoggerService,
     defaultTtl?: number,
   ) {
     if (!this.storeFactories.hasOwnProperty(store)) {
@@ -112,7 +126,9 @@ export class CacheManager {
    * @param pluginId - The plugin that the cache manager should be created for.
    *        Plugin names should be unique.
    */
-  forPlugin(pluginId: string): PluginCacheManager {
+  forPlugin(pluginId: string): {
+    getClient(options?: CacheServiceOptions): CacheService;
+  } {
     return {
       getClient: (defaultOptions = {}) => {
         const clientFactory = (options: CacheServiceOptions) => {
@@ -124,7 +140,7 @@ export class CacheManager {
           // Always provide an error handler to avoid stopping the process.
           concreteClient.on('error', (err: Error) => {
             // In all cases, just log the error.
-            this.logger.error('Failed to create cache client', err);
+            this.logger?.error('Failed to create cache client', err);
 
             // Invoke any custom error handler if provided.
             if (typeof this.errorHandler === 'function') {
@@ -149,7 +165,8 @@ export class CacheManager {
   }
 
   private createRedisStoreFactory(): StoreFactory {
-    let store: KeyvRedis | undefined;
+    const KeyvRedis = require('@keyv/redis');
+    let store: typeof KeyvRedis | undefined;
     return (pluginId, defaultTtl) => {
       if (!store) {
         store = new KeyvRedis(this.connection);
@@ -164,7 +181,8 @@ export class CacheManager {
   }
 
   private createMemcacheStoreFactory(): StoreFactory {
-    let store: KeyvMemcache | undefined;
+    const KeyvMemcache = require('@keyv/memcache');
+    let store: typeof KeyvMemcache | undefined;
     return (pluginId, defaultTtl) => {
       if (!store) {
         store = new KeyvMemcache(this.connection);
@@ -186,13 +204,4 @@ export class CacheManager {
         store,
       });
   }
-}
-
-/** @public */
-export function cacheToPluginCacheManager(
-  cache: CacheService,
-): PluginCacheManager {
-  return {
-    getClient: (opts: CacheServiceOptions) => cache.withOptions(opts),
-  };
 }

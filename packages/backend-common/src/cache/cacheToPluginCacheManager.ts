@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,21 @@
  * limitations under the License.
  */
 
-export * from './reexport';
-export type { PluginDatabaseManager } from './types';
+import {
+  CacheService,
+  CacheServiceOptions,
+} from '@backstage/backend-plugin-api';
+
+/**
+ * Compatibility wrapper for going from a new-backend cache service to the
+ * old-backend plugin cache manager.
+ *
+ * @public
+ */
+export function cacheToPluginCacheManager(cache: CacheService): {
+  getClient(options?: CacheServiceOptions): CacheService;
+} {
+  return {
+    getClient: (opts: CacheServiceOptions) => cache.withOptions(opts),
+  };
+}
