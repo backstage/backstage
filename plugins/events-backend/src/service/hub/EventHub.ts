@@ -14,24 +14,33 @@
  * limitations under the License.
  */
 
-import { HttpAuthService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  DatabaseService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Handler } from 'express';
 import Router from 'express-promise-router';
 import { spec, createOpenApiRouter } from '../../schema/openapi.generated';
 import { internal } from '@backstage/backend-openapi-utils';
 import { MemoryEventHubStore } from './MemoryEventHubStore';
+import { DatabaseEventHubStore } from './DatabaseEventHubStore';
 import { EventHubStore } from './types';
 import { EventParams } from '@backstage/plugin-events-node';
 
 export class EventHub {
   static async create(options: {
     logger: LoggerService;
+    database: DatabaseService;
     httpAuth: HttpAuthService;
   }) {
-    const { httpAuth } = options;
+    const { database, httpAuth } = options;
     const logger = options.logger.child({ type: 'EventHub' });
     const router = Router();
-    const store = new MemoryEventHubStore();
+    const store = await DatabaseEventHubStore.create({
+      database,
+      logger,
+    });
 
     const hub = new EventHub(router, logger, httpAuth, store);
 
@@ -83,16 +92,19 @@ export class EventHub {
     const credentials = await this.#httpAuth.credentials(req, {
       allow: ['service'],
     });
-    await this.#store.publish({
+    const { id } = await this.#store.publish({
       params: {
         topic: req.body.event.topic,
         eventPayload: req.body.event.payload,
       } as EventParams,
       subscriberIds: req.body.subscriptionIds ?? [],
     });
-    this.#logger.info(`Published event to '${req.body.event.topic}'`, {
-      subject: credentials.principal.subject,
-    });
+    this.#logger.info(
+      `Published event to '${req.body.event.topic}' with ID '${id}'`,
+      {
+        subject: credentials.principal.subject,
+      },
+    );
     res.status(201).end();
   };
 

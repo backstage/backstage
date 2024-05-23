@@ -39,7 +39,8 @@
   },
   "files": [
     "config.d.ts",
-    "dist"
+    "dist",
+    "migrations"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -62,6 +63,7 @@
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
     "express-promise-router": "^4.1.0",
+    "knex": "^3.0.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
