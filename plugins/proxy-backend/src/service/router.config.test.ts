@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import { createBackend } from '@backstage/backend-defaults';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import {
-  mockServices,
   setupRequestMockHandlers,
+  startTestBackend,
 } from '@backstage/backend-test-utils';
 import {
   ConfigSources,
@@ -31,7 +30,6 @@ import {
 import { HttpResponse, http, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
 import fetch from 'node-fetch';
-import portFinder from 'portfinder';
 
 // this test is stored in its own file to work around the mocked
 // http-proxy-middleware module used in the main test file
@@ -41,30 +39,12 @@ describe('createRouter reloadable configuration', () => {
   setupRequestMockHandlers(server);
 
   it('should be able to observe the config', async () => {
-    const host = 'localhost';
-    const port = await portFinder.getPortPromise({ host });
-    const baseUrl = `http://${host}:${port}`;
-
-    server.use(
-      http.all(`${baseUrl}/*`, passthrough),
-      http.get('https://non-existing-example.com/*', req =>
-        HttpResponse.json({
-          url: req.request.url.toString(),
-          headers: req.request.headers,
-        }),
-      ),
-    );
-
     // Grab the subscriber function and use mutable config data to mock a config file change
     const mutableConfigSource = MutableConfigSource.create({ data: {} });
     const config = await ConfigSources.toConfig(
       ConfigSources.merge([
         StaticConfigSource.create({
           data: {
-            backend: {
-              baseUrl,
-              listen: { host, port },
-            },
             proxy: {
               endpoints: {
                 '/test': {
@@ -79,38 +59,53 @@ describe('createRouter reloadable configuration', () => {
       ]),
     );
 
-    const backend = createBackend();
-    backend.add(import('../alpha'));
-    backend.add(
-      createServiceFactory({
-        service: coreServices.rootConfig,
-        deps: {},
-        factory: () => config,
-      }),
-    );
-    backend.add(mockServices.rootLogger.factory());
-    await backend.start();
-
-    await expect(fetch(`${baseUrl}/api/proxy/test`)).resolves.toMatchObject({
-      status: 200,
+    const backend = await startTestBackend({
+      features: [
+        import('../alpha'),
+        createServiceFactory({
+          service: coreServices.rootConfig,
+          deps: {},
+          factory: () => config,
+        }),
+      ],
     });
-    await expect(
-      fetch(`${baseUrl}/api/proxy/test2`),
-    ).resolves.not.toMatchObject({ status: 200 });
 
-    mutableConfigSource.setData({
-      proxy: {
-        endpoints: {
-          '/test2': {
-            target: 'https://non-existing-example.com',
-            credentials: 'dangerously-allow-unauthenticated',
+    try {
+      const baseUrl = `http://localhost:${backend.server.port()}`;
+
+      server.use(
+        http.all(`${baseUrl}/*`, passthrough),
+        http.get('https://non-existing-example.com/*', req =>
+          HttpResponse.json({
+            url: req.request.url.toString(),
+            headers: req.request.headers,
+          }),
+        ),
+      );
+
+      await expect(fetch(`${baseUrl}/api/proxy/test`)).resolves.toMatchObject({
+        status: 200,
+      });
+      await expect(
+        fetch(`${baseUrl}/api/proxy/test2`),
+      ).resolves.not.toMatchObject({ status: 200 });
+
+      mutableConfigSource.setData({
+        proxy: {
+          endpoints: {
+            '/test2': {
+              target: 'https://non-existing-example.com',
+              credentials: 'dangerously-allow-unauthenticated',
+            },
           },
         },
-      },
-    });
+      });
 
-    await expect(fetch(`${baseUrl}/api/proxy/test2`)).resolves.toMatchObject({
-      status: 200,
-    });
+      await expect(fetch(`${baseUrl}/api/proxy/test2`)).resolves.toMatchObject({
+        status: 200,
+      });
+    } finally {
+      await backend.stop();
+    }
   });
 });

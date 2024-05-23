@@ -6453,6 +6453,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-proxy-backend@workspace:plugins/proxy-backend"
   dependencies:
+    "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": "workspace:^"
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
@@ -6472,7 +6473,6 @@ __metadata:
     morgan: ^1.10.0
     msw: ^2.0.0
     node-fetch: ^2.6.7
-    portfinder: ^1.0.32
     uuid: ^9.0.0
     winston: ^3.2.1
     yaml: ^2.0.0

@@ -65,6 +65,7 @@
     "yup": "^1.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
@@ -74,8 +75,7 @@
     "@types/uuid": "^9.0.0",
     "@types/yup": "^0.32.0",
     "msw": "^2.0.0",
-    "node-fetch": "^2.6.7",
-    "portfinder": "^1.0.32"
+    "node-fetch": "^2.6.7"
   },
   "configSchema": "config.d.ts"
 }
