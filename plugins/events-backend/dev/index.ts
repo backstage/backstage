@@ -19,7 +19,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { WebSocket } from 'ws';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { DefaultApiClient } from '../../events-node/src/generated';
 

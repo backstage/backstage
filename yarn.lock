@@ -6154,9 +6154,6 @@ __metadata:
     express-promise-router: ^4.1.0
     supertest: ^7.0.0
     winston: ^3.2.1
-    ws: ^8.17.0
-    zod: ^3.22.4
-    zod-validation-error: ^3.3.0
   languageName: unknown
   linkType: soft
 
@@ -44671,12 +44668,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-validation-error@npm:^3.0.3, zod-validation-error@npm:^3.3.0":
-  version: 3.3.0
-  resolution: "zod-validation-error@npm:3.3.0"
+"zod-validation-error@npm:^3.0.3":
+  version: 3.1.0
+  resolution: "zod-validation-error@npm:3.1.0"
   peerDependencies:
     zod: ^3.18.0
-  checksum: cbf81ecd27df675d72883b69833565af787302e70ad970ae4a5dab84e1cb8739cedf094b35f7f4b78307adaadb7cab0c0a8f7debeb6516e3fee998a3d4e13422
+  checksum: 84df01c91d594701eaf7f5f007be881e47f7adef2e3f3765f7be031cb78033f9be0924273106cb81b586d8020da9885dbb81b3da363f00a51df00f26274f2b23
   languageName: node
   linkType: hard
 
