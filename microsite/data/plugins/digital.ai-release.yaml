@@ -2,7 +2,7 @@
 title: Digital.ai Release
 author: digital.ai
 authorUrl: https://digital.ai/
-category: Release
+category: CI/CD
 description: The plugin offers integration with Digital.ai Release and backstage. It provide access to active releases, templates and manage workflow executions.
 documentation: https://docs.digital.ai/bundle/devops-deploy-version-v.24.1/page/deploy/concept/xl-deploy-backstage-overview.html
 iconUrl: /img/digital.ai-release.svg
