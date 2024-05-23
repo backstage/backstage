@@ -35,7 +35,7 @@ describe('credentials', () => {
 
   it('handles all valid credentials settings', async () => {
     const host = 'localhost';
-    const port = await portFinder.getPortPromise();
+    const port = await portFinder.getPortPromise({ host });
     const baseUrl = `http://${host}:${port}`;
 
     const config = {
@@ -82,7 +82,7 @@ describe('credentials', () => {
     };
 
     worker.use(
-      http.all(`${baseUrl}/*`, () => passthrough()),
+      http.all(`${baseUrl}/*`, passthrough),
       http.get('http://target.com/*', req => {
         const auth = req.request.headers.get('authorization');
         return HttpResponse.json({
