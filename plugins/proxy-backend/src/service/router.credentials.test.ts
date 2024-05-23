@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-import { createBackend } from '@backstage/backend-defaults';
+import {
+  authServiceFactory,
+  httpAuthServiceFactory,
+} from '@backstage/backend-app-api';
 import {
   mockServices,
   setupRequestMockHandlers,
+  startTestBackend,
 } from '@backstage/backend-test-utils';
 import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
-import { rest } from 'msw';
+import { HttpResponse, http, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
 import fetch from 'node-fetch';
-import portFinder from 'portfinder';
 
 // this test is stored in its own file to work around the mocked
 // http-proxy-middleware module used in the main test file
@@ -34,14 +37,8 @@ describe('credentials', () => {
   setupRequestMockHandlers(worker);
 
   it('handles all valid credentials settings', async () => {
-    const host = 'localhost';
-    const port = await portFinder.getPortPromise();
-    const baseUrl = `http://${host}:${port}`;
-
     const config = {
       backend: {
-        baseUrl,
-        listen: { host, port },
         auth: {
           externalAccess: [
             {
@@ -81,43 +78,42 @@ describe('credentials', () => {
       },
     };
 
-    worker.use(
-      rest.all(`${baseUrl}/*`, req => req.passthrough()),
-      rest.get('http://target.com/*', (req, res, ctx) => {
-        const auth = req.headers.get('authorization');
-        return res(
-          ctx.status(200),
-          ctx.json({ payload: { forwardedAuthorization: auth ?? false } }),
-        );
-      }),
-    );
-
-    async function call(options: {
-      endpoint: string;
-      authorization: string | false;
-    }): Promise<JsonObject> {
-      const { endpoint, authorization } = options;
-      return fetch(`${baseUrl}/api/proxy/${endpoint}/just-some-path`, {
-        headers: authorization ? { Authorization: authorization } : {},
-      }).then(async res => {
-        if (!res.ok) {
-          throw await ResponseError.fromResponse(res);
-        }
-        return res.json();
-      });
-    }
-
-    // Create an actual backend instead of a test backend, because we want to
-    // use the real HTTP server that provides the protection middleware etc. A
-    // bit harder to test, but at least we can use static external access tokens
-    // for it.
-    const backend = createBackend();
-    backend.add(import('../alpha'));
-    backend.add(mockServices.rootConfig.factory({ data: config }));
-    backend.add(mockServices.rootLogger.factory());
-    await backend.start();
+    const backend = await startTestBackend({
+      features: [
+        import('../alpha'),
+        mockServices.rootConfig.factory({ data: config }),
+        authServiceFactory(),
+        httpAuthServiceFactory(),
+      ],
+    });
 
     try {
+      const baseUrl = `http://localhost:${backend.server.port()}`;
+      worker.use(
+        http.all(`${baseUrl}/*`, passthrough),
+        http.get('http://target.com/*', req => {
+          const auth = req.request.headers.get('authorization');
+          return HttpResponse.json({
+            payload: { forwardedAuthorization: auth ?? false },
+          });
+        }),
+      );
+
+      const call = async (options: {
+        endpoint: string;
+        authorization: string | false;
+      }): Promise<JsonObject> => {
+        const { endpoint, authorization } = options;
+        return fetch(`${baseUrl}/api/proxy/${endpoint}/just-some-path`, {
+          headers: authorization ? { Authorization: authorization } : {},
+        }).then(async res => {
+          if (!res.ok) {
+            throw await ResponseError.fromResponse(res);
+          }
+          return res.json();
+        });
+      };
+
       // simple credentials config
       await expect(
         call({ endpoint: 'simple', authorization: false }),
