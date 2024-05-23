@@ -88,6 +88,46 @@ export interface Config {
                */
               subject: string;
             };
+            /**
+             * Restricts what types of access that are permitted for this access
+             * method. If no access restrictions are given, it'll have unlimited
+             * access. This access restriction applies for the framework level;
+             * individual plugins may have their own access control mechanisms
+             * on top of this.
+             */
+            accessRestrictions?: Array<{
+              /**
+               * Permit access to make requests to this plugin.
+               *
+               * Can be further refined by setting additional fields below.
+               */
+              plugin: string;
+              /**
+               * If given, this method is limited to only performing actions
+               * with these named permissions in this plugin.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permission?: string | Array<string>;
+              /**
+               * If given, this method is limited to only performing actions
+               * whose permissions have these attributes.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permissionAttribute?: {
+                /**
+                 * One of more of 'create', 'read', 'update', or 'delete'.
+                 */
+                action?: string | Array<string>;
+              };
+            }>;
           }
         | {
             /**
@@ -130,6 +170,46 @@ export interface Config {
                */
               subject: string;
             };
+            /**
+             * Restricts what types of access that are permitted for this access
+             * method. If no access restrictions are given, it'll have unlimited
+             * access. This access restriction applies for the framework level;
+             * individual plugins may have their own access control mechanisms
+             * on top of this.
+             */
+            accessRestrictions?: Array<{
+              /**
+               * Permit access to make requests to this plugin.
+               *
+               * Can be further refined by setting additional fields below.
+               */
+              plugin: string;
+              /**
+               * If given, this method is limited to only performing actions
+               * with these named permissions in this plugin.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permission?: string | Array<string>;
+              /**
+               * If given, this method is limited to only performing actions
+               * whose permissions have these attributes.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permissionAttribute?: {
+                /**
+                 * One of more of 'create', 'read', 'update', or 'delete'.
+                 */
+                action?: string | Array<string>;
+              };
+            }>;
           }
         | {
             /**

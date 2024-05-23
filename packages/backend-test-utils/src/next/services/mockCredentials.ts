@@ -17,6 +17,7 @@
 import {
   BackstageCredentials,
   BackstageNonePrincipal,
+  BackstagePrincipalAccessRestrictions,
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
@@ -202,14 +203,19 @@ export namespace mockCredentials {
   /**
    * Creates a mocked credentials object for a service principal.
    *
-   * The default subject is 'external:test-service'.
+   * The default subject is 'external:test-service', and no access restrictions.
    */
   export function service(
     subject: string = DEFAULT_MOCK_SERVICE_SUBJECT,
+    accessRestrictions?: BackstagePrincipalAccessRestrictions,
   ): BackstageCredentials<BackstageServicePrincipal> {
     return {
       $$type: '@backstage/BackstageCredentials',
-      principal: { type: 'service', subject },
+      principal: {
+        type: 'service',
+        subject,
+        ...(accessRestrictions ? { accessRestrictions } : {}),
+      },
     };
   }
 

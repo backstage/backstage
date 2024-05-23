@@ -16,6 +16,7 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
@@ -136,6 +137,14 @@ export type BackstageNonePrincipal = {
   type: 'none';
 };
 
+// @public
+export type BackstagePrincipalAccessRestrictions = {
+  permissionNames?: string[];
+  permissionAttributes?: {
+    action?: Array<Required<PermissionAttributes>['action']>;
+  };
+};
+
 // @public (undocumented)
 export type BackstagePrincipalTypes = {
   user: BackstageUserPrincipal;
@@ -148,6 +157,7 @@ export type BackstagePrincipalTypes = {
 export type BackstageServicePrincipal = {
   type: 'service';
   subject: string;
+  accessRestrictions?: BackstagePrincipalAccessRestrictions;
 };
 
 // @public (undocumented)
