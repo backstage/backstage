@@ -96,29 +96,25 @@ backend:
       - type: jwks
         options:
           url: https://example.com/.well-known/jwks.json
-          issuers:
-            - https://example.com
-          algorithms:
-            - RS256
-          audiences:
-            - example
+          issuer: https://example.com
+          algorithm: RS256
+          audience: example, other-example
           subjectPrefix: custom-prefix
       - type: jwks
         options:
           url: https://another-example.com/.well-known/jwks.json
-          issuers:
-            - https://example.com
+          issuer: https://example.com
 ```
 
 The URL should point at an unauthenticated endpoint that returns the JWKS.
 
-Issuers specifies the issuer(s) of the JWT that the authenticating app will accept.
+`issuer` specifies the issuer(s) of the JWT that the authenticating app will accept.
 Passed JWTs must have an `iss` claim which matches one of the specified issuers.
 
-Algorithms specifies the algorithm(s) that are used to verify the JWT. The passed JWTs
+`algorithm` specifies the algorithm(s) that are used to verify the JWT. The passed JWTs
 must have been signed using one of the listed algorithms.
 
-Audiences specify the intended audience(s) of the JWT. The passed JWTs must have an "aud"
+`audience` specifies the intended audience(s) of the JWT. The passed JWTs must have an "aud"
 claim that matches one of the audiences specified, or have no audience specified.
 
 For additional details regarding the JWKS configuration, please consult your authentication

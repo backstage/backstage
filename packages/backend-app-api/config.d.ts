@@ -226,30 +226,30 @@ export interface Config {
             type: 'jwks';
             options: {
               /**
-               * Sets the algorithms that should be used to verify the JWT tokens.
+               * The full URL of the JWKS endpoint.
+               */
+              url: string;
+              /**
+               * Sets the algorithm(s) that should be used to verify the JWT tokens.
                * The passed JWTs must have been signed using one of the listed algorithms.
                */
-              algorithms?: string[];
+              algorithm?: string | string[];
               /**
-               * Sets the issuers that should be used to verify the JWT tokens.
+               * Sets the issuer(s) that should be used to verify the JWT tokens.
                * Passed JWTs must have an `iss` claim which matches one of the specified issuers.
                */
-              issuers?: string[];
+              issuer?: string | string[];
               /**
-               * Sets the audiences that should be used to verify the JWT tokens.
+               * Sets the audience(s) that should be used to verify the JWT tokens.
                * The passed JWTs must have an "aud" claim that matches one of the audiences specified,
                * or have no audience specified.
                */
-              audiences?: string[];
+              audience?: string | string[];
               /**
                * Sets an optional subject prefix. Passes the subject to called plugins.
                * Useful for debugging and tracking purposes.
                */
               subjectPrefix?: string;
-              /**
-               * Sets the URL containing the JWKS endpoint.
-               */
-              url: string;
             };
           }
       >;

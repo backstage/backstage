@@ -16,7 +16,11 @@
 
 import { jwtVerify, createRemoteJWKSet, JWTVerifyGetKey } from 'jose';
 import { Config } from '@backstage/config';
-import { TokenHandler } from './types';
+import {
+  readAccessRestrictionsFromConfig,
+  readStringOrStringArrayFromConfig,
+} from './helpers';
+import { AccessRestriptionsMap, TokenHandler } from './types';
 
 /**
  * Handles `type: jwks` access.
@@ -31,19 +35,29 @@ export class JWKSHandler implements TokenHandler {
     subjectPrefix?: string;
     url: URL;
     jwks: JWTVerifyGetKey;
+    allAccessRestrictions?: AccessRestriptionsMap;
   }> = [];
 
-  add(options: Config) {
-    const algorithms = options.getOptionalStringArray('algorithms');
-    const issuers = options.getOptionalStringArray('issuers');
-    const audiences = options.getOptionalStringArray('audiences');
-    const subjectPrefix = options.getOptionalString('subjectPrefix');
-    const url = new URL(options.getString('url'));
-    const jwks = createRemoteJWKSet(url);
-
-    if (!options.getString('url').match(/^\S+$/)) {
-      throw new Error('Illegal URL, must be a set of non-space characters');
+  add(config: Config) {
+    if (!config.getString('options.url').match(/^\S+$/)) {
+      throw new Error(
+        'Illegal JWKS URL, must be a set of non-space characters',
+      );
     }
+
+    const algorithms = readStringOrStringArrayFromConfig(
+      config,
+      'options.algorithm',
+    );
+    const issuers = readStringOrStringArrayFromConfig(config, 'options.issuer');
+    const audiences = readStringOrStringArrayFromConfig(
+      config,
+      'options.audience',
+    );
+    const subjectPrefix = config.getOptionalString('options.subjectPrefix');
+    const url = new URL(config.getString('options.url'));
+    const jwks = createRemoteJWKSet(url);
+    const allAccessRestrictions = readAccessRestrictionsFromConfig(config);
 
     this.#entries.push({
       algorithms,
@@ -52,6 +66,7 @@ export class JWKSHandler implements TokenHandler {
       jwks,
       subjectPrefix,
       url,
+      allAccessRestrictions,
     });
   }
 
@@ -67,11 +82,13 @@ export class JWKSHandler implements TokenHandler {
         });
 
         if (sub) {
-          if (entry.subjectPrefix) {
-            return { subject: `external:${entry.subjectPrefix}:${sub}` };
-          }
-
-          return { subject: `external:${sub}` };
+          const prefix = entry.subjectPrefix
+            ? `external:${entry.subjectPrefix}:`
+            : 'external:';
+          return {
+            subject: `${prefix}${sub}`,
+            allAccessRestrictions: entry.allAccessRestrictions,
+          };
         }
       } catch {
         continue;

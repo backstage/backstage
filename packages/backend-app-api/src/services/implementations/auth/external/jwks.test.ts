@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
@@ -21,13 +22,13 @@ import { setupServer } from 'msw/node';
 import { v4 as uuid } from 'uuid';
 import { JWKSHandler } from './jwks';
 
+// Simplified copy of TokenFactory in @backstage/plugin-auth-backend
 interface AnyJWK extends Record<string, string> {
   use: 'sig';
   alg: string;
   kid: string;
   kty: string;
 }
-// Simplified copy of TokenFactory in @backstage/plugin-auth-backend
 class FakeTokenFactory {
   private readonly keys = new Array<AnyJWK>();
 
@@ -100,10 +101,12 @@ describe('JWKSHandler', () => {
 
   it('verifies token with valid entry', async () => {
     const validEntry = {
-      url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['RS256'],
-      issuers: [mockBaseUrl],
-      audiences: ['backstage'],
+      options: {
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+      },
     };
     const jwksHandler = new JWKSHandler();
 
@@ -120,17 +123,21 @@ describe('JWKSHandler', () => {
 
   it('skips invalid entry and continues verification', async () => {
     const invalidEntry = {
-      url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['RS256'],
-      issuers: ['fakeIssuer'],
-      audiences: ['fakeAud'],
+      options: {
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: ['fakeIssuer'],
+        audience: ['fakeAud'],
+      },
     };
 
     const validEntry = {
-      url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['RS256'],
-      issuers: ['multiple-issuers', mockBaseUrl],
-      audiences: ['multiple-audiences', 'backstage'],
+      options: {
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: ['multiple-issuers', mockBaseUrl],
+        audience: ['multiple-audiences', 'backstage'],
+      },
     };
     const jwksHandler = new JWKSHandler();
 
@@ -148,17 +155,19 @@ describe('JWKSHandler', () => {
 
   it('returns undefined if no valid entry found', async () => {
     const invalidEntry1 = {
-      url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['RS256'],
-      issuers: [mockBaseUrl],
-      audiences: [],
+      options: {
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: 'wrong',
+      },
     };
 
     const invalidEntry2 = {
-      url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['HS256'],
-      issuers: [],
-      audiences: ['backstage'],
+      options: {
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: ['HS256'],
+        audience: 'wrong',
+      },
     };
     const jwksHandler = new JWKSHandler();
 
@@ -180,17 +189,21 @@ describe('JWKSHandler', () => {
     expect(() => {
       jwksHandler.add(
         new ConfigReader({
-          url: 'https://exampl e.com/jwks',
+          options: {
+            url: 'https://exampl e.com/jwks',
+          },
         }),
       );
-    }).toThrow('Invalid URL');
+    }).toThrow('Illegal JWKS URL, must be a set of non-space characters');
     expect(() => {
       jwksHandler.add(
         new ConfigReader({
-          url: 'https://example.com/jwks\n',
+          options: {
+            url: 'https://example.com/jwks\n',
+          },
         }),
       );
-    }).toThrow('Illegal URL, must be a set of non-space characters');
+    }).toThrow('Illegal JWKS URL, must be a set of non-space characters');
   });
 
   it('gracefully handles no added tokens', async () => {
@@ -200,11 +213,13 @@ describe('JWKSHandler', () => {
 
   it('uses custom subject prefix if provided', async () => {
     const validEntry = {
-      url: `${mockBaseUrl}/.well-known/jwks.json`,
-      algorithms: ['RS256'],
-      issuers: [mockBaseUrl],
-      audiences: ['backstage'],
-      subjectPrefix: 'custom-prefix',
+      options: {
+        url: `${mockBaseUrl}/.well-known/jwks.json`,
+        algorithm: 'RS256',
+        issuer: mockBaseUrl,
+        audience: 'backstage',
+        subjectPrefix: 'custom-prefix',
+      },
     };
     const jwksHandler = new JWKSHandler();
 
@@ -217,7 +232,30 @@ describe('JWKSHandler', () => {
     const result = await jwksHandler.verifyToken(token);
 
     expect(result).toEqual({
-      subject: `external:${validEntry.subjectPrefix}:${mockSubject}`,
+      subject: `external:${validEntry.options.subjectPrefix}:${mockSubject}`,
+    });
+  });
+
+  it('carries over access restrictions', async () => {
+    const jwksHandler = new JWKSHandler();
+    jwksHandler.add(
+      new ConfigReader({
+        options: {
+          url: `${mockBaseUrl}/.well-known/jwks.json`,
+        },
+        accessRestrictions: [{ plugin: 'scaffolder', permission: 'do.it' }],
+      }),
+    );
+
+    const token = await factory.issueToken({ claims: { sub: mockSubject } });
+
+    await expect(jwksHandler.verifyToken(token)).resolves.toEqual({
+      subject: `external:${mockSubject}`,
+      allAccessRestrictions: new Map(
+        Object.entries({
+          scaffolder: { permissionNames: ['do.it'] },
+        }),
+      ),
     });
   });
 });
