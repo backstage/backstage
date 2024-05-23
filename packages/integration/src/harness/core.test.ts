@@ -57,7 +57,7 @@ describe('Harness code core', () => {
           'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/edit/refMain/~/all-apis.yaml',
         ),
       ).toEqual(
-        'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/edit/all-apis.yaml',
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repoName/files//ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/edit/refMain/~/all-apis.yaml',
       );
     });
   });
@@ -73,7 +73,7 @@ describe('Harness code core', () => {
           'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projectName/repos/repoName/files/branchName',
         ),
       ).toEqual(
-        'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projectName/repoName/+/archive/branchName.zip',
+        'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projectName/repoName/+/archive/branchName.zip?routingId=accountId',
       );
     });
   });
