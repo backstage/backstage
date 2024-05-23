@@ -1,10 +1,10 @@
 ---
-id: authorizing-parameters-steps-and-actions
-title: 'Authorizing parameters, steps and actions'
-description: How to authorize part of a template
+id: authorizing-scaffolder-template-details
+title: 'Authorizing scaffolder tasks, parameters, steps, and actions'
+description: How to authorize parts of a template and authorize scaffolder task access
 ---
 
-The scaffolder plugin integrates with the Backstage [permission framework](../../permissions/overview.md), which allows you to control access to certain parameters and steps in your templates based on the user executing the template.
+The scaffolder plugin integrates with the Backstage [permission framework](../../permissions/overview.md), which allows you to control access to certain parameters and steps in your templates based on the user executing the template. It also allows you to control access to scaffolder tasks.
 
 ### Authorizing parameters and steps
 
@@ -174,7 +174,64 @@ class ExamplePermissionPolicy implements PermissionPolicy {
 }
 ```
 
-Although the rules exported by the scaffolder are simple, combining them can help you achieve more complex cases.
+### Authorizing scaffolder tasks
+
+The scaffolder plugin also exposes permissions that can restrict access to tasks, task logs, task creation, and task cancellation. This can be useful if you want to control who has access to these areas of the scaffolder.
+
+```ts title="packages/src/backend/plugins/permissions.ts"
+/* highlight-add-start */
+import {
+  taskCancelPermission,
+  taskCreatePermission,
+  taskReadPermission,
+} from '@backstage/plugin-scaffolder-common/alpha';
+/* highlight-add-end */
+
+class ExamplePermissionPolicy implements PermissionPolicy {
+  async handle(
+    request: PolicyQuery,
+    user?: BackstageIdentityResponse,
+  ): Promise<PolicyDecision> {
+    /* highlight-add-start */
+    if (isPermission(request.permission, taskCreatePermission)) {
+      if (user?.identity.userEntityRef === 'user:default/spiderman') {
+        return {
+          result: AuthorizeResult.ALLOW,
+        };
+      }
+    }
+    if (isPermission(request.permission, taskCancelPermission)) {
+      if (user?.identity.userEntityRef === 'user:default/spiderman') {
+        return {
+          result: AuthorizeResult.ALLOW,
+        };
+      }
+    }
+    if (isPermission(request.permission, taskReadPermission)) {
+      if (user?.identity.userEntityRef === 'user:default/spiderman') {
+        return {
+          result: AuthorizeResult.ALLOW,
+        };
+      }
+    }
+    /* highlight-add-end */
+
+    return {
+      result: AuthorizeResult.DENY,
+    };
+  }
+}
+```
+
+In the provided example permission policy, we only grant the `spiderman` user permissions to perform/access the following actions/resources:
+
+- Read all scaffolder tasks and their associated events/logs.
+- Cancel any ongoing scaffolder tasks.
+- Trigger software templates, which effectively creates new scaffolder tasks.
+
+Any other user would be denied access to these actions/resources.
+
+Although the rules exported by the scaffolder are simple, combining them can help you achieve more complex use cases.
 
 ### Authorizing in the New Backend System
 

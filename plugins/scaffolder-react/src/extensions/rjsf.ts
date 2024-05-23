@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { ComponentType, ElementType, FormEvent, ReactNode, Ref } from 'react';
+import {
+  ComponentType,
+  ElementType,
+  FormEvent,
+  HTMLAttributes,
+  ReactNode,
+  Ref,
+} from 'react';
 import {
   ErrorSchema,
   FormContextType,
@@ -32,7 +39,6 @@ import {
   Experimental_DefaultFormStateBehavior,
   ErrorTransformer,
 } from '@rjsf/utils';
-import { HTMLAttributes } from 'react';
 import Form, { IChangeEvent } from '@rjsf/core';
 
 /**
