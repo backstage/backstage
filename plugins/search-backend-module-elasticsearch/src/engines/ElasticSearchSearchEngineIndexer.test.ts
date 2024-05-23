@@ -114,7 +114,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     mock.add(
       {
         method: 'DELETE',
-        path: '/some-type-index__123tobedeleted%2Csome-type-index__456tobedeleted',
+        path: '/*',
       },
       deleteSpy,
     );
@@ -161,7 +161,11 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     });
 
     // Old index should be cleaned up.
-    expect(deleteSpy).toHaveBeenCalled();
+    expect(deleteSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: '/some-type-index__123tobedeleted%2Csome-type-index__456tobedeleted',
+      }),
+    );
   });
 
   it('handles when no documents are received', async () => {
@@ -185,7 +189,11 @@ describe('ElasticSearchSearchEngineIndexer', () => {
     expect(aliasesSpy).not.toHaveBeenCalled();
 
     // Old index should not be cleaned up.
-    expect(deleteSpy).not.toHaveBeenCalled();
+    expect(deleteSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        path: expect.not.stringContaining('tobedeleted'),
+      }),
+    );
   });
 
   it('handles bulk and batching during indexing', async () => {
@@ -238,6 +246,47 @@ describe('ElasticSearchSearchEngineIndexer', () => {
 
     // Final deletion shouldn't be called.
     expect(deleteSpy).not.toHaveBeenCalled();
+  });
+
+  it('split index deletion in chunks', async () => {
+    // Generate 200 existing indices
+    const currentIndices = Array.from(
+      new Array(200),
+      (_, i) => `some-type-index__old${i}`,
+    );
+
+    const indicesResponse = currentIndices.reduce((acc, curr) => {
+      return {
+        ...acc,
+        [curr]: { mappings: {}, aliases: {} },
+      };
+    }, {});
+
+    getSpy = jest.fn().mockReturnValue(indicesResponse);
+    mock.clear({
+      method: 'GET',
+      path: '/some-type-index__*',
+    });
+    mock.add(
+      {
+        method: 'GET',
+        path: '/some-type-index__*',
+      },
+      getSpy,
+    );
+
+    await TestPipeline.fromIndexer(indexer)
+      .withDocuments([
+        {
+          title: 'testTerm',
+          text: 'testText',
+          location: 'test/location',
+        },
+      ])
+      .execute();
+
+    // Delete endpoint should have been called for 4 chunks of 50 (200 indices)
+    expect(deleteSpy).toHaveBeenCalledTimes(4);
   });
 
   it('handles bulk client rejection', async () => {
