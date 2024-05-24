@@ -137,6 +137,13 @@ export const spec = {
         operationId: 'PostEvent',
         description: 'Publish a new event',
         responses: {
+          '201': {
+            description: 'The event was published successfully',
+          },
+          '204': {
+            description:
+              'The event did not need to be published as all subscribers have already been notified',
+          },
           default: {
             $ref: '#/components/responses/ErrorResponse',
           },
