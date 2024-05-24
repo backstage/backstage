@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.26.6
+
+### Patch Changes
+
+- f481835: Fix issue with `esm` loaded dependencies being different from the `cjs` import for Vite dependencies
+
 ## 0.26.5
 
 ### Patch Changes
