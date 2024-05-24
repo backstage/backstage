@@ -100,6 +100,23 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
 
+  const getLabel = useCallback(
+    (freeSoloValue: string) => {
+      try {
+        // Will throw if defaultKind or defaultNamespace are not set
+        const parsedRef = parseEntityRef(freeSoloValue, {
+          defaultKind,
+          defaultNamespace,
+        });
+
+        return stringifyEntityRef(parsedRef);
+      } catch (err) {
+        return freeSoloValue;
+      }
+    },
+    [defaultKind, defaultNamespace],
+  );
+
   const onSelect = useCallback(
     (_: any, ref: string | Entity | null, reason: AutocompleteChangeReason) => {
       // ref can either be a string from free solo entry or
@@ -135,7 +152,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
   // back to the given value.
   const selectedEntity =
     entities?.catalogEntities.find(e => stringifyEntityRef(e) === formData) ??
-    (allowArbitraryValues && formData ? formData : '');
+    (allowArbitraryValues && formData ? getLabel(formData) : '');
 
   useEffect(() => {
     if (entities?.catalogEntities.length === 1 && selectedEntity === '') {
