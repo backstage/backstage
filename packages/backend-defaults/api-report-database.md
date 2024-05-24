@@ -38,7 +38,7 @@ export const databaseServiceFactory: () => ServiceFactory<
   'plugin'
 >;
 
-// @public
+// @public @deprecated
 export function dropDatabase(
   dbConfig: Config,
   ...databaseNames: string[]

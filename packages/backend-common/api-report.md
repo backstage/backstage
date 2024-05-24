@@ -312,7 +312,7 @@ export class DockerContainerRunner implements ContainerRunner {
   runContainer(options: RunContainerOptions): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export function dropDatabase(
   dbConfig: Config,
   ...databaseNames: string[]

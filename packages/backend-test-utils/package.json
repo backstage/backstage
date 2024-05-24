@@ -46,7 +46,6 @@
   },
   "dependencies": {
     "@backstage/backend-app-api": "workspace:^",
-    "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -65,9 +64,11 @@
     "msw": "^1.0.0",
     "mysql2": "^3.0.0",
     "pg": "^8.11.3",
+    "pg-connection-string": "^2.3.0",
     "testcontainers": "^10.0.0",
     "textextensions": "^5.16.0",
-    "uuid": "^9.0.0"
+    "uuid": "^9.0.0",
+    "yn": "^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
