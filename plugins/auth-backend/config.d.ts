@@ -90,29 +90,6 @@ export interface Config {
      */
     providers?: {
       /** @visibility frontend */
-      google?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          callbackUrl?: string;
-        };
-      };
-      /** @visibility frontend */
-      github?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          callbackUrl?: string;
-          enterpriseInstanceUrl?: string;
-        };
-      };
-      /** @visibility frontend */
       saml?: {
         entryPoint: string;
         logoutUrl?: string;
@@ -135,20 +112,6 @@ export interface Config {
         signatureAlgorithm?: 'sha256' | 'sha512';
         digestAlgorithm?: string;
         acceptedClockSkewMs?: number;
-      };
-      /** @visibility frontend */
-      oauth2?: {
-        [authEnv: string]: {
-          clientId: string;
-          /**
-           * @visibility secret
-           */
-          clientSecret: string;
-          authorizationUrl: string;
-          tokenUrl: string;
-          scope?: string;
-          disableRefresh?: boolean;
-        };
       };
       /** @visibility frontend */
       auth0?: {
@@ -176,20 +139,6 @@ export interface Config {
           issuer: string;
           callbackUrl?: string;
         };
-      };
-      /** @visibility frontend */
-      awsalb?: {
-        iss?: string;
-        region: string;
-      };
-      /** @visibility frontend */
-      cfaccess?: {
-        teamName: string;
-        /** @deepVisibility secret */
-        serviceTokens?: Array<{
-          token: string;
-          subject: string;
-        }>;
       };
       /**
        * The backstage token expiration.

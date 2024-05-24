@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { TaskScheduler } from '@backstage/backend-tasks';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/scheduler` instead.
+ */
 export const schedulerServiceFactory = createServiceFactory({
   service: coreServices.scheduler,
   deps: {
@@ -33,7 +35,7 @@ export const schedulerServiceFactory = createServiceFactory({
     return TaskScheduler.forPlugin({
       pluginId: plugin.getId(),
       databaseManager,
-      logger: loggerToWinstonLogger(logger),
+      logger,
     });
   },
 });

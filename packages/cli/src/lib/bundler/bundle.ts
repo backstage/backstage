@@ -41,6 +41,10 @@ export async function buildBundle(options: BuildOptions) {
   const { statsJsonEnabled, schema: configSchema } = options;
 
   const paths = resolveBundlingPaths(options);
+  const publicPaths = await resolveOptionalBundlingPaths({
+    entry: 'src/index-public-experimental',
+    dist: 'dist/public',
+  });
 
   const detectedModulesEntryPoint = await createDetectedModulesEntryPoint({
     config: options.fullConfig,
@@ -57,13 +61,10 @@ export async function buildBundle(options: BuildOptions) {
     await createConfig(paths, {
       ...commonConfigOptions,
       additionalEntryPoints: detectedModulesEntryPoint,
+      appMode: publicPaths ? 'protected' : 'public',
     }),
   ];
 
-  const publicPaths = await resolveOptionalBundlingPaths({
-    entry: 'src/index-public-experimental',
-    dist: 'dist/public',
-  });
   if (publicPaths) {
     console.log(
       chalk.yellow(
@@ -73,7 +74,7 @@ export async function buildBundle(options: BuildOptions) {
     configs.push(
       await createConfig(publicPaths, {
         ...commonConfigOptions,
-        publicSubPath: '/public',
+        appMode: 'public',
       }),
     );
   }
@@ -91,6 +92,14 @@ export async function buildBundle(options: BuildOptions) {
       dereference: true,
       filter: file => file !== paths.targetHtml,
     });
+
+    // If we've got a separate public index entry point, copy public content there too
+    if (publicPaths) {
+      await fs.copy(paths.targetPublic, publicPaths.targetDist, {
+        dereference: true,
+        filter: file => file !== paths.targetHtml,
+      });
+    }
   }
 
   if (configSchema) {

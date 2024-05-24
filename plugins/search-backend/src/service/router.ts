@@ -15,12 +15,11 @@
  */
 
 import express from 'express';
-import { Logger } from 'winston';
 import { z } from 'zod';
 import {
-  HostDiscovery,
   createLegacyAuthAdapters,
   errorHandler,
+  HostDiscovery,
 } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
@@ -42,6 +41,7 @@ import {
   AuthService,
   DiscoveryService,
   HttpAuthService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
@@ -68,7 +68,7 @@ export type RouterOptions = {
   discovery?: DiscoveryService;
   permissions: PermissionEvaluator | PermissionAuthorizer;
   config: Config;
-  logger: Logger;
+  logger: LoggerService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
 };

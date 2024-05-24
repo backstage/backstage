@@ -1,5 +1,107 @@
 # @backstage/repo-tools
 
+## 0.9.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.2.6-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.4
+
+## 0.9.0
+
+### Minor Changes
+
+- 683870a: Adds 2 new commands `repo schema openapi diff` and `package schema openapi diff`. `repo schema openapi diff` is intended to power a new breaking changes check on pull requests and the package level command allows plugin developers to quickly see new API breaking changes. They're intended to be used in complement with the existing `repo schema openapi verify` command to validate your OpenAPI spec against a variety of things.
+
+### Patch Changes
+
+- 9ae9bb2: Update the paths logic in the api reports command to support complex subpaths
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-plugin-api@0.6.18
+
+## 0.9.0-next.2
+
+### Minor Changes
+
+- 683870a: Adds 2 new commands `repo schema openapi diff` and `package schema openapi diff`. `repo schema openapi diff` is intended to power a new breaking changes check on pull requests and the package level command allows plugin developers to quickly see new API breaking changes. They're intended to be used in complement with the existing `repo schema openapi verify` command to validate your OpenAPI spec against a variety of things.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+
+## 0.8.1-next.1
+
+### Patch Changes
+
+- 9ae9bb2: Update the paths logic in the api reports command to support complex subpaths
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/cli-node@0.2.5
+  - @backstage/config-loader@1.8.0
+
+## 0.8.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.5
+  - @backstage/config-loader@1.8.0
+  - @backstage/errors@1.2.4
+
+## 0.8.0
+
+### Minor Changes
+
+- 2bd291e: Adds a lint rule to `repo schema openapi lint` to enforce `allowReserved` for all parameters. To fix this, simply add `allowReserved: true` to your parameters, like so
+
+  ```diff
+  /v1/todos:
+      get:
+        operationId: ListTodos
+        # ...
+        parameters:
+          - name: entity
+            in: query
+  +         allowReserved: true
+            schema:
+              type: string
+  ```
+
+- cfdc5e7: Adds two new commands, `repo schema openapi fuzz` and `package schema openapi fuzz` for fuzzing your plugins documented with OpenAPI. This can help find bugs in your application code through the use of auto-generated schema-compliant inputs. For more information on the underlying library this leverages, take a look at [the docs](https://schemathesis.readthedocs.io/en/stable/index.html).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/config-loader@1.8.0
+  - @backstage/cli-node@0.2.5
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/errors@1.2.4
+
+## 0.8.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/errors@1.2.4
+
 ## 0.8.0-next.0
 
 ### Minor Changes

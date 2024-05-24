@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { rest, RestRequest } from 'msw';
@@ -148,7 +150,7 @@ function getProcessor({
   return GitLabDiscoveryProcessor.fromConfig(
     new ConfigReader(config || getConfig()),
     {
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       ...options,
     },
   );

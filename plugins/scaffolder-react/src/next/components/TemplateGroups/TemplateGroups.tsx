@@ -21,7 +21,7 @@ import {
   TemplateEntityV1beta3,
 } from '@backstage/plugin-scaffolder-common';
 import { Progress, Link } from '@backstage/core-components';
-import { Typography } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
 import { errorApiRef, IconComponent, useApi } from '@backstage/core-plugin-api';
 import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TemplateGroup } from '../TemplateGroup/TemplateGroup';

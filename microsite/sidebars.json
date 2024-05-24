@@ -1,6 +1,8 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.27.0",
+      "releases/v1.26.0",
       "releases/v1.25.0",
       "releases/v1.24.0",
       "releases/v1.23.0",
@@ -128,7 +130,7 @@
           "features/software-templates/writing-tests-for-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
-          "features/software-templates/authorizing-parameters-steps-and-actions",
+          "features/software-templates/authorizing-scaffolder-template-details",
           "features/software-templates/migrating-to-rjsf-v5",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
@@ -236,6 +238,11 @@
         "type": "category",
         "label": "Gitea",
         "items": ["integrations/gitea/locations"]
+      },
+      {
+        "type": "category",
+        "label": "Harness",
+        "items": ["integrations/harness/locations"]
       },
       {
         "type": "category",
@@ -492,7 +499,6 @@
       "api/deprecations"
     ],
     "Tutorials": [
-      "tutorials/journey",
       "tutorials/quickstart-app-plugin",
       "tutorials/react-router-stable-migration",
       "tutorials/react18-migration",
@@ -504,6 +510,7 @@
       "tutorials/yarn-migration",
       "tutorials/migrate-to-mui5",
       "tutorials/auth-service-migration",
+      "tutorials/enable-public-entry",
       "tutorials/setup-opentelemetry"
     ],
     "Architecture Decision Records (ADRs)": [

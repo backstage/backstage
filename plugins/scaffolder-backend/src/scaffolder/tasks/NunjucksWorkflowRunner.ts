@@ -31,6 +31,7 @@ import {
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
 import {
+  TaskRecovery,
   TaskSpec,
   TaskSpecV1beta3,
   TaskStep,
@@ -52,10 +53,9 @@ import {
 } from '@backstage/plugin-permission-common';
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
-import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
-import { WinstonLogger } from './logger';
+import { BackstageLoggerTransport, WinstonLogger } from './logger';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -98,9 +98,11 @@ const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
 const createStepLogger = ({
   task,
   step,
+  rootLogger,
 }: {
   task: TaskContext;
   step: TaskStep;
+  rootLogger: winston.Logger;
 }) => {
   const stepLogStream = new PassThrough();
   stepLogStream.on('data', async data => {
@@ -117,8 +119,8 @@ const createStepLogger = ({
       winston.format.simple(),
     ),
     transports: [
-      new winston.transports.Console(),
       new winston.transports.Stream({ stream: stepLogStream }),
+      new BackstageLoggerTransport(rootLogger),
     ],
   });
 
@@ -262,14 +264,15 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const action: TemplateAction<JsonObject> =
         this.options.actionRegistry.get(step.action);
-      const { taskLogger, streamLogger } = createStepLogger({ task, step });
+      const { taskLogger, streamLogger } = createStepLogger({
+        task,
+        step,
+        rootLogger: this.options.logger,
+      });
 
       if (task.isDryRun) {
         const redactedSecrets = Object.fromEntries(
-          Object.entries(task.secrets ?? {}).map(secret => [
-            secret[0],
-            '[REDACTED]',
-          ]),
+          Object.entries(task.secrets ?? {}).map(secret => [secret[0], '***']),
         );
         const debugInput =
           (step.input &&
@@ -413,6 +416,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
                 reason: stringifyError(err),
               });
               throw err;
+            } finally {
+              await task.serializeWorkspace?.({ path: workspacePath });
             }
           },
           createTemporaryDirectory: async () => {
@@ -449,11 +454,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         throw new Error(`Step ${step.name} has been cancelled.`);
       }
 
+      await task.cleanWorkspace?.();
       await stepTrack.markSuccessful();
     } catch (err) {
       await taskTrack.markFailed(step, err);
       await stepTrack.markFailed();
       throw err;
+    } finally {
+      await task.serializeWorkspace?.({ path: workspacePath });
     }
   }
 
@@ -463,10 +471,9 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         'Wrong template version executed with the workflow engine',
       );
     }
-    const workspacePath = path.join(
-      this.options.workingDirectory,
-      await task.getWorkspaceName(),
-    );
+    const taskId = await task.getWorkspaceName();
+
+    const workspacePath = path.join(this.options.workingDirectory, taskId);
 
     const { additionalTemplateFilters, additionalTemplateGlobals } =
       this.options;
@@ -480,6 +487,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     });
 
     try {
+      await task.rehydrateWorkspace?.({ taskId, targetPath: workspacePath });
+
       const taskTrack = await this.tracker.taskStart(task);
       await fs.ensureDir(workspacePath);
 

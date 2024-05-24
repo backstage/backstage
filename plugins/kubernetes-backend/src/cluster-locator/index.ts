@@ -17,7 +17,6 @@
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
-import { Logger } from 'winston';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 import { AuthenticationStrategy } from '../auth/types';
 import { ConfigClusterLocator } from './ConfigClusterLocator';
@@ -27,12 +26,13 @@ import { LocalKubectlProxyClusterLocator } from './LocalKubectlProxyLocator';
 import {
   AuthService,
   BackstageCredentials,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
 class CombinedClustersSupplier implements KubernetesClustersSupplier {
   constructor(
     readonly clusterSuppliers: KubernetesClustersSupplier[],
-    readonly logger: Logger,
+    readonly logger: LoggerService,
   ) {}
 
   async getClusters(options: {
@@ -71,7 +71,7 @@ export const getCombinedClusterSupplier = (
   rootConfig: Config,
   catalogClient: CatalogApi,
   authStrategy: AuthenticationStrategy,
-  logger: Logger,
+  logger: LoggerService,
   refreshInterval: Duration | undefined = undefined,
   auth: AuthService,
 ): KubernetesClustersSupplier => {

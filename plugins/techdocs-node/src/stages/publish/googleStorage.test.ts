@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -23,7 +23,10 @@ import path from 'path';
 import fs from 'fs-extra';
 import { Readable } from 'stream';
 import { GoogleGCSPublish } from './googleStorage';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
 
 const mockDir = createMockDirectory();
 
@@ -136,7 +139,7 @@ const getEntityRootDir = (entity: Entity) => {
   return mockDir.resolve(namespace || DEFAULT_NAMESPACE, kind, name);
 };
 
-const logger = getVoidLogger();
+const logger = loggerToWinstonLogger(mockServices.logger.mock());
 jest.spyOn(logger, 'info').mockReturnValue(logger);
 jest.spyOn(logger, 'error').mockReturnValue(logger);
 

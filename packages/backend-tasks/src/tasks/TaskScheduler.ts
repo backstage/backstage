@@ -23,23 +23,28 @@ import {
 import { Config } from '@backstage/config';
 import { once } from 'lodash';
 import { Duration } from 'luxon';
-import { Logger } from 'winston';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
 import { PluginTaskSchedulerJanitor } from './PluginTaskSchedulerJanitor';
 import { PluginTaskScheduler } from './types';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Deals with the scheduling of distributed tasks.
  *
  * @public
+ * @deprecated Please migrate to the new backend system, and depend on `coreServices.scheduler` from  `@backstage/backend-plugin-api` instead.
  */
 export class TaskScheduler {
+  /**
+   * @deprecated
+   * It is only used by the legacy backend system, and should not be used in the new backend system.
+   */
   static fromConfig(
     config: Config,
     options?: {
       databaseManager?: LegacyRootDatabaseService;
-      logger?: Logger;
+      logger?: LoggerService;
     },
   ): TaskScheduler {
     const databaseManager =
@@ -52,7 +57,7 @@ export class TaskScheduler {
 
   constructor(
     private readonly databaseManager: LegacyRootDatabaseService,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
   ) {}
 
   /**
@@ -72,7 +77,7 @@ export class TaskScheduler {
   static forPlugin(opts: {
     pluginId: string;
     databaseManager: PluginDatabaseManager;
-    logger: Logger;
+    logger: LoggerService;
   }): PluginTaskScheduler {
     const databaseFactory = once(async () => {
       const knex = await opts.databaseManager.getClient();

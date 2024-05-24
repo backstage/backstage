@@ -1,5 +1,143 @@
 # @backstage/plugin-catalog-backend-module-github
 
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.24-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-catalog-backend@1.23.0-next.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-catalog-node@1.12.1-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.11.0
+  - @backstage/plugin-catalog-common@1.0.23
+
+## 0.6.1
+
+### Patch Changes
+
+- 0b50143: GitHub push events now schedule a refresh on entities that have a `refresh_key` matching the `catalogPath` config itself.
+  This allows to support a `catalogPath` configuration that uses glob patterns.
+- f2a2a83: Updated to use the new `catalogAnalysisExtensionPoint` API.
+- 5bdeaa7: Added `alwaysUseDefaultNamespace` option to `GithubMultiOrgEntityProvider`.
+
+  If set to true, the provider will use `default` as the namespace for all group entities. Groups with the same name across different orgs will be considered the same group.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0
+  - @backstage/plugin-catalog-backend@1.22.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-events-node@0.3.4
+  - @backstage/integration@1.11.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-catalog-common@1.0.23
+
+## 0.6.1-next.2
+
+### Patch Changes
+
+- 0b50143: GitHub push events now schedule a refresh on entities that have a `refresh_key` matching the `catalogPath` config itself.
+  This allows to support a `catalogPath` configuration that uses glob patterns.
+- f2a2a83: Updated to use the new `catalogAnalysisExtensionPoint` API.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.12.0-next.2
+  - @backstage/plugin-catalog-backend@1.22.0-next.2
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+  - @backstage/integration@1.11.0-next.0
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-catalog-backend@1.22.0-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/plugin-events-node@0.3.4-next.1
+  - @backstage/plugin-catalog-node@1.11.2-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.22.0-next.0
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-catalog-common@1.0.23-next.0
+  - @backstage/plugin-catalog-node@1.11.2-next.0
+  - @backstage/backend-tasks@0.5.23-next.0
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.10.0
+  - @backstage/plugin-events-node@0.3.4-next.0
+
+## 0.6.0
+
+### Minor Changes
+
+- 29c3898: Remove use of `EventBroker` and `EventSubscriber` for the GitHub org data providers.
+
+  BREAKING CHANGE:
+
+  - `GithubOrgEntityProvider.onEvent` made private
+  - `GithubOrgEntityProvider.supportsEventTopics` removed
+  - `eventBroker` option was removed from `GithubMultiOrgEntityProvider.fromConfig`
+  - `GithubMultiOrgEntityProvider.supportsEventTopics` removed
+
+  This change only impacts users who still use the legacy backend system
+  **and** who still use `eventBroker` as option when creating these
+  entity providers.
+
+  Please pass the `EventsService` instance as option `events` instead.
+  You can find more information at the [installation documentation](https://backstage.io/docs/integrations/github/org/#legacy-backend-system).
+
+### Patch Changes
+
+- d5a1fe1: Replaced winston logger with `LoggerService`
+- 469e87f: Properly instantiate `GithubMultiOrgEntityProvider` and `GithubOrgEntityProvider` with `EventsService` if defined
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-catalog-backend@1.21.1
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/backend-tasks@0.5.22
+  - @backstage/catalog-client@1.6.4
+  - @backstage/integration@1.10.0
+  - @backstage/plugin-events-node@0.3.3
+  - @backstage/plugin-catalog-node@1.11.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-common@1.0.22
+
+## 0.5.8-next.1
+
+### Patch Changes
+
+- 469e87f: Properly instantiate `GithubMultiOrgEntityProvider` and `GithubOrgEntityProvider` with `EventsService` if defined
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-catalog-backend@1.21.1-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/backend-tasks@0.5.22-next.1
+  - @backstage/plugin-events-node@0.3.3-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-catalog-node@1.11.1-next.1
+
 ## 0.5.8-next.0
 
 ### Patch Changes

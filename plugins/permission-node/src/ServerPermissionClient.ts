@@ -21,16 +21,19 @@ import {
 import {
   AuthService,
   BackstageCredentials,
+  BackstageServicePrincipal,
   DiscoveryService,
   PermissionsService,
   PermissionsServiceRequestOptions,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
-  AuthorizeResult,
-  PermissionClient,
   AuthorizePermissionRequest,
   AuthorizePermissionResponse,
+  AuthorizeResult,
+  DefinitivePolicyDecision,
+  Permission,
+  PermissionClient,
   PolicyDecision,
   QueryPermissionRequest,
 } from '@backstage/plugin-permission-common';
@@ -91,31 +94,39 @@ export class ServerPermissionClient implements PermissionsService {
     queries: QueryPermissionRequest[],
     options?: PermissionsServiceRequestOptions,
   ): Promise<PolicyDecision[]> {
-    if (await this.#shouldPermissionsBeApplied(options)) {
-      return this.#permissionClient.authorizeConditional(
-        queries,
-        await this.#getRequestOptions(options),
-      );
+    const credentials = await this.#getIncomingCredentials(options);
+    if (credentials && this.#auth.isPrincipal(credentials, 'service')) {
+      return this.#servicePrincipalDecision(queries, credentials);
+    } else if (!this.#permissionEnabled) {
+      return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
-    return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
+    return this.#permissionClient.authorizeConditional(
+      queries,
+      await this.#getRequestOptions(options),
+    );
   }
 
   async authorize(
     requests: AuthorizePermissionRequest[],
     options?: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
-    if (await this.#shouldPermissionsBeApplied(options)) {
-      return this.#permissionClient.authorize(
-        requests,
-        await this.#getRequestOptions(options),
-      );
+    const credentials = await this.#getIncomingCredentials(options);
+    if (credentials && this.#auth.isPrincipal(credentials, 'service')) {
+      return this.#servicePrincipalDecision(requests, credentials);
+    } else if (!this.#permissionEnabled) {
+      return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
-    return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
+    return this.#permissionClient.authorize(
+      requests,
+      await this.#getRequestOptions(options),
+    );
   }
 
-  async #getRequestOptions(options?: PermissionsServiceRequestOptions) {
+  async #getRequestOptions(
+    options?: PermissionsServiceRequestOptions,
+  ): Promise<{ token?: string } | undefined> {
     if (options && 'credentials' in options) {
       if (this.#auth.isPrincipal(options.credentials, 'none')) {
         return {};
@@ -123,37 +134,55 @@ export class ServerPermissionClient implements PermissionsService {
 
       return this.#auth.getPluginRequestToken({
         onBehalfOf: options.credentials,
-        targetPluginId: 'permissions',
+        targetPluginId: 'permission',
       });
     }
 
     return options;
   }
 
-  async #shouldPermissionsBeApplied(
+  async #getIncomingCredentials(
     options?: PermissionsServiceRequestOptions,
-  ) {
-    if (!this.#permissionEnabled) {
-      return false;
-    }
-
-    let credentials: BackstageCredentials;
+  ): Promise<BackstageCredentials | undefined> {
     if (options && 'credentials' in options) {
-      credentials = options.credentials;
-    } else {
-      if (!options?.token) {
-        return true;
-      }
+      return options.credentials;
+    }
+
+    if (options?.token) {
       try {
-        credentials = await this.#auth.authenticate(options.token);
+        return await this.#auth.authenticate(options.token);
       } catch {
-        return true;
+        // ignore
       }
     }
 
-    if (this.#auth.isPrincipal(credentials, 'service')) {
-      return false;
-    }
-    return true;
+    return undefined;
+  }
+
+  /**
+   * For service principals, we can always make an immediate definitive decision
+   * based on their associated access restrictions (if any).
+   */
+  #servicePrincipalDecision(
+    input: { permission: Permission }[],
+    credentials: BackstageCredentials<BackstageServicePrincipal>,
+  ): DefinitivePolicyDecision[] {
+    const { permissionNames, permissionAttributes } =
+      credentials.principal.accessRestrictions ?? {};
+
+    return input.map(item => {
+      if (permissionNames && !permissionNames.includes(item.permission.name)) {
+        return { result: AuthorizeResult.DENY };
+      }
+
+      if (permissionAttributes?.action) {
+        const action = item.permission.attributes?.action;
+        if (!action || !permissionAttributes.action.includes(action)) {
+          return { result: AuthorizeResult.DENY };
+        }
+      }
+
+      return { result: AuthorizeResult.ALLOW };
+    });
   }
 }

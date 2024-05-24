@@ -27,6 +27,7 @@ import {
   transports,
   transport as Transport,
 } from 'winston';
+import { MESSAGE } from 'triple-beam';
 import { escapeRegExp } from '../lib/escapeRegExp';
 
 /**
@@ -61,8 +62,8 @@ export class WinstonLogger implements RootLoggerService {
     let logger = createLogger({
       level: process.env.LOG_LEVEL || options.level || 'info',
       format: format.combine(
-        redacter.format,
         options.format ?? defaultFormatter,
+        redacter.format,
       ),
       transports: options.transports ?? new transports.Console(),
     });
@@ -86,14 +87,14 @@ export class WinstonLogger implements RootLoggerService {
     let redactionPattern: RegExp | undefined = undefined;
 
     return {
-      format: format(info => {
-        if (redactionPattern && typeof info.message === 'string') {
-          info.message = info.message.replace(redactionPattern, '[REDACTED]');
+      format: format((obj: TransformableInfo) => {
+        if (!redactionPattern || !obj) {
+          return obj;
         }
-        if (redactionPattern && typeof info.stack === 'string') {
-          info.stack = info.stack.replace(redactionPattern, '[REDACTED]');
-        }
-        return info;
+
+        obj[MESSAGE] = obj[MESSAGE]?.replace?.(redactionPattern, '***');
+
+        return obj;
       })(),
       add(newRedactions) {
         let added = 0;

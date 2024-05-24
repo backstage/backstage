@@ -55,7 +55,7 @@ Some defining traits of entity providers:
 
 The recommended way of instantiating the catalog backend classes is to use the
 `CatalogBuilder`, as illustrated in the
-[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
+[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend-legacy/src/plugins/catalog.ts).
 We will create a new
 [`EntityProvider`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/provider.ts)
 subclass that can be added to this catalog builder.
@@ -279,6 +279,45 @@ the `connect` call has been made to the provider.
 Start up the backend - it should now start reading from the previously
 registered location and you'll see your entities start to appear in Backstage.
 
+#### New Backend System
+
+To install the provider using the new backend system you will need to create a module and add it to your backend. The following is a very simplified example of what that would look like:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { FrobsProvider } from './path/to/class';
+
+export const catalogModuleFrobsProvider = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'frobs-provider',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogProcessingExtensionPoint,
+        reader: coreServices.urlReader,
+      },
+      async init({ catalog, reader }) {
+        catalog.addEntityProvider(new FrobsProvider('dev', reader));
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(catalogModuleFrobsProvider);
+
+// Other plugins ...
+
+backend.start();
+```
+
 ### Example User Entity Provider
 
 If you have a 3rd party entity provider such as an internal HR system that you wish to use you are not limited to using our entity providers, (or simply wish to add to existing entity providers with your own data).
@@ -492,7 +531,7 @@ does so!
 
 The recommended way of instantiating the catalog backend classes is to use the
 `CatalogBuilder`, as illustrated in the
-[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend/src/plugins/catalog.ts).
+[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend-legacy/src/plugins/catalog.ts).
 We will create a new
 [`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/processor.ts)
 subclass that can be added to this catalog builder.
@@ -585,6 +624,45 @@ export default async function createPlugin(
 
 Start up the backend - it should now start reading from the previously
 registered location and you'll see your entities start to appear in Backstage.
+
+#### Installing Processor Using New Backend System
+
+To install the processor using the new backend system you will need to create a module and add it to your backend. The following is a very simplified example of what that would look like:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { SystemXReaderProcessor } from '../path/to/class';
+
+export const catalogModuleSystemXReaderProcessor = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'system-x-reader-processor',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogProcessingExtensionPoint,
+        reader: coreServices.urlReader,
+      },
+      async init({ catalog, reader }) {
+        catalog.addProcessor(new SystemXReaderProcessor(reader));
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(catalogModuleSystemXReaderProcessor);
+
+// Other plugins ...
+
+backend.start();
+```
 
 ### Caching processing results
 
@@ -807,4 +885,43 @@ import { customEntityDataParser } from '../lib/customEntityDataParser';
 ...
 
 builder.setEntityDataParser(customEntityDataParser);
+```
+
+#### Using Custom Entity Data Parser with New Backend System
+
+To use a custom entity data parse with the new backend system you will need to create a module and add it to your backend. The following is a very simplified example of what that would look like:
+
+```ts title="packages/backend/src/index.ts"
+import { createBackend } from '@backstage/backend-defaults';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { customEntityDataParser } from '../lib/customEntityDataParser';
+
+export const catalogModuleCustomDataParser = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'custom-data-parser',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogModelExtensionPoint,
+        reader: coreServices.urlReader,
+      },
+      async init({ catalog, reader }) {
+        catalog.setEntityDataParser(customEntityDataParser);
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+backend.add(catalogModuleCustomDataParser);
+
+// Other plugins ...
+
+backend.start();
 ```

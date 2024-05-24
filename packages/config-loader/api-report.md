@@ -25,7 +25,6 @@ export interface BaseConfigSourcesOptions {
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;
   // (undocumented)
   rootDir?: string;
-  // (undocumented)
   substitutionFunc?: EnvFunc;
   // (undocumented)
   watch?: boolean;

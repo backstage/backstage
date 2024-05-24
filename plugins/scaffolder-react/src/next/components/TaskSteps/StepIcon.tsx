@@ -15,7 +15,9 @@
  */
 
 import React from 'react';
-import { CircularProgress, makeStyles, StepIconProps } from '@material-ui/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { StepIconProps } from '@material-ui/core/StepIcon';
+import { makeStyles } from '@material-ui/core/styles';
 import RemoveCircleOutline from '@material-ui/icons/RemoveCircleOutline';
 import PanoramaFishEyeIcon from '@material-ui/icons/PanoramaFishEye';
 import classNames from 'classnames';

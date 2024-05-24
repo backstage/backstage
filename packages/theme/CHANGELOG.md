@@ -1,5 +1,29 @@
 # @backstage/theme
 
+## 0.5.6-next.0
+
+### Patch Changes
+
+- 702fa7d: Internal refactor to fix an issue where the MUI 5 `v5-` class prefixing gets removed by tree shaking.
+
+## 0.5.4
+
+### Patch Changes
+
+- f1462df: Fixed bug where scrollbars don't pick up the theme when in dark mode
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- f1462df: Fixed bug where scrollbars don't pick up the theme when in dark mode
+
+## 0.5.3
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+
 ## 0.5.2
 
 ### Patch Changes

@@ -52,6 +52,21 @@ import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
 import { mockCredentials } from './mockCredentials';
 import { MockUserInfoService } from './MockUserInfoService';
+import {
+  eventsServiceFactory,
+  eventsServiceRef,
+} from '@backstage/plugin-events-node';
+
+/** @internal */
+function createLoggerMock() {
+  return {
+    child: jest.fn().mockImplementation(createLoggerMock),
+    debug: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+  };
+}
 
 /** @internal */
 function simpleFactory<
@@ -207,6 +222,7 @@ export namespace mockServices {
       isPrincipal: jest.fn() as any,
       getPluginRequestToken: jest.fn(),
       getLimitedUserToken: jest.fn(),
+      listPublicServiceKeys: jest.fn(),
     }));
   }
 
@@ -353,13 +369,10 @@ export namespace mockServices {
 
   export namespace logger {
     export const factory = loggerServiceFactory;
-    export const mock = simpleMock(coreServices.logger, () => ({
-      child: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-    }));
+
+    export const mock = simpleMock(coreServices.logger, () =>
+      createLoggerMock(),
+    );
   }
 
   export namespace permissions {
@@ -394,6 +407,14 @@ export namespace mockServices {
       readTree: jest.fn(),
       readUrl: jest.fn(),
       search: jest.fn(),
+    }));
+  }
+
+  export namespace events {
+    export const factory = eventsServiceFactory;
+    export const mock = simpleMock(eventsServiceRef, () => ({
+      publish: jest.fn(),
+      subscribe: jest.fn(),
     }));
   }
 }

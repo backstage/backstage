@@ -8,13 +8,16 @@
 import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common';
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
+import { Duration } from 'luxon';
 import { Handler } from 'express';
+import { HumanDuration } from '@backstage/types';
 import { IdentityApi } from '@backstage/plugin-auth-node';
+import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
 import { Readable } from 'stream';
@@ -55,6 +58,10 @@ export interface AuthService {
     credentials: BackstageCredentials,
     type: TType,
   ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
+  // (undocumented)
+  listPublicServiceKeys(): Promise<{
+    keys: JsonObject[];
+  }>;
 }
 
 // @public (undocumented)
@@ -130,6 +137,14 @@ export type BackstageNonePrincipal = {
   type: 'none';
 };
 
+// @public
+export type BackstagePrincipalAccessRestrictions = {
+  permissionNames?: string[];
+  permissionAttributes?: {
+    action?: Array<Required<PermissionAttributes>['action']>;
+  };
+};
+
 // @public (undocumented)
 export type BackstagePrincipalTypes = {
   user: BackstageUserPrincipal;
@@ -142,6 +157,7 @@ export type BackstagePrincipalTypes = {
 export type BackstageServicePrincipal = {
   type: 'service';
   subject: string;
+  accessRestrictions?: BackstagePrincipalAccessRestrictions;
 };
 
 // @public (undocumented)
@@ -198,9 +214,11 @@ export namespace coreServices {
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin'>;
-  const tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
+  const // @deprecated
+    tokenManager: ServiceRef<TokenManagerService, 'plugin'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
-  const identity: ServiceRef<IdentityService, 'plugin'>;
+  const // @deprecated
+    identity: ServiceRef<IdentityService, 'plugin'>;
 }
 
 // @public
@@ -321,7 +339,7 @@ export interface HttpAuthService {
   issueUserCookie(
     res: Response_2,
     options?: {
-      credentials?: BackstageCredentials<BackstageUserPrincipal>;
+      credentials?: BackstageCredentials;
     },
   ): Promise<{
     expiresAt: Date;
@@ -346,6 +364,11 @@ export interface HttpRouterServiceAuthPolicy {
 
 // @public (undocumented)
 export interface IdentityService extends IdentityApi {}
+
+export { isChildPath };
+
+// @public
+export function isDatabaseConflictError(e: unknown): boolean;
 
 // @public (undocumented)
 export interface LifecycleService {
@@ -438,11 +461,15 @@ export interface PluginServiceFactoryConfig<
     deps: ServiceRefsToInstances<TDeps>,
     context: TContext,
   ): TImpl | Promise<TImpl>;
-  // (undocumented)
   initialization?: 'always' | 'lazy';
   // (undocumented)
   service: ServiceRef<TService, 'plugin'>;
 }
+
+// @public
+export function readSchedulerServiceTaskScheduleDefinitionFromConfig(
+  config: Config,
+): SchedulerServiceTaskScheduleDefinition;
 
 // @public
 export type ReadTreeOptions = {
@@ -493,6 +520,12 @@ export type ReadUrlResponse = {
   lastModifiedAt?: Date;
 };
 
+// @public
+export function resolvePackagePath(name: string, ...paths: string[]): string;
+
+// @public
+export function resolveSafeChildPath(base: string, path: string): string;
+
 // @public (undocumented)
 export interface RootConfigService extends Config {}
 
@@ -519,14 +552,75 @@ export interface RootServiceFactoryConfig<
   deps: TDeps;
   // (undocumented)
   factory(deps: ServiceRefsToInstances<TDeps, 'root'>): TImpl | Promise<TImpl>;
-  // (undocumented)
   initialization?: 'always' | 'lazy';
   // (undocumented)
   service: ServiceRef<TService, 'root'>;
 }
 
-// @public (undocumented)
-export interface SchedulerService extends PluginTaskScheduler {}
+// @public
+export interface SchedulerService {
+  createScheduledTaskRunner(
+    schedule: SchedulerServiceTaskScheduleDefinition,
+  ): SchedulerServiceTaskRunner;
+  getScheduledTasks(): Promise<SchedulerServiceTaskDescriptor[]>;
+  scheduleTask(
+    task: SchedulerServiceTaskScheduleDefinition &
+      SchedulerServiceTaskInvocationDefinition,
+  ): Promise<void>;
+  triggerTask(id: string): Promise<void>;
+}
+
+// @public
+export type SchedulerServiceTaskDescriptor = {
+  id: string;
+  scope: 'global' | 'local';
+  settings: {
+    version: number;
+  } & JsonObject;
+};
+
+// @public
+export type SchedulerServiceTaskFunction =
+  | ((abortSignal: AbortSignal) => void | Promise<void>)
+  | (() => void | Promise<void>);
+
+// @public
+export interface SchedulerServiceTaskInvocationDefinition {
+  fn: SchedulerServiceTaskFunction;
+  id: string;
+  signal?: AbortSignal;
+}
+
+// @public
+export interface SchedulerServiceTaskRunner {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void>;
+}
+
+// @public
+export interface SchedulerServiceTaskScheduleDefinition {
+  frequency:
+    | {
+        cron: string;
+      }
+    | Duration
+    | HumanDuration;
+  initialDelay?: Duration | HumanDuration;
+  scope?: 'global' | 'local';
+  timeout: Duration | HumanDuration;
+}
+
+// @public
+export interface SchedulerServiceTaskScheduleDefinitionConfig {
+  frequency:
+    | {
+        cron: string;
+      }
+    | string
+    | HumanDuration;
+  initialDelay?: string | HumanDuration;
+  scope?: 'global' | 'local';
+  timeout: string | HumanDuration;
+}
 
 // @public
 export type SearchOptions = {
@@ -568,7 +662,6 @@ export type ServiceRef<
   id: string;
   scope: TScope;
   T: TService;
-  toString(): string;
   $$type: '@backstage/ServiceRef';
 };
 

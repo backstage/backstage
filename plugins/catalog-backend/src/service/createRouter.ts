@@ -25,11 +25,9 @@ import {
 import { Config } from '@backstage/config';
 import { InputError, NotFoundError, serializeError } from '@backstage/errors';
 import express from 'express';
-import { Logger } from 'winston';
 import yn from 'yn';
 import { z } from 'zod';
 import { EntitiesCatalog } from '../catalog/types';
-import { LocationAnalyzer } from '../ingestion';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import {
@@ -51,7 +49,12 @@ import {
 import { createOpenApiRouter } from '../schema/openapi.generated';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { parseEntityPaginationParams } from './request/parseEntityPaginationParams';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  HttpAuthService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 
 /**
  * Options used by {@link createRouter}.
@@ -65,7 +68,7 @@ export interface RouterOptions {
   orchestrator?: CatalogProcessingOrchestrator;
   refreshService?: RefreshService;
   scheduler?: PluginTaskScheduler;
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   permissionIntegrationRouter?: express.Router;
   auth: AuthService;

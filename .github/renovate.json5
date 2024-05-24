@@ -63,8 +63,20 @@
       allowedVersions: '<4.0.0',
     },
     {
+      matchPackageNames: ['p-throttle'],
+      allowedVersions: '<4.0.0',
+    },
+    {
       matchPackageNames: ['p-queue'],
       allowedVersions: '<7.0.0',
+    },
+    {
+      matchPackageNames: ['serialize-error'],
+      allowedVersions: '<9.0.0',
+    },
+    {
+      matchPackageNames: ['yn'],
+      allowedVersions: '<5.0.0',
     },
   ],
 }

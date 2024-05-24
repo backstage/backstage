@@ -25,7 +25,6 @@ import { createPermissionIntegrationRouter } from '@backstage/plugin-permission-
 import express from 'express';
 import Router from 'express-promise-router';
 import { Duration } from 'luxon';
-import { Logger } from 'winston';
 
 import {
   AksStrategy,
@@ -46,15 +45,16 @@ import {
   BackstageCredentials,
   DiscoveryService,
   HttpAuthService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 import {
-  AuthMetadata,
   AuthenticationStrategy,
+  AuthMetadata,
   CustomResource,
   KubernetesClustersSupplier,
   KubernetesFetcher,
-  KubernetesObjectTypes,
   KubernetesObjectsProvider,
+  KubernetesObjectTypes,
   KubernetesServiceLocator,
 } from '@backstage/plugin-kubernetes-node';
 import { addResourceRoutesToRouter } from '../routes/resourcesRoutes';
@@ -78,7 +78,7 @@ import { KubernetesProxy } from './KubernetesProxy';
  * @public
  */
 export interface KubernetesEnvironment {
-  logger: Logger;
+  logger: LoggerService;
   config: Config;
   catalogApi: CatalogApi;
   discovery: DiscoveryService;
@@ -157,7 +157,12 @@ export class KubernetesBuilder {
 
     const authStrategyMap = this.getAuthStrategyMap();
 
-    const proxy = this.getProxy(logger, clusterSupplier);
+    const proxy = this.getProxy(
+      logger,
+      clusterSupplier,
+      this.env.discovery,
+      httpAuth,
+    );
 
     const serviceLocator = this.getServiceLocator();
 
@@ -348,8 +353,10 @@ export class KubernetesBuilder {
   }
 
   protected buildProxy(
-    logger: Logger,
+    logger: LoggerService,
     clusterSupplier: KubernetesClustersSupplier,
+    discovery: DiscoveryService,
+    httpAuth: HttpAuthService,
   ): KubernetesProxy {
     const authStrategyMap = this.getAuthStrategyMap();
     const authStrategy = new DispatchStrategy({
@@ -359,6 +366,8 @@ export class KubernetesBuilder {
       logger,
       clusterSupplier,
       authStrategy,
+      discovery,
+      httpAuth,
     });
     return this.proxy;
   }
@@ -386,10 +395,13 @@ export class KubernetesBuilder {
       const serviceId = req.params.serviceId;
       const requestBody: ObjectsByEntityRequest = req.body;
       try {
-        const response = await objectsProvider.getKubernetesObjectsByEntity({
-          entity: requestBody.entity,
-          auth: requestBody.auth || {},
-        });
+        const response = await objectsProvider.getKubernetesObjectsByEntity(
+          {
+            entity: requestBody.entity,
+            auth: requestBody.auth || {},
+          },
+          { credentials: await httpAuth.credentials(req) },
+        );
         res.json(response);
       } catch (e) {
         logger.error(
@@ -528,10 +540,15 @@ export class KubernetesBuilder {
   }
 
   protected getProxy(
-    logger: Logger,
+    logger: LoggerService,
     clusterSupplier: KubernetesClustersSupplier,
+    discovery: DiscoveryService,
+    httpAuth: HttpAuthService,
   ) {
-    return this.proxy ?? this.buildProxy(logger, clusterSupplier);
+    return (
+      this.proxy ??
+      this.buildProxy(logger, clusterSupplier, discovery, httpAuth)
+    );
   }
 
   protected getAuthStrategyMap() {

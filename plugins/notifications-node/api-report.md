@@ -8,6 +8,7 @@ import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
@@ -20,17 +21,36 @@ export class DefaultNotificationService implements NotificationService {
   send(notification: NotificationSendOptions): Promise<void>;
 }
 
-// @public (undocumented)
+// @public
 export interface NotificationProcessor {
-  decorate?(notification: Notification_2): Promise<Notification_2>;
-  send?(notification: Notification_2): Promise<void>;
+  getName(): string;
+  getNotificationFilters?(): NotificationProcessorFilters;
+  postProcess?(
+    notification: Notification_2,
+    options: NotificationSendOptions,
+  ): Promise<void>;
+  preProcess?(
+    notification: Notification_2,
+    options: NotificationSendOptions,
+  ): Promise<Notification_2>;
+  processOptions?(
+    options: NotificationSendOptions,
+  ): Promise<NotificationSendOptions>;
 }
+
+// @public (undocumented)
+export type NotificationProcessorFilters = {
+  minSeverity?: NotificationSeverity;
+  maxSeverity?: NotificationSeverity;
+  excludedTopics?: string[];
+};
 
 // @public (undocumented)
 export type NotificationRecipients =
   | {
       type: 'entity';
       entityRef: string | string[];
+      excludeEntityRef?: string | string[];
     }
   | {
       type: 'broadcast';

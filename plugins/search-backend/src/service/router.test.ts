@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  getVoidLogger,
-} from '@backstage/backend-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -55,7 +52,7 @@ describe('createRouter', () => {
   };
 
   beforeAll(async () => {
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     mockSearchEngine = {
       getIndexer: jest.fn(),
       setTranslator: jest.fn(),
@@ -99,7 +96,6 @@ describe('createRouter', () => {
       mockSearchEngine.query.mockRejectedValueOnce(error);
 
       const response = await request(app).get('/query');
-      console.log((response as any).text);
 
       expect(response.status).toEqual(500);
       expect(response.body).toMatchObject(
@@ -127,6 +123,8 @@ describe('createRouter', () => {
       'types[0]=first-type&types[1]=second-type',
       'filters[prop]=value',
       'pageCursor=foo',
+      // https://github.com/backstage/backstage/issues/23973
+      'term=foo+bar',
     ])('accepts valid query string "%s"', async queryString => {
       const response = await request(app).get(`/query?${queryString}`);
 
@@ -258,7 +256,7 @@ describe('createRouter', () => {
 
     describe('search result filtering', () => {
       beforeAll(async () => {
-        const logger = getVoidLogger();
+        const logger = mockServices.logger.mock();
         mockSearchEngine = {
           getIndexer: jest.fn(),
           setTranslator: jest.fn(),

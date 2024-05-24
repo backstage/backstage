@@ -1,5 +1,106 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.33-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.10.6-next.0
+  - @backstage/test-utils@1.5.6-next.0
+  - @backstage/plugin-search-react@1.7.12-next.0
+  - @backstage/plugin-techdocs-react@1.2.5-next.0
+  - @backstage/core-app-api@1.12.5
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/integration-react@1.1.27
+  - @backstage/plugin-catalog@1.20.1-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+
+## 1.0.32
+
+### Patch Changes
+
+- 2f13862: Fix bug in TechDocsAddonTester when jest.resetAllMocks is called between tests
+- Updated dependencies
+  - @backstage/plugin-catalog@1.20.0
+  - @backstage/plugin-techdocs@1.10.5
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/core-app-api@1.12.5
+  - @backstage/integration-react@1.1.27
+  - @backstage/test-utils@1.5.5
+  - @backstage/plugin-search-react@1.7.11
+  - @backstage/plugin-techdocs-react@1.2.4
+
+## 1.0.32-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.10.5-next.2
+  - @backstage/plugin-catalog-react@1.12.0-next.2
+  - @backstage/plugin-catalog@1.20.0-next.2
+  - @backstage/plugin-search-react@1.7.11-next.1
+  - @backstage/integration-react@1.1.27-next.0
+
+## 1.0.32-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.19.1-next.1
+  - @backstage/plugin-catalog-react@1.11.4-next.1
+  - @backstage/integration-react@1.1.26
+  - @backstage/plugin-search-react@1.7.11-next.1
+  - @backstage/plugin-techdocs@1.10.5-next.1
+  - @backstage/plugin-techdocs-react@1.2.4-next.1
+
+## 1.0.32-next.0
+
+### Patch Changes
+
+- 2f13862: Fix bug in TechDocsAddonTester when jest.resetAllMocks is called between tests
+- Updated dependencies
+  - @backstage/plugin-catalog@1.19.1-next.0
+  - @backstage/plugin-techdocs@1.10.5-next.0
+  - @backstage/plugin-catalog-react@1.11.4-next.0
+  - @backstage/plugin-techdocs-react@1.2.4-next.0
+  - @backstage/core-app-api@1.12.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/integration-react@1.1.26
+  - @backstage/test-utils@1.5.5-next.0
+  - @backstage/plugin-search-react@1.7.11-next.0
+
+## 1.0.31
+
+### Patch Changes
+
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.19.0
+  - @backstage/plugin-techdocs-react@1.2.3
+  - @backstage/plugin-search-react@1.7.10
+  - @backstage/plugin-catalog-react@1.11.3
+  - @backstage/core-app-api@1.12.4
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/test-utils@1.5.4
+  - @backstage/plugin-techdocs@1.10.4
+  - @backstage/integration-react@1.1.26
+
+## 1.0.31-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.19.0-next.1
+  - @backstage/core-app-api@1.12.4-next.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/integration-react@1.1.26-next.0
+  - @backstage/test-utils@1.5.4-next.0
+  - @backstage/plugin-catalog-react@1.11.3-next.1
+  - @backstage/plugin-search-react@1.7.10-next.1
+  - @backstage/plugin-techdocs@1.10.4-next.1
+  - @backstage/plugin-techdocs-react@1.2.3-next.0
+
 ## 1.0.31-next.0
 
 ### Patch Changes

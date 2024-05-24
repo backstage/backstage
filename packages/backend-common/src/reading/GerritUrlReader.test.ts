@@ -16,6 +16,7 @@
 
 import {
   createMockDirectory,
+  mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
@@ -29,7 +30,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import fs from 'fs-extra';
 import path from 'path';
-import { getVoidLogger } from '../logging';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
 import {
@@ -47,7 +47,7 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
 });
 
 const cloneMock = jest.fn(() => Promise.resolve());
-jest.mock('../scm', () => ({
+jest.mock('./git', () => ({
   Git: {
     fromAuth: () => ({
       clone: cloneMock,
@@ -86,7 +86,7 @@ const gerritProcessorWithGitiles = new GerritUrlReader(
 const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
   return GerritUrlReader.factory({
     config: new ConfigReader(config),
-    logger: getVoidLogger(),
+    logger: mockServices.logger.mock(),
     treeResponseFactory,
   });
 };

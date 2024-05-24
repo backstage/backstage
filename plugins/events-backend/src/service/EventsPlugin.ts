@@ -94,6 +94,10 @@ export const eventsPlugin = createBackendPlugin({
         const eventsRouter = Router();
         http.bind(eventsRouter);
         router.use(eventsRouter);
+        router.addAuthPolicy({
+          allow: 'unauthenticated',
+          path: '/http',
+        });
       },
     });
   },

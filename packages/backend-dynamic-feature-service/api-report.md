@@ -240,7 +240,9 @@ export interface NewBackendPluginInstaller {
 export type ScannedPluginManifest = BackstagePackageJson &
   Required<Pick<BackstagePackageJson, 'main'>> &
   Required<Pick<BackstagePackageJson, 'backstage'>> & {
-    backstage: Required<BackstagePackageJson['backstage']>;
+    backstage: {
+      role: PackageRole;
+    };
   };
 
 // @public (undocumented)

@@ -24,7 +24,7 @@ describe('useCookieAuthRefresh', () => {
   const discoveryApiMock = {
     getBaseUrl: jest
       .fn()
-      .mockResolvedValue('http://localhost:7000/techdocs/api'),
+      .mockResolvedValue('http://localhost:7000/api/techdocs'),
   };
 
   const now = 1710316886171;
@@ -217,6 +217,39 @@ describe('useCookieAuthRefresh', () => {
     );
   });
 
+  it('should handle 404 as disabled cookie auth', async () => {
+    const { result } = renderHook(
+      () => useCookieAuthRefresh({ pluginId: 'techdocs' }),
+      {
+        wrapper: ({ children }) => (
+          <TestApiProvider
+            apis={[
+              [
+                fetchApiRef,
+                {
+                  fetch: jest.fn().mockResolvedValue({
+                    ok: false,
+                    status: 404,
+                  }),
+                },
+              ],
+              [discoveryApiRef, discoveryApiMock],
+            ]}
+          >
+            {children}
+          </TestApiProvider>
+        ),
+      },
+    );
+
+    await waitFor(() =>
+      expect(result.current).toEqual({
+        status: 'success',
+        data: { expiresAt: expect.any(Date) },
+      }),
+    );
+  });
+
   it('should call the api to get the cookie and use it', async () => {
     const { result } = renderHook(
       () => useCookieAuthRefresh({ pluginId: 'techdocs' }),
@@ -236,7 +269,7 @@ describe('useCookieAuthRefresh', () => {
 
     await waitFor(() =>
       expect(fetchApiMock.fetch).toHaveBeenCalledWith(
-        'http://localhost:7000/techdocs/api/cookie',
+        'http://localhost:7000/api/techdocs/.backstage/auth/v1/cookie',
         { credentials: 'include' },
       ),
     );

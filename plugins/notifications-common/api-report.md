@@ -12,7 +12,7 @@ export type NewNotificationSignal = {
 // @public (undocumented)
 type Notification_2 = {
   id: string;
-  user: string;
+  user: string | null;
   created: Date;
   saved?: Date;
   read?: Date;
@@ -38,6 +38,9 @@ export type NotificationReadSignal = {
   action: 'notification_read' | 'notification_unread';
   notification_ids: string[];
 };
+
+// @public
+export const notificationSeverities: NotificationSeverity[];
 
 // @public (undocumented)
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';

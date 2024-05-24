@@ -16,7 +16,8 @@
 import React, { PropsWithChildren, ReactElement } from 'react';
 
 import { MarkdownContent } from '@backstage/core-components';
-import { FormControl, makeStyles } from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
+import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles(theme => ({
   markdownDescription: {
@@ -75,6 +76,7 @@ export const ScaffolderField = (
       {displayLabel && rawDescription ? (
         <MarkdownContent
           content={rawDescription}
+          linkTarget="_blank"
           className={classes.markdownDescription}
         />
       ) : null}

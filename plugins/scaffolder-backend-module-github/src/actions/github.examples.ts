@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Initializes a git repository of contents in workspace and publish it to GitHub with default configuration.',
+      'Initializes a git repository with the content in the workspace, and publishes it to GitHub with the default configuration.',
     example: yaml.stringify({
       steps: [
         {
@@ -35,7 +35,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Add a description.',
+    description: 'Initializes a GitHub repository with a description.',
     example: yaml.stringify({
       steps: [
         {
@@ -51,7 +51,8 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Change visibility of the repository.',
+    description:
+      'Initializes a GitHub repository with public repo visibility, if not set defaults to private',
     example: yaml.stringify({
       steps: [
         {
@@ -60,7 +61,6 @@ export const examples: TemplateExample[] = [
           name: 'Publish to GitHub',
           input: {
             repoUrl: 'github.com?repo=repo&owner=owner',
-            description: 'Initialize a git repository',
             repoVisibility: 'public',
           },
         },

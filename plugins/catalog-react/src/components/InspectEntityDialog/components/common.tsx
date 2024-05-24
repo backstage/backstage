@@ -15,17 +15,15 @@
  */
 
 import { Link } from '@backstage/core-components';
-import {
-  Box,
-  Card,
-  CardContent,
-  ListItem,
-  ListItemIcon,
-  ListItemText as MuiListItemText,
-  ListSubheader as MuiListSubheader,
-  makeStyles,
-  Typography,
-} from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import MuiListItemText from '@material-ui/core/ListItemText';
+import MuiListSubheader from '@material-ui/core/ListSubheader';
+import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/core/styles';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
 import React from 'react';
 

@@ -1,5 +1,78 @@
 # @backstage/plugin-notifications-node
 
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-signals-node@0.1.5-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-notifications-common@0.0.3
+
+## 0.1.4
+
+### Patch Changes
+
+- 295c05d: Support for filtering entities from notification recipients after resolving them from the recipients
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-signals-node@0.1.4
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- 295c05d: Support for filtering entities from notification recipients after resolving them from the recipients
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-signals-node@0.1.4-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-notifications-common@0.0.3
+  - @backstage/plugin-signals-node@0.1.4-next.0
+
+## 0.1.3
+
+### Patch Changes
+
+- 0d99528: Notification processor functions are now renamed to `preProcess` and `postProcess`.
+  Additionally, processor name is now required to be returned by `getName`.
+  A new processor functionality `processOptions` was added to process options before sending the notification.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-notifications-common@0.0.3
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/catalog-client@1.6.4
+  - @backstage/plugin-signals-node@0.1.3
+  - @backstage/catalog-model@1.4.5
+
+## 0.1.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/plugin-signals-node@0.1.3-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/plugin-notifications-common@0.0.2
+
 ## 0.1.3-next.0
 
 ### Patch Changes

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -37,6 +36,7 @@ import { DefaultCatalogProcessingOrchestrator } from './DefaultCatalogProcessing
 import { defaultEntityDataParser } from '../modules/util/parse';
 import { ConfigReader } from '@backstage/config';
 import { InputError } from '@backstage/errors';
+import { mockServices } from '@backstage/backend-test-utils';
 
 class FooBarProcessor implements CatalogProcessor {
   getProcessorName = () => 'foo-bar';
@@ -93,7 +93,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
     const orchestrator = new DefaultCatalogProcessingOrchestrator({
       processors: [new FooBarProcessor()],
       integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       parser: defaultEntityDataParser,
       policy: EntityPolicies.allOf([]),
       rulesEnforcer: { isAllowed: () => true },
@@ -209,7 +209,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
           processor2 as CatalogProcessor,
         ],
         integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         parser: defaultEntityDataParser,
         policy: EntityPolicies.allOf([]),
         rulesEnforcer: { isAllowed: () => true },
@@ -222,7 +222,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
           processor2 as CatalogProcessor,
         ],
         integrations: ScmIntegrations.fromConfig(new ConfigReader({})),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         parser: defaultEntityDataParser,
         policy: EntityPolicies.allOf([]),
         rulesEnforcer: { isAllowed: () => true },
@@ -287,7 +287,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       const orchestrator = new DefaultCatalogProcessingOrchestrator({
         processors: [processor],
         integrations,
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         parser,
         policy: EntityPolicies.allOf([]),
         rulesEnforcer,
@@ -329,7 +329,7 @@ describe('DefaultCatalogProcessingOrchestrator', () => {
       const orchestrator = new DefaultCatalogProcessingOrchestrator({
         processors: [processor],
         integrations,
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         parser,
         policy: EntityPolicies.allOf([new FailingEntityPolicy()]),
         rulesEnforcer,

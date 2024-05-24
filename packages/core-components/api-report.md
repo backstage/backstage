@@ -47,7 +47,6 @@ import { StyledComponentProps } from '@material-ui/core/styles/withStyles';
 import { StyleRules } from '@material-ui/styles';
 import { StyleRules as StyleRules_2 } from '@material-ui/core/styles/withStyles';
 import { TabProps } from '@material-ui/core/Tab';
-import { TextTruncateProps } from 'react-text-truncate';
 import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
@@ -448,6 +447,7 @@ export type GaugeProps = {
   inverse?: boolean;
   unit?: string;
   max?: number;
+  size?: 'normal' | 'small';
   description?: ReactNode;
   getColor?: GaugePropsGetColor;
 };
@@ -1128,6 +1128,7 @@ export type SidebarSubmenuItemProps = {
   icon?: IconComponent;
   dropdownItems?: SidebarSubmenuItemDropdownItem[];
   exact?: boolean;
+  initialShowDropdown?: boolean;
 };
 
 // @public

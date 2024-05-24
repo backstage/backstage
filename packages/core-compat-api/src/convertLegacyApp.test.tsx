@@ -15,8 +15,8 @@
  */
 
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
-import { PuppetDbPage } from '@backstage/plugin-puppetdb';
-import { StackstormPage } from '@backstage/plugin-stackstorm';
+import { PuppetDbPage } from '@backstage-community/plugin-puppetdb';
+import { StackstormPage } from '@backstage-community/plugin-stackstorm';
 import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
 import React, { ReactNode } from 'react';
 import { Route } from 'react-router-dom';

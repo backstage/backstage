@@ -20,31 +20,36 @@ import {
   NotFoundError,
   serializeError,
 } from '@backstage/errors';
-import { getBearerTokenFromAuthorizationHeader } from '@backstage/plugin-auth-node';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
-  KubernetesRequestAuth,
   kubernetesProxyPermission,
+  KubernetesRequestAuth,
 } from '@backstage/plugin-kubernetes-common';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
-  AuthorizeResult,
-  PermissionEvaluator,
-} from '@backstage/plugin-permission-common';
-import {
-  Cluster,
-  KubeConfig,
   bufferFromFileOrString,
+  Cluster,
+  Config,
+  KubeConfig,
 } from '@kubernetes/client-node';
 import { createProxyMiddleware, RequestHandler } from 'http-proxy-middleware';
-import { Logger } from 'winston';
 import fs from 'fs-extra';
-import { Config } from '@kubernetes/client-node';
 
 import { AuthenticationStrategy } from '../auth';
 import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
 
 import type { Request } from 'express';
 import { IncomingHttpHeaders } from 'http';
+import {
+  DiscoveryService,
+  HttpAuthService,
+  LoggerService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
+import {
+  createLegacyAuthAdapters,
+  loggerToWinstonLogger,
+} from '@backstage/backend-common';
 
 export const APPLICATION_JSON: string = 'application/json';
 
@@ -69,7 +74,7 @@ export const HEADER_KUBERNETES_AUTH: string =
  * @public
  */
 export type KubernetesProxyCreateRequestHandlerOptions = {
-  permissionApi: PermissionEvaluator;
+  permissionApi: PermissionsService;
 };
 
 /**
@@ -78,9 +83,11 @@ export type KubernetesProxyCreateRequestHandlerOptions = {
  * @public
  */
 export type KubernetesProxyOptions = {
-  logger: Logger;
+  logger: LoggerService;
   clusterSupplier: KubernetesClustersSupplier;
   authStrategy: AuthenticationStrategy;
+  discovery: DiscoveryService;
+  httpAuth?: HttpAuthService;
 };
 
 /**
@@ -90,14 +97,22 @@ export type KubernetesProxyOptions = {
  */
 export class KubernetesProxy {
   private readonly middlewareForClusterName = new Map<string, RequestHandler>();
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly clusterSupplier: KubernetesClustersSupplier;
   private readonly authStrategy: AuthenticationStrategy;
+  private readonly httpAuth: HttpAuthService;
 
   constructor(options: KubernetesProxyOptions) {
     this.logger = options.logger;
     this.clusterSupplier = options.clusterSupplier;
     this.authStrategy = options.authStrategy;
+
+    const legacy = createLegacyAuthAdapters({
+      discovery: options.discovery,
+      httpAuth: options.httpAuth,
+    });
+
+    this.httpAuth = legacy.httpAuth;
   }
 
   public createRequestHandler(
@@ -108,9 +123,7 @@ export class KubernetesProxy {
       const authorizeResponse = await permissionApi.authorize(
         [{ permission: kubernetesProxyPermission }],
         {
-          token: getBearerTokenFromAuthorizationHeader(
-            req.header('authorization'),
-          ),
+          credentials: await this.httpAuth.credentials(req),
         },
       );
       const auth = authorizeResponse[0];
@@ -144,7 +157,8 @@ export class KubernetesProxy {
     if (!middleware) {
       const logger = this.logger.child({ cluster: originalCluster.name });
       middleware = createProxyMiddleware({
-        logProvider: () => logger,
+        // TODO: Add 'log' to LoggerService
+        logProvider: () => loggerToWinstonLogger(logger),
         ws: true,
         secure: !originalCluster.skipTLSVerify,
         changeOrigin: true,
@@ -172,8 +186,9 @@ export class KubernetesProxy {
             )?.toString(),
           };
 
-          const authHeader = req.header(HEADER_KUBERNETES_AUTH);
-          if (authHeader) {
+          const authHeader =
+            req.headers[HEADER_KUBERNETES_AUTH.toLocaleLowerCase('en-US')];
+          if (typeof authHeader === 'string') {
             req.headers.authorization = authHeader;
           } else {
             // Map Backstage-Kubernetes-Authorization-X-X headers to a KubernetesRequestAuth object
@@ -201,7 +216,7 @@ export class KubernetesProxy {
             error,
           );
 
-          logger.error(wrappedError);
+          logger.error('Kubernetes proxy error', wrappedError);
 
           const body: ErrorResponseBody = {
             error: serializeError(wrappedError, {
@@ -220,7 +235,9 @@ export class KubernetesProxy {
 
   private async getClusterForRequest(req: Request): Promise<ClusterDetails> {
     const clusterName = req.headers[HEADER_KUBERNETES_CLUSTER.toLowerCase()];
-    const clusters = await this.clusterSupplier.getClusters();
+    const clusters = await this.clusterSupplier.getClusters({
+      credentials: await this.httpAuth.credentials(req),
+    });
 
     if (!clusters || clusters.length <= 0) {
       throw new NotFoundError(`No Clusters configured`);

@@ -1,5 +1,115 @@
 # @backstage/cli
 
+## 0.26.6-next.0
+
+### Patch Changes
+
+- 009da47: Fix `versions:check --fix` when `yarn.lock` has multiple joint versions in the same section
+- 9ee948a: Bump `esbuild` target for package builds to `ES2022`.
+- Updated dependencies
+  - @backstage/cli-node@0.2.6-next.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/integration@1.11.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.5
+
+### Patch Changes
+
+- b8f1fc2: The `build-workspace` command no longer manually runs `yarn postpack`, relying instead on the fact that running `yarn pack` will automatically invoke the `postpack` script. No action is necessary if you are running the latest version of yarn 1, 3, or 4.
+- fcd3462: Both the target and types library have been bumped from ES2021 to ES2022 in `@backstage/cli/config/tsconfig.json`.
+- 0cc5ed3: Add support for `versions:migrate` to do code changes. Can be skipped with `--no-code-changes`
+- f97ad04: Add preserveModules to rollup, which allows better async loading and tree-shaking in webpack
+- 2a6f10d: The `versions:bump` command will no longer exit with a non-zero status if the version bump fails due to forbidden duplicate package installations. It will now also provide more information about how to troubleshoot such an error. The set of forbidden duplicates has also been expanded to include all `@backstage/*-app-api` packages.
+- c5d7b40: Allow passing a `--require` argument through to the Node process during `package start`
+- cc3c518: Fixed an issue causing the `repo fix` command to set an incorrect `workspace` property using Windows
+- 812dff0: Add previously-missing semicolon in file templated by `backstage-cli new --select plugin`.
+- f185603: Fixed the dynamic import of vite.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/integration@1.11.0
+
+## 0.26.5-next.1
+
+### Patch Changes
+
+- 2a6f10d: The `versions:bump` command will no longer exit with a non-zero status if the version bump fails due to forbidden duplicate package installations. It will now also provide more information about how to troubleshoot such an error. The set of forbidden duplicates has also been expanded to include all `@backstage/*-app-api` packages.
+- c5d7b40: Allow passing a `--require` argument through to the Node process during `package start`
+- cc3c518: Fixed an issue causing the `repo fix` command to set an incorrect `workspace` property using Windows
+- 812dff0: Add previously-missing semicolon in file templated by `backstage-cli new --select plugin`.
+- Updated dependencies
+  - @backstage/integration@1.11.0-next.0
+
+## 0.26.5-next.0
+
+### Patch Changes
+
+- fcd3462: Both the target and types library have been bumped from ES2021 to ES2022 in `@backstage/cli/config/tsconfig.json`.
+- 0cc5ed3: Add support for `versions:migrate` to do code changes. Can be skipped with `--no-code-changes`
+- f97ad04: Add preserveModules to rollup, which allows better async loading and tree-shaking in webpack
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.5
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.7
+  - @backstage/integration@1.10.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.3
+
+### Patch Changes
+
+- c884b9a: Fix the bundle public subpath configuration.
+- e3c213e: Add the deprecation plugin to the default linter setup, switched off.
+
+  This allows to disable deprecation warnings for `backstage-cli repo list-deprecations` with inline comments.
+
+- 4946f03: Updated dependency `webpack-dev-server` to `^5.0.0`.
+- 6b5ddbe: Fix the backend plugin to use correct plugin id
+- 4fecffc: When building the frontend app public assets are now also copied to the public dist directory when in use.
+- ed9260f: Added `versions:migrate` command to help move packages to the new `@backstage-community` namespace
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.7
+  - @backstage/config-loader@1.8.0
+  - @backstage/integration@1.10.0
+  - @backstage/cli-node@0.2.5
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.3-next.1
+
+### Patch Changes
+
+- c884b9a: Fix the bundle public subpath configuration.
+- 6b5ddbe: Fix the backend plugin to use correct plugin id
+- 4fecffc: When building the frontend app public assets are now also copied to the public dist directory when in use.
+- Updated dependencies
+  - @backstage/eslint-plugin@0.1.7-next.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/cli-common@0.1.13
+  - @backstage/cli-node@0.2.4
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.0-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.26.3-next.0
 
 ### Patch Changes
@@ -1554,9 +1664,7 @@
 - 1fe6823bb5: Updated dependency `eslint-plugin-jest` to `^27.0.0`.
 
   Note that this major update to the Jest plugin contains some breaking changes.
-  This means that some of your tests may start seeing some new lint errors. [Read
-  about them
-  here](https://github.com/jest-community/eslint-plugin-jest/blob/main/CHANGELOG.md#2700-2022-08-28).
+  This means that some of your tests may start seeing some new lint errors. [Read about them here](https://github.com/jest-community/eslint-plugin-jest/blob/main/CHANGELOG.md#2700-2022-08-28).
 
   These are mostly possible to fix automatically. You can try to run `yarn backstage-cli repo lint --fix` in your repo root to have most or all of them
   corrected.
@@ -1690,9 +1798,7 @@
 - 1fe6823bb5: Updated dependency `eslint-plugin-jest` to `^27.0.0`.
 
   Note that this major update to the Jest plugin contains some breaking changes.
-  This means that some of your tests may start seeing some new lint errors. [Read
-  about them
-  here](https://github.com/jest-community/eslint-plugin-jest/blob/main/CHANGELOG.md#2700-2022-08-28).
+  This means that some of your tests may start seeing some new lint errors. [Read about them here](https://github.com/jest-community/eslint-plugin-jest/blob/main/CHANGELOG.md#2700-2022-08-28).
 
   These are mostly possible to fix automatically. You can try to run `yarn backstage-cli repo lint --fix` in your repo root to have most or all of them
   corrected.

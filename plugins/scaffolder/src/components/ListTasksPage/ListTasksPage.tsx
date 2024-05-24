@@ -77,7 +77,7 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
         <EmptyState
           missing="info"
           title="No information to display"
-          description="There is no Tasks or there was an issue communicating with backend."
+          description="There are no tasks or there was an issue communicating with backend."
         />
       </>
     );
@@ -105,6 +105,7 @@ const ListTaskPageContent = (props: MyTaskPageProps) => {
             },
             {
               title: 'Template',
+              field: 'spec.templateInfo.entity.metadata.title',
               render: row => (
                 <TemplateTitleColumn
                   entityRef={row.spec.templateInfo?.entityRef}

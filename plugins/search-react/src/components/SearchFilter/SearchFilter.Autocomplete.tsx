@@ -15,12 +15,12 @@
  */
 
 import React, { ChangeEvent, useState } from 'react';
-import { Chip, TextField } from '@material-ui/core';
-import {
-  Autocomplete,
+import Chip from '@material-ui/core/Chip';
+import TextField from '@material-ui/core/TextField';
+import Autocomplete, {
   AutocompleteGetTagProps,
   AutocompleteRenderInputParams,
-} from '@material-ui/lab';
+} from '@material-ui/lab/Autocomplete';
 
 import { useSearch } from '../../context';
 import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';

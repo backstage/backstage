@@ -17,7 +17,9 @@
 import React from 'react';
 import { V1Ingress } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
-import { Typography, Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
+import Chip from '@material-ui/core/Chip';
 
 export const IngressDrawer = ({
   ingress,
@@ -26,6 +28,7 @@ export const IngressDrawer = ({
   ingress: V1Ingress;
   expanded?: boolean;
 }) => {
+  const namespace = ingress.metadata?.namespace;
   return (
     <KubernetesStructuredMetadataTableDrawer
       object={ingress}
@@ -52,6 +55,11 @@ export const IngressDrawer = ({
             Ingress
           </Typography>
         </Grid>
+        {namespace && (
+          <Grid item>
+            <Chip size="small" label={`namespace: ${namespace}`} />
+          </Grid>
+        )}
       </Grid>
     </KubernetesStructuredMetadataTableDrawer>
   );

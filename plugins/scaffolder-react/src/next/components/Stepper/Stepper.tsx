@@ -15,14 +15,12 @@
  */
 import { useAnalytics, useApiHolder } from '@backstage/core-plugin-api';
 import { JsonValue } from '@backstage/types';
-import {
-  Stepper as MuiStepper,
-  Step as MuiStep,
-  StepLabel as MuiStepLabel,
-  Button,
-  makeStyles,
-  LinearProgress,
-} from '@material-ui/core';
+import MuiStepper from '@material-ui/core/Stepper';
+import MuiStep from '@material-ui/core/Step';
+import MuiStepLabel from '@material-ui/core/StepLabel';
+import Button from '@material-ui/core/Button';
+import LinearProgress from '@material-ui/core/LinearProgress';
+import { makeStyles } from '@material-ui/core/styles';
 import { type IChangeEvent } from '@rjsf/core';
 import { ErrorSchema } from '@rjsf/utils';
 import React, {
@@ -37,9 +35,8 @@ import {
   type FormValidation,
 } from './createAsyncValidators';
 import { ReviewState, type ReviewStateProps } from '../ReviewState';
-import { useTemplateSchema } from '../../hooks/useTemplateSchema';
+import { useTemplateSchema, useFormDataFromQuery } from '../../hooks';
 import validator from '@rjsf/validator-ajv8';
-import { useFormDataFromQuery } from '../../hooks';
 import { useTransformSchemaToProps } from '../../hooks/useTransformSchemaToProps';
 import { hasErrors } from './utils';
 import * as FieldOverrides from './FieldOverrides';
@@ -117,6 +114,13 @@ export const Stepper = (stepperProps: StepperProps) => {
   const [errors, setErrors] = useState<undefined | FormValidation>();
   const styles = useStyles();
 
+  const backLabel =
+    presentation?.buttonLabels?.backButtonText ?? backButtonText;
+  const createLabel =
+    presentation?.buttonLabels?.createButtonText ?? createButtonText;
+  const reviewLabel =
+    presentation?.buttonLabels?.reviewButtonText ?? reviewButtonText;
+
   const extensions = useMemo(() => {
     return Object.fromEntries(
       props.extensions.map(({ name, component }) => [name, component]),
@@ -152,7 +156,8 @@ export const Stepper = (stepperProps: StepperProps) => {
 
   const handleCreate = useCallback(() => {
     props.onCreate(formState);
-  }, [props, formState]);
+    analytics.captureEvent('click', `${createLabel}`);
+  }, [props, formState, analytics, createLabel]);
 
   const currentStep = useTransformSchemaToProps(steps[activeStep], { layouts });
 
@@ -183,13 +188,6 @@ export const Stepper = (stepperProps: StepperProps) => {
     setFormState(current => ({ ...current, ...formData }));
   };
 
-  const backLabel =
-    presentation?.buttonLabels?.backButtonText ?? backButtonText;
-  const createLabel =
-    presentation?.buttonLabels?.createButtonText ?? createButtonText;
-  const reviewLabel =
-    presentation?.buttonLabels?.reviewButtonText ?? reviewButtonText;
-
   return (
     <>
       {isValidating && <LinearProgress variant="indeterminate" />}
@@ -216,7 +214,7 @@ export const Stepper = (stepperProps: StepperProps) => {
           );
         })}
         <MuiStep>
-          <MuiStepLabel>Review</MuiStepLabel>
+          <MuiStepLabel>{reviewLabel}</MuiStepLabel>
         </MuiStep>
       </MuiStepper>
       <div className={styles.formWrapper}>
@@ -276,7 +274,7 @@ export const Stepper = (stepperProps: StepperProps) => {
                 className={styles.backButton}
                 disabled={activeStep < 1}
               >
-                Back
+                {backLabel}
               </Button>
               <Button
                 variant="contained"

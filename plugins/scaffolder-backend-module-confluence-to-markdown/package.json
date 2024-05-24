@@ -1,15 +1,12 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-confluence-to-markdown",
+  "version": "0.2.20-next.0",
   "description": "The confluence-to-markdown module for @backstage/plugin-scaffolder-backend",
-  "version": "0.2.18-next.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "license": "Apache-2.0",
-  "publishConfig": {
-    "access": "public"
-  },
   "backstage": {
     "role": "backend-plugin-module"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -17,10 +14,13 @@
     "url": "https://github.com/backstage/backstage",
     "directory": "plugins/scaffolder-backend-module-confluence-to-markdown"
   },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "package.json": [
@@ -28,15 +28,19 @@
       ]
     }
   },
+  "files": [
+    "dist",
+    "config.d.ts"
+  ],
   "scripts": {
-    "start": "backstage-cli package start",
     "build": "backstage-cli package build",
-    "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "clean": "backstage-cli package clean",
+    "help": "backstage-cli help",
+    "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "help": "backstage-cli help"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -57,9 +61,5 @@
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "msw": "^1.0.0"
   },
-  "files": [
-    "dist",
-    "config.d.ts"
-  ],
   "configSchema": "config.d.ts"
 }

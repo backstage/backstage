@@ -20,7 +20,7 @@ export function isDockerDisabledForTests() {
   // the (relatively heavy, long running) docker based tests. If you want to
   // still run local tests for all databases, just pass either the CI=1 env
   // parameter to your test runner, or individual connection strings per
-  // database.
+  // database or cache.
   return (
     Boolean(process.env.BACKSTAGE_TEST_DISABLE_DOCKER) ||
     !Boolean(process.env.CI)

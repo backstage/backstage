@@ -1,5 +1,76 @@
 # @backstage/backend-defaults
 
+## 0.2.19-next.0
+
+### Patch Changes
+
+- 6551b3d: Added core service factories and implementations from
+  `@backstage/backend-app-api`. They are now available as subpath exports, e.g.
+  `@backstage/backend-defaults/scheduler` is where the service factory and default
+  implementation of `coreServices.scheduler` now lives. They have been marked as
+  deprecated in their old locations.
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-permission-node@0.7.30-next.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.2.18
+
+### Patch Changes
+
+- 7e5a50d: added `eventsServiceFactory` to `defaultServiceFactories` to resolve issue where different instances of the EventsServices could be used
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.3
+  - @backstage/backend-common@0.22.0
+  - @backstage/plugin-events-node@0.3.4
+
+## 0.2.18-next.2
+
+### Patch Changes
+
+- 7e5a50d: added `eventsServiceFactory` to `defaultServiceFactories` to resolve issue where different instances of the EventsServices could be used
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+
+## 0.2.18-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.2-next.1
+  - @backstage/backend-common@0.22.0-next.1
+
+## 0.2.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.1-next.0
+  - @backstage/backend-common@0.21.8-next.0
+
+## 0.2.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-app-api@0.7.0
+
+## 0.2.17-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-app-api@0.7.0-next.1
+
 ## 0.2.17-next.0
 
 ### Patch Changes

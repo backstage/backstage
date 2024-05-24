@@ -120,6 +120,7 @@ export function registerScriptCommand(program: Command) {
       '--inspect-brk [host]',
       'Enable debugger in Node.js environments, breaking before code starts',
     )
+    .option('--require <path>', 'Add a --require argument to the node process')
     .action(lazy(() => import('./start').then(m => m.command)));
 
   command
@@ -386,6 +387,7 @@ export function registerCommands(program: Command) {
       'main',
     )
     .option('--skip-install', 'Skips yarn install step')
+    .option('--skip-migrate', 'Skips migration of any moved packages')
     .description('Bump Backstage packages to the latest versions')
     .action(lazy(() => import('./versions/bump').then(m => m.default)));
 
@@ -394,6 +396,21 @@ export function registerCommands(program: Command) {
     .option('--fix', 'Fix any auto-fixable versioning problems')
     .description('Check Backstage package versioning')
     .action(lazy(() => import('./versions/lint').then(m => m.default)));
+
+  program
+    .command('versions:migrate')
+    .option(
+      '--pattern <glob>',
+      'Override glob for matching packages to upgrade',
+    )
+    .option(
+      '--skip-code-changes',
+      'Skip code changes and only update package.json files',
+    )
+    .description(
+      'Migrate any plugins that have been moved to the @backstage-community namespace automatically',
+    )
+    .action(lazy(() => import('./versions/migrate').then(m => m.default)));
 
   // TODO(Rugvip): Deprecate in favor of package variant
   program

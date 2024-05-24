@@ -1,5 +1,38 @@
 # @backstage/catalog-client
 
+## 1.6.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+
+## 1.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/errors@1.2.4
+
+## 1.6.4
+
+### Patch Changes
+
+- dad7505: Fix the `CatalogClient::getEntities` method to only sort the resulting entities in case no `order`-parameter is provided.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+
+## 1.6.4-next.0
+
+### Patch Changes
+
+- dad7505: Fix the `CatalogClient::getEntities` method to only sort the resulting entities in case no `order`-parameter is provided.
+- Updated dependencies
+  - @backstage/catalog-model@1.4.5
+  - @backstage/errors@1.2.4
+
 ## 1.6.3
 
 ### Patch Changes

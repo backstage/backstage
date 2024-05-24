@@ -22,13 +22,11 @@ import {
 } from '@backstage/catalog-model';
 import { Progress, ResponseErrorPanel } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
-import {
-  DialogContentText,
-  List,
-  ListItem,
-  makeStyles,
-} from '@material-ui/core';
-import { Alert } from '@material-ui/lab';
+import DialogContentText from '@material-ui/core/DialogContentText';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import { makeStyles } from '@material-ui/core/styles';
+import Alert from '@material-ui/lab/Alert';
 import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { catalogApiRef } from '../../../api';

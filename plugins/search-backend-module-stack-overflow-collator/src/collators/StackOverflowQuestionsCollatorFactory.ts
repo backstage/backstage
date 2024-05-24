@@ -15,14 +15,14 @@
  */
 
 import {
-  IndexableDocument,
   DocumentCollatorFactory,
+  IndexableDocument,
 } from '@backstage/plugin-search-common';
 import { Config } from '@backstage/config';
 import { Readable } from 'stream';
 import fetch from 'node-fetch';
 import qs from 'qs';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Extended IndexableDocument with stack overflow specific properties
@@ -55,7 +55,7 @@ export type StackOverflowQuestionsCollatorFactoryOptions = {
   apiAccessToken?: string;
   teamName?: string;
   requestParams?: StackOverflowQuestionsRequestParams;
-  logger: Logger;
+  logger: LoggerService;
 };
 
 /**
@@ -72,7 +72,7 @@ export class StackOverflowQuestionsCollatorFactory
   private readonly apiAccessToken: string | undefined;
   private readonly teamName: string | undefined;
   private readonly maxPage: number | undefined;
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   public readonly type: string = 'stack-overflow';
 
   private constructor(options: StackOverflowQuestionsCollatorFactoryOptions) {

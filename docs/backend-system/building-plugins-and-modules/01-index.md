@@ -73,8 +73,7 @@ items.
 Backend modules are used to extend [plugins](../architecture/04-plugins.md) or other modules with
 additional features or change existing behavior. They must always be installed
 in the same backend instance as the plugin or module that they extend, and may only extend a single plugin and modules from that plugin at a time.
-Modules interact with their target plugin or module using the [extension
-points](../architecture/05-extension-points.md) registered by the plugin, while also being
+Modules interact with their target plugin or module using the [extension points](../architecture/05-extension-points.md) registered by the plugin, while also being
 able to depend on the [services](../architecture/03-services.md) of the target plugin.
 That last point is worth reiterating: injected `plugin` scoped services will be
 the exact
@@ -157,8 +156,7 @@ the database. They will run on the same logical database instance as the target
 plugin, so care must be taken to choose table names that do not risk colliding
 with those of the plugin. A recommended naming pattern is `<package
 name>__<table name>`, for example the `@backstage/backend-tasks` package creates
-tables named `backstage_backend_tasks__<table>`. If you use the default [`Knex`
-migration facilities](https://knexjs.org/guide/migrations.html), you will also
+tables named `backstage_backend_tasks__<table>`. If you use the default [`Knex` migration facilities](https://knexjs.org/guide/migrations.html), you will also
 want to make sure that it uses similarly prefixed migration state tables for its
 internal bookkeeping needs, so they do not collide with the main ones used by
 the plugin itself. You can do this as follows:
@@ -179,8 +177,7 @@ There are several ways of configuring and customizing plugins and modules.
 Whenever you want to allow modules to configure your plugin dynamically, for
 example in the way that the catalog backend lets catalog modules inject
 additional entity providers, you can use the extension points mechanism. This is
-described in detail with code examples in [the extension points architecture
-article](../architecture/05-extension-points.md), while the following is a more
+described in detail with code examples in [the extension points architecture article](../architecture/05-extension-points.md), while the following is a more
 slim example of how to implement an extension point for a plugin:
 
 ```ts
@@ -249,7 +246,5 @@ export const examplePlugin = createBackendPlugin({
 });
 ```
 
-Before adding custom configuration options, make sure to read [the configuration
-docs](../../conf/index.md), in particular the section on [defining configuration
-for your own plugins](../../conf/defining.md) which explains how to establish a
+Before adding custom configuration options, make sure to read [the configuration docs](../../conf/index.md), in particular the section on [defining configuration for your own plugins](../../conf/defining.md) which explains how to establish a
 configuration schema for your specific plugin.

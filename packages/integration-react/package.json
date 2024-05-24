@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration-react",
-  "version": "1.1.26-next.0",
+  "version": "1.1.27",
   "description": "Frontend package for managing integrations towards external systems",
   "backstage": {
     "role": "web-library"
@@ -45,7 +45,7 @@
     "@backstage/core-components": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^9.0.0",
+    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "msw": "^1.0.0"
   },

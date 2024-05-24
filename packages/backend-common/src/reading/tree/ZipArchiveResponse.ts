@@ -25,7 +25,7 @@ import {
   ReadTreeResponseFile,
 } from '../types';
 import { streamToBuffer } from './util';
-import { resolveSafeChildPath } from '../../paths';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 
 /**
  * Wraps a zip archive stream into a tree response reader.

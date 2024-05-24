@@ -237,6 +237,10 @@ describe('CatalogClient', () => {
 
     it('handles ordering properly', async () => {
       expect.assertions(2);
+      const sortedEntities = [
+        { apiVersion: '1', kind: 'Component', metadata: { name: 'b' } },
+        { apiVersion: '1', kind: 'Component', metadata: { name: 'a' } },
+      ];
 
       server.use(
         rest.get(`${mockBaseUrl}/entities`, (req, res, ctx) => {
@@ -245,7 +249,7 @@ describe('CatalogClient', () => {
             'asc:kind',
             'desc:metadata.name',
           ]);
-          return res(ctx.json([]));
+          return res(ctx.json(sortedEntities));
         }),
       );
 
@@ -259,7 +263,7 @@ describe('CatalogClient', () => {
         { token },
       );
 
-      expect(response.items).toEqual([]);
+      expect(response.items).toEqual(sortedEntities);
     });
   });
 

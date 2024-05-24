@@ -16,6 +16,7 @@ api
 asciidoc
 async
 Atlassian
+autofix
 automations
 autoscaling
 Autoscaling
@@ -151,6 +152,8 @@ graphviz
 Hackathons
 haproxy
 hardcoded
+Harness
+harness
 Helidon
 Henneke
 Heroku
@@ -361,6 +364,8 @@ SIG
 SIGs
 siloed
 Sinon
+snackbars
+snackbar
 Snyk
 Sonarqube
 sourcemaps
@@ -442,6 +447,7 @@ unregistering
 unregistration
 untracked
 upsert
+upstreams
 upvote
 URIs
 url
@@ -461,6 +467,7 @@ Weaveworks
 Webpack
 widget's
 winston
+Wolfi
 www
 WWW
 XCMetrics
@@ -474,3 +481,4 @@ Zolotusky
 zoomable
 zsh
 scrollable
+severities

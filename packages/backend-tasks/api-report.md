@@ -8,13 +8,13 @@ import { Duration } from 'luxon';
 import { HumanDuration as HumanDuration_2 } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import { LegacyRootDatabaseService } from '@backstage/backend-common';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @public @deprecated
 export type HumanDuration = HumanDuration_2;
 
-// @public
+// @public @deprecated
 export interface PluginTaskScheduler {
   createScheduledTaskRunner(schedule: TaskScheduleDefinition): TaskRunner;
   getScheduledTasks(): Promise<TaskDescriptor[]>;
@@ -24,12 +24,12 @@ export interface PluginTaskScheduler {
   triggerTask(id: string): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export function readTaskScheduleDefinitionFromConfig(
   config: Config,
 ): TaskScheduleDefinition;
 
-// @public
+// @public @deprecated
 export type TaskDescriptor = {
   id: string;
   scope: 'global' | 'local';
@@ -38,24 +38,24 @@ export type TaskDescriptor = {
   } & JsonObject;
 };
 
-// @public
+// @public @deprecated
 export type TaskFunction =
   | ((abortSignal: AbortSignal) => void | Promise<void>)
   | (() => void | Promise<void>);
 
-// @public
+// @public @deprecated
 export interface TaskInvocationDefinition {
   fn: TaskFunction;
   id: string;
   signal?: AbortSignal;
 }
 
-// @public
+// @public @deprecated
 export interface TaskRunner {
   run(task: TaskInvocationDefinition): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export interface TaskScheduleDefinition {
   frequency:
     | {
@@ -68,7 +68,7 @@ export interface TaskScheduleDefinition {
   timeout: Duration | HumanDuration_2;
 }
 
-// @public
+// @public @deprecated
 export interface TaskScheduleDefinitionConfig {
   frequency:
     | {
@@ -81,22 +81,25 @@ export interface TaskScheduleDefinitionConfig {
   timeout: string | HumanDuration_2;
 }
 
-// @public
+// @public @deprecated
 export class TaskScheduler {
-  constructor(databaseManager: LegacyRootDatabaseService, logger: Logger);
+  constructor(
+    databaseManager: LegacyRootDatabaseService,
+    logger: LoggerService,
+  );
   forPlugin(pluginId: string): PluginTaskScheduler;
   // (undocumented)
   static forPlugin(opts: {
     pluginId: string;
     databaseManager: PluginDatabaseManager;
-    logger: Logger;
+    logger: LoggerService;
   }): PluginTaskScheduler;
-  // (undocumented)
+  // @deprecated (undocumented)
   static fromConfig(
     config: Config,
     options?: {
       databaseManager?: LegacyRootDatabaseService;
-      logger?: Logger;
+      logger?: LoggerService;
     },
   ): TaskScheduler;
 }

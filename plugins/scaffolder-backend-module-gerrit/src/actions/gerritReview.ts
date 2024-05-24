@@ -24,6 +24,7 @@ import {
   getRepoSourceDirectory,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
+import { examples } from './gerritReview.examples';
 
 const generateGerritChangeId = (): string => {
   const changeId = crypto.randomBytes(20).toString('hex');
@@ -50,6 +51,7 @@ export function createPublishGerritReviewAction(options: {
   }>({
     id: 'publish:gerrit:review',
     description: 'Creates a new Gerrit review.',
+    examples,
     schema: {
       input: {
         type: 'object',

@@ -1,5 +1,99 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-scaffolder-node@0.4.5-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.11.0
+
+## 0.4.0
+
+### Minor Changes
+
+- 18f736f: Add examples for `gitlab:projectVariable:create` scaffolder action & improve related tests
+
+### Patch Changes
+
+- 8fa8a00: Add merge method and squash option for project creation
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- ffc73ec: Add examples for `gitlab:repo:push` scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-scaffolder-node@0.4.4
+  - @backstage/integration@1.11.0
+
+## 0.4.0-next.2
+
+### Minor Changes
+
+- 18f736f: Add examples for `gitlab:projectVariable:create` scaffolder action & improve related tests
+
+### Patch Changes
+
+- 8fa8a00: Add merge method and squash option for project creation
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-scaffolder-node@0.4.4-next.2
+  - @backstage/integration@1.11.0-next.0
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-scaffolder-node@0.4.4-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- ffc73ec: Add examples for `gitlab:repo:push` scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/plugin-scaffolder-node@0.4.4-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0
+
+## 0.3.3
+
+### Patch Changes
+
+- aa514d1: Add examples for `publish:gitlab:merge-request` scaffolder action & improve related tests
+- 52f40ea: Add examples for `gitlab:group:ensureExists` scaffolder action & improve related tests
+- 33f958a: Improve examples to ensure consistency across all publish actions
+- d112225: Add examples for `gitlab:projectDeployToken:create` scaffolder action & improve related tests
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/integration@1.10.0
+  - @backstage/plugin-scaffolder-node@0.4.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- 33f958a: Improve examples to ensure consistency across all publish actions
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-scaffolder-node@0.4.3-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0-next.0
+
 ## 0.3.3-next.0
 
 ### Patch Changes

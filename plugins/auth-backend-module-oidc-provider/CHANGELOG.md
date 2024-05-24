@@ -1,5 +1,69 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-auth-backend@0.22.6-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- dd53bf3: Add nonce to authorize request to be added in ID token
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-auth-backend@0.22.5
+  - @backstage/plugin-auth-node@0.4.13
+
+## 0.1.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-auth-backend@0.22.5-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.1.9-next.0
+
+### Patch Changes
+
+- dd53bf3: Add nonce to authorize request to be added in ID token
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.22.5-next.0
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+
+## 0.1.8
+
+### Patch Changes
+
+- 28eb473: Support revoke refresh token to oidc logout function
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-auth-backend@0.22.4
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-auth-node@0.4.12
+
+## 0.1.8-next.1
+
+### Patch Changes
+
+- 28eb473: Support revoke refresh token to oidc logout function
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/plugin-auth-backend@0.22.4-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+
 ## 0.1.8-next.0
 
 ### Patch Changes

@@ -21,6 +21,7 @@ import {
 } from '@backstage/integration';
 import {
   createMockDirectory,
+  mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -30,10 +31,9 @@ import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
 import { BitbucketUrlReader } from './BitbucketUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
-import { getVoidLogger } from '../logging';
 import getRawBody from 'raw-body';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('BitbucketUrlReader.factory', () => {
   it('only apply integration configs not inherited from bitbucketCloud or bitbucketServer', () => {

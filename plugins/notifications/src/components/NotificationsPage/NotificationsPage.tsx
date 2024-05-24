@@ -15,12 +15,14 @@
  */
 
 import React, { useEffect } from 'react';
+import throttle from 'lodash/throttle';
 import {
   Content,
   PageWithHeader,
   ResponseErrorPanel,
 } from '@backstage/core-components';
 import Grid from '@material-ui/core/Grid';
+import { ConfirmProvider } from 'material-ui-confirm';
 import { useSignal } from '@backstage/plugin-signals-react';
 
 import { NotificationsTable } from '../NotificationsTable';
@@ -31,10 +33,37 @@ import {
   SortBy,
   SortByOptions,
 } from '../NotificationsFilters';
-import { GetNotificationsOptions } from '../../api';
-import { NotificationSeverity } from '@backstage/plugin-notifications-common';
+import { GetNotificationsOptions, GetNotificationsResponse } from '../../api';
+import {
+  NotificationSeverity,
+  NotificationStatus,
+} from '@backstage/plugin-notifications-common';
 
-export const NotificationsPage = () => {
+const ThrottleDelayMs = 2000;
+
+/** @public */
+export type NotificationsPageProps = {
+  /** Mark notification as read when opening the link it contains, defaults to false */
+  markAsReadOnLinkOpen?: boolean;
+  title?: string;
+  themeId?: string;
+  subtitle?: string;
+  tooltip?: string;
+  type?: string;
+  typeLink?: string;
+};
+
+export const NotificationsPage = (props?: NotificationsPageProps) => {
+  const {
+    title = 'Notifications',
+    themeId = 'tool',
+    subtitle,
+    tooltip,
+    type,
+    typeLink,
+    markAsReadOnLinkOpen,
+  } = props ?? {};
+
   const [refresh, setRefresh] = React.useState(false);
   const { lastSignal } = useSignal('notifications');
   const [unreadOnly, setUnreadOnly] = React.useState<boolean | undefined>(true);
@@ -42,13 +71,15 @@ export const NotificationsPage = () => {
   const [pageNumber, setPageNumber] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(5);
   const [containsText, setContainsText] = React.useState<string>();
-  const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
+  const [createdAfter, setCreatedAfter] = React.useState<string>('all');
   const [sorting, setSorting] = React.useState<SortBy>(
     SortByOptions.newest.sortBy,
   );
   const [severity, setSeverity] = React.useState<NotificationSeverity>('low');
 
-  const { error, value, retry, loading } = useNotificationsApi(
+  const { error, value, retry, loading } = useNotificationsApi<
+    [GetNotificationsResponse, NotificationStatus]
+  >(
     api => {
       const options: GetNotificationsOptions = {
         search: containsText,
@@ -69,7 +100,7 @@ export const NotificationsPage = () => {
         options.createdAfter = createdAfterDate;
       }
 
-      return api.getNotifications(options);
+      return Promise.all([api.getNotifications(options), api.getStatus()]);
     },
     [
       containsText,
@@ -83,59 +114,79 @@ export const NotificationsPage = () => {
     ],
   );
 
+  const throttledSetRefresh = React.useMemo(
+    () => throttle(setRefresh, ThrottleDelayMs),
+    [setRefresh],
+  );
+
   useEffect(() => {
-    if (refresh) {
+    if (refresh && !loading) {
       retry();
       setRefresh(false);
     }
-  }, [refresh, setRefresh, retry]);
+  }, [refresh, setRefresh, retry, loading]);
 
   useEffect(() => {
     if (lastSignal && lastSignal.action) {
-      setRefresh(true);
+      throttledSetRefresh(true);
     }
-  }, [lastSignal]);
+  }, [lastSignal, throttledSetRefresh]);
 
   const onUpdate = () => {
-    setRefresh(true);
+    throttledSetRefresh(true);
   };
 
   if (error) {
     return <ResponseErrorPanel error={error} />;
   }
 
+  const notifications = value?.[0]?.notifications;
+  const totalCount = value?.[0]?.totalCount;
+  const isUnread = !!value?.[1]?.unread;
+
   return (
-    <PageWithHeader title="Notifications" themeId="tool">
+    <PageWithHeader
+      title={title}
+      themeId={themeId}
+      tooltip={tooltip}
+      subtitle={subtitle}
+      type={type}
+      typeLink={typeLink}
+    >
       <Content>
-        <Grid container>
-          <Grid item xs={2}>
-            <NotificationsFilters
-              unreadOnly={unreadOnly}
-              onUnreadOnlyChanged={setUnreadOnly}
-              createdAfter={createdAfter}
-              onCreatedAfterChanged={setCreatedAfter}
-              onSortingChanged={setSorting}
-              sorting={sorting}
-              saved={saved}
-              onSavedChanged={setSaved}
-              severity={severity}
-              onSeverityChanged={setSeverity}
-            />
+        <ConfirmProvider>
+          <Grid container>
+            <Grid item xs={2}>
+              <NotificationsFilters
+                unreadOnly={unreadOnly}
+                onUnreadOnlyChanged={setUnreadOnly}
+                createdAfter={createdAfter}
+                onCreatedAfterChanged={setCreatedAfter}
+                onSortingChanged={setSorting}
+                sorting={sorting}
+                saved={saved}
+                onSavedChanged={setSaved}
+                severity={severity}
+                onSeverityChanged={setSeverity}
+              />
+            </Grid>
+            <Grid item xs={10}>
+              <NotificationsTable
+                isLoading={loading}
+                isUnread={isUnread}
+                markAsReadOnLinkOpen={markAsReadOnLinkOpen}
+                notifications={notifications}
+                onUpdate={onUpdate}
+                setContainsText={setContainsText}
+                onPageChange={setPageNumber}
+                onRowsPerPageChange={setPageSize}
+                page={pageNumber}
+                pageSize={pageSize}
+                totalCount={totalCount}
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={10}>
-            <NotificationsTable
-              isLoading={loading}
-              notifications={value?.notifications}
-              onUpdate={onUpdate}
-              setContainsText={setContainsText}
-              onPageChange={setPageNumber}
-              onRowsPerPageChange={setPageSize}
-              page={pageNumber}
-              pageSize={pageSize}
-              totalCount={value?.totalCount}
-            />
-          </Grid>
-        </Grid>
+        </ConfirmProvider>
       </Content>
     </PageWithHeader>
   );

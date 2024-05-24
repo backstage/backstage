@@ -25,7 +25,7 @@ import {
   readMicrosoftGraphUsersInGroups,
   resolveRelations,
 } from './read';
-import { getVoidLogger } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 
 function user(data: Partial<UserEntity>): UserEntity {
   return merge(
@@ -106,7 +106,7 @@ describe('read microsoft graph', () => {
 
       const { users } = await readMicrosoftGraphUsers(client, {
         userFilter: 'accountEnabled eq true',
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -153,7 +153,7 @@ describe('read microsoft graph', () => {
       const { users } = await readMicrosoftGraphUsers(client, {
         queryMode: 'advanced',
         userFilter: 'accountEnabled eq true',
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -206,7 +206,7 @@ describe('read microsoft graph', () => {
           metadata: { name: 'x' },
           spec: { memberOf: [] },
         }),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -246,7 +246,7 @@ describe('read microsoft graph', () => {
 
       const { users } = await readMicrosoftGraphUsersInGroups(client, {
         userGroupMemberFilter: 'securityEnabled eq true',
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -304,7 +304,7 @@ describe('read microsoft graph', () => {
       const { users } = await readMicrosoftGraphUsersInGroups(client, {
         queryMode: 'advanced',
         userGroupMemberFilter: 'securityEnabled eq true',
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -369,7 +369,7 @@ describe('read microsoft graph', () => {
           metadata: { name: 'x' },
           spec: { memberOf: [] },
         }),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -893,7 +893,7 @@ describe('read microsoft graph', () => {
       );
 
       await readMicrosoftGraphOrg(client, 'tenantid', {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         groupFilter: 'securityEnabled eq false',
       });
 
@@ -930,7 +930,7 @@ describe('read microsoft graph', () => {
       );
 
       await readMicrosoftGraphOrg(client, 'tenantid', {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         userExpand: 'manager',
         userFilter: 'accountEnabled eq true',
         groupFilter: 'securityEnabled eq false',
@@ -955,6 +955,43 @@ describe('read microsoft graph', () => {
       );
     });
 
+    it('should ignore loading photos if loadPhotos is false', async () => {
+      client.getOrganization.mockResolvedValue(getExampleOrg());
+
+      client.getUsers.mockImplementation(getExampleUsers);
+      client.getUserPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: mockServices.logger.mock(),
+        loadUserPhotos: false,
+      });
+
+      expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(0);
+
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+    });
+
     it('should read users with userSelect', async () => {
       client.getOrganization.mockResolvedValue({
         id: 'tenantid',
@@ -970,7 +1007,7 @@ describe('read microsoft graph', () => {
       client.getGroupMembers.mockImplementation(getExampleGroupMembers);
 
       await readMicrosoftGraphOrg(client, 'tenantid', {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         userSelect: ['mail'],
       });
 
@@ -1003,7 +1040,7 @@ describe('read microsoft graph', () => {
       );
 
       await readMicrosoftGraphOrg(client, 'tenantid', {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         userGroupMemberFilter: 'name eq backstage-group',
         groupFilter: 'securityEnabled eq false',
       });
@@ -1026,6 +1063,52 @@ describe('read microsoft graph', () => {
         undefined,
       );
       expect(client.getUserPhotoWithSizeLimit).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle loading huge amounts of users', async () => {
+      client.getOrganization.mockResolvedValue(getExampleOrg());
+
+      const userCount = 200_000;
+
+      async function* getHugeAmountsOfExampleUsers() {
+        for (let i = 0; i < userCount; ++i) {
+          yield {
+            id: `userid-${i}`,
+            displayName: 'User Name',
+            mail: 'user.name@example.com',
+          };
+        }
+      }
+
+      client.getUsers.mockImplementation(getHugeAmountsOfExampleUsers);
+
+      client.getGroups.mockImplementation(getExampleGroups);
+      client.getGroupMembers.mockImplementation(getExampleGroupMembers);
+      client.getGroupPhotoWithSizeLimit.mockResolvedValue(
+        'data:image/jpeg;base64,...',
+      );
+
+      const { users } = await readMicrosoftGraphOrg(client, 'tenantid', {
+        logger: mockServices.logger.mock(),
+        loadUserPhotos: false,
+      });
+
+      expect(users.length).toBe(userCount);
+
+      expect(client.getUsers).toHaveBeenCalledTimes(1);
+      expect(client.getUsers).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
+      expect(client.getGroups).toHaveBeenCalledTimes(1);
+      expect(client.getGroups).toHaveBeenCalledWith(
+        {
+          top: 999,
+        },
+        undefined,
+      );
     });
   });
 });

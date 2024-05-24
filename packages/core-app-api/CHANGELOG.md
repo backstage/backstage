@@ -1,5 +1,35 @@
 # @backstage/core-app-api
 
+## 1.12.5
+
+### Patch Changes
+
+- 1bed9a3: The Backstage identity session expiration check will no longer fall back to using the provider expiration. This was introduced to smooth out the rollout of Backstage release 1.18, and is no longer needed.
+
+## 1.12.4
+
+### Patch Changes
+
+- c884b9a: The app is now aware of if it is being served from the `app-backend` with a separate public and protected bundles. When in protected mode the app will now continuously refresh the session cookie, as well as clear the cookie if the user signs out.
+- abfbcfc: Updated dependency `@testing-library/react` to `^15.0.0`.
+- cb1e3b0: Updated dependency `@testing-library/dom` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/version-bridge@1.0.8
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 1.12.4-next.0
+
+### Patch Changes
+
+- c884b9a: The app is now aware of if it is being served from the `app-backend` with a separate public and protected bundles. When in protected mode the app will now continuously refresh the session cookie, as well as clear the cookie if the user signs out.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.1
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.7
+
 ## 1.12.3
 
 ### Patch Changes
@@ -515,8 +545,7 @@
 
   This change makes the dependence explicit, and removes the burden on
   OAuth2-based providers which require an ID token (e.g. this is done by various
-  default [auth
-  handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  default [auth handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
   `openid` to their default scopes. _That_ could carry another indirect benefit:
   by removing `openid` from the default scopes for a provider, grants for
   resource-specific access tokens can avoid requesting excess ID token-related
@@ -544,8 +573,7 @@
 
   This change makes the dependence explicit, and removes the burden on
   OAuth2-based providers which require an ID token (e.g. this is done by various
-  default [auth
-  handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  default [auth handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
   `openid` to their default scopes. _That_ could carry another indirect benefit:
   by removing `openid` from the default scopes for a provider, grants for
   resource-specific access tokens can avoid requesting excess ID token-related

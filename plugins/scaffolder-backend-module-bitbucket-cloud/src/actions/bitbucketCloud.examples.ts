@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Initializes a Bitbucket Cloud repository of contents in workspace and publish it to Bitbucket Cloud with default configuration.',
+      'Initializes a git repository with the content in the workspace, and publishes it to Bitbucket Cloud with the default configuration.',
     example: yaml.stringify({
       steps: [
         {

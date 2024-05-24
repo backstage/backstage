@@ -18,7 +18,8 @@ import {
   ScaffolderOutputText,
   ScaffolderTaskOutput,
 } from '@backstage/plugin-scaffolder-react';
-import { Box, Paper } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
 import React, { useEffect, useMemo, useState } from 'react';
 import { LinkOutputs } from './LinkOutputs';
 import { TextOutputs } from './TextOutputs';

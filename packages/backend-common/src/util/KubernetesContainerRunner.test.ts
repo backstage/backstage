@@ -187,6 +187,26 @@ describeIfKubernetes('KubernetesContainerRunner', () => {
     );
   });
 
+  it('should not close the original log stream', async () => {
+    const options: KubernetesContainerRunnerOptions = {
+      kubeConfig,
+      name,
+      namespace: 'default',
+    };
+    const containerRunner = new KubernetesContainerRunner(options);
+    const logStream = new PassThrough();
+    const runOptions: RunContainerOptions = {
+      imageName: 'alpine',
+      args: ['echo', 'hello world'],
+      logStream,
+    };
+
+    await containerRunner.runContainer(runOptions);
+
+    expect(logStream.writableEnded).toBe(false);
+    expect(logStream.destroyed).toBe(false);
+  });
+
   describe('with namespace test', () => {
     let api: CoreV1Api;
     let authApi: RbacAuthorizationV1Api;

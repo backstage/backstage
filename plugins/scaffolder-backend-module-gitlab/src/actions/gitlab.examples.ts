@@ -20,7 +20,7 @@ import yaml from 'yaml';
 export const examples: TemplateExample[] = [
   {
     description:
-      'Initializes a git repository of the content in the workspace, and publishes it to GitLab.',
+      'Initializes a git repository with the content in the workspace, and publishes it to GitLab with the default configuration.',
     example: yaml.stringify({
       steps: [
         {
@@ -52,7 +52,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Sets the commit message on the repository. The default value is `initial commit`.',
+      'Initializes a GitLab repository with an initial commit message, if not set defaults to `initial commit`.',
     example: yaml.stringify({
       steps: [
         {
@@ -69,7 +69,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Initializes a git repository with additional settings.',
+    description: 'Initializes a GitLab repository with aditional settings.',
     example: yaml.stringify({
       steps: [
         {
@@ -88,7 +88,27 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Initializes a git repository with branches settings',
+    description:
+      'Initializes a GitLab repository with fast forward merge and always squash settings.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            settings: {
+              merge_method: 'ff',
+              squash_option: 'always',
+            },
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Initializes a GitLab repository with branch settings.',
     example: yaml.stringify({
       steps: [
         {
@@ -115,7 +135,7 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
-    description: 'Initializes a git repository with environment variables',
+    description: 'Initializes a GitLab repository with environment variables.',
     example: yaml.stringify({
       steps: [
         {

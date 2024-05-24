@@ -27,6 +27,8 @@ export type BundlingOptions = {
   additionalEntryPoints?: string[];
   // Path to append to the detected public path, e.g. '/public'
   publicSubPath?: string;
+  // Mode that the app is running in, 'protected' or 'public', default is 'public'
+  appMode?: string;
 };
 
 export type ServeOptions = BundlingPathsOptions & {
@@ -52,10 +54,12 @@ export type BackendBundlingOptions = {
   parallelism?: number;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
+  require?: string;
 };
 
 export type BackendServeOptions = BundlingPathsOptions & {
   checksEnabled: boolean;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
+  require?: string;
 };

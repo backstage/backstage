@@ -15,16 +15,15 @@
  */
 
 import {
-  Config,
+  bufferFromFileOrString,
   Cluster,
+  Config,
   CoreV1Api,
   KubeConfig,
   Metrics,
-  bufferFromFileOrString,
   topPods,
 } from '@kubernetes/client-node';
 import lodash, { Dictionary } from 'lodash';
-import { Logger } from 'winston';
 import {
   FetchResponseWrapper,
   KubernetesFetcher,
@@ -33,8 +32,8 @@ import {
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   FetchResponse,
-  KubernetesFetchError,
   KubernetesErrorTypes,
+  KubernetesFetchError,
   PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
 import fetch, { RequestInit, Response } from 'node-fetch';
@@ -45,9 +44,10 @@ import {
   ClusterDetails,
   KubernetesCredential,
 } from '@backstage/plugin-kubernetes-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface KubernetesClientBasedFetcherOptions {
-  logger: Logger;
+  logger: LoggerService;
 }
 
 type FetchResult = FetchResponse | KubernetesFetchError;
@@ -84,7 +84,7 @@ const statusCodeToErrorType = (statusCode: number): KubernetesErrorTypes => {
 };
 
 export class KubernetesClientBasedFetcher implements KubernetesFetcher {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
 
   constructor({ logger }: KubernetesClientBasedFetcherOptions) {
     this.logger = logger;

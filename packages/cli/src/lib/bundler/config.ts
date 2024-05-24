@@ -130,6 +130,9 @@ export async function createConfig(
 
   plugins.push(
     new HtmlWebpackPlugin({
+      meta: {
+        'backstage-app-mode': options?.appMode ?? 'public',
+      },
       template: paths.targetHtml,
       templateParameters: {
         publicPath,
@@ -272,6 +275,9 @@ export async function createBackendConfig(
         ? `--inspect-brk=${options.inspectBrkEnabled}`
         : '--inspect-brk';
     runScriptNodeArgs.push(inspect);
+  }
+  if (options.require) {
+    runScriptNodeArgs.push(`--require=${options.require}`);
   }
 
   return {

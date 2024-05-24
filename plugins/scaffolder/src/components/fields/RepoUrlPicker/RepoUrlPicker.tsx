@@ -51,7 +51,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
   );
   const integrationApi = useApi(scmIntegrationsApiRef);
   const scmAuthApi = useApi(scmAuthApiRef);
-  const { setSecrets } = useTemplateSecrets();
+  const { secrets, setSecrets } = useTemplateSecrets();
   const allowedHosts = useMemo(
     () => uiSchema?.['ui:options']?.allowedHosts ?? [],
     [uiSchema],
@@ -129,6 +129,11 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
         !requestUserCredentials ||
         !(state.host && workspace && state.repoName)
       ) {
+        return;
+      }
+
+      // don't show login prompt if secret value is already in state
+      if (secrets[requestUserCredentials.secretsKey]) {
         return;
       }
 
@@ -215,7 +220,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
       {hostType === 'azure' && (
         <AzureRepoPicker
           allowedOrganizations={allowedOrganizations}
-          allowedOwners={allowedOwners}
+          allowedProject={allowedProjects}
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}

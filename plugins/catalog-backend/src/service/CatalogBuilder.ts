@@ -15,10 +15,10 @@
  */
 
 import {
-  PluginDatabaseManager,
-  HostDiscovery,
-  UrlReader,
   createLegacyAuthAdapters,
+  HostDiscovery,
+  PluginDatabaseManager,
+  UrlReader,
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import {
@@ -45,6 +45,7 @@ import {
   EntitiesSearchFilter,
   EntityProvider,
   PlaceholderResolver,
+  LocationAnalyzer,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
@@ -64,8 +65,11 @@ import {
   yamlPlaceholderResolver,
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
-import { LocationAnalyzer } from '../ingestion';
-import { CatalogProcessingEngine } from '../processing';
+import {
+  CatalogProcessingEngine,
+  createRandomProcessingInterval,
+  ProcessingIntervalFunction,
+} from '../processing';
 import { DefaultProcessingDatabase } from '../database/DefaultProcessingDatabase';
 import { applyDatabaseMigrations } from '../database/migrations';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
@@ -73,30 +77,23 @@ import { DefaultLocationService } from './DefaultLocationService';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
-import {
-  createRandomProcessingInterval,
-  ProcessingIntervalFunction,
-} from '../processing';
 import { createRouter } from './createRouter';
 import { DefaultRefreshService } from './DefaultRefreshService';
 import { AuthorizedRefreshService } from './AuthorizedRefreshService';
 import { DefaultCatalogRulesEnforcer } from '../ingestion/CatalogRules';
 import { Config, readDurationFromConfig } from '@backstage/config';
-import { Logger } from 'winston';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
 import {
   Permission,
-  PermissionRuleParams,
-} from '@backstage/plugin-permission-common';
-import { permissionRules as catalogPermissionRules } from '../permissions/rules';
-import { PermissionRule } from '@backstage/plugin-permission-node';
-import {
   PermissionAuthorizer,
+  PermissionRuleParams,
   toPermissionEvaluator,
 } from '@backstage/plugin-permission-common';
+import { permissionRules as catalogPermissionRules } from '../permissions/rules';
 import {
   createConditionTransformer,
   createPermissionIntegrationRouter,
+  PermissionRule,
 } from '@backstage/plugin-permission-node';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
 import { basicEntityFilter } from './request';
@@ -107,12 +104,13 @@ import {
 import { AuthorizedLocationService } from './AuthorizedLocationService';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
-import { EventBroker } from '@backstage/plugin-events-node';
+import { EventBroker, EventsService } from '@backstage/plugin-events-node';
 import { durationToMilliseconds } from '@backstage/types';
 import {
-  DiscoveryService,
   AuthService,
+  DiscoveryService,
   HttpAuthService,
+  LoggerService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 
@@ -127,7 +125,7 @@ export type CatalogPermissionRuleInput<
 
 /** @public */
 export type CatalogEnvironment = {
-  logger: Logger;
+  logger: LoggerService;
   database: PluginDatabaseManager;
   config: Config;
   reader: UrlReader;
@@ -184,7 +182,7 @@ export class CatalogBuilder {
   private readonly permissionRules: CatalogPermissionRuleInput[];
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
-  private eventBroker?: EventBroker;
+  private eventBroker?: EventBroker | EventsService;
 
   /**
    * Creates a catalog builder.
@@ -455,7 +453,7 @@ export class CatalogBuilder {
   /**
    * Enables the publishing of events for conflicts in the DefaultProcessingDatabase
    */
-  setEventBroker(broker: EventBroker): CatalogBuilder {
+  setEventBroker(broker: EventBroker | EventsService): CatalogBuilder {
     this.eventBroker = broker;
     return this;
   }
@@ -591,6 +589,7 @@ export class CatalogBuilder {
       onProcessingError: event => {
         this.onProcessingError?.(event);
       },
+      eventBroker: this.eventBroker,
     });
 
     const locationAnalyzer =

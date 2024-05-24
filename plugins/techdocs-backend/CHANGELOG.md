@@ -1,5 +1,113 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.10.6-next.0
+
+### Patch Changes
+
+- 8869b8e: Updated local development setup.
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.24-next.0
+  - @backstage/plugin-techdocs-node@1.12.5-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.11.0
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-permission-common@0.7.13
+
+## 1.10.5
+
+### Patch Changes
+
+- 5863cf7: The `techdocs.builder` config is now optional and it will default to `local`.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-techdocs-node@1.12.4
+  - @backstage/integration@1.11.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.23
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-catalog-common@1.0.23
+
+## 1.10.5-next.2
+
+### Patch Changes
+
+- 5863cf7: The `techdocs.builder` config is now optional and it will default to `local`.
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/integration@1.11.0-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.23-next.2
+  - @backstage/plugin-techdocs-node@1.12.4-next.2
+
+## 1.10.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.23-next.1
+  - @backstage/plugin-techdocs-node@1.12.4-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 1.10.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-catalog-common@1.0.23-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.23-next.0
+  - @backstage/plugin-techdocs-node@1.12.4-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0
+  - @backstage/plugin-permission-common@0.7.13
+
+## 1.10.4
+
+### Patch Changes
+
+- 8e28c88: Allow overriding default techdocs preparers with new `TechdocsPreparerExtensionPoint`
+- c884b9a: Use the default cookie endpoints added automatically when a cookie policy is set.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-techdocs-node@1.12.3
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-search-backend-module-techdocs@0.1.22
+  - @backstage/catalog-client@1.6.4
+  - @backstage/integration@1.10.0
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+
+## 1.10.4-next.1
+
+### Patch Changes
+
+- c884b9a: Use the default cookie endpoints added automatically when a cookie policy is set.
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.22-next.1
+  - @backstage/plugin-techdocs-node@1.12.3-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.10.0-next.0
+  - @backstage/plugin-catalog-common@1.0.22
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 1.10.4-next.0
 
 ### Patch Changes

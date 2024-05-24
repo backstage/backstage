@@ -30,9 +30,9 @@ const app = createApp({
 Now you can utilize the API from other plugins using the `@backstage/plugin-signals-react` package or simply by:
 
 ```ts
-import { signalsApiRef } from '@backstage/plugin-signals-react';
+import { signalApiRef } from '@backstage/plugin-signals-react';
 
-const signals = useApi(signalsApiRef);
+const signals = useApi(signalApiRef);
 const { unsubscribe } = signals.subscribe(
   'myplugin:topic',
   (message: JsonObject) => {

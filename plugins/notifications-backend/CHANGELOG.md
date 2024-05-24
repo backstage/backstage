@@ -1,5 +1,133 @@
 # @backstage/plugin-notifications-backend
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+  - @backstage/plugin-notifications-node@0.1.5-next.0
+  - @backstage/plugin-signals-node@0.1.5-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-notifications-common@0.0.3
+
+## 0.2.1
+
+### Patch Changes
+
+- d541ff6: Fixed email processor `esm` issue and config reading
+- 295c05d: Support for filtering entities from notification recipients after resolving them from the recipients
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- cba628a: Add possibility to generate random notifications on the fly in local development
+- ee09dfc: Updated documentation for sending messages by external services.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/plugin-notifications-node@0.1.4
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-events-node@0.3.4
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-signals-node@0.1.4
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- d541ff6: Fixed email processor `esm` issue and config reading
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- 295c05d: Support for filtering entities from notification recipients after resolving them from the recipients
+- cba628a: Add possibility to generate random notifications on the fly in local development
+- Updated dependencies
+  - @backstage/plugin-notifications-node@0.1.4-next.1
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/plugin-events-node@0.3.4-next.1
+  - @backstage/plugin-signals-node@0.1.4-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- ee09dfc: Updated documentation for sending messages by external services.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0-next.0
+  - @backstage/plugin-auth-node@0.4.13-next.0
+  - @backstage/backend-common@0.21.8-next.0
+  - @backstage/backend-plugin-api@0.6.18-next.0
+  - @backstage/catalog-client@1.6.5-next.0
+  - @backstage/plugin-notifications-node@0.1.4-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-events-node@0.3.4-next.0
+  - @backstage/plugin-notifications-common@0.0.3
+  - @backstage/plugin-signals-node@0.1.4-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 939b4ec: Notifications-backend URL query parameter changed from `minimal_severity` to `minimumSeverity`.
+- ec40998: On the Notifications page, the user can trigger "Save" or "Mark as read" actions once for multiple selected notifications.
+
+### Patch Changes
+
+- 0d99528: Notification processor functions are now renamed to `preProcess` and `postProcess`.
+  Additionally, processor name is now required to be returned by `getName`.
+  A new processor functionality `processOptions` was added to process options before sending the notification.
+- e003e0e: The ordered list of notifications' severities is exported by notifications-common for reusability.
+- 9a41a7b: Migrate signals and notifications to the new backend in local development
+- 9987066: fix: retrieve relations and children when mapping group entities for notifications
+- 6206039: Fix entity owner resolution in notifications
+- Updated dependencies
+  - @backstage/backend-common@0.21.7
+  - @backstage/plugin-notifications-common@0.0.3
+  - @backstage/plugin-notifications-node@0.1.3
+  - @backstage/backend-plugin-api@0.6.17
+  - @backstage/plugin-auth-node@0.4.12
+  - @backstage/catalog-client@1.6.4
+  - @backstage/plugin-events-node@0.3.3
+  - @backstage/plugin-signals-node@0.1.3
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.2.0-next.1
+
+### Minor Changes
+
+- ec40998: On the Notifications page, the user can trigger "Save" or "Mark as read" actions once for multiple selected notifications.
+
+### Patch Changes
+
+- 9987066: fix: retrieve relations and children when mapping group entities for notifications
+- Updated dependencies
+  - @backstage/backend-common@0.21.7-next.1
+  - @backstage/backend-plugin-api@0.6.17-next.1
+  - @backstage/plugin-auth-node@0.4.12-next.1
+  - @backstage/catalog-client@1.6.4-next.0
+  - @backstage/plugin-events-node@0.3.3-next.1
+  - @backstage/plugin-notifications-node@0.1.3-next.1
+  - @backstage/plugin-signals-node@0.1.3-next.1
+  - @backstage/catalog-model@1.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-notifications-common@0.0.2
+
 ## 0.1.3-next.0
 
 ### Patch Changes

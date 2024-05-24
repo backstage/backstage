@@ -16,7 +16,7 @@
 
 import React, { ReactNode } from 'react';
 
-import { List, ListProps } from '@material-ui/core';
+import List, { ListProps } from '@material-ui/core/List';
 
 import {
   Progress,

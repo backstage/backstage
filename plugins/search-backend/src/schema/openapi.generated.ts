@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -197,6 +197,7 @@ export const spec = {
             name: 'term',
             in: 'query',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'string',
               default: '',
@@ -208,6 +209,7 @@ export const spec = {
             required: false,
             style: 'deepObject',
             explode: true,
+            allowReserved: true,
             schema: {
               $ref: '#/components/schemas/JsonObject',
             },
@@ -216,6 +218,7 @@ export const spec = {
             name: 'types',
             in: 'query',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'array',
               items: {
@@ -227,6 +230,7 @@ export const spec = {
             name: 'pageCursor',
             in: 'query',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -235,6 +239,7 @@ export const spec = {
             name: 'pageLimit',
             in: 'query',
             required: false,
+            allowReserved: true,
             schema: {
               type: 'integer',
             },

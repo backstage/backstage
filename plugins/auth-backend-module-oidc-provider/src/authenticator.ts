@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import crypto from 'crypto';
 import {
   custom,
   CustomHttpOptionsProvider,
@@ -131,6 +132,7 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     const options: Record<string, string> = {
       scope: input.scope || initializedScope || 'openid profile email',
       state: input.state,
+      nonce: crypto.randomBytes(16).toString('base64'),
     };
     const prompt = initializedPrompt || 'none';
     if (prompt !== 'auto') {
@@ -196,5 +198,13 @@ export const oidcAuthenticator = createOAuthAuthenticator({
         },
       });
     });
+  },
+
+  async logout(input, ctx) {
+    const { client } = await ctx.promise;
+
+    if (input.refreshToken) {
+      await client.revoke(input.refreshToken);
+    }
   },
 });

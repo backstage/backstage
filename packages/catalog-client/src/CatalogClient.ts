@@ -143,6 +143,11 @@ export class CatalogClient implements CatalogApi {
       ),
     );
 
+    // do not sort entities, if order is provided
+    if (encodedOrder.length) {
+      return { items: entities };
+    }
+
     const refCompare = (a: Entity, b: Entity) => {
       // in case field filtering is used, these fields might not be part of the response
       if (

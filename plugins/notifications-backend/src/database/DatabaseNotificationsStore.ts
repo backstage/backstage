@@ -13,10 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  PluginDatabaseManager,
-  resolvePackagePath,
-} from '@backstage/backend-common';
+import { PluginDatabaseManager } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import {
   NotificationGetOptions,
   NotificationModifyOptions,
@@ -25,6 +23,7 @@ import {
 import {
   Notification,
   NotificationSeverity,
+  notificationSeverities,
 } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
 
@@ -49,16 +48,9 @@ const NOTIFICATION_COLUMNS = [
   'saved',
 ];
 
-const severities: NotificationSeverity[] = [
-  'critical',
-  'high',
-  'normal',
-  'low',
-];
-
 export const normalizeSeverity = (input?: string): NotificationSeverity => {
   let lower = (input ?? 'normal').toLowerCase() as NotificationSeverity;
-  if (severities.indexOf(lower) < 0) {
+  if (notificationSeverities.indexOf(lower) < 0) {
     lower = 'normal';
   }
   return lower;
@@ -219,8 +211,8 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     } // or match both if undefined
 
     if (options.minimumSeverity !== undefined) {
-      const idx = severities.indexOf(options.minimumSeverity);
-      const equalOrHigher = severities.slice(0, idx + 1);
+      const idx = notificationSeverities.indexOf(options.minimumSeverity);
+      const equalOrHigher = notificationSeverities.slice(0, idx + 1);
       query.whereIn('severity', equalOrHigher);
     }
 

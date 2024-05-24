@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-import { Logger } from 'winston';
 import parseGitUrl from 'git-url-parse';
 import { Entity } from '@backstage/catalog-model';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { LocationAnalyzer } from './types';
 import {
   AnalyzeLocationRequest,
   AnalyzeLocationResponse,
 } from '@backstage/plugin-catalog-common';
-import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-node';
+import {
+  LocationAnalyzer,
+  ScmLocationAnalyzer,
+} from '@backstage/plugin-catalog-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export class RepoLocationAnalyzer implements LocationAnalyzer {
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly scmIntegrations: ScmIntegrationRegistry;
   private readonly analyzers: ScmLocationAnalyzer[];
 
   constructor(
-    logger: Logger,
+    logger: LoggerService,
     scmIntegrations: ScmIntegrationRegistry,
     analyzers: ScmLocationAnalyzer[],
   ) {

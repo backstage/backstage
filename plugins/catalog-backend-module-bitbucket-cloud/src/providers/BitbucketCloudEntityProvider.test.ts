@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, TokenManager } from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
   TaskRunner,
 } from '@backstage/backend-tasks';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Entity, LocationEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
@@ -54,7 +57,7 @@ class PersistingTaskRunner implements TaskRunner {
   }
 }
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 const server = setupServer();
 
@@ -152,7 +155,7 @@ describe('BitbucketCloudEntityProvider', () => {
   };
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
     schedule.reset();
   });
 

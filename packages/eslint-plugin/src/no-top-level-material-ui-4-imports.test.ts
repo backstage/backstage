@@ -36,6 +36,9 @@ ruleTester.run('path-imports-rule', rule, {
       code: `import { styled, withStyles } from '@material-ui/core/styles';`,
     },
     {
+      code: `import { WithStyles } from '@material-ui/core/styles';`,
+    },
+    {
       code: `import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';`,
     },
     {
@@ -58,6 +61,28 @@ import Typography from '@material-ui/core/Typography';`,
       output: `import Box from '@material-ui/core/Box';`,
     },
     {
+      code: `import { ThemeProvider } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import { ThemeProvider } from '@material-ui/core/styles';`,
+    },
+    {
+      code: `import { WithStyles } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import { WithStyles } from '@material-ui/core/styles';`,
+    },
+    {
+      code: `import { Grid, GridProps, Theme, makeStyles } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import Grid, { GridProps } from '@material-ui/core/Grid';
+import { Theme, makeStyles } from '@material-ui/core/styles';`,
+    },
+    {
+      code: `import { Grid, GridProps, SvgIcon, SvgIconProps } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import Grid, { GridProps } from '@material-ui/core/Grid';
+import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';`,
+    },
+    {
       code: `import {
                   Box,
                   DialogActions,
@@ -65,6 +90,11 @@ import Typography from '@material-ui/core/Typography';`,
                   DialogTitle,
                   Grid,
                   makeStyles,
+                  ThemeProvider,
+                  WithStyles,
+                  Tooltip as MaterialTooltip,
+                  alpha,
+                  easing
                 } from '@material-ui/core';`,
       errors: [{ messageId: 'topLevelImport' }],
       output: `import Box from '@material-ui/core/Box';
@@ -72,7 +102,8 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Grid from '@material-ui/core/Grid';
-import { makeStyles } from '@material-ui/core/styles';`,
+import MaterialTooltip from '@material-ui/core/Tooltip';
+import { makeStyles, ThemeProvider, WithStyles, alpha, easing } from '@material-ui/core/styles';`,
     },
     {
       code: `import { Box, Button, makeStyles } from '@material-ui/core';`,
@@ -82,11 +113,11 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';`,
     },
     {
-      code: `import { Paper, Typography, styled, withStyles } from '@material-ui/core';`,
+      code: `import { Paper, Typography, styled, withStyles, alpha, duration} from '@material-ui/core';`,
       errors: [{ messageId: 'topLevelImport' }],
       output: `import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { styled, withStyles } from '@material-ui/core/styles';`,
+import { styled, withStyles, alpha, duration } from '@material-ui/core/styles';`,
     },
     {
       code: `import { styled } from '@material-ui/core';`,
@@ -102,6 +133,38 @@ import { styled, withStyles } from '@material-ui/core/styles';`,
       code: `import { TabProps } from '@material-ui/core';`,
       errors: [{ messageId: 'topLevelImport' }],
       output: `import { TabProps } from '@material-ui/core/Tab';`,
+    },
+    {
+      code: `import { Tooltip as MaterialTooltip, } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import MaterialTooltip from '@material-ui/core/Tooltip';`,
+    },
+    {
+      code: `import { SvgIcon as Icon, SvgIconProps as IconProps } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import Icon, { SvgIconProps as IconProps } from '@material-ui/core/SvgIcon';`,
+    },
+    {
+      code: `import { SvgIconProps as IconProps } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import { SvgIconProps as IconProps } from '@material-ui/core/SvgIcon';`,
+    },
+    {
+      code: `import { styled as s } from '@material-ui/core';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import { styled as s } from '@material-ui/core/styles';`,
+    },
+    {
+      code: `import { TreeItem, TreeItemProps, TreeView, AlertProps } from '@material-ui/lab';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import TreeItem, { TreeItemProps } from '@material-ui/lab/TreeItem';
+import TreeView from '@material-ui/lab/TreeView';
+import { AlertProps } from '@material-ui/lab/Alert';`,
+    },
+    {
+      code: `import { KeyboardDatePicker  } from '@material-ui/pickers';`,
+      errors: [{ messageId: 'topLevelImport' }],
+      output: `import { KeyboardDatePicker } from '@material-ui/pickers/DatePicker';`,
     },
   ],
 });

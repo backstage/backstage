@@ -16,7 +16,8 @@
 
 import React from 'react';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
-import { Typography, Grid } from '@material-ui/core';
+import Typography from '@material-ui/core/Typography';
+import Grid from '@material-ui/core/Grid';
 
 const capitalize = (str: string) =>
   str.charAt(0).toLocaleUpperCase('en-US') + str.slice(1);

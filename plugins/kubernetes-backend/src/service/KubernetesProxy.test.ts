@@ -16,9 +16,10 @@
 
 import 'buffer';
 import { resolve as resolvePath } from 'path';
-import { errorHandler, getVoidLogger } from '@backstage/backend-common';
+import { errorHandler } from '@backstage/backend-common';
 import {
   createMockDirectory,
+  mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import { NotFoundError } from '@backstage/errors';
@@ -55,6 +56,10 @@ import {
 } from './KubernetesProxy';
 
 import type { Request } from 'express';
+import {
+  BackstageCredentials,
+  DiscoveryService,
+} from '@backstage/backend-plugin-api';
 
 const mockCertDir = createMockDirectory({
   content: {
@@ -66,15 +71,23 @@ describe('KubernetesProxy', () => {
   let proxy: KubernetesProxy;
   let authStrategy: jest.Mocked<AuthenticationStrategy>;
   const worker = setupServer();
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
 
   const clusterSupplier: jest.Mocked<KubernetesClustersSupplier> = {
-    getClusters: jest.fn<Promise<ClusterDetails[]>, []>(),
+    getClusters: jest.fn<
+      Promise<ClusterDetails[]>,
+      [{ credentials: BackstageCredentials }]
+    >(),
   };
 
   const permissionApi: jest.Mocked<PermissionEvaluator> = {
     authorize: jest.fn(),
     authorizeConditional: jest.fn(),
+  };
+
+  const mockDisocveryApi: jest.Mocked<DiscoveryService> = {
+    getBaseUrl: jest.fn(),
+    getExternalBaseUrl: jest.fn(),
   };
 
   setupRequestMockHandlers(worker);
@@ -146,7 +159,12 @@ describe('KubernetesProxy', () => {
       validateCluster: jest.fn(),
       presentAuthMetadata: jest.fn(),
     };
-    proxy = new KubernetesProxy({ logger, clusterSupplier, authStrategy });
+    proxy = new KubernetesProxy({
+      logger,
+      clusterSupplier,
+      authStrategy,
+      discovery: mockDisocveryApi,
+    });
     permissionApi.authorize.mockResolvedValue([
       { result: AuthorizeResult.ALLOW },
     ]);
@@ -532,9 +550,10 @@ describe('KubernetesProxy', () => {
     };
 
     proxy = new KubernetesProxy({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       clusterSupplier: clusterSupplier,
       authStrategy: strategy,
+      discovery: mockDisocveryApi,
     });
 
     worker.use(
@@ -653,9 +672,10 @@ describe('KubernetesProxy', () => {
 
   it('returns a response with a localKubectlProxy auth provider configuration', async () => {
     proxy = new KubernetesProxy({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       clusterSupplier: new LocalKubectlProxyClusterLocator(),
       authStrategy: new AnonymousStrategy(),
+      discovery: mockDisocveryApi,
     });
 
     worker.use(

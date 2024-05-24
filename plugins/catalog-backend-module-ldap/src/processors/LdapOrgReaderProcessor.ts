@@ -15,7 +15,6 @@
  */
 
 import { Config } from '@backstage/config';
-import { Logger } from 'winston';
 import {
   GroupTransformer,
   LdapClient,
@@ -30,6 +29,7 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Extracts teams and users out of an LDAP server.
@@ -38,14 +38,14 @@ import { LocationSpec } from '@backstage/plugin-catalog-common';
  */
 export class LdapOrgReaderProcessor implements CatalogProcessor {
   private readonly providers: LdapProviderConfig[];
-  private readonly logger: Logger;
+  private readonly logger: LoggerService;
   private readonly groupTransformer?: GroupTransformer;
   private readonly userTransformer?: UserTransformer;
 
   static fromConfig(
     configRoot: Config,
     options: {
-      logger: Logger;
+      logger: LoggerService;
       groupTransformer?: GroupTransformer;
       userTransformer?: UserTransformer;
     },
@@ -62,7 +62,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
 
   constructor(options: {
     providers: LdapProviderConfig[];
-    logger: Logger;
+    logger: LoggerService;
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
   }) {

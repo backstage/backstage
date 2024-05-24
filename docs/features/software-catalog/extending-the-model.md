@@ -120,7 +120,7 @@ the infrastructure tooling through plugins. Different plugins are used for
 managing different types of components.
 
 For example, the
-[Lighthouse plugin](https://github.com/backstage/backstage/tree/master/plugins/lighthouse)
+[Lighthouse plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/lighthouse/plugins/lighthouse)
 only makes sense for Websites. The more specific you can be in how you model
 your software, the easier it is to provide plugins that are contextual.
 
@@ -139,11 +139,12 @@ Example intents:
 > data in annotation values, not just strings."
 
 After pieces of raw entity data have been read from a location, they are passed
-through a fixed number of so called `Validators`, as part of the entity policy
-check step. They ensure that the types and syntax of the base envelope and
-metadata make sense - in short, things that aren't entity-kind-specific. Some or
-all of these validators can be replaced when building the backend catalog using
-the `CatalogBuilder`.
+through a field format validation step. This ensures that the types and syntax
+of the base envelope and metadata make sense - in short, things that aren't
+entity-kind-specific. Some or all of these validators can be replaced when
+building the backend using the catalog's dedicated `catalogModelExtensionPoint`
+(or directly on the `CatalogBuilder` if you are still using the old backend
+system).
 
 The risk and impact of this type of extension varies, based on what it is that
 you want to do. For example, extending the valid character set for kinds,
@@ -154,8 +155,55 @@ aren't careful about encoding arguments. Supporting non-strings in annotations
 may be possible but has not yet been tried out in the real world - there is
 likely to be some level of plugin breakage that can be hard to predict.
 
+You must also be careful about not making the rules _more strict_ than they used
+to be after populating the catalog with data. This risks making previously valid
+entities start having processing errors and fail to update.
+
 Before making this kind of extension, we recommend that you contact the
 Backstage maintainers or a support partner to discuss your use case.
+
+This is an example of relaxing the format rules of the `metadata.name` field:
+
+```ts
+import { createBackend } from '@backstage/backend-defaults';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+
+const myCatalogCustomizations = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'catalog-customization',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        catalogModel: catalogModelExtensionPoint,
+      },
+      async init({ catalogModel }) {
+        catalogModel.setFieldValidators({
+          // This is only one of many methods that you can pass into
+          // setFieldValidators; your editor of choice should help you
+          // find the others. The length checks and regexp inside are
+          // just examples and can be adjusted as needed, but take care
+          // to test your changes thoroughly to ensure that you get
+          // them right.
+          isValidEntityName(value) {
+            return (
+              typeof value === 'string' &&
+              value.length >= 1 &&
+              value.length <= 63 &&
+              /^[A-Za-z0-9@+_.-]+$/.test(value)
+            );
+          },
+        });
+      },
+    });
+  },
+});
+
+const backend = createBackend();
+// ... add other backend features and the catalog backend itself here ...
+backend.add(myCatalogCustomizations);
+backend.start();
+```
 
 ## Changing the Validation Rules for Core Entity Fields
 
@@ -471,6 +519,9 @@ will be used within the catalog to make sure that it's able to ingest and
 validate entities of our new kind. Just like with the definition package, you
 can find inspiration in for example the existing
 [ScaffolderEntitiesProcessor](https://github.com/backstage/backstage/tree/master/plugins/catalog-backend-module-scaffolder-entity-model/src/processor/ScaffolderEntitiesProcessor.ts).
+
+The custom processor should be created as a separate module for the catalog plugin. For information on how to set that up, see the [plugin docs](../../plugins/backend-plugin.md#creating-a-backend-plugin). Use `yarn new --select backend-module` instead to create a module. For our case, the module ID will be `foobar` and the plugin ID will be `catalog`.
+
 We also provide a high-level example of what a catalog process for a custom
 entity might look like:
 
@@ -537,20 +588,43 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
 }
 ```
 
-Once the processor is created it can be wired up to the catalog via the
-`CatalogBuilder` in `packages/backend/src/plugins/catalog.ts`:
+#### New Backend
 
-```ts title="packages/backend/src/plugins/catalog.ts"
+To use your custom processor, you'll need to add the module to your backend as well as integrate your module with the catalog plugin.
+
+```ts title="plugins/catalog-backend-module-foobar/src/index.ts"
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 /* highlight-add-next-line */
-import { FoobarEntitiesProcessor } from '@internal/plugin-foobar-backend';
+import { FoobarEntitiesProcessor } from './providers';
 
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  /* highlight-add-next-line */
-  builder.addProcessor(new FoobarEntitiesProcessor());
-  const { processingEngine, router } = await builder.build();
-  // ..
-}
+export const catalogModuleFoobarEntitiesProcessor = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'foobar',
+  register(env) {
+    env.registerInit({
+      deps: {
+        catalog: catalogProcessingExtensionPoint,
+      },
+      async init({ catalog }) {
+        catalog.addProcessor(new FoobarEntitiesProcessor());
+      },
+    });
+  },
+});
+
+export default catalogModuleFoobarEntitiesProcessor;
 ```
+
+This module can then be installed to your backend like so,
+
+```ts
+backend.add(import('@internal/plugin-catalog-backend-module-foobar'));
+```
+
+#### Legacy Backend
+
+Look through the [legacy documentation](./extending-the-model--old.md).

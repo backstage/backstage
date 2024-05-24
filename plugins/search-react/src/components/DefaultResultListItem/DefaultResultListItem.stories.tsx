@@ -16,7 +16,7 @@
 
 import { LinkButton } from '@backstage/core-components';
 import { lightTheme } from '@backstage/theme';
-import { Grid } from '@material-ui/core';
+import Grid from '@material-ui/core/Grid';
 import CssBaseline from '@material-ui/core/CssBaseline';
 import { ThemeProvider } from '@material-ui/core/styles';
 import FindInPageIcon from '@material-ui/icons/FindInPage';

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { errors } from '@elastic/elasticsearch';
 import Mock from '@elastic/elasticsearch-mock';
@@ -26,6 +25,7 @@ import {
   encodePageCursor,
 } from './ElasticSearchSearchEngine';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('uuid', () => ({ v4: () => 'tag' }));
 
@@ -86,14 +86,14 @@ describe('ElasticSearchSearchEngine', () => {
       options,
       'search',
       '',
-      getVoidLogger(),
+      mockServices.logger.mock(),
       1000,
     );
     inspectableSearchEngine = new ElasticSearchSearchEngineForTranslatorTests(
       options,
       'search',
       '',
-      getVoidLogger(),
+      mockServices.logger.mock(),
       1000,
     );
     // eslint-disable-next-line dot-notation
@@ -915,7 +915,7 @@ describe('ElasticSearchSearchEngine', () => {
       const getOptional = jest.spyOn(config, 'getOptional');
 
       await ElasticSearchSearchEngine.fromConfig({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         config,
       });
 
@@ -940,7 +940,7 @@ describe('ElasticSearchSearchEngine', () => {
       expect(
         async () =>
           await ElasticSearchSearchEngine.fromConfig({
-            logger: getVoidLogger(),
+            logger: mockServices.logger.mock(),
             config,
           }),
       ).not.toThrow();

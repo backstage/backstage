@@ -499,8 +499,12 @@ Start writing your documentation by adding more markdown (.md) files to this
 folder (/docs) or replace the content in this file.
 ```
 
-> Note: The values of `site_name`, `component_id` and `site_description` depends
-> on how you have configured your `template.yaml`
+:::note Note
+
+The values of `site_name`, `component_id` and `site_description` depends
+on how you have configured your `template.yaml`.
+
+:::
 
 Done! You now have support for TechDocs in your own software template!
 
@@ -514,7 +518,11 @@ theme:
   font: false
 ```
 
-> Note: The addition `name: material` is necessary. Otherwise it will not work
+:::note Note
+
+The addition `name: material` is necessary. Otherwise it will not work
+
+:::
 
 ## How to enable iframes in TechDocs
 
@@ -623,12 +631,16 @@ plugins:
   - kroki
 ```
 
-> Note: you will very likely want to set a `kroki` `ServerURL` configuration in your
-> `mkdocs.yml` as well. The default value is the publicly hosted `kroki.io`. If
-> you have sensitive information in your organization's diagrams, you should set
-> up a [server of your own](https://docs.kroki.io/kroki/setup/install/) and use it
-> instead. Check out [mkdocs-kroki-plugin config](https://github.com/AVATEAM-IT-SYSTEMHAUS/mkdocs-kroki-plugin#config)
-> for more plugin configuration details.
+:::note Note
+
+You will very likely want to set a `kroki` `ServerURL` configuration in your
+`mkdocs.yml` as well. The default value is the publicly hosted `kroki.io`. If
+you have sensitive information in your organization's diagrams, you should set
+up a [server of your own](https://docs.kroki.io/kroki/setup/install/) and use it
+instead. Check out [mkdocs-kroki-plugin config](https://github.com/AVATEAM-IT-SYSTEMHAUS/mkdocs-kroki-plugin#config)
+for more plugin configuration details.
+
+:::
 
 4. **Add mermaid code into TechDocs:**
 
@@ -720,6 +732,57 @@ entity. If the value of this annotation is `'local'`, the TechDocs backend will 
 and publish the documentation for them. If the value of the `company.com/techdocs-builder`
 annotation is anything other than `'local'`, the user is responsible for publishing
 documentation to the appropriate location in the TechDocs external storage.
+
+### Hybrid build strategy using the New Backend System
+
+To setup a hybrid build strategy using the New Backend System you'll follow the same steps as above but for Step 4 you will need to do the following:
+
+```ts title="packages/backend/src/index.ts"
+const backend = createBackend();
+
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  DocsBuildStrategy,
+  techdocsBuildsExtensionPoint,
+} from '@backstage/plugin-techdocs-node';
+
+const techdocsCustomBuildStrategy = createBackendModule({
+  pluginId: 'techdocs',
+  moduleId: 'customBuildStrategy',
+  register(env) {
+    env.registerInit({
+      deps: {
+        techdocs: techdocsBuildsExtensionPoint,
+      },
+      async init({ techdocs }) {
+        const docsBuildStrategy: DocsBuildStrategy = {
+          shouldBuild: async params =>
+            params.entity.metadata?.annotations?.[
+              'demo.backstage.io/techdocs-builder'
+            ] === 'local',
+        };
+
+        techdocs.setBuildStrategy(docsBuildStrategy);
+      },
+    });
+  },
+});
+
+// Other plugins...
+
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-techdocs-backend/alpha'));
+backend.add(techdocsCustomBuildStrategy());
+/* highlight-add-end */
+
+backend.start();
+```
+
+:::note Note
+
+You may need to add the `@backstage/plugin-techdocs-node` package to your backend `package.json` if it's not been imported already.
+
+:::
 
 ## How to use other mkdocs plugins?
 

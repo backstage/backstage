@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-signals",
-  "version": "0.0.5-next.0",
+  "version": "0.0.7-next.0",
   "backstage": {
     "role": "frontend-plugin"
   },
@@ -48,7 +48,7 @@
     "@backstage/dev-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^14.0.0",
+    "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0",
     "jest-websocket-mock": "^2.5.0",
     "msw": "^1.0.0"

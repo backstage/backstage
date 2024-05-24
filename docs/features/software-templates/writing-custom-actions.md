@@ -8,10 +8,14 @@ If you want to extend the functionality of the Scaffolder, you can do so
 by writing custom actions which can be used alongside our
 [built-in actions](./builtin-actions.md).
 
-> Note: When adding custom actions, the actions array will **replace the
-> built-in actions too**. Meaning, you will no longer be able to use them.
-> If you want to continue using the builtin actions, include them in the actions
-> array when registering your custom actions, as seen below.
+:::note Note
+
+When adding custom actions, the actions array will **replace the
+built-in actions too**. Meaning, you will no longer be able to use them.
+If you want to continue using the builtin actions, include them in the actions
+array when registering your custom actions, as seen below.
+
+:::
 
 ## Writing your Custom Action
 
@@ -107,7 +111,7 @@ export const createNewFileAction = () => {
 };
 ```
 
-#### Naming Conventions
+### Naming Conventions
 
 Try to keep names consistent for both your own custom actions, and any actions contributed to open source. We've found that a separation of `:` and using a verb as the last part of the name works well.
 We follow `provider:entity:verb` or as close to this as possible for our built in actions. For example, `github:actions:create` or `github:repo:create`.
@@ -187,6 +191,42 @@ export default async function createPlugin(
     reader: env.reader,
   });
 }
+```
+
+### Register Action With New Backend System
+
+To register your new custom action in the New Backend System you will need to create a backend module. Here is a very simplified example of how to do that:
+
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-start */
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+/* highlight-add-end */
+
+/* highlight-add-start */
+const scaffolderModuleCustomExtensions = createBackendModule({
+  pluginId: 'scaffolder', // name of the plugin that the module is targeting
+  moduleId: 'custom-extensions',
+  register(env) {
+    env.registerInit({
+      deps: {
+        scaffolder: scaffolderActionsExtensionPoint,
+        // ... and other dependencies as needed
+      },
+      async init({ scaffolder /* ..., other dependencies */ }) {
+        // Here you have the opportunity to interact with the extension
+        // point before the plugin itself gets instantiated
+        scaffolder.addActions(new createNewFileAction()); // just an example
+      },
+    });
+  },
+});
+/* highlight-add-end */
+
+const backend = createBackend();
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+/* highlight-add-next-line */
+backend.add(scaffolderModuleCustomExtensions());
 ```
 
 ## List of custom action packages

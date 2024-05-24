@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import {
-  FormControl,
-  IconButton,
-  Input,
-  InputAdornment,
-  makeStyles,
-  Toolbar,
-} from '@material-ui/core';
+import FormControl from '@material-ui/core/FormControl';
+import IconButton from '@material-ui/core/IconButton';
+import Input from '@material-ui/core/Input';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import Toolbar from '@material-ui/core/Toolbar';
+import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
 import React, { useEffect, useMemo, useState } from 'react';

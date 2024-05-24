@@ -17,13 +17,13 @@
 import { ConfigReader } from '@backstage/config';
 import {
   createMockDirectory,
+  mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
-import { getVoidLogger } from '../logging';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { NotModifiedError, NotFoundError } from '@backstage/errors';
@@ -32,7 +32,7 @@ import {
   readGitLabIntegrationConfig,
 } from '@backstage/integration';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 const mockDir = createMockDirectory({ mockOsTmpDir: true });
 

@@ -1,20 +1,30 @@
 {
   "name": "@backstage/backend-app-api",
+  "version": "0.7.6-next.0",
   "description": "Core API used by Backstage backend apps",
-  "version": "0.6.3-next.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "publishConfig": {
-    "access": "public"
-  },
   "backstage": {
     "role": "node-library"
   },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/backend-app-api"
+  },
+  "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -25,24 +35,19 @@
       ]
     }
   },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "packages/backend-app-api"
-  },
-  "keywords": [
-    "backstage"
+  "files": [
+    "dist",
+    "config.d.ts",
+    "migrations/**/*.{js,d.ts}"
   ],
-  "license": "Apache-2.0",
   "scripts": {
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-common": "workspace:^",
@@ -67,8 +72,10 @@
     "fs-extra": "^11.2.0",
     "helmet": "^6.0.0",
     "jose": "^5.0.0",
+    "knex": "^3.0.0",
     "lodash": "^4.17.21",
     "logform": "^2.3.2",
+    "luxon": "^3.0.0",
     "minimatch": "^9.0.0",
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
@@ -76,6 +83,8 @@
     "path-to-regexp": "^6.2.1",
     "selfsigned": "^2.0.0",
     "stoppable": "^1.1.0",
+    "triple-beam": "^1.4.1",
+    "uuid": "^9.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0"
   },
@@ -93,10 +102,5 @@
     "msw": "^1.0.0",
     "supertest": "^6.1.3"
   },
-  "configSchema": "config.d.ts",
-  "files": [
-    "dist",
-    "config.d.ts",
-    "alpha"
-  ]
+  "configSchema": "config.d.ts"
 }

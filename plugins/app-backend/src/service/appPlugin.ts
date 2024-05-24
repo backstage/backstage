@@ -20,7 +20,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './router';
-import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   configSchemaExtensionPoint,
   staticFallbackHandlerExtensionPoint,
@@ -65,22 +64,26 @@ export const appPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         database: coreServices.database,
         httpRouter: coreServices.httpRouter,
+        auth: coreServices.auth,
+        httpAuth: coreServices.httpAuth,
       },
-      async init({ logger, config, database, httpRouter }) {
+      async init({ logger, config, database, httpRouter, auth, httpAuth }) {
         const appPackageName =
           config.getOptionalString('app.packageName') ?? 'app';
 
-        const winstonLogger = loggerToWinstonLogger(logger);
-
         const router = await createRouter({
-          logger: winstonLogger,
+          logger,
           config,
           database,
+          auth,
+          httpAuth,
           appPackageName,
           staticFallbackHandler,
           schema,
         });
         httpRouter.use(router);
+
+        // Access control is handled within the router
         httpRouter.addAuthPolicy({
           allow: 'unauthenticated',
           path: '/',

@@ -38,19 +38,15 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import {
-  EventBroker,
-  EventParams,
-  EventsService,
-} from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
 import {
   InstallationCreatedEvent,
   InstallationEvent,
+  MembershipEvent,
   OrganizationEvent,
   OrganizationMemberAddedEvent,
   OrganizationMemberRemovedEvent,
-  MembershipEvent,
   TeamCreatedEvent,
   TeamDeletedEvent,
   TeamEditedEvent,
@@ -58,7 +54,6 @@ import {
 } from '@octokit/webhooks-types';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
-import { Logger } from 'winston';
 
 import {
   assignGroupsToUsers,
@@ -83,6 +78,7 @@ import {
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 const EVENT_TOPICS = [
   'github.installation',
@@ -140,12 +136,21 @@ export interface GithubMultiOrgEntityProviderOptions {
   /**
    * The logger to use.
    */
-  logger: Logger;
+  logger: LoggerService;
 
   /**
    * Optionally supply a custom credentials provider, replacing the default one.
    */
   githubCredentialsProvider?: GithubCredentialsProvider;
+
+  /**
+   * Use the default namespace for groups. By default, groups will be namespaced according to their GitHub org.
+   *
+   * @remarks
+   *
+   * If set to true, groups with the same name across different orgs will be considered the same group.
+   */
+  alwaysUseDefaultNamespace?: boolean;
 
   /**
    * Optionally include a user transformer for transforming from GitHub users to User Entities
@@ -157,13 +162,6 @@ export interface GithubMultiOrgEntityProviderOptions {
    * By default, groups will be namespaced according to their GitHub org.
    */
   teamTransformer?: TeamTransformer;
-
-  /**
-   * An EventBroker to subscribe this provider to GitHub events to trigger delta mutations
-   *
-   * @deprecated Use `events` instead.
-   */
-  eventBroker?: EventBroker;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -209,16 +207,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
+      alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
     });
 
     provider.schedule(options.schedule);
-
-    if (options.eventBroker) {
-      options.eventBroker.subscribe({
-        supportsEventTopics: provider.supportsEventTopics.bind(provider),
-        onEvent: provider.onEvent.bind(provider),
-      });
-    }
 
     return provider;
   }
@@ -230,10 +222,11 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       gitHubConfig: GithubIntegrationConfig;
       githubCredentialsProvider: GithubCredentialsProvider;
       githubUrl: string;
-      logger: Logger;
+      logger: LoggerService;
       orgs?: string[];
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
+      alwaysUseDefaultNamespace?: boolean;
     },
   ) {}
 
@@ -257,7 +250,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
    * Runs one single complete ingestion. This is only necessary if you use
    * manual scheduling.
    */
-  async read(options?: { logger?: Logger }) {
+  async read(options?: { logger?: LoggerService }) {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -334,10 +327,6 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     });
 
     markCommitComplete();
-  }
-
-  private supportsEventTopics(): string[] {
-    return EVENT_TOPICS;
   }
 
   private async onEvent(params: EventParams): Promise<void> {
@@ -868,7 +857,10 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     const result = await defaultOrganizationTeamTransformer(team, ctx);
 
     if (result && result.spec) {
-      result.metadata.namespace = ctx.org.toLocaleLowerCase('en-US');
+      if (!this.options.alwaysUseDefaultNamespace) {
+        result.metadata.namespace = ctx.org.toLocaleLowerCase('en-US');
+      }
+
       // Group `spec.members` inherits the namespace of it's group so need to explicitly specify refs here
       result.spec.members = team.members.map(
         user => `${DEFAULT_NAMESPACE}/${user.login}`,
@@ -925,7 +917,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 }
 
 // Helps wrap the timing and logging behaviors
-function trackProgress(logger: Logger) {
+function trackProgress(logger: LoggerService) {
   let timestamp = Date.now();
   let summary: string;
 
