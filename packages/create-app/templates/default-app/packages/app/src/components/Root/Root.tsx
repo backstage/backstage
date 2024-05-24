@@ -70,8 +70,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         <SidebarItem icon={CreateComponentIcon} to="create" text="Create..." />
         {/* End global nav */}
         <SidebarDivider />
-        <SidebarScrollWrapper>
-        </SidebarScrollWrapper>
+        <SidebarScrollWrapper />
       </SidebarGroup>
       <SidebarSpace />
       <SidebarDivider />
