@@ -34,7 +34,7 @@ export class MemoryEventHubStore implements EventHubStore {
   async publish(options: {
     params: EventParams;
     subscriberIds: string[];
-  }): Promise<void> {
+  }): Promise<{ id: string } | undefined> {
     const topicId = options.params.topic;
     const subscriberIds = new Set(options.subscriberIds);
 
@@ -46,7 +46,7 @@ export class MemoryEventHubStore implements EventHubStore {
       }
     }
     if (!hasOtherSubscribers) {
-      return;
+      return undefined;
     }
 
     const nextSeq = this.#getMaxSeq() + 1;
@@ -57,6 +57,7 @@ export class MemoryEventHubStore implements EventHubStore {
         listener.notify(topicId);
       }
     }
+    return { id: String(nextSeq) };
   }
 
   #getMaxSeq() {
@@ -98,16 +99,21 @@ export class MemoryEventHubStore implements EventHubStore {
 
   async listen(
     subscriptionId: string,
-    onNotify: (topicId: string) => void,
-  ): Promise<() => void> {
+    listeners: {
+      onNotify(topicId: string): void;
+      onError(): void;
+    },
+  ): Promise<{ cancel(): void }> {
     const sub = this.#subscribers.get(subscriptionId);
     if (!sub) {
       throw new Error(`Subscription not found`);
     }
-    const listener = { topics: sub.topics, notify: onNotify };
+    const listener = { topics: sub.topics, notify: listeners.onNotify };
     this.#listeners.add(listener);
-    return () => {
-      this.#listeners.delete(listener);
+    return {
+      cancel: () => {
+        this.#listeners.delete(listener);
+      },
     };
   }
 }

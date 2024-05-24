@@ -20,7 +20,7 @@ export type EventHubStore = {
   publish(options: {
     params: EventParams;
     subscriberIds: string[];
-  }): Promise<{ id: string }>;
+  }): Promise<{ id: string } | undefined>;
 
   upsertSubscription(id: string, topics: string[]): Promise<void>;
 

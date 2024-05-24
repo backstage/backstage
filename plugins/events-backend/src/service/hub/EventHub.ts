@@ -37,10 +37,19 @@ export class EventHub {
     const { database, httpAuth } = options;
     const logger = options.logger.child({ type: 'EventHub' });
     const router = Router();
-    const store = await DatabaseEventHubStore.create({
-      database,
-      logger,
-    });
+
+    let store: EventHubStore;
+    const db = await database.getClient();
+    if (db.client.config.client === 'pg') {
+      logger.info('Database is PostgreSQL, using database store');
+      store = await DatabaseEventHubStore.create({
+        database,
+        logger,
+      });
+    } else {
+      logger.info('Database is not PostgreSQL, using memory store');
+      store = new MemoryEventHubStore();
+    }
 
     const hub = new EventHub(router, logger, httpAuth, store);
 
@@ -92,19 +101,21 @@ export class EventHub {
     const credentials = await this.#httpAuth.credentials(req, {
       allow: ['service'],
     });
-    const { id } = await this.#store.publish({
+    const result = await this.#store.publish({
       params: {
         topic: req.body.event.topic,
         eventPayload: req.body.event.payload,
       } as EventParams,
       subscriberIds: req.body.subscriptionIds ?? [],
     });
-    this.#logger.info(
-      `Published event to '${req.body.event.topic}' with ID '${id}'`,
-      {
-        subject: credentials.principal.subject,
-      },
-    );
+    if (result) {
+      this.#logger.info(
+        `Published event to '${req.body.event.topic}' with ID '${result.id}'`,
+        {
+          subject: credentials.principal.subject,
+        },
+      );
+    }
     res.status(201).end();
   };
 
