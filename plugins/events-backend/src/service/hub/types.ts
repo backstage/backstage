@@ -28,6 +28,9 @@ export type EventHubStore = {
 
   listen(
     subscriptionId: string,
-    onNotify: (topicId: string) => void,
-  ): Promise<() => void>;
+    listeners: {
+      onNotify(topicId: string): void;
+      onError(): void;
+    },
+  ): Promise<{ cancel(): void }>;
 };

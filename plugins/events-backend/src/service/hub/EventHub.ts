@@ -118,21 +118,46 @@ export class EventHub {
     });
     const id = req.params.subscriptionId;
 
-    const { events } = await this.#store.readSubscription(id);
-
-    this.#logger.info(
-      `Reading subscription '${id}' resulted in ${events.length} events`,
-      { subject: credentials.principal.subject },
-    );
-
-    if (events.length > 0) {
-      res.json({ events });
-      return;
-    }
-
-    this.#store.listen(id, () => {
-      res.status(204).end();
+    let resolveShouldNotify: (shouldNotify: boolean) => void;
+    const shouldNotifyPromise = new Promise<boolean>(resolve => {
+      resolveShouldNotify = resolve;
     });
+
+    const { cancel } = await this.#store.listen(id, {
+      onNotify() {
+        shouldNotifyPromise.then(shouldNotify => {
+          if (shouldNotify) {
+            res.status(204).end();
+          }
+        });
+      },
+      onError() {
+        shouldNotifyPromise.then(shouldNotify => {
+          if (shouldNotify) {
+            res.status(500).end();
+          }
+        });
+      },
+    });
+    req.on('end', cancel);
+
+    try {
+      const { events } = await this.#store.readSubscription(id);
+
+      this.#logger.info(
+        `Reading subscription '${id}' resulted in ${events.length} events`,
+        { subject: credentials.principal.subject },
+      );
+
+      if (events.length > 0) {
+        res.json({ events });
+        resolveShouldNotify!(false);
+      } else {
+        resolveShouldNotify!(true);
+      }
+    } finally {
+      resolveShouldNotify!(false);
+    }
   };
 
   #handlePutSubscription: internal.DocRequestHandler<

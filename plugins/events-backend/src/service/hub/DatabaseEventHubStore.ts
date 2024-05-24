@@ -348,8 +348,11 @@ export class DatabaseEventHubStore implements EventHubStore {
 
   async listen(
     subscriptionId: string,
-    onNotify: (topicId: string) => void,
-  ): Promise<() => void> {
+    listeners: {
+      onNotify: (topicId: string) => void;
+      onError: () => void;
+    },
+  ): Promise<{ cancel(): void }> {
     const result = await this.#db<SubscriptionsRow>(TABLE_SUBSCRIPTIONS)
       .select('topics')
       .where({ id: subscriptionId })
@@ -361,6 +364,11 @@ export class DatabaseEventHubStore implements EventHubStore {
       );
     }
     const topics = new Set(result.topics ?? []);
-    return this.#listener.listen(topics, onNotify, () => {});
+    const cancel = await this.#listener.listen(
+      topics,
+      listeners.onNotify,
+      listeners.onError,
+    );
+    return { cancel };
   }
 }
