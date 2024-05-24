@@ -24,14 +24,16 @@ import {
 } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
 import {
-  catalogApiRef,
   EntityDisplayName,
+  EntityRefPresentationSnapshot,
+  catalogApiRef,
   entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import TextField from '@material-ui/core/TextField';
 import FormControl from '@material-ui/core/FormControl';
 import Autocomplete, {
   AutocompleteChangeReason,
+  createFilterOptions,
 } from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect } from 'react';
 import useAsync from 'react-use/esm/useAsync';
@@ -75,28 +77,28 @@ export const EntityPicker = (props: EntityPickerProps) => {
         ? { filter: catalogFilter, fields }
         : { filter: undefined, fields },
     );
-    return items;
+
+    const entityRefToPresentation = new Map<
+      string,
+      EntityRefPresentationSnapshot
+    >(
+      await Promise.all(
+        items.map(async item => {
+          const presentation = await entityPresentationApi.forEntity(item)
+            .promise;
+          return [stringifyEntityRef(item), presentation] as [
+            string,
+            EntityRefPresentationSnapshot,
+          ];
+        }),
+      ),
+    );
+
+    return { catalogEntities: items, entityRefToPresentation };
   });
+
   const allowArbitraryValues =
     uiSchema['ui:options']?.allowArbitraryValues ?? true;
-
-  const getLabel = useCallback(
-    (formDataOrRef: string) => {
-      try {
-        const parsedRef = stringifyEntityRef(
-          parseEntityRef(formDataOrRef, { defaultKind, defaultNamespace }),
-        );
-
-        return entityPresentationApi.forEntity(parsedRef, {
-          defaultKind,
-          defaultNamespace,
-        }).snapshot.primaryTitle;
-      } catch (err) {
-        return formDataOrRef;
-      }
-    },
-    [defaultKind, defaultNamespace, entityPresentationApi],
-  );
 
   const onSelect = useCallback(
     (_: any, ref: string | Entity | null, reason: AutocompleteChangeReason) => {
@@ -132,12 +134,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
   // Since free solo can be enabled, attempt to parse as a full entity ref first, then fall
   // back to the given value.
   const selectedEntity =
-    entities?.find(e => stringifyEntityRef(e) === formData) ??
-    (allowArbitraryValues && formData ? getLabel(formData) : '');
+    entities?.catalogEntities.find(e => stringifyEntityRef(e) === formData) ??
+    (allowArbitraryValues && formData ? formData : '');
 
   useEffect(() => {
-    if (entities?.length === 1 && selectedEntity === '') {
-      onChange(stringifyEntityRef(entities[0]));
+    if (entities?.catalogEntities.length === 1 && selectedEntity === '') {
+      onChange(stringifyEntityRef(entities.catalogEntities[0]));
     }
   }, [entities, onChange, selectedEntity]);
 
@@ -148,21 +150,18 @@ export const EntityPicker = (props: EntityPickerProps) => {
       error={rawErrors?.length > 0 && !formData}
     >
       <Autocomplete
-        disabled={entities?.length === 1}
+        disabled={entities?.catalogEntities.length === 1}
         id={idSchema?.$id}
         value={selectedEntity}
         loading={loading}
         onChange={onSelect}
-        options={entities || []}
-        renderOption={option => <EntityDisplayName entityRef={option} />}
+        options={entities?.catalogEntities || []}
         getOptionLabel={option =>
           // option can be a string due to freeSolo.
           typeof option === 'string'
             ? option
-            : entityPresentationApi.forEntity(option, {
-                defaultKind,
-                defaultNamespace,
-              }).snapshot.primaryTitle
+            : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+                ?.entityRef!
         }
         autoSelect
         freeSolo={allowArbitraryValues}
@@ -178,6 +177,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
             InputProps={params.InputProps}
           />
         )}
+        renderOption={option => <EntityDisplayName entityRef={option} />}
+        filterOptions={createFilterOptions<Entity>({
+          stringify: option =>
+            entities?.entityRefToPresentation.get(stringifyEntityRef(option))
+              ?.primaryTitle!,
+        })}
       />
     </FormControl>
   );
