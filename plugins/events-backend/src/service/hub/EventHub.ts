@@ -101,22 +101,34 @@ export class EventHub {
     const credentials = await this.#httpAuth.credentials(req, {
       allow: ['service'],
     });
+    const topic = req.body.event.topic;
+    const subscriberIds = req.body.subscriptionIds ?? [];
     const result = await this.#store.publish({
       params: {
-        topic: req.body.event.topic,
+        topic,
         eventPayload: req.body.event.payload,
       } as EventParams,
-      subscriberIds: req.body.subscriptionIds ?? [],
+      subscriberIds,
     });
     if (result) {
       this.#logger.info(
-        `Published event to '${req.body.event.topic}' with ID '${result.id}'`,
+        `Published event to '${topic}' with ID '${result.id}'`,
         {
           subject: credentials.principal.subject,
         },
       );
+      res.status(201).end();
+    } else {
+      this.#logger.info(
+        `Skipped publishing of event to '${topic}', subscribers have already been notified: '${subscriberIds.join(
+          "', '",
+        )}'`,
+        {
+          subject: credentials.principal.subject,
+        },
+      );
+      res.status(204).end();
     }
-    res.status(201).end();
   };
 
   #handleGetSubscription: internal.DocRequestHandler<

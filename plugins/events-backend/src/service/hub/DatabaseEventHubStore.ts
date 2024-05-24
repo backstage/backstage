@@ -223,24 +223,54 @@ export class DatabaseEventHubStore implements EventHubStore {
   async publish(options: {
     params: EventParams;
     subscriberIds: string[];
-  }): Promise<{ id: string }> {
+  }): Promise<{ id: string } | undefined> {
     const topic = options.params.topic;
-    const result = await this.#db<EventsRow>(TABLE_EVENTS)
-      .insert({
-        topic,
-        data_json: JSON.stringify({
-          payload: options.params.eventPayload,
-          metadata: options.params.metadata,
-        }),
-        consumed_by: options.subscriberIds,
-      })
-      .returning('id');
+    // This query inserts a new event into the database, but only if there are
+    // subscribers to the topic that have not already been notified
+    const result = await this.#db
+      // There's no clean way to create a INSERT INTO .. SELECT with knex, so we end up with quite a lot of .raw(...)
+      .into(
+        this.#db.raw('?? (??, ??, ??)', [
+          TABLE_EVENTS,
+          // These are the rows that we insert, and should match the SELECT below
+          'topic',
+          'data_json',
+          'consumed_by',
+        ]),
+      )
+      .insert<EventsRow>(
+        (q: Knex.QueryBuilder) =>
+          q
+            // We're not reading data to insert from anywhere else, just raw data
+            .select(
+              this.#db.raw('?', [topic]),
+              this.#db.raw('?', [
+                JSON.stringify({
+                  payload: options.params.eventPayload,
+                  metadata: options.params.metadata,
+                }),
+              ]),
+              this.#db.raw('?', [options.subscriberIds]),
+            )
+            // The rest of this query is to check whether there are any
+            // subscribers that have not been notified yet
+            .from(TABLE_SUBSCRIPTIONS)
+            .whereNotIn('id', options.subscriberIds) // Skip notified subscribers
+            .andWhere(this.#db.raw('? = ANY(topics)', [topic])) // Match topic
+            .having(this.#db.raw('count(*)'), '>', 0), // Check if there are any results
+      )
+      .returning<{ id: string }[]>('id');
 
-    if (result.length !== 1) {
-      throw new Error(`Failed to insert event, updated ${result.length} rows`);
+    if (result.length === 0) {
+      return undefined;
+    }
+    if (result.length > 1) {
+      throw new Error(
+        `Failed to insert event, unexpectedly updated ${result.length} rows`,
+      );
     }
 
-    const { id } = result[0];
+    const [{ id }] = result;
 
     // Notify other event bus instances that an event is available on the topic
     const notifyResult = await this.#db.select(
