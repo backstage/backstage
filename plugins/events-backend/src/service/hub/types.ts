@@ -16,7 +16,7 @@
 
 import { EventParams } from '@backstage/plugin-events-node';
 
-export type EventHubStore = {
+export type EventBusStore = {
   publish(options: {
     params: EventParams;
     subscriberIds: string[];

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 import { EventParams } from '@backstage/plugin-events-node';
-import { EventHubStore } from './types';
+import { EventBusStore } from './types';
 
 const MAX_BATCH_SIZE = 5;
 
-export class MemoryEventHubStore implements EventHubStore {
+export class MemoryEventBusStore implements EventBusStore {
   #events = new Array<
     EventParams & { seq: number; subscriberIds: Set<string> }
   >();

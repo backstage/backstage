@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { createEventBusRouter } from './EventHub';
+export { createEventBusRouter } from './createEventBusRouter';

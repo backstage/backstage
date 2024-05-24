@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { EventParams } from '@backstage/plugin-events-node';
-import { EventHubStore } from './types';
+import { EventBusStore } from './types';
 import { Knex } from 'knex';
 import {
   DatabaseService,
@@ -69,7 +69,7 @@ interface InternalDbConnection {
 }
 
 // This internal class manages a single connection to the database that all listeners share
-class DatabaseEventHubListener {
+class DatabaseEventBusListener {
   readonly #client: InternalDbClient;
   readonly #logger: LoggerService;
 
@@ -84,7 +84,7 @@ class DatabaseEventHubListener {
 
   constructor(client: InternalDbClient, logger: LoggerService) {
     this.#client = client;
-    this.#logger = logger.child({ type: 'DatabaseEventHubListener' });
+    this.#logger = logger.child({ type: 'DatabaseEventBusListener' });
   }
 
   async listen(
@@ -187,16 +187,16 @@ class DatabaseEventHubListener {
   }
 }
 
-export class DatabaseEventHubStore implements EventHubStore {
+export class DatabaseEventBusStore implements EventBusStore {
   static async create(options: {
     database: DatabaseService;
     logger: LoggerService;
-  }): Promise<DatabaseEventHubStore> {
+  }): Promise<DatabaseEventBusStore> {
     const db = await options.database.getClient();
 
     if (db.client.config.client !== 'pg') {
       throw new Error(
-        `DatabaseEventHubStore only supports PostgreSQL, got '${db.client.config.client}'`,
+        `DatabaseEventBusStore only supports PostgreSQL, got '${db.client.config.client}'`,
       );
     }
 
@@ -204,20 +204,20 @@ export class DatabaseEventHubStore implements EventHubStore {
       await db.migrate.latest({
         directory: migrationsDir,
       });
-      options.logger.info('DatabaseEventHubStore migrations ran successfully');
+      options.logger.info('DatabaseEventBusStore migrations ran successfully');
     }
 
-    return new DatabaseEventHubStore(db, options.logger);
+    return new DatabaseEventBusStore(db, options.logger);
   }
 
   readonly #db: Knex;
   readonly #logger: LoggerService;
-  readonly #listener: DatabaseEventHubListener;
+  readonly #listener: DatabaseEventBusListener;
 
   private constructor(db: Knex, logger: LoggerService) {
     this.#db = db;
     this.#logger = logger;
-    this.#listener = new DatabaseEventHubListener(db.client, logger);
+    this.#listener = new DatabaseEventBusListener(db.client, logger);
   }
 
   async publish(options: {

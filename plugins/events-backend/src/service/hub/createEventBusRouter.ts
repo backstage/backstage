@@ -22,9 +22,9 @@ import {
 import { Handler } from 'express';
 import Router from 'express-promise-router';
 import { createOpenApiRouter } from '../../schema/openapi.generated';
-import { MemoryEventHubStore } from './MemoryEventHubStore';
-import { DatabaseEventHubStore } from './DatabaseEventHubStore';
-import { EventHubStore } from './types';
+import { MemoryEventBusStore } from './MemoryEventBusStore';
+import { DatabaseEventBusStore } from './DatabaseEventBusStore';
+import { EventBusStore } from './types';
 import { EventParams } from '@backstage/plugin-events-node';
 
 export async function createEventBusRouter(options: {
@@ -33,20 +33,20 @@ export async function createEventBusRouter(options: {
   httpAuth: HttpAuthService;
 }): Promise<Handler> {
   const { database, httpAuth } = options;
-  const logger = options.logger.child({ type: 'EventHub' });
+  const logger = options.logger.child({ type: 'EventBus' });
   const router = Router();
 
-  let store: EventHubStore;
+  let store: EventBusStore;
   const db = await database.getClient();
   if (db.client.config.client === 'pg') {
     logger.info('Database is PostgreSQL, using database store');
-    store = await DatabaseEventHubStore.create({
+    store = await DatabaseEventBusStore.create({
       database,
       logger,
     });
   } else {
     logger.info('Database is not PostgreSQL, using memory store');
-    store = new MemoryEventHubStore();
+    store = new MemoryEventBusStore();
   }
 
   const apiRouter = await createOpenApiRouter();
