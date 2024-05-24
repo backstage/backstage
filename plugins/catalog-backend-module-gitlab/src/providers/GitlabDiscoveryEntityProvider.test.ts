@@ -61,7 +61,7 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
   });
 
   it('should fail without schedule nor scheduler', () => {
-    const config = new ConfigReader(mock.config_single_integration_branch);
+    const config = new ConfigReader(mock.config_single_integration);
 
     expect(() =>
       GitlabDiscoveryEntityProvider.fromConfig(config, {
@@ -99,7 +99,7 @@ describe('GitlabDiscoveryEntityProvider - configuration', () => {
 
   it('should instantiate provider with single simple discovery config', () => {
     const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader(mock.config_single_integration_branch);
+    const config = new ConfigReader(mock.config_single_integration);
     const providers = GitlabDiscoveryEntityProvider.fromConfig(config, {
       logger,
       schedule,
@@ -153,7 +153,7 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
-      entities: mock.expected_location_entities.filter(
+      entities: mock.expected_location_entities_default_branch.filter(
         entity =>
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
@@ -187,7 +187,7 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
-      entities: mock.expected_location_entities.filter(
+      entities: mock.expected_location_entities_default_branch.filter(
         entity =>
           entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
@@ -217,7 +217,7 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
-      entities: mock.expected_location_entities.filter(
+      entities: mock.expected_location_entities_default_branch.filter(
         entity =>
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
@@ -229,8 +229,9 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     });
   });
 
-  it('should filter found projects based on the branch', async () => {
-    const config = new ConfigReader(mock.config_single_integration_branch);
+  // branch and fallback branch are undefined in the config
+  it('should ingest catalog from project default branch only', async () => {
+    const config = new ConfigReader(mock.config_single_integration);
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
@@ -241,21 +242,14 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
       schedule,
     })[0];
 
-    const configured_branch =
-      mock.config_single_integration_branch.catalog.providers.gitlab['test-id']
-        .branch;
-
     await provider.connect(entityProviderConnection);
 
     await provider.refresh(logger);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
-      entities: mock.expected_location_entities.filter(
+      entities: mock.expected_location_entities_default_branch.filter(
         entity =>
-          entity.entity.metadata.annotations[
-            'backstage.io/managed-by-location'
-          ].includes(configured_branch) &&
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
           ].includes('awesome'),
@@ -263,7 +257,38 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
     });
   });
 
-  it('should only include projects with fallback branch', async () => {
+  // branch was set in the config
+  it('should ingest catalog from specific branch only', async () => {
+    const config = new ConfigReader(
+      mock.config_single_integration_specific_branch,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_specific_branch.filter(
+        entity =>
+          !entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('awesome'),
+      ),
+    });
+  });
+
+  // fallback branch was set in the config
+  it('should ingest catalog from default or fallback branch', async () => {
     const config = new ConfigReader(mock.config_fallbackBranch_branch);
     const schedule = new PersistingTaskRunner();
     const entityProviderConnection: EntityProviderConnection = {
@@ -275,21 +300,14 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
       schedule,
     })[0];
 
-    const configured_branch =
-      mock.config_fallbackBranch_branch.catalog.providers.gitlab['test-id']
-        .fallbackBranch;
-
     await provider.connect(entityProviderConnection);
 
     await provider.refresh(logger);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
-      entities: mock.expected_location_entities.filter(
+      entities: mock.expected_location_entities_fallback_branch.filter(
         entity =>
-          entity.entity.metadata.annotations[
-            'backstage.io/managed-by-location'
-          ].includes(configured_branch) &&
           !entity.entity.metadata.annotations[
             'backstage.io/managed-by-location'
           ].includes('awesome'),
@@ -319,7 +337,7 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
-      entities: mock.expected_location_entities.filter(entity =>
+      entities: mock.expected_location_entities_default_branch.filter(entity =>
         entity.entity.metadata.annotations[
           'backstage.io/managed-by-location'
         ].includes(configured_group),
@@ -394,7 +412,7 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
   it('should apply delta mutations on added files from push event', async () => {
-    const config = new ConfigReader(mock.config_single_integration_branch);
+    const config = new ConfigReader(mock.config_single_integration);
 
     const schedule = new PersistingTaskRunner();
     const events = DefaultEventsService.create({ logger });
@@ -421,7 +439,7 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
   });
 
   it('should apply delta mutations on removed files from push event', async () => {
-    const config = new ConfigReader(mock.config_single_integration_branch);
+    const config = new ConfigReader(mock.config_single_integration);
     const schedule = new PersistingTaskRunner();
     const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
@@ -447,7 +465,7 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
   });
 
   it('should call refresh on added files from push event', async () => {
-    const config = new ConfigReader(mock.config_single_integration_branch);
+    const config = new ConfigReader(mock.config_single_integration);
     const schedule = new PersistingTaskRunner();
     const events = DefaultEventsService.create({ logger });
     const entityProviderConnection: EntityProviderConnection = {
