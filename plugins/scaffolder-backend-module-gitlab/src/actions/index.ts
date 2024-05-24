@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 export * from './createGitlabGroupEnsureExistsAction';
-export * from './createGitlabProjectDeployTokenAction';
-export * from './createGitlabProjectAccessTokenAction';
-export * from './createGitlabProjectVariableAction';
 export * from './createGitlabIssueAction';
+export * from './createGitlabProjectAccessTokenAction';
+export * from './createGitlabProjectDeployTokenAction';
+export * from './createGitlabProjectVariableAction';
 export * from './gitlab';
 export * from './gitlabMergeRequest';
 export * from './gitlabRepoPush';
+export * from './gitlabPipelineTrigger';
