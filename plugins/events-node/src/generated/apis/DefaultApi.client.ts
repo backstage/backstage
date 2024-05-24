@@ -75,7 +75,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<void | GetSubscriptionEvents200Response>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/hub/subscriptions/{subscriptionId}/events`;
+    const uriTemplate = `/bus/v1/subscriptions/{subscriptionId}/events`;
 
     const uri = parser.parse(uriTemplate).expand({
       subscriptionId: request.path.subscriptionId,
@@ -103,7 +103,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/hub/events`;
+    const uriTemplate = `/bus/v1/events`;
 
     const uri = parser.parse(uriTemplate).expand({});
 
@@ -134,7 +134,7 @@ export class DefaultApiClient {
   ): Promise<TypedResponse<void>> {
     const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
 
-    const uriTemplate = `/hub/subscriptions/{subscriptionId}`;
+    const uriTemplate = `/bus/v1/subscriptions/{subscriptionId}`;
 
     const uri = parser.parse(uriTemplate).expand({
       subscriptionId: request.path.subscriptionId,

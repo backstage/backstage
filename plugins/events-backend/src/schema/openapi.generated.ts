@@ -132,7 +132,7 @@ export const spec = {
     },
   },
   paths: {
-    '/hub/events': {
+    '/bus/v1/events': {
       post: {
         operationId: 'PostEvent',
         description: 'Publish a new event',
@@ -192,7 +192,7 @@ export const spec = {
         },
       },
     },
-    '/hub/subscriptions/{subscriptionId}': {
+    '/bus/v1/subscriptions/{subscriptionId}': {
       put: {
         operationId: 'PutSubscription',
         description:
@@ -245,7 +245,7 @@ export const spec = {
         },
       },
     },
-    '/hub/subscriptions/{subscriptionId}/events': {
+    '/bus/v1/subscriptions/{subscriptionId}/events': {
       get: {
         operationId: 'GetSubscriptionEvents',
         description: 'Get new events for the provided subscription',

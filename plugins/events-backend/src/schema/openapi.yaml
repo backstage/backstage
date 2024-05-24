@@ -88,7 +88,7 @@ components:
       scheme: bearer
       bearerFormat: JWT
 paths:
-  /hub/events:
+  /bus/v1/events:
     post:
       operationId: PostEvent
       description: Publish a new event
@@ -126,7 +126,7 @@ paths:
                     payload:
                       myData: foo
 
-  /hub/subscriptions/{subscriptionId}:
+  /bus/v1/subscriptions/{subscriptionId}:
     put:
       operationId: PutSubscription
       description: Ensures that the subscription exists with the provided configuration
@@ -160,7 +160,7 @@ paths:
                   topics:
                     - test-topic
 
-  /hub/subscriptions/{subscriptionId}/events:
+  /bus/v1/subscriptions/{subscriptionId}/events:
     get:
       operationId: GetSubscriptionEvents
       description: Get new events for the provided subscription

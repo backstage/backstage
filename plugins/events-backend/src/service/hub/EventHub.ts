@@ -53,7 +53,7 @@ export async function createEventBusRouter(options: {
 
   router.use(apiRouter);
 
-  apiRouter.post('/hub/events', async (req, res) => {
+  apiRouter.post('/bus/v1/events', async (req, res) => {
     const credentials = await httpAuth.credentials(req, {
       allow: ['service'],
     });
@@ -85,7 +85,7 @@ export async function createEventBusRouter(options: {
   });
 
   apiRouter.get(
-    '/hub/subscriptions/:subscriptionId/events',
+    '/bus/v1/subscriptions/:subscriptionId/events',
     async (req, res) => {
       const credentials = await httpAuth.credentials(req, {
         allow: ['service'],
@@ -135,7 +135,7 @@ export async function createEventBusRouter(options: {
     },
   );
 
-  apiRouter.put('/hub/subscriptions/:subscriptionId', async (req, res) => {
+  apiRouter.put('/bus/v1/subscriptions/:subscriptionId', async (req, res) => {
     const credentials = await httpAuth.credentials(req, {
       allow: ['service'],
     });
