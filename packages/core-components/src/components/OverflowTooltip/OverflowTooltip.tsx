@@ -52,7 +52,9 @@ export function OverflowTooltip(props: Props) {
       title={props.title ?? (props.text || '')}
       placement={props.placement}
     >
-      <Typography className={classes.typo}>{props.text}</Typography>
+      <Typography className={classes.typo} variant="inherit">
+        {props.text}
+      </Typography>
     </Tooltip>
   );
 }
