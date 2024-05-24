@@ -141,6 +141,11 @@ export async function createEventBusRouter(options: {
         notify(204);
         controller.abort();
       }, notifyTimeoutMs);
+      shouldNotifyPromise.then(shouldNotify => {
+        if (!shouldNotify) {
+          clearTimeout(timeout);
+        }
+      });
 
       try {
         const { events } = await store.readSubscription(id);
@@ -156,7 +161,6 @@ export async function createEventBusRouter(options: {
           resolveShouldNotify!(true);
         }
       } finally {
-        clearTimeout(timeout);
         resolveShouldNotify!(false);
       }
     },
