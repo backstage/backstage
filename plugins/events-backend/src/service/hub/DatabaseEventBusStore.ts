@@ -21,10 +21,11 @@ import {
   LoggerService,
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
-import { NotFoundError } from '@backstage/errors';
+import { ForwardedError, NotFoundError } from '@backstage/errors';
 
 const MAX_BATCH_SIZE = 10;
-const LISTENER_CONNECTION_TIMEOUT_MS = 10_000;
+const LISTENER_CONNECTION_TIMEOUT_MS = 60_000;
+const KEEPALIVE_INTERVAL_MS = 60_000;
 
 const TABLE_EVENTS = 'event_bus_events';
 const TABLE_SUBSCRIPTIONS = 'event_bus_subscriptions';
@@ -81,6 +82,7 @@ class DatabaseEventBusListener {
 
   #connPromise?: Promise<InternalDbConnection>;
   #connTimeout?: NodeJS.Timeout;
+  #keepaliveInterval?: NodeJS.Timeout;
 
   constructor(client: InternalDbClient, logger: LoggerService) {
     this.#client = client;
@@ -104,13 +106,11 @@ class DatabaseEventBusListener {
     return () => {
       this.#listeners.delete(listener);
 
-      // We don't use any heartbeats for the connection, as clients will be
-      // driving that for us. We do however need to make sure we don't sit
-      // idle for too long without any listeners
+      // If we don't have any listeners, destroy the connection after a timeout
       if (this.#listeners.size === 0) {
         this.#connTimeout = setTimeout(() => {
           this.#connPromise?.then(conn => {
-            this.#logger.info('Listener connection timed out');
+            this.#logger.info('Listener connection timed out, destroying');
             this.#connPromise = undefined;
             this.#destroyConnection(conn);
           });
@@ -128,7 +128,8 @@ class DatabaseEventBusListener {
     }
   }
 
-  // We don't try to reconnect on error, instead we notify all listeners and let them try to establish a new connection
+  // We don't try to reconnect on error, instead we notify all listeners and let
+  // them try to establish a new connection
   #handleError(error: Error) {
     this.#logger.error(
       `Listener connection failed, notifying all listeners`,
@@ -140,6 +141,10 @@ class DatabaseEventBusListener {
   }
 
   #destroyConnection(conn: InternalDbConnection) {
+    if (this.#keepaliveInterval) {
+      clearInterval(this.#keepaliveInterval);
+      this.#keepaliveInterval = undefined;
+    }
     this.#client.destroyRawConnection(conn).catch(error => {
       this.#logger.error(`Listener failed to destroy connection`, error);
     });
@@ -156,6 +161,18 @@ class DatabaseEventBusListener {
 
       try {
         await conn.query(`LISTEN ${TOPIC_PUBLISH}`);
+
+        // Set up a keepalive interval to make sure the connection stays alive
+        if (this.#keepaliveInterval) {
+          clearInterval(this.#keepaliveInterval);
+        }
+        this.#keepaliveInterval = setInterval(() => {
+          conn.query('select 1').catch(error => {
+            this.#connPromise = undefined;
+            this.#destroyConnection(conn);
+            this.#handleError(new ForwardedError('Keepalive failed', error));
+          });
+        }, KEEPALIVE_INTERVAL_MS);
 
         conn.on('notification', event => {
           this.#handleNotify(event.payload);
