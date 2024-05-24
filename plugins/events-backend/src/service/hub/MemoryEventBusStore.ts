@@ -99,21 +99,25 @@ export class MemoryEventBusStore implements EventBusStore {
 
   async listen(
     subscriptionId: string,
-    listeners: {
+    options: {
+      signal: AbortSignal;
       onNotify(topicId: string): void;
       onError(): void;
     },
-  ): Promise<{ cancel(): void }> {
+  ): Promise<void> {
+    if (options.signal.aborted) {
+      return;
+    }
+
     const sub = this.#subscribers.get(subscriptionId);
     if (!sub) {
       throw new Error(`Subscription not found`);
     }
-    const listener = { topics: sub.topics, notify: listeners.onNotify };
+    const listener = { topics: sub.topics, notify: options.onNotify };
     this.#listeners.add(listener);
-    return {
-      cancel: () => {
-        this.#listeners.delete(listener);
-      },
-    };
+
+    options.signal.addEventListener('abort', () => {
+      this.#listeners.delete(listener);
+    });
   }
 }

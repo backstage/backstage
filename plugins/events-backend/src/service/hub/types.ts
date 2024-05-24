@@ -28,9 +28,10 @@ export type EventBusStore = {
 
   listen(
     subscriptionId: string,
-    listeners: {
+    options: {
+      signal: AbortSignal;
       onNotify(topicId: string): void;
       onError(): void;
     },
-  ): Promise<{ cancel(): void }>;
+  ): Promise<void>;
 };

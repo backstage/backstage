@@ -378,27 +378,37 @@ export class DatabaseEventBusStore implements EventBusStore {
 
   async listen(
     subscriptionId: string,
-    listeners: {
+    options: {
+      signal: AbortSignal;
       onNotify: (topicId: string) => void;
       onError: () => void;
     },
-  ): Promise<{ cancel(): void }> {
+  ): Promise<void> {
     const result = await this.#db<SubscriptionsRow>(TABLE_SUBSCRIPTIONS)
       .select('topics')
       .where({ id: subscriptionId })
       .first();
-    console.log(`DEBUG: result=`, result);
+
     if (!result) {
       throw new NotFoundError(
         `Subscription with ID '${subscriptionId}' not found`,
       );
     }
+
+    if (options.signal.aborted) {
+      return;
+    }
+
     const topics = new Set(result.topics ?? []);
     const cancel = await this.#listener.listen(
       topics,
-      listeners.onNotify,
-      listeners.onError,
+      options.onNotify,
+      options.onError,
     );
-    return { cancel };
+    if (options.signal.aborted) {
+      cancel();
+    } else {
+      options.signal.addEventListener('abort', cancel);
+    }
   }
 }

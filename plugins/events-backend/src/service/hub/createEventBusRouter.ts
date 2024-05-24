@@ -27,12 +27,19 @@ import { DatabaseEventBusStore } from './DatabaseEventBusStore';
 import { EventBusStore } from './types';
 import { EventParams } from '@backstage/plugin-events-node';
 
+const DEFAULT_NOTIFY_TIMEOUT_MS = 55_000; // Just below 60s, which is a common HTTP timeout
+
 export async function createEventBusRouter(options: {
   logger: LoggerService;
   database: DatabaseService;
   httpAuth: HttpAuthService;
+  notifyTimeoutMs?: number; // for testing
 }): Promise<Handler> {
-  const { database, httpAuth } = options;
+  const {
+    database,
+    httpAuth,
+    notifyTimeoutMs = DEFAULT_NOTIFY_TIMEOUT_MS,
+  } = options;
   const logger = options.logger.child({ type: 'EventBus' });
   const router = Router();
 
@@ -92,28 +99,48 @@ export async function createEventBusRouter(options: {
       });
       const id = req.params.subscriptionId;
 
+      // Don't notify until we know the outcome of reading events
       let resolveShouldNotify: (shouldNotify: boolean) => void;
       const shouldNotifyPromise = new Promise<boolean>(resolve => {
         resolveShouldNotify = resolve;
       });
 
-      const { cancel } = await store.listen(id, {
+      const controller = new AbortController();
+      req.on('end', () => controller.abort());
+
+      let timeout: NodeJS.Timeout | undefined = undefined;
+
+      let notified = false;
+      const notify = async (status: number) => {
+        if (!notified) {
+          clearTimeout(timeout);
+          notified = true;
+          if (await shouldNotifyPromise) {
+            res.status(status).end();
+          }
+        }
+      };
+
+      // By setting up the listener first we make sure we don't miss any events
+      // that are published while reading. If an event is published we'll receive
+      // a notification, which depending on the outcome of the read we may ignore
+      await store.listen(id, {
+        signal: controller.signal,
         onNotify() {
-          shouldNotifyPromise.then(shouldNotify => {
-            if (shouldNotify) {
-              res.status(204).end();
-            }
-          });
+          notify(204);
         },
         onError() {
-          shouldNotifyPromise.then(shouldNotify => {
-            if (shouldNotify) {
-              res.status(500).end();
-            }
-          });
+          notify(500);
         },
       });
-      req.on('end', cancel);
+
+      // By timing out requests we make sure they don't stall or that events get stuck.
+      // For the caller there's no difference between a timeout and a
+      // notifications, either way they should try reading again.
+      timeout = setTimeout(() => {
+        notify(204);
+        controller.abort();
+      }, notifyTimeoutMs);
 
       try {
         const { events } = await store.readSubscription(id);
@@ -125,11 +152,11 @@ export async function createEventBusRouter(options: {
 
         if (events.length > 0) {
           res.json({ events });
-          resolveShouldNotify!(false);
         } else {
           resolveShouldNotify!(true);
         }
       } finally {
+        clearTimeout(timeout);
         resolveShouldNotify!(false);
       }
     },
