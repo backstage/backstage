@@ -21,11 +21,14 @@ import {
   LoggerService,
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
+import { NotFoundError } from '@backstage/errors';
 
 const MAX_BATCH_SIZE = 10;
+const LISTENER_CONNECTION_TIMEOUT_MS = 10_000;
 
 const TABLE_EVENTS = 'event_bus_events';
 const TABLE_SUBSCRIPTIONS = 'event_bus_subscriptions';
+const TOPIC_PUBLISH = 'event_bus_publish';
 
 type EventsRow = {
   id: string;
@@ -48,6 +51,142 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
+interface InternalDbClient {
+  acquireRawConnection(): Promise<InternalDbConnection>;
+  destroyRawConnection(conn: InternalDbConnection): Promise<void>;
+}
+
+interface InternalDbConnection {
+  query(sql: string): Promise<void>;
+  end(): Promise<void>;
+  on(
+    event: 'notification',
+    listener: (event: { channel: string; payload: string }) => void,
+  ): void;
+  on(event: 'error', listener: (error: Error) => void): void;
+  on(event: 'end', listener: (error?: Error) => void): void;
+  removeAllListeners(): void;
+}
+
+// This internal class manages a single connection to the database that all listeners share
+class DatabaseEventHubListener {
+  readonly #client: InternalDbClient;
+  readonly #logger: LoggerService;
+
+  readonly #listeners = new Set<{
+    topics: Set<string>;
+    onNotify: (topicId: string) => void;
+    onError: () => void;
+  }>();
+
+  #connPromise?: Promise<InternalDbConnection>;
+  #connTimeout?: NodeJS.Timeout;
+
+  constructor(client: InternalDbClient, logger: LoggerService) {
+    this.#client = client;
+    this.#logger = logger.child({ type: 'DatabaseEventHubListener' });
+  }
+
+  async listen(
+    topics: Set<string>,
+    onNotify: (topicId: string) => void,
+    onError: () => void,
+  ): Promise<() => void> {
+    if (this.#connTimeout) {
+      clearTimeout(this.#connTimeout);
+      this.#connTimeout = undefined;
+    }
+    await this.#ensureConnection();
+
+    const listener = { topics, onNotify, onError };
+    this.#listeners.add(listener);
+
+    return () => {
+      this.#listeners.delete(listener);
+
+      // We don't use any heartbeats for the connection, as clients will be
+      // driving that for us. We do however need to make sure we don't sit
+      // idle for too long without any listeners
+      if (this.#listeners.size === 0) {
+        this.#connTimeout = setTimeout(() => {
+          this.#connPromise?.then(conn => {
+            this.#logger.info('Listener connection timed out');
+            this.#connPromise = undefined;
+            this.#destroyConnection(conn);
+          });
+        }, LISTENER_CONNECTION_TIMEOUT_MS);
+      }
+    };
+  }
+
+  #handleNotify(topic: string) {
+    this.#logger.info(`Listener received notification for topic '${topic}'`);
+    for (const l of this.#listeners) {
+      if (l.topics.has(topic)) {
+        l.onNotify(topic);
+      }
+    }
+  }
+
+  // We don't try to reconnect on error, instead we notify all listeners and let them try to establish a new connection
+  #handleError(error: Error) {
+    this.#logger.error(
+      `Listener connection failed, notifying all listeners`,
+      error,
+    );
+    for (const l of this.#listeners) {
+      l.onError();
+    }
+  }
+
+  #destroyConnection(conn: InternalDbConnection) {
+    this.#client.destroyRawConnection(conn).catch(error => {
+      this.#logger.error(`Listener failed to destroy connection`, error);
+    });
+    conn.removeAllListeners();
+  }
+
+  async #ensureConnection() {
+    if (this.#connPromise) {
+      await this.#connPromise;
+      return;
+    }
+    this.#connPromise = Promise.resolve().then(async () => {
+      const conn = await this.#client.acquireRawConnection();
+
+      try {
+        await conn.query(`LISTEN ${TOPIC_PUBLISH}`);
+
+        conn.on('notification', event => {
+          this.#handleNotify(event.payload);
+        });
+        conn.on('error', error => {
+          this.#connPromise = undefined;
+          this.#destroyConnection(conn);
+          this.#handleError(error);
+        });
+        conn.on('end', error => {
+          this.#connPromise = undefined;
+          this.#destroyConnection(conn);
+          this.#handleError(
+            error ?? new Error('Connection ended unexpectedly'),
+          );
+        });
+        return conn;
+      } catch (error) {
+        this.#destroyConnection(conn);
+        throw error;
+      }
+    });
+    try {
+      await this.#connPromise;
+    } catch (error) {
+      this.#connPromise = undefined;
+      throw error;
+    }
+  }
+}
+
 export class DatabaseEventHubStore implements EventHubStore {
   static async create(options: {
     database: DatabaseService;
@@ -68,22 +207,27 @@ export class DatabaseEventHubStore implements EventHubStore {
       options.logger.info('DatabaseEventHubStore migrations ran successfully');
     }
 
-    return new DatabaseEventHubStore(db);
+    return new DatabaseEventHubStore(db, options.logger);
   }
 
   readonly #db: Knex;
+  readonly #logger: LoggerService;
+  readonly #listener: DatabaseEventHubListener;
 
-  private constructor(db: Knex) {
+  private constructor(db: Knex, logger: LoggerService) {
     this.#db = db;
+    this.#logger = logger;
+    this.#listener = new DatabaseEventHubListener(db.client, logger);
   }
 
   async publish(options: {
     params: EventParams;
     subscriberIds: string[];
   }): Promise<{ id: string }> {
+    const topic = options.params.topic;
     const result = await this.#db<EventsRow>(TABLE_EVENTS)
       .insert({
-        topic: options.params.topic,
+        topic,
         data_json: JSON.stringify({
           payload: options.params.eventPayload,
           metadata: options.params.metadata,
@@ -98,7 +242,15 @@ export class DatabaseEventHubStore implements EventHubStore {
 
     const { id } = result[0];
 
-    // TODO: notify
+    // Notify other event bus instances that an event is available on the topic
+    const notifyResult = await this.#db.select(
+      this.#db.raw(`pg_notify(?, ?)`, [TOPIC_PUBLISH, topic]),
+    );
+    if (notifyResult?.length !== 1) {
+      this.#logger.warn(
+        `Failed to notify subscribers of event with ID '${id}' on topic '${topic}'`,
+      );
+    }
 
     return { id };
   }
@@ -169,9 +321,11 @@ export class DatabaseEventHubStore implements EventHubStore {
       .where(`${TABLE_SUBSCRIPTIONS}.id`, id)
       .returning<[{ events: EventsRow[] }]>('events_array.events');
 
-    if (result.length !== 1) {
+    if (result.length === 0) {
+      throw new NotFoundError(`Subscription with ID '${id}' not found`);
+    } else if (result.length > 1) {
       throw new Error(
-        `Failed to upsert subscription, updated ${result.length} rows`,
+        `Failed to read subscription, unexpectedly updated ${result.length} rows`,
       );
     }
 
@@ -193,10 +347,20 @@ export class DatabaseEventHubStore implements EventHubStore {
   }
 
   async listen(
-    _subscriptionId: string,
-    _onNotify: (topicId: string) => void,
+    subscriptionId: string,
+    onNotify: (topicId: string) => void,
   ): Promise<() => void> {
-    // TODO
-    return () => {};
+    const result = await this.#db<SubscriptionsRow>(TABLE_SUBSCRIPTIONS)
+      .select('topics')
+      .where({ id: subscriptionId })
+      .first();
+    console.log(`DEBUG: result=`, result);
+    if (!result) {
+      throw new NotFoundError(
+        `Subscription with ID '${subscriptionId}' not found`,
+      );
+    }
+    const topics = new Set(result.topics ?? []);
+    return this.#listener.listen(topics, onNotify, () => {});
   }
 }
