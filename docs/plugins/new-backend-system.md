@@ -57,7 +57,7 @@ Many plugins have ways in which you can extend them, for example entity provider
 
 Extension Points look a little bit like services, since you depended on them just like you would a service. A key difference is that extension points are registered and provided by plugins themselves, based on what customizations each individual plugin wants to expose.
 
-Extension Points are also exported separately from the plugin instance itself, and a single plugin can also expose multiple different extension points at once. This makes it easier to evolve and deprecated individual Extension Points over time, rather than dealing with a single large API surface.
+Extension Points are also exported separately from the plugin instance itself, and a single plugin can also expose multiple different extension points at once. This makes it easier to evolve and deprecate individual Extension Points over time, rather than dealing with a single large API surface.
 
 ### Modules
 
@@ -130,7 +130,7 @@ backend.add(examplePlugin({ silent: true }));
 
 ## Creating Modules
 
-Some facts about modules
+Some facts about modules:
 
 - A Module is able to extend a plugin with additional functionality using the `ExtensionPoint`s registered by the plugin.
 - A module can only extend one plugin but can interact with multiple `ExtensionPoint`s registered by that plugin.
@@ -215,7 +215,7 @@ export const exampleServiceRef = createServiceRef<ExampleApi>({
   scope: 'plugin', // can be 'root' or 'plugin'
 
   // The defaultFactory is optional to implement but it will be used if no other factory is provided to the backend.
-  // This is allows for the backend to provide a default implementation of the service without having to wire it beforehand.
+  // This enables the backend to provide a default implementation of the service without having to wire it beforehand.
   defaultFactory: async service =>
     createServiceFactory({
       service,

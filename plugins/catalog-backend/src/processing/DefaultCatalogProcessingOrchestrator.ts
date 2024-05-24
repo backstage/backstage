@@ -186,6 +186,9 @@ export class DefaultCatalogProcessingOrchestrator
       };
     } catch (error) {
       assertError(error);
+
+      this.options?.logger?.error(error.message);
+
       return {
         ok: false,
         errors: collector.results().errors.concat(error),

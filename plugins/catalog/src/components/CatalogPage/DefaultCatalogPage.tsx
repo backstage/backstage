@@ -16,7 +16,6 @@
 
 import {
   Content,
-  ContentHeader,
   CreateButton,
   PageWithHeader,
   SupportButton,
@@ -60,9 +59,11 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   });
 
   return (
-    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
-      <Content>
-        <ContentHeader title="">
+    <PageWithHeader
+      title={t('indexPage.title', { orgName })}
+      themeId="home"
+      extra={
+        <>
           {allowed && (
             <CreateButton
               title={t('indexPage.createButtonTitle')}
@@ -70,7 +71,10 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
             />
           )}
           <SupportButton>All your software catalog entities</SupportButton>
-        </ContentHeader>
+        </>
+      }
+    >
+      <Content>
         <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>

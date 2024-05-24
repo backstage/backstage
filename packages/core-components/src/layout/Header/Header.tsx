@@ -50,6 +50,7 @@ const useStyles = makeStyles(
       display: 'flex',
       flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'space-between',
       backgroundImage: theme.page.backgroundImage,
       backgroundPosition: 'center',
       backgroundSize: 'cover',
@@ -114,6 +115,7 @@ type Props = {
   tooltip?: string;
   type?: string;
   typeLink?: string;
+  extra?: ReactNode;
 };
 
 type TypeFragmentProps = {
@@ -216,6 +218,7 @@ export function Header(props: PropsWithChildren<Props>) {
     tooltip,
     type,
     typeLink,
+    extra,
   } = props;
   const classes = useStyles();
   const configApi = useApi(configApiRef);
@@ -246,6 +249,7 @@ export function Header(props: PropsWithChildren<Props>) {
         <Grid container className={classes.rightItemsBox} spacing={4}>
           {children}
         </Grid>
+        {extra}
       </header>
     </>
   );

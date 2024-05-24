@@ -385,6 +385,10 @@ auth:
         clientId: ${AUTH_MICROSOFT_CLIENT_ID}
         clientSecret: ${AUTH_MICROSOFT_CLIENT_SECRET}
         tenantId: ${AUTH_MICROSOFT_TENANT_ID}
+        domainHint: ${AZURE_TENANT_ID}
+        signIn:
+          resolvers:
+            - resolver: emailMatchingUserEntityProfileEmail
     onelogin:
       development:
         clientId: ${AUTH_ONELOGIN_CLIENT_ID}

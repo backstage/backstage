@@ -6,13 +6,13 @@ description: Backstage was born out of necessity at Spotify. We found that as we
 ---
 
 Backstage was born out of necessity at Spotify. We found that as we grew, our
-infrastructure was becoming more fragmented, our engineers less productive.
+infrastructure was becoming more fragmented and our engineers less productive.
 
-Instead of building and testing code, teams were spending more time looking for
-the right information just to get started. “Where’s the API for that service
-we’re all supposed to be using?” “What version of that framework is everyone
-on?” “This service isn’t responding, who owns it?” “I can’t find documentation
-for anything!”
+Instead of building and testing code, teams were spending significant time just
+searching for the right information just to get started on their tasks. “Where’s
+the API for that service we’re all supposed to be using?” “What version of that
+framework is everyone on?” “This service isn’t responding, who owns it?” “I
+can’t find documentation for this old codebase!”
 
 Context switching and cognitive overload were dragging engineers down, day by
 day. We needed to make it easier for our engineers to do their work without
@@ -20,9 +20,9 @@ having to become an expert in every aspect of infrastructure tooling.
 
 Our idea was to centralize and simplify end-to-end software development with an
 abstraction layer that sits on top of all of our infrastructure and developer
-tooling. That’s Backstage.
+tooling. This idea grew into Backstage.
 
-It’s a developer portal powered by a centralized software catalog — with a
+Backstage is a developer portal powered by a centralized software catalog — with a
 plugin architecture that makes it endlessly extensible and customizable.
 
 Manage all your services, software, tooling, and testing in Backstage. Start
@@ -31,8 +31,9 @@ maintain, and find the documentation for all that software in Backstage.
 
 One place for everything. Accessible to everyone.
 
-Backstage was originally built by Spotify and then donated to the CNCF.
-Backstage is currently in the Incubation phase. Read the announcement
-[here](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
+Backstage was originally built by Spotify and then donated to the CNCF in 2022.
+Backstage is currently in the Incubation phase.
 
-<img src="https://backstage.io/img/cncf-white.svg" alt="CNCF logo" width="400" />
+[Read the CNCF donation announcement here](https://backstage.io/blog/2022/03/16/backstage-turns-two#out-of-the-sandbox-and-into-incubation).
+
+<img src="https://backstage.io/img/cncf-white.svg" alt="CNCF logo" width="300" />

@@ -6,12 +6,14 @@ description: Documentation on Adding Plugin to Plugin Directory
 
 ## Adding a Plugin to the Directory
 
-To add a new plugin to the [plugin directory](https://backstage.io/plugins)
-create a file in
+To add a new plugin to the public [plugin directory](https://backstage.io/plugins)
+on backstage.io, create a file in
 [`microsite/data/plugins`](https://github.com/backstage/backstage/tree/master/microsite/data/plugins)
-with your plugin's information. Example:
+with your plugin's information.
 
-```yaml
+Example:
+
+```yaml title="my-custom-plugin.yaml"
 ---
 title: Your Plugin
 author: Your Name

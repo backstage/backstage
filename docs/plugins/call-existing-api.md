@@ -57,7 +57,7 @@ This can be used when:
   requirements that the user's browser will impose for security reasons, and the
   requests will be rejected otherwise.
 - The API endpoint is easily reachable, in terms of network conditions, by end
-  users. This may be particularly relevant if your end users are outside of your
+  users. This may be particularly relevant if your end users are outside your
   perimeter.
 - The requests do not require secrets to be passed. This limitation does not
   apply to OAuth tokens, which the frontend can negotiate and make proper use
