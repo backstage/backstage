@@ -21,8 +21,6 @@ import {
   BackstageUserPrincipal,
   DiscoveryService,
   HttpAuthService,
-  coreServices,
-  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import { parse as parseCookie } from 'cookie';
@@ -71,7 +69,7 @@ type RequestWithCredentials = Request & {
   [limitedCredentialsSymbol]?: Promise<BackstageCredentials>;
 };
 
-class DefaultHttpAuthService implements HttpAuthService {
+export class DefaultHttpAuthService implements HttpAuthService {
   readonly #auth: AuthService;
   readonly #discovery: DiscoveryService;
   readonly #pluginId: string;
@@ -271,19 +269,3 @@ class DefaultHttpAuthService implements HttpAuthService {
     }
   }
 }
-
-/**
- * @public
- * @deprecated Please import from `@backstage/backend-defaults/httpAuth` instead.
- */
-export const httpAuthServiceFactory = createServiceFactory({
-  service: coreServices.httpAuth,
-  deps: {
-    auth: coreServices.auth,
-    discovery: coreServices.discovery,
-    plugin: coreServices.pluginMetadata,
-  },
-  async factory({ auth, discovery, plugin }) {
-    return new DefaultHttpAuthService(auth, discovery, plugin.getId());
-  },
-});

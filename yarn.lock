@@ -3458,7 +3458,9 @@ __metadata:
     base64-stream: ^1.0.0
     better-sqlite3: ^9.0.0
     concat-stream: ^2.0.0
+    cookie: ^0.6.0
     cron: ^3.0.0
+    express: ^4.17.1
     fs-extra: ^11.2.0
     git-url-parse: ^14.0.0
     isomorphic-git: ^1.23.0

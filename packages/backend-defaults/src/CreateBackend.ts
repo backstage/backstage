@@ -18,7 +18,6 @@ import {
   Backend,
   authServiceFactory,
   createSpecializedBackend,
-  httpAuthServiceFactory,
   httpRouterServiceFactory,
   identityServiceFactory,
   loggerServiceFactory,
@@ -30,6 +29,7 @@ import {
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { discoveryServiceFactory } from '@backstage/backend-defaults/discovery';
+import { httpAuthServiceFactory } from '@backstage/backend-defaults/httpAuth';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
 import { rootConfigServiceFactory } from '@backstage/backend-defaults/rootConfig';
