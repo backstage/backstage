@@ -182,11 +182,12 @@ class PluginEventsService implements EventsService {
       throw await ResponseError.fromResponse(res);
     }
 
-    this.#startPolling(subscriptionId, options.onEvent);
+    this.#startPolling(subscriptionId, options.topics, options.onEvent);
   }
 
   #startPolling(
     subscriptionId: string,
+    topics: string[],
     onEvent: EventsServiceSubscribeOptions['onEvent'],
   ) {
     let backoffMs = POLL_BACKOFF_START_MS;
@@ -208,6 +209,21 @@ class PluginEventsService implements EventsService {
         );
 
         if (!res.ok) {
+          if (res.status === 404) {
+            this.logger.info(
+              `Polling event subscription resulted in a 404, recreating subscription`,
+            );
+            const putRes = await this.client.putSubscription(
+              {
+                path: { subscriptionId },
+                body: { topics },
+              },
+              { token },
+            );
+            if (!putRes.ok) {
+              throw await ResponseError.fromResponse(res);
+            }
+          }
           throw await ResponseError.fromResponse(res);
         }
         backoffMs = POLL_BACKOFF_START_MS;
