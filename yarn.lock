@@ -6137,6 +6137,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend@workspace:plugins/events-backend"
   dependencies:
+    "@backstage/backend-app-api": "workspace:^"
     "@backstage/backend-common": ^0.25.0
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-openapi-utils": "workspace:^"
