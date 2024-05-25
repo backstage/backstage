@@ -339,9 +339,9 @@ export class DatabaseEventBusStore implements EventBusStore {
             this.#db.ref('topics').withSchema('sub').wrap('ANY(', ')'),
           )
           // Skip events that have already been consumed by this subscription
-          .where(
+          .whereNot(
             this.#db.raw('?', id),
-            '<>',
+            '=',
             this.#db.ref('consumed_by').withSchema('event').wrap('ANY(', ')'),
           )
           .where('event.id', '>', this.#db.ref('read_until').withSchema('sub'))
