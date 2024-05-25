@@ -324,7 +324,9 @@ export class DatabaseEventBusStore implements EventBusStore {
   async readSubscription(id: string): Promise<{ events: EventParams[] }> {
     const result = await this.#db<SubscriptionsRow>(TABLE_SUBSCRIPTIONS)
       // Read the target subscription so that we can use the read marker and topics
-      .with('sub', q => q.select().from(TABLE_SUBSCRIPTIONS).where({ id }))
+      .with('sub', q =>
+        q.select().from(TABLE_SUBSCRIPTIONS).where({ id }).forUpdate(),
+      )
       // Read the next batch of events for the subscription from its read marker
       .with('events', q =>
         q
