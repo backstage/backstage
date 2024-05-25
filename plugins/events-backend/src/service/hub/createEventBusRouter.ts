@@ -227,6 +227,12 @@ export async function createEventBusRouter(options: {
               `Received notification for subscription '${id}' for topic '${topic}'`,
               { subject: credentials.principal.subject },
             );
+          } catch (error) {
+            if (error === controller.signal.reason) {
+              res.end();
+            } else {
+              throw error;
+            }
           } finally {
             // A small extra delay ensures a more even spread of events across
             // consumers in case some consumers are faster than others

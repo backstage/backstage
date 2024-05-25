@@ -113,6 +113,7 @@ class DatabaseEventBusListener {
       signal.addEventListener('abort', () => {
         this.#listeners.delete(listener);
         this.#maybeTimeoutConnection();
+        reject(signal.reason);
       });
     });
   }
