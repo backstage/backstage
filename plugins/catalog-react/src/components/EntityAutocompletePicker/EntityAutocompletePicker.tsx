@@ -152,6 +152,9 @@ export function EntityAutocompletePicker<
       <Typography className={classes.label} variant="button" component="label">
         {label}
         <Autocomplete<string, true>
+          PopperComponent={popperProps => (
+            <div {...popperProps}>{popperProps.children}</div>
+          )}
           multiple
           disableCloseOnSelect
           options={availableOptions}

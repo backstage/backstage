@@ -73,6 +73,9 @@ export const EntityProcessingStatusPicker = () => {
       <Typography className={classes.label} variant="button" component="label">
         Processing Status
         <Autocomplete<string, true>
+          PopperComponent={popperProps => (
+            <div {...popperProps}>{popperProps.children}</div>
+          )}
           multiple
           disableCloseOnSelect
           options={availableAdvancedItems}

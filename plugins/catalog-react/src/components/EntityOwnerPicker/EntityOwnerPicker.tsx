@@ -178,6 +178,9 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
       <Typography className={classes.label} variant="button" component="label">
         Owner
         <Autocomplete
+          PopperComponent={popperProps => (
+            <div {...popperProps}>{popperProps.children}</div>
+          )}
           multiple
           disableCloseOnSelect
           loading={loading}

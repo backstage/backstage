@@ -78,6 +78,9 @@ export const TemplateCategoryPicker = () => {
         Categories
       </Typography>
       <Autocomplete<string, true>
+        PopperComponent={popperProps => (
+          <div {...popperProps}>{popperProps.children}</div>
+        )}
         multiple
         id="categories-picker"
         options={availableTypes}
