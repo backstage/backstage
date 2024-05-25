@@ -17,6 +17,7 @@
 import {
   AuthService,
   DiscoveryService,
+  LifecycleService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { EventParams } from './EventParams';
@@ -111,34 +112,39 @@ class PluginEventsService implements EventsService {
   ) {}
 
   async publish(params: EventParams): Promise<void> {
-    const { notifiedSubscribers } = await this.localBus.publish(params);
+    const lock = this.#getShutdownLock();
+    try {
+      const { notifiedSubscribers } = await this.localBus.publish(params);
 
-    if (!this.client) {
-      return;
-    }
-    const token = await this.#getToken();
-    if (!token) {
-      return;
-    }
-    const res = await this.client.postEvent(
-      {
-        body: {
-          event: { payload: params.eventPayload, topic: params.topic },
-          subscriptionIds: notifiedSubscribers,
-        },
-      },
-      { token },
-    );
-
-    if (!res.ok) {
-      if (res.status === 404) {
-        this.logger.warn(
-          `Event publish request failed with status 404, events backend not found. Future events will not be persisted.`,
-        );
-        delete this.client;
+      if (!this.client) {
         return;
       }
-      throw await ResponseError.fromResponse(res);
+      const token = await this.#getToken();
+      if (!token) {
+        return;
+      }
+      const res = await this.client.postEvent(
+        {
+          body: {
+            event: { payload: params.eventPayload, topic: params.topic },
+            subscriptionIds: notifiedSubscribers,
+          },
+        },
+        { token },
+      );
+
+      if (!res.ok) {
+        if (res.status === 404) {
+          this.logger.warn(
+            `Event publish request failed with status 404, events backend not found. Future events will not be persisted.`,
+          );
+          delete this.client;
+          return;
+        }
+        throw await ResponseError.fromResponse(res);
+      }
+    } finally {
+      lock.release();
     }
   }
 
@@ -188,6 +194,7 @@ class PluginEventsService implements EventsService {
       if (!this.client) {
         return;
       }
+      const lock = this.#getShutdownLock();
       try {
         const token = await this.#getToken();
         if (!token) {
@@ -210,6 +217,7 @@ class PluginEventsService implements EventsService {
         // request times out. In both cases we should should try to read events
         // immediately again
         if (res.status === 202) {
+          lock.release();
           await res.body?.getReader()?.closed;
           process.nextTick(poll);
         } else if (res.status === 200) {
@@ -247,6 +255,8 @@ class PluginEventsService implements EventsService {
           backoffMs * POLL_BACKOFF_FACTOR,
           POLL_BACKOFF_MAX_MS,
         );
+      } finally {
+        lock.release();
       }
     };
     poll();
@@ -275,6 +285,31 @@ class PluginEventsService implements EventsService {
       }
       throw error;
     }
+  }
+
+  async shutdown() {
+    this.#isShuttingDown = true;
+    await Promise.all(this.#shutdownLocks);
+  }
+
+  #isShuttingDown = false;
+  #shutdownLocks: Promise<void>[] = [];
+
+  // This locking mechanism helps ensure that we are either idle or waiting for
+  // a blocked events call before shutting down. It increases out changes of
+  // never dropping any events on shutdown.
+  #getShutdownLock(): { release(): void } {
+    if (this.#isShuttingDown) {
+      throw new Error('Service is shutting down');
+    }
+
+    let release: () => void;
+    this.#shutdownLocks.push(
+      new Promise<void>(resolve => {
+        release = resolve;
+      }),
+    );
+    return { release: release! };
   }
 }
 
@@ -312,6 +347,7 @@ export class DefaultEventsService implements EventsService {
       discovery: DiscoveryService;
       logger: LoggerService;
       auth: AuthService;
+      lifecycle: LifecycleService;
     },
   ): EventsService {
     const client =
@@ -321,13 +357,17 @@ export class DefaultEventsService implements EventsService {
         fetchApi: { fetch }, // use native node fetch
       });
     const logger = options?.logger ?? this.logger;
-    return new PluginEventsService(
+    const service = new PluginEventsService(
       pluginId,
       this.localBus,
       logger,
       client,
       options?.auth,
     );
+    options?.lifecycle.addShutdownHook(async () => {
+      await service.shutdown();
+    });
+    return service;
   }
 
   /** @deprecated this method should not be called */
