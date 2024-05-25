@@ -205,10 +205,12 @@ class PluginEventsService implements EventsService {
         }
         backoffMs = POLL_BACKOFF_START_MS;
 
-        // 204 arrives after a blocking response and means there are new events
-        // available or we timed out, either way should should try to read events
+        // 202 means there were no immediately available events, but the
+        // response will block until either new events are available or the
+        // request times out. In both cases we should should try to read events
         // immediately again
-        if (res.status === 204) {
+        if (res.status === 202) {
+          await res.body?.getReader()?.closed;
           process.nextTick(poll);
         } else if (res.status === 200) {
           const data = await res.json();
@@ -316,6 +318,7 @@ export class DefaultEventsService implements EventsService {
       options &&
       new DefaultApiClient({
         discoveryApi: options.discovery,
+        fetchApi: { fetch }, // use native node fetch
       });
     const logger = options?.logger ?? this.logger;
     return new PluginEventsService(

@@ -26,12 +26,10 @@ export type EventBusStore = {
 
   readSubscription(id: string): Promise<{ events: EventParams[] }>;
 
-  listen(
+  setupListener(
     subscriptionId: string,
     options: {
       signal: AbortSignal;
-      onNotify(topicId: string): void;
-      onError(): void;
     },
-  ): Promise<void>;
+  ): Promise<{ waitForUpdate(): Promise<{ topic: string }> }>;
 };

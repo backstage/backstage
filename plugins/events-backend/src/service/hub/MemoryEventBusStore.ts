@@ -28,19 +28,19 @@ export class MemoryEventBusStore implements EventBusStore {
   >();
   #listeners = new Set<{
     topics: Set<string>;
-    notify(topicId: string): void;
+    resolve(result: { topic: string }): void;
   }>();
 
   async publish(options: {
     params: EventParams;
     subscriberIds: string[];
   }): Promise<{ id: string } | undefined> {
-    const topicId = options.params.topic;
+    const topic = options.params.topic;
     const subscriberIds = new Set(options.subscriberIds);
 
     let hasOtherSubscribers = false;
     for (const sub of this.#subscribers.values()) {
-      if (sub.topics.has(topicId) && !subscriberIds.has(sub.id)) {
+      if (sub.topics.has(topic) && !subscriberIds.has(sub.id)) {
         hasOtherSubscribers = true;
         break;
       }
@@ -53,8 +53,9 @@ export class MemoryEventBusStore implements EventBusStore {
     this.#events.push({ ...options.params, subscriberIds, seq: nextSeq });
 
     for (const listener of this.#listeners) {
-      if (listener.topics.has(topicId)) {
-        listener.notify(topicId);
+      if (listener.topics.has(topic)) {
+        listener.resolve({ topic });
+        this.#listeners.delete(listener);
       }
     }
     return { id: String(nextSeq) };
@@ -97,27 +98,30 @@ export class MemoryEventBusStore implements EventBusStore {
     return { events: events.map(event => ({ ...event, seq: undefined })) };
   }
 
-  async listen(
+  async setupListener(
     subscriptionId: string,
     options: {
       signal: AbortSignal;
-      onNotify(topicId: string): void;
-      onError(): void;
     },
-  ): Promise<void> {
-    if (options.signal.aborted) {
-      return;
-    }
+  ): Promise<{ waitForUpdate(): Promise<{ topic: string }> }> {
+    return {
+      waitForUpdate: async () => {
+        options.signal.throwIfAborted();
 
-    const sub = this.#subscribers.get(subscriptionId);
-    if (!sub) {
-      throw new Error(`Subscription not found`);
-    }
-    const listener = { topics: sub.topics, notify: options.onNotify };
-    this.#listeners.add(listener);
+        const sub = this.#subscribers.get(subscriptionId);
+        if (!sub) {
+          throw new Error(`Subscription not found`);
+        }
 
-    options.signal.addEventListener('abort', () => {
-      this.#listeners.delete(listener);
-    });
+        return new Promise<{ topic: string }>(resolve => {
+          const listener = { topics: sub.topics, resolve };
+          this.#listeners.add(listener);
+
+          options.signal.addEventListener('abort', () => {
+            this.#listeners.delete(listener);
+          });
+        });
+      },
+    };
   }
 }

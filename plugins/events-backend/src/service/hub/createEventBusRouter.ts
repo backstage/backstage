@@ -103,53 +103,22 @@ export async function createEventBusRouter(options: {
       });
       const id = req.params.subscriptionId;
 
-      // Don't notify until we know the outcome of reading events
-      let resolveShouldNotify: (shouldNotify: boolean) => void;
-      const shouldNotifyPromise = new Promise<boolean>(resolve => {
-        resolveShouldNotify = resolve;
-      });
-
       const controller = new AbortController();
       req.on('end', () => controller.abort());
-
-      let timeout: NodeJS.Timeout | undefined = undefined;
-
-      let notified = false;
-      const notify = async (status: number) => {
-        if (!notified) {
-          clearTimeout(timeout);
-          notified = true;
-          if (await shouldNotifyPromise) {
-            res.status(status).end();
-          }
-        }
-      };
 
       // By setting up the listener first we make sure we don't miss any events
       // that are published while reading. If an event is published we'll receive
       // a notification, which depending on the outcome of the read we may ignore
-      await store.listen(id, {
+      const listener = await store.setupListener(id, {
         signal: controller.signal,
-        onNotify() {
-          notify(204);
-        },
-        onError() {
-          notify(500);
-        },
       });
 
       // By timing out requests we make sure they don't stall or that events get stuck.
       // For the caller there's no difference between a timeout and a
       // notifications, either way they should try reading again.
-      timeout = setTimeout(() => {
-        notify(204);
+      const timeout = setTimeout(() => {
         controller.abort();
       }, notifyTimeoutMs);
-      shouldNotifyPromise.then(shouldNotify => {
-        if (!shouldNotify) {
-          clearTimeout(timeout);
-        }
-      });
 
       try {
         const { events } = await store.readSubscription(id);
@@ -162,10 +131,27 @@ export async function createEventBusRouter(options: {
         if (events.length > 0) {
           res.json({ events });
         } else {
-          resolveShouldNotify!(true);
+          res.status(202);
+          res.flushHeaders();
+
+          try {
+            const { topic } = await listener.waitForUpdate();
+            logger.info(
+              `Received notification for subscription '${id}' for topic '${topic}'`,
+              { subject: credentials.principal.subject },
+            );
+          } finally {
+            // A small extra delay ensures a more even spread of events across
+            // consumers in case some consumers are faster than others
+            await new Promise(resolve =>
+              setTimeout(resolve, 1 + Math.random() * 9),
+            );
+            res.end();
+          }
         }
       } finally {
-        resolveShouldNotify!(false);
+        controller.abort();
+        clearTimeout(timeout);
       }
     },
   );

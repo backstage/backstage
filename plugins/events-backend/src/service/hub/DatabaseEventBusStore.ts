@@ -82,8 +82,8 @@ class DatabaseEventBusListener {
 
   readonly #listeners = new Set<{
     topics: Set<string>;
-    onNotify: (topicId: string) => void;
-    onError: () => void;
+    resolve: (result: { topic: string }) => void;
+    reject: (error: Error) => void;
   }>();
 
   #connPromise?: Promise<InternalDbConnection>;
@@ -95,43 +95,37 @@ class DatabaseEventBusListener {
     this.#logger = logger.child({ type: 'DatabaseEventBusListener' });
   }
 
-  async listen(
+  async waitForUpdate(
     topics: Set<string>,
-    onNotify: (topicId: string) => void,
-    onError: () => void,
-  ): Promise<() => void> {
+    signal: AbortSignal,
+  ): Promise<{ topic: string }> {
     if (this.#connTimeout) {
       clearTimeout(this.#connTimeout);
       this.#connTimeout = undefined;
     }
+
     await this.#ensureConnection();
 
-    const listener = { topics, onNotify, onError };
-    this.#listeners.add(listener);
+    return new Promise<{ topic: string }>((resolve, reject) => {
+      const listener = { topics, resolve, reject };
+      this.#listeners.add(listener);
 
-    return () => {
-      this.#listeners.delete(listener);
-
-      // If we don't have any listeners, destroy the connection after a timeout
-      if (this.#listeners.size === 0) {
-        this.#connTimeout = setTimeout(() => {
-          this.#connPromise?.then(conn => {
-            this.#logger.info('Listener connection timed out, destroying');
-            this.#connPromise = undefined;
-            this.#destroyConnection(conn);
-          });
-        }, LISTENER_CONNECTION_TIMEOUT_MS);
-      }
-    };
+      signal.addEventListener('abort', () => {
+        this.#listeners.delete(listener);
+        this.#maybeTimeoutConnection();
+      });
+    });
   }
 
   #handleNotify(topic: string) {
-    this.#logger.info(`Listener received notification for topic '${topic}'`);
+    this.#logger.debug(`Listener received notification for topic '${topic}'`);
     for (const l of this.#listeners) {
       if (l.topics.has(topic)) {
-        l.onNotify(topic);
+        l.resolve({ topic });
+        this.#listeners.delete(l);
       }
     }
+    this.#maybeTimeoutConnection();
   }
 
   // We don't try to reconnect on error, instead we notify all listeners and let
@@ -142,7 +136,23 @@ class DatabaseEventBusListener {
       error,
     );
     for (const l of this.#listeners) {
-      l.onError();
+      l.reject(new Error('Listener connection failed'));
+    }
+    this.#listeners.clear();
+    this.#maybeTimeoutConnection();
+  }
+
+  #maybeTimeoutConnection() {
+    // If we don't have any listeners, destroy the connection after a timeout
+    if (this.#listeners.size === 0 && !this.#connTimeout) {
+      this.#connTimeout = setTimeout(() => {
+        this.#connTimeout = undefined;
+        this.#connPromise?.then(conn => {
+          this.#logger.info('Listener connection timed out, destroying');
+          this.#connPromise = undefined;
+          this.#destroyConnection(conn);
+        });
+      }, LISTENER_CONNECTION_TIMEOUT_MS);
     }
   }
 
@@ -437,14 +447,12 @@ export class DatabaseEventBusStore implements EventBusStore {
     };
   }
 
-  async listen(
+  async setupListener(
     subscriptionId: string,
     options: {
       signal: AbortSignal;
-      onNotify: (topicId: string) => void;
-      onError: () => void;
     },
-  ): Promise<void> {
+  ): Promise<{ waitForUpdate(): Promise<{ topic: string }> }> {
     const result = await this.#db<SubscriptionsRow>(TABLE_SUBSCRIPTIONS)
       .select('topics')
       .where({ id: subscriptionId })
@@ -456,21 +464,12 @@ export class DatabaseEventBusStore implements EventBusStore {
       );
     }
 
-    if (options.signal.aborted) {
-      return;
-    }
+    options.signal.throwIfAborted();
 
     const topics = new Set(result.topics ?? []);
-    const cancel = await this.#listener.listen(
-      topics,
-      options.onNotify,
-      options.onError,
-    );
-    if (options.signal.aborted) {
-      cancel();
-    } else {
-      options.signal.addEventListener('abort', cancel);
-    }
+    return {
+      waitForUpdate: () => this.#listener.waitForUpdate(topics, options.signal),
+    };
   }
 
   #cleanup = async () => {
