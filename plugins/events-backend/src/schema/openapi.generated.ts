@@ -73,7 +73,6 @@ export const spec = {
             description: 'The topic that the event is published on',
           },
           payload: {
-            $ref: '#/components/schemas/JsonObject',
             description: 'The event payload',
           },
         },
@@ -116,11 +115,6 @@ export const spec = {
           },
         },
         required: ['error', 'request', 'response'],
-      },
-      JsonObject: {
-        type: 'object',
-        properties: {},
-        additionalProperties: {},
       },
     },
     securitySchemes: {
@@ -269,8 +263,9 @@ export const spec = {
               },
             },
           },
-          '201': {
-            description: 'Block poll response, new events are available',
+          '202': {
+            description:
+              'No new events are available. Response will block until the client should try again.',
           },
           default: {
             $ref: '#/components/responses/ErrorResponse',

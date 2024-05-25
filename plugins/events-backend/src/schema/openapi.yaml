@@ -39,7 +39,6 @@ components:
           type: string
           description: The topic that the event is published on
         payload:
-          $ref: '#/components/schemas/JsonObject'
           description: The event payload
 
     Error:
@@ -76,12 +75,6 @@ components:
         - error
         - request
         - response
-
-    JsonObject:
-      type: object
-      properties: {}
-      # Free form object.
-      additionalProperties: {}
   securitySchemes:
     JWT:
       type: http
@@ -178,8 +171,8 @@ paths:
                       $ref: '#/components/schemas/Event'
                 required:
                   - results
-        '201':
-          description: Block poll response, new events are available
+        '202':
+          description: No new events are available. Response will block until the client should try again.
         default:
           $ref: '#/components/responses/ErrorResponse'
       security:

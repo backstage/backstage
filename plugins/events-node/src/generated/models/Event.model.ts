@@ -23,5 +23,8 @@ export interface Event {
    * The topic that the event is published on
    */
   topic: string;
-  payload: { [key: string]: any };
+  /**
+   * The event payload
+   */
+  payload: any | null;
 }
