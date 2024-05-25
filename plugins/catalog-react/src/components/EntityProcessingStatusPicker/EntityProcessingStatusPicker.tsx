@@ -24,7 +24,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import React, { useState } from 'react';
+import React, { useState, ReactNode } from 'react';
 import { useEntityList } from '../../hooks';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 
@@ -74,7 +74,7 @@ export const EntityProcessingStatusPicker = () => {
         Processing Status
         <Autocomplete<string, true>
           PopperComponent={popperProps => (
-            <div {...popperProps}>{popperProps.children}</div>
+            <div {...popperProps}>{popperProps.children as ReactNode}</div>
           )}
           multiple
           disableCloseOnSelect
