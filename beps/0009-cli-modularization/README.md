@@ -180,24 +180,24 @@ Having a standard service layer will let us further control what our CLIs should
 ```ts
 // Allow users to register top level commands with the program.
 interface RootProgramService {
-  command(commandAndArgs: string, description: string): CliCommandService;
+  command(commandAndArgs: string, description: string): PluginCommandService;
 
   // Alias the first argument to be called as the second argument.
   alias(command: string, newCommand: string);
 }
 
 // A scoped command with the pluginId as the command name.
-interface PluginCommandService extends CliCommandService {}
+interface PluginCommandService extends Command {}
 
 // Allow users to register commands under specific commands (of arbitrary depth).
-interface CliCommandService {
-  command(commandAndArgs: string, description: string): CliCommandService;
+interface Command {
+  command(commandAndArgs: string, description: string): Command;
   action(
     argument: string,
     description: string,
     processingFn?: () => void,
     defaultValue?: string,
-  ): CliCommandService;
+  ): Command;
   action(handler: () => void | () => Promise<void>): void;
 }
 ```
