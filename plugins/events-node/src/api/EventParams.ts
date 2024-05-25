@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-import { JsonValue } from '@backstage/types';
-
 /**
  * @public
  */
-export interface EventParams<TPayload extends JsonValue = JsonValue> {
+export interface EventParams<TPayload = unknown> {
   /**
    * Topic for which this event should be published.
    */
@@ -31,5 +29,5 @@ export interface EventParams<TPayload extends JsonValue = JsonValue> {
   /**
    * Metadata (e.g., HTTP headers and similar for events received from external).
    */
-  metadata?: { [name in string]?: string | string[] };
+  metadata?: Record<string, string | string[] | undefined>;
 }
