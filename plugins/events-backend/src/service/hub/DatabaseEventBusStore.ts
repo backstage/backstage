@@ -19,9 +19,15 @@ import { Knex } from 'knex';
 import {
   DatabaseService,
   LoggerService,
+  SchedulerService,
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
 import { ForwardedError, NotFoundError } from '@backstage/errors';
+import { HumanDuration, durationToMilliseconds } from '@backstage/types';
+
+const WINDOW_SIZE_DEFAULT = 10000;
+const WINDOW_MIN_AGE_DEFAULT = { minutes: 10 };
+const WINDOW_MAX_AGE_DEFAULT = { days: 1 };
 
 const MAX_BATCH_SIZE = 10;
 const LISTENER_CONNECTION_TIMEOUT_MS = 60_000;
@@ -208,6 +214,15 @@ export class DatabaseEventBusStore implements EventBusStore {
   static async create(options: {
     database: DatabaseService;
     logger: LoggerService;
+    scheduler: SchedulerService;
+    window?: {
+      /** Events within this range will never be deleted */
+      minAge?: HumanDuration;
+      /** Events outside of this age will always be deleted */
+      maxAge?: HumanDuration;
+      /** Events outside of this count will be deleted if they are outside the minAge window */
+      size?: number;
+    };
   }): Promise<DatabaseEventBusStore> {
     const db = await options.database.getClient();
 
@@ -224,16 +239,43 @@ export class DatabaseEventBusStore implements EventBusStore {
       options.logger.info('DatabaseEventBusStore migrations ran successfully');
     }
 
-    return new DatabaseEventBusStore(db, options.logger);
+    const store = new DatabaseEventBusStore(
+      db,
+      options.logger,
+      options.window?.size ?? WINDOW_SIZE_DEFAULT,
+      durationToMilliseconds(options.window?.minAge ?? WINDOW_MIN_AGE_DEFAULT),
+      durationToMilliseconds(options.window?.maxAge ?? WINDOW_MAX_AGE_DEFAULT),
+    );
+
+    options.scheduler.scheduleTask({
+      id: 'event-bus-cleanup',
+      frequency: { seconds: 10 },
+      timeout: { minutes: 1 },
+      fn: store.#cleanup,
+    });
+
+    return store;
   }
 
   readonly #db: Knex;
   readonly #logger: LoggerService;
+  readonly #windowSize: number;
+  readonly #windowMinAge: number;
+  readonly #windowMaxAge: number;
   readonly #listener: DatabaseEventBusListener;
 
-  private constructor(db: Knex, logger: LoggerService) {
+  private constructor(
+    db: Knex,
+    logger: LoggerService,
+    windowSize: number,
+    windowMinAge: number,
+    windowMaxAge: number,
+  ) {
     this.#db = db;
     this.#logger = logger;
+    this.#windowSize = windowSize;
+    this.#windowMinAge = windowMinAge;
+    this.#windowMaxAge = windowMaxAge;
     this.#listener = new DatabaseEventBusListener(db.client, logger);
   }
 
@@ -430,4 +472,50 @@ export class DatabaseEventBusStore implements EventBusStore {
       options.signal.addEventListener('abort', cancel);
     }
   }
+
+  #cleanup = async () => {
+    try {
+      const eventCount = await this.#db
+        .delete()
+        .from(TABLE_EVENTS)
+        // Delete any events that are outside both the min age and size window
+        .where('created_at', '<', new Date(Date.now() - this.#windowMinAge))
+        .andWhere(
+          'id',
+          '=',
+          this.#db
+            .raw(
+              this.#db
+                .select('id')
+                .from(TABLE_EVENTS)
+                .orderBy('id', 'desc')
+                .offset(this.#windowSize),
+            )
+            .wrap('ANY(ARRAY(', '))'),
+        )
+        // If events are outside the max age they will always be deleted
+        .orWhere('created_at', '<', new Date(Date.now() - this.#windowMaxAge));
+      this.#logger.info(
+        `Event cleanup resulted in ${eventCount} old events being deleted`,
+      );
+    } catch (error) {
+      this.#logger.error('Event cleanup failed', error);
+    }
+
+    try {
+      // Delete any subscribers that aren't keeping up with current events
+      const subscriberCount = await this.#db
+        .delete()
+        .from(TABLE_SUBSCRIPTIONS)
+        .where('read_until', '<', (q: Knex.QueryBuilder) =>
+          q.select(this.#db.raw('MIN(id)')).from(TABLE_EVENTS),
+        );
+
+      this.#logger.info(
+        `Subscription cleanup resulted in ${subscriberCount} stale subscribers being deleted`,
+      );
+    } catch (error) {
+      this.#logger.error('Subscription cleanup failed', error);
+    }
+  };
 }

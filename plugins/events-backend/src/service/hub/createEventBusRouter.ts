@@ -18,6 +18,7 @@ import {
   DatabaseService,
   HttpAuthService,
   LoggerService,
+  SchedulerService,
 } from '@backstage/backend-plugin-api';
 import { Handler } from 'express';
 import Router from 'express-promise-router';
@@ -32,12 +33,14 @@ const DEFAULT_NOTIFY_TIMEOUT_MS = 55_000; // Just below 60s, which is a common H
 export async function createEventBusRouter(options: {
   logger: LoggerService;
   database: DatabaseService;
+  scheduler: SchedulerService;
   httpAuth: HttpAuthService;
   notifyTimeoutMs?: number; // for testing
 }): Promise<Handler> {
   const {
     database,
     httpAuth,
+    scheduler,
     notifyTimeoutMs = DEFAULT_NOTIFY_TIMEOUT_MS,
   } = options;
   const logger = options.logger.child({ type: 'EventBus' });
@@ -50,6 +53,7 @@ export async function createEventBusRouter(options: {
     store = await DatabaseEventBusStore.create({
       database,
       logger,
+      scheduler,
     });
   } else {
     logger.info('Database is not PostgreSQL, using memory store');
