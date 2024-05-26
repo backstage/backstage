@@ -33,58 +33,22 @@ export const createGitlabIssueAction: (options: {
     projectId: number;
     labels?: string | undefined;
     description?: string | undefined;
-    weight?: number | undefined;
     token?: string | undefined;
+    weight?: number | undefined;
     assignees?: number[] | undefined;
     createdAt?: string | undefined;
     confidential?: boolean | undefined;
     milestoneId?: number | undefined;
     epicId?: number | undefined;
     dueDate?: string | undefined;
-    discussionToResolve?: string | undefined;
     issueType?: IssueType | undefined;
+    discussionToResolve?: string | undefined;
     mergeRequestToResolveDiscussionsOf?: number | undefined;
   },
   {
+    issueIid: number;
     issueUrl: string;
     issueId: number;
-    issueIid: number;
-  }
->;
-
-// @public
-export const editGitlabIssueAction: (options: {
-  integrations: ScmIntegrationRegistry;
-}) => TemplateAction<
-  {
-    repoUrl: string;
-    projectId: number;
-    issueIid: number;
-    title: string | undefined;
-    labels?: string | undefined;
-    addLabels?: string | undefined;
-    removeLabels?: string | undefined
-    description?: string | undefined;
-    discussionLocked?: string | undefined;
-    weight?: number | undefined;
-    token?: string | undefined;
-    assignees?: number[] | undefined;
-    updatedAt?: string | undefined;
-    confidential?: boolean | undefined;
-    milestoneId?: number | undefined;
-    epicId?: number | undefined;
-    dueDate?: string | undefined;
-    stateEvent?: IssueStateEvent | undefined;
-    issueType?: IssueType | undefined;
-  },
-  {
-    issueUrl: string;
-    issueId: number;
-    issueIid: number;
-    projectId: number;
-    title: string;
-    state: string;
-    updatedAt: string;
   }
 >;
 
@@ -97,8 +61,8 @@ export const createGitlabProjectAccessTokenAction: (options: {
     projectId: string | number;
     name?: string | undefined;
     token?: string | undefined;
-    scopes?: string[] | undefined;
     expiresAt?: string | undefined;
+    scopes?: string[] | undefined;
     accessLevel?: number | undefined;
   },
   {
@@ -114,8 +78,8 @@ export const createGitlabProjectDeployTokenAction: (options: {
     name: string;
     repoUrl: string;
     projectId: string | number;
-    username?: string | undefined;
     token?: string | undefined;
+    username?: string | undefined;
     scopes?: string[] | undefined;
   },
   {
@@ -238,8 +202,52 @@ export const createPublishGitlabMergeRequestAction: (options: {
 >;
 
 // @public
+export const editGitlabIssueAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    projectId: number;
+    issueIid: number;
+    title?: string | undefined;
+    labels?: string | undefined;
+    description?: string | undefined;
+    token?: string | undefined;
+    weight?: number | undefined;
+    assignees?: number[] | undefined;
+    addLabels?: string | undefined;
+    confidential?: boolean | undefined;
+    milestoneId?: number | undefined;
+    removeLabels?: string | undefined;
+    stateEvent?: IssueStateEvent | undefined;
+    discussionLocked?: boolean | undefined;
+    epicId?: number | undefined;
+    dueDate?: string | undefined;
+    updatedAt?: string | undefined;
+    issueType?: IssueType | undefined;
+  },
+  {
+    state: string;
+    title: string;
+    projectId: number;
+    updatedAt: string;
+    issueIid: number;
+    issueUrl: string;
+    issueId: number;
+  }
+>;
+
+// @public
 const gitlabModule: () => BackendFeature;
 export default gitlabModule;
+
+// @public
+export enum IssueStateEvent {
+  // (undocumented)
+  CLOSE = 'close',
+  // (undocumented)
+  REOPEN = 'reopen',
+}
 
 // @public
 export enum IssueType {
@@ -248,16 +256,8 @@ export enum IssueType {
   // (undocumented)
   ISSUE = 'issue',
   // (undocumented)
-  TEST = 'test_case',
-  // (undocumented)
   TASK = 'task',
-}
-
-// @public
-export enum IssueStateEvent {
-  // Flag to close an open issue
-  CLOSE = 'close',
-  // Flat to reopen a closed issue
-  REOPEN = 'reopen'
+  // (undocumented)
+  TEST = 'test_case',
 }
 ```

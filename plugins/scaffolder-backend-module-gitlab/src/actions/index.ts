@@ -22,3 +22,4 @@ export * from './createGitlabIssueAction';
 export * from './gitlab';
 export * from './gitlabMergeRequest';
 export * from './gitlabRepoPush';
+export { IssueType, IssueStateEvent } from '../commonGitlabConfig';
