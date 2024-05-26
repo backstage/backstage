@@ -30,6 +30,11 @@ export const commonGitlabConfigExample = {
   token: '${{ secrets.USER_OAUTH_TOKEN }}',
 };
 
+/**
+ * Gitlab issue types as specified by gitlab api
+ *
+ * @public
+ */
 export enum IssueType {
   ISSUE = 'issue',
   INCIDENT = 'incident',
@@ -37,6 +42,11 @@ export enum IssueType {
   TASK = 'task',
 }
 
+/**
+ * Gitlab issue state events for modifications
+ *
+ * @public
+ */
 export enum IssueStateEvent {
   CLOSE = 'close',
   REOPEN = 'reopen',
