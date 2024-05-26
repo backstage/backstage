@@ -97,10 +97,10 @@ class DatabaseEventBusListener {
     this.#logger = logger.child({ type: 'DatabaseEventBusListener' });
   }
 
-  async waitForUpdate(
+  async setupListener(
     topics: Set<string>,
     signal: AbortSignal,
-  ): Promise<{ topic: string }> {
+  ): Promise<{ waitForUpdate(): Promise<{ topic: string }> }> {
     if (this.#connTimeout) {
       clearTimeout(this.#connTimeout);
       this.#connTimeout = undefined;
@@ -108,7 +108,7 @@ class DatabaseEventBusListener {
 
     await this.#ensureConnection();
 
-    return new Promise<{ topic: string }>((resolve, reject) => {
+    const updatePromise = new Promise<{ topic: string }>((resolve, reject) => {
       const listener = { topics, resolve, reject };
       this.#listeners.add(listener);
 
@@ -118,6 +118,11 @@ class DatabaseEventBusListener {
         reject(signal.reason);
       });
     });
+
+    // Ignore unhandled rejections
+    updatePromise.catch(() => {});
+
+    return { waitForUpdate: () => updatePromise };
   }
 
   async shutdown() {
@@ -492,10 +497,10 @@ export class DatabaseEventBusStore implements EventBusStore {
 
     options.signal.throwIfAborted();
 
-    const topics = new Set(result.topics ?? []);
-    return {
-      waitForUpdate: () => this.#listener.waitForUpdate(topics, options.signal),
-    };
+    return this.#listener.setupListener(
+      new Set(result.topics ?? []),
+      options.signal,
+    );
   }
 
   #cleanup = async () => {
