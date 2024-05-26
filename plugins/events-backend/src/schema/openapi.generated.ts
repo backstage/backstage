@@ -250,6 +250,7 @@ export const spec = {
               'application/json': {
                 schema: {
                   type: 'object',
+                  required: ['events'],
                   properties: {
                     events: {
                       type: 'array',
@@ -258,7 +259,6 @@ export const spec = {
                       },
                     },
                   },
-                  required: ['results'],
                 },
               },
             },

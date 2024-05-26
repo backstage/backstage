@@ -164,13 +164,13 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - events
                 properties:
                   events:
                     type: array
                     items:
                       $ref: '#/components/schemas/Event'
-                required:
-                  - results
         '202':
           description: No new events are available. Response will block until the client should try again.
         default:

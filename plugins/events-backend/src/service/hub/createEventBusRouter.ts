@@ -216,7 +216,12 @@ export async function createEventBusRouter(options: {
         );
 
         if (events.length > 0) {
-          res.json({ events });
+          res.json({
+            events: events.map(event => ({
+              topic: event.topic,
+              payload: event.eventPayload,
+            })),
+          });
         } else {
           res.status(202);
           res.flushHeaders();

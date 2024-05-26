@@ -20,5 +20,5 @@
 import { Event } from '../models/Event.model';
 
 export interface GetSubscriptionEvents200Response {
-  events?: Array<Event>;
+  events: Array<Event>;
 }
