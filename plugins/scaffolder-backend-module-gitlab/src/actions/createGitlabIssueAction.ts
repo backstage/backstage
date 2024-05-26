@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import commonGitlabConfig from '../commonGitlabConfig';
+import commonGitlabConfig, { IssueType } from '../commonGitlabConfig';
 import { examples } from './createGitlabIssueAction.examples';
 import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
@@ -28,12 +28,6 @@ import { Gitlab, CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
  *
  * @public
  */
-export enum IssueType {
-  ISSUE = 'issue',
-  INCIDENT = 'incident',
-  TEST = 'test_case',
-}
-
 const issueInputProperties = z.object({
   projectId: z.number().describe('Project Id'),
   title: z.string({ description: 'Title of the issue' }),

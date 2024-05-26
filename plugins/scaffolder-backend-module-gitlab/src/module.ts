@@ -27,6 +27,7 @@ import {
   createGitlabRepoPushAction,
   createPublishGitlabAction,
   createPublishGitlabMergeRequestAction,
+  editGitlabIssueAction,
 } from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 
@@ -49,6 +50,7 @@ export const gitlabModule = createBackendModule({
         scaffolder.addActions(
           createGitlabGroupEnsureExistsAction({ integrations }),
           createGitlabIssueAction({ integrations }),
+          editGitlabIssueAction({ integrations }),
           createGitlabProjectAccessTokenAction({ integrations }),
           createGitlabProjectDeployTokenAction({ integrations }),
           createGitlabProjectVariableAction({ integrations }),

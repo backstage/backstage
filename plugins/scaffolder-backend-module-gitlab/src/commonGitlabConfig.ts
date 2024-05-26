@@ -29,3 +29,15 @@ export const commonGitlabConfigExample = {
   repoUrl: 'gitlab.com?owner=namespace-or-owner&repo=project-name',
   token: '${{ secrets.USER_OAUTH_TOKEN }}',
 };
+
+export enum IssueType {
+  ISSUE = 'issue',
+  INCIDENT = 'incident',
+  TEST = 'test_case',
+  TASK = 'task',
+}
+
+export enum IssueStateEvent {
+  CLOSE = 'close',
+  REOPEN = 'reopen',
+}
