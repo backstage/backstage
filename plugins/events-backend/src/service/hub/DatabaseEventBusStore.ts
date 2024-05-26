@@ -287,6 +287,7 @@ export class DatabaseEventBusStore implements EventBusStore {
       id: 'event-bus-cleanup',
       frequency: { seconds: 10 },
       timeout: { minutes: 1 },
+      initialDelay: { seconds: 10 },
       fn: store.#cleanup,
     });
 
