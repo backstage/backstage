@@ -18,6 +18,7 @@ import { EventBusStore } from './types';
 import { Knex } from 'knex';
 import {
   DatabaseService,
+  LifecycleService,
   LoggerService,
   SchedulerService,
   resolvePackagePath,
@@ -86,6 +87,7 @@ class DatabaseEventBusListener {
     reject: (error: Error) => void;
   }>();
 
+  #isShuttingDown = false;
   #connPromise?: Promise<InternalDbConnection>;
   #connTimeout?: NodeJS.Timeout;
   #keepaliveInterval?: NodeJS.Timeout;
@@ -116,6 +118,17 @@ class DatabaseEventBusListener {
         reject(signal.reason);
       });
     });
+  }
+
+  async shutdown() {
+    if (this.#isShuttingDown) {
+      return;
+    }
+    this.#isShuttingDown = true;
+    const conn = await this.#connPromise?.catch(() => undefined);
+    if (conn) {
+      this.#destroyConnection(conn);
+    }
   }
 
   #handleNotify(topic: string) {
@@ -169,6 +182,9 @@ class DatabaseEventBusListener {
   }
 
   async #ensureConnection() {
+    if (this.#isShuttingDown) {
+      throw new Error('Listener is shutting down');
+    }
     if (this.#connPromise) {
       await this.#connPromise;
       return;
@@ -226,6 +242,7 @@ export class DatabaseEventBusStore implements EventBusStore {
     database: DatabaseService;
     logger: LoggerService;
     scheduler: SchedulerService;
+    lifecycle: LifecycleService;
     window?: {
       /** Events within this range will never be deleted */
       minAge?: HumanDuration;
@@ -250,9 +267,12 @@ export class DatabaseEventBusStore implements EventBusStore {
       options.logger.info('DatabaseEventBusStore migrations ran successfully');
     }
 
+    const listener = new DatabaseEventBusListener(db.client, options.logger);
+
     const store = new DatabaseEventBusStore(
       db,
       options.logger,
+      listener,
       options.window?.size ?? WINDOW_SIZE_DEFAULT,
       durationToMilliseconds(options.window?.minAge ?? WINDOW_MIN_AGE_DEFAULT),
       durationToMilliseconds(options.window?.maxAge ?? WINDOW_MAX_AGE_DEFAULT),
@@ -265,29 +285,34 @@ export class DatabaseEventBusStore implements EventBusStore {
       fn: store.#cleanup,
     });
 
+    options.lifecycle.addShutdownHook(async () => {
+      await listener.shutdown();
+    });
+
     return store;
   }
 
   readonly #db: Knex;
   readonly #logger: LoggerService;
+  readonly #listener: DatabaseEventBusListener;
   readonly #windowSize: number;
   readonly #windowMinAge: number;
   readonly #windowMaxAge: number;
-  readonly #listener: DatabaseEventBusListener;
 
   private constructor(
     db: Knex,
     logger: LoggerService,
+    listener: DatabaseEventBusListener,
     windowSize: number,
     windowMinAge: number,
     windowMaxAge: number,
   ) {
     this.#db = db;
     this.#logger = logger;
+    this.#listener = listener;
     this.#windowSize = windowSize;
     this.#windowMinAge = windowMinAge;
     this.#windowMaxAge = windowMaxAge;
-    this.#listener = new DatabaseEventBusListener(db.client, logger);
   }
 
   async publish(options: {

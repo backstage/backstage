@@ -17,6 +17,7 @@
 import {
   DatabaseService,
   HttpAuthService,
+  LifecycleService,
   LoggerService,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
@@ -121,6 +122,7 @@ export async function createEventBusRouter(options: {
   logger: LoggerService;
   database: DatabaseService;
   scheduler: SchedulerService;
+  lifecycle: LifecycleService;
   httpAuth: HttpAuthService;
   notifyTimeoutMs?: number; // for testing
 }): Promise<Handler> {
@@ -128,6 +130,7 @@ export async function createEventBusRouter(options: {
     database,
     httpAuth,
     scheduler,
+    lifecycle,
     notifyTimeoutMs = DEFAULT_NOTIFY_TIMEOUT_MS,
   } = options;
   const logger = options.logger.child({ type: 'EventBus' });
@@ -141,6 +144,7 @@ export async function createEventBusRouter(options: {
       database,
       logger,
       scheduler,
+      lifecycle,
     });
   } else {
     logger.info('Database is not PostgreSQL, using memory store');

@@ -78,6 +78,7 @@ export const eventsPlugin = createBackendPlugin({
         database: coreServices.database,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
+        lifecycle: coreServices.lifecycle,
         httpAuth: coreServices.httpAuth,
         router: coreServices.httpRouter,
       },
@@ -87,6 +88,7 @@ export const eventsPlugin = createBackendPlugin({
         database,
         logger,
         scheduler,
+        lifecycle,
         httpAuth,
         router,
       }) {
@@ -107,7 +109,13 @@ export const eventsPlugin = createBackendPlugin({
         http.bind(eventsRouter);
 
         router.use(
-          await createEventBusRouter({ database, logger, httpAuth, scheduler }),
+          await createEventBusRouter({
+            database,
+            logger,
+            httpAuth,
+            scheduler,
+            lifecycle,
+          }),
         );
 
         router.use(eventsRouter);
