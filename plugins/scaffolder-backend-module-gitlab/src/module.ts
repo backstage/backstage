@@ -29,6 +29,7 @@ import {
   createPublishGitlabAction,
   createPublishGitlabMergeRequestAction,
   createTriggerGitlabPipelineAction,
+  editGitlabIssueAction,
 } from './actions';
 
 /**
@@ -50,6 +51,7 @@ export const gitlabModule = createBackendModule({
         scaffolder.addActions(
           createGitlabGroupEnsureExistsAction({ integrations }),
           createGitlabIssueAction({ integrations }),
+          editGitlabIssueAction({ integrations }),
           createGitlabProjectAccessTokenAction({ integrations }),
           createGitlabProjectDeployTokenAction({ integrations }),
           createGitlabProjectVariableAction({ integrations }),
