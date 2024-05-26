@@ -392,7 +392,9 @@ export class DatabaseEventBusStore implements EventBusStore {
         id,
         updated_at: this.#db.fn.now(),
         topics,
-        read_until: this.#db<EventsRow>(TABLE_EVENTS).max('id') as any, // TODO: figure out TS,
+        read_until: this.#db.raw(
+          `( SELECT COALESCE(MAX("id"), 0) FROM "${TABLE_EVENTS}" )`,
+        ),
       })
       .onConflict('id')
       .merge(['topics', 'updated_at'])
