@@ -53,6 +53,42 @@ export const createGitlabIssueAction: (options: {
 >;
 
 // @public
+export const editGitlabIssueAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    projectId: number;
+    issueIid: number;
+    title: string | undefined;
+    labels?: string | undefined;
+    addLabels?: string | undefined;
+    removeLabels?: string | undefined
+    description?: string | undefined;
+    discussionLocked?: string | undefined;
+    weight?: number | undefined;
+    token?: string | undefined;
+    assignees?: number[] | undefined;
+    updatedAt?: string | undefined;
+    confidential?: boolean | undefined;
+    milestoneId?: number | undefined;
+    epicId?: number | undefined;
+    dueDate?: string | undefined;
+    stateEvent?: IssueStateEvent | undefined;
+    issueType?: IssueType | undefined;
+  },
+  {
+    issueUrl: string;
+    issueId: number;
+    issueIid: number;
+    projectId: number;
+    title: string;
+    state: string;
+    updatedAt: string;
+  }
+>;
+
+// @public
 export const createGitlabProjectAccessTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
@@ -213,5 +249,15 @@ export enum IssueType {
   ISSUE = 'issue',
   // (undocumented)
   TEST = 'test_case',
+  // (undocumented)
+  TASK = 'task',
+}
+
+// @public
+export enum IssueStateEvent {
+  // Flag to close an open issue
+  CLOSE = 'close',
+  // Flat to reopen a closed issue
+  REOPEN = 'reopen'
 }
 ```

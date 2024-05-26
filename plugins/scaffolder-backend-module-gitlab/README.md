@@ -25,6 +25,7 @@ import {
   createGitlabProjectVariableAction,
   createGitlabGroupEnsureExistsAction,
   createGitlabIssueAction,
+  editGitlabIssueAction,
 } from '@backstage/plugin-scaffolder-backend-module-gitlab';
 
 // Create BuiltIn Actions
@@ -43,6 +44,7 @@ const actions = [
   createGitlabProjectVariableAction({ integrations: integrations }),
   createGitlabGroupEnsureExistsAction({ integrations: integrations }),
   createGitlabIssueAction({ integrations: integrations }),
+  editGitlabIssueAction({ integrations: integrations }),
 ];
 
 // Create Scaffolder Router
@@ -178,7 +180,42 @@ spec:
         dueDate: 2024-09-28 12:00:00.000
         epicId: 3333333
         labels: phase1:label1,phase2:label2
+
+     - id: editGitlabIssue
+      name: EditIssues
+      action: gitlab:issues:edit
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        token: ${{ secrets.USER_OAUTH_TOKEN }}
+        projectId: 1111111
+        issueIid: ${{ steps['gitlabIssue'].output.issueIid }}
+        title: Test Issue
+        assignees:
+          - 2222222
+        description: This is the description of the edited issue
+        confidential: true
+        dueDate: 2024-09-28
+        epicId: 3333333
+        addLabels: phase1:label3,phase2:label3
+        removeLabels: phase1:label1,phase2:label2
+
   output:
+    text:
+      - title: Output
+        content: |
+          *Project ID:* ${{ steps['editGitlabIssue'].output.projectId }}
+
+          *Issue URL:* ${{ steps['editGitlabIssue'].output.issueUrl }}
+
+          *Issue ID:* ${{ steps['editGitlabIssue'].output.issueId }}
+
+          *Issue IID:* ${{ steps['editGitlabIssue'].output.issueIid }}
+
+          *Title:* ${{ steps['editGitlabIssue'].output.title }}
+
+          *State:* ${{ steps['editGitlabIssue'].output.state }}
+
+          *UpdatedAt:* ${{ steps['editGitlabIssue'].output.updatedAt }}
     links:
       - title: Repository
         url: ${{ steps['publish'].output.remoteUrl }}
