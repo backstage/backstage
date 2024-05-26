@@ -1,5 +1,5 @@
 ---
-id: org
+id: org--old
 title: LDAP Organizational Data
 sidebar_label: Org Data
 # prettier-ignore
@@ -18,6 +18,9 @@ Backstage in general supports OpenLDAP compatible vendors, as well as Active Dir
 
 ## Installation
 
+This guide will use the Entity Provider method. If you for some reason prefer
+the Processor method (not recommended), it is described separately below.
+
 The provider is not installed by default, therefore you have to add a dependency
 to `@backstage/plugin-catalog-backend-module-ldap` to your backend package.
 
@@ -26,30 +29,47 @@ to `@backstage/plugin-catalog-backend-module-ldap` to your backend package.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-ldap
 ```
 
-Next add the basic configuration to `app-config.yaml`
+:::note Note
 
-```yaml title="app-config.yaml"
-catalog:
-  providers:
-    ldapOrg:
-      default:
-        target: ldaps://ds.example.net
-        bind:
-          dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-          secret: ${LDAP_SECRET}
-        schedule:
-          frequency: PT1H
-          timeout: PT15M
+When configuring to use a Provider instead of a Processor you do not
+need to add a _location_ pointing to your LDAP server
+
+:::
+
+Update the catalog plugin initialization in your backend to add the provider and
+schedule it:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+/* highlight-add-next-line */
+import { LdapOrgEntityProvider } from '@backstage/plugin-catalog-backend-module-ldap';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const builder = await CatalogBuilder.create(env);
+
+  /* highlight-add-start */
+  // The target parameter below needs to match the ldap.providers.target
+  // value specified in your app-config.
+  builder.addEntityProvider(
+    LdapOrgEntityProvider.fromConfig(env.config, {
+      id: 'our-ldap-master',
+      target: 'ldaps://ds.example.net',
+      logger: env.logger,
+      schedule: env.scheduler.createScheduledTaskRunner({
+        frequency: { minutes: 60 },
+        timeout: { minutes: 15 },
+      }),
+    }),
+  );
+  /* highlight-add-end */
+
+  // ..
+}
 ```
 
-Finally, updated your backend by adding the following line:
-
-```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-catalog-backend/alpha'));
-/* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-ldap'));
-/* highlight-add-end */
-```
+After this, you also have to add some configuration in your app-config that
+describes what you want to import for that target.
 
 ## Configuration
 
@@ -57,31 +77,33 @@ The following configuration is a small example of how a setup could look for
 importing groups and users from a corporate LDAP server.
 
 ```yaml
-catalog:
+ldap:
   providers:
-    ldapOrg:
-      default:
-        target: ldaps://ds.example.net
-        bind:
-          dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
-          secret: ${LDAP_SECRET}
-        users:
-          dn: ou=people,ou=example,dc=example,dc=net
-          options:
-            filter: (uid=*)
-          map:
-            description: l
-          set:
-            metadata.customField: 'hello'
-        groups:
-          dn: ou=access,ou=groups,ou=example,dc=example,dc=net
-          options:
-            filter: (&(objectClass=some-group-class)(!(groupType=email)))
-          map:
-            description: l
-          set:
-            metadata.customField: 'hello'
+    - target: ldaps://ds.example.net
+      bind:
+        dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
+        secret: ${LDAP_SECRET}
+      users:
+        dn: ou=people,ou=example,dc=example,dc=net
+        options:
+          filter: (uid=*)
+        map:
+          description: l
+        set:
+          metadata.customField: 'hello'
+      groups:
+        dn: ou=access,ou=groups,ou=example,dc=example,dc=net
+        options:
+          filter: (&(objectClass=some-group-class)(!(groupType=email)))
+        map:
+          description: l
+        set:
+          metadata.customField: 'hello'
 ```
+
+There may be many providers, each targeting a specific `target` which is
+supposed to match the `target` of a dedicated provider instance - i.e., you will
+add one entity provider class instance per target to ingest from.
 
 These config blocks have a lot of options in them, so we will describe each
 "root" key within the block separately.
@@ -299,34 +321,97 @@ map:
 ## Customize the Provider
 
 In case you want to customize the ingested entities, the provider allows to pass
-transformers for users and groups.
+transformers for users and groups. Here we will show an example of overriding
+the group transformer.
 
-Transformers can be configured by extending `ldapOrgEntityProviderTransformExtensionPoint`. Here is an example:
+1. Create a transformer:
 
-```ts title="packages/backend/src/index.ts"
-import { createBackendModule } from '@backstage/backend-plugin-api';
-import { ldapOrgEntityProviderTransformExtensionPoint } from '@backstage/plugin-catalog-backend-module-ldap';
-import { myUserTransformer, myGroupTransformer } from './transformers';
+   ```ts
+   export async function myGroupTransformer(
+     vendor: LdapVendor,
+     config: GroupConfig,
+     group: SearchEntry,
+   ): Promise<GroupEntity | undefined> {
+     // Transformations may change namespace, change entity naming pattern, fill
+     // profile with more or other details...
 
-backend.add(
-  createBackendModule({
-    pluginId: 'catalog',
-    moduleId: 'ldap-extensions',
-    register(env) {
-      env.registerInit({
-        deps: {
-          /* highlight-add-start */
-          ldapTransformers: ldapOrgEntityProviderTransformExtensionPoint,
-          /* highlight-add-end */
-        },
-        async init({ ldapTransformers }) {
-          /* highlight-add-start */
-          ldapTransformers.setUserTransformer(myUserTransformer);
-          ldapTransformers.setGroupTransformer(myGroupTransformer);
-          /* highlight-add-end */
-        },
-      });
-    },
+     // Create the group entity on your own, or wrap the default transformer
+     return await defaultGroupTransformer(vendor, config, group);
+   }
+   ```
+
+2. Configure the provider with the transformer:
+
+   ```ts
+   const ldapEntityProvider = LdapOrgEntityProvider.fromConfig(env.config, {
+     id: 'our-ldap-master',
+     target: 'ldaps://ds.example.net',
+     logger: env.logger,
+     groupTransformer: myGroupTransformer,
+   });
+   ```
+
+## Using a Processor instead of a Provider
+
+An alternative to using the Provider for ingesting LDAP entries is to use a
+Processor. This is the old way that's based on registering locations with the
+proper type and target, triggering the processor to run.
+
+The drawback of this method is that it will leave orphaned Group/User entities
+whenever they are deleted on your LDAP server, and you cannot control the
+frequency with which they are refreshed, separately from other processors.
+
+### Processor Installation
+
+The `LdapOrgReaderProcessor` is not registered by default, so you have to
+register it in the catalog plugin:
+
+```typescript title="packages/backend/src/plugins/catalog.ts"
+builder.addProcessor(
+  LdapOrgReaderProcessor.fromConfig(env.config, {
+    logger: env.logger,
   }),
 );
+```
+
+### Driving LDAP Org Processor Ingestion with Locations
+
+Locations point out the specific org(s) you want to import. The `type` of these
+locations must be `ldap-org`, and the `target` must point to the exact URL
+(starting with `ldap://` or `ldaps://`) of the targeted LDAP server. You can
+have several such location entries if you want, but typically you will have just
+one.
+
+```yaml
+catalog:
+  locations:
+    - type: ldap-org
+      target: ldaps://ds.example.net
+      rules:
+        - allow: [User, Group]
+```
+
+### Example configurations
+
+#### Google Secure LDAP Service
+
+To sync Google Workspace/Cloud Identity organization data to users and groups in backstage,
+you must [configure Secure LDAP Service](https://support.google.com/a/answer/9048516) first.
+
+Once Secure LDAP Service is configured, you can enable TLS options in LDAP configuration,
+as mentioned below. `keys` and `certs` specify the location of files that are generated
+while configuring Secure LDAP Service above.
+
+```yaml
+ldap:
+  providers:
+    - target: ldaps://ldap.google.com:636
+      tls:
+        rejectUnauthorized: false
+        keys: '/var/secrets/tls/gldap.key'
+        certs: '/var/secrets/tls/gldap.crt'
+      users:
+        # users configuration comes here
+      groups:
+        # groups configuration comes here
 ```
