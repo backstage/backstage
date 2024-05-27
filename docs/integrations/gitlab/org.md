@@ -196,10 +196,23 @@ which contain members will be ingested.
 
 ### Users
 
-For self hosted, all `User` entities are ingested from the entire instance.
+For self hosted, all `User` entities are ingested from the entire instance by default.
 
 For gitlab.com `User` entities for users who have [direct or inherited membership](https://docs.gitlab.com/ee/user/project/members/index.html#membership-types)
 of the top-level group for the configured group path will be ingested.
+
+In both cases (SaaS & self hosted), you can limit the ingested users to users directly assigned to the group defined in your `app-config.yaml` by setting the configuration key `restrictUsersToGroup: true`. This is especially useful when you have a large userbase that you don't want to import by default.
+
+```yaml
+catalog:
+  providers:
+    gitlab:
+      yourProviderId:
+        host: gitlab.com ## Could also be self hosted.
+        orgEnabled: true
+        group: org/teams # Required for gitlab.com when `orgEnabled: true`. Optional for self managed. Must not end with slash. Accepts only groups under the provided path (which will be stripped)
+        restrictUsersToGroup: true # Backstage will ingest only users directly assigned to org/teams.
+```
 
 ### Limiting `User` and `Group` entity ingestion in the provider
 
