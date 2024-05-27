@@ -38,7 +38,7 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventParams, EventsService } from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/backend-plugin-api';
 import { graphql } from '@octokit/graphql';
 import {
   InstallationCreatedEvent,

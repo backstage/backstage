@@ -2,8 +2,7 @@
 
 Welcome to the events-backend backend plugin!
 
-This package is based on [events-node](../events-node) and its `eventsServiceRef`
-that is at the core of the event support.
+This package is based on [events-node](../events-node) and its `coreServices.events` ref that is at the core of the event support.
 It provides an `eventsPlugin` (exported as `default`).
 
 By default, the plugin ships with support to receive events via HTTP endpoints

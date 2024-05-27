@@ -14,6 +14,44 @@
  * limitations under the License.
  */
 
+import {
+  coreServices,
+  type EventParams as _EventParams,
+  type EventsService as _EventsService,
+  type EventsServiceEventHandler as _EventsServiceEventHandler,
+  type EventsServiceSubscribeOptions as _EventsServiceSubscribeOptions,
+} from '@backstage/backend-plugin-api';
+
 export type { EventBroker } from './api/EventBroker';
 export type { EventPublisher } from './api/EventPublisher';
 export type { EventSubscriber } from './api/EventSubscriber';
+
+/**
+ * @public
+ * @deprecated Use {@link @backstage/backend-plugin-api#coreServices.events} instead.
+ */
+export const eventsServiceRef = coreServices.events;
+
+/**
+ * @public
+ * @deprecated Use {@link @backstage/backend-plugin-api#EventParams} instead.
+ */
+export type EventParams = _EventParams;
+
+/**
+ * @public
+ * @deprecated Use {@link @backstage/backend-plugin-api#EventsService} instead.
+ */
+export type EventsService = _EventsService;
+
+/**
+ * @public
+ * @deprecated Use {@link @backstage/backend-plugin-api#EventsServiceEventHandler} instead.
+ */
+export type EventsServiceEventHandler = _EventsServiceEventHandler;
+
+/**
+ * @public
+ * @deprecated Use {@link @backstage/backend-plugin-api#EventsServiceSubscribeOptions} instead.
+ */
+export type EventsServiceSubscribeOptions = _EventsServiceSubscribeOptions;

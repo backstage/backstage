@@ -4,7 +4,7 @@
 
 ```ts
 import { Config } from '@backstage/config';
-import { EventsService } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 

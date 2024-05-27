@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { EventsService, LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
@@ -26,7 +26,6 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventsService } from '@backstage/plugin-events-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
 

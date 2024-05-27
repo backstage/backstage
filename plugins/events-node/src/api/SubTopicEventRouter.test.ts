@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { EventParams } from './EventParams';
-import { EventsService } from './EventsService';
+import { EventParams, EventsService } from '@backstage/backend-plugin-api';
 import { SubTopicEventRouter } from './SubTopicEventRouter';
 
 class TestSubTopicEventRouter extends SubTopicEventRouter {

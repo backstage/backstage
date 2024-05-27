@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { EventParams } from './EventParams';
+import { EventParams, EventsService } from '@backstage/backend-plugin-api';
 import { EventRouter } from './EventRouter';
-import { EventsService } from './EventsService';
 
 class TestEventRouter extends EventRouter {
   constructor(events: EventsService) {

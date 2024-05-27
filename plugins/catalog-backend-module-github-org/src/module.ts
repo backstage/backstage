@@ -30,7 +30,6 @@ import {
   UserTransformer,
 } from '@backstage/plugin-catalog-backend-module-github';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GithubOrgEntityCleanerProvider } from './GithubOrgEntityCleanerProvider';
 
 /**
@@ -96,7 +95,7 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
       deps: {
         catalog: catalogProcessingExtensionPoint,
         config: coreServices.rootConfig,
-        events: eventsServiceRef,
+        events: coreServices.events,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },

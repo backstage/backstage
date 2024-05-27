@@ -37,9 +37,9 @@ import {
   withActiveSpan,
 } from '../util/opentelemetry';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
-import { EventBroker, EventsService } from '@backstage/plugin-events-node';
+import { EventBroker } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { EventsService, LoggerService } from '@backstage/backend-plugin-api';
 
 const CACHE_TTL = 5;
 

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  EventParams,
-  EventsService,
-  SubTopicEventRouter,
-} from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/backend-plugin-api';
+import { SubTopicEventRouter } from '@backstage/plugin-events-node';
 
 /**
  * Subscribes to the generic `azureDevOps` topic

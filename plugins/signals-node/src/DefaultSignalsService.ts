@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventsService } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/backend-plugin-api';
 import { SignalPayload, SignalsServiceOptions } from './types';
 import { SignalsService } from './SignalsService';
 import { JsonObject } from '@backstage/types';

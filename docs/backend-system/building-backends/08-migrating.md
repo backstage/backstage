@@ -713,9 +713,11 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { eventsServiceRef } from '@backstage/plugin-events-node';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
-import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 
 /* highlight-add-start */
@@ -747,7 +749,7 @@ const otherPluginModuleCustomExtensions = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
-        events: eventsServiceRef,
+        events: coreServices.events,
         // ... and other dependencies as needed
       },
       async init({ events /* ..., other dependencies */ }) {

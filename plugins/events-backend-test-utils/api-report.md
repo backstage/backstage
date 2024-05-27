@@ -4,10 +4,10 @@
 
 ```ts
 import { EventBroker } from '@backstage/plugin-events-node';
-import { EventParams } from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-plugin-api';
 import { EventPublisher } from '@backstage/plugin-events-node';
-import { EventsService } from '@backstage/plugin-events-node';
-import { EventsServiceSubscribeOptions } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/backend-plugin-api';
+import { EventsServiceSubscribeOptions } from '@backstage/backend-plugin-api';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 
 // @public @deprecated (undocumented)

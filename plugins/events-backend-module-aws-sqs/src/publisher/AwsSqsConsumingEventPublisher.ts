@@ -21,10 +21,9 @@ import {
   ReceiveMessageCommandInput,
   SQSClient,
 } from '@aws-sdk/client-sqs';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { EventsService, LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
-import { EventsService } from '@backstage/plugin-events-node';
 import { AwsSqsEventSourceConfig, readConfig } from './config';
 
 /**

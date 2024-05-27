@@ -6,7 +6,7 @@
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { EventsService } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { LifecycleService } from '@backstage/backend-plugin-api';

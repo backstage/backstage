@@ -22,10 +22,7 @@ import {
   eventsExtensionPoint,
   EventsExtensionPoint,
 } from '@backstage/plugin-events-node/alpha';
-import {
-  eventsServiceRef,
-  HttpPostIngressOptions,
-} from '@backstage/plugin-events-node';
+import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import Router from 'express-promise-router';
 import { HttpPostIngressEventPublisher } from './http';
 
@@ -34,7 +31,7 @@ class EventsExtensionPointImpl implements EventsExtensionPoint {
 
   setEventBroker(_: any): void {
     throw new Error(
-      'setEventBroker is not supported anymore; use eventsServiceRef instead',
+      'setEventBroker is not supported anymore; use coreServices.events instead',
     );
   }
 
@@ -73,7 +70,7 @@ export const eventsPlugin = createBackendPlugin({
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
-        events: eventsServiceRef,
+        events: coreServices.events,
         logger: coreServices.logger,
         router: coreServices.httpRouter,
       },

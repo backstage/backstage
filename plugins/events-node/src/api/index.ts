@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-export type { EventParams } from './EventParams';
 export { EventRouter } from './EventRouter';
-export type {
-  EventsService,
-  EventsServiceSubscribeOptions,
-  EventsServiceEventHandler,
-} from './EventsService';
 export { DefaultEventsService } from './DefaultEventsService';
 export * from './http';
 export { SubTopicEventRouter } from './SubTopicEventRouter';

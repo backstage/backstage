@@ -10,7 +10,7 @@ import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
 import { EventBroker } from '@backstage/plugin-events-node';
 import { EventsBackend } from '@backstage/plugin-events-backend';
-import { EventsService } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/backend-plugin-api';
 import { FeatureDiscoveryService } from '@backstage/backend-plugin-api/alpha';
 import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';

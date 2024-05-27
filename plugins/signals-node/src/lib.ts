@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import {
+  coreServices,
   createServiceFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 import { DefaultSignalsService } from './DefaultSignalsService';
 import { SignalsService } from './SignalsService';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /** @public */
 export const signalsServiceRef = createServiceRef<SignalsService>({
@@ -29,7 +29,7 @@ export const signalsServiceRef = createServiceRef<SignalsService>({
     createServiceFactory({
       service,
       deps: {
-        events: eventsServiceRef,
+        events: coreServices.events,
       },
       factory({ events }) {
         return DefaultSignalsService.create({ events });

@@ -24,9 +24,10 @@ import {
   UrlReader,
 } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { EventsService } from '@backstage/backend-plugin-api';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { EventBroker, EventsService } from '@backstage/plugin-events-node';
+import { EventBroker } from '@backstage/plugin-events-node';
 import { SignalsService } from '@backstage/plugin-signals-node';
 
 export type PluginEnvironment = {

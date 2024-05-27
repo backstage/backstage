@@ -2,8 +2,7 @@
 
 This package defined basic types for event-based interactions inside of Backstage.
 
-Additionally, it provides the core event service `eventsServiceRef` of type `EventsService`
-with its default implementation that uses the `DefaultEventsService` implementation.
+Additionally, it provides a default implementation for the `coreServices.events` ref that uses the `DefaultEventsService` implementation.
 
 `DefaultEventsService` is a simple in-memory implementation
 that requires the co-deployment of producers and consumers of events.
@@ -13,7 +12,7 @@ that requires the co-deployment of producers and consumers of events.
 Add `@backstage/plugin-events-node` as dependency to your plugin or plugin module package
 to which you want to add event support.
 
-Use `eventsServiceRef` as a dependency at your plugin or plugin module.
+Use `coreServices.events` as a dependency at your plugin or plugin module.
 
 ### Legacy Backend System
 
@@ -60,10 +59,10 @@ export default async function createPlugin(
 Create your custom service factory implementation:
 
 ```ts
-import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { coreServices } from '@backstage/backend-plugin-api';
 // ...
 export const customEventsServiceFactory = createServiceFactory({
-  service: eventsServiceRef,
+  service: coreServices.events,
   deps: {
     // add needed dependencies here
   },

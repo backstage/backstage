@@ -15,7 +15,7 @@
  */
 
 import { TokenManager } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { EventsService, LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import { LocationEntity } from '@backstage/catalog-model';
@@ -36,7 +36,6 @@ import {
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
-import { EventsService } from '@backstage/plugin-events-node';
 import {
   BitbucketCloudEntityProviderConfig,
   readProviderConfigs,

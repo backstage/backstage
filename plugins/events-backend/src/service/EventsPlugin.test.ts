@@ -15,11 +15,11 @@
  */
 
 import {
+  coreServices,
   createBackendModule,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { eventsExtensionPoint } from '@backstage/plugin-events-node/alpha';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import request from 'supertest';
@@ -29,7 +29,7 @@ describe('eventsPlugin', () => {
   it('should be initialized properly', async () => {
     const eventsService = new TestEventsService();
     const eventsServiceFactory = createServiceFactory({
-      service: eventsServiceRef,
+      service: coreServices.events,
       deps: {},
       async factory({}) {
         return eventsService;

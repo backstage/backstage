@@ -18,7 +18,7 @@ import {
   EventParams,
   EventsService,
   EventsServiceSubscribeOptions,
-} from '@backstage/plugin-events-node';
+} from '@backstage/backend-plugin-api';
 
 /** @public */
 export class TestEventsService implements EventsService {

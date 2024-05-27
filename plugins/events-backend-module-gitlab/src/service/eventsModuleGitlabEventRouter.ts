@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { createBackendModule } from '@backstage/backend-plugin-api';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
 import { GitlabEventRouter } from '../router/GitlabEventRouter';
 
 /**
@@ -31,7 +33,7 @@ export const eventsModuleGitlabEventRouter = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
-        events: eventsServiceRef,
+        events: coreServices.events,
       },
       async init({ events }) {
         const eventRouter = new GitlabEventRouter({ events: events });

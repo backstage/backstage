@@ -18,7 +18,6 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 
 /**
  * Signals backend plugin
@@ -38,7 +37,7 @@ export const signalsPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         userInfo: coreServices.userInfo,
         auth: coreServices.auth,
-        events: eventsServiceRef,
+        events: coreServices.events,
       },
       async init({
         httpRouter,

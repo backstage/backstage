@@ -45,14 +45,14 @@ import {
   satisfiesVisibilityFilter,
 } from '../lib/util';
 
+import { EventSubscriber } from '@backstage/plugin-events-node';
+import { Commit, PushEvent } from '@octokit/webhooks-types';
+import { Minimatch } from 'minimatch';
 import {
   EventParams,
   EventsService,
-  EventSubscriber,
-} from '@backstage/plugin-events-node';
-import { Commit, PushEvent } from '@octokit/webhooks-types';
-import { Minimatch } from 'minimatch';
-import { LoggerService } from '@backstage/backend-plugin-api';
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 const TOPIC_REPO_PUSH = 'github.push';
 

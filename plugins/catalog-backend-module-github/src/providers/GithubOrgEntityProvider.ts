@@ -28,7 +28,6 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
 import {
   MembershipEvent,
@@ -60,7 +59,11 @@ import { assignGroupsToUsers, buildOrgHierarchy } from '../lib/org';
 import { parseGithubOrgUrl } from '../lib/util';
 import { withLocations } from '../lib/withLocations';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  EventParams,
+  EventsService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 const EVENT_TOPICS = [
   'github.membership',

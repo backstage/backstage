@@ -78,3 +78,9 @@ export type {
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
 export type { IdentityService } from './IdentityService';
+export type {
+  EventParams,
+  EventsService,
+  EventsServiceEventHandler,
+  EventsServiceSubscribeOptions,
+} from './EventsService';

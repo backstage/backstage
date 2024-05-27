@@ -27,12 +27,11 @@ import type {
   DeferredEntity,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventParams } from '@backstage/plugin-events-node';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { DurationObjectUnits } from 'luxon';
 import type { Logger } from 'winston';
 import { IncrementalIngestionDatabaseManager } from './database/IncrementalIngestionDatabaseManager';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { EventParams, LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Ingest entities into the catalog in bite-sized chunks.

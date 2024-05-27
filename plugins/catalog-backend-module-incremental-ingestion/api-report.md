@@ -9,7 +9,7 @@ import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import type { Config } from '@backstage/config';
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import type { DurationObjectUnits } from 'luxon';
-import { EventParams } from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-plugin-api';
 import { EventSubscriber } from '@backstage/plugin-events-node';
 import type { Logger } from 'winston';
 import type { PermissionEvaluator } from '@backstage/plugin-permission-common';

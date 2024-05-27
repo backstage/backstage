@@ -15,6 +15,7 @@
  */
 
 import { createServiceRef } from '../system';
+import { EventsService } from './EventsService';
 
 /**
  * All core services references
@@ -196,4 +197,14 @@ export namespace coreServices {
   export const identity = createServiceRef<
     import('./IdentityService').IdentityService
   >({ id: 'core.identity' });
+
+  /**
+   * The {@link EventsService} that allows to publish events, and subscribe to topics.
+   * Uses the `root` scope so that events can be shared across all plugins, modules, and more.
+   *
+   * @public
+   */
+  export const events = createServiceRef<
+    import('./EventsService').EventsService
+  >({ id: 'core.events' });
 }

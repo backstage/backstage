@@ -15,10 +15,9 @@
  */
 
 import { errorHandler } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { EventsService, LoggerService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
-  EventsService,
   HttpPostIngressOptions,
   RequestValidator,
 } from '@backstage/plugin-events-node';

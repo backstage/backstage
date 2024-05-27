@@ -29,11 +29,10 @@ import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
   EventBroker,
-  EventsService,
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
 
-import { BackendFeature } from '@backstage/backend-plugin-api';
+import { BackendFeature, EventsService } from '@backstage/backend-plugin-api';
 import { PackagePlatform, PackageRole } from '@backstage/cli-node';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';

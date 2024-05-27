@@ -22,4 +22,4 @@
 
 export * from './api';
 export * from './deprecated';
-export { eventsServiceRef, eventsServiceFactory } from './service';
+export { eventsServiceFactory } from './service';

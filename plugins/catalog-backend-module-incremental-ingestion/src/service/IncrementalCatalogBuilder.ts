@@ -27,7 +27,8 @@ import { applyDatabaseMigrations } from '../database/migrations';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
 import { IncrementalProviderRouter } from '../router/routes';
 import { Deferred } from '../util';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { EventSubscriber } from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-plugin-api';
 
 /** @public */
 export class IncrementalCatalogBuilder {

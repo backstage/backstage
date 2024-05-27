@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { createServiceFactory } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsModuleAwsSqsConsumingEventPublisher } from './eventsModuleAwsSqsConsumingEventPublisher';
 
@@ -24,7 +26,7 @@ describe('eventsModuleAwsSqsConsumingEventPublisher', () => {
   it('should be correctly wired and set up', async () => {
     const events = new TestEventsService();
     const eventsServiceFactory = createServiceFactory({
-      service: eventsServiceRef,
+      service: coreServices.events,
       deps: {},
       async factory({}) {
         return events;

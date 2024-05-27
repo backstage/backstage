@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  EventParams,
+  EventsService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import {
   DefaultEventsService,
   EventBroker,
-  EventParams,
-  EventsService,
   EventSubscriber,
 } from '@backstage/plugin-events-node';
 

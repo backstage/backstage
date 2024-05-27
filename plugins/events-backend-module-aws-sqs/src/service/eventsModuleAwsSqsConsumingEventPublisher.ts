@@ -18,7 +18,6 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { AwsSqsConsumingEventPublisher } from '../publisher/AwsSqsConsumingEventPublisher';
 
 /**
@@ -33,7 +32,7 @@ export const eventsModuleAwsSqsConsumingEventPublisher = createBackendModule({
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
-        events: eventsServiceRef,
+        events: coreServices.events,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
       },

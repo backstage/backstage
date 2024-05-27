@@ -21,7 +21,8 @@ import { performance } from 'perf_hooks';
 import { Duration, DurationObjectUnits } from 'luxon';
 import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { EventSubscriber } from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-plugin-api';
 
 export class IncrementalIngestionEngine
   implements IterationEngine, EventSubscriber

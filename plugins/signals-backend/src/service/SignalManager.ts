@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { EventParams, EventsService } from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/backend-plugin-api';
 import { SignalPayload } from '@backstage/plugin-signals-node';
 import { RawData, WebSocket } from 'ws';
 import { v4 as uuid } from 'uuid';

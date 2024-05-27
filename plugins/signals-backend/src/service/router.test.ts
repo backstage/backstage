@@ -18,9 +18,8 @@ import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
-import { EventsService } from '@backstage/plugin-events-node';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { UserInfoService } from '@backstage/backend-plugin-api';
+import { EventsService, UserInfoService } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { mockServices } from '@backstage/backend-test-utils';
 

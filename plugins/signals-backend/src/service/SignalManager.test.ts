@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 import { WebSocket } from 'ws';
-import { EventsServiceSubscribeOptions } from '@backstage/plugin-events-node';
-import { SignalManager } from './SignalManager';
 import { ConfigReader } from '@backstage/config';
+import { EventsServiceSubscribeOptions } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
+import { SignalManager } from './SignalManager';
 
 class MockWebSocket {
   closed: boolean = false;

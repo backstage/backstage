@@ -17,24 +17,12 @@
 import {
   coreServices,
   createServiceFactory,
-  createServiceRef,
 } from '@backstage/backend-plugin-api';
-import { EventsService, DefaultEventsService } from './api';
-
-/**
- * The {@link EventsService} that allows to publish events, and subscribe to topics.
- * Uses the `root` scope so that events can be shared across all plugins, modules, and more.
- *
- * @public
- */
-export const eventsServiceRef = createServiceRef<EventsService>({
-  id: 'events.service',
-  scope: 'plugin',
-});
+import { DefaultEventsService } from './api';
 
 /** @public */
 export const eventsServiceFactory = createServiceFactory({
-  service: eventsServiceRef,
+  service: coreServices.events,
   deps: {
     pluginMetadata: coreServices.pluginMetadata,
     rootLogger: coreServices.rootLogger,

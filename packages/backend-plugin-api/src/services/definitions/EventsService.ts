@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,8 +14,23 @@
  * limitations under the License.
  */
 
-import { EventParams } from '@backstage/backend-plugin-api';
-import { EventSubscriber } from './EventSubscriber';
+/**
+ * @public
+ */
+export interface EventParams<TPayload = unknown> {
+  /**
+   * Topic for which this event should be published.
+   */
+  topic: string;
+  /**
+   * Event payload.
+   */
+  eventPayload: TPayload;
+  /**
+   * Metadata (e.g., HTTP headers and similar for events received from external).
+   */
+  metadata?: Record<string, string | string[] | undefined>;
+}
 
 /**
  * Allows a decoupled and asynchronous communication between components.
@@ -23,9 +38,8 @@ import { EventSubscriber } from './EventSubscriber';
  * others can subscribe for future events for topics they are interested in.
  *
  * @public
- * @deprecated use `EventsService` instead
  */
-export interface EventBroker {
+export interface EventsService {
   /**
    * Publishes an event for the topic.
    *
@@ -34,11 +48,26 @@ export interface EventBroker {
   publish(params: EventParams): Promise<void>;
 
   /**
-   * Adds new subscribers for {@link EventSubscriber#supportsEventTopics | interested topics}.
+   * Subscribes to one or more topics, registering an event handler for them.
    *
-   * @param subscribers - interested in events of specified topics.
+   * @param options - event subscription options.
    */
-  subscribe(
-    ...subscribers: Array<EventSubscriber | Array<EventSubscriber>>
-  ): void;
+  subscribe(options: EventsServiceSubscribeOptions): Promise<void>;
 }
+
+/**
+ * @public
+ */
+export type EventsServiceSubscribeOptions = {
+  /**
+   * Identifier for the subscription. E.g., used as part of log messages.
+   */
+  id: string;
+  topics: string[];
+  onEvent: EventsServiceEventHandler;
+};
+
+/**
+ * @public
+ */
+export type EventsServiceEventHandler = (params: EventParams) => Promise<void>;

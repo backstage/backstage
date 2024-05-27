@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { DefaultEventsService } from './DefaultEventsService';
-import { EventParams } from './EventParams';
+import { EventParams } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
+import { DefaultEventsService } from './DefaultEventsService';
 
 const logger = mockServices.logger.mock();
 

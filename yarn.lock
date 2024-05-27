@@ -5805,7 +5805,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
-    "@backstage/plugin-events-node": "workspace:^"
     "@backstage/types": "workspace:^"
     aws-sdk-client-mock: ^4.0.0
     luxon: ^3.0.0
@@ -5879,6 +5878,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-events-backend-test-utils@workspace:plugins/events-backend-test-utils"
   dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
   languageName: unknown
@@ -7287,7 +7287,6 @@ __metadata:
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^"
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-events-backend": "workspace:^"
-    "@backstage/plugin-events-node": "workspace:^"
     "@backstage/plugin-signals-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@types/express": "*"
@@ -25729,6 +25728,7 @@ __metadata:
   resolution: "example-backend-legacy@workspace:packages/backend-legacy"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
@@ -38951,6 +38951,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "root@workspace:."
   dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:*"
     "@backstage/codemods": "workspace:*"
     "@backstage/create-app": "workspace:*"

@@ -23,7 +23,7 @@ import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
-import { EventParams } from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../lib/github', () => {

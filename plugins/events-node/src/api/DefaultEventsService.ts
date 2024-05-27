@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
-import { EventParams } from './EventParams';
-import { EventsService, EventsServiceSubscribeOptions } from './EventsService';
+import {
+  LoggerService,
+  EventParams,
+  EventsService,
+  EventsServiceSubscribeOptions,
+} from '@backstage/backend-plugin-api';
 
 /**
  * In-process event broker which will pass the event to all registered subscribers

@@ -22,7 +22,6 @@ import {
   catalogProcessingExtensionPoint,
   catalogServiceRef,
 } from '@backstage/plugin-catalog-node/alpha';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { BitbucketCloudEntityProvider } from '../providers/BitbucketCloudEntityProvider';
 
 /**
@@ -37,7 +36,7 @@ export const catalogModuleBitbucketCloudEntityProvider = createBackendModule({
         catalog: catalogProcessingExtensionPoint,
         catalogApi: catalogServiceRef,
         config: coreServices.rootConfig,
-        events: eventsServiceRef,
+        events: coreServices.events,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
         tokenManager: coreServices.tokenManager,

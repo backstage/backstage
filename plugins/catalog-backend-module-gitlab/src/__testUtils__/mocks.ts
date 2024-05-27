@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { locationSpecToMetadataName } from '@backstage/plugin-catalog-node';
-import { EventParams } from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-plugin-api';
 import { GitLabGroup, GitLabProject, GitLabUser } from '../lib/types';
 
 type MockObject = Record<string, any>;

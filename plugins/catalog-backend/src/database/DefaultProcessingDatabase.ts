@@ -42,15 +42,15 @@ import { checkLocationKeyConflict } from './operations/refreshState/checkLocatio
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
 import { generateStableHash } from './util';
-import {
-  EventBroker,
-  EventParams,
-  EventsService,
-} from '@backstage/plugin-events-node';
+import { EventBroker } from '@backstage/plugin-events-node';
 import { DateTime } from 'luxon';
 import { CATALOG_CONFLICTS_TOPIC } from '../constants';
 import { CatalogConflictEventPayload } from '../catalog/types';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  EventParams,
+  EventsService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause

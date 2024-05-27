@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-plugin-api';
+import { EventSubscriber } from '@backstage/plugin-events-node';
 
 /**
  * @public

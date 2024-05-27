@@ -21,10 +21,8 @@ import {
 } from '@backstage/integration';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
-import {
-  DefaultEventsService,
-  EventParams,
-} from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-plugin-api';
+import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
 import { withLocations } from '../lib/withLocations';
 import { mockServices } from '@backstage/backend-test-utils';

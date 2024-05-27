@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { createServiceFactory } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Duration } from 'luxon';
 import { GitlabDiscoveryEntityProvider } from '../providers';
 import { catalogModuleGitlabDiscoveryEntityProvider } from './catalogModuleGitlabDiscoveryEntityProvider';
@@ -29,7 +31,7 @@ describe('catalogModuleGitlabDiscoveryEntityProvider', () => {
   it('should register provider at the catalog extension point', async () => {
     const events = new TestEventsService();
     const eventsServiceFactory = createServiceFactory({
-      service: eventsServiceRef,
+      service: coreServices.events,
       deps: {},
       async factory({}) {
         return events;

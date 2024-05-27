@@ -17,7 +17,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Entity, Validators } from '@backstage/catalog-model';
 import { CatalogBuilder, CatalogPermissionRuleInput } from './CatalogBuilder';
 import {
@@ -212,7 +211,7 @@ export const catalogPlugin = createBackendPlugin({
         discovery: coreServices.discovery,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
-        events: eventsServiceRef,
+        events: coreServices.events,
       },
       async init({
         logger,

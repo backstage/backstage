@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { EventParams } from './EventParams';
-import { EventsService } from './EventsService';
+import { EventParams, EventsService } from '@backstage/backend-plugin-api';
 
 /**
  * Subscribes to a topic and - depending on a set of conditions -

@@ -23,6 +23,7 @@ import Router from 'express-promise-router';
 import {
   AuthService,
   BackstageUserInfo,
+  EventsService,
   LifecycleService,
   LoggerService,
   UserInfoService,
@@ -31,7 +32,6 @@ import * as https from 'https';
 import http, { IncomingMessage } from 'http';
 import { SignalManager } from './SignalManager';
 import { IdentityApi } from '@backstage/plugin-auth-node';
-import { EventsService } from '@backstage/plugin-events-node';
 import { WebSocket, WebSocketServer } from 'ws';
 import { Duplex } from 'stream';
 import { Config } from '@backstage/config';

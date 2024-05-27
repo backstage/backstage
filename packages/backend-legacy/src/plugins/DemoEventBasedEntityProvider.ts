@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { EventParams, EventsService } from '@backstage/backend-plugin-api';
 import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { Logger } from 'winston';
 
 export class DemoEventBasedEntityProvider implements EntityProvider {

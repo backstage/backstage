@@ -52,10 +52,7 @@ import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
 import { mockCredentials } from './mockCredentials';
 import { MockUserInfoService } from './MockUserInfoService';
-import {
-  eventsServiceFactory,
-  eventsServiceRef,
-} from '@backstage/plugin-events-node';
+import { eventsServiceFactory } from '@backstage/plugin-events-node';
 
 /** @internal */
 function createLoggerMock() {
@@ -412,7 +409,7 @@ export namespace mockServices {
 
   export namespace events {
     export const factory = eventsServiceFactory;
-    export const mock = simpleMock(eventsServiceRef, () => ({
+    export const mock = simpleMock(coreServices.events, () => ({
       publish: jest.fn(),
       subscribe: jest.fn(),
     }));

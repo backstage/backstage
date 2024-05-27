@@ -15,7 +15,8 @@
  */
 
 import { TestEventSubscriber } from '@backstage/plugin-events-backend-test-utils';
-import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
+import { EventSubscriber } from '@backstage/plugin-events-node';
+import { EventParams } from '@backstage/backend-plugin-api';
 import { DefaultEventBroker } from './DefaultEventBroker';
 import { mockServices } from '@backstage/backend-test-utils';
 

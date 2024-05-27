@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { EventParams } from './EventParams';
+import { EventParams } from '@backstage/backend-plugin-api';
 
 /**
  * Handles received events.

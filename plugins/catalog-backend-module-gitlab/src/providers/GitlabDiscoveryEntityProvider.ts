@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { EventsService, LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
@@ -25,7 +25,6 @@ import {
   EntityProviderConnection,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
-import { EventsService } from '@backstage/plugin-events-node';
 import { WebhookProjectSchema, WebhookPushEventSchema } from '@gitbeaker/rest';
 import * as uuid from 'uuid';
 import {

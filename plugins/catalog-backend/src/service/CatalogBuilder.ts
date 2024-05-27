@@ -104,11 +104,12 @@ import {
 import { AuthorizedLocationService } from './AuthorizedLocationService';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
-import { EventBroker, EventsService } from '@backstage/plugin-events-node';
+import { EventBroker } from '@backstage/plugin-events-node';
 import { durationToMilliseconds } from '@backstage/types';
 import {
   AuthService,
   DiscoveryService,
+  EventsService,
   HttpAuthService,
   LoggerService,
   PermissionsService,

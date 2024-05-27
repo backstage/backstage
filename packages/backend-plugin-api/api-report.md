@@ -210,6 +210,7 @@ export namespace coreServices {
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
   const // @deprecated
     identity: ServiceRef<IdentityService, 'plugin'>;
+  const events: ServiceRef<EventsService, 'plugin'>;
 }
 
 // @public
@@ -322,6 +323,29 @@ export interface DiscoveryService {
   getBaseUrl(pluginId: string): Promise<string>;
   getExternalBaseUrl(pluginId: string): Promise<string>;
 }
+
+// @public (undocumented)
+export interface EventParams<TPayload = unknown> {
+  eventPayload: TPayload;
+  metadata?: Record<string, string | string[] | undefined>;
+  topic: string;
+}
+
+// @public
+export interface EventsService {
+  publish(params: EventParams): Promise<void>;
+  subscribe(options: EventsServiceSubscribeOptions): Promise<void>;
+}
+
+// @public (undocumented)
+export type EventsServiceEventHandler = (params: EventParams) => Promise<void>;
+
+// @public (undocumented)
+export type EventsServiceSubscribeOptions = {
+  id: string;
+  topics: string[];
+  onEvent: EventsServiceEventHandler;
+};
 
 // @public
 export type ExtensionPoint<T> = {

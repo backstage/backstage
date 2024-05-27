@@ -18,16 +18,13 @@ import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import {
-  DefaultEventsService,
-  EventsService,
-} from '@backstage/plugin-events-node';
+import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { graphql } from '@octokit/graphql';
 import {
   GithubMultiOrgEntityProvider,
   withLocations,
 } from './GithubMultiOrgEntityProvider';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { EventsService, LoggerService } from '@backstage/backend-plugin-api';
 import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('@octokit/graphql');
