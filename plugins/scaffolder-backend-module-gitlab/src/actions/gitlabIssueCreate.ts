@@ -139,11 +139,7 @@ export const createGitlabIssueAction = (options: {
         let isEpicScoped = false;
 
         if (epicId) {
-          isEpicScoped = await checkEpicScope(
-            api as any as InstanceType<typeof Gitlab>,
-            projectId,
-            epicId,
-          );
+          isEpicScoped = await checkEpicScope(api, projectId, epicId);
 
           if (isEpicScoped) {
             ctx.logger.info('Epic is within Project Scope');
