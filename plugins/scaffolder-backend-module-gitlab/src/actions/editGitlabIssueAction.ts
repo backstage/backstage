@@ -24,7 +24,7 @@ import commonGitlabConfig, {
 import { examples } from './editGitlabIssueAction.examples';
 import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
-import { Gitlab, IssueSchema, EditIssueOptions } from '@gitbeaker/rest';
+import { IssueSchema, EditIssueOptions } from '@gitbeaker/rest';
 
 const editIssueInputProperties = z.object({
   projectId: z
