@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { createGitlabProjectVariableAction } from './createGitlabProjectVariableAction';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import yaml from 'yaml';
-import { examples } from './createGitlabProjectVariableAction.examples';
+import { createGitlabProjectVariableAction } from './gitlabProjectVariableCreate';
+import { examples } from './gitlabProjectVariableCreate.examples';
 
 const mockGitlabClient = {
   ProjectVariables: {

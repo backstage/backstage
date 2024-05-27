@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { Gitlab } from '@gitbeaker/node';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { GroupSchema } from '@gitbeaker/core/dist/types/resources/Groups';
+import { Gitlab } from '@gitbeaker/node';
+import { z } from 'zod';
 import commonGitlabConfig from '../commonGitlabConfig';
 import { getToken } from '../util';
-import { z } from 'zod';
-import { examples } from './createGitlabGroupEnsureExistsAction.examples';
+import { examples } from './gitlabGroupEnsureExists.examples';
 
 /**
  * Creates an `gitlab:group:ensureExists` Scaffolder action.

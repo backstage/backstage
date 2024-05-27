@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { createGitlabProjectDeployTokenAction } from './createGitlabProjectDeployTokenAction';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
+import { ScmIntegrations } from '@backstage/integration';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import yaml from 'yaml';
-import { examples } from './createGitlabProjectDeployTokenAction.examples';
+import { createGitlabProjectDeployTokenAction } from './gitlabProjectDeployTokenCreate';
+import { examples } from './gitlabProjectDeployTokenCreate.examples';
 
 const mockGitlabClient = {
   ProjectDeployTokens: {
