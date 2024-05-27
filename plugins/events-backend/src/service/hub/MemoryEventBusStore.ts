@@ -111,12 +111,13 @@ export class MemoryEventBusStore implements EventBusStore {
           throw new Error(`Subscription not found`);
         }
 
-        return new Promise<{ topic: string }>(resolve => {
+        return new Promise<{ topic: string }>((resolve, reject) => {
           const listener = { topics: sub.topics, resolve };
           this.#listeners.add(listener);
 
           options.signal.addEventListener('abort', () => {
             this.#listeners.delete(listener);
+            reject(options.signal.reason);
           });
         });
       },
