@@ -15,6 +15,7 @@
  */
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventBusStore } from './types';
+import { NotFoundError } from '@backstage/errors';
 
 const MAX_BATCH_SIZE = 10;
 
@@ -80,7 +81,7 @@ export class MemoryEventBusStore implements EventBusStore {
   async readSubscription(id: string): Promise<{ events: EventParams[] }> {
     const sub = this.#subscribers.get(id);
     if (!sub) {
-      throw new Error(`Subscription not found`);
+      throw new NotFoundError(`Subscription not found`);
     }
     const events = this.#events
       .filter(
@@ -108,7 +109,7 @@ export class MemoryEventBusStore implements EventBusStore {
 
         const sub = this.#subscribers.get(subscriptionId);
         if (!sub) {
-          throw new Error(`Subscription not found`);
+          throw new NotFoundError(`Subscription not found`);
         }
 
         return new Promise<{ topic: string }>((resolve, reject) => {

@@ -416,5 +416,19 @@ describe('eventsPlugin', () => {
         await backend.stop();
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should refuse listen without a subscription, %p',
+      async databaseId => {
+        const backend = await startTestBackend({
+          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+        });
+        const helper = new ReqHelper(backend);
+
+        await helper.readEvents('nonexistent').expect(404);
+
+        await backend.stop();
+      },
+    );
   });
 });
