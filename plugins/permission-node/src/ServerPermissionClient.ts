@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  TokenManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   AuthService,
   BackstageCredentials,
@@ -25,6 +22,7 @@ import {
   DiscoveryService,
   PermissionsService,
   PermissionsServiceRequestOptions,
+  TokenManagerService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import {
@@ -53,7 +51,7 @@ export class ServerPermissionClient implements PermissionsService {
     config: Config,
     options: {
       discovery: DiscoveryService;
-      tokenManager: TokenManager;
+      tokenManager: TokenManagerService;
       auth?: AuthService;
     },
   ) {
