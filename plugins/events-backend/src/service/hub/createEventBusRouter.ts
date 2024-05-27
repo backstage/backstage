@@ -242,7 +242,7 @@ export async function createEventBusRouter(options: {
             );
           } catch (error) {
             if (error !== controller.signal.reason) {
-              throw error;
+              logger.error(`Error listening for subscription '${id}'`, error);
             }
           } finally {
             // A small extra delay ensures a more even spread of events across
