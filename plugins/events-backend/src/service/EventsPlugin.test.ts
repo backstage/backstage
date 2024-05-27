@@ -368,5 +368,53 @@ describe('eventsPlugin', () => {
         await backend.stop();
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should time out when no events are available, %p',
+      async databaseId => {
+        const backend = await startTestBackend({
+          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+        });
+        const helper = new ReqHelper(backend);
+        await helper.subscribe('tester', ['test']).expect(201);
+
+        jest.useFakeTimers({
+          doNotFake: ['nextTick'],
+        });
+
+        try {
+          // Can't use supertest for this one because it can't handle the partially blocking response
+          const res = await fetch(
+            `http://localhost:${backend.server.port()}/api/events/bus/v1/subscriptions/tester/events`,
+            {
+              headers: {
+                authorization: mockCredentials.service.header(),
+              },
+            },
+          );
+
+          expect(res.status).toBe(202);
+
+          const { closed } = res.body!.getReader();
+          const checkClosed = () =>
+            Promise.race([
+              closed.then(() => true),
+              new Promise(r => process.nextTick(() => r(false))),
+            ]);
+
+          await expect(checkClosed()).resolves.toBe(false);
+
+          await jest.advanceTimersByTimeAsync(30000);
+          await expect(checkClosed()).resolves.toBe(false);
+
+          await jest.advanceTimersByTimeAsync(30000);
+          await expect(checkClosed()).resolves.toBe(true);
+        } finally {
+          jest.useRealTimers();
+        }
+
+        await backend.stop();
+      },
+    );
   });
 });
