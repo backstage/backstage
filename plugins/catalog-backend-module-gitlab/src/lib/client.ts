@@ -145,18 +145,6 @@ export class GitLabClient {
       resp.items = resp.items.filter(user => user.is_using_seat);
       return resp;
     });
-    /*
-    return this.pagedRequest(
-      `/groups/${encodeURIComponent(groupPath)}/members/all`,
-      {
-        ...options,
-        show_seat_info: true,
-      },
-    ).then(resp => {
-      resp.items = resp.items.filter(user => user.is_using_seat);
-      return resp;
-    });
-*/
   }
 
   async listGroups(
