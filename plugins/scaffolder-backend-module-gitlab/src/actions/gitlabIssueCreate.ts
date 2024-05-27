@@ -21,7 +21,7 @@ import commonGitlabConfig, { IssueType } from '../commonGitlabConfig';
 import { examples } from './gitlabIssueCreate.examples';
 import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
-import { Gitlab, CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
+import { CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
 
 const issueInputProperties = z.object({
   projectId: z.number().describe('Project Id'),
