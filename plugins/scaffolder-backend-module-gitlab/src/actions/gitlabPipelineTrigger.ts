@@ -55,36 +55,43 @@ export const createTriggerGitlabPipelineAction = (options: {
       output: pipelineOutputProperties,
     },
     async handler(ctx) {
+      let pipelineTokenResponse: PipelineTriggerTokenSchema | null = null;
+
+      const { repoUrl, projectId, tokenDescription, token, branch } =
+        commonGitlabConfig.merge(pipelineInputProperties).parse(ctx.input);
+
+      const { host } = parseRepoUrl(repoUrl, integrations);
+      const api = getClient({ host, integrations, token });
+
       try {
-        const { repoUrl, projectId, tokenDescription, token, branch } =
-          commonGitlabConfig.merge(pipelineInputProperties).parse(ctx.input);
+        // Create a pipeline token
+        pipelineTokenResponse = (await api.PipelineTriggerTokens.create(
+          projectId,
+          tokenDescription,
+        )) as PipelineTriggerTokenSchema;
 
-        const { host } = parseRepoUrl(repoUrl, integrations);
-        const api = getClient({ host, integrations, token });
-
-        // Get a pipeline token
-        const createdPipelineTokenResponse =
-          (await api.PipelineTriggerTokens.create(
-            projectId,
-            tokenDescription,
-          )) as PipelineTriggerTokenSchema;
-
-        if (!createdPipelineTokenResponse.token) {
+        if (!pipelineTokenResponse.token) {
+          ctx.logger.error('Failed to create pipeline token.');
           return;
         }
+        ctx.logger.info(
+          `Pipeline token id ${pipelineTokenResponse.id} created.`,
+        );
+
         // Use the pipeline token to trigger the pipeline in the project
         const pipelineTriggerResponse =
           (await api.PipelineTriggerTokens.trigger(
             projectId,
             branch,
-            createdPipelineTokenResponse.token,
+            pipelineTokenResponse.token,
           )) as ExpandedPipelineSchema;
 
-        // Delete the pipeline token
-        await api.PipelineTriggerTokens.remove(
-          projectId,
-          createdPipelineTokenResponse.id,
-        );
+        if (!pipelineTriggerResponse.id) {
+          ctx.logger.error('Failed to trigger pipeline.');
+          return;
+        }
+
+        ctx.logger.info(`Pipeline id ${pipelineTriggerResponse.id} triggered.`);
 
         ctx.output('pipelineUrl', pipelineTriggerResponse.web_url);
       } catch (error: any) {
@@ -96,6 +103,23 @@ export const createTriggerGitlabPipelineAction = (options: {
         }
         // Handling other errors
         throw new InputError(`Failed to trigger Pipeline: ${error.message}`);
+      } finally {
+        // Delete the pipeline token if it was created
+        if (pipelineTokenResponse && pipelineTokenResponse.id) {
+          try {
+            await api.PipelineTriggerTokens.remove(
+              projectId,
+              pipelineTokenResponse.id,
+            );
+            ctx.logger.info(
+              `Deleted pipeline token ${pipelineTokenResponse.id}.`,
+            );
+          } catch (error: any) {
+            ctx.logger.error(
+              `Failed to delete pipeline token id ${pipelineTokenResponse.id}.`,
+            );
+          }
+        }
       }
     },
   });
