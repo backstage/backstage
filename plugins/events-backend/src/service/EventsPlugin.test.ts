@@ -379,7 +379,7 @@ describe('eventsPlugin', () => {
         await helper.subscribe('tester', ['test']).expect(201);
 
         jest.useFakeTimers({
-          doNotFake: ['nextTick'],
+          advanceTimers: true,
         });
 
         try {

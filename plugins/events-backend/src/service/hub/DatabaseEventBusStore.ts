@@ -447,7 +447,7 @@ export class DatabaseEventBusStore implements EventBusStore {
       // events where read, the last ID out of all events
       .update({
         read_until: this.#db.raw(
-          'COALESCE(last_event_id, (SELECT MAX(id) FROM event_bus_events))',
+          'COALESCE(last_event_id, (SELECT MAX(id) FROM event_bus_events), 0)',
         ),
       })
       .updateFrom({
