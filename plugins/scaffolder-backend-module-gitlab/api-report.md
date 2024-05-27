@@ -33,11 +33,11 @@ export const createGitlabIssueAction: (options: {
     projectId: number;
     labels?: string | undefined;
     description?: string | undefined;
-    token?: string | undefined;
     weight?: number | undefined;
+    token?: string | undefined;
     assignees?: number[] | undefined;
-    confidential?: boolean | undefined;
     createdAt?: string | undefined;
+    confidential?: boolean | undefined;
     milestoneId?: number | undefined;
     epicId?: number | undefined;
     dueDate?: string | undefined;
@@ -61,8 +61,8 @@ export const createGitlabProjectAccessTokenAction: (options: {
     projectId: string | number;
     name?: string | undefined;
     token?: string | undefined;
-    expiresAt?: string | undefined;
     scopes?: string[] | undefined;
+    expiresAt?: string | undefined;
     accessLevel?: number | undefined;
   },
   {
@@ -78,8 +78,8 @@ export const createGitlabProjectDeployTokenAction: (options: {
     name: string;
     repoUrl: string;
     projectId: string | number;
-    token?: string | undefined;
     username?: string | undefined;
+    token?: string | undefined;
     scopes?: string[] | undefined;
   },
   {
@@ -118,7 +118,7 @@ export const createGitlabRepoPushAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'update' | 'create' | 'delete' | undefined;
+    commitAction?: 'update' | 'delete' | 'create' | undefined;
   },
   JsonObject
 >;
@@ -193,7 +193,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'update' | 'create' | 'delete' | undefined;
+    commitAction?: 'update' | 'delete' | 'create' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
@@ -206,8 +206,8 @@ export const createTriggerGitlabPipelineAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    repoUrl: string;
     branch: string;
+    repoUrl: string;
     projectId: number;
     tokenDescription: string;
     token?: string | undefined;
