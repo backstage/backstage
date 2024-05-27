@@ -26,11 +26,6 @@ import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
 import { Gitlab, IssueSchema, EditIssueOptions } from '@gitbeaker/rest';
 
-/**
- * Gitlab issue types
- *
- * @public
- */
 const editIssueInputProperties = z.object({
   projectId: z
     .number()
