@@ -41,7 +41,10 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 
 import queryString from 'qs';
-import { fetchEventSource } from '@microsoft/fetch-event-source';
+import {
+  EventSourceMessage,
+  fetchEventSource,
+} from '@microsoft/fetch-event-source';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -244,7 +247,7 @@ export class ScaffolderClient implements ScaffolderApi {
 
           fetchEventSource(url, {
             fetch: this.fetchApi.fetch,
-            onmessage(e: any) {
+            onmessage(e: EventSourceMessage) {
               if (e.event === 'log') {
                 processEvent(e);
                 return;

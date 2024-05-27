@@ -126,6 +126,8 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    // @deprecated Remove identityApiRef
+    identityApi?: any;
   }) {
     this.configApi = options.configApi;
     this.discoveryApi = options.discoveryApi;
@@ -212,7 +214,9 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
         fetch: this.fetchApi.fetch,
         onmessage(e: any) {
           if (e.event === 'log') {
-            logHandler(JSON.parse(e.data));
+            if (e.data) {
+              logHandler(JSON.parse(e.data));
+            }
           } else if (e.event === 'finish') {
             let updated: boolean = false;
             if (e.data) {

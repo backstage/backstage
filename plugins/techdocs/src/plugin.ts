@@ -31,6 +31,7 @@ import {
   createRoutableExtension,
   discoveryApiRef,
   fetchApiRef,
+  identityApiRef,
 } from '@backstage/core-plugin-api';
 import {
   createSearchResultListItemExtension,
@@ -51,13 +52,18 @@ export const techdocsPlugin = createPlugin({
       deps: {
         configApi: configApiRef,
         discoveryApi: discoveryApiRef,
+        /**
+         * @deprecated fetchApi is enough
+         */
+        identityApi: identityApiRef,
         fetchApi: fetchApiRef,
       },
-      factory: ({ configApi, discoveryApi, fetchApi }) =>
+      factory: ({ configApi, discoveryApi, fetchApi, identityApi = null }) =>
         new TechDocsStorageClient({
           configApi,
           discoveryApi,
           fetchApi,
+          identityApi,
         }),
     }),
     createApiFactory({

@@ -465,6 +465,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi_2 {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
+    identityApi?: any;
   });
   // (undocumented)
   configApi: Config;
