@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend-module-gitlab': minor
+'@backstage/plugin-scaffolder-backend-module-gitlab': patch
 ---
 
-Add new Scaffolder action to trigger GitLab pipelines.
+Add new `gitlab:pipeline:trigger` action to trigger GitLab pipelines.
