@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend-module-gitlab': minor
+'@backstage/plugin-scaffolder-backend-module-gitlab': patch
 ---
 
-feat: Added a new gitlab edit issue action to scaffolder gitlab module and minor fix to allow TASK actions to existing create gitlab issue task.
+Added `gitlab:issues:edit` action to edit existing GitLab issues
