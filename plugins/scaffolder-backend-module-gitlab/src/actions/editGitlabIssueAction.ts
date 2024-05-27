@@ -240,7 +240,9 @@ export const editGitlabIssueAction = (options: {
           });
         }
         // Handling other errors
-        throw new InputError(`Failed to create GitLab issue: ${error.message}`);
+        throw new InputError(
+          `Failed to edit/modify GitLab issue: ${error.message}`,
+        );
       }
     },
   });
