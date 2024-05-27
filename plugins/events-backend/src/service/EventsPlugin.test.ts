@@ -259,5 +259,114 @@ describe('eventsPlugin', () => {
         await backend.stop();
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should should not notify subscribers that have already consumed the event, %p',
+      async databaseId => {
+        const backend = await startTestBackend({
+          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+        });
+        const helper = new ReqHelper(backend);
+
+        // 2 subscribers
+        await helper.subscribe('tester-1', ['test']).expect(201);
+        await helper.subscribe('tester-2', ['test']).expect(201);
+
+        // A single event for each subscriber, that should not be sent to the other one
+        await helper
+          .publish(
+            'test',
+            { for: 'tester-2' },
+            {
+              consumedBy: ['tester-1'],
+            },
+          )
+          .expect(201);
+        await helper
+          .publish(
+            'test',
+            { for: 'tester-1' },
+            {
+              consumedBy: ['tester-2'],
+            },
+          )
+          .expect(201);
+
+        // Single client for subscriber 1 gets the event
+        await helper.readEvents('tester-1').expect(200, {
+          events: [{ topic: 'test', payload: { for: 'tester-1' } }],
+        });
+        // Single client for subscriber 1 gets the event
+        await helper.readEvents('tester-2').expect(200, {
+          events: [{ topic: 'test', payload: { for: 'tester-2' } }],
+        });
+
+        await backend.stop();
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should return multiple events in order, %p',
+      async databaseId => {
+        const backend = await startTestBackend({
+          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+        });
+        const helper = new ReqHelper(backend);
+
+        // 2 subscribers
+        await helper.subscribe('tester', ['test']).expect(201);
+
+        // A single event for each subscriber, that should not be sent to the other one
+        for (let n = 0; n < 15; ++n) {
+          await helper.publish('test', { n }).expect(201);
+        }
+
+        // Batch size it 10
+        await helper.readEvents('tester').expect(200, {
+          events: [
+            { topic: 'test', payload: { n: 0 } },
+            { topic: 'test', payload: { n: 1 } },
+            { topic: 'test', payload: { n: 2 } },
+            { topic: 'test', payload: { n: 3 } },
+            { topic: 'test', payload: { n: 4 } },
+            { topic: 'test', payload: { n: 5 } },
+            { topic: 'test', payload: { n: 6 } },
+            { topic: 'test', payload: { n: 7 } },
+            { topic: 'test', payload: { n: 8 } },
+            { topic: 'test', payload: { n: 9 } },
+          ],
+        });
+
+        await helper.readEvents('tester').expect(200, {
+          events: [
+            { topic: 'test', payload: { n: 10 } },
+            { topic: 'test', payload: { n: 11 } },
+            { topic: 'test', payload: { n: 12 } },
+            { topic: 'test', payload: { n: 13 } },
+            { topic: 'test', payload: { n: 14 } },
+          ],
+        });
+
+        await backend.stop();
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'should skip publishing if all subscribers have already consumed the event, %p',
+      async databaseId => {
+        const backend = await startTestBackend({
+          features: [eventsPlugin(), await mockKnexFactory(databaseId)],
+        });
+        const helper = new ReqHelper(backend);
+
+        await helper.subscribe('tester', ['test']).expect(201);
+
+        await helper
+          .publish('test', { for: 'tester-2' }, { consumedBy: ['tester'] })
+          .expect(204);
+
+        await backend.stop();
+      },
+    );
   });
 });
