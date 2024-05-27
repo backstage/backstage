@@ -79,18 +79,26 @@ type PageContextType = {
   content: {
     contentRef?: React.MutableRefObject<HTMLElement | null>;
   };
+
+  notificationsCount?: number;
+  setNotificationsCount: (count: number) => void;
 };
 
 const PageContext = createContext<PageContextType>({
   content: {
     contentRef: undefined,
   },
+
+  notificationsCount: undefined,
+  setNotificationsCount: () => {},
 });
+
 export function SidebarPage(props: SidebarPageProps) {
   const [isPinned, setIsPinned] = useState(() =>
     LocalStorage.getSidebarPinState(),
   );
   const { sidebarConfig } = useContext(SidebarConfigContext);
+  const [notificationsCount, setNotificationsCount] = useState<number>();
 
   const contentRef = useRef(null);
 
@@ -99,8 +107,11 @@ export function SidebarPage(props: SidebarPageProps) {
       content: {
         contentRef,
       },
+
+      notificationsCount,
+      setNotificationsCount,
     }),
-    [contentRef],
+    [contentRef, notificationsCount],
   );
 
   useEffect(() => {
@@ -162,4 +173,14 @@ export function useContent() {
   }, [content]);
 
   return { focusContent, contentRef: content?.contentRef };
+}
+
+/**
+ * Hook to read and update context details of a page with SideBar.
+ *
+ * @public
+ */
+export function usePageContext(): PageContextType {
+  const pageContext = useContext(PageContext);
+  return pageContext;
 }

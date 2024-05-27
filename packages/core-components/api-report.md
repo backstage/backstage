@@ -1459,6 +1459,11 @@ export function useContent(): {
   contentRef: React_2.MutableRefObject<HTMLElement | null> | undefined;
 };
 
+// Warning: (ae-forgotten-export) The symbol "PageContextType" needs to be exported by the entry point index.d.ts
+//
+// @public
+export function usePageContext(): PageContextType;
+
 // Warning: (ae-forgotten-export) The symbol "SetQueryParams" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "useQueryParamState" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
