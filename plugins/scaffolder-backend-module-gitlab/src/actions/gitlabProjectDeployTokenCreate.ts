@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { Gitlab } from '@gitbeaker/node';
+import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { DeployTokenScope } from '@gitbeaker/core/dist/types/templates/ResourceDeployTokens';
+import { Gitlab } from '@gitbeaker/node';
+import { z } from 'zod';
 import commonGitlabConfig from '../commonGitlabConfig';
 import { getToken } from '../util';
-import { InputError } from '@backstage/errors';
-import { z } from 'zod';
-import { examples } from './createGitlabProjectDeployTokenAction.examples';
+import { examples } from './gitlabProjectDeployTokenCreate.examples';
 
 /**
  * Creates a `gitlab:projectDeployToken:create` Scaffolder action.

@@ -21,7 +21,7 @@ import { AccessTokenScopes, Gitlab } from '@gitbeaker/rest';
 import { DateTime } from 'luxon';
 import { z } from 'zod';
 import { getToken } from '../util';
-import { examples } from './createGitlabProjectAccessTokenAction.examples';
+import { examples } from './gitlabProjectAccessTokenCreate.examples';
 
 /**
  * Creates a `gitlab:projectAccessToken:create` Scaffolder action.

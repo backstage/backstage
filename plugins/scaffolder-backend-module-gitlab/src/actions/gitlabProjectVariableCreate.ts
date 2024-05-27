@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ScmIntegrationRegistry } from '@backstage/integration';
+import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { Gitlab } from '@gitbeaker/node';
-import { getToken } from '../util';
-import commonGitlabConfig from '../commonGitlabConfig';
 import { z } from 'zod';
-import { examples } from './createGitlabProjectVariableAction.examples';
+import commonGitlabConfig from '../commonGitlabConfig';
+import { getToken } from '../util';
+import { examples } from './gitlabProjectVariableCreate.examples';
 
 /**
  * Creates a `gitlab:projectVariable:create` Scaffolder action.

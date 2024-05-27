@@ -18,7 +18,7 @@ import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import commonGitlabConfig from '../commonGitlabConfig';
-import { examples } from './createGitlabIssueAction.examples';
+import { examples } from './gitlabIssueCreate.examples';
 import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
 import { Gitlab, CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
