@@ -21,6 +21,7 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import {
+  TestBackend,
   TestDatabaseId,
   TestDatabases,
   mockCredentials,
@@ -102,6 +103,38 @@ describe('eventsPlugin', () => {
   });
 
   describe('event bus', () => {
+    class ReqHelper {
+      constructor(private readonly backend: TestBackend) {}
+
+      subscribe(id: string, topics: string[], options?: { auth?: string }) {
+        return request(this.backend.server)
+          .put(`/api/events/bus/v1/subscriptions/${id}`)
+          .set(
+            'authorization',
+            options?.auth ?? mockCredentials.service.header(),
+          )
+          .send({ topics });
+      }
+
+      publish(
+        topic: string,
+        payload: unknown,
+        options?: { consumedBy?: string[] },
+      ) {
+        return request(this.backend.server)
+          .post('/api/events/bus/v1/events')
+          .set('authorization', mockCredentials.service.header())
+          .send({ event: { topic, payload }, consumedBy: options?.consumedBy });
+      }
+
+      readEvents(id: string) {
+        return request(this.backend.server)
+          .get(`/api/events/bus/v1/subscriptions/${id}/events`)
+          .set('authorization', mockCredentials.service.header())
+          .send();
+      }
+    }
+
     const databases = TestDatabases.create({
       ids: ['SQLITE_3', 'POSTGRES_9', 'POSTGRES_13', 'POSTGRES_16'],
     });
@@ -119,24 +152,21 @@ describe('eventsPlugin', () => {
         const backend = await startTestBackend({
           features: [eventsPlugin(), await mockKnexFactory(databaseId)],
         });
-        const { server } = backend;
+        const helper = new ReqHelper(backend);
 
-        await request(server)
-          .post('/api/events/bus/v1/events')
+        await helper
+          .publish('test', { n: 1 })
           .set('authorization', mockCredentials.none.header())
-          .send({ event: { topic: 'test', payload: { n: 1 } } })
           .expect(401);
 
-        await request(server)
-          .post('/api/events/bus/v1/events')
+        await helper
+          .publish('test', { n: 1 })
           .set('authorization', mockCredentials.user.header())
-          .send({ event: { topic: 'test', payload: { n: 1 } } })
           .expect(403);
 
-        await request(server)
-          .post('/api/events/bus/v1/events')
+        await helper
+          .publish('test', { n: 1 })
           .set('authorization', mockCredentials.service.header())
-          .send({ event: { topic: 'test', payload: { n: 1 } } })
           .expect(204); // 204, since there are no subscribers
 
         await backend.stop();
@@ -149,51 +179,35 @@ describe('eventsPlugin', () => {
         const backend = await startTestBackend({
           features: [eventsPlugin(), await mockKnexFactory(databaseId)],
         });
-        const { server } = backend;
+        const helper = new ReqHelper(backend);
 
-        await request(server)
-          .put('/api/events/bus/v1/subscriptions/tester')
+        await helper
+          .subscribe('tester', ['test'])
           .set('authorization', mockCredentials.none.header())
-          .send({ topics: ['test'] })
           .expect(401);
 
-        await request(server)
-          .put('/api/events/bus/v1/subscriptions/tester')
+        await helper
+          .subscribe('tester', ['test'])
           .set('authorization', mockCredentials.user.header())
-          .send({ topics: ['test'] })
           .expect(403);
 
-        await request(server)
-          .put('/api/events/bus/v1/subscriptions/tester')
-          .set('authorization', mockCredentials.service.header())
-          .send({ topics: ['test'] })
-          .expect(201);
+        await helper.subscribe('tester', ['test']).expect(201);
 
-        await request(server)
-          .get('/api/events/bus/v1/subscriptions/tester/events')
+        await helper
+          .readEvents('tester')
           .set('authorization', mockCredentials.none.header())
-          .send({ topics: ['test'] })
           .expect(401);
 
-        await request(server)
-          .get('/api/events/bus/v1/subscriptions/tester/events')
+        await helper
+          .readEvents('tester')
           .set('authorization', mockCredentials.user.header())
-          .send({ topics: ['test'] })
           .expect(403);
 
-        await request(server)
-          .post('/api/events/bus/v1/events')
-          .set('authorization', mockCredentials.service.header())
-          .send({ event: { topic: 'test', payload: { n: 1 } } })
-          .expect(201); // 201, since there is a subscriber
+        await helper.publish('test', { n: 1 }).expect(201); // 201, since there is a subscriber
 
-        await request(server)
-          .get('/api/events/bus/v1/subscriptions/tester/events')
-          .set('authorization', mockCredentials.service.header())
-          .send({ topics: ['test'] })
-          .expect(200, {
-            events: [{ topic: 'test', payload: { n: 1 } }],
-          });
+        await helper.readEvents('tester').expect(200, {
+          events: [{ topic: 'test', payload: { n: 1 } }],
+        });
 
         await backend.stop();
       },
@@ -205,45 +219,23 @@ describe('eventsPlugin', () => {
         const backend = await startTestBackend({
           features: [eventsPlugin(), await mockKnexFactory(databaseId)],
         });
-        const { server } = backend;
+        const helper = new ReqHelper(backend);
 
         // 2 subscribers
-        await request(server)
-          .put('/api/events/bus/v1/subscriptions/tester-1')
-          .set('authorization', mockCredentials.service.header())
-          .send({ topics: ['test'] })
-          .expect(201);
-        await request(server)
-          .put('/api/events/bus/v1/subscriptions/tester-2')
-          .set('authorization', mockCredentials.service.header())
-          .send({ topics: ['test'] })
-          .expect(201);
+        await helper.subscribe('tester-1', ['test']).expect(201);
+        await helper.subscribe('tester-2', ['test']).expect(201);
 
         // A single event
-        await request(server)
-          .post('/api/events/bus/v1/events')
-          .set('authorization', mockCredentials.service.header())
-          .send({ event: { topic: 'test', payload: { n: 1 } } })
-          .expect(201);
+        await helper.publish('test', { n: 1 }).expect(201);
 
         // Single client for subscriber 1 gets the event
-        await request(server)
-          .get('/api/events/bus/v1/subscriptions/tester-1/events')
-          .set('authorization', mockCredentials.service.header())
-          .send({ topics: ['test'] })
-          .expect(200, {
-            events: [{ topic: 'test', payload: { n: 1 } }],
-          });
+        await helper.readEvents('tester-1').expect(200, {
+          events: [{ topic: 'test', payload: { n: 1 } }],
+        });
 
         // Two clients for subscriber 2, only one  gets the event
-        const res1 = request(server)
-          .get('/api/events/bus/v1/subscriptions/tester-2/events')
-          .set('authorization', mockCredentials.service.header())
-          .send({ topics: ['test'] });
-        const res2 = request(server)
-          .get('/api/events/bus/v1/subscriptions/tester-2/events')
-          .set('authorization', mockCredentials.service.header())
-          .send({ topics: ['test'] });
+        const res1 = helper.readEvents('tester-2');
+        const res2 = helper.readEvents('tester-2');
 
         const res = await Promise.race([res1, res2]);
         expect(res.status).toBe(200);
@@ -252,11 +244,7 @@ describe('eventsPlugin', () => {
         });
 
         // Post another event, which triggers the other client to return
-        await request(server)
-          .post('/api/events/bus/v1/events')
-          .set('authorization', mockCredentials.service.header())
-          .send({ event: { topic: 'test', payload: { n: 2 } } })
-          .expect(201);
+        await helper.publish('test', { n: 2 }).expect(201);
 
         const otherRes = await Promise.all([res1, res2]).then(rs =>
           rs.find(r => r !== res),
@@ -264,13 +252,9 @@ describe('eventsPlugin', () => {
         expect(otherRes?.status).toBe(202);
 
         // Reading subscriber 2 should now return the second event only
-        await request(server)
-          .get('/api/events/bus/v1/subscriptions/tester-2/events')
-          .set('authorization', mockCredentials.service.header())
-          .send({ topics: ['test'] })
-          .expect(200, {
-            events: [{ topic: 'test', payload: { n: 2 } }],
-          });
+        await helper.readEvents('tester-2').expect(200, {
+          events: [{ topic: 'test', payload: { n: 2 } }],
+        });
 
         await backend.stop();
       },
