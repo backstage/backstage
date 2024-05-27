@@ -60,6 +60,7 @@ export type GitLabUser = {
   avatar_url: string;
   groups?: GitLabGroup[];
   group_saml_identity?: GitLabGroupSamlIdentity;
+  is_using_seat?: boolean; // Only available in responses from the group members endpoint
 };
 
 /**
@@ -149,6 +150,13 @@ export type GitlabProviderConfig = {
    * Accepts only groups under the provided path (which will be stripped)
    */
   group: string;
+
+  /**
+   * If true, the provider will only ingest users that are part of the configured group.
+   * Only valid for self-hosted GitLab instances.
+   */
+  restrictUsersToGroup?: boolean;
+
   /**
    * ???
    */

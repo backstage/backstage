@@ -356,7 +356,24 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     let groups;
     let users;
 
-    if (this.gitLabClient.isSelfManaged()) {
+    // Doesn't matter if we are on SaaS or not, we can either get the users from the defined group or from the root group.
+    if (this.gitLabClient.isSelfManaged() && this.config.restrictUsersToGroup) {
+      groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
+        .items;
+      users = paginated<GitLabUser>(
+        options =>
+          this.gitLabClient.listGroupMembers(this.config.group, options),
+        {
+          page: 1,
+          per_page: 100,
+        },
+      );
+    }
+
+    if (
+      this.gitLabClient.isSelfManaged() &&
+      !this.config.restrictUsersToGroup
+    ) {
       groups = paginated<GitLabGroup>(
         options => this.gitLabClient.listGroups(options),
         {
@@ -365,19 +382,19 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
           all_available: true,
         },
       );
-
       users = paginated<GitLabUser>(
         options => this.gitLabClient.listUsers(options),
-        {
-          page: 1,
-          per_page: 100,
-          active: true,
-        },
+        { page: 1, per_page: 100, active: true },
       );
-    } else {
+    }
+
+    // For SaaS, the only difference is the root group
+    if (!this.gitLabClient.isSelfManaged()) {
       groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
         .items;
-      const rootGroup = this.config.group.split('/')[0];
+      const rootGroup = this.config.restrictUsersToGroup
+        ? this.config.group
+        : this.config.group.split('/')[0];
       users = paginated<GitLabUser>(
         options => this.gitLabClient.listSaaSUsers(rootGroup, options),
         {

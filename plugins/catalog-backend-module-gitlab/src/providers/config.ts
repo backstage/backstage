@@ -51,6 +51,8 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const schedule = config.has('schedule')
     ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
     : undefined;
+  const restrictUsersToGroup =
+    config.getOptionalBoolean('restrictUsersToGroup') ?? false;
 
   return {
     id,
@@ -66,6 +68,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     orgEnabled,
     allowInherited,
     skipForkedRepos,
+    restrictUsersToGroup,
   };
 }
 

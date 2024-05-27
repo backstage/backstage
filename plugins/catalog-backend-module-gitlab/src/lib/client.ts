@@ -23,6 +23,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   GitLabDescendantGroupsResponse,
   GitLabGroup,
+  GitlabGroupMember,
   GitLabGroupMembersResponse,
   GitLabProject,
   GitLabUser,
@@ -114,8 +115,19 @@ export class GitLabClient {
     return response;
   }
 
+  async listGroupMembers(
+    groupPath: string,
+    options?: CommonListOptions,
+  ): Promise<PagedResponse<GitLabUser>> {
+    return this.pagedRequest(
+      `/groups/${encodeURIComponent(groupPath)}/members/all`,
+      options,
+    );
+  }
+
   async listUsers(
     options?: UserListOptions,
+    global?: boolean,
   ): Promise<PagedResponse<GitLabUser>> {
     return this.pagedRequest(`/users?`, {
       ...options,
@@ -128,6 +140,14 @@ export class GitLabClient {
     groupPath: string,
     options?: CommonListOptions,
   ): Promise<PagedResponse<GitLabUser>> {
+    return this.listGroupMembers(groupPath, {
+      ...options,
+      show_seat_info: true,
+    }).then(resp => {
+      resp.items = resp.items.filter(user => user.is_using_seat);
+      return resp;
+    });
+    /*
     return this.pagedRequest(
       `/groups/${encodeURIComponent(groupPath)}/members/all`,
       {
@@ -138,6 +158,7 @@ export class GitLabClient {
       resp.items = resp.items.filter(user => user.is_using_seat);
       return resp;
     });
+*/
   }
 
   async listGroups(
