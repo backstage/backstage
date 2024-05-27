@@ -16,7 +16,7 @@
 import { EventParams } from '@backstage/plugin-events-node';
 import { EventBusStore } from './types';
 
-const MAX_BATCH_SIZE = 5;
+const MAX_BATCH_SIZE = 10;
 
 export class MemoryEventBusStore implements EventBusStore {
   #events = new Array<EventParams & { seq: number; consumedBy: Set<string> }>();
