@@ -241,9 +241,7 @@ export async function createEventBusRouter(options: {
               { subject: credentials.principal.subject },
             );
           } catch (error) {
-            if (error === controller.signal.reason) {
-              res.end();
-            } else {
+            if (error !== controller.signal.reason) {
               throw error;
             }
           } finally {
