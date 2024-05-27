@@ -8,7 +8,7 @@ To be able to send notifications from other backend plugins, the `NotificationSe
 environment. Add notification service to your `plugin.ts` as a dependency for init
 
 ```ts
-import { notificationService } from '@backstage/plugin-notifications-node';
+import { coreServices } from '@backstage/backend-plugin-api';
 
 export const myPlugin = createBackendPlugin({
   pluginId: 'myPlugin',
@@ -18,15 +18,15 @@ export const myPlugin = createBackendPlugin({
         config: coreServices.rootConfig,
         logger: coreServices.logger,
         httpRouter: coreServices.httpRouter,
-        notificationService: notificationService,
+        notifications: coreServices.notifications,
       },
-      async init({ config, logger, httpRouter, notificationService }) {
+      async init({ config, logger, httpRouter, notifications }) {
         httpRouter.use(
           await createRouter({
             config,
             logger,
             permissions,
-            notificationService,
+            notifications,
           }),
         );
       },

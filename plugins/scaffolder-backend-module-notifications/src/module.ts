@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createBackendModule } from '@backstage/backend-plugin-api';
-import { notificationService } from '@backstage/plugin-notifications-node';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import { createSendNotificationAction } from './actions';
 
@@ -28,7 +30,7 @@ export const scaffolderModuleNotifications = createBackendModule({
   register(reg) {
     reg.registerInit({
       deps: {
-        notifications: notificationService,
+        notifications: coreServices.notifications,
         scaffolder: scaffolderActionsExtensionPoint,
       },
       async init({ notifications, scaffolder }) {

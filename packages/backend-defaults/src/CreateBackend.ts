@@ -37,6 +37,7 @@ import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLif
 import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import { eventsServiceFactory } from '@backstage/plugin-events-node';
+import { notificationsServiceFactory } from '@backstage/plugin-notifications-node';
 
 export const defaultServiceFactories = [
   authServiceFactory(),
@@ -58,6 +59,7 @@ export const defaultServiceFactories = [
   userInfoServiceFactory(),
   urlReaderServiceFactory(),
   eventsServiceFactory(),
+  notificationsServiceFactory(),
 ];
 
 /**

@@ -84,6 +84,7 @@ export const defaultServiceFactories = [
   mockServices.userInfo.factory(),
   mockServices.urlReader.factory(),
   mockServices.events.factory(),
+  mockServices.notifications.factory(),
 ];
 
 /**

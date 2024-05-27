@@ -19,7 +19,6 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { notificationService } from '@backstage/plugin-notifications-node';
 import { errorHandler } from '@backstage/backend-common';
 import {
   notificationSeverities,
@@ -75,7 +74,7 @@ const notificationsDebug = createBackendPlugin({
   register(env) {
     env.registerInit({
       deps: {
-        notifications: notificationService,
+        notifications: coreServices.notifications,
         httpRouter: coreServices.httpRouter,
       },
       async init({ notifications, httpRouter }) {

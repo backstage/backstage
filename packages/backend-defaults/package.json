@@ -90,6 +90,7 @@
     "@backstage/config-loader": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
+    "@backstage/plugin-notifications-node": "workspace:^",
     "@backstage/plugin-permission-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "@keyv/memcache": "^1.3.5",

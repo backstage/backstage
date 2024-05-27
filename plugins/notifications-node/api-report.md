@@ -7,12 +7,14 @@ import { AuthService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
-import { NotificationPayload } from '@backstage/plugin-notifications-common';
+import { NotificationSendOptions } from '@backstage/backend-plugin-api';
+import { NotificationService as NotificationService_2 } from '@backstage/backend-plugin-api';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
+import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
-export class DefaultNotificationService implements NotificationService {
+export class DefaultNotificationService implements NotificationService_2 {
   // (undocumented)
   static create(
     options: NotificationServiceOptions,
@@ -45,31 +47,11 @@ export type NotificationProcessorFilters = {
   excludedTopics?: string[];
 };
 
-// @public (undocumented)
-export type NotificationRecipients =
-  | {
-      type: 'entity';
-      entityRef: string | string[];
-      excludeEntityRef?: string | string[];
-    }
-  | {
-      type: 'broadcast';
-    };
+// @public @deprecated (undocumented)
+export type NotificationService = NotificationService_2;
 
-// @public (undocumented)
-export type NotificationSendOptions = {
-  recipients: NotificationRecipients;
-  payload: NotificationPayload;
-};
-
-// @public (undocumented)
-export interface NotificationService {
-  // (undocumented)
-  send(options: NotificationSendOptions): Promise<void>;
-}
-
-// @public (undocumented)
-export const notificationService: ServiceRef<NotificationService, 'plugin'>;
+// @public @deprecated (undocumented)
+export const notificationService: ServiceRef<NotificationService_2, 'plugin'>;
 
 // @public (undocumented)
 export type NotificationServiceOptions = {
@@ -87,4 +69,10 @@ export interface NotificationsProcessingExtensionPoint {
 
 // @public (undocumented)
 export const notificationsProcessingExtensionPoint: ExtensionPoint<NotificationsProcessingExtensionPoint>;
+
+// @public (undocumented)
+export const notificationsServiceFactory: () => ServiceFactory<
+  NotificationService_2,
+  'plugin'
+>;
 ```

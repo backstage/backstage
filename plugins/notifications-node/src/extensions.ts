@@ -13,12 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createExtensionPoint } from '@backstage/backend-plugin-api';
+import {
+  createExtensionPoint,
+  NotificationSendOptions,
+} from '@backstage/backend-plugin-api';
 import {
   Notification,
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
-import { NotificationSendOptions } from './service';
 
 /**
  * Notification processors are used to modify the notification parameters or sending the notifications

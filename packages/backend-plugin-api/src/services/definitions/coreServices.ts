@@ -196,4 +196,8 @@ export namespace coreServices {
   export const identity = createServiceRef<
     import('./IdentityService').IdentityService
   >({ id: 'core.identity' });
+
+  export const notifications = createServiceRef<
+    import('./NotificationService').NotificationService
+  >({ id: 'core.notifications' });
 }

@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  NotificationSendOptions as _NotificationSendOptions,
-  NotificationService as _NotificationService,
-} from '@backstage/backend-plugin-api';
+import { NotificationPayload } from '@backstage/plugin-notifications-common';
 
 /** @public */
 export type NotificationRecipients =
@@ -36,14 +33,13 @@ export type NotificationRecipients =
     }
   | { type: 'broadcast' };
 
-/**
- * @public
- * @deprecated Use {@link @backstage/backend-plugin-api#NotificationSendOptions} instead
- */
-export type NotificationSendOptions = _NotificationSendOptions;
+/** @public */
+export type NotificationSendOptions = {
+  recipients: NotificationRecipients;
+  payload: NotificationPayload;
+};
 
-/**
- * @public
- * @deprecated Use {@link @backstage/backend-plugin-api#NotificationService} instead
- */
-export type NotificationService = _NotificationService;
+/** @public */
+export interface NotificationService {
+  send(options: NotificationSendOptions): Promise<void>;
+}

@@ -23,3 +23,4 @@
 export * from './service';
 export * from './lib';
 export * from './extensions';
+export * from './deprecated';

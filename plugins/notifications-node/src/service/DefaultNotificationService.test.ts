@@ -18,10 +18,8 @@ import { setupRequestMockHandlers } from '@backstage/test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
-import {
-  DefaultNotificationService,
-  NotificationSendOptions,
-} from './DefaultNotificationService';
+import { NotificationSendOptions } from '@backstage/backend-plugin-api';
+import { DefaultNotificationService } from './DefaultNotificationService';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 
 const testNotification: NotificationPayload = {

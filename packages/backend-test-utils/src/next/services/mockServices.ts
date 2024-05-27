@@ -56,6 +56,7 @@ import {
   eventsServiceFactory,
   eventsServiceRef,
 } from '@backstage/plugin-events-node';
+import { notificationsServiceFactory } from '@backstage/plugin-notifications-node';
 
 /** @internal */
 function createLoggerMock() {
@@ -415,6 +416,13 @@ export namespace mockServices {
     export const mock = simpleMock(eventsServiceRef, () => ({
       publish: jest.fn(),
       subscribe: jest.fn(),
+    }));
+  }
+
+  export namespace notifications {
+    export const factory = notificationsServiceFactory;
+    export const mock = simpleMock(coreServices.notifications, () => ({
+      send: jest.fn(),
     }));
   }
 }

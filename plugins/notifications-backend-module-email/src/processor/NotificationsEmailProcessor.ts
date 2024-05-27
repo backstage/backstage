@@ -16,12 +16,12 @@
 import {
   NotificationProcessor,
   NotificationProcessorFilters,
-  NotificationSendOptions,
 } from '@backstage/plugin-notifications-node';
 import {
   AuthService,
   CacheService,
   LoggerService,
+  NotificationSendOptions,
 } from '@backstage/backend-plugin-api';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { durationToMilliseconds } from '@backstage/types';

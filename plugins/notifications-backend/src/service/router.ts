@@ -32,10 +32,7 @@ import {
   RELATION_PARENT_OF,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import {
-  NotificationProcessor,
-  NotificationSendOptions,
-} from '@backstage/plugin-notifications-node';
+import { NotificationProcessor } from '@backstage/plugin-notifications-node';
 import { InputError } from '@backstage/errors';
 import {
   AuthService,
@@ -43,6 +40,7 @@ import {
   HttpAuthService,
   LoggerService,
   UserInfoService,
+  NotificationSendOptions,
 } from '@backstage/backend-plugin-api';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import {

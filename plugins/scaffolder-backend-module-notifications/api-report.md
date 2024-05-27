@@ -5,7 +5,7 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { NotificationService } from '@backstage/plugin-notifications-node';
+import { NotificationService } from '@backstage/backend-plugin-api';
 import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 

@@ -78,3 +78,8 @@ export type {
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
 export type { IdentityService } from './IdentityService';
+export type {
+  NotificationRecipients,
+  NotificationSendOptions,
+  NotificationService,
+} from './NotificationService';

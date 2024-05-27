@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 import { createSendNotificationAction } from './sendNotification';
-import { NotificationService } from '@backstage/plugin-notifications-node';
+import { mockServices } from '@backstage/backend-test-utils';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('notification:send', () => {
-  const notificationService: jest.Mocked<NotificationService> = {
-    send: jest.fn(),
-  };
+  const notificationService = mockServices.notifications.mock();
 
   let action: TemplateAction<any>;
 

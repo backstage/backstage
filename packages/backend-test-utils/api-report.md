@@ -30,6 +30,7 @@ import Keyv from 'keyv';
 import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { NotificationService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterFactoryOptions } from '@backstage/backend-app-api';
@@ -253,6 +254,15 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<LoggerService> | undefined,
       ) => ServiceMock<LoggerService>;
+  }
+  // (undocumented)
+  export namespace notifications {
+    const // (undocumented)
+      factory: () => ServiceFactory<NotificationService, 'plugin'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<NotificationService> | undefined,
+      ) => ServiceMock<NotificationService>;
   }
   // (undocumented)
   export namespace permissions {

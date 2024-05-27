@@ -16,7 +16,7 @@
 import {
   NotificationRecipients,
   NotificationService,
-} from '@backstage/plugin-notifications-node';
+} from '@backstage/backend-plugin-api';
 import {
   NotificationPayload,
   NotificationSeverity,

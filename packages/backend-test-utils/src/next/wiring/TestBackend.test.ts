@@ -202,9 +202,10 @@ describe('TestBackend', () => {
             urlReader: coreServices.urlReader,
             auth: coreServices.auth,
             httpAuth: coreServices.httpAuth,
+            notifications: coreServices.notifications,
           },
           async init(deps) {
-            expect(Object.keys(deps)).toHaveLength(17);
+            expect(Object.keys(deps)).toHaveLength(18);
             expect(Object.values(deps)).not.toContain(undefined);
           },
         });

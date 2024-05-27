@@ -16,6 +16,7 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { NotificationPayload } from '@backstage/plugin-notifications-common';
 import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
@@ -219,6 +220,8 @@ export namespace coreServices {
   const urlReader: ServiceRef<UrlReaderService, 'plugin'>;
   const // @deprecated
     identity: ServiceRef<IdentityService, 'plugin'>;
+  const // (undocumented)
+    notifications: ServiceRef<NotificationService, 'plugin'>;
 }
 
 // @public
@@ -410,6 +413,29 @@ export interface LoggerService {
   info(message: string, meta?: Error | JsonObject): void;
   // (undocumented)
   warn(message: string, meta?: Error | JsonObject): void;
+}
+
+// @public (undocumented)
+export type NotificationRecipients =
+  | {
+      type: 'entity';
+      entityRef: string | string[];
+      excludeEntityRef?: string | string[];
+    }
+  | {
+      type: 'broadcast';
+    };
+
+// @public (undocumented)
+export type NotificationSendOptions = {
+  recipients: NotificationRecipients;
+  payload: NotificationPayload;
+};
+
+// @public (undocumented)
+export interface NotificationService {
+  // (undocumented)
+  send(options: NotificationSendOptions): Promise<void>;
 }
 
 // @public (undocumented)
