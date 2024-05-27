@@ -23,7 +23,6 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   GitLabDescendantGroupsResponse,
   GitLabGroup,
-  GitlabGroupMember,
   GitLabGroupMembersResponse,
   GitLabProject,
   GitLabUser,
@@ -127,7 +126,6 @@ export class GitLabClient {
 
   async listUsers(
     options?: UserListOptions,
-    global?: boolean,
   ): Promise<PagedResponse<GitLabUser>> {
     return this.pagedRequest(`/users?`, {
       ...options,

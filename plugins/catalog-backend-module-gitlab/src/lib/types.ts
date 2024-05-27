@@ -153,7 +153,6 @@ export type GitlabProviderConfig = {
 
   /**
    * If true, the provider will only ingest users that are part of the configured group.
-   * Only valid for self-hosted GitLab instances.
    */
   restrictUsersToGroup?: boolean;
 
