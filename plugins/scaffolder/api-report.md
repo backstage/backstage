@@ -397,11 +397,11 @@ export const repoPickerValidation: (
 export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    allowedOwners?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
+    allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
     allowedRepos?: string[] | undefined;
-    allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
           secretsKey: string;
@@ -409,8 +409,8 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                bitbucket?: string[] | undefined;
                 gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
@@ -424,11 +424,11 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
 export const RepoUrlPickerFieldSchema: FieldSchema<
   string,
   {
-    allowedOwners?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
+    allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
     allowedRepos?: string[] | undefined;
-    allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
           secretsKey: string;
@@ -436,8 +436,8 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                bitbucket?: string[] | undefined;
                 gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
