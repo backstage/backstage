@@ -160,13 +160,13 @@ export async function createEventBusRouter(options: {
       allow: ['service'],
     });
     const topic = req.body.event.topic;
-    const subscriberIds = req.body.subscriptionIds ?? [];
+    const consumedBy = req.body.consumedBy;
     const result = await store.publish({
       params: {
         topic,
         eventPayload: req.body.event.payload,
       } as EventParams,
-      subscriberIds,
+      consumedBy: req.body.consumedBy,
     });
     if (result) {
       logger.info(`Published event to '${topic}' with ID '${result.id}'`, {
@@ -174,14 +174,18 @@ export async function createEventBusRouter(options: {
       });
       res.status(201).end();
     } else {
-      logger.info(
-        `Skipped publishing of event to '${topic}', subscribers have already been notified: '${subscriberIds.join(
-          "', '",
-        )}'`,
-        {
-          subject: credentials.principal.subject,
-        },
-      );
+      if (consumedBy) {
+        const notified = `'${consumedBy.join("', '")}'`;
+        logger.info(
+          `Skipped publishing of event to '${topic}', subscribers have already been notified: ${notified}`,
+          { subject: credentials.principal.subject },
+        );
+      } else {
+        logger.info(
+          `Skipped publishing of event to '${topic}', no subscribers present`,
+          { subject: credentials.principal.subject },
+        );
+      }
       res.status(204).end();
     }
   });
@@ -267,7 +271,7 @@ export async function createEventBusRouter(options: {
     await store.upsertSubscription(id, req.body.topics);
 
     logger.info(
-      `New subscription '${id}' topics='${req.body.topics.join("', '")}'`,
+      `New subscription '${id}' for topics '${req.body.topics.join("', '")}'`,
       { subject: credentials.principal.subject },
     );
 

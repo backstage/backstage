@@ -19,9 +19,7 @@ import { EventBusStore } from './types';
 const MAX_BATCH_SIZE = 5;
 
 export class MemoryEventBusStore implements EventBusStore {
-  #events = new Array<
-    EventParams & { seq: number; subscriberIds: Set<string> }
-  >();
+  #events = new Array<EventParams & { seq: number; consumedBy: Set<string> }>();
   #subscribers = new Map<
     string,
     { id: string; seq: number; topics: Set<string> }
@@ -33,14 +31,14 @@ export class MemoryEventBusStore implements EventBusStore {
 
   async publish(options: {
     params: EventParams;
-    subscriberIds: string[];
+    consumedBy: string[];
   }): Promise<{ id: string } | undefined> {
     const topic = options.params.topic;
-    const subscriberIds = new Set(options.subscriberIds);
+    const consumedBy = new Set(options.consumedBy);
 
     let hasOtherSubscribers = false;
     for (const sub of this.#subscribers.values()) {
-      if (sub.topics.has(topic) && !subscriberIds.has(sub.id)) {
+      if (sub.topics.has(topic) && !consumedBy.has(sub.id)) {
         hasOtherSubscribers = true;
         break;
       }
@@ -50,7 +48,7 @@ export class MemoryEventBusStore implements EventBusStore {
     }
 
     const nextSeq = this.#getMaxSeq() + 1;
-    this.#events.push({ ...options.params, subscriberIds, seq: nextSeq });
+    this.#events.push({ ...options.params, consumedBy, seq: nextSeq });
 
     for (const listener of this.#listeners) {
       if (listener.topics.has(topic)) {
@@ -89,7 +87,7 @@ export class MemoryEventBusStore implements EventBusStore {
         event =>
           event.seq > sub.seq &&
           sub.topics.has(event.topic) &&
-          !event.subscriberIds.has(id),
+          !event.consumedBy.has(id),
       )
       .slice(0, MAX_BATCH_SIZE);
 

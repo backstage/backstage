@@ -19,7 +19,7 @@ import { EventParams } from '@backstage/plugin-events-node';
 export type EventBusStore = {
   publish(options: {
     params: EventParams;
-    subscriberIds: string[];
+    consumedBy?: string[];
   }): Promise<{ id: string } | undefined>;
 
   upsertSubscription(id: string, topics: string[]): Promise<void>;

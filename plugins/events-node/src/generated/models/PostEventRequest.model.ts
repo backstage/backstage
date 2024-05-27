@@ -24,5 +24,5 @@ export interface PostEventRequest {
   /**
    * The IDs of subscriptions that have already received this event
    */
-  subscriptionIds?: Array<string>;
+  consumedBy?: Array<string>;
 }

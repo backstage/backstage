@@ -323,9 +323,10 @@ export class DatabaseEventBusStore implements EventBusStore {
 
   async publish(options: {
     params: EventParams;
-    subscriberIds: string[];
+    consumedBy?: string[];
   }): Promise<{ id: string } | undefined> {
     const topic = options.params.topic;
+    const consumedBy = options.consumedBy ?? [];
     // This query inserts a new event into the database, but only if there are
     // subscribers to the topic that have not already been notified
     const result = await this.#db
@@ -351,12 +352,12 @@ export class DatabaseEventBusStore implements EventBusStore {
                   metadata: options.params.metadata,
                 }),
               ]),
-              this.#db.raw('?', [options.subscriberIds]),
+              this.#db.raw('?', [consumedBy]),
             )
             // The rest of this query is to check whether there are any
             // subscribers that have not been notified yet
             .from(TABLE_SUBSCRIPTIONS)
-            .whereNotIn('id', options.subscriberIds) // Skip notified subscribers
+            .whereNotIn('id', consumedBy) // Skip notified subscribers
             .andWhere(this.#db.raw('? = ANY(topics)', [topic])) // Match topic
             .having(this.#db.raw('count(*)'), '>', 0), // Check if there are any results
       )

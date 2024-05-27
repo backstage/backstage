@@ -106,7 +106,7 @@ paths:
               properties:
                 event:
                   $ref: '#/components/schemas/Event'
-                subscriptionIds:
+                consumedBy:
                   type: array
                   description: The IDs of subscriptions that have already received this event
                   items:
