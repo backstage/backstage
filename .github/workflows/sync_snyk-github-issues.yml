@@ -29,7 +29,7 @@ jobs:
           cache-prefix: ${{ runner.os }}-v18.x
 
       - name: Create Snyk report
-        uses: snyk/actions/node@8349f9043a8b7f0f3ee8885bf28f0b388d2446e8 # master
+        uses: snyk/actions/node@d406fd286b663eb8c6f8adcced4f7bcd199c0a3f # master
         continue-on-error: true # Snyk CLI exits with error when vulnerabilities are found
         with:
           args: >
