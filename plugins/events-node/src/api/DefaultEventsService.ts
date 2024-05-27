@@ -23,7 +23,7 @@ import {
 import { EventParams } from './EventParams';
 import { EventsService, EventsServiceSubscribeOptions } from './EventsService';
 import { DefaultApiClient } from '../generated';
-import { NotImplementedError, ResponseError } from '@backstage/errors';
+import { ResponseError } from '@backstage/errors';
 
 const POLL_BACKOFF_START_MS = 1_000;
 const POLL_BACKOFF_MAX_MS = 60_000;
@@ -386,13 +386,11 @@ export class DefaultEventsService implements EventsService {
     return service;
   }
 
-  /** @deprecated this method should not be called */
-  async publish(_params: EventParams): Promise<void> {
-    throw new NotImplementedError();
+  async publish(params: EventParams): Promise<void> {
+    await this.localBus.publish(params);
   }
 
-  /** @deprecated this method should not be called */
-  async subscribe(_options: EventsServiceSubscribeOptions): Promise<void> {
-    throw new NotImplementedError();
+  async subscribe(options: EventsServiceSubscribeOptions): Promise<void> {
+    this.localBus.subscribe(options);
   }
 }

@@ -23,10 +23,10 @@ export class DefaultEventsService implements EventsService {
       lifecycle: LifecycleService;
     },
   ): EventsService;
-  // @deprecated (undocumented)
-  publish(_params: EventParams): Promise<void>;
-  // @deprecated (undocumented)
-  subscribe(_options: EventsServiceSubscribeOptions): Promise<void>;
+  // (undocumented)
+  publish(params: EventParams): Promise<void>;
+  // (undocumented)
+  subscribe(options: EventsServiceSubscribeOptions): Promise<void>;
 }
 
 // @public @deprecated
