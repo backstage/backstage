@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-backend-module-gitlab
 
+## 0.3.16
+
+### Patch Changes
+
+- c6db9d7: Fixed an issue in `GitlabOrgDiscoveryEntityProvider` where a missing `orgEnabled` config key was throwing an error.
+- 2e9a0ae: Fixed an issue in `GitlabDiscoveryEntityProvider` where the fallback branch was taking precedence over the GitLab default branch.
+
 ## 0.3.15
 
 ### Patch Changes
