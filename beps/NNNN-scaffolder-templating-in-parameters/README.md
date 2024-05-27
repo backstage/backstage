@@ -102,20 +102,70 @@ and make progress.
 
 ## Proposal
 
-<!--
-This is where we get down to the specifics of what the proposal actually is.
-This should have enough detail that reviewers can understand exactly what
-you're proposing, but should not include things like API designs or
-implementation.
--->
+The proposal is to be able to decorate the template schema server side with a context and use that to drive the form rendering client side.
+
+We can extend the `/parameter-schema` endpoint to accept a `formData` context query parameter which will be a JSON object of the current `formData` state.
+
+```diff
+export interface ScaffolderApi {
+  getTemplateParameterSchema(
+    templateRef: string,
++    formData?: string,
+  ): Promise<TemplateParameterSchema>;
+}
+```
+
+```diff
+ router
+    .get(
+      '/v2/templates/:namespace/:kind/:name/parameter-schema',
+      async (req, res) => {
+        const credentials = await httpAuth.credentials(req);
+        const { token } = await auth.getPluginRequestToken({
+          onBehalfOf: credentials,
+          targetPluginId: 'catalog',
+        });
+        const template = await authorizeTemplate(
+          req.params,
+          token,
+          credentials,
+        );
+
+        const parameters = [template.spec.parameters ?? []].flat();
++        const secureTemplater = await SecureTemplater.loadRenderer({
++          templateFilters: {
++            ...createDefaultFilters({ integrations }),
++            ...additionalTemplateFilters,
++          },
++          templateGlobals: additionalTemplateGlobals,
++        });
++
++        const templatedParameters = parameters.map(parameter =>
++          renderTemplateString(
++            parameter,
++            {
++              parameters: req.query.formData,
++            },
++            secureTemplater,
++            logger,
++          ),
++        );
+```
+
+You can see a quick implementation of this in this [branch](https://github.com/backstage/backstage/compare/master...blam/templating-in-parameters)
 
 ## Design Details
 
-<!--
-This section should contain enough information that the specifics of your
-change are understandable. This may include API specs or even code snippets.
-If there's any ambiguity about HOW your proposal will be implemented, this is the place to discuss them.
--->
+There's a slight issue with the implementation of the `react-jsonschema-form`, which makes things like live updating on things like the `default` field slightly more difficult.
+Currently, on first render, the default value is populated and then stored in the `formData` object or the current state, and the default value is never re-evaluated again at a later stage.
+
+This means that if end users are wanting to set default values with `${{ parameters.myOtherProperty }}`, then they would need to ensure that they are on different steps in the form
+as the form would need to be re-rendered, and for performance reasons, we don't want to re-render the form on every `formData` update.
+
+We could fix this, by implementing custom logic for when the `parameter-schema` is updated, if the updated field is in a `default: *` field, then we replace the previous value with the new value in the `formData` automatically.
+This is a pretty ugly workaround, but maybe the only option we have. Also at this point, pretty unsure if this affects any other parts of the `JSONSchema`, and we would also have to implement it for those fields if they exist.
+
+Perhaps we just accept this as a limitation, and document it as such.
 
 ## Release Plan
 
@@ -124,6 +174,8 @@ This section should describe the rollout process for any new features. It must t
 
 If there is any particular feedback to be gathered during the rollout, this should be described here as well.
 -->
+
+This change is backwards compatible, and can be released in a minor release. There's no breaking changes to worry about here.
 
 ## Dependencies
 
@@ -138,3 +190,8 @@ What other approaches did you consider, and why did you rule them out? These do
 not need to be as detailed as the proposal, but should include enough
 information to express the idea and why it was not acceptable.
 -->
+
+#### Templating client side
+
+- This could lead to confusion as `filters` such as `parseRepoUrl` and `pick` and any custom filters which you define in the backend would not be available in the client side.
+- Also with the limitations of the `default` value being updated only on first render and never re-evaluated, there's no performance benefit of doing things client side anymore.
