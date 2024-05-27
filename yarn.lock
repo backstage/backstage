@@ -6259,6 +6259,7 @@ __metadata:
     "@backstage/test-utils": "workspace:^"
     knex: ^3.0.0
     msw: ^1.0.0
+    node-fetch: ^2.6.7
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -6751,6 +6752,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     msw: ^2.0.0
+    node-fetch: ^2.6.7
     yaml: ^2.3.3
   languageName: unknown
   linkType: soft
