@@ -115,7 +115,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             }
 
             // We need to check against formData here as that's the previous value for this field.
-            if (formData.includes(ref) || allowArbitraryValues) {
+            if (formData?.includes(ref) || allowArbitraryValues) {
               return entityRef;
             }
           }
@@ -173,7 +173,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             required={required}
             InputProps={{
               ...params.InputProps,
-              required: formData.length === 0 && required,
+              required: formData?.length === 0 && required,
             }}
           />
         )}
