@@ -97,18 +97,13 @@ jobs:
           kustomize edit set image backstage=${{ needs.build-backstage.outputs.tags }}
           kustomize build . > manifests.rendered.yml
           cat manifests.rendered.yml
-      - name: Upload Rendered Manifests File as Artifact
+      - name: Upload Artifacts
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
         with:
           name: preview-spec
-          path: ./.github/uffizzi/k8s/manifests/manifests.rendered.yml
-          retention-days: 2
-          overwrite: true
-      - name: Upload PR Event as Artifact
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
-        with:
-          name: preview-spec
-          path: ${{ github.event_path }}
+          path: |
+            ./.github/uffizzi/k8s/manifests/manifests.rendered.yml
+            ${{ github.event_path }}
           retention-days: 2
           overwrite: true
 

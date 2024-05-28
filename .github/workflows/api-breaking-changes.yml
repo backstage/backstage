@@ -45,14 +45,9 @@ jobs:
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
         with:
           name: preview-spec
-          path: comment.md
+          path: |
+            comment.md
+            ${{ github.event_path }}
           retention-days: 2
           overwrite: true
 
-      - name: Upload PR Event as Artifact
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
-        with:
-          name: preview-spec
-          path: ${{ github.event_path }}
-          retention-days: 2
-          overwrite: true
