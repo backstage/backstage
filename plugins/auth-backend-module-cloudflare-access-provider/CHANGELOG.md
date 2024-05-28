@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-cloudflare-access-provider
 
+## 0.1.2-next.1
+
+### Patch Changes
+
+- 1354d81: Use `node-fetch` instead of native fetch, as per https://backstage.io/docs/architecture-decisions/adrs-adr013
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-auth-node@0.4.14-next.1
+
 ## 0.1.2-next.0
 
 ### Patch Changes
