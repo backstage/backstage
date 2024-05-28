@@ -111,7 +111,7 @@ There are only two possible scopes for services, `'plugin'` and `'root'`.
 
 ## Root Scoped Services
 
-If a service is defined as a root scoped service, the implementation created by the factory will be shared across all plugins and services. One other differentiating factory for root scoped services is that they are always initialized, regardless of whether any plugins depend on them or not. This makes them suitable for implementing backend-wide concerns that are not specific to any individual plugin.
+If a service is defined as a root scoped service, the implementation created by the factory will be shared across all plugins and services. One other differentiating factors for root scoped services is that they are always initialized, regardless of whether any plugins depend on them or not. This makes them suitable for implementing backend-wide concerns that are not specific to any individual plugin.
 
 There is a limitation in the usage of root scoped services, which is that their implementation can only depend on other root scoped services. Plugin scoped services on the other hand can depend on both root and plugin scoped services. Because of this limitation, one of the main reasons to define a root scoped services is to make it possible for other root scoped services to depend on it.
 
