@@ -33,10 +33,10 @@ import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { TypeMeta } from '@kubernetes-models/base';
-import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { V1Job } from '@kubernetes/client-node';
 import { V1ObjectMeta } from '@kubernetes/client-node';
 import { V1Pod } from '@kubernetes/client-node';
+import { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { WorkloadsByEntityRequest } from '@backstage/plugin-kubernetes-common';
 
 // @public (undocumented)
@@ -285,7 +285,7 @@ export const GroupedResponsesContext: React_2.Context<GroupedResponses>;
 
 // @public (undocumented)
 export const HorizontalPodAutoscalerDrawer: (props: {
-  hpa: V1HorizontalPodAutoscaler;
+  hpa: V2HorizontalPodAutoscaler;
   expanded?: boolean;
   children?: React_2.ReactNode;
 }) => React_2.JSX.Element;
