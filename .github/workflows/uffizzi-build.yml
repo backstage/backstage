@@ -98,17 +98,18 @@ jobs:
           kustomize build . > manifests.rendered.yml
           cat manifests.rendered.yml
 
-      - name: clone github events.json locally
+      - name: clone artifacts into current directory
         run: |
-          cat ${{ github.event_path }} > events.json
+          cat ${{ github.event_path }} > event.json
+          cp ./.github/uffizzi/k8s/manifests/manifests.rendered.yml manifests.rendered.yml
 
       - name: Upload Artifacts
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
         with:
           name: preview-spec
           path: |
-            ./.github/uffizzi/k8s/manifests/manifests.rendered.yml
-            events.json
+            manifests.rendered.yml
+            event.json
           retention-days: 2
           overwrite: true
 
