@@ -16,7 +16,11 @@
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
-import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
+import {
+  DiscoveryApi,
+  FetchApi,
+  IdentityApi,
+} from '@backstage/core-plugin-api';
 import { NotFoundError, ResponseError } from '@backstage/errors';
 import {
   SyncResult,
@@ -126,8 +130,8 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     configApi: Config;
     discoveryApi: DiscoveryApi;
     fetchApi: FetchApi;
-    // @deprecated Remove identityApiRef
-    identityApi?: any;
+    /** @deprecated identityApi is not needed any more */
+    identityApi?: IdentityApi;
   }) {
     this.configApi = options.configApi;
     this.discoveryApi = options.discoveryApi;
@@ -210,8 +214,10 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
     const url = `${apiOrigin}/sync/${namespace}/${kind}/${name}`;
 
     return new Promise((resolve, reject) => {
+      const ctrl = new AbortController();
       fetchEventSource(url, {
         fetch: this.fetchApi.fetch,
+        signal: ctrl.signal,
         onmessage(e: any) {
           if (e.event === 'log') {
             if (e.data) {
@@ -228,6 +234,7 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
           }
         },
         onerror(err) {
+          ctrl.abort();
           reject(err);
         },
       });

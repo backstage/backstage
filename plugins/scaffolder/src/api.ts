@@ -245,8 +245,10 @@ export class ScaffolderClient implements ScaffolderApi {
             }
           };
 
+          const ctrl = new AbortController();
           fetchEventSource(url, {
             fetch: this.fetchApi.fetch,
+            signal: ctrl.signal,
             onmessage(e: EventSourceMessage) {
               if (e.event === 'log') {
                 processEvent(e);
@@ -254,6 +256,7 @@ export class ScaffolderClient implements ScaffolderApi {
               } else if (e.event === 'completion') {
                 processEvent(e);
                 subscriber.complete();
+                ctrl.abort();
                 return;
               }
               processEvent(e);
