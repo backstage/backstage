@@ -15,11 +15,13 @@
  */
 
 import { OptionValues } from 'commander';
+import { ChildProcess } from 'child_process';
 import path from 'path';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { findPaths } from '@backstage/cli-common';
 import HTTPServer from '../../lib/httpServer';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
+import Docker from 'dockerode';
 import { LogFunc, waitForSignal } from '../../lib/run';
 import { createLogger } from '../../lib/utility';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
@@ -74,9 +76,14 @@ export default async function serve(opts: OptionValues) {
     mkdocsConfigFileName,
   });
 
+  let dockerClient: Docker | undefined;
   // Validate that Docker is up and running
   if (opts.docker) {
-    const isDockerOperational = await checkIfDockerIsOperational(logger);
+    dockerClient = new Docker();
+    const isDockerOperational = await checkIfDockerIsOperational(
+      logger,
+      dockerClient,
+    );
     if (!isDockerOperational) {
       return;
     }
@@ -107,12 +114,13 @@ export default async function serve(opts: OptionValues) {
   // https://github.com/mkdocs/mkdocs/issues/879#issuecomment-203536006
   // Had me questioning this whole implementation for half an hour.
   logger.info('Starting mkdocs server.');
-  const mkdocsChildProcess = await runMkdocsServer({
+  const mkdocsChildOrContainer = await runMkdocsServer({
     port: opts.mkdocsPort,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
+    dockerClient: dockerClient,
     stdoutLogFunc: mkdocsLogFunc,
     stderrLogFunc: mkdocsLogFunc,
     mkdocsConfigFileName: mkdocsYmlPath,
@@ -150,7 +158,14 @@ export default async function serve(opts: OptionValues) {
     .serve()
     .catch(err => {
       logger.error('Failed to start HTTP server', err);
-      mkdocsChildProcess.kill();
+      if (mkdocsChildOrContainer instanceof ChildProcess) {
+        mkdocsChildOrContainer.kill();
+      }
+      if (mkdocsChildOrContainer instanceof Docker.Container) {
+        mkdocsChildOrContainer
+          .stop({})
+          .then(() => mkdocsChildOrContainer.remove({}));
+      }
       process.exit(1);
     })
     .then(() => {
@@ -161,7 +176,7 @@ export default async function serve(opts: OptionValues) {
       );
     });
 
-  await waitForSignal([mkdocsChildProcess]);
+  await waitForSignal([mkdocsChildOrContainer]);
 
   if (configIsTemporary) {
     process.on('exit', async () => {

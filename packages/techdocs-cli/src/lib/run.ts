@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import { spawn, SpawnOptions, ChildProcess } from 'child_process';
+import Docker from 'dockerode';
 
 export type LogFunc = (data: Buffer | string) => void;
 type SpawnOptionsPartialEnv = Omit<SpawnOptions, 'env'> & {
@@ -64,35 +65,53 @@ export const run = async (
 };
 
 // Block indefinitely and wait for a signal to stop the child process(es)
-// Throw error if any child process errors
+// and container(s). Throw error if any process or container errors.
 // Resolves only when all processes exit with status code 0
 export async function waitForSignal(
-  childProcesses: Array<ChildProcess>,
+  childrenOrContainers: Array<ChildProcess | Docker.Container>,
 ): Promise<void> {
   const promises: Array<Promise<void>> = [];
 
   for (const signal of ['SIGINT', 'SIGTERM'] as const) {
     process.on(signal, () => {
-      childProcesses.forEach(childProcess => {
-        childProcess.kill();
+      childrenOrContainers.forEach(c => {
+        if (c instanceof ChildProcess) {
+          c.kill();
+        }
+        if (c instanceof Docker.Container) {
+          c.stop({}).then(() => c.remove({}));
+        }
       });
     });
   }
 
-  childProcesses.forEach(childProcess => {
-    if (typeof childProcess.exitCode === 'number') {
-      if (childProcess.exitCode) {
-        throw new Error(`Non zero exit code from child process`);
+  childrenOrContainers.forEach(c => {
+    if (c instanceof ChildProcess) {
+      if (typeof c.exitCode === 'number') {
+        if (c.exitCode) {
+          throw new Error(`Non zero exit code from child process`);
+        }
+        return;
       }
-      return;
-    }
 
-    promises.push(
-      new Promise<void>((resolve, reject) => {
-        childProcess.once('error', reject);
-        childProcess.once('exit', resolve);
-      }),
-    );
+      promises.push(
+        new Promise<void>((resolve, reject) => {
+          c.once('error', reject);
+          c.once('exit', resolve);
+        }),
+      );
+    }
+    if (c instanceof Docker.Container) {
+      promises.push(
+        c.wait().then(async status => {
+          await c.remove();
+
+          if (status.StatusCode != 0) {
+            throw new Error('Non zero exit code code from container');
+          }
+        }),
+      );
+    }
   });
 
   await Promise.all(promises);

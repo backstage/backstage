@@ -22,6 +22,7 @@ import { LogFunc, waitForSignal } from '../../lib/run';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
+import Docker from 'dockerode';
 
 export default async function serveMkdocs(opts: OptionValues) {
   const logger = createLogger({ verbose: opts.verbose });
@@ -30,8 +31,13 @@ export default async function serveMkdocs(opts: OptionValues) {
   const localAddr = `http://127.0.0.1:${opts.port}`;
   const expectedDevAddr = opts.docker ? dockerAddr : localAddr;
 
+  let dockerClient: Docker | undefined;
   if (opts.docker) {
-    const isDockerOperational = await checkIfDockerIsOperational(logger);
+    dockerClient = new Docker();
+    const isDockerOperational = await checkIfDockerIsOperational(
+      logger,
+      dockerClient,
+    );
     if (!isDockerOperational) {
       return;
     }
@@ -74,18 +80,19 @@ export default async function serveMkdocs(opts: OptionValues) {
   // Had me questioning this whole implementation for half an hour.
 
   // Commander stores --no-docker in cmd.docker variable
-  const childProcess = await runMkdocsServer({
+  const childOrContainer = await runMkdocsServer({
     port: opts.port,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
+    dockerClient: dockerClient,
     stdoutLogFunc: logFunc,
     stderrLogFunc: logFunc,
   });
 
   // Keep waiting for user to cancel the process
-  await waitForSignal([childProcess]);
+  await waitForSignal([childOrContainer]);
 
   if (configIsTemporary) {
     process.on('exit', async () => {
