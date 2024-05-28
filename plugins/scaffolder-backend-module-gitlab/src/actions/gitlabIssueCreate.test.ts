@@ -15,13 +15,11 @@
  */
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { createGitlabIssueAction } from './createGitlabIssueAction';
+import { createGitlabIssueAction } from './gitlabIssueCreate';
 
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { IssueType } from '../commonGitlabConfig';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-import { createGitlabIssueAction, IssueType } from './gitlabIssueCreate';
 
 const mockGitlabClient = {
   Issues: {

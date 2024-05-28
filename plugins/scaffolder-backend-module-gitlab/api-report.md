@@ -41,14 +41,14 @@ export const createGitlabIssueAction: (options: {
     milestoneId?: number | undefined;
     epicId?: number | undefined;
     dueDate?: string | undefined;
-    issueType?: IssueType | undefined;
     discussionToResolve?: string | undefined;
+    issueType?: IssueType | undefined;
     mergeRequestToResolveDiscussionsOf?: number | undefined;
   },
   {
-    issueIid: number;
     issueUrl: string;
     issueId: number;
+    issueIid: number;
   }
 >;
 
@@ -202,6 +202,22 @@ export const createPublishGitlabMergeRequestAction: (options: {
 >;
 
 // @public
+export const createTriggerGitlabPipelineAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    branch: string;
+    repoUrl: string;
+    projectId: number;
+    tokenDescription: string;
+    token?: string | undefined;
+  },
+  {
+    pipelineUrl: string;
+  }
+>;
+
+// @public
 export const editGitlabIssueAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
@@ -231,25 +247,9 @@ export const editGitlabIssueAction: (options: {
     title: string;
     projectId: number;
     updatedAt: string;
-    issueIid: number;
     issueUrl: string;
     issueId: number;
-  }
->;
-
-// @public
-export const createTriggerGitlabPipelineAction: (options: {
-  integrations: ScmIntegrationRegistry;
-}) => TemplateAction<
-  {
-    branch: string;
-    repoUrl: string;
-    projectId: number;
-    tokenDescription: string;
-    token?: string | undefined;
-  },
-  {
-    pipelineUrl: string;
+    issueIid: number;
   }
 >;
 

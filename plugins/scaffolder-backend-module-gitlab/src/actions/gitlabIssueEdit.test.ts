@@ -17,8 +17,8 @@
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { editGitlabIssueAction } from './editGitlabIssueAction';
 import { IssueType } from '../commonGitlabConfig';
+import { editGitlabIssueAction } from './gitlabIssueEdit';
 
 const mockGitlabClient = {
   Issues: {

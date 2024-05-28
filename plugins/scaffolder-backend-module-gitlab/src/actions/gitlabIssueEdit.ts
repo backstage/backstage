@@ -21,7 +21,7 @@ import commonGitlabConfig, {
   IssueType,
   IssueStateEvent,
 } from '../commonGitlabConfig';
-import { examples } from './editGitlabIssueAction.examples';
+import { examples } from './gitlabIssueEdit.examples';
 import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
 import { IssueSchema, EditIssueOptions } from '@gitbeaker/rest';
