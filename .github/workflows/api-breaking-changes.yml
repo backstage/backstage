@@ -41,13 +41,17 @@ jobs:
         run: |
           yarn backstage-repo-tools repo schema openapi check --since origin/${{ github.base_ref }} > comment.md
 
+      - name: clone github events.json to local path
+        run: |
+          cat ${{ github.event_path }} > events.json
+
       - name: Upload Artifacts
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
         with:
           name: preview-spec
           path: |
             comment.md
-            ${{ github.event_path }}
+            events.json
           retention-days: 2
           overwrite: true
 
