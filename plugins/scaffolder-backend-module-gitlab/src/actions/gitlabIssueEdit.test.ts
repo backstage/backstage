@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { IssueType } from '../commonGitlabConfig';
-import { createGitlabIssueAction } from './gitlabIssueCreate';
+import { editGitlabIssueAction } from './gitlabIssueEdit';
 
 const mockGitlabClient = {
   Issues: {
-    create: jest.fn(),
+    edit: jest.fn(),
   },
 };
 jest.mock('@gitbeaker/rest', () => ({
@@ -33,7 +33,7 @@ jest.mock('@gitbeaker/rest', () => ({
   },
 }));
 
-describe('gitlab:issues:create', () => {
+describe('gitlab:issues:edit', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers({
@@ -58,21 +58,22 @@ describe('gitlab:issues:create', () => {
   });
   const integrations = ScmIntegrations.fromConfig(config);
 
-  const action = createGitlabIssueAction({ integrations });
+  const action = editGitlabIssueAction({ integrations });
 
   it('should return a Gitlab issue when called with minimal input params', async () => {
     const mockContext = createMockActionContext({
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
+        issueIid: 42,
         title: 'Computer banks to rule the world',
       },
       workspacePath: 'seen2much',
     });
 
-    mockGitlabClient.Issues.create.mockResolvedValue({
-      id: 42,
-      iid: 1,
+    mockGitlabClient.Issues.edit.mockResolvedValue({
+      id: 123,
+      iid: 42,
       web_url: 'https://gitlab.com/hangar18-/issues/42',
     });
 
@@ -80,27 +81,26 @@ describe('gitlab:issues:create', () => {
       ...mockContext,
     });
 
-    expect(mockGitlabClient.Issues.create).toHaveBeenCalledWith(
-      123,
-      'Computer banks to rule the world',
-      {
-        issueType: undefined,
-        description: '',
-        assigneeIds: [],
-        confidential: false,
-        epicId: undefined,
-        labels: '',
-        createdAt: new Date().toISOString(),
-        dueDate: undefined,
-        discussionToResolve: '',
-        mergeRequestToResolveDiscussionsOf: undefined,
-        milestoneId: undefined,
-        weight: undefined,
-      },
-    );
+    expect(mockGitlabClient.Issues.edit).toHaveBeenCalledWith(123, 42, {
+      title: 'Computer banks to rule the world',
+      issueType: undefined,
+      addLabels: undefined,
+      removeLabels: undefined,
+      description: undefined,
+      assigneeIds: [],
+      confidential: false,
+      discussionLocked: false,
+      epicId: undefined,
+      labels: undefined,
+      updatedAt: new Date().toISOString(),
+      dueDate: undefined,
+      milestoneId: undefined,
+      weight: undefined,
+      stateEvent: undefined,
+    });
 
-    expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
-    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 1);
+    expect(mockContext.output).toHaveBeenCalledWith('issueId', 123);
+    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 42);
     expect(mockContext.output).toHaveBeenCalledWith(
       'issueUrl',
       'https://gitlab.com/hangar18-/issues/42',
@@ -112,59 +112,59 @@ describe('gitlab:issues:create', () => {
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
+        issueIid: 42,
         title: 'Computer banks to rule the world',
         token: 'myAwesomeToken',
       },
       workspacePath: 'seen2much',
     });
 
-    mockGitlabClient.Issues.create.mockResolvedValue({
-      id: 42,
-      iid: 1,
+    mockGitlabClient.Issues.edit.mockResolvedValue({
+      id: 123,
+      iid: 42,
       web_url: 'https://gitlab.com/hangar18-/issues/42',
     });
 
     await action.handler({
       ...mockContext,
     });
+    expect(mockGitlabClient.Issues.edit).toHaveBeenCalledWith(123, 42, {
+      title: 'Computer banks to rule the world',
+      issueType: undefined,
+      addLabels: undefined,
+      removeLabels: undefined,
+      description: undefined,
+      assigneeIds: [],
+      confidential: false,
+      discussionLocked: false,
+      epicId: undefined,
+      labels: undefined,
+      updatedAt: new Date().toISOString(),
+      dueDate: undefined,
+      milestoneId: undefined,
+      weight: undefined,
+      stateEvent: undefined,
+    });
 
-    expect(mockGitlabClient.Issues.create).toHaveBeenCalledWith(
-      123,
-      'Computer banks to rule the world',
-      {
-        issueType: undefined,
-        description: '',
-        assigneeIds: [],
-        confidential: false,
-        epicId: undefined,
-        labels: '',
-        createdAt: new Date().toISOString(),
-        dueDate: undefined,
-        discussionToResolve: '',
-        mergeRequestToResolveDiscussionsOf: undefined,
-        milestoneId: undefined,
-        weight: undefined,
-      },
-    );
-
-    expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
-    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 1);
+    expect(mockContext.output).toHaveBeenCalledWith('issueId', 123);
+    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 42);
     expect(mockContext.output).toHaveBeenCalledWith(
       'issueUrl',
       'https://gitlab.com/hangar18-/issues/42',
     );
   });
 
-  it('should return a Gitlab issue when called with several input params', async () => {
+  it('should return a Gitlab issue when modified with several input params', async () => {
     const mockContext = createMockActionContext({
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         projectId: 123,
+        issueIid: 42,
         issueType: IssueType.INCIDENT,
         title: 'Computer banks to rule the world',
         description:
           'this issue should kickstart research on instruments to sight the stars',
-        dueDate: '1990-08-20T23:59:59Z',
+        dueDate: '2025-08-20',
         token: 'myAwesomeToken',
         assignees: [3, 14, 15],
         labels: 'operation:mindcrime',
@@ -172,9 +172,9 @@ describe('gitlab:issues:create', () => {
       workspacePath: 'seen2much',
     });
 
-    mockGitlabClient.Issues.create.mockResolvedValue({
-      id: 42,
-      iid: 1,
+    mockGitlabClient.Issues.edit.mockResolvedValue({
+      id: 123,
+      iid: 42,
       web_url: 'https://gitlab.com/hangar18-/issues/42',
     });
 
@@ -182,28 +182,27 @@ describe('gitlab:issues:create', () => {
       ...mockContext,
     });
 
-    expect(mockGitlabClient.Issues.create).toHaveBeenCalledWith(
-      123,
-      'Computer banks to rule the world',
-      {
-        issueType: 'incident',
-        description:
-          'this issue should kickstart research on instruments to sight the stars',
-        assigneeIds: [3, 14, 15],
-        confidential: false,
-        epicId: undefined,
-        labels: 'operation:mindcrime',
-        createdAt: new Date().toISOString(),
-        dueDate: '1990-08-20T23:59:59.000Z',
-        discussionToResolve: '',
-        mergeRequestToResolveDiscussionsOf: undefined,
-        milestoneId: undefined,
-        weight: undefined,
-      },
-    );
+    expect(mockGitlabClient.Issues.edit).toHaveBeenCalledWith(123, 42, {
+      title: 'Computer banks to rule the world',
+      issueType: 'incident',
+      addLabels: undefined,
+      removeLabels: undefined,
+      description:
+        'this issue should kickstart research on instruments to sight the stars',
+      assigneeIds: [3, 14, 15],
+      confidential: false,
+      discussionLocked: false,
+      epicId: undefined,
+      labels: 'operation:mindcrime',
+      updatedAt: new Date().toISOString(),
+      dueDate: '2025-08-20',
+      milestoneId: undefined,
+      weight: undefined,
+      stateEvent: undefined,
+    });
 
-    expect(mockContext.output).toHaveBeenCalledWith('issueId', 42);
-    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 1);
+    expect(mockContext.output).toHaveBeenCalledWith('issueId', 123);
+    expect(mockContext.output).toHaveBeenCalledWith('issueIid', 42);
     expect(mockContext.output).toHaveBeenCalledWith(
       'issueUrl',
       'https://gitlab.com/hangar18-/issues/42',

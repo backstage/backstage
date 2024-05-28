@@ -29,12 +29,12 @@ export const createGitlabIssueAction: (options: {
 }) => TemplateAction<
   {
     title: string;
-    repoUrl: string;
     projectId: number;
+    repoUrl: string;
     labels?: string | undefined;
     description?: string | undefined;
-    weight?: number | undefined;
     token?: string | undefined;
+    weight?: number | undefined;
     assignees?: number[] | undefined;
     createdAt?: string | undefined;
     confidential?: boolean | undefined;
@@ -57,12 +57,12 @@ export const createGitlabProjectAccessTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    repoUrl: string;
     projectId: string | number;
+    repoUrl: string;
     name?: string | undefined;
     token?: string | undefined;
-    scopes?: string[] | undefined;
     expiresAt?: string | undefined;
+    scopes?: string[] | undefined;
     accessLevel?: number | undefined;
   },
   {
@@ -76,10 +76,10 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     name: string;
-    repoUrl: string;
     projectId: string | number;
-    username?: string | undefined;
+    repoUrl: string;
     token?: string | undefined;
+    username?: string | undefined;
     scopes?: string[] | undefined;
   },
   {
@@ -95,8 +95,8 @@ export const createGitlabProjectVariableAction: (options: {
   {
     key: string;
     value: string;
-    repoUrl: string;
     projectId: string | number;
+    repoUrl: string;
     variableType: string;
     raw?: boolean | undefined;
     token?: string | undefined;
@@ -149,8 +149,8 @@ export function createPublishGitlabAction(options: {
           squash_option?:
             | 'always'
             | 'never'
-            | 'default_off'
             | 'default_on'
+            | 'default_off'
             | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
@@ -207,8 +207,8 @@ export const createTriggerGitlabPipelineAction: (options: {
 }) => TemplateAction<
   {
     branch: string;
-    repoUrl: string;
     projectId: number;
+    repoUrl: string;
     tokenDescription: string;
     token?: string | undefined;
   },
@@ -218,8 +218,52 @@ export const createTriggerGitlabPipelineAction: (options: {
 >;
 
 // @public
+export const editGitlabIssueAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    projectId: number;
+    repoUrl: string;
+    issueIid: number;
+    title?: string | undefined;
+    labels?: string | undefined;
+    description?: string | undefined;
+    token?: string | undefined;
+    weight?: number | undefined;
+    assignees?: number[] | undefined;
+    addLabels?: string | undefined;
+    confidential?: boolean | undefined;
+    milestoneId?: number | undefined;
+    removeLabels?: string | undefined;
+    stateEvent?: IssueStateEvent | undefined;
+    discussionLocked?: boolean | undefined;
+    epicId?: number | undefined;
+    dueDate?: string | undefined;
+    updatedAt?: string | undefined;
+    issueType?: IssueType | undefined;
+  },
+  {
+    state: string;
+    title: string;
+    projectId: number;
+    updatedAt: string;
+    issueUrl: string;
+    issueId: number;
+    issueIid: number;
+  }
+>;
+
+// @public
 const gitlabModule: () => BackendFeature;
 export default gitlabModule;
+
+// @public
+export enum IssueStateEvent {
+  // (undocumented)
+  CLOSE = 'close',
+  // (undocumented)
+  REOPEN = 'reopen',
+}
 
 // @public
 export enum IssueType {
@@ -227,6 +271,8 @@ export enum IssueType {
   INCIDENT = 'incident',
   // (undocumented)
   ISSUE = 'issue',
+  // (undocumented)
+  TASK = 'task',
   // (undocumented)
   TEST = 'test_case',
 }

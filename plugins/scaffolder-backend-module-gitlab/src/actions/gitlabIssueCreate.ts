@@ -17,22 +17,11 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import commonGitlabConfig from '../commonGitlabConfig';
+import commonGitlabConfig, { IssueType } from '../commonGitlabConfig';
 import { examples } from './gitlabIssueCreate.examples';
 import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
-import { Gitlab, CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
-
-/**
- * Gitlab issue types
- *
- * @public
- */
-export enum IssueType {
-  ISSUE = 'issue',
-  INCIDENT = 'incident',
-  TEST = 'test_case',
-}
+import { CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
 
 const issueInputProperties = z.object({
   projectId: z.number().describe('Project Id'),
@@ -150,11 +139,7 @@ export const createGitlabIssueAction = (options: {
         let isEpicScoped = false;
 
         if (epicId) {
-          isEpicScoped = await checkEpicScope(
-            api as any as InstanceType<typeof Gitlab>,
-            projectId,
-            epicId,
-          );
+          isEpicScoped = await checkEpicScope(api, projectId, epicId);
 
           if (isEpicScoped) {
             ctx.logger.info('Epic is within Project Scope');

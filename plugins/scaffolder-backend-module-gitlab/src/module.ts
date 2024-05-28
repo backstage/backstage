@@ -29,6 +29,7 @@ import {
   createPublishGitlabAction,
   createPublishGitlabMergeRequestAction,
   createTriggerGitlabPipelineAction,
+  editGitlabIssueAction,
 } from './actions';
 
 /**
@@ -54,6 +55,7 @@ export const gitlabModule = createBackendModule({
           createGitlabProjectDeployTokenAction({ integrations }),
           createGitlabProjectVariableAction({ integrations }),
           createGitlabRepoPushAction({ integrations }),
+          editGitlabIssueAction({ integrations }),
           createPublishGitlabAction({ config, integrations }),
           createPublishGitlabMergeRequestAction({ integrations }),
           createTriggerGitlabPipelineAction({ integrations }),
