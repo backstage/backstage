@@ -58,8 +58,7 @@ developers.
 
 ### Resource
 
-Resources are the infrastructure a component needs to operate at runtime, like
-BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together
+Resources are the infrastructure component that needs to operate at runtime, like BigTable databases, Pub/Sub topics, S3 buckets or CDNs. Modelling them together
 with components and systems will better allow us to visualize resource
 footprint, and create tooling around them.
 
