@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { CacheManager } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { CacheManager } from './CacheManager';
 
 /**
  * @public
@@ -28,9 +28,10 @@ export const cacheServiceFactory = createServiceFactory({
   deps: {
     config: coreServices.rootConfig,
     plugin: coreServices.pluginMetadata,
+    logger: coreServices.rootLogger,
   },
-  async createRootContext({ config }) {
-    return CacheManager.fromConfig(config);
+  async createRootContext({ config, logger }) {
+    return CacheManager.fromConfig(config, { logger });
   },
   async factory({ plugin }, manager) {
     return manager.forPlugin(plugin.getId()).getClient();

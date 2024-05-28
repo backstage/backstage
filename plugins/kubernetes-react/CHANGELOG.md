@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.4.0-next.1
+
+### Minor Changes
+
+- 4f92394: Migrate from identityApi to fetchApi in frontend plugins.
+- 0177f75: Update kubernetes plugins to use autoscaling/v2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.8.0-next.0
+
 ## 0.3.6-next.0
 
 ### Patch Changes

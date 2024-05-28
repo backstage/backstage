@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.6.0-next.1
+
+### Minor Changes
+
+- debcc8c: Migrate LDAP catalog module to the new backend system.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.24-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-catalog-node@1.12.1-next.0
+
 ## 0.5.35-next.0
 
 ### Patch Changes

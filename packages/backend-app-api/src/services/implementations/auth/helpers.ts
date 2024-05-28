@@ -17,6 +17,7 @@
 import {
   BackstageCredentials,
   BackstageNonePrincipal,
+  BackstagePrincipalAccessRestrictions,
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
@@ -25,6 +26,7 @@ import { InternalBackstageCredentials } from './types';
 export function createCredentialsWithServicePrincipal(
   sub: string,
   token?: string,
+  accessRestrictions?: BackstagePrincipalAccessRestrictions,
 ): InternalBackstageCredentials<BackstageServicePrincipal> {
   return {
     $$type: '@backstage/BackstageCredentials',
@@ -33,6 +35,7 @@ export function createCredentialsWithServicePrincipal(
     principal: {
       type: 'service',
       subject: sub,
+      accessRestrictions,
     },
   };
 }

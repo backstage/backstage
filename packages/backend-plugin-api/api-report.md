@@ -16,6 +16,7 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
@@ -69,13 +70,8 @@ export interface BackendFeature {
   $$type: '@backstage/BackendFeature';
 }
 
-// @public
-export interface BackendModuleConfig {
-  moduleId: string;
-  pluginId: string;
-  // (undocumented)
-  register(reg: BackendModuleRegistrationPoints): void;
-}
+// @public @deprecated (undocumented)
+export type BackendModuleConfig = CreateBackendModuleOptions;
 
 // @public
 export interface BackendModuleRegistrationPoints {
@@ -97,12 +93,8 @@ export interface BackendModuleRegistrationPoints {
   }): void;
 }
 
-// @public
-export interface BackendPluginConfig {
-  pluginId: string;
-  // (undocumented)
-  register(reg: BackendPluginRegistrationPoints): void;
-}
+// @public @deprecated (undocumented)
+export type BackendPluginConfig = CreateBackendPluginOptions;
 
 // @public
 export interface BackendPluginRegistrationPoints {
@@ -136,6 +128,14 @@ export type BackstageNonePrincipal = {
   type: 'none';
 };
 
+// @public
+export type BackstagePrincipalAccessRestrictions = {
+  permissionNames?: string[];
+  permissionAttributes?: {
+    action?: Array<Required<PermissionAttributes>['action']>;
+  };
+};
+
 // @public (undocumented)
 export type BackstagePrincipalTypes = {
   user: BackstageUserPrincipal;
@@ -148,6 +148,7 @@ export type BackstagePrincipalTypes = {
 export type BackstageServicePrincipal = {
   type: 'service';
   subject: string;
+  accessRestrictions?: BackstagePrincipalAccessRestrictions;
 };
 
 // @public (undocumented)
@@ -213,18 +214,38 @@ export namespace coreServices {
 
 // @public
 export function createBackendModule(
-  config: BackendModuleConfig,
+  options: CreateBackendModuleOptions,
 ): () => BackendFeature;
+
+// @public
+export interface CreateBackendModuleOptions {
+  moduleId: string;
+  pluginId: string;
+  // (undocumented)
+  register(reg: BackendModuleRegistrationPoints): void;
+}
 
 // @public
 export function createBackendPlugin(
-  config: BackendPluginConfig,
+  options: CreateBackendPluginOptions,
 ): () => BackendFeature;
 
 // @public
+export interface CreateBackendPluginOptions {
+  pluginId: string;
+  // (undocumented)
+  register(reg: BackendPluginRegistrationPoints): void;
+}
+
+// @public
 export function createExtensionPoint<T>(
-  config: ExtensionPointConfig,
+  options: CreateExtensionPointOptions,
 ): ExtensionPoint<T>;
+
+// @public
+export interface CreateExtensionPointOptions {
+  id: string;
+}
 
 // @public
 export function createServiceFactory<
@@ -310,10 +331,8 @@ export type ExtensionPoint<T> = {
   $$type: '@backstage/ExtensionPoint';
 };
 
-// @public
-export interface ExtensionPointConfig {
-  id: string;
-}
+// @public @deprecated (undocumented)
+export type ExtensionPointConfig = CreateExtensionPointOptions;
 
 // @public (undocumented)
 export interface HttpAuthService {

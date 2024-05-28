@@ -1,5 +1,19 @@
 # @backstage/backend-common
 
+## 0.23.0-next.1
+
+### Minor Changes
+
+- 02103be: Deprecated and moved over core services to `@backstage/backend-defaults`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/config-loader@1.8.0
+  - @backstage/plugin-auth-node@0.4.14-next.1
+
 ## 0.22.1-next.0
 
 ### Patch Changes

@@ -14,10 +14,5 @@
  * limitations under the License.
  */
 
-export { DatabaseManager, dropDatabase } from './DatabaseManager';
-export type {
-  DatabaseManagerOptions,
-  LegacyRootDatabaseService,
-} from './DatabaseManager';
-
+export * from './reexport';
 export type { PluginDatabaseManager } from './types';

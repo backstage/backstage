@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskRunner } from '@backstage/backend-tasks';
+import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -32,18 +32,65 @@ import {
   LdapClient,
   LdapProviderConfig,
   LDAP_DN_ANNOTATION,
-  readLdapConfig,
   readLdapOrg,
   UserTransformer,
 } from '../ldap';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { readLdapLegacyConfig, readProviderConfigs } from '../ldap';
 
 /**
  * Options for {@link LdapOrgEntityProvider}.
  *
  * @public
  */
-export interface LdapOrgEntityProviderOptions {
+export type LdapOrgEntityProviderOptions =
+  | LdapOrgEntityProviderLegacyOptions
+  | {
+      /**
+       * The logger to use.
+       */
+      logger: LoggerService;
+
+      /**
+       * The refresh schedule to use.
+       *
+       * @remarks
+       *
+       * If you pass in 'manual', you are responsible for calling the `read` method
+       * manually at some interval.
+       *
+       * But more commonly you will pass in the result of
+       * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+       * to enable automatic scheduling of tasks.
+       */
+      schedule?: 'manual' | TaskRunner;
+
+      /**
+       * Scheduler used to schedule refreshes based on
+       * the schedule config.
+       */
+      scheduler?: PluginTaskScheduler;
+
+      /**
+       * The function that transforms a user entry in msgraph to an entity.
+       * Optionally, you can pass separate transformers per provider ID.
+       */
+      userTransformer?: UserTransformer | Record<string, UserTransformer>;
+
+      /**
+       * The function that transforms a group entry in msgraph to an entity.
+       * Optionally, you can pass separate transformers per provider ID.
+       */
+      groupTransformer?: GroupTransformer | Record<string, GroupTransformer>;
+    };
+
+/**
+ * Options for {@link LdapOrgEntityProvider}.
+ *
+ * @public
+ * @deprecated This interface exists for backwards compatibility only and will be removed in the future.
+ */
+export interface LdapOrgEntityProviderLegacyOptions {
   /**
    * A unique, stable identifier for this provider.
    *
@@ -109,12 +156,68 @@ export class LdapOrgEntityProvider implements EntityProvider {
   static fromConfig(
     configRoot: Config,
     options: LdapOrgEntityProviderOptions,
+  ): LdapOrgEntityProvider[] {
+    if ('id' in options) {
+      return [LdapOrgEntityProvider.fromLegacyConfig(configRoot, options)];
+    }
+
+    if (!options.schedule && !options.scheduler) {
+      throw new Error('Either schedule or scheduler must be provided.');
+    }
+
+    function getTransformer<T extends Function>(
+      id: string,
+      transformers?: T | Record<string, T>,
+    ): T | undefined {
+      if (['undefined', 'function'].includes(typeof transformers)) {
+        return transformers as T;
+      }
+
+      return (transformers as Record<string, T>)[id];
+    }
+
+    return readProviderConfigs(configRoot).map(providerConfig => {
+      if (!options.schedule && !providerConfig.schedule) {
+        throw new Error(
+          `No schedule provided neither via code nor config for LdapOrgEntityProvider:${providerConfig.id}.`,
+        );
+      }
+
+      const taskRunner =
+        options.schedule ??
+        options.scheduler!.createScheduledTaskRunner(providerConfig.schedule!);
+
+      const provider = new LdapOrgEntityProvider({
+        id: providerConfig.id,
+        provider: providerConfig,
+        logger: options.logger,
+        userTransformer: getTransformer(
+          providerConfig.id,
+          options.userTransformer,
+        ),
+        groupTransformer: getTransformer(
+          providerConfig.id,
+          options.groupTransformer,
+        ),
+      });
+
+      if (taskRunner !== 'manual') {
+        provider.schedule(taskRunner);
+      }
+
+      return provider;
+    });
+  }
+
+  static fromLegacyConfig(
+    configRoot: Config,
+    options: LdapOrgEntityProviderLegacyOptions,
   ): LdapOrgEntityProvider {
     // TODO(freben): Deprecate the old catalog.processors.ldapOrg config
     const config =
       configRoot.getOptionalConfig('ldap') ||
       configRoot.getOptionalConfig('catalog.processors.ldapOrg');
-    const providers = config ? readLdapConfig(config) : [];
+    const providers = config ? readLdapLegacyConfig(config) : [];
     const provider = providers.find(p => options.target === p.target);
     if (!provider) {
       throw new TypeError(
@@ -134,7 +237,9 @@ export class LdapOrgEntityProvider implements EntityProvider {
       logger,
     });
 
-    result.schedule(options.schedule);
+    if (options.schedule !== 'manual') {
+      result.schedule(options.schedule);
+    }
 
     return result;
   }
@@ -206,14 +311,10 @@ export class LdapOrgEntityProvider implements EntityProvider {
     markCommitComplete();
   }
 
-  private schedule(schedule: LdapOrgEntityProviderOptions['schedule']) {
-    if (schedule === 'manual') {
-      return;
-    }
-
+  private schedule(taskRunner: TaskRunner) {
     this.scheduleFn = async () => {
       const id = `${this.getProviderName()}:refresh`;
-      await schedule.run({
+      await taskRunner.run({
         id,
         fn: async () => {
           const logger = this.options.logger.child({

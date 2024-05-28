@@ -88,6 +88,46 @@ export interface Config {
                */
               subject: string;
             };
+            /**
+             * Restricts what types of access that are permitted for this access
+             * method. If no access restrictions are given, it'll have unlimited
+             * access. This access restriction applies for the framework level;
+             * individual plugins may have their own access control mechanisms
+             * on top of this.
+             */
+            accessRestrictions?: Array<{
+              /**
+               * Permit access to make requests to this plugin.
+               *
+               * Can be further refined by setting additional fields below.
+               */
+              plugin: string;
+              /**
+               * If given, this method is limited to only performing actions
+               * with these named permissions in this plugin.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permission?: string | Array<string>;
+              /**
+               * If given, this method is limited to only performing actions
+               * whose permissions have these attributes.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permissionAttribute?: {
+                /**
+                 * One of more of 'create', 'read', 'update', or 'delete'.
+                 */
+                action?: string | Array<string>;
+              };
+            }>;
           }
         | {
             /**
@@ -129,6 +169,87 @@ export interface Config {
                * Useful for debugging and tracking purposes.
                */
               subject: string;
+            };
+            /**
+             * Restricts what types of access that are permitted for this access
+             * method. If no access restrictions are given, it'll have unlimited
+             * access. This access restriction applies for the framework level;
+             * individual plugins may have their own access control mechanisms
+             * on top of this.
+             */
+            accessRestrictions?: Array<{
+              /**
+               * Permit access to make requests to this plugin.
+               *
+               * Can be further refined by setting additional fields below.
+               */
+              plugin: string;
+              /**
+               * If given, this method is limited to only performing actions
+               * with these named permissions in this plugin.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permission?: string | Array<string>;
+              /**
+               * If given, this method is limited to only performing actions
+               * whose permissions have these attributes.
+               *
+               * Note that this only applies where permissions checks are
+               * enabled in the first place. Endpoints that are not protected by
+               * the permissions system at all, are not affected by this
+               * setting.
+               */
+              permissionAttribute?: {
+                /**
+                 * One of more of 'create', 'read', 'update', or 'delete'.
+                 */
+                action?: string | Array<string>;
+              };
+            }>;
+          }
+        | {
+            /**
+             * This access method consists of a JWKS endpoint that can be used to
+             * verify JWT tokens.
+             *
+             * Callers generate JWT tokens via 3rd party tooling
+             * and pass them in the Authorization header:
+             *
+             * ```
+             * Authorization: Bearer eZv5o+fW3KnR3kVabMW4ZcDNLPl8nmMW
+             * ```
+             */
+            type: 'jwks';
+            options: {
+              /**
+               * The full URL of the JWKS endpoint.
+               */
+              url: string;
+              /**
+               * Sets the algorithm(s) that should be used to verify the JWT tokens.
+               * The passed JWTs must have been signed using one of the listed algorithms.
+               */
+              algorithm?: string | string[];
+              /**
+               * Sets the issuer(s) that should be used to verify the JWT tokens.
+               * Passed JWTs must have an `iss` claim which matches one of the specified issuers.
+               */
+              issuer?: string | string[];
+              /**
+               * Sets the audience(s) that should be used to verify the JWT tokens.
+               * The passed JWTs must have an "aud" claim that matches one of the audiences specified,
+               * or have no audience specified.
+               */
+              audience?: string | string[];
+              /**
+               * Sets an optional subject prefix. Passes the subject to called plugins.
+               * Useful for debugging and tracking purposes.
+               */
+              subjectPrefix?: string;
             };
           }
       >;

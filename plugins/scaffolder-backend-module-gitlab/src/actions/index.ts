@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export * from './createGitlabGroupEnsureExistsAction';
-export * from './createGitlabProjectDeployTokenAction';
-export * from './createGitlabProjectAccessTokenAction';
-export * from './createGitlabProjectVariableAction';
-export * from './createGitlabIssueAction';
 export * from './gitlab';
+export * from './gitlabGroupEnsureExists';
+export * from './gitlabIssueCreate';
 export * from './gitlabMergeRequest';
+export * from './gitlabPipelineTrigger';
+export * from './gitlabProjectAccessTokenCreate';
+export * from './gitlabProjectDeployTokenCreate';
+export * from './gitlabProjectVariableCreate';
 export * from './gitlabRepoPush';

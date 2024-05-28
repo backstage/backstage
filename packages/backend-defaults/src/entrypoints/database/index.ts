@@ -15,3 +15,9 @@
  */
 
 export { databaseServiceFactory } from './databaseServiceFactory';
+export {
+  DatabaseManager,
+  type DatabaseManagerOptions,
+  type LegacyRootDatabaseService,
+  dropDatabase,
+} from './DatabaseManager';

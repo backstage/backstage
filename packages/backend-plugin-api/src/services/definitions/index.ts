@@ -20,6 +20,7 @@ export type {
   BackstageCredentials,
   BackstageUserPrincipal,
   BackstageServicePrincipal,
+  BackstagePrincipalAccessRestrictions,
   BackstagePrincipalTypes,
   BackstageNonePrincipal,
 } from './AuthService';
