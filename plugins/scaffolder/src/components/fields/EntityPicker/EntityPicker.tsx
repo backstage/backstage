@@ -71,7 +71,12 @@ export const EntityPicker = (props: EntityPickerProps) => {
   const entityPresentationApi = useApi(entityPresentationApiRef);
 
   const { value: entities, loading } = useAsync(async () => {
-    const fields = ['metadata.name', 'metadata.namespace', 'kind'];
+    const fields = [
+      'metadata.name',
+      'metadata.namespace',
+      'metadata.namespace',
+      'kind',
+    ];
     const { items } = await catalogApi.getEntities(
       catalogFilter
         ? { filter: catalogFilter, fields }
@@ -178,7 +183,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
           typeof option === 'string'
             ? option
             : entities?.entityRefToPresentation.get(stringifyEntityRef(option))
-                ?.entityRef!
+                ?.primaryTitle!
         }
         autoSelect
         freeSolo={allowArbitraryValues}
