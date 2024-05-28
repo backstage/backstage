@@ -368,9 +368,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
           per_page: 100,
         },
       );
-    }
-
-    if (
+    } else if (
       this.gitLabClient.isSelfManaged() &&
       !this.config.restrictUsersToGroup
     ) {
@@ -387,9 +385,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         { page: 1, per_page: 100, active: true },
       );
     }
-
     // For SaaS, the only difference is the root group
-    if (!this.gitLabClient.isSelfManaged()) {
+    else {
       groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
         .items;
       const rootGroup = this.config.restrictUsersToGroup
