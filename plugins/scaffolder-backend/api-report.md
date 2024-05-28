@@ -145,8 +145,8 @@ export function createFetchCatalogEntityAction(options: {
     entityRefs?: string[] | undefined;
   },
   {
-    entities?: any[] | undefined;
     entity?: any;
+    entities?: any[] | undefined;
   }
 >;
 
@@ -287,10 +287,7 @@ export const createPublishGithubPullRequestAction: (
     commitMessage?: string | undefined;
     update?: boolean | undefined;
     forceFork?: boolean | undefined;
-    gitAuthorName?: string | undefined
-    /**
-     * @public @deprecated use import from \@backstage/plugin-scaffolder-backend-module-azure instead
-     */;
+    gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
   },
   JsonObject
