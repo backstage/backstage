@@ -1,11 +1,5 @@
 # @backstage/plugin-scaffolder-react
 
-## 1.8.7
-
-### Patch Changes
-
-- d74fc94: Fixing bug in `formData` type as it should be `optional` as it's possibly undefined
-
 ## 1.8.6
 
 ### Patch Changes
