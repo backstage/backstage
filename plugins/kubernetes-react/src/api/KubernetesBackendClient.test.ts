@@ -19,7 +19,7 @@ import { KubernetesBackendClient } from './KubernetesBackendClient';
 import { rest } from 'msw';
 import { UrlPatternDiscovery } from '@backstage/core-app-api';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
 import {
   CustomObjectsByEntityRequest,
   KubernetesRequestBody,
@@ -44,6 +44,7 @@ describe('KubernetesBackendClient', () => {
     getBackstageIdentity: jest.fn(),
     signOut: jest.fn(),
   };
+  const fetchApi = new MockFetchApi({ injectIdentityAuth: { identityApi } });
 
   beforeEach(() => {
     jest.resetAllMocks();
@@ -51,7 +52,7 @@ describe('KubernetesBackendClient', () => {
       discoveryApi: UrlPatternDiscovery.compile(
         'http://localhost:1234/api/{{ pluginId }}',
       ),
-      identityApi,
+      fetchApi,
       kubernetesAuthProvidersApi,
     });
     mockResponse = {
@@ -454,6 +455,7 @@ describe('KubernetesBackendClient', () => {
     });
 
     it('hits the /proxy API with serviceAccount as auth provider', async () => {
+      identityApi.getCredentials.mockResolvedValue({ token: 'idToken' });
       worker.use(
         rest.get(
           'http://localhost:1234/api/kubernetes/clusters',
