@@ -24,3 +24,4 @@ export * from './services';
 export type { BackendFeature } from './types';
 export * from './paths';
 export * from './wiring';
+export * from './deprecated';

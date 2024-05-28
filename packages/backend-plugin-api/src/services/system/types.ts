@@ -78,7 +78,7 @@ export interface InternalServiceFactory<
 export type ServiceFactoryOrFunction = ServiceFactory | (() => ServiceFactory);
 
 /** @public */
-export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
+export interface ServiceRefOptions<TService, TScope extends 'root' | 'plugin'> {
   id: string;
   scope?: TScope;
   defaultFactory?: (
@@ -92,7 +92,7 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
  * @public
  */
 export function createServiceRef<TService>(
-  config: ServiceRefConfig<TService, 'plugin'>,
+  options: ServiceRefOptions<TService, 'plugin'>,
 ): ServiceRef<TService, 'plugin'>;
 
 /**
@@ -101,12 +101,13 @@ export function createServiceRef<TService>(
  * @public
  */
 export function createServiceRef<TService>(
-  config: ServiceRefConfig<TService, 'root'>,
+  options: ServiceRefOptions<TService, 'root'>,
 ): ServiceRef<TService, 'root'>;
+
 export function createServiceRef<TService>(
-  config: ServiceRefConfig<TService, any>,
+  options: ServiceRefOptions<TService, any>,
 ): ServiceRef<TService, any> {
-  const { id, scope = 'plugin', defaultFactory } = config;
+  const { id, scope = 'plugin', defaultFactory } = options;
   return {
     id,
     scope,
@@ -114,7 +115,7 @@ export function createServiceRef<TService>(
       throw new Error(`tried to read ServiceRef.T of ${this}`);
     },
     toString() {
-      return `serviceRef{${config.id}}`;
+      return `serviceRef{${options.id}}`;
     },
     $$type: '@backstage/ServiceRef',
     __defaultFactory: defaultFactory,
@@ -134,7 +135,7 @@ type ServiceRefsToInstances<
 };
 
 /** @public */
-export interface RootServiceFactoryConfig<
+export interface RootServiceFactoryOptions<
   TService,
   TImpl extends TService,
   TDeps extends { [name in string]: ServiceRef<unknown> },
@@ -156,7 +157,7 @@ export interface RootServiceFactoryConfig<
 }
 
 /** @public */
-export interface PluginServiceFactoryConfig<
+export interface PluginServiceFactoryOptions<
   TService,
   TContext,
   TImpl extends TService,
@@ -188,7 +189,7 @@ export interface PluginServiceFactoryConfig<
  * Creates a root scoped service factory without options.
  *
  * @public
- * @param config - The service factory configuration.
+ * @param options - The service factory configuration.
  */
 export function createServiceFactory<
   TService,
@@ -196,13 +197,13 @@ export function createServiceFactory<
   TDeps extends { [name in string]: ServiceRef<unknown, 'root'> },
   TOpts extends object | undefined = undefined,
 >(
-  config: RootServiceFactoryConfig<TService, TImpl, TDeps>,
+  options: RootServiceFactoryOptions<TService, TImpl, TDeps>,
 ): () => ServiceFactory<TService, 'root'>;
 /**
  * Creates a root scoped service factory with optional options.
  *
  * @public
- * @param config - The service factory configuration.
+ * @param options - The service factory configuration.
  */
 export function createServiceFactory<
   TService,
@@ -210,13 +211,15 @@ export function createServiceFactory<
   TDeps extends { [name in string]: ServiceRef<unknown, 'root'> },
   TOpts extends object | undefined = undefined,
 >(
-  config: (options?: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>,
+  options: (
+    options?: TOpts,
+  ) => RootServiceFactoryOptions<TService, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'root'>;
 /**
  * Creates a plugin scoped service factory without options.
  *
  * @public
- * @param config - The service factory configuration.
+ * @param options - The service factory configuration.
  */
 export function createServiceFactory<
   TService,
@@ -225,13 +228,13 @@ export function createServiceFactory<
   TContext = undefined,
   TOpts extends object | undefined = undefined,
 >(
-  config: PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+  options: PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>,
 ): () => ServiceFactory<TService, 'plugin'>;
 /**
  * Creates a plugin scoped service factory with optional options.
  *
  * @public
- * @param config - The service factory configuration.
+ * @param options - The service factory configuration.
  */
 export function createServiceFactory<
   TService,
@@ -240,9 +243,9 @@ export function createServiceFactory<
   TContext = undefined,
   TOpts extends object | undefined = undefined,
 >(
-  config: (
+  options: (
     options?: TOpts,
-  ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>,
+  ) => PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>,
 ): (options?: TOpts) => ServiceFactory<TService, 'plugin'>;
 export function createServiceFactory<
   TService,
@@ -251,23 +254,24 @@ export function createServiceFactory<
   TContext,
   TOpts extends object | undefined = undefined,
 >(
-  config:
-    | RootServiceFactoryConfig<TService, TImpl, TDeps>
-    | PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>
-    | ((options: TOpts) => RootServiceFactoryConfig<TService, TImpl, TDeps>)
+  options:
+    | RootServiceFactoryOptions<TService, TImpl, TDeps>
+    | PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>
+    | ((options: TOpts) => RootServiceFactoryOptions<TService, TImpl, TDeps>)
     | ((
         options: TOpts,
-      ) => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>)
-    | (() => RootServiceFactoryConfig<TService, TImpl, TDeps>)
-    | (() => PluginServiceFactoryConfig<TService, TContext, TImpl, TDeps>),
+      ) => PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>)
+    | (() => RootServiceFactoryOptions<TService, TImpl, TDeps>)
+    | (() => PluginServiceFactoryOptions<TService, TContext, TImpl, TDeps>),
 ): (options: TOpts) => ServiceFactory {
-  const configCallback = typeof config === 'function' ? config : () => config;
+  const configCallback =
+    typeof options === 'function' ? options : () => options;
   const factory = (
-    options: TOpts,
+    o: TOpts,
   ): InternalServiceFactory<TService, 'plugin' | 'root'> => {
-    const anyConf = configCallback(options);
+    const anyConf = configCallback(o);
     if (anyConf.service.scope === 'root') {
-      const c = anyConf as RootServiceFactoryConfig<TService, TImpl, TDeps>;
+      const c = anyConf as RootServiceFactoryOptions<TService, TImpl, TDeps>;
       return {
         $$type: '@backstage/BackendFeature',
         version: 'v1',
@@ -277,7 +281,7 @@ export function createServiceFactory<
         factory: async (deps: TDeps) => c.factory(deps),
       };
     }
-    const c = anyConf as PluginServiceFactoryConfig<
+    const c = anyConf as PluginServiceFactoryOptions<
       TService,
       TContext,
       TImpl,
