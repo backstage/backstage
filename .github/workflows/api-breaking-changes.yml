@@ -54,4 +54,3 @@ jobs:
             event.json
           retention-days: 2
           overwrite: true
-
