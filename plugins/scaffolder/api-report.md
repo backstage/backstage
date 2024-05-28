@@ -410,8 +410,8 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
                 bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
                 gitlab?: string[] | undefined;
+                gerrit?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -437,8 +437,8 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
                 bitbucket?: string[] | undefined;
-                gerrit?: string[] | undefined;
                 gitlab?: string[] | undefined;
+                gerrit?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
