@@ -1,5 +1,15 @@
 # @backstage/plugin-kubernetes
 
+## 0.11.11-next.1
+
+### Patch Changes
+
+- 4f92394: Migrate from identityApi to fetchApi in frontend plugins.
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.4.0-next.1
+  - @backstage/plugin-kubernetes-common@0.8.0-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+
 ## 0.11.11-next.0
 
 ### Patch Changes

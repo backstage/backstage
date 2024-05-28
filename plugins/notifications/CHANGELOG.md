@@ -1,5 +1,11 @@
 # @backstage/plugin-notifications
 
+## 0.2.2-next.1
+
+### Patch Changes
+
+- 6d196b4: Fixes performance issue with Notifications title counter.
+
 ## 0.2.2-next.0
 
 ### Patch Changes

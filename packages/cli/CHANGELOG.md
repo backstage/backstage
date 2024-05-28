@@ -1,5 +1,15 @@
 # @backstage/cli
 
+## 0.26.7-next.1
+
+### Patch Changes
+
+- 788eca7: Fix readme for new plugins created using cli
+- c00f7ee: Fix issue with `esm` loaded dependencies being different from the `cjs` import for Vite dependencies
+- Updated dependencies
+  - @backstage/cli-node@0.2.6-next.0
+  - @backstage/config-loader@1.8.0
+
 ## 0.26.6-next.0
 
 ### Patch Changes

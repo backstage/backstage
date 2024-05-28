@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend
 
+## 1.5.10-next.1
+
+### Patch Changes
+
+- 34dc47d: Move @backstage/repo-tools to devDependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.1
+  - @backstage/backend-defaults@0.3.0-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-search-backend-node@1.2.24-next.1
+
 ## 1.5.10-next.0
 
 ### Patch Changes

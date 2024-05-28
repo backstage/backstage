@@ -1,5 +1,18 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.1.0-next.1
+
+### Minor Changes
+
+- 07a789b: add notification filters
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-notifications-node@0.2.0-next.1
+  - @backstage/backend-common@0.23.0-next.1
+
 ## 0.0.2-next.0
 
 ### Patch Changes

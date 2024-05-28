@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder
 
+## 1.20.2-next.1
+
+### Patch Changes
+
+- 75dcd7e: Fixing bug in `formData` type as it should be `optional` as it's possibly undefined
+- bcec60f: updated the ContextMenu, ActionsPage, OngoingTask and TemplateCard frontend components to support the new scaffolder permissions:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.8.7-next.1
+  - @backstage/plugin-scaffolder-common@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+
 ## 1.20.1-next.0
 
 ### Patch Changes
