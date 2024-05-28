@@ -201,7 +201,7 @@ For self hosted, all `User` entities are ingested from the entire instance by de
 For gitlab.com `User` entities for users who have [direct or inherited membership](https://docs.gitlab.com/ee/user/project/members/index.html#membership-types)
 of the top-level group for the configured group path will be ingested.
 
-In both cases (SaaS & self hosted), you can limit the ingested users to users directly assigned to the group defined in your `app-config.yaml` by setting the configuration key `restrictUsersToGroup: true`. This is especially useful when you have a large userbase that you don't want to import by default.
+In both cases (SaaS & self hosted), you can limit the ingested users to users directly assigned to the group defined in your `app-config.yaml` by setting the configuration key `restrictUsersToGroup: true`. This is especially useful when you have a large user base that you don't want to import by default.
 
 ```yaml
 catalog:
