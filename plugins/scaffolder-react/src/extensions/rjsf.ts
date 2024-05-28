@@ -64,7 +64,7 @@ export interface ScaffolderRJSFFieldProps<
   /** The tree of unique ids for every child field */
   idSchema: IdSchema<T>;
   /** The data for this field */
-  formData: T;
+  formData?: T;
   /** The tree of errors for this field and its children */
   errorSchema?: ErrorSchema<T>;
   /** The field change event handler; called with the updated form data and an optional `ErrorSchema` */
