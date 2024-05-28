@@ -103,7 +103,12 @@ describe('<EntityPicker />', () => {
       );
 
       expect(catalogApi.getEntities).toHaveBeenCalledWith({
-        fields: ['metadata.name', 'metadata.namespace', 'kind'],
+        fields: [
+          'metadata.name',
+          'metadata.namespace',
+          'metadata.title',
+          'kind',
+        ],
         filter: undefined,
       });
     });

@@ -74,7 +74,7 @@ export const EntityPicker = (props: EntityPickerProps) => {
     const fields = [
       'metadata.name',
       'metadata.namespace',
-      'metadata.namespace',
+      'metadata.title',
       'kind',
     ];
     const { items } = await catalogApi.getEntities(
