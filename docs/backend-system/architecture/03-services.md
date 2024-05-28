@@ -157,7 +157,7 @@ export const fooServiceFactory = createServiceFactory({
 });
 ```
 
-Whatever value is returned by the `createRootContext` function will shared and passed as the second argument to each invocation of the `factory` function. That way you can create a shared context that is used in the creation of each plugin instance. Unlike the `factory` function, the `createRootContext` function will only receive root scoped services as its dependencies, but just like the `factory` function, it can also be `async`.
+Whatever value is returned by the `createRootContext` function will be shared and passed as the second argument to each invocation of the `factory` function. That way you can create a shared context that is used in the creation of each plugin instance. Unlike the `factory` function, the `createRootContext` function will only receive root scoped services as its dependencies, but just like the `factory` function, it can also be `async`.
 
 ## Default Service Factories
 
