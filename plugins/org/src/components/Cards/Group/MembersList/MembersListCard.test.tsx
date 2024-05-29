@@ -119,7 +119,7 @@ describe('MemberTab Test', () => {
     expect(getEntitiesSpy).toHaveBeenCalledWith({
       filter: {
         kind: 'User',
-        'relations.memberOf': ['group:default/team-d'],
+        'relations.memberof': ['group:default/team-d'],
       },
     });
 
@@ -174,7 +174,7 @@ describe('MemberTab Test', () => {
     expect(getEntitiesSpy).toHaveBeenCalledWith({
       filter: {
         kind: 'User',
-        'relations.leaderOf': ['group:default/team-d'],
+        'relations.leaderof': ['group:default/team-d'],
       },
     });
   });

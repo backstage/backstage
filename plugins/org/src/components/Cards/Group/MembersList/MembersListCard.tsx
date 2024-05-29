@@ -145,7 +145,7 @@ export const MembersListCard = (props: {
     memberDisplayTitle = 'Members',
     pageSize = 50,
     showAggregateMembersToggle,
-    relationship = 'memberOf',
+    relationship = 'memberof',
     relationsType = 'direct',
   } = props;
   const classes = useListStyles();
@@ -179,6 +179,7 @@ export const MembersListCard = (props: {
       return await getAllDesendantMembersForGroupEntity(
         groupEntity,
         catalogApi,
+        relationship,
       );
     }, [catalogApi, groupEntity, showAggregateMembers]);
   const {
@@ -189,7 +190,7 @@ export const MembersListCard = (props: {
     const membersList = await catalogApi.getEntities({
       filter: {
         kind: 'User',
-        [`relations.${relationship}`]: [
+        [`relations.${relationship.toLocaleLowerCase('en-US')}`]: [
           stringifyEntityRef({
             kind: 'group',
             namespace: groupNamespace.toLocaleLowerCase('en-US'),
