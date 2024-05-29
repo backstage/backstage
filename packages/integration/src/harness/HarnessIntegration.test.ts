@@ -117,7 +117,7 @@ describe('HarnessIntegration', () => {
         'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/edit/refMain/~/all-apis.yaml',
       ),
     ).toBe(
-      'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/edit/all-apis.yaml',
+      'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repoName/files/refMain/~/all-apis.yaml',
     );
   });
 });

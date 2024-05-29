@@ -65,8 +65,8 @@ export function getHarnessFileContentsUrl(
  * @remarks
  *
  * Converts
- * from: https://gitea.com/a/b/src/branchname
- * to:   https://gitea.com/api/v1/repos/a/b/archive/branchname.zip
+ * from: https://qa.harness.io/ng/account/accountId/module/code/orgs/orgId/projects/projectName/repos/repoName/files/branch/~/fileName
+ * to:   https://qa.harness.io/gateway/code/api/v1/repos/accountId/orgId/projectName/repoName/+/archive/branch.zip?routingId=accountId
  *
  * @param url - A URL pointing to a repository/path
  * @param config - The relevant provider config
@@ -128,7 +128,7 @@ export function getHarnessRequestOptions(config: HarnessIntegrationConfig): {
 /**
  * Return parsed git url properties.
  *
- * @param config - A Gitea provider config
+ * @param config - A Harness provider config
  * @param url - A URL pointing to a repository
  * @public
  */
@@ -171,7 +171,7 @@ export function parseHarnessUrl(
       ..._path
     ] = pathSegments;
     const refAndPath = urlParts.slice(
-      urlParts.findIndex(i => i === 'files') + 1,
+      urlParts.findIndex(i => i === 'files' || i === 'edit') + 1,
     );
     const refIndex = refAndPath.findIndex(item => item === '~');
     const refString = refAndPath.slice(0, refIndex).join('/');
