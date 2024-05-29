@@ -6,6 +6,10 @@ sidebar_label: Discovery
 description: Automatically discovering catalog entities from repositories in a GitHub organization
 ---
 
+:::info
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./discovery--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+:::
+
 ## GitHub Provider
 
 The GitHub integration has a discovery provider for discovering catalog
@@ -14,10 +18,9 @@ organization and register entities matching the configured path. This can be
 useful as an alternative to static locations or manually adding things to the
 catalog. This is the preferred method for ingesting entities into the catalog.
 
-## Installation without Events Support
+## Installation
 
-You will have to add the provider in the catalog initialization code of your
-backend. They are not installed by default, therefore you have to add a
+You will have to add the GitHub Entity provider to your backend as it is not installed by default, therefore you have to add a
 dependency on `@backstage/plugin-catalog-backend-module-github` to your backend
 package.
 
@@ -29,13 +32,12 @@ yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-github
 And then update your backend by adding the following line:
 
 ```ts title="packages/backend/src/index.ts"
-// github discovery
+backend.add(import('@backstage/plugin-catalog-backend/alpha'));
+/* highlight-add-start */
 backend.add(import('@backstage/plugin-catalog-backend-module-github/alpha'));
 ```
 
-## Installation with Events Support
-
-_For the legacy backend system, please read the sub-section below._
+## Events Support
 
 The catalog module for GitHub comes with events support enabled.
 This will make it subscribe to its relevant topics (`github.push`)
@@ -52,47 +54,6 @@ You can decide between the following options (extensible):
 
 - [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
-
-### Legacy Backend System
-
-Please follow the installation instructions at
-
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md>
-- <https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-github/README.md>
-
-Additionally, you need to decide how you want to receive events from external sources like
-
-- [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
-- [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
-
-Set up your provider
-
-```ts title="packages/backend/src/plugins/catalog.ts"
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
-/* highlight-add-next-line */
-import { GithubEntityProvider } from '@backstage/plugin-catalog-backend-module-github';
-import { ScaffolderEntitiesProcessor } from '@backstage/plugin-scaffolder-backend';
-import { Router } from 'express';
-import { PluginEnvironment } from '../types';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  builder.addProcessor(new ScaffolderEntitiesProcessor());
-  /* highlight-add-start */
-  const githubProvider = GithubEntityProvider.fromConfig(env.config, {
-    events: env.events,
-    logger: env.logger,
-    scheduler: env.scheduler,
-  });
-  builder.addEntityProvider(githubProvider);
-  /* highlight-add-end */
-  const { processingEngine, router } = await builder.build();
-  await processingEngine.start();
-  return router;
-}
-```
 
 You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks). The webhook will need to be configured to forward `push` events.
 
@@ -169,8 +130,12 @@ catalog:
 
 This provider supports multiple organizations via unique provider IDs.
 
-> **Note:** It is possible but certainly not recommended to skip the provider ID level.
-> If you do so, `default` will be used as provider ID.
+:::note Note
+
+It is possible but certainly not recommended to skip the provider ID level.
+If you do so, `default` will be used as provider ID.
+
+:::
 
 - **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
@@ -230,124 +195,6 @@ schedule:
 ```
 
 More information about scheduling can be found on the [TaskScheduleDefinition](https://backstage.io/docs/reference/backend-tasks.taskscheduledefinition) page.
-
-Alternatively, or additionally, you can configure [github-apps](github-apps.md) authentication
-which carries a much higher rate limit at GitHub.
-
-This is true for any method of adding GitHub entities to the catalog, but
-especially easy to hit with automatic discovery.
-
-## GitHub Processor (To Be Deprecated)
-
-The GitHub integration has a special discovery processor for discovering catalog
-entities within a GitHub organization. The processor will crawl the GitHub
-organization and register entities matching the configured path. This can be
-useful as an alternative to static locations or manually adding things to the
-catalog.
-
-## Installation
-
-You will have to add the processors in the catalog initialization code of your
-backend. They are not installed by default, therefore you have to add a
-dependency on `@backstage/plugin-catalog-backend-module-github` to your backend
-package, plus `@backstage/integration` for the basic credentials management:
-
-```bash
-# From your Backstage root directory
-yarn --cwd packages/backend add @backstage/integration @backstage/plugin-catalog-backend-module-github
-```
-
-And then add the processors to your catalog builder:
-
-```ts title="packages/backend/src/plugins/catalog.ts"
-/* highlight-add-start */
-import {
-  GithubDiscoveryProcessor,
-  GithubOrgReaderProcessor,
-} from '@backstage/plugin-catalog-backend-module-github';
-import {
-  ScmIntegrations,
-  DefaultGithubCredentialsProvider,
-} from '@backstage/integration';
-/* highlight-add-end */
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const builder = await CatalogBuilder.create(env);
-  /* highlight-add-start */
-  const integrations = ScmIntegrations.fromConfig(env.config);
-  const githubCredentialsProvider =
-    DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-  builder.addProcessor(
-    GithubDiscoveryProcessor.fromConfig(env.config, {
-      logger: env.logger,
-      githubCredentialsProvider,
-    }),
-    GithubOrgReaderProcessor.fromConfig(env.config, {
-      logger: env.logger,
-      githubCredentialsProvider,
-    }),
-  );
-  /* highlight-add-end */
-
-  // ..
-}
-```
-
-## Configuration
-
-To use the discovery processor, you'll need a GitHub integration
-[set up](locations.md) with either a [Personal Access Token](../../getting-started/config/authentication.md) or [GitHub Apps](./github-apps.md).
-
-Then you can add a location target to the catalog configuration:
-
-```yaml
-catalog:
-  locations:
-    # (since 0.13.5) Scan all repositories for a catalog-info.yaml in the root of the default branch
-    - type: github-discovery
-      target: https://github.com/myorg
-    # Or use a custom pattern for a subset of all repositories with default repository
-    - type: github-discovery
-      target: https://github.com/myorg/service-*/blob/-/catalog-info.yaml
-    # Or use a custom file format and location
-    - type: github-discovery
-      target: https://github.com/*/blob/-/docs/your-own-format.yaml
-    # Or use a specific branch-name
-    - type: github-discovery
-      target: https://github.com/*/blob/backstage-docs/catalog-info.yaml
-```
-
-Note the `github-discovery` type, as this is not a regular `url` processor.
-
-When using a custom pattern, the target is composed of three parts:
-
-- The base organization URL, `https://github.com/myorg` in this case
-- The repository blob to scan, which accepts \* wildcard tokens. This can simply
-  be `*` to scan all repositories in the organization. This example only looks
-  for repositories prefixed with `service-`.
-- The path within each repository to find the catalog YAML file. This will
-  usually be `/blob/main/catalog-info.yaml`, `/blob/master/catalog-info.yaml` or
-  a similar variation for catalog files stored in the root directory of each
-  repository. You could also use a dash (`-`) for referring to the default
-  branch.
-
-## GitHub API Rate Limits
-
-GitHub [rate limits](https://docs.github.com/en/rest/overview/resources-in-the-rest-api#rate-limiting) API requests to 5,000 per hour (or more for Enterprise
-accounts). The default Backstage catalog backend refreshes data every 100
-seconds, which issues an API request for each discovered location.
-
-This means if you have more than ~140 catalog entities, you may get throttled by
-rate limiting. You can change the refresh rate of the catalog in your `packages/backend/src/plugins/catalog.ts` file:
-
-```typescript
-const builder = await CatalogBuilder.create(env);
-
-// For example, to refresh every 5 minutes (300 seconds).
-builder.setProcessingIntervalSeconds(300);
-```
 
 Alternatively, or additionally, you can configure [github-apps](github-apps.md) authentication
 which carries a much higher rate limit at GitHub.

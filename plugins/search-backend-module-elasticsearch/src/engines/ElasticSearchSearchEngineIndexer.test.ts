@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import Mock from '@elastic/elasticsearch-mock';
 import { range } from 'lodash';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { ElasticSearchSearchEngineIndexer } from './ElasticSearchSearchEngineIndexer';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mock = new Mock();
 const clientWrapper = ElasticSearchClientWrapper.fromClientOptions({
@@ -43,7 +43,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       indexPrefix: '',
       indexSeparator: '-index__',
       alias: 'some-type-index__search',
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       elasticSearchClientWrapper: clientWrapper,
       batchSize: 1000,
       skipRefresh: false,
@@ -270,7 +270,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       indexPrefix: '',
       indexSeparator: '-index__',
       alias: 'some-type-index__search',
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       elasticSearchClientWrapper: mockClientWrapper,
       batchSize: 1000,
       skipRefresh: false,
@@ -292,7 +292,7 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       indexPrefix: '',
       indexSeparator: '-index__',
       alias: 'some-type-index__search',
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       elasticSearchClientWrapper: clientWrapper,
       batchSize: 1000,
       skipRefresh: true,

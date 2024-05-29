@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend",
-  "version": "1.22.0-next.1",
+  "version": "1.23.0-next.1",
   "description": "The Backstage backend plugin that provides the Backstage catalog",
   "backstage": {
     "role": "backend-plugin"
@@ -43,6 +43,7 @@
   "scripts": {
     "build": "backstage-cli package build",
     "clean": "backstage-cli package clean",
+    "diff": "backstage-repo-tools package schema openapi diff",
     "fuzz": "backstage-repo-tools package schema openapi fuzz --exclude-checks response_schema_conformance",
     "generate": "backstage-repo-tools package schema openapi generate --server --client-package packages/catalog-client",
     "lint": "backstage-cli package lint",
@@ -90,6 +91,7 @@
     "zod": "^3.22.4"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",

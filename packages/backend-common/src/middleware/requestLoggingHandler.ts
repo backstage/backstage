@@ -26,6 +26,7 @@ import { ConfigReader } from '@backstage/config';
  * @public
  * @param logger - An optional logger to use. If not specified, the root logger will be used.
  * @returns An Express request handler
+ * @deprecated @deprecated Use {@link @backstage/backend-app-api#MiddlewareFactory.create.logging} instead
  */
 export function requestLoggingHandler(logger?: LoggerService): RequestHandler {
   return MiddlewareFactory.create({

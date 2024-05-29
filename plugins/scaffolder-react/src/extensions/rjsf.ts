@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { ComponentType, ElementType, FormEvent, ReactNode, Ref } from 'react';
+import {
+  ComponentType,
+  ElementType,
+  FormEvent,
+  HTMLAttributes,
+  ReactNode,
+  Ref,
+} from 'react';
 import {
   ErrorSchema,
   FormContextType,
@@ -32,7 +39,6 @@ import {
   Experimental_DefaultFormStateBehavior,
   ErrorTransformer,
 } from '@rjsf/utils';
-import { HTMLAttributes } from 'react';
 import Form, { IChangeEvent } from '@rjsf/core';
 
 /**
@@ -58,7 +64,7 @@ export interface ScaffolderRJSFFieldProps<
   /** The tree of unique ids for every child field */
   idSchema: IdSchema<T>;
   /** The data for this field */
-  formData: T;
+  formData?: T;
   /** The tree of errors for this field and its children */
   errorSchema?: ErrorSchema<T>;
   /** The field change event handler; called with the updated form data and an optional `ErrorSchema` */

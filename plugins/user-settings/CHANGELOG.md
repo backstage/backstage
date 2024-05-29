@@ -1,5 +1,43 @@
 # @backstage/plugin-user-settings
 
+## 0.8.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.6-next.0
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/core-app-api@1.12.5
+  - @backstage/core-compat-api@0.2.6-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.6-next.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+
+## 0.8.6
+
+### Patch Changes
+
+- 131e5cb: Fix broken links in README.
+- Updated dependencies
+  - @backstage/core-compat-api@0.2.5
+  - @backstage/core-components@0.14.7
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/theme@0.5.4
+  - @backstage/core-app-api@1.12.5
+  - @backstage/frontend-plugin-api@0.6.5
+
+## 0.8.6-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.0-next.2
+  - @backstage/core-components@0.14.7-next.2
+  - @backstage/core-compat-api@0.2.5-next.1
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+
 ## 0.8.6-next.1
 
 ### Patch Changes

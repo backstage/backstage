@@ -18,8 +18,10 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
 import { DbRefreshStateRow } from '../../tables';
 import { v4 as uuid } from 'uuid';
-import { isDatabaseConflictError } from '@backstage/backend-common';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  isDatabaseConflictError,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Attempts to insert a new refresh state row for the given entity, returning

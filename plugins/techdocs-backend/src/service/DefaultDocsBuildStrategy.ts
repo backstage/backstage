@@ -29,6 +29,8 @@ export class DefaultDocsBuildStrategy implements DocsBuildStrategy {
   }
 
   async shouldBuild(_: { entity: Entity }): Promise<boolean> {
-    return this.config.getString('techdocs.builder') === 'local';
+    return [undefined, 'local'].includes(
+      this.config.getOptionalString('techdocs.builder'),
+    );
   }
 }

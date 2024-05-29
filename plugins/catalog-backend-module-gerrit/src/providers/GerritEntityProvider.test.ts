@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
   TaskRunner,
 } from '@backstage/backend-tasks';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import fs from 'fs-extra';
@@ -52,13 +54,13 @@ class PersistingTaskRunner implements TaskRunner {
   }
 }
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('GerritEntityProvider', () => {
   setupRequestMockHandlers(server);
 
   afterEach(() => {
-    jest.resetAllMocks();
+    jest.clearAllMocks();
   });
 
   const config = new ConfigReader({

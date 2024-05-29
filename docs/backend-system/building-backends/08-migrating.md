@@ -201,10 +201,14 @@ const legacyPlugin = makeLegacyPlugin(
 After this, your backend will know how to instantiate your thing on demand and
 place it in the legacy plugin environment.
 
-> NOTE: If you happen to be dealing with a service ref that does NOT have a
-> default implementation, but rather has a separate service factory, then you
-> will also need to import that factory and pass it to the `services` array
-> argument of `createBackend`.
+:::note Note
+
+If you happen to be dealing with a service ref that does NOT have a
+default implementation, but rather has a separate service factory, then you
+will also need to import that factory and pass it to the `services` array
+argument of `createBackend`.
+
+:::
 
 ## Cleaning Up the Plugins Folder
 
@@ -216,10 +220,14 @@ maintained by the Backstage maintainers, you may find that they have already
 been migrated to the new backend system. This section describes some specific
 such migrations you can make.
 
-> NOTE: For each of these, note that your backend still needs to have a
-> dependency (e.g. in `packages/backend/package.json`) to those plugin packages,
-> and they still need to be configured properly in your app-config. Those
-> mechanisms still work just the same as they used to in the old backend system.
+:::note Note
+
+For each of these, note that your backend still needs to have a
+dependency (e.g. in `packages/backend/package.json`) to those plugin packages,
+and they still need to be configured properly in your app-config. Those
+mechanisms still work just the same as they used to in the old backend system.
+
+:::
 
 ### The App Plugin
 
@@ -452,7 +460,7 @@ catalog:
         /* highlight-add-end */
 ```
 
-To migrate `GithubMultiOrgEntityProvider` and `GithubOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github-org`.
+To migrate `GithubMultiOrgEntityProvider` or `GithubOrgEntityProvider` to the new backend system, add a reference to `@backstage/plugin-catalog-backend-module-github-org`.
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend/alpha'));
@@ -461,20 +469,79 @@ backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 /* highlight-add-end */
 ```
 
-If you were providing a `schedule` in code, this now needs to be set via configuration.
-All other Github configuration in `app-config.yaml` remains the same.
+##### GithubOrgEntityProvider
+
+If you were using `GithubOrgEntityProvider` you might have been configured in code like this:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+// The org URL below needs to match a configured integrations.github entry
+// specified in your app-config.
+builder.addEntityProvider(
+  GithubOrgEntityProvider.fromConfig(env.config, {
+    id: 'production',
+    orgUrl: 'https://github.com/backstage',
+    logger: env.logger,
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 60 },
+      timeout: { minutes: 15 },
+    }),
+  }),
+);
+```
+
+This now needs to be set via configuration. The options defined above are now set in `app-config.yaml` instead as shown below:
 
 ```yaml title="app-config.yaml"
 catalog:
+  /* highlight-add-start */
   providers:
     githubOrg:
-      yourProviderId:
-        # ...
-        /* highlight-add-start */
+      - id: production
+        githubUrl: 'https://github.com',
+        orgs: ['backstage']
         schedule:
           frequency: PT30M
-          timeout: PT3M
-        /* highlight-add-end */
+          timeout: PT15M
+          /* highlight-add-end */
+```
+
+##### GithubMultiOrgEntityProvider
+
+If you were using `GithubMultiOrgEntityProvider` you might have been configured in code like this:
+
+```ts title="packages/backend/src/plugins/catalog.ts"
+// The GitHub URL below needs to match a configured integrations.github entry
+// specified in your app-config.
+builder.addEntityProvider(
+  GithubMultiOrgEntityProvider.fromConfig(env.config, {
+    id: 'production',
+    githubUrl: 'https://github.com',
+    // Set the following to list the GitHub orgs you wish to ingest from. You can
+    // also omit this option to ingest all orgs accessible by your GitHub integration
+    orgs: ['org-a', 'org-b'],
+    logger: env.logger,
+    schedule: env.scheduler.createScheduledTaskRunner({
+      frequency: { minutes: 60 },
+      timeout: { minutes: 15 },
+    }),
+  }),
+);
+```
+
+This now needs to be set via configuration. The options defined above are now set in `app-config.yaml` instead as shown below:
+
+```yaml title="app-config.yaml"
+catalog:
+  /* highlight-add-start */
+  providers:
+    githubOrg:
+      - id: production
+        githubUrl: 'https://github.com',
+        orgs: ['org-a', 'org-b'],
+        schedule:
+          frequency: PT30M
+          timeout: PT15M
+          /* highlight-add-end */
 ```
 
 If you were providing transformers, these can be configured by extending `githubOrgEntityProviderTransformsExtensionPoint`
@@ -821,7 +888,11 @@ auth:
             - resolver: emailMatchingUserEntityAnnotation
 ```
 
-> Note: the resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+:::note Note
+
+The resolvers will be tried in order, but will only be skipped if they throw a `NotFoundError`.
+
+:::
 
 #### Auth Plugin Modules and Their Resolvers
 
@@ -1078,7 +1149,11 @@ backend.add(import('@backstage/plugin-search-backend/alpha'));
 /* highlight-add-end */
 ```
 
-> Note: this will use the Lunr search engine which stores its index in memory
+:::note Note
+
+This will use the Lunr search engine which stores its index in memory.
+
+:::
 
 #### Search Engines
 
@@ -1167,7 +1242,11 @@ backend.add(
 /* highlight-add-end */
 ```
 
-> Note: The above example includes a default allow-all policy. If that is not what you want, do not add the second line and instead investigate one of the options below.
+:::note Note
+
+The above example includes a default allow-all policy. If that is not what you want, do not add the second line and instead investigate one of the options below.
+
+:::
 
 #### Custom Permission Policy
 
@@ -1290,7 +1369,7 @@ The vast majority of the backend plugins that currently live in the Backstage Re
 | @backstage/plugin-catalog-backend-module-github-org                | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-github-org/README.md)                                  |
 | @backstage/plugin-catalog-backend-module-gitlab                    | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-gitlab/README.md)                                      |
 | @backstage/plugin-catalog-backend-module-incremental-ingestion     | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-incremental-ingestion/README.md)                       |
-| @backstage/plugin-catalog-backend-module-ldap                      | backend-plugin-module |          |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-ldap/README.md)                                        |
+| @backstage/plugin-catalog-backend-module-ldap                      | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-ldap/README.md)                                        |
 | @backstage/plugin-catalog-backend-module-msgraph                   | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-msgraph/README.md)                                     |
 | @backstage/plugin-catalog-backend-module-openapi                   | backend-plugin-module | true     |                   | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-openapi/README.md)                                     |
 | @backstage/plugin-catalog-backend-module-puppetdb                  | backend-plugin-module | true     | true              | [README](https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-puppetdb/README.md)                                    |

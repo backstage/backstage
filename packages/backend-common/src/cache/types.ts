@@ -14,39 +14,26 @@
  * limitations under the License.
  */
 
-import { LoggerService } from '@backstage/backend-plugin-api';
-import {
+import type {
   CacheService,
+  CacheServiceSetOptions,
   CacheServiceOptions,
 } from '@backstage/backend-plugin-api';
 
-export type {
-  CacheService as CacheClient,
-  CacheServiceSetOptions as CacheClientSetOptions,
-  CacheServiceOptions as CacheClientOptions,
-} from '@backstage/backend-plugin-api';
-
 /**
- * Options given when constructing a {@link CacheManager}.
- *
  * @public
+ * @deprecated Use `CacheService` from the `@backstage/backend-plugin-api` package instead
  */
-export type CacheManagerOptions = {
-  /**
-   * An optional logger for use by the PluginCacheManager.
-   */
-  logger?: LoggerService;
-
-  /**
-   * An optional handler for connection errors emitted from the underlying data
-   * store.
-   */
-  onError?: (err: Error) => void;
-};
+export type CacheClient = CacheService;
 
 /**
  * @public
+ * @deprecated Use `CacheServiceSetOptions` from the `@backstage/backend-plugin-api` package instead
  */
-export interface PluginCacheManager {
-  getClient(options?: CacheServiceOptions): CacheService;
-}
+export type CacheClientSetOptions = CacheServiceSetOptions;
+
+/**
+ * @public
+ * @deprecated Use `CacheServiceOptions` from the `@backstage/backend-plugin-api` package instead
+ */
+export type CacheClientOptions = CacheServiceOptions;

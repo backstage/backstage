@@ -221,6 +221,29 @@ describe('github:repository:webhook:create', () => {
     });
   });
 
+  it('should not call the githubApi for creating repository Webhook with dry run', async () => {
+    // Define constants for reused string literals
+    const repoUrl = 'github.com?repo=repo&owner=owner';
+    const webhookUrl = 'https://example.com/payload';
+
+    // Create the context object with the necessary properties for a dry run
+    const ctx = {
+      ...mockContext,
+      isDryRun: true,
+      input: {
+        ...mockContext.input,
+        repoUrl,
+        webhookUrl,
+      },
+    };
+
+    // Call the handler with the context
+    await action.handler(ctx);
+
+    // Check that the createWebhook method was not called
+    expect(mockOctokit.rest.repos.createWebhook).not.toHaveBeenCalled();
+  });
+
   it('should validate input', async () => {
     const Validator = require('jsonschema').Validator;
     const v = new Validator();

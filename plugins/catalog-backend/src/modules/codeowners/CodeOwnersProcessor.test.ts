@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { CodeOwnersProcessor } from './CodeOwnersProcessor';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mockCodeOwnersText = () => `
 *                   @acme/team-foo @acme/team-bar
@@ -52,7 +52,7 @@ describe('CodeOwnersProcessor', () => {
         }),
       };
       const processor = CodeOwnersProcessor.fromConfig(config, {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         reader,
       });
 

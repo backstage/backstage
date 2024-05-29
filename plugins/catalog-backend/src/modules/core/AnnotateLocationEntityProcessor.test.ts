@@ -166,5 +166,53 @@ describe('AnnotateLocationEntityProcessor', () => {
         },
       });
     });
+    it('should not render edit button in about for invalid or git hash commit branch', async () => {
+      const entity: Entity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+        },
+      };
+
+      const location: LocationSpec = {
+        type: 'url',
+        target:
+          'https://github.com/backstage/backstage/blob/f1ba2bc6097a757c2827ff97fa301cff626de137/packages/app/catalog-info.yaml',
+      };
+      const originLocation: LocationSpec = {
+        type: 'url',
+        target:
+          'https://github.com/backstage/backstage/blob/f1ba2bc6097a757c2827ff97fa301cff626de137/catalog-info.yaml',
+      };
+
+      const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
+      const processor = new AnnotateLocationEntityProcessor({ integrations });
+
+      expect(
+        await processor.preProcessEntity(
+          entity,
+          location,
+          () => {},
+          originLocation,
+        ),
+      ).toEqual({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: {
+          name: 'my-component',
+          annotations: {
+            'backstage.io/managed-by-location':
+              'url:https://github.com/backstage/backstage/blob/f1ba2bc6097a757c2827ff97fa301cff626de137/packages/app/catalog-info.yaml',
+            'backstage.io/managed-by-origin-location':
+              'url:https://github.com/backstage/backstage/blob/f1ba2bc6097a757c2827ff97fa301cff626de137/catalog-info.yaml',
+            'backstage.io/view-url':
+              'https://github.com/backstage/backstage/blob/f1ba2bc6097a757c2827ff97fa301cff626de137/packages/app/catalog-info.yaml',
+            'backstage.io/source-location':
+              'url:https://github.com/backstage/backstage/tree/f1ba2bc6097a757c2827ff97fa301cff626de137/packages/app/',
+          },
+        },
+      });
+    });
   });
 });

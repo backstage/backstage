@@ -1,5 +1,37 @@
 # @backstage/core-components
 
+## 0.14.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.5.6-next.0
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/version-bridge@1.0.8
+
+## 0.14.7
+
+### Patch Changes
+
+- e42779e: Properly log the `errorInfo` in `ErrorBoundary`
+- 5223c4c: Fixed an internal circular import that broke Jest mocks.
+- 71e4229: Added optional `initialShowDropDown` prop to `SidebarSubmenuItem` to internally manage the initial display state of the dropdown items.
+- a2ee4df: Add `alignGauge` prop to the `GaugeCard`, and a small size version. When `alignGauge` is `'bottom'` the gauge will vertically align the gauge in the cards, even when the card titles span across multiple lines.
+  Add `alignContent` prop to the `InfoCard`, defaulting to `'normal'` with the option of `'bottom'` which vertically aligns the content to the bottom of the card.
+- 5b7b49b: The `SignInPage` guest provider will now fall back to legacy guest auth if the backend request fails, allowing guest auth without a running backend.
+- 359376a: Removing react-text-truncate with css styles.
+- Updated dependencies
+  - @backstage/theme@0.5.4
+
+## 0.14.7-next.2
+
+### Patch Changes
+
+- a2ee4df: Add `alignGauge` prop to the `GaugeCard`, and a small size version. When `alignGauge` is `'bottom'` the gauge will vertically align the gauge in the cards, even when the card titles span across multiple lines.
+  Add `alignContent` prop to the `InfoCard`, defaulting to `'normal'` with the option of `'bottom'` which vertically aligns the content to the bottom of the card.
+
 ## 0.14.6-next.1
 
 ### Patch Changes

@@ -27,11 +27,14 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { CustomErrorBase, InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-common';
 import { createPullRequest } from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from './helpers';
 import { examples } from './githubPullRequest.examples';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -100,6 +103,10 @@ export interface CreateGithubPullRequestActionOptions {
       } | null>;
     }
   >;
+  /**
+   * An instance of {@link @backstage/config#Config} that will be used in the action.
+   */
+  config?: Config;
 }
 
 type GithubPullRequest = {
@@ -119,6 +126,7 @@ export const createPublishGithubPullRequestAction = (
     integrations,
     githubCredentialsProvider,
     clientFactory = defaultClientFactory,
+    config,
   } = options;
 
   return createTemplateAction<{
@@ -136,9 +144,12 @@ export const createPublishGithubPullRequestAction = (
     commitMessage?: string;
     update?: boolean;
     forceFork?: boolean;
+    gitAuthorName?: string;
+    gitAuthorEmail?: string;
   }>({
     id: 'publish:github:pull-request',
     examples,
+    supportsDryRun: true,
     schema: {
       input: {
         required: ['repoUrl', 'title', 'description', 'branchName'],
@@ -223,6 +234,18 @@ export const createPublishGithubPullRequestAction = (
             title: 'Force Fork',
             description: 'Create pull request from a fork',
           },
+          gitAuthorName: {
+            type: 'string',
+            title: 'Default Author Name',
+            description:
+              "Sets the default author name for the commit. The default value is the authenticated user or 'Scaffolder'",
+          },
+          gitAuthorEmail: {
+            type: 'string',
+            title: 'Default Author Email',
+            description:
+              "Sets the default author email for the commit. The default value is the authenticated user or 'scaffolder@backstage.io'",
+          },
         },
       },
       output: {
@@ -262,6 +285,8 @@ export const createPublishGithubPullRequestAction = (
         commitMessage,
         update,
         forceFork,
+        gitAuthorEmail,
+        gitAuthorName,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -319,6 +344,16 @@ export const createPublishGithubPullRequestAction = (
         ]),
       );
 
+      // If this is a dry run, log and return
+      if (ctx.isDryRun) {
+        ctx.logger.info(`Performing dry run of creating pull request`);
+        ctx.output('targetBranchName', branchName);
+        ctx.output('remoteUrl', repoUrl);
+        ctx.output('pullRequestNumber', 43);
+        ctx.logger.info(`Dry run complete`);
+        return;
+      }
+
       try {
         const createOptions: createPullRequest.Options = {
           owner,
@@ -327,7 +362,10 @@ export const createPublishGithubPullRequestAction = (
           changes: [
             {
               files,
-              commit: commitMessage ?? title,
+              commit:
+                commitMessage ??
+                config?.getOptionalString('scaffolder.defaultCommitMessage') ??
+                title,
             },
           ],
           body: description,
@@ -336,6 +374,36 @@ export const createPublishGithubPullRequestAction = (
           update,
           forceFork,
         };
+
+        const gitAuthorInfo = {
+          name:
+            gitAuthorName ??
+            config?.getOptionalString('scaffolder.defaultAuthor.name'),
+          email:
+            gitAuthorEmail ??
+            config?.getOptionalString('scaffolder.defaultAuthor.email'),
+        };
+
+        if (gitAuthorInfo.name || gitAuthorInfo.email) {
+          if (Array.isArray(createOptions.changes)) {
+            createOptions.changes = createOptions.changes.map(change => ({
+              ...change,
+              author: {
+                name: gitAuthorInfo.name || 'Scaffolder',
+                email: gitAuthorInfo.email || 'scaffolder@backstage.io',
+              },
+            }));
+          } else {
+            createOptions.changes = {
+              ...createOptions.changes,
+              author: {
+                name: gitAuthorInfo.name || 'Scaffolder',
+                email: gitAuthorInfo.email || 'scaffolder@backstage.io',
+              },
+            };
+          }
+        }
+
         if (targetBranchName) {
           createOptions.base = targetBranchName;
         }

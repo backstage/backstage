@@ -152,6 +152,8 @@ graphviz
 Hackathons
 haproxy
 hardcoded
+Harness
+harness
 Helidon
 Henneke
 Heroku
@@ -445,6 +447,7 @@ unregistering
 unregistration
 untracked
 upsert
+upstreams
 upvote
 URIs
 url

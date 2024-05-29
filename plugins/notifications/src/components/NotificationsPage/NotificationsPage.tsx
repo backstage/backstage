@@ -71,7 +71,7 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
   const [pageNumber, setPageNumber] = React.useState(0);
   const [pageSize, setPageSize] = React.useState(5);
   const [containsText, setContainsText] = React.useState<string>();
-  const [createdAfter, setCreatedAfter] = React.useState<string>('lastWeek');
+  const [createdAfter, setCreatedAfter] = React.useState<string>('all');
   const [sorting, setSorting] = React.useState<SortBy>(
     SortByOptions.newest.sortBy,
   );

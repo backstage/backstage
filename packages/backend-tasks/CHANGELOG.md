@@ -1,5 +1,36 @@
 # @backstage/backend-tasks
 
+## 0.5.24-next.1
+
+### Patch Changes
+
+- ed473cd: Updated the `TaskScheduleDefinitionConfig` deprecated comment to point to `SchedulerServiceTaskScheduleDefinitionConfig`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/backend-common@0.23.0-next.1
+
+## 0.5.24-next.0
+
+### Patch Changes
+
+- 736bc3c: Marked all exports as deprecated and pointed at `@backstage/backend-plugin-api` and `@backstage/backend-defaults`
+- 6a576dc: Deprecate the legacy `TaskScheduler.fromConfig` method and stop using the `getVoidlogger` in tests files to reduce the dependency on the soon-to-deprecate `backstage-common` package.
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.5.23
+
+### Patch Changes
+
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+
 ## 0.5.23-next.1
 
 ### Patch Changes

@@ -171,6 +171,10 @@ const config: Config = {
             from: '/docs/getting-started/configuration',
             to: '/docs/getting-started/#next-steps',
           },
+          {
+            from: '/docs/features/software-templates/authorizing-parameters-steps-and-actions',
+            to: '/docs/features/software-templates/authorizing-scaffolder-template-details',
+          },
         ],
       },
     ],
@@ -181,6 +185,7 @@ const config: Config = {
         hideIcon: true,
         customFont: true,
         buttonStyle: 'dark',
+        ratingMode: 'stars',
       },
     ],
   ],
@@ -216,7 +221,7 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: 'docs/releases/v1.26.0',
+          to: 'docs/releases/v1.27.0',
           label: 'Releases',
           position: 'left',
         },

@@ -1,5 +1,132 @@
 # example-app-next
 
+## 0.0.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.26.7-next.1
+  - @backstage/plugin-catalog-import@0.12.0-next.1
+  - @backstage/plugin-kubernetes@0.11.11-next.1
+  - @backstage/plugin-search@1.4.12-next.1
+  - @backstage/plugin-notifications@0.2.2-next.1
+  - @backstage/plugin-scaffolder-react@1.8.7-next.1
+  - @backstage/plugin-scaffolder@1.20.2-next.1
+  - @backstage/plugin-catalog@1.20.1-next.1
+  - @backstage/plugin-kubernetes-cluster@0.0.12-next.1
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+
+## 0.0.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.10.6-next.0
+  - @backstage/plugin-notifications@0.2.2-next.0
+  - @backstage/plugin-scaffolder-react@1.8.6-next.0
+  - @backstage/theme@0.5.6-next.0
+  - @backstage/plugin-api-docs@0.11.6-next.0
+  - @backstage/cli@0.26.6-next.0
+  - @backstage/plugin-scaffolder@1.20.1-next.0
+  - @backstage/app-defaults@1.5.6-next.0
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/frontend-app-api@0.7.1-next.0
+  - @backstage/plugin-home@0.7.5-next.0
+  - @backstage/plugin-search-react@1.7.12-next.0
+  - @backstage/plugin-signals@0.0.7-next.0
+  - @backstage/plugin-techdocs-react@1.2.5-next.0
+  - @backstage/plugin-user-settings@0.8.7-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/core-app-api@1.12.5
+  - @backstage/core-compat-api@0.2.6-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/frontend-plugin-api@0.6.6-next.0
+  - @backstage/integration-react@1.1.27
+  - @backstage/plugin-app-visualizer@0.1.7-next.0
+  - @backstage/plugin-auth-react@0.1.3-next.0
+  - @backstage/plugin-catalog@1.20.1-next.0
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-catalog-graph@0.4.6-next.0
+  - @backstage/plugin-catalog-import@0.11.1-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.5-next.0
+  - @backstage/plugin-kubernetes@0.11.11-next.0
+  - @backstage/plugin-kubernetes-cluster@0.0.12-next.0
+  - @backstage/plugin-org@0.6.26-next.0
+  - @backstage/plugin-permission-react@0.4.22
+  - @backstage/plugin-search@1.4.12-next.0
+  - @backstage/plugin-search-common@1.2.11
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.11-next.0
+
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.8.5
+  - @backstage/plugin-scaffolder@1.20.0
+  - @backstage/plugin-user-settings@0.8.6
+  - @backstage/plugin-catalog@1.20.0
+  - @backstage/plugin-notifications@0.2.1
+  - @backstage/core-compat-api@0.2.5
+  - @backstage/plugin-api-docs@0.11.5
+  - @backstage/plugin-home@0.7.4
+  - @backstage/cli@0.26.5
+  - @backstage/core-components@0.14.7
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-techdocs@1.10.5
+  - @backstage/plugin-catalog-import@0.11.0
+  - @backstage/frontend-app-api@0.7.0
+  - @backstage/plugin-auth-react@0.1.2
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/theme@0.5.4
+  - @backstage/core-app-api@1.12.5
+  - @backstage/plugin-catalog-graph@0.4.5
+  - @backstage/plugin-search@1.4.11
+  - @backstage/plugin-org@0.6.25
+  - @backstage/app-defaults@1.5.5
+  - @backstage/frontend-plugin-api@0.6.5
+  - @backstage/integration-react@1.1.27
+  - @backstage/plugin-app-visualizer@0.1.6
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.4
+  - @backstage/plugin-kubernetes@0.11.10
+  - @backstage/plugin-kubernetes-cluster@0.0.11
+  - @backstage/plugin-search-react@1.7.11
+  - @backstage/plugin-signals@0.0.6
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.10
+  - @backstage/plugin-techdocs-react@1.2.4
+
+## 0.0.11-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.26.5-next.1
+  - @backstage/frontend-app-api@0.7.0-next.2
+  - @backstage/plugin-techdocs@1.10.5-next.2
+  - @backstage/plugin-notifications@0.2.1-next.2
+  - @backstage/plugin-catalog-react@1.12.0-next.2
+  - @backstage/plugin-catalog@1.20.0-next.2
+  - @backstage/plugin-api-docs@0.11.5-next.2
+  - @backstage/core-components@0.14.7-next.2
+  - @backstage/plugin-scaffolder@1.19.4-next.2
+  - @backstage/plugin-search@1.4.11-next.2
+  - @backstage/plugin-org@0.6.25-next.2
+  - @backstage/core-compat-api@0.2.5-next.1
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+  - @backstage/plugin-search-react@1.7.11-next.1
+  - @backstage/plugin-catalog-graph@0.4.5-next.2
+  - @backstage/plugin-catalog-import@0.10.11-next.2
+  - @backstage/plugin-home@0.7.4-next.2
+  - @backstage/plugin-kubernetes@0.11.10-next.2
+  - @backstage/plugin-kubernetes-cluster@0.0.11-next.2
+  - @backstage/plugin-scaffolder-react@1.8.5-next.2
+  - @backstage/plugin-user-settings@0.8.6-next.2
+  - @backstage/integration-react@1.1.27-next.0
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.10-next.2
+
 ## 0.0.11-next.1
 
 ### Patch Changes

@@ -18,11 +18,6 @@ import React from 'react';
 import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
 import { renderInTestApp } from '@backstage/test-utils';
 
-// Using canvas to render text..
-jest.mock('react-text-truncate', () => {
-  return ({ text }: { text: string }) => <span>{text}</span>;
-});
-
 const validResult = {
   location: 'https://backstage.io/docs',
   title: 'Documentation',

@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, DatabaseManager } from '@backstage/backend-common';
+import {
+  DatabaseManager,
+  loggerToWinstonLogger,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
@@ -23,6 +26,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
+import { mockServices } from '@backstage/backend-test-utils';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(
@@ -55,7 +59,7 @@ describe('StorageTaskBroker', () => {
     secrets: fakeSecrets,
   };
 
-  const logger = getVoidLogger();
+  const logger = loggerToWinstonLogger(mockServices.logger.mock());
   it('should claim a dispatched work item', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     await broker.dispatch(emptyTaskSpec);

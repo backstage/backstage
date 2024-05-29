@@ -6,8 +6,12 @@ sidebar_label: Overview
 description: Building backends using the new backend system
 ---
 
-> NOTE: If you have an existing backend that is not yet using the new backend
-> system, see [migrating](./08-migrating.md).
+:::note Note
+
+If you have an existing backend that is not yet using the new backend
+system, see [migrating](./08-migrating.md).
+
+:::
 
 This section covers how to set up and customize your own Backstage backend. It covers some aspects of how backend instances fit into the larger system, but for a more in-depth explanation of the role of backends in the backend system, see [the architecture section](../architecture/02-backends.md).
 

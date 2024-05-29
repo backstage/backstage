@@ -1,5 +1,46 @@
 # @backstage/plugin-techdocs-node
 
+## 1.12.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/backend-common@0.23.0-next.1
+
+## 1.12.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.11.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/plugin-search-common@1.2.11
+
+## 1.12.4
+
+### Patch Changes
+
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/integration@1.11.0
+
+## 1.12.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/integration@1.11.0-next.0
+
 ## 1.12.4-next.1
 
 ### Patch Changes

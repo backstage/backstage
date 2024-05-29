@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { TestDatabases } from '@backstage/backend-test-utils';
+import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { applyDatabaseMigrations } from '../database/migrations';
 import {
@@ -31,7 +30,7 @@ jest.setTimeout(60_000);
 
 describe('Stitcher', () => {
   const databases = TestDatabases.create();
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
 
   it.each(databases.eachSupportedId())(
     'runs the happy path for %p',

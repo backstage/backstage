@@ -37,7 +37,7 @@ more, read our blog post,
 
 Yes, we've already started releasing open source versions of some of the plugins
 we use here, and we'll continue to do so.
-[Plugins](#what-is-a-plugin-in-backstage) are the building blocks of
+[Plugins](technical.md#what-is-a-plugin-in-backstage) are the building blocks of
 functionality in Backstage. We have over 120 plugins inside Spotify — many of
 those are specialized for our use, so will remain internal and proprietary to
 us. But we estimate that about a third of our existing plugins make good open

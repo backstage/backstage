@@ -1,5 +1,37 @@
 # @backstage/plugin-auth-node
 
+## 0.4.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/backend-common@0.23.0-next.1
+
+## 0.4.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.13
+
+### Patch Changes
+
+- ea9262b: Allow overriding default ownership resolving with the new `AuthOwnershipResolutionExtensionPoint`
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/catalog-client@1.6.5
+
 ## 0.4.13-next.1
 
 ### Patch Changes
