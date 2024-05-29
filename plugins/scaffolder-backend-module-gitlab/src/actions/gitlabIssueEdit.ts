@@ -134,7 +134,7 @@ const editIssueOutputProperties = z.object({
 });
 
 /**
- * Creates a `gitlab:issues:edit` Scaffolder action.
+ * Creates a `gitlab:issue:edit` Scaffolder action.
  *
  * @param options - Templating configuration.
  * @public
@@ -144,7 +144,7 @@ export const editGitlabIssueAction = (options: {
 }) => {
   const { integrations } = options;
   return createTemplateAction({
-    id: 'gitlab:issues:edit',
+    id: 'gitlab:issue:edit',
     description: 'Edit a Gitlab issue.',
     examples,
     schema: {
