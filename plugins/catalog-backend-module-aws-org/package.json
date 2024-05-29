@@ -1,0 +1,69 @@
+{
+  "name": "@backstage/plugin-catalog-backend-module-aws-org",
+  "version": "0.1.0",
+  "description": "A Backstage catalog backend module that helps integrate towards AWS organizations",
+  "backstage": {
+    "role": "backend-plugin-module"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "plugins/catalog-backend-module-aws-org"
+  },
+  "license": "Apache-2.0",
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
+  "files": [
+    "config.d.ts",
+    "dist"
+  ],
+  "scripts": {
+    "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@aws-sdk/client-organizations": "^3.350.0",
+    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/config": "workspace:^",
+    "@backstage/integration-aws-node": "workspace:^",
+    "@backstage/plugin-catalog-node": "workspace:^",
+    "luxon": "^3.4.4",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {
+    "@backstage/backend-test-utils": "workspace:^",
+    "@backstage/cli": "workspace:^",
+    "aws-sdk-client-mock": "^4.0.0",
+    "aws-sdk-client-mock-jest": "^4.0.0"
+  },
+  "configSchema": "config.d.ts"
+}

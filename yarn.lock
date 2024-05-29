@@ -4959,6 +4959,26 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-aws-org@workspace:plugins/catalog-backend-module-aws-org":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-aws-org@workspace:plugins/catalog-backend-module-aws-org"
+  dependencies:
+    "@aws-sdk/client-organizations": ^3.350.0
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-model": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/integration-aws-node": "workspace:^"
+    "@backstage/plugin-catalog-node": "workspace:^"
+    aws-sdk-client-mock: ^4.0.0
+    aws-sdk-client-mock-jest: ^4.0.0
+    luxon: ^3.4.4
+    uuid: ^9.0.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-aws@workspace:plugins/catalog-backend-module-aws":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-aws@workspace:plugins/catalog-backend-module-aws"
@@ -31940,7 +31960,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"luxon@npm:^3.0.0, luxon@npm:^3.4.3, luxon@npm:~3.4.0":
+"luxon@npm:^3.0.0, luxon@npm:^3.4.3, luxon@npm:^3.4.4, luxon@npm:~3.4.0":
   version: 3.4.4
   resolution: "luxon@npm:3.4.4"
   checksum: 36c1f99c4796ee4bfddf7dc94fa87815add43ebc44c8934c924946260a58512f0fd2743a629302885df7f35ccbd2d13f178c15df046d0e3b6eb71db178f1c60c

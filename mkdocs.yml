@@ -92,6 +92,8 @@ nav:
           - FAQ: 'features/techdocs/FAQ.md'
   - Integrations:
       - Overview: 'integrations/index.md'
+      - AWS Organizations:
+          - Discovery: 'integrations/aws-org/discovery.md'
       - AWS S3:
           - Locations: 'integrations/aws-s3/locations.md'
           - Discovery: 'integrations/aws-s3/discovery.md'
