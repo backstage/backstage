@@ -99,6 +99,7 @@ describe('MemberTab Test', () => {
         ] as Entity[],
       }),
   };
+  const getEntitiesSpy = jest.spyOn(catalogApi, 'getEntities');
 
   it('Display Profile Card', async () => {
     await renderInTestApp(
@@ -115,6 +116,12 @@ describe('MemberTab Test', () => {
         },
       },
     );
+    expect(getEntitiesSpy).toHaveBeenCalledWith({
+      filter: {
+        kind: 'User',
+        'relations.memberOf': ['group:default/team-d'],
+      },
+    });
 
     expect(screen.getByAltText('Tara MacGovern')).toHaveAttribute(
       'src',
@@ -147,6 +154,29 @@ describe('MemberTab Test', () => {
     );
 
     expect(screen.getByText('Testers (1)')).toBeInTheDocument();
+  });
+
+  it('Can query a different relationship', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityProvider entity={groupEntity}>
+          <MembersListCard relationship="leaderOf" />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    expect(getEntitiesSpy).toHaveBeenCalledWith({
+      filter: {
+        kind: 'User',
+        'relations.leaderOf': ['group:default/team-d'],
+      },
+    });
   });
 
   describe('Aggregate members toggle', () => {
