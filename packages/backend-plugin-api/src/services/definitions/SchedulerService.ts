@@ -285,6 +285,8 @@ export interface SchedulerServiceTaskRunner {
 /**
  * Deals with the scheduling of distributed tasks, for a given plugin.
  *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/scheduler | service documentation} for more details.
+ *
  * @public
  */
 export interface SchedulerService {
