@@ -22,87 +22,80 @@ import {
 import {
   ServiceRef,
   coreServices,
+  createBackendModule,
   createExtensionPoint,
   createServiceFactory,
   createServiceModuleFactory,
   createServiceRef,
 } from '@backstage/backend-plugin-api';
 
+/* 
+
+Open questions:
+ - Should service factories/modules define their own ID for debugging/logging?
+
+*/
+
 type ReaderFactoriesExtensionPointType = {
   addReaderFactory(...factories: ReaderFactory[]): void;
 };
 
-const urlReadersFactoriesExtensionPoint =
+export const urlReadersFactoriesExtensionPoint =
   createExtensionPoint<ReaderFactoriesExtensionPointType>({
-    id: 'urlreaders.factories',
+    id: `${coreServices.urlReader.id}.factories`,
   });
 
-const { createServiceModule: createUrlReaderServiceModule } =
-  createServiceModuleFactory<ReaderFactoriesExtensionPointType>({
-    register(env) {
-      const readerFactories = [] as ReaderFactory[];
+// export const urlReadersFactoriesExtensionPoint =
+//   createServiceExtensionPoint<ReaderFactoriesExtensionPointType>({
+//     service: coreServices.urlReader,
+//     id: 'factories',
+//   });
 
-      env.registerExtensionPoint(urlReadersFactoriesExtensionPoint, {
-        addReaderFactory(...factories: ReaderFactory[]) {
-          readerFactories.push(...factories);
-        },
-      });
-
-      return { readerFactories };
-    },
-  });
-
-/** @public */
+// @backstage/backend-service-url-reader
+// @backstage/backend-defaults/url-reader
 export const urlReaderServiceFactory = createServiceFactory({
-  service: coreServices.urlReader,
-  deps: {
-    config: coreServices.rootConfig,
-    logger: coreServices.logger,
-  },
-  extensionPoints: {
-    factories: urlReadersFactoriesExtensionPoint,
-  },
-  async factory({ config, logger, factories }) {
-    return UrlReaders.default({
-      config,
-      logger,
-      factories: factories.factories,
+  // moduleId: 'urlReaderServiceFactory',
+  register(reg) {
+    const factories = new Array<ReaderFactory>();
+
+    reg.registerExtensionPoint(urlReadersFactoriesExtensionPoint, {
+      addReaderFactory(factory: ReaderFactory) {
+        factories.push(factory);
+      },
+    });
+
+    reg.registerServiceFactory({
+      service: coreServices.urlReader,
+      deps: {
+        config: coreServices.rootConfig,
+        logger: coreServices.logger,
+      },
+      async factory({ config, logger, plugin }) {
+        return UrlReaders.default({
+          config,
+          logger,
+          factories,
+        });
+      },
     });
   },
 });
 
-// export const defaultUrlFactoriesServiceRef = createServiceRef<{
-//   getFactories(): ReaderFactory[];
-// }>({
-//   id: 'core.urlReader.factories',
-//   scope: 'plugin',
-//   async defaultFactory(service) {
-//     return createServiceFactory({
-//       service,
-//       deps: {},
-//       factory() {
-//         return {
-//           getFactories: () => defaultFactories,
-//         };
-//       },
-//     });
-//   },
-// });
+import { urlReadersFactoriesExtensionPoint } from '@backstage/backend-defaults/url-reader';
 
-// export const urlReaderServiceFactory = createServiceFactory({
-//   service: coreServices.urlReader,
-//   deps: {
-//     config: coreServices.rootConfig,
-//     logger: coreServices.logger,
-//     customizableService: defaultUrlFactoriesServiceRef,
-//   },
-//   async factory({ config, logger, customizableService }) {
-//     console.log('result', customizableService.foo());
-//     return UrlReaders.default({
-//       config,
-//       logger,
-//     });
-//   },
-// });
-
-export { createUrlReaderServiceModule };
+// @backstage/backend-service-url-reader-module-my-reader
+export const urlReaderServiceModule = createServiceModule({
+  // pluginId: '',
+  moduleId: 'myUrlReaderModule',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        logger: coreServices.rootLogger,
+        factories: urlReadersFactoriesExtensionPoint,
+      },
+      async init({ factories, logger }) {
+        factories.addReaderFactory(MyUrlReader.factory({ logger }));
+      },
+    });
+  },
+});
