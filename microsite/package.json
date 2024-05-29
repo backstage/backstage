@@ -24,7 +24,7 @@
     "@docusaurus/preset-classic": "^3.1.1",
     "@docusaurus/types": "^3.1.1",
     "@mdx-js/react": "^3.0.0",
-    "@swc/core": "^1.3.46",
+    "@swc/core": "1.5.7",
     "clsx": "^2.0.0",
     "docusaurus-plugin-sass": "^0.2.3",
     "docusaurus-pushfeedback": "^1.0.0",
