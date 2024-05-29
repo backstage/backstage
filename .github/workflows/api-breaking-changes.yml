@@ -41,18 +41,16 @@ jobs:
         run: |
           yarn backstage-repo-tools repo schema openapi diff --since origin/${{ github.base_ref }} > comment.md
 
-      - name: Upload Rendered Comment as Artifact
+      - name: clone artifacts to current directory
+        run: |
+          cat ${{ github.event_path }} > event.json
+
+      - name: Upload Artifacts
         uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4
         with:
           name: preview-spec
-          path: comment.md
-          retention-days: 2
-          overwrite: true
-
-      - name: Upload PR Event as Artifact
-        uses: actions/upload-artifact@65462800fd760344b1a7b4382951275a0abb4808 # v4.3.3
-        with:
-          name: preview-spec
-          path: ${{ github.event_path }}
+          path: |
+            comment.md
+            event.json
           retention-days: 2
           overwrite: true

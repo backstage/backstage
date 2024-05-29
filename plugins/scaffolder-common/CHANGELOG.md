@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.5.3-next.0
+
+### Patch Changes
+
+- bcec60f: added the following new permissions to the scaffolder backend endpoints:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
 ## 1.5.2
 
 ### Patch Changes

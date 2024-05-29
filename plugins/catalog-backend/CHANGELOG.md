@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend
 
+## 1.23.0-next.1
+
+### Patch Changes
+
+- d779e3b: Added a regex test to check commit hash. If url is from git commit branch ignore the edit url.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.24-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-catalog-node@1.12.1-next.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.25-next.1
+
 ## 1.23.0-next.0
 
 ### Minor Changes

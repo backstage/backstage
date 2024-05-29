@@ -1,5 +1,20 @@
 # @backstage/backend-app-api
 
+## 0.7.6-next.1
+
+### Patch Changes
+
+- 398b82a: Add support for JWKS tokens in ExternalTokenHandler.
+- 9e63318: Added an optional `accessRestrictions` to external access service tokens and service principals in general, such that you can limit their access to certain plugins or permissions.
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.24-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/cli-node@0.2.6-next.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/plugin-auth-node@0.4.14-next.1
+
 ## 0.7.6-next.0
 
 ### Patch Changes

@@ -125,7 +125,7 @@ export class MyAwesomeApiClient implements MyAwesomeApi {
 
   private async fetch<T = any>(input: string, init?: RequestInit): Promise<T> {
     // As configured previously for the backend proxy
-    const proxyUri = '${await this.discoveryApi.getBaseUrl('proxy')}/<your-proxy-uri>';
+    const proxyUri = `${await this.discoveryApi.getBaseUrl('proxy')}/<your-proxy-uri>`;
 
     const resp = await fetch(`${proxyUri}${input}`, init);
     if (!resp.ok) throw new Error(resp);

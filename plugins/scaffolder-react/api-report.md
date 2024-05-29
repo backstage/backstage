@@ -304,7 +304,7 @@ export interface ScaffolderRJSFFieldProps<
   disabled: boolean;
   errorSchema?: ErrorSchema<T>;
   formContext?: F;
-  formData: T;
+  formData?: T;
   hideError?: boolean;
   idPrefix?: string;
   idSchema: IdSchema<T>;
