@@ -25,7 +25,7 @@ export const examples: TemplateExample[] = [
         {
           id: 'gitlabIssue',
           name: 'EditIssues',
-          action: 'gitlab:issues:edit',
+          action: 'gitlab:issue:edit',
           input: {
             ...commonGitlabConfigExample,
             projectId: 12,
@@ -43,7 +43,7 @@ export const examples: TemplateExample[] = [
         {
           id: 'gitlabIssue',
           name: 'EditIssues',
-          action: 'gitlab:issues:edit',
+          action: 'gitlab:issue:edit',
           input: {
             ...commonGitlabConfigExample,
             projectId: 12,
@@ -64,7 +64,7 @@ export const examples: TemplateExample[] = [
         {
           id: 'gitlabIssue',
           name: 'EditIssues',
-          action: 'gitlab:issues:edit',
+          action: 'gitlab:issue:edit',
           input: {
             ...commonGitlabConfigExample,
             projectId: 12,

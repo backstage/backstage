@@ -33,7 +33,7 @@ jest.mock('@gitbeaker/rest', () => ({
   },
 }));
 
-describe('gitlab:issues:edit', () => {
+describe('gitlab:issue:edit', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     jest.useFakeTimers({
