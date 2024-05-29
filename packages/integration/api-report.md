@@ -789,6 +789,7 @@ export function parseHarnessUrl(
   repoName: string;
   path: string;
   refDashStr: string;
+  branch: string;
 };
 
 // @public
