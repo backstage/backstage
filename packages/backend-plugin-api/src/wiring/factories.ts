@@ -30,7 +30,7 @@ import {
  * @see {@link https://backstage.io/docs/backend-system/architecture/extension-points | The architecture of extension points}
  * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
  */
-export interface ExtensionPointConfig {
+export interface CreateExtensionPointOptions {
   /**
    * The ID of this extension point.
    *
@@ -46,15 +46,15 @@ export interface ExtensionPointConfig {
  * @see {@link https://backstage.io/docs/backend-system/architecture/extension-points | The architecture of extension points}
  */
 export function createExtensionPoint<T>(
-  config: ExtensionPointConfig,
+  options: CreateExtensionPointOptions,
 ): ExtensionPoint<T> {
   return {
-    id: config.id,
+    id: options.id,
     get T(): T {
       throw new Error(`tried to read ExtensionPoint.T of ${this}`);
     },
     toString() {
-      return `extensionPoint{${config.id}}`;
+      return `extensionPoint{${options.id}}`;
     },
     $$type: '@backstage/ExtensionPoint',
   };
@@ -67,7 +67,7 @@ export function createExtensionPoint<T>(
  * @see {@link https://backstage.io/docs/backend-system/architecture/plugins | The architecture of plugins}
  * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
  */
-export interface BackendPluginConfig {
+export interface CreateBackendPluginOptions {
   /**
    * The ID of this plugin.
    *
@@ -85,7 +85,7 @@ export interface BackendPluginConfig {
  * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
  */
 export function createBackendPlugin(
-  config: BackendPluginConfig,
+  options: CreateBackendPluginOptions,
 ): () => BackendFeature {
   const factory: BackendFeatureFactory = () => {
     let registrations: InternalBackendPluginRegistration[];
@@ -102,7 +102,7 @@ export function createBackendPlugin(
         let init: InternalBackendPluginRegistration['init'] | undefined =
           undefined;
 
-        config.register({
+        options.register({
           registerExtensionPoint(ext, impl) {
             if (init) {
               throw new Error(
@@ -124,14 +124,14 @@ export function createBackendPlugin(
 
         if (!init) {
           throw new Error(
-            `registerInit was not called by register in ${config.pluginId}`,
+            `registerInit was not called by register in ${options.pluginId}`,
           );
         }
 
         registrations = [
           {
             type: 'plugin',
-            pluginId: config.pluginId,
+            pluginId: options.pluginId,
             extensionPoints,
             init,
           },
@@ -152,7 +152,7 @@ export function createBackendPlugin(
  * @see {@link https://backstage.io/docs/backend-system/architecture/modules | The architecture of modules}
  * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
  */
-export interface BackendModuleConfig {
+export interface CreateBackendModuleOptions {
   /**
    * Should exactly match the `id` of the plugin that the module extends.
    *
@@ -175,7 +175,7 @@ export interface BackendModuleConfig {
  * @see {@link https://backstage.io/docs/backend-system/architecture/naming-patterns | Recommended naming patterns}
  */
 export function createBackendModule(
-  config: BackendModuleConfig,
+  options: CreateBackendModuleOptions,
 ): () => BackendFeature {
   const factory: BackendFeatureFactory = () => {
     let registrations: InternalBackendModuleRegistration[];
@@ -192,7 +192,7 @@ export function createBackendModule(
         let init: InternalBackendModuleRegistration['init'] | undefined =
           undefined;
 
-        config.register({
+        options.register({
           registerExtensionPoint(ext, impl) {
             if (init) {
               throw new Error(
@@ -214,15 +214,15 @@ export function createBackendModule(
 
         if (!init) {
           throw new Error(
-            `registerInit was not called by register in ${config.moduleId} module for ${config.pluginId}`,
+            `registerInit was not called by register in ${options.moduleId} module for ${options.pluginId}`,
           );
         }
 
         registrations = [
           {
             type: 'module',
-            pluginId: config.pluginId,
-            moduleId: config.moduleId,
+            pluginId: options.pluginId,
+            moduleId: options.moduleId,
             extensionPoints,
             init,
           },

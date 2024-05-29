@@ -1,5 +1,14 @@
 # @backstage/backend-plugin-api
 
+## 0.6.19-next.1
+
+### Patch Changes
+
+- 9e63318: Added an optional `accessRestrictions` to external access service tokens and service principals in general, such that you can limit their access to certain plugins or permissions.
+- 0665b7e: Renamed `BackendPluginConfig`, `BackendModuleConfig`, and `ExtensionPointConfig` respectively to `CreateBackendPluginOptions`, `CreateBackendModuleOptions`, and `CreateExtensionPointOptions` to standardize frontend and backend factories signatures.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.14-next.1
+
 ## 0.6.19-next.0
 
 ### Patch Changes

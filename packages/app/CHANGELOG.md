@@ -1,5 +1,21 @@
 # example-app
 
+## 0.2.98-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.26.7-next.1
+  - @backstage/plugin-catalog-import@0.12.0-next.1
+  - @backstage/plugin-kubernetes@0.11.11-next.1
+  - @backstage/plugin-search@1.4.12-next.1
+  - @backstage/plugin-notifications@0.2.2-next.1
+  - @backstage/plugin-scaffolder-react@1.8.7-next.1
+  - @backstage/plugin-scaffolder@1.20.2-next.1
+  - @backstage/plugin-catalog@1.20.1-next.1
+  - @backstage/plugin-kubernetes-cluster@0.0.12-next.1
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+
 ## 0.2.98-next.0
 
 ### Patch Changes

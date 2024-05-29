@@ -149,8 +149,8 @@ export function createPublishGitlabAction(options: {
           squash_option?:
             | 'always'
             | 'never'
-            | 'default_on'
             | 'default_off'
+            | 'default_on'
             | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
@@ -199,6 +199,22 @@ export const createPublishGitlabMergeRequestAction: (options: {
     assignee?: string | undefined;
   },
   JsonObject
+>;
+
+// @public
+export const createTriggerGitlabPipelineAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    branch: string;
+    repoUrl: string;
+    projectId: number;
+    tokenDescription: string;
+    token?: string | undefined;
+  },
+  {
+    pipelineUrl: string;
+  }
 >;
 
 // @public

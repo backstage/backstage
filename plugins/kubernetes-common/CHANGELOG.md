@@ -1,5 +1,11 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.8.0-next.0
+
+### Minor Changes
+
+- 0177f75: Update kubernetes plugins to use autoscaling/v2
+
 ## 0.7.6
 
 ### Patch Changes

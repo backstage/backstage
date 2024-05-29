@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-import
 
+## 0.12.0-next.1
+
+### Minor Changes
+
+- 4f92394: Migrate from identityApi to fetchApi in frontend plugins.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+
 ## 0.11.1-next.0
 
 ### Patch Changes

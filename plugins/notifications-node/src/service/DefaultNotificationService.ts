@@ -17,6 +17,7 @@
 import { NotificationService } from './NotificationService';
 import { AuthService, DiscoveryService } from '@backstage/backend-plugin-api';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
+import fetch from 'node-fetch';
 
 /** @public */
 export type NotificationServiceOptions = {
@@ -68,7 +69,7 @@ export class DefaultNotificationService implements NotificationService {
         targetPluginId: 'notifications',
       });
 
-      const response = await fetch(`${baseUrl}/`, {
+      const response = await fetch(baseUrl, {
         method: 'POST',
         body: JSON.stringify(notification),
         headers: {
