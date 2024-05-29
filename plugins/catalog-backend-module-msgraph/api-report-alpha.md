@@ -7,6 +7,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { GroupTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { OrganizationTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
+import { ProviderConfigTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { UserTransformer } from '@backstage/plugin-catalog-backend-module-msgraph';
 
 // @alpha
@@ -25,6 +26,11 @@ export interface MicrosoftGraphOrgEntityProviderTransformsExtensionPoint {
     transformer:
       | OrganizationTransformer
       | Record<string, OrganizationTransformer>,
+  ): void;
+  setProviderConfigTransformer(
+    transformer:
+      | ProviderConfigTransformer
+      | Record<string, ProviderConfigTransformer>,
   ): void;
   setUserTransformer(
     transformer: UserTransformer | Record<string, UserTransformer>,

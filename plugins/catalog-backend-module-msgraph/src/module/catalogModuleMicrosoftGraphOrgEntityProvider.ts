@@ -23,6 +23,7 @@ import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/
 import {
   GroupTransformer,
   OrganizationTransformer,
+  ProviderConfigTransformer,
   UserTransformer,
 } from '@backstage/plugin-catalog-backend-module-msgraph';
 import { MicrosoftGraphOrgEntityProvider } from '../processors';
@@ -57,6 +58,18 @@ export interface MicrosoftGraphOrgEntityProviderTransformsExtensionPoint {
     transformer:
       | OrganizationTransformer
       | Record<string, OrganizationTransformer>,
+  ): void;
+
+  /**
+   * Set the function that transforms provider config dynamically.
+   * Optionally, you can pass separate transformers per provider ID.
+   * Note: adjusting fields that are not used on each scheduled ingestion
+   *       (e.g., id, schedule) will have no effect.
+   */
+  setProviderConfigTransformer(
+    transformer:
+      | ProviderConfigTransformer
+      | Record<string, ProviderConfigTransformer>,
   ): void;
 }
 
@@ -94,6 +107,10 @@ export const catalogModuleMicrosoftGraphOrgEntityProvider = createBackendModule(
         | OrganizationTransformer
         | Record<string, OrganizationTransformer>
         | undefined;
+      let providerConfigTransformer:
+        | ProviderConfigTransformer
+        | Record<string, ProviderConfigTransformer>
+        | undefined;
 
       env.registerExtensionPoint(
         microsoftGraphOrgEntityProviderTransformExtensionPoint,
@@ -116,6 +133,12 @@ export const catalogModuleMicrosoftGraphOrgEntityProvider = createBackendModule(
             }
             organizationTransformer = transformer;
           },
+          setProviderConfigTransformer(transformer) {
+            if (providerConfigTransformer) {
+              throw new Error('Provider transformer may only be set once');
+            }
+            providerConfigTransformer = transformer;
+          },
         },
       );
 
@@ -134,6 +157,7 @@ export const catalogModuleMicrosoftGraphOrgEntityProvider = createBackendModule(
               userTransformer: userTransformer,
               groupTransformer: groupTransformer,
               organizationTransformer: organizationTransformer,
+              providerConfigTransformer: providerConfigTransformer,
             }),
           );
         },

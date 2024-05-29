@@ -126,6 +126,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     userTransformer?: UserTransformer;
     groupTransformer?: GroupTransformer;
     organizationTransformer?: OrganizationTransformer;
+    providerConfigTransformer?: ProviderConfigTransformer;
   });
   // (undocumented)
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -145,6 +146,7 @@ export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
   id: string;
   logger: LoggerService;
   organizationTransformer?: OrganizationTransformer;
+  providerConfigTransformer?: ProviderConfigTransformer;
   schedule: 'manual' | TaskRunner;
   target: string;
   userTransformer?: UserTransformer;
@@ -162,6 +164,9 @@ export type MicrosoftGraphOrgEntityProviderOptions =
       organizationTransformer?:
         | OrganizationTransformer
         | Record<string, OrganizationTransformer>;
+      providerConfigTransformer?:
+        | ProviderConfigTransformer
+        | Record<string, ProviderConfigTransformer>;
     };
 
 // @public @deprecated
@@ -232,6 +237,11 @@ export type ODataQuery = {
 export type OrganizationTransformer = (
   organization: MicrosoftGraph.Organization,
 ) => Promise<GroupEntity | undefined>;
+
+// @public
+export type ProviderConfigTransformer = (
+  provider: MicrosoftGraphProviderConfig,
+) => Promise<MicrosoftGraphProviderConfig>;
 
 // @public @deprecated
 export function readMicrosoftGraphConfig(
