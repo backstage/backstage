@@ -46,7 +46,7 @@ Apart from installing existing plugins and modules in the backend, there are a c
 
 ### Configuration
 
-Perhaps the most accessible way is though static configuration, which you can read more about in the documentation for how to [write configuration](../../conf/writing.md). Many different aspects of the backend can be configured, including both the behavior of the backend itself, as well as many plugins or modules. You'll need to refer to the documentation of each plugin or module to see what configuration is available. Also be sure to check out the documentation of the [core services](../core-services/01-index.md), as that also covers how to configure those.
+Perhaps the most accessible way is through static configuration, which you can read more about in the documentation for how to [write configuration](../../conf/writing.md). Many different aspects of the backend can be configured, including both the behavior of the backend itself, as well as many plugins or modules. You'll need to refer to the documentation of each plugin or module to see what configuration is available. Also be sure to check out the documentation of the [core services](../core-services/01-index.md), as that also covers how to configure those.
 
 ### Services
 
@@ -107,7 +107,7 @@ This example touches on the fact that services can have different scopes, being 
 
 A more advanced way to deploy Backstage is to split the backend plugins into multiple different backend deployments. Both the [deployment documentation](../../deployment/scaling.md) and [Threat Model](../../overview/threat-model.md#trust-model) explain the benefits of this, so here we'll focus on how to do it.
 
-To create a separate backend we need to create an additional backend package. This package will be built and deployed separately from your existing backend. There is currently no template to create a backend via `yarn new`, so the quickest way is to copy the new package and modify. The naming is up to you and it depends on how you are splitting things and up. For this example we'll just use a simple suffix. You might end up with a directory structure like this:
+To create a separate backend we need to create an additional backend package. This package will be built and deployed separately from your existing backend. There is currently no template to create a backend via `yarn new`, so the quickest way is to copy the new package and modify. The naming is up to you and it depends on how you are splitting things up. For this example we'll just use a simple suffix. You might end up with a directory structure like this:
 
 ```text
 packages/
