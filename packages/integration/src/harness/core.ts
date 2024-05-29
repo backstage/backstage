@@ -39,7 +39,7 @@ export function getHarnessEditContentsUrl(
 
 /**
  * Given a file path URL,
- * it returns an API URL which returns the contents of the file.
+ * it returns an API URL which returns the contents of the file .
  * @remarks
  *
  * Converts
