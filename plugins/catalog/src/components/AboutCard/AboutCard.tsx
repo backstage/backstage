@@ -147,30 +147,34 @@ export function AboutCard(props: AboutCardProps) {
     icon: <ScmIntegrationIcon type={entitySourceLocation?.integrationType} />,
     href: entitySourceLocation?.locationTargetUrl,
   };
-  // const viewInTechDocs: IconLinkVerticalProps = {
-  //   label: 'View TechDocs',
-  //   disabled:
-  //     !(
-  //       entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
-  //       entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
-  //     ) || !viewTechdocLink,
-  //   icon: <DocsIcon />,
-  //   href:
-  //     viewTechdocLink &&
-  //     (techdocsRef
-  //       ? viewTechdocLink({
-  //           namespace: techdocsRef.namespace || DEFAULT_NAMESPACE,
-  //           kind: techdocsRef.kind,
-  //           name: techdocsRef.name,
-  //         })
-  //       : viewTechdocLink({
-  //           namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-  //           kind: entity.kind,
-  //           name: entity.metadata.name,
-  //         })),
-  // };
+  const viewInTechDocs: IconLinkVerticalProps = {
+    label: 'View TechDocs',
+    disabled:
+      !(
+        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
+      ) || !viewTechdocLink,
+    icon: <DocsIcon />,
+    href:
+      viewTechdocLink &&
+      (techdocsRef
+        ? viewTechdocLink({
+            namespace: techdocsRef.namespace || DEFAULT_NAMESPACE,
+            kind: techdocsRef.kind,
+            name: techdocsRef.name,
+          })
+        : viewTechdocLink({
+            namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+            kind: entity.kind,
+            name: entity.metadata.name,
+          })),
+  };
 
   const subHeaderLinks = [viewInSource];
+
+  if (!viewInTechDocs?.disabled) {
+    subHeaderLinks.push(viewInTechDocs);
+  }
 
   if (isTemplateEntityV1beta3(entity)) {
     const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
