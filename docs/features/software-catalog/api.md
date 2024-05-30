@@ -425,6 +425,10 @@ value. These are special in that they form the entity's unique
 The return type is JSON, as a single [`Entity`](descriptor-format.md), or a 404
 error if there was no entity with that reference triplet.
 
+### `GET /entities/by-name/{kind}/{namespace}/{name}/ancestry`
+
+Get an entity's ancestry by entity ref.
+
 ### `POST /entities/by-refs`
 
 Gets a batch of entities by their entity refs. This is useful in contexts where
@@ -455,6 +459,35 @@ The return type is JSON, on the form
 where the `items` array has _the same length_ and _the same order_ as the input
 `entityRefs` array. Each element contains the corresponding entity data, or
 `null` if no entity existed in the catalog with that ref.
+
+### `POST /refresh`
+
+Refresh the entity related to `entityRef`.
+
+Request body is JSON, on the form
+
+```json
+{
+  "entityRef": "<string>",
+  "authorizationToken": "<string>"
+}
+```
+
+### `POST /validate-entity`
+
+Validate that a passed in entity has no errors in schema.
+
+Request body is JSON, on the form
+
+```json
+{
+  "location": "<string>",
+  "entity": {
+    "proident_f": {},
+    "culpa_ca": {}
+  }
+}
+```
 
 ## Locations
 
@@ -504,6 +537,39 @@ Response type is JSON, on the form
 }
 ```
 
+### `GET /entity-facets?facet=<string>&facet=<string>&filter=<string>&filter=<string>`
+
+Get all entity facets that match the given filters.
+
+Response type is JSON, on the form
+
+```json
+{
+  "facets": {
+    "exercitation84": [
+      {
+        "value": "<string>",
+        "count": "<number>"
+      },
+      {
+        "value": "<string>",
+        "count": "<number>"
+      }
+    ],
+    "consectetur_1": [
+      {
+        "value": "<string>",
+        "count": "<number>"
+      },
+      {
+        "value": "<string>",
+        "count": "<number>"
+      }
+    ]
+  }
+}
+```
+
 ### `POST /locations`
 
 Adds a location to be ingested by the catalog.
@@ -542,7 +608,219 @@ If the location already exists the response will be `HTTP/1.1 409 Conflict` and 
 
 Supports the `?dryRun=true` query parameter, which will perform validation and not write anything to the database. In the event of successfully passing validation, the `entities` field of the response JSON will be populated with entities present in the location.
 
-### `DELETE /locations/<uid>`
+### `POST /analyze-location`
+
+Validate a given location.
+
+Request body is JSON, on the form
+
+```json
+{
+  "location": {
+    "type": "<string>",
+    "target": "<string>"
+  },
+  "catalogFileName": "<string>"
+}
+```
+
+And Response type is JSON, on the form
+
+```json
+{
+  "generateEntities": [
+    {
+      "fields": [
+        {
+          "description": "<string>",
+          "value": "<string>",
+          "state": "needsUserInput",
+          "field": "<string>"
+        },
+        {
+          "description": "<string>",
+          "value": "<string>",
+          "state": "analysisSuggestedNoValue",
+          "field": "<string>"
+        }
+      ],
+      "entity": {
+        "apiVersion": "<string>",
+        "kind": "<string>",
+        "metadata": {},
+        "spec": {
+          "ullamco_b24": {}
+        },
+        "relations": [
+          {
+            "targetRef": "<string>",
+            "type": "<string>"
+          },
+          {
+            "targetRef": "<string>",
+            "type": "<string>"
+          }
+        ]
+      }
+    },
+    {
+      "fields": [
+        {
+          "description": "<string>",
+          "value": "<string>",
+          "state": "needsUserInput",
+          "field": "<string>"
+        },
+        {
+          "description": "<string>",
+          "value": "<string>",
+          "state": "analysisSuggestedValue",
+          "field": "<string>"
+        }
+      ],
+      "entity": {
+        "apiVersion": "<string>",
+        "kind": "<string>",
+        "metadata": {},
+        "spec": {
+          "velita": {},
+          "aliquip_d": {},
+          "officia__e8": {}
+        },
+        "relations": [
+          {
+            "targetRef": "<string>",
+            "type": "<string>"
+          },
+          {
+            "targetRef": "<string>",
+            "type": "<string>"
+          }
+        ]
+      }
+    }
+  ],
+  "existingEntityFiles": [
+    {
+      "entity": {
+        "metadata": {
+          "name": "<string>",
+          "links": [
+            {
+              "url": "<string>",
+              "type": "<string>",
+              "icon": "<string>",
+              "title": "<string>"
+            },
+            {
+              "url": "<string>",
+              "type": "<string>",
+              "icon": "<string>",
+              "title": "<string>"
+            }
+          ],
+          "tags": ["<string>", "<string>"],
+          "annotations": {
+            "nostrud__": "<string>",
+            "ipsumd": "<string>",
+            "amet_bc2": "<string>"
+          },
+          "labels": {
+            "ea1c": "<string>"
+          },
+          "description": "<string>",
+          "title": "<string>",
+          "namespace": "<string>",
+          "etag": "<string>",
+          "uid": "<string>"
+        },
+        "kind": "<string>",
+        "apiVersion": "<string>",
+        "relations": [
+          {
+            "targetRef": "<string>",
+            "type": "<string>"
+          },
+          {
+            "targetRef": "<string>",
+            "type": "<string>"
+          }
+        ],
+        "spec": {
+          "culpa982": {},
+          "dolorb": {},
+          "mollitb7e": {}
+        }
+      },
+      "isRegistered": "<boolean>",
+      "location": {
+        "target": "<string>",
+        "type": "<string>"
+      }
+    },
+    {
+      "entity": {
+        "metadata": {
+          "name": "<string>",
+          "links": [
+            {
+              "url": "<string>",
+              "type": "<string>",
+              "icon": "<string>",
+              "title": "<string>"
+            },
+            {
+              "url": "<string>",
+              "type": "<string>",
+              "icon": "<string>",
+              "title": "<string>"
+            }
+          ],
+          "tags": ["<string>", "<string>"],
+          "annotations": {
+            "sint_69": "<string>",
+            "ex5b7": "<string>"
+          },
+          "labels": {
+            "proidentc1": "<string>",
+            "ullamco_c": "<string>",
+            "do_8": "<string>"
+          },
+          "description": "<string>",
+          "title": "<string>",
+          "namespace": "<string>",
+          "etag": "<string>",
+          "uid": "<string>"
+        },
+        "kind": "<string>",
+        "apiVersion": "<string>",
+        "relations": [
+          {
+            "targetRef": "<string>",
+            "type": "<string>"
+          },
+          {
+            "targetRef": "<string>",
+            "type": "<string>"
+          }
+        ],
+        "spec": {
+          "ine": {},
+          "Ute1": {},
+          "fugiat80": {}
+        }
+      },
+      "isRegistered": "<boolean>",
+      "location": {
+        "target": "<string>",
+        "type": "<string>"
+      }
+    }
+  ]
+}
+```
+
+### `DELETE /locations/{id}`
 
 Delete a location by its id. On success response code will be `HTTP/1.1 204 No Content`.
 
