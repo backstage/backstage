@@ -84,4 +84,4 @@ To register an entity that is stored in an AWS CodeCommit repository, you need t
 - Now you can copy-paste the URL from your browser inside Backstage
 
 The format would be something like:
-`https://{region}.console.aws.amazon.com/codesuite/codecommit/repositories/{reponame}/browse/refs/heads/{branch}/--{/path-to-entity-file}/catalog-info.yaml`
+`https://{region}.console.aws.amazon.com/codesuite/codecommit/repositories/{reponame}/browse/refs/heads/{branch}/--/catalog-info.yaml`
