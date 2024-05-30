@@ -73,6 +73,7 @@ export class AwsOrganizationEntityProvider implements EntityProvider {
     });
     this.scheduleFn = this.createScheduleFn(taskRunner);
     this.organizations = new Organizations({
+      customUserAgent: 'backstage-aws-catalog-organizations',
       credentialDefaultProvider: () => this.credProvider.sdkCredentialProvider,
       region: AWS_ORGANIZATION_REGION,
     }); // Only available in us-east-1
