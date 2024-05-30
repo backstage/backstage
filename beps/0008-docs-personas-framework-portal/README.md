@@ -5,7 +5,7 @@ authors:
   - '@waldirmontoya25'
   - '@aramissennyeydd'
 owners:
-  - '@aramissennyeydd'
+  - '@backstage/documentation-maintainers'
 project-areas:
   - documentation
 creation-date: 2024-03-18
