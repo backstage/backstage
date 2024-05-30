@@ -69,19 +69,6 @@
       "getting-started/keeping-backstage-updated",
       "getting-started/concepts"
     ],
-    "Local Development": [
-      {
-        "type": "category",
-        "label": "CLI",
-        "items": [
-          "local-dev/cli-overview",
-          "local-dev/cli-build-system",
-          "local-dev/cli-commands"
-        ]
-      },
-      "local-dev/linking-local-packages",
-      "local-dev/debugging"
-    ],
     "Core Features": [
       {
         "type": "category",
@@ -355,6 +342,25 @@
           "permissions/plugin-authors/03-adding-a-resource-permission-check",
           "permissions/plugin-authors/04-authorizing-access-to-paginated-data",
           "permissions/plugin-authors/05-frontend-authorization"
+        ]
+      }
+    ],
+    "Tooling": [
+      {
+        "type": "category",
+        "label": "Backstage CLI",
+        "items": [
+          "tooling/cli/overview",
+          "tooling/cli/build-system",
+          "tooling/cli/commands"
+        ]
+      },
+      {
+        "type": "category",
+        "label": "Local Development",
+        "items": [
+          "tooling/local-dev/linking-local-packages",
+          "tooling/local-dev/debugging"
         ]
       }
     ],
