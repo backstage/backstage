@@ -71,15 +71,10 @@ async function exitIfMissingVale() {
     // eslint-disable-next-line @backstage/no-undeclared-imports
     await require('command-exists')('vale');
   } catch (e) {
-    if (process.env.CI) {
-      console.log(
-        `Language linter (vale) was not found. Please install vale linter (https://vale.sh/docs/vale-cli/installation/).\n`,
-      );
-      process.exit(1);
-    }
-    console.log(`Language linter (vale) generated errors. Please check the errors and review any markdown files that you changed.
-  Possibly update .github/vale/config/vocabularies/Backstage/accept.txt to add new valid words.\n`);
-    process.exit(0);
+    console.log(
+      `Language linter (vale) was not found. Please install vale linter (https://vale.sh/docs/vale-cli/installation/).\n`,
+    );
+    process.exit(1);
   }
 }
 
