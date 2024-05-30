@@ -23,13 +23,12 @@ auth:
   environment: development
   providers:
     oauth2Proxy:
-      development:
-        signIn:
-          resolvers:
-            # typically you would pick one of these
-            - resolver: emailMatchingUserEntityProfileEmail
-            - resolver: emailLocalPartMatchingUserEntityName
-            - resolver: forwardedUserMatchingUserEntityName
+      signIn:
+        resolvers:
+          # typically you would pick one of these
+          - resolver: emailMatchingUserEntityProfileEmail
+          - resolver: emailLocalPartMatchingUserEntityName
+          - resolver: forwardedUserMatchingUserEntityName
 ```
 
 ### Resolvers
