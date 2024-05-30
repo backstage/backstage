@@ -19,7 +19,7 @@ import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import { useNavigate } from 'react-router-dom';
 import { notificationsApiRef } from '../api';
 
-/** @public */
+/** @internal */
 export function useWebNotifications(
   enabled: boolean,
   markAsReadOnLinkOpen: boolean,
