@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog
 
+## 1.20.1-next.1
+
+### Patch Changes
+
+- a2d2649: Export `catalogTranslationRef` under `/alpha`
+- bcec60f: updated the ContextMenu, ActionsPage, OngoingTask and TemplateCard frontend components to support the new scaffolder permissions:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+
 ## 1.20.1-next.0
 
 ### Patch Changes

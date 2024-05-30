@@ -47,7 +47,10 @@ If you want to use the Lighthouse CLI and run the checks based on the config you
 yarn dlx @lhci/cli@0.11.x autorun
 ```
 
-> Note: running this command will use the [Lighthouse config](https://github.com/backstage/backstage/blob/39ba2284d73885b7ca8290cb38e2b1e4d983c8d6/lighthouserc.js#L19-L34) so make sure to adjust it to your needs if needed.
+:::note Note
+Running this command will use the [Lighthouse config](https://github.com/backstage/backstage/blob/39ba2284d73885b7ca8290cb38e2b1e4d983c8d6/lighthouserc.js#L19-L34) so make sure to adjust it to your needs if needed.
+
+:::
 
 ### Use Lighthouse Github Action on your own repo
 

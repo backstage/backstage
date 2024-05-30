@@ -1,5 +1,33 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.8-next.1
+
+### Patch Changes
+
+- bcec60f: added the following new permissions to the scaffolder backend endpoints:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
+- Updated dependencies
+  - @backstage/backend-tasks@0.5.24-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.9-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.1-next.1
+  - @backstage/plugin-scaffolder-common@1.5.3-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.17-next.1
+  - @backstage/plugin-catalog-node@1.12.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.9-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.11-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.2.9-next.1
+  - @backstage/plugin-scaffolder-node@0.4.5-next.1
+
 ## 1.22.8-next.0
 
 ### Patch Changes

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2023 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-import { createGitlabGroupEnsureExistsAction } from './createGitlabGroupEnsureExistsAction';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import yaml from 'yaml';
+import { createGitlabGroupEnsureExistsAction } from './gitlabGroupEnsureExists';
+import { examples } from './gitlabGroupEnsureExists.examples';
 
 const mockGitlabClient = {
   Groups: {
@@ -40,21 +42,11 @@ describe('gitlab:group:ensureExists', () => {
     jest.resetAllMocks();
   });
 
-  it('should create a new group if it does not exists', async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
-        id: 1,
-        full_path: 'bar',
-      },
-      {
-        id: 2,
-        full_path: 'foo',
-      },
-    ]);
-
+  it(`Should ${examples[0].description}`, async () => {
+    mockGitlabClient.Groups.search.mockResolvedValue([]);
     mockGitlabClient.Groups.create.mockResolvedValue({
       id: 3,
-      full_path: 'foo/bar',
+      full_path: 'group1',
     });
 
     const config = new ConfigReader({
@@ -74,34 +66,76 @@ describe('gitlab:group:ensureExists', () => {
 
     await action.handler({
       ...mockContext,
-      input: {
-        repoUrl: 'gitlab.com',
-        path: ['foo', 'bar'],
-      },
+      input: yaml.parse(examples[0].example).steps[0].input,
     });
 
-    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith('bar', 'bar', {
-      parent_id: 2,
-    });
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'group1',
+      'group1',
+      {},
+    );
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
   });
 
-  it('should return existing group if it does exists', async () => {
+  it(`Should ${examples[1].description}`, async () => {
     mockGitlabClient.Groups.search.mockResolvedValue([
       {
         id: 1,
-        full_path: 'bar',
+        full_path: 'group1',
+      },
+    ]);
+    mockGitlabClient.Groups.create.mockResolvedValue({
+      id: 3,
+      full_path: 'group1/group2',
+    });
+
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'tokenlols',
+            apiBaseUrl: 'https://api.gitlab.com',
+          },
+        ],
+      },
+    });
+    const integrations = ScmIntegrations.fromConfig(config);
+
+    const action = createGitlabGroupEnsureExistsAction({ integrations });
+
+    await action.handler({
+      ...mockContext,
+      input: yaml.parse(examples[1].example).steps[0].input,
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'group2',
+      'group2',
+      {
+        parent_id: 1,
+      },
+    );
+
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
+  });
+
+  it(`Should ${examples[2].description}`, async () => {
+    mockGitlabClient.Groups.search.mockResolvedValue([
+      {
+        id: 1,
+        full_path: 'group1',
       },
       {
         id: 2,
-        full_path: 'foo',
-      },
-      {
-        id: 42,
-        full_path: 'foo/bar',
+        full_path: 'group1/group2',
       },
     ]);
+    mockGitlabClient.Groups.create.mockResolvedValue({
+      id: 3,
+      full_path: 'group1/group2/group3',
+    });
 
     const config = new ConfigReader({
       integrations: {
@@ -120,18 +154,21 @@ describe('gitlab:group:ensureExists', () => {
 
     await action.handler({
       ...mockContext,
-      input: {
-        repoUrl: 'gitlab.com',
-        path: ['foo', 'bar'],
-      },
+      input: yaml.parse(examples[2].example).steps[0].input,
     });
 
-    expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith(
+      'group3',
+      'group3',
+      {
+        parent_id: 2,
+      },
+    );
 
-    expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
   });
 
-  it('should not call API on dryRun', async () => {
+  it(`Should ${examples[3].description}`, async () => {
     const config = new ConfigReader({
       integrations: {
         gitlab: [
@@ -149,11 +186,8 @@ describe('gitlab:group:ensureExists', () => {
 
     await action.handler({
       ...mockContext,
-      isDryRun: true,
-      input: {
-        repoUrl: 'gitlab.com',
-        path: ['foo', 'bar'],
-      },
+      isDryRun: yaml.parse(examples[3].example).steps[0].isDryRun,
+      input: yaml.parse(examples[3].example).steps[0].input,
     });
 
     expect(mockGitlabClient.Groups.search).not.toHaveBeenCalled();

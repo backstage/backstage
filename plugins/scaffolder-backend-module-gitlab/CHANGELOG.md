@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.4.1-next.1
+
+### Patch Changes
+
+- 829e0ec: Add new `gitlab:pipeline:trigger` action to trigger GitLab pipelines.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-scaffolder-node@0.4.5-next.1
+
 ## 0.4.1-next.0
 
 ### Patch Changes

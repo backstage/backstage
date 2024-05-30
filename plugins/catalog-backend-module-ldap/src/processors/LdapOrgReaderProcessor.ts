@@ -19,7 +19,7 @@ import {
   GroupTransformer,
   LdapClient,
   LdapProviderConfig,
-  readLdapConfig,
+  readLdapLegacyConfig,
   readLdapOrg,
   UserTransformer,
 } from '../ldap';
@@ -56,7 +56,7 @@ export class LdapOrgReaderProcessor implements CatalogProcessor {
       configRoot.getOptionalConfig('catalog.processors.ldapOrg');
     return new LdapOrgReaderProcessor({
       ...options,
-      providers: config ? readLdapConfig(config) : [],
+      providers: config ? readLdapLegacyConfig(config) : [],
     });
   }
 
