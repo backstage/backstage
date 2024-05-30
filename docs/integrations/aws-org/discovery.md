@@ -61,11 +61,10 @@ Once your role is provisioned add the required backstage AWS configuration. More
 This example shows an IAM role in the organization account that can be assumed by backstage (running in AWS).
 
 ```yaml
-integrations:
-  aws:
-    accounts:
-      - accountId: '123456789123'
-        roleName: 'backstage'
+aws:
+  accounts:
+    - accountId: '123456789123'
+      roleName: 'backstage'
 ```
 
 Then you can add an `aws-org` config to the catalog providers configuration:
