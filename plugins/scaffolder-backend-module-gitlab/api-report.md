@@ -218,8 +218,52 @@ export const createTriggerGitlabPipelineAction: (options: {
 >;
 
 // @public
+export const editGitlabIssueAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    projectId: number;
+    issueIid: number;
+    title?: string | undefined;
+    labels?: string | undefined;
+    description?: string | undefined;
+    weight?: number | undefined;
+    token?: string | undefined;
+    assignees?: number[] | undefined;
+    addLabels?: string | undefined;
+    confidential?: boolean | undefined;
+    milestoneId?: number | undefined;
+    removeLabels?: string | undefined;
+    stateEvent?: IssueStateEvent | undefined;
+    discussionLocked?: boolean | undefined;
+    epicId?: number | undefined;
+    dueDate?: string | undefined;
+    updatedAt?: string | undefined;
+    issueType?: IssueType | undefined;
+  },
+  {
+    state: string;
+    title: string;
+    projectId: number;
+    updatedAt: string;
+    issueUrl: string;
+    issueId: number;
+    issueIid: number;
+  }
+>;
+
+// @public
 const gitlabModule: () => BackendFeature;
 export default gitlabModule;
+
+// @public
+export enum IssueStateEvent {
+  // (undocumented)
+  CLOSE = 'close',
+  // (undocumented)
+  REOPEN = 'reopen',
+}
 
 // @public
 export enum IssueType {
@@ -227,6 +271,8 @@ export enum IssueType {
   INCIDENT = 'incident',
   // (undocumented)
   ISSUE = 'issue',
+  // (undocumented)
+  TASK = 'task',
   // (undocumented)
   TEST = 'test_case',
 }

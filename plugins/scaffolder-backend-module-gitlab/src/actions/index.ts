@@ -16,9 +16,11 @@
 export * from './gitlab';
 export * from './gitlabGroupEnsureExists';
 export * from './gitlabIssueCreate';
+export * from './gitlabIssueEdit';
 export * from './gitlabMergeRequest';
 export * from './gitlabPipelineTrigger';
 export * from './gitlabProjectAccessTokenCreate';
 export * from './gitlabProjectDeployTokenCreate';
 export * from './gitlabProjectVariableCreate';
 export * from './gitlabRepoPush';
+export { IssueType, IssueStateEvent } from '../commonGitlabConfig';
