@@ -84,7 +84,6 @@ export const NotificationsSidebarItem = (props?: {
   titleCounterEnabled?: boolean;
   snackbarEnabled?: boolean;
   snackbarAutoHideDuration?: number | null;
-  markAsReadOnLinkOpen?: boolean;
   className?: string;
   icon?: IconComponent;
   text?: string;
@@ -96,7 +95,6 @@ export const NotificationsSidebarItem = (props?: {
     titleCounterEnabled = true,
     snackbarEnabled = true,
     snackbarAutoHideDuration = 10000,
-    markAsReadOnLinkOpen = false,
     icon = NotificationsIcon,
     text = 'Notifications',
     ...restProps
@@ -105,7 +103,6 @@ export const NotificationsSidebarItem = (props?: {
     titleCounterEnabled: true,
     snackbarEnabled: true,
     snackbarAutoHideDuration: 10000,
-    markAsReadOnLinkOpen: false,
   };
 
   const { loading, error, value, retry } = useNotificationsApi(api =>
@@ -117,9 +114,8 @@ export const NotificationsSidebarItem = (props?: {
   const notificationsRoute = useRouteRef(rootRouteRef);
   // TODO: Do we want to add long polling in case signals are not available
   const { lastSignal } = useSignal<NotificationSignal>('notifications');
-  const { sendWebNotification } = useWebNotifications(
+  const { sendWebNotification, requestUserPermission } = useWebNotifications(
     webNotificationsEnabled,
-    markAsReadOnLinkOpen,
   );
   const [refresh, setRefresh] = React.useState(false);
   const { setNotificationCount } = useTitleCounter();
@@ -132,7 +128,7 @@ export const NotificationsSidebarItem = (props?: {
             component={Link}
             to={notification.payload.link ?? notificationsRoute()}
             onClick={() => {
-              if (markAsReadOnLinkOpen) {
+              if (notification.payload.link) {
                 notificationsApi
                   .updateNotifications({
                     ids: [notification.id],
@@ -175,7 +171,7 @@ export const NotificationsSidebarItem = (props?: {
 
       return { action };
     },
-    [notificationsRoute, markAsReadOnLinkOpen, notificationsApi, alertApi],
+    [notificationsRoute, notificationsApi, alertApi],
   );
 
   useEffect(() => {
@@ -278,6 +274,9 @@ export const NotificationsSidebarItem = (props?: {
       )}
       <SidebarItem
         to={notificationsRoute()}
+        onClick={() => {
+          requestUserPermission();
+        }}
         hasNotifications={!error && !!unreadCount}
         text={text}
         icon={icon}

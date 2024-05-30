@@ -103,7 +103,6 @@ export const NotificationsSidebarItem: (props?: {
   titleCounterEnabled?: boolean;
   snackbarEnabled?: boolean;
   snackbarAutoHideDuration?: number | null;
-  markAsReadOnLinkOpen?: boolean;
   className?: string;
   icon?: IconComponent;
   text?: string;

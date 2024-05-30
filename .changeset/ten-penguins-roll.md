@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-notifications': patch
+'@backstage/plugin-notifications': minor
 ---
 
-Allow setting notification as read when opening snackbar or web notification link
+By default, set notification as read when opening snackbar or web notification link
