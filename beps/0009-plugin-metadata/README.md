@@ -101,7 +101,9 @@ The package relationships are defined in the `backstage.pluginPackages` field. T
 
 ```json
 {
+  "name": "@backstage/plugin-catalog",
   "backstage": {
+    "role": "frontend-plugin",
     "pluginId": "catalog",
     "pluginPackages": {
       "frontend-plugin": "@backstage/plugin-catalog",
@@ -120,7 +122,9 @@ Module packages define their target plugin both via the `backstage.pluginId` fie
 
 ```json
 {
+  "name": "@backstage/plugin-catalog-backend-module-github",
   "backstage": {
+    "role": "backend-plugin-module",
     "pluginId": "catalog",
     "pluginPackage": "@backstage/plugin-catalog-backend"
   }
