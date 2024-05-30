@@ -20,7 +20,7 @@ import {
   renderWithEffects,
   withLogCollector,
 } from '@backstage/test-utils';
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React, { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
@@ -874,7 +874,9 @@ describe('Integration Test', () => {
     );
     await renderWithEffects(<Root />);
 
-    await userEvent.click(screen.getByText('Sign Out'));
+    await act(async () => {
+      await userEvent.click(screen.getByText('Sign Out'));
+    });
 
     await waitFor(() =>
       expect(fetchApiMock.fetch).toHaveBeenCalledWith(

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import '@testing-library/jest-dom';
 
 Element.prototype.scrollIntoView = jest.fn();
@@ -41,3 +42,5 @@ global.BroadcastChannel = jest
       close: jest.fn(),
     };
   });
+
+window.scroll = jest.fn();
