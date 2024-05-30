@@ -6,12 +6,25 @@ authorization token.
 
 ## Setup backend
 
-1. Install the backend plugin:
+Install the backend plugin
 
 ```bash
 # From your Backstage root directory
 yarn --cwd packages/backend add @backstage/plugin-user-settings-backend
 ```
+
+### New backend
+
+Add the plugin to your backend in `packages/backend/src/index.ts`:
+
+```ts
+backend.add(import('@backstage/plugin-user-settings-backend/alpha'));
+```
+
+To get real-time updates of the user settings across different user sessions, you must also install
+the `@backstage/plugin-signals-backend` plugin.
+
+### Old backend
 
 1. Configure the routes by adding a new `userSettings.ts` file in
    `packages/backend/src/plugins/`:
@@ -29,7 +42,7 @@ export default async function createPlugin(env: PluginEnvironment) {
 }
 ```
 
-3. Add the new routes to your backend by modifying `packages/backend/src/index.ts`:
+2. Add the new routes to your backend by modifying `packages/backend/src/index.ts`:
 
 ```diff
  // packages/backend/src/index.ts
@@ -58,6 +71,7 @@ To make use of the user settings backend, replace the `WebStorage` with the
 +  storageApiRef,
  } from '@backstage/core-plugin-api';
 +import { UserSettingsStorage } from '@backstage/plugin-user-settings';
++import { signalApiRef } from '@backstage/plugin-signals-react';
 
  export const apis: AnyApiFactory[] = [
 +  createApiFactory({
@@ -66,7 +80,8 @@ To make use of the user settings backend, replace the `WebStorage` with the
 +      discoveryApi: discoveryApiRef,
 +      errorApi: errorApiRef,
 +      fetchApi: fetchApiRef,
-+      identityApi: identityApiRef
++      identityApi: identityApiRef,
++      signalApi: signalApiRef, // Optional
 +    },
 +    factory: deps => UserSettingsStorage.create(deps),
 +  }),
