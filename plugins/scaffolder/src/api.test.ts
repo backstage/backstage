@@ -118,6 +118,7 @@ describe('api', () => {
             fetch: fetchApi.fetch,
             onmessage: expect.any(Function),
             onerror: expect.any(Function),
+            signal: expect.any(AbortSignal),
           },
         );
 

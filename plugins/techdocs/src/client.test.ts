@@ -104,6 +104,7 @@ describe('TechDocsStorageClient', () => {
           fetch: fetchApi.fetch,
           onerror: expect.any(Function),
           onmessage: expect.any(Function),
+          signal: expect.any(AbortSignal),
         },
       );
     });
