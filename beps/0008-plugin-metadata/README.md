@@ -42,7 +42,7 @@ The summary of the BEP is a few paragraphs long and give a high-level overview o
 
 All Backstage adopters benefit from it being easy to find, install, configure, and validate the setup of plugins and modules. That's regardless of whether one is only using a minimal set of core plugins, or installing a large number of 3rd party features from the Backstage ecosystem. This proposal aims to build upon our [existing package metadata](https://backstage.io/docs/tooling/cli/build-system#package-roles) to introduce a new set of standardized fields that plugins can use to provide additional information about themselves.
 
-This metadata will be used to improve tooling in an around Backstage, such as providing better validation and more powerful utilities in the Backstage CLI, and the more information to be surfaced in association with plugins for better discoverability.
+This metadata will be used to improve tooling in and around Backstage, such as providing better validation and more powerful utilities in the Backstage CLI, and more information to be surfaced in association with plugins for better discoverability.
 
 ### Goals
 
@@ -51,7 +51,7 @@ We want to provide a new set of standardized fields that makes it possible to bu
 - Browsing packages related to a plugin, i.e. listing all available library packages and frontend/backend variants of a specific plugin.
 - Discoverability of plugin modules. Given a plugin you should be able to identify all of its modules.
 
-Furthermore this proposal should also lay the foundation for how we define additional metadata fields in the future. How they are validate, documented, and surfaced in the Backstage ecosystem.
+Furthermore this proposal should also lay the foundation for how we define additional metadata fields in the future. How they are validated, documented, and surfaced in the Backstage ecosystem.
 
 In relation to the above, this proposal will aim to define what existing `package.json` fields are known in the Backstage ecosystem, and what their purpose is. This will help avoid duplication of fields, and aim to reduce metadata fragmentation.
 
@@ -93,7 +93,7 @@ All fields must be documented in a new section of the "Tooling" documentation on
 
 This section defines how we associate packages from the same plugin with each other.
 
-Package the are part of the same plugin should always be managed within the same monorepo and workspace. This does not apply to modules for a plugin, which may be hosted separately, but may still need to refer to the plugin that it is a module for.
+Packages that are part of the same plugin should always be managed within the same monorepo and workspace. This does not apply to modules for a plugin, which may be hosted separately, but may still need to refer to the plugin that it is a module for.
 
 Each plugin package must define a `backstage.pluginId` field, which is the same identifier as is used in the implementation of the plugin. This field is inferred from the package name by the `backstage-cli repo fix` command if it is not present. It should only be defined for plugin package, for example `@backstage/errors` should not define a plugin ID. The `backstage.pluginId` field is required when publishing a package with a plugin or module role, or a library role with "plugin" in its name.
 
