@@ -1,6 +1,6 @@
 ---
 id: discovery
-title: AWS Organization Discovery
+title: AWS Organization Accounts Discovery
 sidebar_label: Discovery
 # prettier-ignore
 description: Automatically discovering AWS accounts from AWS organizations
@@ -10,9 +10,9 @@ description: Automatically discovering AWS accounts from AWS organizations
 This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md).
 :::
 
-## AWS Organization Provider
+## AWS Organization Accounts Provider
 
-The AWS Organization integration has a discovery provider for ingesting AWS accounts from an AWS organization into the software catalog. It will list organization accounts (including the org account) and provide entities to your software catalog. The current provider provides accounts as kind `Resource` with no owners. There are plans to make the kind and ownership customizable soon to allow for flexible requirements.
+The AWS Organization integration has a discovery provider for ingesting AWS accounts from an AWS organization into the software catalog. It will list organization accounts (including the org account) and provide entities to your software catalog. The current provider provides accounts as kind `Resource` and defaults the owner to `unknown`. There are plans to make the kind and ownership customizable soon to allow for flexible requirements.
 
 AWS recommends [organizing your AWS environment using multiple accounts](https://docs.aws.amazon.com/whitepapers/latest/organizing-your-aws-environment/organizing-your-aws-environment.html). You may have dozens or even hundreds of AWS accounts. This provider will help you manage ownership and the lifecycle of your accounts in Backstage.
 
