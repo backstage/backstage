@@ -4959,9 +4959,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-aws-org@workspace:plugins/catalog-backend-module-aws-org":
+"@backstage/plugin-catalog-backend-module-aws-accounts@workspace:plugins/catalog-backend-module-aws-accounts":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-catalog-backend-module-aws-org@workspace:plugins/catalog-backend-module-aws-org"
+  resolution: "@backstage/plugin-catalog-backend-module-aws-accounts@workspace:plugins/catalog-backend-module-aws-accounts"
   dependencies:
     "@aws-sdk/client-organizations": ^3.350.0
     "@backstage/backend-common": "workspace:^"

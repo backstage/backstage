@@ -87,7 +87,7 @@ nav:
   - Integrations:
       - Overview: 'integrations/index.md'
       - AWS Accounts:
-          - Discovery: 'integrations/aws-org/discovery.md'
+          - Discovery: 'integrations/aws-accounts/discovery.md'
       - AWS S3:
           - Locations: 'integrations/aws-s3/locations.md'
           - Discovery: 'integrations/aws-s3/discovery.md'

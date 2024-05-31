@@ -1,7 +1,7 @@
 {
-  "name": "@backstage/plugin-catalog-backend-module-aws-org",
+  "name": "@backstage/plugin-catalog-backend-module-aws-accounts",
   "version": "0.0.0",
-  "description": "A Backstage catalog backend module that helps integrate towards AWS organizations",
+  "description": "A Backstage catalog backend module that provides AWS accounts via AWS organizations.",
   "backstage": {
     "role": "backend-plugin-module"
   },
@@ -15,7 +15,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/catalog-backend-module-aws-org"
+    "directory": "plugins/catalog-backend-module-aws-accounts"
   },
   "license": "Apache-2.0",
   "exports": {
