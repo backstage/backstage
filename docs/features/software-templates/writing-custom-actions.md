@@ -142,61 +142,7 @@ argument. It looks like the following:
 
 ## Registering Custom Actions
 
-### Register Action With Previous Backend System, Backstage Version < 1.24.x
-
-Once you have your Custom Action ready for usage with the scaffolder, you'll
-need to pass this into the `scaffolder-backend` `createRouter` function. You
-should have something similar to the below in
-`packages/backend/src/plugins/scaffolder.ts`
-
-```ts
-return await createRouter({
-  containerRunner,
-  catalogClient,
-  logger: env.logger,
-  config: env.config,
-  database: env.database,
-  reader: env.reader,
-});
-```
-
-There's another property you can pass here, which is an array of `actions` which
-will set the available actions that the scaffolder has access to.
-
-```ts
-import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
-import { ScmIntegrations } from '@backstage/integration';
-import { createNewFileAction } from './scaffolder/actions/custom';
-
-export default async function createPlugin(
-  env: PluginEnvironment,
-): Promise<Router> {
-  const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
-  const integrations = ScmIntegrations.fromConfig(env.config);
-
-  const builtInActions = createBuiltinActions({
-    integrations,
-    catalogClient,
-    config: env.config,
-    reader: env.reader,
-  });
-
-  const actions = [...builtInActions, createNewFileAction()];
-
-  return createRouter({
-    actions,
-    catalogClient: catalogClient,
-    logger: env.logger,
-    config: env.config,
-    database: env.database,
-    reader: env.reader,
-  });
-}
-```
-
-### Register Action With New Backend System, Backstage Version >= 1.24.0
-
-To register your new custom action in the New Backend System you will need to create a backend module. Here is a very simplified example of how to do that:
+To register your new custom action in the Backend System you will need to create a backend module. Here is a very simplified example of how to do that:
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
@@ -251,6 +197,58 @@ import {
           customActionNeedingCacheAndConfig({ cache: cache, config: config }),
         );
     })
+```
+
+### Register Custom Actions with the Legacy Backend System
+
+Once you have your Custom Action ready for usage with the scaffolder, you'll
+need to pass this into the `scaffolder-backend` `createRouter` function. You
+should have something similar to the below in
+`packages/backend/src/plugins/scaffolder.ts`
+
+```ts
+return await createRouter({
+  containerRunner,
+  catalogClient,
+  logger: env.logger,
+  config: env.config,
+  database: env.database,
+  reader: env.reader,
+});
+```
+
+There's another property you can pass here, which is an array of `actions` which
+will set the available actions that the scaffolder has access to.
+
+```ts
+import { createBuiltinActions } from '@backstage/plugin-scaffolder-backend';
+import { ScmIntegrations } from '@backstage/integration';
+import { createNewFileAction } from './scaffolder/actions/custom';
+
+export default async function createPlugin(
+  env: PluginEnvironment,
+): Promise<Router> {
+  const catalogClient = new CatalogClient({ discoveryApi: env.discovery });
+  const integrations = ScmIntegrations.fromConfig(env.config);
+
+  const builtInActions = createBuiltinActions({
+    integrations,
+    catalogClient,
+    config: env.config,
+    reader: env.reader,
+  });
+
+  const actions = [...builtInActions, createNewFileAction()];
+
+  return createRouter({
+    actions,
+    catalogClient: catalogClient,
+    logger: env.logger,
+    config: env.config,
+    database: env.database,
+    reader: env.reader,
+  });
+}
 ```
 
 ## List of custom action packages
