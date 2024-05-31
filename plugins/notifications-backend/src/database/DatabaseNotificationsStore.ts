@@ -46,6 +46,8 @@ const NOTIFICATION_COLUMNS = [
   'user',
   'read',
   'saved',
+  'm.name as metadata_name',
+  'm.value as metadata_value',
 ];
 
 export const normalizeSeverity = (input?: string): NotificationSeverity => {
@@ -103,6 +105,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         severity: row.severity,
         scope: row.scope,
         icon: row.icon,
+        metadata: row.metadata,
       },
     }));
   };
@@ -117,6 +120,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload?.link,
       title: notification.payload?.title,
       description: notification.payload?.description,
+      metadata: notification.payload?.metadata,
       severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
       saved: notification.saved,
@@ -133,6 +137,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload?.link,
       title: notification.payload?.title,
       description: notification.payload?.description,
+      metadata: notification.payload?.metadata,
       severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
     };
@@ -140,6 +145,12 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   private getBroadcastUnion = () => {
     return this.db('broadcast')
+      .leftJoin(
+        'broadcast_metadata as m',
+        'broadcast.id',
+        '=',
+        'metadata.originating_broadcast_id',
+      )
       .leftJoin(
         'broadcast_user_status',
         'id',
@@ -155,6 +166,12 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const { user, orderField } = options;
 
     const subQuery = this.db('notification')
+      .leftJoin(
+        'notification_metadata as m',
+        'notification.id',
+        '=',
+        'metadata.originating_notification_id',
+      )
       .select(NOTIFICATION_COLUMNS)
       .unionAll([this.getBroadcastUnion()])
       .as('notifications');
@@ -192,6 +209,13 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         `(LOWER(title) LIKE LOWER(?) OR LOWER(description) LIKE LOWER(?))`,
         [`%${options.search}%`, `%${options.search}%`],
       );
+    }
+
+    if (options.metadata) {
+      Object.keys(options.metadata ?? {}).forEach(key => {
+        const value = options.metadata?.[key];
+        query.orWhereRaw(`(LOWER(metadata_name) LIKE LOWER(?)`, [`%${value}%`]);
+      });
     }
 
     if (options.ids) {
@@ -327,6 +351,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload.link,
       topic: notification.payload.topic,
       updated: new Date(),
+      metadata: notification.payload?.metadata,
       severity: normalizeSeverity(notification.payload?.severity),
       read: null,
     };

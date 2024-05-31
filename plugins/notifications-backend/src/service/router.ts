@@ -321,6 +321,16 @@ export async function createRouter(
       );
     }
 
+    Object.keys(req.query).forEach(key => {
+      if (!opts.metadata) {
+        opts.metadata = {};
+      }
+      const prefix = 'metadata.';
+      if (key.startsWith(prefix)) {
+        opts.metadata[key.substring(prefix.length)] = req.query[key];
+      }
+    });
+
     const [notifications, totalCount] = await Promise.all([
       store.getNotifications(opts),
       store.getNotificationsCount(opts),
