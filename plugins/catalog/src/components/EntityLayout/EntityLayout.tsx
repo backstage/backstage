@@ -89,6 +89,28 @@ function EntityLayoutTitle(props: {
   );
 }
 
+function MajorTitleComponent(props: {
+  title: string;
+  entity: Entity | undefined;
+}) {
+  const { entity, title } = props;
+  const description =
+    entity?.metadata?.description || 'No description available';
+
+  return (
+    <Box display="inline-flex" alignItems="center" height="1em" maxWidth="100%">
+      <Box
+        component="span"
+        textOverflow="ellipsis"
+        whiteSpace="nowrap"
+        overflow="hidden"
+      >
+        {description}
+      </Box>
+    </Box>
+  );
+}
+
 function headerProps(
   paramKind: string | undefined,
   paramNamespace: string | undefined,
@@ -261,6 +283,8 @@ export const EntityLayout = (props: EntityLayoutProps) => {
         {entity && (
           <>
             <EntityLabels entity={entity} />
+            {/* Group entity now shows the type of team they are part of  */}
+            <MajorTitleComponent title={headerTitle} entity={entity} />
             <EntityContextMenu
               UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
               UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
