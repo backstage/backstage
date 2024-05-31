@@ -3,7 +3,7 @@ id: discovery
 title: AWS Account Discovery
 sidebar_label: Discovery
 # prettier-ignore
-description: Automatically discovering AWS accounts from AWS organizations
+description: Automatically discovering AWS accounts from AWS Organizations
 ---
 
 :::info
@@ -18,11 +18,11 @@ AWS recommends [organizing your AWS environment using multiple accounts](https:/
 
 ## Installation
 
-You will have to add the AWS Organization Entity provider to your backend as it is not installed by default, therefore you have to add a dependency on `@backstage/plugin-catalog-backend-module-aws-org` to your backend package.
+You will have to add the AWS Organization Entity provider to your backend as it is not installed by default, therefore you have to add a dependency on `@backstage/plugin-catalog-backend-module-aws-accounts` to your backend package.
 
 ```bash
 # From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-aws-org
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-aws-accounts
 ```
 
 And then update your backend by adding the following line:
@@ -30,7 +30,7 @@ And then update your backend by adding the following line:
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend'));
 /* highlight-add-start */
-backend.add(import('@backstage/plugin-catalog-backend-module-aws-org'));
+backend.add(import('@backstage/plugin-catalog-backend-module-aws-accounts'));
 ```
 
 ## Configuration
