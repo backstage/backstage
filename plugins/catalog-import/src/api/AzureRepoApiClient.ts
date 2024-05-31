@@ -95,7 +95,6 @@ const apiVersions = '6.0';
 export interface RepoApiClientOptions {
   project: string;
   tenantUrl: string;
-  token: string;
 }
 
 export interface NewBranchOptions {
@@ -103,9 +102,14 @@ export interface NewBranchOptions {
   fileName: string;
   title: string;
   branchName: string;
+  repoName: string;
+  sourceBranch: AzureRef;
 }
 
 export interface CreatePrOptions {
+  repoName: string;
+  sourceName: string;
+  targetName: string;
   description: string;
   title: string;
 }
@@ -134,11 +138,12 @@ export class RepoApiClient {
     path: string,
     version: string,
     queryParams: Record<string, string> | undefined = undefined,
+    token: string,
   ): Promise<T> {
     const endpoint = this.createEndpoint(path, version, queryParams);
     const result = await fetch(endpoint, {
       headers: {
-        Authorization: `Bearer ${this._options.token}`,
+        Authorization: `Bearer ${token}`,
       },
     });
     if (!result.ok) {
@@ -151,12 +156,13 @@ export class RepoApiClient {
     path: string,
     version: string,
     payload: unknown,
+    token: string,
   ): Promise<T> {
     const endpoint = this.createEndpoint(path, version);
     const result = await fetch(endpoint, {
       method: 'POST',
       headers: {
-        Authorization: `Bearer ${this._options.token}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
@@ -167,16 +173,20 @@ export class RepoApiClient {
     return await result.json();
   }
 
-  async getRepository(repositoryName: string): Promise<AzureRepo> {
-    return this.get(`/${repositoryName}`, apiVersions);
+  async getRepository(
+    repositoryName: string,
+    token: string,
+  ): Promise<AzureRepo> {
+    return this.get(`/${repositoryName}`, apiVersions, undefined, token);
   }
 
-  async getDefaultBranch(repo: AzureRepo): Promise<AzureRef> {
+  async getDefaultBranch(repo: AzureRepo, token: string): Promise<AzureRef> {
     const filter = repo.defaultBranch.replace('refs/', '');
     const result: RefQueryResult = await this.get(
       `/${repo.name}/refs`,
       apiVersions,
       { filter },
+      token,
     );
     if (!result.value?.length) {
       return Promise.reject(
@@ -187,10 +197,10 @@ export class RepoApiClient {
   }
 
   async pushNewBranch(
-    repoName: string,
-    sourceBranch: AzureRef,
     options: NewBranchOptions,
+    token: string,
   ): Promise<AzureRefUpdate> {
+    const { sourceBranch, repoName } = options;
     const push: AzurePush = {
       refUpdates: [
         {
@@ -220,16 +230,16 @@ export class RepoApiClient {
       `/${repoName}/pushes`,
       apiVersions,
       push,
+      token,
     );
     return result.refUpdates[0];
   }
 
   async createPullRequest(
-    repoName: string,
-    sourceName: string,
-    targetName: string,
     options: CreatePrOptions,
+    token: string,
   ): Promise<AzurePrResult> {
+    const { repoName, sourceName, targetName } = options;
     const payload: CreateAzurePr = {
       title: options.title,
       description: options.description,
@@ -241,6 +251,7 @@ export class RepoApiClient {
       `/${repoName}/pullrequests`,
       apiVersions,
       payload,
+      token,
     );
   }
 }
@@ -249,18 +260,33 @@ export async function createAzurePullRequest(
   options: AzurePrOptions,
   client: RepoApiClient | undefined = undefined,
 ): Promise<AzurePrResult> {
+  const {
+    title,
+    repository,
+    token,
+    fileContent,
+    fileName,
+    branchName,
+    description,
+  } = options;
   const actualClient = client ?? new RepoApiClient(options);
-  const repo = await actualClient.getRepository(options.repository);
-  const defaultBranch = await actualClient.getDefaultBranch(repo);
-  const refUpdate = await actualClient.pushNewBranch(
-    repo.name,
-    defaultBranch,
-    options,
-  );
-  return actualClient.createPullRequest(
-    repo.name,
-    refUpdate.name,
-    defaultBranch.name,
-    options,
-  );
+  const repo = await actualClient.getRepository(repository, token);
+  const defaultBranch = await actualClient.getDefaultBranch(repo, token);
+  const branchOptions: NewBranchOptions = {
+    title: title,
+    repoName: repo.name,
+    sourceBranch: defaultBranch,
+    branchName: branchName,
+    fileContent: fileContent,
+    fileName: fileName,
+  };
+  const refUpdate = await actualClient.pushNewBranch(branchOptions, token);
+  const prOptions: CreatePrOptions = {
+    title,
+    description,
+    repoName: repo.name,
+    sourceName: refUpdate.name,
+    targetName: defaultBranch.name,
+  };
+  return actualClient.createPullRequest(prOptions, token);
 }

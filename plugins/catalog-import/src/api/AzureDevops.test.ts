@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { parseRepoUrl } from './util';
+
+import { parseRepoUrl } from './AzureDevops';
 
 describe('parseRepoUrl', () => {
   it('parses Azure DevOps Cloud url', async () => {

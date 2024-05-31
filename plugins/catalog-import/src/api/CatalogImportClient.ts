@@ -91,9 +91,9 @@ export class CatalogImportClient implements CatalogImportApi {
     }
     const supportedIntegrations = ['github', 'azure'];
     const foundIntegration = this.scmIntegrationsApi.byUrl(url);
-    const iSupported = supportedIntegrations.find(
-      it => it === foundIntegration?.type,
-    );
+    const iSupported =
+      !!foundIntegration &&
+      supportedIntegrations.find(it => it === foundIntegration.type);
     if (!iSupported) {
       const catalogFilename = getCatalogFilename(this.configApi);
 
@@ -103,7 +103,7 @@ export class CatalogImportClient implements CatalogImportApi {
         );
       }
       throw new Error(
-        `This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a ${catalogFilename} file instead.`,
+        `This URL was not recognized as a valid git URL because there was no configured integration that matched the given host name. Currently GitHub and Azure DevOps are supported. You could try to paste the full URL to a ${catalogFilename} file instead.`,
       );
     }
 
@@ -146,7 +146,7 @@ export class CatalogImportClient implements CatalogImportApi {
 
     return {
       type: 'repository',
-      integrationType: foundIntegration!.type,
+      integrationType: foundIntegration.type,
       url: url,
       generatedEntities: analyzation.generateEntities.map(x => x.entity),
     };

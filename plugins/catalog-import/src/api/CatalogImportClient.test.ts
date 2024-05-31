@@ -43,6 +43,7 @@ jest.mock('@octokit/rest', () => {
       return octokit;
     }
   }
+
   return { Octokit };
 });
 
@@ -299,7 +300,7 @@ describe('CatalogImportClient', () => {
         ),
       ).rejects.toThrow(
         new Error(
-          'This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a catalog-info.yaml file instead.',
+          'This URL was not recognized as a valid git URL because there was no configured integration that matched the given host name. Currently GitHub and Azure DevOps are supported. You could try to paste the full URL to a catalog-info.yaml file instead.',
         ),
       );
     });

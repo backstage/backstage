@@ -154,6 +154,7 @@ function mockPrEndpoint() {
 describe('RepoApiClient', () => {
   const server = setupServer();
   setupRequestMockHandlers(server);
+  const testToken = new Date().toString();
   const sut = new RepoApiClient({
     project: 'project',
     tenantUrl: 'https://dev.azure.com/acme',
@@ -168,25 +169,28 @@ describe('RepoApiClient', () => {
   });
   describe('getRepository', () => {
     it('should get an existing repository', async () => {
-      await expect(sut.getRepository('success')).resolves.toEqual({
+      await expect(sut.getRepository('success', testToken)).resolves.toEqual({
         id: '01',
         name: 'success',
         defaultBranch: 'refs/heads/master',
       });
     });
     it('should throw when the repository repository does not exist', async () => {
-      await expect(sut.getRepository('not-found')).rejects.toThrow(
+      await expect(sut.getRepository('not-found', testToken)).rejects.toThrow(
         new Error('repository not found'),
       );
     });
   });
   describe('getDefaultBranch', () => {
     it('should return when correct branch', async () => {
-      const foundRef = await sut.getDefaultBranch({
-        name: 'success',
-        defaultBranch: 'refs/heads/main',
-        id: '01',
-      });
+      const foundRef = await sut.getDefaultBranch(
+        {
+          name: 'success',
+          defaultBranch: 'refs/heads/main',
+          id: '01',
+        },
+        testToken,
+      );
       expect(foundRef).toEqual({
         name: 'refs/heads/main',
         objectId: '0000000000000000000000000000000000000000',
@@ -194,37 +198,43 @@ describe('RepoApiClient', () => {
     });
 
     it('should throw when the repository does not exist', async () => {
-      const promise = sut.getDefaultBranch({
-        name: 'fail',
-        defaultBranch: 'refs/heads/main',
-        id: '01',
-      });
+      const promise = sut.getDefaultBranch(
+        {
+          name: 'fail',
+          defaultBranch: 'refs/heads/main',
+          id: '01',
+        },
+        testToken,
+      );
       await expect(promise).rejects.toThrow(new Error('repository not found'));
     });
 
     it('should throw when the default branch does not exist', async () => {
-      const promise = sut.getDefaultBranch({
-        name: 'success',
-        defaultBranch: 'refs/heads/missing_branch',
-        id: '01',
-      });
+      const promise = sut.getDefaultBranch(
+        {
+          name: 'success',
+          defaultBranch: 'refs/heads/missing_branch',
+          id: '01',
+        },
+        testToken,
+      );
       await expect(promise).rejects.toThrow(
         new Error(`The requested ref 'heads/missing_branch' was not found`),
       );
     });
   });
   describe('pushNewBranch', () => {
-    let sourceBranch: AzureRef;
     let options: NewBranchOptions;
     let expectedResult: AzureRefUpdate;
 
     beforeEach(() => {
-      sourceBranch = {
-        name: 'refs/heads/main',
-        objectId: '0000000000000000000000000000000000000000',
-      };
       options = {
+        repoName: 'name',
         title: 'title',
+        sourceBranch: {
+          name: 'refs/heads/main',
+          objectId: '0000000000000000000000000000000000000000',
+        },
         branchName: 'backstage-integration',
         fileName: 'catalog-info.yaml',
         fileContent: 'This is a test',
@@ -238,29 +248,43 @@ describe('RepoApiClient', () => {
     });
     it('should create a new branch', async () => {
       await expect(
-        sut.pushNewBranch('success', sourceBranch, options),
+        sut.pushNewBranch(
+          {
+            ...options,
+            repoName: 'success',
+          },
+          testToken,
+        ),
       ).resolves.toEqual(expectedResult);
     });
     it('should throw when api call fails', async () => {
       await expect(
-        sut.pushNewBranch('error', sourceBranch, options),
+        sut.pushNewBranch(
+          {
+            ...options,
+            repoName: 'error',
+          },
+          testToken,
+        ),
       ).rejects.toThrow(new Error('internal error'));
     });
   });
   describe('createPullRequest', () => {
-    const sourceBranchName = 'refs/heads/main';
-    const targetBranchName = 'refs/heads/backstage-integration';
     const options: CreatePrOptions = {
+      repoName: 'repoName',
+      sourceName: 'refs/heads/main',
+      targetName: 'refs/heads/backstage-integration',
       title: 'Title',
       description: 'Description',
     };
     it('should create a new Pull request', async () => {
       await expect(
         sut.createPullRequest(
-          'success',
-          sourceBranchName,
-          targetBranchName,
-          options,
+          {
+            ...options,
+            repoName: 'success',
+          },
+          testToken,
         ),
       ).resolves.toEqual({
         pullRequestId: 'PR01',
@@ -272,12 +296,7 @@ describe('RepoApiClient', () => {
     });
     it('should throw when api call fails', async () => {
       await expect(
-        sut.createPullRequest(
-          'error',
-          sourceBranchName,
-          targetBranchName,
-          options,
-        ),
+        sut.createPullRequest({ ...options, repoName: 'error' }, testToken),
       ).rejects.toThrow(new Error('internal error'));
     });
   });
@@ -297,6 +316,7 @@ describe('createAzurePullRequest', () => {
   });
 
   it('should create a new Pull request', async () => {
+    const testToken = new Date().getTime().toString();
     const options: AzurePrOptions = {
       tenantUrl: 'https://dev.azure.com/acme',
       repository: 'test',
@@ -306,7 +326,8 @@ describe('createAzurePullRequest', () => {
       fileContent: 'content',
       branchName: 'backstage-integration',
       description: 'Test Description',
-    } as any;
+      token: testToken,
+    };
     const repo: AzureRepo = {
       name: options.repository,
       defaultBranch: 'ref/heads/main',
@@ -337,18 +358,34 @@ describe('createAzurePullRequest', () => {
     await expect(createAzurePullRequest(options, client)).resolves.toEqual(
       expectedResult,
     );
-    expect(clientMock.getRepository).toHaveBeenCalledWith(options.repository);
-    expect(clientMock.getDefaultBranch).toHaveBeenCalledWith(repo);
-    expect(clientMock.pushNewBranch).toHaveBeenCalledWith(
-      repo.name,
-      defaultBranch,
-      options,
+    expect(clientMock.getRepository).toHaveBeenCalledWith(
+      options.repository,
+      testToken,
     );
+    expect(clientMock.getDefaultBranch).toHaveBeenCalledWith(repo, testToken);
+    const expectedBranchOptions: NewBranchOptions = {
+      repoName: repo.name,
+      sourceBranch: defaultBranch,
+      branchName: options.branchName,
+      fileContent: options.fileContent,
+      fileName: options.fileName,
+      title: options.title,
+    };
+    expect(clientMock.pushNewBranch).toHaveBeenCalledWith(
+      expectedBranchOptions,
+      testToken,
+    );
+
+    const expectedPrOptions: CreatePrOptions = {
+      repoName: repo.name,
+      description: options.description,
+      title: options.title,
+      sourceName: options.branchName,
+      targetName: defaultBranch.name,
+    };
     expect(clientMock.createPullRequest).toHaveBeenCalledWith(
-      repo.name,
-      options.branchName,
-      defaultBranch.name,
-      options,
+      expectedPrOptions,
+      testToken,
     );
   });
 });
