@@ -19,7 +19,7 @@ import { LoggerService } from './LoggerService';
 /**
  * Root-level logging.
  *
- * Seethe {@link https://backstage.io/docs/backend-system/core-services/root-logger | service documentation} for more details.
+ * See the {@link https://backstage.io/docs/backend-system/core-services/root-logger | service documentation} for more details.
  *
  * @public
  */
