@@ -18,7 +18,11 @@ import {
   authServiceFactory,
   httpAuthServiceFactory,
 } from '@backstage/backend-app-api';
-import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 import { ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { HttpResponse, http, passthrough } from 'msw';
@@ -30,8 +34,7 @@ import fetch from 'node-fetch';
 
 describe('credentials', () => {
   const worker = setupServer();
-  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
-  afterEach(() => worker.resetHandlers());
+  setupRequestMockHandlers(worker);
 
   it('handles all valid credentials settings', async () => {
     const config = {
