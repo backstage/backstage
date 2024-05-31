@@ -234,9 +234,10 @@ export class DatabaseManager implements LegacyRootDatabaseService {
 }
 
 /**
- * Helper for deleting databases, only exists for backend-test-utils for now.
+ * Helper for deleting databases.
  *
  * @public
+ * @deprecated Will be removed in a future release.
  */
 export async function dropDatabase(
   dbConfig: Config,
