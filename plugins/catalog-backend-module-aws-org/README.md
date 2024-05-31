@@ -1,6 +1,6 @@
-# Catalog Backend Module for GitHub
+# Catalog Backend Module for AWS Accounts
 
-This is an extension module to the plugin-catalog-backend plugin, providing extensions targeted at AWS organizations.
+This is an extension module to the plugin-catalog-backend plugin. It provides an entity provider to ingest AWS accounts via AWS organizations to the software catalog.
 
 ## Getting started
 
