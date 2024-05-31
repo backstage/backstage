@@ -20,7 +20,7 @@
  * See the {@link https://backstage.io/docs/backend-system/core-services/token-manager | service documentation} for more details.
  *
  * @public
- * @deprecated Please migrate to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
+ * @deprecated Please {@link https://backstage.io/docs/tutorials/auth-service-migration | migrate} to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
  */
 export interface TokenManagerService {
   /**
