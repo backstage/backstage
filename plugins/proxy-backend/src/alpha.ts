@@ -19,7 +19,7 @@ import {
   createBackendPlugin,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { createRouter } from './service/router';
+import { createRouterInternal } from './service/router';
 
 /**
  * The proxy backend plugin.
@@ -37,16 +37,11 @@ export default createBackendPlugin({
         httpRouter: coreServices.httpRouter,
       },
       async init({ config, discovery, logger, httpRouter }) {
-        httpRouter.use(
-          await createRouter({
-            config,
-            discovery,
-            logger: loggerToWinstonLogger(logger),
-          }),
-        );
-        httpRouter.addAuthPolicy({
-          allow: 'unauthenticated',
-          path: '/',
+        await createRouterInternal({
+          config,
+          discovery,
+          logger: loggerToWinstonLogger(logger),
+          httpRouterService: httpRouter,
         });
       },
     });

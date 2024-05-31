@@ -80,6 +80,7 @@ export const NotificationsPage: (
 
 // @public (undocumented)
 export type NotificationsPageProps = {
+  markAsReadOnLinkOpen?: boolean;
   title?: string;
   themeId?: string;
   subtitle?: string;
@@ -101,6 +102,7 @@ export const NotificationsSidebarItem: (props?: {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
   snackbarEnabled?: boolean;
+  snackbarAutoHideDuration?: number | null;
   className?: string;
   icon?: IconComponent;
   text?: string;
@@ -110,8 +112,10 @@ export const NotificationsSidebarItem: (props?: {
 
 // @public (undocumented)
 export const NotificationsTable: ({
+  markAsReadOnLinkOpen,
   isLoading,
   notifications,
+  isUnread,
   onUpdate,
   setContainsText,
   onPageChange,
@@ -126,7 +130,9 @@ export type NotificationsTableProps = Pick<
   TableProps,
   'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
 > & {
+  markAsReadOnLinkOpen?: boolean;
   isLoading?: boolean;
+  isUnread: boolean;
   notifications?: Notification_2[];
   onUpdate: () => void;
   setContainsText: (search: string) => void;

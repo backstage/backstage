@@ -20,7 +20,7 @@ import { DatabaseKeyStore } from './DatabaseKeyStore';
 import { FirestoreKeyStore } from './FirestoreKeyStore';
 import { KeyStores } from './KeyStores';
 import { MemoryKeyStore } from './MemoryKeyStore';
-import { getVoidLogger } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('KeyStores', () => {
   const defaultConfigOptions = {
@@ -35,7 +35,7 @@ describe('KeyStores', () => {
   it('reads auth section from config', async () => {
     const configSpy = jest.spyOn(defaultConfig, 'getOptionalConfig');
     const keyStore = await KeyStores.fromConfig(defaultConfig, {
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       database: AuthDatabase.forTesting(),
     });
 
@@ -50,7 +50,7 @@ describe('KeyStores', () => {
 
   it('can handle without auth config', async () => {
     const keyStore = await KeyStores.fromConfig(new ConfigReader({}), {
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       database: AuthDatabase.forTesting(),
     });
     expect(keyStore).toBeInstanceOf(DatabaseKeyStore);
@@ -78,7 +78,7 @@ describe('KeyStores', () => {
     };
     const config = new ConfigReader(configOptions);
     const keyStore = await KeyStores.fromConfig(config, {
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       database: AuthDatabase.forTesting(),
     });
 

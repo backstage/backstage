@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-app-api",
-  "version": "0.7.1-next.0",
+  "version": "0.7.6-next.1",
   "description": "Core API used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -83,6 +83,7 @@
     "path-to-regexp": "^6.2.1",
     "selfsigned": "^2.0.0",
     "stoppable": "^1.1.0",
+    "triple-beam": "^1.4.1",
     "uuid": "^9.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0"

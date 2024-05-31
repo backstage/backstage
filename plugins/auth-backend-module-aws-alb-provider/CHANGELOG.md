@@ -1,5 +1,56 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-auth-backend@0.22.6-next.1
+  - @backstage/plugin-auth-node@0.4.14-next.1
+
+## 0.1.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-auth-backend@0.22.6-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+  - @backstage/errors@1.2.4
+
+## 0.1.10
+
+### Patch Changes
+
+- 4a0577e: fix: Move config declarations to appropriate auth backend modules
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-auth-backend@0.22.5
+  - @backstage/plugin-auth-node@0.4.13
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- 4a0577e: fix: Move config declarations to appropriate auth backend modules
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-auth-backend@0.22.5-next.2
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-auth-backend@0.22.5-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 0.1.10-next.0
 
 ### Patch Changes

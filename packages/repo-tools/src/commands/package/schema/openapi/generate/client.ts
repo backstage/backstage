@@ -24,15 +24,21 @@ import { paths as cliPaths } from '../../../../../lib/paths';
 import { mkdirpSync } from 'fs-extra';
 import fs from 'fs-extra';
 import { exec } from '../../../../../lib/exec';
-import { resolvePackagePath } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { getPathToCurrentOpenApiSpec } from '../../../../../lib/openapi/helpers';
 
-async function generate(outputDirectory: string) {
+async function generate(
+  outputDirectory: string,
+  clientAdditionalProperties?: string,
+) {
   const resolvedOpenapiPath = await getPathToCurrentOpenApiSpec();
   const resolvedOutputDirectory = cliPaths.resolveTargetRoot(
     outputDirectory,
     OUTPUT_PATH,
   );
+  const additionalProperties = clientAdditionalProperties
+    ? `--additional-properties=${clientAdditionalProperties}`
+    : '';
   mkdirpSync(resolvedOutputDirectory);
 
   await fs.mkdirp(resolvedOutputDirectory);
@@ -60,6 +66,7 @@ async function generate(outputDirectory: string) {
       ),
       '--generator-key',
       'v3.0',
+      additionalProperties,
     ],
     {
       maxBuffer: Number.MAX_VALUE,
@@ -87,9 +94,12 @@ async function generate(outputDirectory: string) {
   });
 }
 
-export async function command(outputPackage: string): Promise<void> {
+export async function command(
+  outputPackage: string,
+  clientAdditionalProperties?: string,
+): Promise<void> {
   try {
-    await generate(outputPackage);
+    await generate(outputPackage, clientAdditionalProperties);
     console.log(
       chalk.green(`Generated client in ${outputPackage}/${OUTPUT_PATH}`),
     );

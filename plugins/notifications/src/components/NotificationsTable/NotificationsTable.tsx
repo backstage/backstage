@@ -23,15 +23,16 @@ import CheckBox from '@material-ui/core/Checkbox';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { Notification } from '@backstage/plugin-notifications-common';
-
-import { notificationsApiRef } from '../../api';
-import { useApi } from '@backstage/core-plugin-api';
+import { useConfirm } from 'material-ui-confirm';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
 import {
   Link,
   Table,
-  TableProps,
   TableColumn,
+  TableProps,
 } from '@backstage/core-components';
+
+import { notificationsApiRef } from '../../api';
 
 import { SeverityIcon } from './SeverityIcon';
 import { SelectAll } from './SelectAll';
@@ -42,7 +43,7 @@ const ThrottleDelayMs = 1000;
 const useStyles = makeStyles({
   description: {
     maxHeight: '5rem',
-    overflow: 'scroll',
+    overflow: 'auto',
   },
   severityItem: {
     alignContent: 'center',
@@ -54,7 +55,9 @@ export type NotificationsTableProps = Pick<
   TableProps,
   'onPageChange' | 'onRowsPerPageChange' | 'page' | 'totalCount'
 > & {
+  markAsReadOnLinkOpen?: boolean;
   isLoading?: boolean;
+  isUnread: boolean;
   notifications?: Notification[];
   onUpdate: () => void;
   setContainsText: (search: string) => void;
@@ -63,8 +66,10 @@ export type NotificationsTableProps = Pick<
 
 /** @public */
 export const NotificationsTable = ({
+  markAsReadOnLinkOpen,
   isLoading,
   notifications = [],
+  isUnread,
   onUpdate,
   setContainsText,
   onPageChange,
@@ -75,6 +80,9 @@ export const NotificationsTable = ({
 }: NotificationsTableProps) => {
   const classes = useStyles();
   const notificationsApi = useApi(notificationsApiRef);
+  const alertApi = useApi(alertApiRef);
+  const confirm = useConfirm();
+
   const [selectedNotifications, setSelectedNotifications] = React.useState(
     new Set<Notification['id']>(),
   );
@@ -116,6 +124,39 @@ export const NotificationsTable = ({
     },
     [notificationsApi, onUpdate],
   );
+
+  const onMarkAllRead = React.useCallback(() => {
+    confirm({
+      title: 'Are you sure?',
+      description: (
+        <>
+          Mark <b>all</b> notifications as <b>read</b>.
+        </>
+      ),
+      confirmationText: 'Mark All',
+    })
+      .then(async () => {
+        const ids = (
+          await notificationsApi.getNotifications({ read: false })
+        ).notifications?.map(notification => notification.id);
+
+        return notificationsApi
+          .updateNotifications({
+            ids,
+            read: true,
+          })
+          .then(onUpdate);
+      })
+      .catch(e => {
+        if (e) {
+          // if e === undefined, the Cancel button has been hit
+          alertApi.post({
+            message: 'Failed to mark all notifications as read',
+            severity: 'error',
+          });
+        }
+      });
+  }, [alertApi, confirm, notificationsApi, onUpdate]);
 
   const throttledContainsTextHandler = React.useMemo(
     () => throttle(setContainsText, ThrottleDelayMs),
@@ -174,7 +215,14 @@ export const NotificationsTable = ({
                 <Box>
                   <Typography variant="subtitle2">
                     {notification.payload.link ? (
-                      <Link to={notification.payload.link}>
+                      <Link
+                        to={notification.payload.link}
+                        onClick={() => {
+                          if (markAsReadOnLinkOpen && !notification.read) {
+                            onSwitchReadStatus([notification.id], true);
+                          }
+                        }}
+                      >
                         {notification.payload.title}
                       </Link>
                     ) : (
@@ -210,8 +258,10 @@ export const NotificationsTable = ({
           <BulkActions
             notifications={notifications}
             selectedNotifications={selectedNotifications}
+            isUnread={isUnread}
             onSwitchReadStatus={onSwitchReadStatus}
             onSwitchSavedStatus={onSwitchSavedStatus}
+            onMarkAllRead={onMarkAllRead}
           />
         ),
         render: (notification: Notification) => (
@@ -220,15 +270,19 @@ export const NotificationsTable = ({
             selectedNotifications={new Set([notification.id])}
             onSwitchReadStatus={onSwitchReadStatus}
             onSwitchSavedStatus={onSwitchSavedStatus}
+            //
           />
         ),
       },
     ],
     [
+      markAsReadOnLinkOpen,
       selectedNotifications,
       notifications,
+      isUnread,
       onSwitchReadStatus,
       onSwitchSavedStatus,
+      onMarkAllRead,
       onNotificationsSelectChange,
       classes.severityItem,
       classes.description,

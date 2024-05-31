@@ -1,5 +1,40 @@
 # @backstage/plugin-scaffolder-backend-module-sentry
 
+## 0.1.27-next.1
+
+### Patch Changes
+
+- 1354d81: Use `node-fetch` instead of native fetch, as per https://backstage.io/docs/architecture-decisions/adrs-adr013
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-scaffolder-node@0.4.5-next.1
+
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-scaffolder-node@0.4.5-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.1.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-scaffolder-node@0.4.4
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.4.4-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 0.1.26-next.0
 
 ### Patch Changes

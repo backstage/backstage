@@ -1,5 +1,53 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 07a789b: add notifications filtering by processors
+
+### Patch Changes
+
+- 1354d81: Use `node-fetch` instead of native fetch, as per https://backstage.io/docs/architecture-decisions/adrs-adr013
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-signals-node@0.1.5-next.1
+
+## 0.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-signals-node@0.1.5-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-notifications-common@0.0.3
+
+## 0.1.4
+
+### Patch Changes
+
+- 295c05d: Support for filtering entities from notification recipients after resolving them from the recipients
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/catalog-client@1.6.5
+  - @backstage/plugin-signals-node@0.1.4
+
+## 0.1.4-next.1
+
+### Patch Changes
+
+- 295c05d: Support for filtering entities from notification recipients after resolving them from the recipients
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-signals-node@0.1.4-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 0.1.4-next.0
 
 ### Patch Changes

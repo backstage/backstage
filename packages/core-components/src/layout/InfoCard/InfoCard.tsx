@@ -43,6 +43,10 @@ const useStyles = makeStyles(
         paddingBottom: 0,
       },
     },
+    contentAlignBottom: {
+      display: 'flex',
+      alignItems: 'self-end',
+    },
     header: {
       padding: theme.spacing(2, 2, 2, 2.5),
     },
@@ -138,6 +142,7 @@ export type Props = {
   slackChannel?: string;
   errorBoundaryProps?: ErrorBoundaryProps;
   variant?: InfoCardVariants;
+  alignContent?: 'normal' | 'bottom';
   children?: ReactNode;
   headerStyle?: object;
   headerProps?: CardHeaderProps;
@@ -150,6 +155,7 @@ export type Props = {
   className?: string;
   noPadding?: boolean;
   titleTypographyProps?: object;
+  subheaderTypographyProps?: object;
 };
 
 /**
@@ -167,6 +173,7 @@ export function InfoCard(props: Props): JSX.Element {
     slackChannel,
     errorBoundaryProps,
     variant,
+    alignContent = 'normal',
     children,
     headerStyle,
     headerProps,
@@ -179,6 +186,7 @@ export function InfoCard(props: Props): JSX.Element {
     className,
     noPadding,
     titleTypographyProps,
+    subheaderTypographyProps,
   } = props;
   const classes = useStyles();
   /**
@@ -209,10 +217,7 @@ export function InfoCard(props: Props): JSX.Element {
     }
 
     return (
-      <div
-        className={classes.headerSubheader}
-        data-testid="info-card-subheader"
-      >
+      <div data-testid="info-card-subheader">
         {subheader && <div className={classes.subheader}>{subheader}</div>}
         {icon}
       </div>
@@ -228,7 +233,7 @@ export function InfoCard(props: Props): JSX.Element {
         {title && (
           <CardHeader
             classes={{
-              root: classes.header,
+              root: classNames(classes.header),
               title: classes.headerTitle,
               subheader: classes.headerSubheader,
               avatar: classes.headerAvatar,
@@ -240,6 +245,7 @@ export function InfoCard(props: Props): JSX.Element {
             action={action}
             style={{ ...headerStyle }}
             titleTypographyProps={titleTypographyProps}
+            subheaderTypographyProps={subheaderTypographyProps}
             {...headerProps}
           />
         )}
@@ -250,6 +256,7 @@ export function InfoCard(props: Props): JSX.Element {
         <CardContent
           className={classNames(cardClassName, {
             [classes.noPadding]: noPadding,
+            [classes.contentAlignBottom]: alignContent === 'bottom',
           })}
           style={calculatedCardStyle}
         >

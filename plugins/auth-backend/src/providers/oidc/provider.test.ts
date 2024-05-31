@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
-import { getVoidLogger } from '@backstage/backend-common';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
 import {
@@ -112,7 +114,7 @@ describe('oidc.create', () => {
           clientSecret: 'clientSecret',
         },
       }),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       resolverContext: {
         issueToken: jest.fn(),
         findCatalogUser: jest.fn(),

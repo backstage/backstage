@@ -15,32 +15,39 @@
  */
 
 import React from 'react';
-import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 
 /** @public */
 export const HorizontalPodAutoscalerDrawer = (props: {
-  hpa: V1HorizontalPodAutoscaler;
+  hpa: V2HorizontalPodAutoscaler;
   expanded?: boolean;
   children?: React.ReactNode;
 }) => {
   const { hpa, expanded, children } = props;
+
+  const specCpuUtil = hpa?.spec?.metrics?.find(
+    metric => metric.type === 'Resource' && metric.resource?.name === 'cpu',
+  )?.resource?.target.averageUtilization;
+
+  const cpuUtil = hpa?.status?.currentMetrics?.find(
+    metric => metric.type === 'Resource' && metric.resource?.name === 'cpu',
+  )?.resource?.current.averageUtilization;
 
   return (
     <KubernetesStructuredMetadataTableDrawer
       kind="HorizontalPodAutoscaler"
       object={hpa}
       expanded={expanded}
-      renderObject={(hpaObject: V1HorizontalPodAutoscaler) => {
+      renderObject={(hpaObject: V2HorizontalPodAutoscaler) => {
         return {
-          targetCPUUtilizationPercentage:
-            hpaObject.spec?.targetCPUUtilizationPercentage,
-          currentCPUUtilizationPercentage:
-            hpaObject.status?.currentCPUUtilizationPercentage,
+          targetCPUUtilizationPercentage: specCpuUtil,
+          currentCPUUtilizationPercentage: cpuUtil,
           minReplicas: hpaObject.spec?.minReplicas,
           maxReplicas: hpaObject.spec?.maxReplicas,
           currentReplicas: hpaObject.status?.currentReplicas,
           desiredReplicas: hpaObject.status?.desiredReplicas,
+          lastScaleTime: hpa?.status?.lastScaleTime,
         };
       }}
     >

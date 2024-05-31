@@ -40,7 +40,7 @@ import { AuthService } from '@backstage/backend-plugin-api';
 export type DefaultCatalogCollatorFactoryOptions = {
   auth?: AuthService;
   discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
+  tokenManager?: TokenManager;
   /**
    * @deprecated Use the config key `search.collators.catalog.locationTemplate` instead.
    */
@@ -95,7 +95,6 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
       entityTransformer: options.entityTransformer,
       auth: adaptedAuth,
       discovery: options.discovery,
-      tokenManager: options.tokenManager,
       catalogClient: options.catalogClient,
     });
   }
@@ -107,7 +106,6 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
     entityTransformer?: CatalogCollatorEntityTransformer;
     auth: AuthService;
     discovery: PluginEndpointDiscovery;
-    tokenManager: TokenManager;
     catalogClient?: CatalogApi;
   }) {
     const {

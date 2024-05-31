@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  getVoidLogger,
-} from '@backstage/backend-common';
+import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -55,7 +52,7 @@ describe('createRouter', () => {
   };
 
   beforeAll(async () => {
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     mockSearchEngine = {
       getIndexer: jest.fn(),
       setTranslator: jest.fn(),
@@ -259,7 +256,7 @@ describe('createRouter', () => {
 
     describe('search result filtering', () => {
       beforeAll(async () => {
-        const logger = getVoidLogger();
+        const logger = mockServices.logger.mock();
         mockSearchEngine = {
           getIndexer: jest.fn(),
           setTranslator: jest.fn(),

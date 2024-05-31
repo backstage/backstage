@@ -13,7 +13,7 @@ starting point that's meant to be evolved.
 
 The Backstage CLI has a command to bump all `@backstage` packages and
 dependencies you're using to the latest versions:
-[versions:bump](https://backstage.io/docs/local-dev/cli-commands#versionsbump).
+[versions:bump](https://backstage.io/docs/tooling/cli/03-commands#versionsbump).
 
 ```bash
 yarn backstage-cli versions:bump
@@ -70,7 +70,7 @@ example, depends on global referential equality. This can cause problems in
 Backstage with API lookup, or config loading.
 
 To help resolve these situations, the Backstage CLI has
-[versions:check](https://backstage.io/docs/local-dev/cli-commands#versionscheck). This
+[versions:check](https://backstage.io/docs/tooling/cli/03-commands#versionscheck). This
 will validate versions of `@backstage` packages in your app to check for
 duplicate definitions:
 

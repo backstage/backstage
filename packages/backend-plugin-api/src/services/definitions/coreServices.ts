@@ -172,6 +172,7 @@ export namespace coreServices {
    * The service reference for the plugin scoped {@link TokenManagerService}.
    *
    * @public
+   * @deprecated Please migrate to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead
    */
   export const tokenManager = createServiceRef<
     import('./TokenManagerService').TokenManagerService
@@ -190,6 +191,7 @@ export namespace coreServices {
    * The service reference for the plugin scoped {@link IdentityService}.
    *
    * @public
+   * @deprecated Please migrate to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead
    */
   export const identity = createServiceRef<
     import('./IdentityService').IdentityService

@@ -1,5 +1,29 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.5.3-next.0
+
+### Patch Changes
+
+- bcec60f: added the following new permissions to the scaffolder backend endpoints:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
+## 1.5.2
+
+### Patch Changes
+
+- 9156654: Capturing more event clicks for scaffolder
+- Updated dependencies
+  - @backstage/catalog-model@1.5.0
+
+## 1.5.2-next.1
+
+### Patch Changes
+
+- 9156654: Capturing more event clicks for scaffolder
+
 ## 1.5.2-next.0
 
 ### Patch Changes
@@ -635,8 +659,7 @@
 
 - e72d371296: Added `TemplateEntityV1beta2` which was moved here from
   `@backstage/plugin-scaffolder-common`. It has also been marked as deprecated in
-  the process - please consider [migrating to `v1beta3`
-  templates](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3).
+  the process - please consider [migrating to `v1beta3` templates](https://backstage.io/docs/features/software-templates/migrating-from-v1beta2-to-v1beta3).
 - c77c5c7eb6: Added `backstage.role` to `package.json`
 - Updated dependencies
   - @backstage/catalog-model@0.10.0

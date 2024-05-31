@@ -1,5 +1,102 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.2.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.1
+  - @backstage/backend-tasks@0.5.24-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-catalog-backend@1.23.0-next.1
+  - @backstage/cli-node@0.2.6-next.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/plugin-auth-node@0.4.14-next.1
+  - @backstage/plugin-events-backend@0.3.6-next.1
+  - @backstage/plugin-events-node@0.3.5-next.0
+  - @backstage/plugin-scaffolder-node@0.4.5-next.1
+  - @backstage/plugin-search-backend-node@1.2.24-next.1
+
+## 0.2.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.0
+  - @backstage/cli-node@0.2.6-next.0
+  - @backstage/backend-tasks@0.5.24-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-catalog-backend@1.23.0-next.0
+  - @backstage/plugin-search-backend-node@1.2.24-next.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+  - @backstage/plugin-events-backend@0.3.6-next.0
+  - @backstage/plugin-permission-node@0.7.30-next.0
+  - @backstage/plugin-scaffolder-node@0.4.5-next.0
+  - @backstage/plugin-app-node@0.1.19-next.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-common@1.2.11
+
+## 0.2.10
+
+### Patch Changes
+
+- b192752: Updated `README.md` to point to `packages/backend` instead of `packages/backend-next`.
+- d229dc4: Move path utilities from `backend-common` to the `backend-plugin-api` package.
+- b611fd0: Updates the `scanRoot` method in the `PluginScanner` class to specifically ignore the `lost+found` directory, which is a system-generated directory used for file recovery on Unix-like systems. Skipping this directory avoids unnecessary errors.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.22.0
+  - @backstage/backend-app-api@0.7.3
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-scaffolder-node@0.4.4
+  - @backstage/backend-tasks@0.5.23
+  - @backstage/plugin-search-backend-node@1.2.22
+  - @backstage/plugin-events-node@0.3.4
+  - @backstage/plugin-auth-node@0.4.13
+  - @backstage/plugin-app-node@0.1.18
+  - @backstage/plugin-events-backend@0.3.5
+  - @backstage/plugin-permission-node@0.7.29
+
+## 0.2.10-next.2
+
+### Patch Changes
+
+- b192752: Updated `README.md` to point to `packages/backend` instead of `packages/backend-next`.
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@1.22.0-next.2
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-scaffolder-node@0.4.4-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+
+## 0.2.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.2-next.1
+  - @backstage/backend-common@0.22.0-next.1
+  - @backstage/plugin-catalog-backend@1.22.0-next.1
+  - @backstage/plugin-scaffolder-node@0.4.4-next.1
+  - @backstage/backend-tasks@0.5.23-next.1
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/plugin-events-backend@0.3.5-next.1
+  - @backstage/plugin-events-node@0.3.4-next.1
+  - @backstage/plugin-permission-node@0.7.29-next.1
+  - @backstage/plugin-search-backend-node@1.2.22-next.1
+  - @backstage/cli-node@0.2.5
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-plugin-api@0.6.18-next.1
+  - @backstage/plugin-app-node@0.1.18-next.1
+
 ## 0.2.10-next.0
 
 ### Patch Changes

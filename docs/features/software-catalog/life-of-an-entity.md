@@ -162,9 +162,13 @@ steps and merging them into the final object which is what is visible from the
 catalog API. As the final entity itself gets updated, the stitcher makes sure
 that the search table gets refreshed accordingly as well.
 
-> Note: The search table mentioned here is not related to the core Search
-> feature of Backstage. It's rather the table that backs the ability to filter
-> catalog API query results.
+:::note Note
+
+The search table mentioned here is not related to the core Search
+feature of Backstage. It's rather the table that backs the ability to filter
+catalog API query results.
+
+:::
 
 ![Stitching overview](../../assets/features/catalog/life-of-an-entity_stitching.svg)
 

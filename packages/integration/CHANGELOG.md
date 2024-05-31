@@ -1,5 +1,17 @@
 # @backstage/integration
 
+## 1.11.0
+
+### Minor Changes
+
+- 2cc750d: Added `HarnessIntegration` via the `ScmIntegrations` interface.
+
+## 1.11.0-next.0
+
+### Minor Changes
+
+- 2cc750d: Added `HarnessIntegration` via the `ScmIntegrations` interface.
+
 ## 1.10.0
 
 ### Minor Changes

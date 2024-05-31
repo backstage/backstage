@@ -21,7 +21,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/database` instead.
+ */
 export const databaseServiceFactory = createServiceFactory({
   service: coreServices.database,
   deps: {

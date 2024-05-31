@@ -26,7 +26,7 @@ import {
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
 import {
@@ -35,6 +35,12 @@ import {
   TaskSteps,
 } from '@backstage/plugin-scaffolder-react/alpha';
 import { useAsync } from '@react-hookz/web';
+import { usePermission } from '@backstage/plugin-permission-react';
+import {
+  taskCancelPermission,
+  taskReadPermission,
+  taskCreatePermission,
+} from '@backstage/plugin-scaffolder-common/alpha';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -66,6 +72,7 @@ export const OngoingTask = (props: {
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
+  const analytics = useAnalytics();
   const scaffolderApi = useApi(scaffolderApiRef);
   const taskStream = useTaskEventStream(taskId!);
   const classes = useStyles();
@@ -80,6 +87,22 @@ export const OngoingTask = (props: {
 
   const [logsVisible, setLogVisibleState] = useState(false);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
+
+  // Used dummy string value for `resourceRef` since `allowed` field will always return `false` if `resourceRef` is `undefined`
+  const { allowed: canCancelTask } = usePermission({
+    permission: taskCancelPermission,
+  });
+
+  const { allowed: canReadTask } = usePermission({
+    permission: taskReadPermission,
+  });
+
+  const { allowed: canCreateTask } = usePermission({
+    permission: taskCreatePermission,
+  });
+
+  // Start Over endpoint requires user to have both read (to grab parameters) and create (to create new task) permissions
+  const canStartOver = canReadTask && canCreateTask;
 
   useEffect(() => {
     if (taskStream.error) {
@@ -113,6 +136,8 @@ export const OngoingTask = (props: {
       return;
     }
 
+    analytics.captureEvent('click', `Task has been started over`);
+
     navigate({
       pathname: templateRouteRef({
         namespace,
@@ -121,6 +146,7 @@ export const OngoingTask = (props: {
       search: `?${qs.stringify({ formData: JSON.stringify(formData) })}`,
     });
   }, [
+    analytics,
     navigate,
     taskStream.task?.spec.parameters,
     taskStream.task?.spec.templateInfo?.entity?.metadata,
@@ -130,6 +156,7 @@ export const OngoingTask = (props: {
   const [{ status: cancelStatus }, { execute: triggerCancel }] = useAsync(
     async () => {
       if (taskId) {
+        analytics.captureEvent('cancelled', 'Template has been cancelled');
         await scaffolderApi.cancelTask(taskId);
       }
     },
@@ -192,7 +219,11 @@ export const OngoingTask = (props: {
                 <div className={classes.buttonBar}>
                   <Button
                     className={classes.cancelButton}
-                    disabled={!cancelEnabled || cancelStatus !== 'not-executed'}
+                    disabled={
+                      !cancelEnabled ||
+                      cancelStatus !== 'not-executed' ||
+                      !canCancelTask
+                    }
                     onClick={triggerCancel}
                     data-testid="cancel-button"
                   >
@@ -209,8 +240,9 @@ export const OngoingTask = (props: {
                   <Button
                     variant="contained"
                     color="primary"
-                    disabled={cancelEnabled}
+                    disabled={cancelEnabled || !canStartOver}
                     onClick={startOver}
+                    data-testid="start-over-button"
                   >
                     Start Over
                   </Button>

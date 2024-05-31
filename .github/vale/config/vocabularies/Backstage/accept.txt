@@ -152,6 +152,8 @@ graphviz
 Hackathons
 haproxy
 hardcoded
+Harness
+harness
 Helidon
 Henneke
 Heroku
@@ -433,7 +435,6 @@ transpilers
 truthy
 TSDoc
 typeahead
-Uffizzi
 ui
 unbreak
 Unconference
@@ -445,6 +446,7 @@ unregistering
 unregistration
 untracked
 upsert
+upstreams
 upvote
 URIs
 url
@@ -464,6 +466,7 @@ Weaveworks
 Webpack
 widget's
 winston
+Wolfi
 www
 WWW
 XCMetrics

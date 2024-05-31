@@ -1,5 +1,64 @@
 # @backstage/plugin-search
 
+## 1.4.12-next.1
+
+### Patch Changes
+
+- 4f92394: Migrate from identityApi to fetchApi in frontend plugins.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+
+## 1.4.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/plugin-search-react@1.7.12-next.0
+  - @backstage/core-compat-api@0.2.6-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.6-next.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+  - @backstage/plugin-search-common@1.2.11
+
+## 1.4.11
+
+### Patch Changes
+
+- 0501243: Added `aria-label` attribute to DialogTitle element and set `aria-modal` attribute to `true` for improved accessibility in the search modal.
+- Updated dependencies
+  - @backstage/core-compat-api@0.2.5
+  - @backstage/core-components@0.14.7
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/frontend-plugin-api@0.6.5
+  - @backstage/plugin-search-react@1.7.11
+
+## 1.4.11-next.2
+
+### Patch Changes
+
+- 0501243: Added `aria-label` attribute to DialogTitle element and set `aria-modal` attribute to `true` for improved accessibility in the search modal.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.0-next.2
+  - @backstage/core-components@0.14.7-next.2
+  - @backstage/core-compat-api@0.2.5-next.1
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+  - @backstage/plugin-search-react@1.7.11-next.1
+
+## 1.4.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.6-next.1
+  - @backstage/plugin-catalog-react@1.11.4-next.1
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+  - @backstage/plugin-search-react@1.7.11-next.1
+  - @backstage/core-compat-api@0.2.5-next.1
+
 ## 1.4.11-next.0
 
 ### Patch Changes

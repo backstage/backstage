@@ -15,15 +15,19 @@
  */
 
 import {
+  BackstagePrincipalAccessRestrictions,
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
+import { NotAllowedError } from '@backstage/errors';
 import { LegacyTokenHandler } from './legacy';
 import { StaticTokenHandler } from './static';
+import { JWKSHandler } from './jwks';
 import { TokenHandler } from './types';
 
 const NEW_CONFIG_KEY = 'backend.auth.externalAccess';
 const OLD_CONFIG_KEY = 'backend.auth.keys';
+let loggedDeprecationWarning = false;
 
 /**
  * Handles all types of external caller token types (i.e. not Backstage user
@@ -33,16 +37,19 @@ const OLD_CONFIG_KEY = 'backend.auth.keys';
  */
 export class ExternalTokenHandler {
   static create(options: {
+    ownPluginId: string;
     config: RootConfigService;
     logger: LoggerService;
   }): ExternalTokenHandler {
-    const { config, logger } = options;
+    const { ownPluginId, config, logger } = options;
 
     const staticHandler = new StaticTokenHandler();
     const legacyHandler = new LegacyTokenHandler();
+    const jwksHandler = new JWKSHandler();
     const handlers: Record<string, TokenHandler> = {
       static: staticHandler,
       legacy: legacyHandler,
+      jwks: jwksHandler,
     };
 
     // Load the new-style handlers
@@ -58,12 +65,13 @@ export class ExternalTokenHandler {
           `Unknown type '${type}' in ${NEW_CONFIG_KEY}, expected one of ${valid}`,
         );
       }
-      handler.add(handlerConfig.getConfig('options'));
+      handler.add(handlerConfig);
     }
 
     // Load the old keys too
     const legacyConfigs = config.getOptionalConfigArray(OLD_CONFIG_KEY) ?? [];
-    if (legacyConfigs.length) {
+    if (legacyConfigs.length && !loggedDeprecationWarning) {
+      loggedDeprecationWarning = true;
       logger.warn(
         `DEPRECATION WARNING: The ${OLD_CONFIG_KEY} config has been replaced by ${NEW_CONFIG_KEY}, see https://backstage.io/docs/auth/service-to-service-auth`,
       );
@@ -72,18 +80,48 @@ export class ExternalTokenHandler {
       legacyHandler.addOld(handlerConfig);
     }
 
-    return new ExternalTokenHandler(Object.values(handlers));
+    return new ExternalTokenHandler(ownPluginId, Object.values(handlers));
   }
 
-  constructor(private readonly handlers: TokenHandler[]) {}
+  constructor(
+    private readonly ownPluginId: string,
+    private readonly handlers: TokenHandler[],
+  ) {}
 
-  async verifyToken(token: string): Promise<{ subject: string } | undefined> {
+  async verifyToken(token: string): Promise<
+    | {
+        subject: string;
+        accessRestrictions?: BackstagePrincipalAccessRestrictions;
+      }
+    | undefined
+  > {
     for (const handler of this.handlers) {
       const result = await handler.verifyToken(token);
       if (result) {
-        return result;
+        const { allAccessRestrictions, ...rest } = result;
+        if (allAccessRestrictions) {
+          const accessRestrictions = allAccessRestrictions.get(
+            this.ownPluginId,
+          );
+          if (!accessRestrictions) {
+            const valid = [...allAccessRestrictions.keys()]
+              .map(k => `'${k}'`)
+              .join(', ');
+            throw new NotAllowedError(
+              `This token's access is restricted to plugin(s) ${valid}`,
+            );
+          }
+
+          return {
+            ...rest,
+            accessRestrictions,
+          };
+        }
+
+        return rest;
       }
     }
+
     return undefined;
   }
 }

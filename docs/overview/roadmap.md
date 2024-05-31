@@ -6,93 +6,87 @@ description: Roadmap of Backstage
 
 ## The Backstage Roadmap
 
-Backstage is currently under rapid development. This page details the project's
-public roadmap, the result of ongoing collaboration between the core maintainers
-and the broader Backstage community.
+Backstage is still under rapid development, and this page details the project's
+public roadmap. This not a complete list of all work happening in and around the
+project, it only highlights the highest priority initiatives worked on by the
+core maintainers.
 
-The Backstage roadmap lays out both [“what's next”](#whats-next) and ["future
-work"](#future-work). With "next" we mean features planned for release within
-the ongoing quarter from July through September 2022. With "future" we mean
-features on the radar, but not yet scheduled.
+## 2024 Fall Roadmap
 
-| [What's next](#whats-next)                                                                                                                                                                                                                                          | [Future work](#future-work)                                                                             |
-| ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
-| [Backend Services (MVP)](#backend-services-mvp) <br/> [Backstage Security Audit](#backstage-security-audit) <br/> [Backstage Threat Model](#backstage-threat-model) <br/> [Software Catalog pagination](#software-catalog-pagination) <br/> [More SIGs](#more-sigs) | Ease of onboarding <br/> Composable Homepage 1.0 <br/> Creator experience <br/> GraphQL <br/> Telemetry |
+The initiatives listed below are planned for release within the next half-year, starting in May 2024. The roadmap is updated every 6 months, and the next update is planned for November 2024.
 
-The long-term roadmap (12 - 36 months) is not detailed in the public roadmap.
-Third-party contributions are also not currently included in the roadmap. Let us
-know about any ongoing developments and we're happy to include them here as
-well.
+### Backend System 1.0
 
-## What's next
+The goal of this initiative is the stable 1.0 release of the [new backend system](../backend-system/index.md).
+This includes ensuring that all documentation is up to date, and includes API
+reviews and refactoring efforts to ensure that what is released is both stable
+and evolvable. You can follow along with this work in the [meta issue](https://github.com/backstage/backstage/issues/24493).
 
-The feature set below is planned for the ongoing quarter, and grouped by theme.
-The list order doesn't necessarily reflect priority, and the development/release
-cycle will vary based on maintainer schedules.
+As part of this initiative, there will also be an exploration on how to
+simplify extension of backend services. It is not currently possible to augment
+backend services through declarative integration, they are instead only
+customizable through complete replacement. This also limits the ability to
+modularize services and scale ownership of the implementations. The goal is to
+provide a more flexible and scalable way to extend backend services.
 
-### Backend Services (MVP)
+### New Frontend System - Ready for Adoption
 
-To better scale and maintain the Backstage instances, a backend services system
-is planned to be introduced as part of the software architecture. This layer of
-backend services will help in decoupling the various modules (e.g. Catalog and
-Scaffolder) from the frontend experience.
+The [new fronted system](../frontend-system/index.md) still needs more work, and
+the next milestone is to improve it to the point where there is enough
+confidence in the design to start encouraging adoption in the community. You can
+follow along with this work in the [meta issue](https://github.com/backstage/backstage/issues/19545).
+This milestone also includes reaching and executing [rollout phase 2](https://github.com/backstage/backstage/issues/19545#issuecomment-1766069146).
 
-After the experimentation and design happened in the past quarter, soon we plan to release a first version to start providing the first benefits to adopters and developers.
+Once the initial milestone is reached, the goal is to also build out broader
+support for the new frontend system in the core plugins.
 
 ### Backstage Security Audit
 
-This is the continuation of the initiative started in the previous quarters. This
-quarter will see the publication of the report describing the outcome of the
-audit, together the first fixes and the development of some of the changes
-required to address the vulnerabilities.
+This is the second security audit of the Backstage project. It is done together,
+and with the support of the [Cloud Native Computing Foundation (CNCF)](https://www.cncf.io/).
+This time the audit will in particular focus on the recently introduced
+[authentication system](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution),
+but also cover other parts of the project.
 
-This initiative is the first of a broader Security Strategy for Backstage. The
-purpose of the Security Audit is to involve third-party companies in auditing
-the platform. The benefit for the adopters is clear: we want Backstage to be as
-secure as possible, and we want to make it reliable through a specific
-initiative.
+### Plugin Metadata
 
-This initiative is done together with, and with the support of, the [Cloud
-Native Computing Foundation (CNCF)](https://www.cncf.io/).
+The goal of this initiative is to provide better machine readable metadata for
+Backstage packages, available both at runtime, at build-time and as part of
+package registries. We want to surface information such as what packages make up
+a particular plugin, what features it provides, and more generally laying the
+foundation for an evolvable plugin metadata system.
 
-### Backstage Threat Model
+### MUI v5 Green-light
 
-This is another (relevant) initiative planned to make Backstage a secure product for the adopters. The goals of this initiative are:
+Material-UI v4 is still the officially supported version of MUI in Backstage.
+While we have heard that adopters have had success using MUI 5, this is still an
+untested path with known bugs. The goal of this initiative is to iron out any
+remaining issues or gaps, and then provide a green light for migration to MUI 5.
 
-1. Understand where security investment and attention is needed.
-2. Guide the upcoming security audit.
-3. Communicate expectations to Backstage adopters and inform and attract security researchers.
+### Configuration Improvements
 
-The planned artifacts are:
+This initiative aims to improve the configuration experience and reliability in
+Backstage. Areas for improvement include the way that configuration schema is
+loaded, the way that plugins access configuration that is not owned by them, how
+plugins read configuration, and how configuration visibility is handled.
 
-- Concise high level threat model that will be included as part of the Backstage security documentation.
-- Granular threat model created in conjunction with the security audit to inform further security investment areas for Backstage.
+### Versioned Documentation
 
-### Software Catalog pagination
+The goal of this initiative is to provide versioned documentation at
+[backstage.io](https://backstage.io). This lets us provide documentation that is
+both up-to-date while at the same time not ahead of the latest release.
 
-Today adopters with a big catalog (with several thousands of software components) might not have an ideal end-user experience when viewing the `/catalog` page. The issue is related to how the entities are fetched by the frontend. In order to provide a better end-user experience the pagination of the catalog’s entities needs to be enforced. Some experimentation is already completed but in this quarter we plan to continue, and hopefully complete, this relevant enhancement.
+### Rework Pull Request & Issue Process
 
-### More SIGs
+Our current review and issue triage process is centered around either core- or
+project area maintainers. The goal of this initiative is to make it simpler for
+more members of the community to be involved and contribute to this process.
 
-In the last quarter we launched the [Catalog SIG (Special Interest Group)](https://github.com/backstage/community/tree/main/sigs/sig-catalog) to better coordinate the increasing number of contributions to the project. We think that this is the proper path to follow to engage more with the contributors. For this reason we will launch other SIGs dedicated to the most interesting topics for the community.
+### Catalog Observability
 
-## Future work
-
-The following feature list doesn't represent a commitment to develop, and the
-list order doesn't reflect any priority or importance, but these features are on
-the maintainers' radar, with clear interest expressed by the community.
-
-- **Ease of onboarding:** A faster (with less development) and easier setup of
-  Backstage and the most relevant/adopted plugins.
-- **Composable Homepage 1.0:** Driving this to 1.0 by adding some composable
-  components.
-- **Creator experience:** Provide a better Backstage user experience through
-  visual guidelines and templates, especially navigation across plug-ins and
-  portal functionalities.
-- **[GraphQL](https://graphql.org/) support:** Introduce the ability to query
-  Backstage backend services with a standard query language for APIs.
-- **Telemetry:** To efficiently generate logging and metrics in such a way that
-  adopters can get insights so that Backstage can be monitored and improved.
+The goal of this initiative is to provide better tools for debugging catalog
+ingestion issues and to more generally reduce friction for setting up and
+maintaining the software catalog.
 
 ## How to influence the roadmap
 

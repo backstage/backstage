@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { Config, ConfigReader } from '@backstage/config';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
@@ -65,7 +64,7 @@ describe('getCombinedClusterSupplier', () => {
       config,
       catalogApi,
       mockStrategy,
-      getVoidLogger(),
+      mockServices.logger.mock(),
       undefined,
       auth,
     );
@@ -109,7 +108,7 @@ describe('getCombinedClusterSupplier', () => {
         config,
         catalogApi,
         new DispatchStrategy({ authStrategyMap: {} }),
-        getVoidLogger(),
+        mockServices.logger.mock(),
         undefined,
         auth,
       ),
@@ -119,7 +118,7 @@ describe('getCombinedClusterSupplier', () => {
   });
 
   it('logs a warning when two clusters have the same name', async () => {
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     const warn = jest.spyOn(logger, 'warn');
     const config: Config = new ConfigReader(
       {

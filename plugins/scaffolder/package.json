@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder",
-  "version": "1.19.4-next.0",
+  "version": "1.20.2-next.1",
   "description": "The Backstage plugin that helps you create new things",
   "backstage": {
     "role": "frontend-plugin"
@@ -98,6 +98,7 @@
     "@backstage/core-app-api": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
+    "@backstage/plugin-permission-common": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
@@ -105,7 +106,8 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/humanize-duration": "^3.18.1",
     "@types/json-schema": "^7.0.9",
-    "msw": "^1.0.0"
+    "msw": "^1.0.0",
+    "swr": "^2.0.0"
   },
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",

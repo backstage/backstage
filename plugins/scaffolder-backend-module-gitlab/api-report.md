@@ -31,19 +31,19 @@ export const createGitlabIssueAction: (options: {
     title: string;
     repoUrl: string;
     projectId: number;
+    labels?: string | undefined;
+    description?: string | undefined;
+    weight?: number | undefined;
     token?: string | undefined;
     assignees?: number[] | undefined;
-    confidential?: boolean | undefined;
-    description?: string | undefined;
     createdAt?: string | undefined;
+    confidential?: boolean | undefined;
+    milestoneId?: number | undefined;
+    epicId?: number | undefined;
     dueDate?: string | undefined;
     discussionToResolve?: string | undefined;
-    epicId?: number | undefined;
-    labels?: string | undefined;
     issueType?: IssueType | undefined;
     mergeRequestToResolveDiscussionsOf?: number | undefined;
-    milestoneId?: number | undefined;
-    weight?: number | undefined;
   },
   {
     issueUrl: string;
@@ -59,11 +59,11 @@ export const createGitlabProjectAccessTokenAction: (options: {
   {
     repoUrl: string;
     projectId: string | number;
-    token?: string | undefined;
     name?: string | undefined;
-    accessLevel?: number | undefined;
+    token?: string | undefined;
     scopes?: string[] | undefined;
     expiresAt?: string | undefined;
+    accessLevel?: number | undefined;
   },
   {
     access_token: string;
@@ -78,8 +78,8 @@ export const createGitlabProjectDeployTokenAction: (options: {
     name: string;
     repoUrl: string;
     projectId: string | number;
-    token?: string | undefined;
     username?: string | undefined;
+    token?: string | undefined;
     scopes?: string[] | undefined;
   },
   {
@@ -98,11 +98,11 @@ export const createGitlabProjectVariableAction: (options: {
     repoUrl: string;
     projectId: string | number;
     variableType: string;
-    token?: string | undefined;
-    variableProtected?: boolean | undefined;
-    masked?: boolean | undefined;
     raw?: boolean | undefined;
+    token?: string | undefined;
+    masked?: boolean | undefined;
     environmentScope?: string | undefined;
+    variableProtected?: boolean | undefined;
   },
   JsonObject
 >;
@@ -145,6 +145,13 @@ export function createPublishGitlabAction(options: {
           auto_devops_enabled?: boolean | undefined;
           ci_config_path?: string | undefined;
           description?: string | undefined;
+          merge_method?: 'merge' | 'ff' | 'rebase_merge' | undefined;
+          squash_option?:
+            | 'always'
+            | 'never'
+            | 'default_off'
+            | 'default_on'
+            | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
         }
@@ -195,8 +202,68 @@ export const createPublishGitlabMergeRequestAction: (options: {
 >;
 
 // @public
+export const createTriggerGitlabPipelineAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    branch: string;
+    repoUrl: string;
+    projectId: number;
+    tokenDescription: string;
+    token?: string | undefined;
+  },
+  {
+    pipelineUrl: string;
+  }
+>;
+
+// @public
+export const editGitlabIssueAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    projectId: number;
+    issueIid: number;
+    title?: string | undefined;
+    labels?: string | undefined;
+    description?: string | undefined;
+    weight?: number | undefined;
+    token?: string | undefined;
+    assignees?: number[] | undefined;
+    addLabels?: string | undefined;
+    confidential?: boolean | undefined;
+    milestoneId?: number | undefined;
+    removeLabels?: string | undefined;
+    stateEvent?: IssueStateEvent | undefined;
+    discussionLocked?: boolean | undefined;
+    epicId?: number | undefined;
+    dueDate?: string | undefined;
+    updatedAt?: string | undefined;
+    issueType?: IssueType | undefined;
+  },
+  {
+    state: string;
+    title: string;
+    projectId: number;
+    updatedAt: string;
+    issueUrl: string;
+    issueId: number;
+    issueIid: number;
+  }
+>;
+
+// @public
 const gitlabModule: () => BackendFeature;
 export default gitlabModule;
+
+// @public
+export enum IssueStateEvent {
+  // (undocumented)
+  CLOSE = 'close',
+  // (undocumented)
+  REOPEN = 'reopen',
+}
 
 // @public
 export enum IssueType {
@@ -204,6 +271,8 @@ export enum IssueType {
   INCIDENT = 'incident',
   // (undocumented)
   ISSUE = 'issue',
+  // (undocumented)
+  TASK = 'task',
   // (undocumented)
   TEST = 'test_case',
 }

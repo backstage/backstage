@@ -1,5 +1,65 @@
 # techdocs-cli-embedded-app
 
+## 0.2.97-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.10.6-next.0
+  - @backstage/theme@0.5.6-next.0
+  - @backstage/cli@0.26.6-next.0
+  - @backstage/app-defaults@1.5.6-next.0
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/test-utils@1.5.6-next.0
+  - @backstage/plugin-techdocs-react@1.2.5-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/core-app-api@1.12.5
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/integration-react@1.1.27
+  - @backstage/plugin-catalog@1.20.1-next.0
+
+## 0.2.96
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.20.0
+  - @backstage/cli@0.26.5
+  - @backstage/core-components@0.14.7
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-techdocs@1.10.5
+  - @backstage/theme@0.5.4
+  - @backstage/core-app-api@1.12.5
+  - @backstage/app-defaults@1.5.5
+  - @backstage/integration-react@1.1.27
+  - @backstage/test-utils@1.5.5
+  - @backstage/plugin-techdocs-react@1.2.4
+
+## 0.2.96-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli@0.26.5-next.1
+  - @backstage/plugin-techdocs@1.10.5-next.2
+  - @backstage/plugin-catalog@1.20.0-next.2
+  - @backstage/core-components@0.14.7-next.2
+  - @backstage/integration-react@1.1.27-next.0
+
+## 0.2.96-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.6-next.1
+  - @backstage/plugin-catalog@1.19.1-next.1
+  - @backstage/app-defaults@1.5.5-next.1
+  - @backstage/cli@0.26.5-next.0
+  - @backstage/integration-react@1.1.26
+  - @backstage/plugin-techdocs@1.10.5-next.1
+  - @backstage/plugin-techdocs-react@1.2.4-next.1
+
 ## 0.2.96-next.0
 
 ### Patch Changes

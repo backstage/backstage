@@ -1,7 +1,7 @@
 {
   "name": "e2e-test",
   "description": "E2E test for verifying Backstage packages",
-  "version": "0.2.16-next.0",
+  "version": "0.2.17-next.0",
   "private": true,
   "backstage": {
     "role": "cli"
@@ -43,7 +43,6 @@
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0",
     "@types/node": "^18.17.8",
-    "@types/puppeteer": "^7.0.0",
     "nodemon": "^3.0.1"
   },
   "nodemonConfig": {

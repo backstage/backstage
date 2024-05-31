@@ -25,6 +25,7 @@ import {
 } from '@backstage/integration';
 import {
   createMockDirectory,
+  mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
@@ -32,7 +33,6 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
-import { getVoidLogger } from '../logging';
 import { AzureUrlReader } from './AzureUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 
@@ -42,7 +42,7 @@ type AzureIntegrationConfigLike = Partial<
   credentials?: Partial<AzureDevOpsCredentialLike>[];
 };
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 const mockDir = createMockDirectory({ mockOsTmpDir: true });
 
