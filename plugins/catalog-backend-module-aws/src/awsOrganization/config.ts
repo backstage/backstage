@@ -24,6 +24,11 @@ export type AwsOrganizationProviderConfig = {
    * The role to assume for the processor.
    */
   roleArn?: string;
+
+  /**
+   * The AWS accountId
+   */
+  accountId?: string;
 };
 
 export function readAwsOrganizationConfig(
@@ -32,7 +37,9 @@ export function readAwsOrganizationConfig(
   const providerConfig = config.getOptionalConfig('provider');
 
   const roleArn = providerConfig?.getOptionalString('roleArn');
+  const accountId = providerConfig?.getOptionalString('accountId');
   return {
     roleArn,
+    accountId,
   };
 }

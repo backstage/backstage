@@ -22,11 +22,13 @@ describe('readAwsOrganizationConfig', () => {
     const config = {
       provider: {
         roleArn: 'aws::arn::foo',
+        accountId: '111111111111',
       },
     };
     const actual = readAwsOrganizationConfig(new ConfigReader(config));
     const expected = {
       roleArn: 'aws::arn::foo',
+      accountId: '111111111111',
     };
     expect(actual).toEqual(expected);
   });

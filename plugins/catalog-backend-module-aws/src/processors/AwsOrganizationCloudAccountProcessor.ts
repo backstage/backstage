@@ -59,10 +59,18 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   static async fromConfig(config: Config, options: { logger: LoggerService }) {
     const c = config.getOptionalConfig('catalog.processors.awsOrganization');
     const orgConfig = c ? readAwsOrganizationConfig(c) : undefined;
+
+    if (orgConfig?.roleArn) {
+      options.logger.warn(
+        'The roleArn configuration for AwsOrganizationCloudAccountProcessor ignores the role name, use accountId configuration instead',
+      );
+    }
+
     const awsCredentialsManager =
       DefaultAwsCredentialsManager.fromConfig(config);
     const credProvider = await awsCredentialsManager.getCredentialProvider({
       arn: orgConfig?.roleArn,
+      accountId: orgConfig?.accountId,
     });
     return new AwsOrganizationCloudAccountProcessor(
       credProvider,
@@ -98,23 +106,27 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
 
     this.logger?.info('Discovering AWS Organization Account objects');
 
-    (await this.getAwsAccounts())
-      .map(account => this.mapAccountToComponent(account))
-      .filter(entity => {
-        if (location.target !== '') {
-          if (entity.metadata.annotations) {
-            return (
-              entity.metadata.annotations[ORGANIZATION_ANNOTATION] ===
-              location.target
-            );
+    try {
+      (await this.getAwsAccounts())
+        .map(account => this.mapAccountToComponent(account))
+        .filter(entity => {
+          if (location.target !== '') {
+            if (entity.metadata.annotations) {
+              return (
+                entity.metadata.annotations[ORGANIZATION_ANNOTATION] ===
+                location.target
+              );
+            }
+            return false;
           }
-          return false;
-        }
-        return true;
-      })
-      .forEach(entity => {
-        emit(processingResult.entity(location, entity));
-      });
+          return true;
+        })
+        .forEach(entity => {
+          emit(processingResult.entity(location, entity));
+        });
+    } catch (e) {
+      this.logger?.error(e);
+    }
 
     return true;
   }

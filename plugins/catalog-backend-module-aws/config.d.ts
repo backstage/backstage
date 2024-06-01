@@ -26,8 +26,14 @@ export interface Config {
         provider: {
           /**
            * The role to be assumed by this processor
+           * @deprecated Use `accountId` instead.
            */
           roleArn?: string;
+
+          /**
+           * The AWS account ID to query for organizational data
+           */
+          accountId?: string;
         };
       };
     };
