@@ -111,6 +111,13 @@ const testNotification3: Notification = {
     topic: 'fgh-topic',
     link: '/catalog',
     severity: 'normal',
+    metadata: [
+      {
+        name: 'name',
+        value: 'Chris',
+        type: 'string',
+      },
+    ],
   },
 };
 const testNotification4: Notification = {

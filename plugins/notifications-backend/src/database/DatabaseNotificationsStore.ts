@@ -46,9 +46,6 @@ const NOTIFICATION_COLUMNS = [
   'user',
   'read',
   'saved',
-  'name',
-  'value',
-  'type',
 ];
 
 export const normalizeSeverity = (input?: string): NotificationSeverity => {
@@ -172,12 +169,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   private getBroadcastUnion = () => {
     return this.db('broadcast')
       .leftJoin(
-        'broadcast_metadata as m',
-        'broadcast.id',
-        '=',
-        'm.originating_id',
-      )
-      .leftJoin(
         'broadcast_user_status',
         'id',
         '=',
@@ -192,12 +183,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const { user, orderField } = options;
 
     const subQuery = this.db('notification')
-      .leftJoin(
-        'notification_metadata as m',
-        'notification.id',
-        '=',
-        'm.originating_id',
-      )
       .select(NOTIFICATION_COLUMNS)
       .unionAll([this.getBroadcastUnion()])
       .as('notifications');
@@ -240,10 +225,8 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     if (options.metadata) {
       const count = Object.keys(options.metadata ?? {}).length;
 
-      if (count > 0) {
-        const mQuery = this.db('notification_metadata').select(
-          'originating_id',
-        );
+      const notificationMetadataQuery = (tableName: string) => {
+        const mQuery = this.db(tableName).select('originating_id');
 
         Object.keys(options.metadata ?? {}).forEach(key => {
           const value = options.metadata?.[key];
@@ -255,8 +238,15 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         mQuery
           .groupBy('originating_id')
           .having(this.db.raw(`COUNT(DISTINCT name) = ${count}`));
+        return mQuery;
+      };
 
-        query.whereIn('id', mQuery);
+      if (count > 0) {
+        // const inClause = this.db.unionAll([notificationMetadataQuery(
+        //   'notification_metadata',
+        // )], true); SQLITE3 doesn't work
+
+        query.whereIn('id', notificationMetadataQuery('notification_metadata'));
       }
     }
 
@@ -321,9 +311,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const metadataRows = this.mapNotificationToMetadataDbRows(notification);
 
     if (metadataRows.length > 0) {
-      await this.db
-        .insert(this.mapNotificationToMetadataDbRows(notification))
-        .into('broadcast_metadata');
+      await this.db.insert(metadataRows).into('broadcast_metadata');
     }
 
     if (notification.saved || notification.read) {
@@ -431,12 +419,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .select('*')
       .from(
         this.db('notification')
-          .leftJoin(
-            'notification_metadata as m',
-            'notification.id',
-            '=',
-            'm.originating_id',
-          )
           .select(NOTIFICATION_COLUMNS)
           .unionAll([this.getBroadcastUnion()])
           .as('notifications'),
