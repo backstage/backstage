@@ -48,6 +48,8 @@ const NOTIFICATION_COLUMNS = [
   'saved',
 ];
 
+const METADTA_COLUMNS = ['type', 'name', 'value'];
+
 export const normalizeSeverity = (input?: string): NotificationSeverity => {
   let lower = (input ?? 'normal').toLowerCase() as NotificationSeverity;
   if (notificationSeverities.indexOf(lower) < 0) {
@@ -445,16 +447,28 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .where('id', options.id)
       .limit(1);
 
-    const query = this.db('notification')
+    const notificationQuery = this.db('notification')
       .leftJoin(
         'notification_metadata',
         'notification.id',
         'notification_metadata.originating_id',
       )
-      .select('*')
+      .select([...NOTIFICATION_COLUMNS, ...METADTA_COLUMNS])
       .whereIn('notification.id', subQuery);
 
-    const rows = await query;
+    const broadcastQuery = this.getBroadcastUnion()
+      .leftJoin(
+        'broadcast_metadata',
+        'broadcast.id',
+        'broadcast_metadata.originating_id',
+      )
+      .select([...NOTIFICATION_COLUMNS, ...METADTA_COLUMNS])
+      .whereIn('broadcast.id', subQuery);
+
+    const nRows = await notificationQuery;
+    const bRows = await broadcastQuery;
+
+    const rows = nRows.concat(bRows);
     if (!rows || rows.length === 0) {
       return null;
     }
