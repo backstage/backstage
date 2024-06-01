@@ -146,6 +146,7 @@ export const createPublishGithubPullRequestAction = (
     forceFork?: boolean;
     gitAuthorName?: string;
     gitAuthorEmail?: string;
+    forceEmptyGitAuthor?: boolean;
   }>({
     id: 'publish:github:pull-request',
     examples,
@@ -246,6 +247,12 @@ export const createPublishGithubPullRequestAction = (
             description:
               "Sets the default author email for the commit. The default value is the authenticated user or 'scaffolder@backstage.io'",
           },
+          forceEmptyGitAuthor: {
+            type: 'boolean',
+            title: 'Force Empty Git Author',
+            description:
+              'Forces the author to be empty. This is useful when using a Github App, it permit the commit to be verified on Github',
+          },
         },
       },
       output: {
@@ -287,6 +294,7 @@ export const createPublishGithubPullRequestAction = (
         forceFork,
         gitAuthorEmail,
         gitAuthorName,
+        forceEmptyGitAuthor,
       } = ctx.input;
 
       const { owner, repo, host } = parseRepoUrl(repoUrl, integrations);
@@ -384,25 +392,28 @@ export const createPublishGithubPullRequestAction = (
             config?.getOptionalString('scaffolder.defaultAuthor.email'),
         };
 
-        if (gitAuthorInfo.name || gitAuthorInfo.email) {
-          if (Array.isArray(createOptions.changes)) {
-            createOptions.changes = createOptions.changes.map(change => ({
-              ...change,
-              author: {
-                name: gitAuthorInfo.name || 'Scaffolder',
-                email: gitAuthorInfo.email || 'scaffolder@backstage.io',
-              },
-            }));
-          } else {
-            createOptions.changes = {
-              ...createOptions.changes,
-              author: {
-                name: gitAuthorInfo.name || 'Scaffolder',
-                email: gitAuthorInfo.email || 'scaffolder@backstage.io',
-              },
-            };
+        if (!forceEmptyGitAuthor) {
+          if (gitAuthorInfo.name || gitAuthorInfo.email) {
+            if (Array.isArray(createOptions.changes)) {
+              createOptions.changes = createOptions.changes.map(change => ({
+                ...change,
+                author: {
+                  name: gitAuthorInfo.name || 'Scaffolder',
+                  email: gitAuthorInfo.email || 'scaffolder@backstage.io',
+                },
+              }));
+            } else {
+              createOptions.changes = {
+                ...createOptions.changes,
+                author: {
+                  name: gitAuthorInfo.name || 'Scaffolder',
+                  email: gitAuthorInfo.email || 'scaffolder@backstage.io',
+                },
+              };
+            }
           }
         }
+
 
         if (targetBranchName) {
           createOptions.base = targetBranchName;
