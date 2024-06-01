@@ -246,7 +246,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       if (count > 0) {
         // const inClause = this.db.unionAll([notificationMetadataQuery(
         //   'notification_metadata',
-        // )], true); SQLITE3 doesn't work
+        // )], true); TODO: SQLITE3 doesn't work
 
         query.whereIn('id', notificationMetadataQuery('notification_metadata'));
       }
@@ -436,39 +436,37 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   }
 
   async getNotification(options: { id: string }): Promise<Notification | null> {
-    const subQuery = this.db
-      .select('id')
+    const query = this.db
+      .select([...NOTIFICATION_COLUMNS, ...METADTA_COLUMNS])
       .from(
         this.db('notification')
-          .select(NOTIFICATION_COLUMNS)
-          .unionAll([this.getBroadcastUnion()])
+          .leftJoin(
+            'notification_metadata',
+            'notification.id',
+            'notification_metadata.originating_id',
+          )
+          .select([...NOTIFICATION_COLUMNS, ...METADTA_COLUMNS])
+          .unionAll([
+            this.db('broadcast')
+              .leftJoin(
+                'broadcast_user_status',
+                'id',
+                '=',
+                'broadcast_user_status.broadcast_id',
+              )
+              .leftJoin(
+                'broadcast_metadata',
+                'broadcast.id',
+                'broadcast_metadata.originating_id',
+              )
+              .select([...NOTIFICATION_COLUMNS, ...METADTA_COLUMNS]),
+          ])
           .as('notifications'),
       )
       .where('id', options.id)
       .limit(1);
 
-    const notificationQuery = this.db('notification')
-      .leftJoin(
-        'notification_metadata',
-        'notification.id',
-        'notification_metadata.originating_id',
-      )
-      .select([...NOTIFICATION_COLUMNS, ...METADTA_COLUMNS])
-      .whereIn('notification.id', subQuery);
-
-    const broadcastQuery = this.getBroadcastUnion()
-      .leftJoin(
-        'broadcast_metadata',
-        'broadcast.id',
-        'broadcast_metadata.originating_id',
-      )
-      .select([...NOTIFICATION_COLUMNS, ...METADTA_COLUMNS])
-      .whereIn('broadcast.id', subQuery);
-
-    const nRows = await notificationQuery;
-    const bRows = await broadcastQuery;
-
-    const rows = nRows.concat(bRows);
+    const rows = await query;
     if (!rows || rows.length === 0) {
       return null;
     }
