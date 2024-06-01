@@ -48,7 +48,7 @@ const NOTIFICATION_COLUMNS = [
   'saved',
 ];
 
-const METADTA_COLUMNS = ['type', 'name', 'value'];
+const METADATA_COLUMNS = ['type', 'name', 'value'];
 
 export const normalizeSeverity = (input?: string): NotificationSeverity => {
   let lower = (input ?? 'normal').toLowerCase() as NotificationSeverity;
@@ -434,7 +434,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   async getNotification(options: { id: string }): Promise<Notification | null> {
     const query = this.db
-      .select([...NOTIFICATION_COLUMNS, ...METADTA_COLUMNS])
+      .select([...NOTIFICATION_COLUMNS, ...METADATA_COLUMNS])
       .from(
         this.db('notification')
           .leftJoin(
@@ -442,7 +442,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
             'notification.id',
             'notification_metadata.originating_id',
           )
-          .select([...NOTIFICATION_COLUMNS, ...METADTA_COLUMNS])
+          .select([...NOTIFICATION_COLUMNS, ...METADATA_COLUMNS])
           .unionAll([
             this.db('broadcast')
               .leftJoin(
@@ -456,7 +456,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
                 'broadcast.id',
                 'broadcast_metadata.originating_id',
               )
-              .select([...NOTIFICATION_COLUMNS, ...METADTA_COLUMNS]),
+              .select([...NOTIFICATION_COLUMNS, ...METADATA_COLUMNS]),
           ])
           .as('notifications'),
       )
