@@ -74,7 +74,7 @@ async function exitIfMissingVale() {
     console.log(
       `Language linter (vale) was not found. Please install vale linter (https://vale.sh/docs/vale-cli/installation/).\n`,
     );
-    process.exit(1);
+    process.exit(process.env.CI ? 1 : 0);
   }
 }
 
