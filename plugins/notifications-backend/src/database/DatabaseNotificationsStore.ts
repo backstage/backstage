@@ -244,11 +244,8 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       };
 
       if (count > 0) {
-        // const inClause = this.db.unionAll([notificationMetadataQuery(
-        //   'notification_metadata',
-        // )], true); TODO: SQLITE3 doesn't work
-
         query.whereIn('id', notificationMetadataQuery('notification_metadata'));
+        query.orWhereIn('id', notificationMetadataQuery('broadcast_metadata'));
       }
     }
 
