@@ -24,41 +24,34 @@ import { Readable } from 'stream';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
 
-// @public (undocumented)
+// @public
 export interface AuthService {
-  // (undocumented)
   authenticate(
     token: string,
     options?: {
       allowLimitedAccess?: boolean;
     },
   ): Promise<BackstageCredentials>;
-  // (undocumented)
   getLimitedUserToken(
     credentials: BackstageCredentials<BackstageUserPrincipal>,
   ): Promise<{
     token: string;
     expiresAt: Date;
   }>;
-  // (undocumented)
   getNoneCredentials(): Promise<BackstageCredentials<BackstageNonePrincipal>>;
-  // (undocumented)
   getOwnServiceCredentials(): Promise<
     BackstageCredentials<BackstageServicePrincipal>
   >;
-  // (undocumented)
   getPluginRequestToken(options: {
     onBehalfOf: BackstageCredentials;
     targetPluginId: string;
   }): Promise<{
     token: string;
   }>;
-  // (undocumented)
   isPrincipal<TType extends keyof BackstagePrincipalTypes>(
     credentials: BackstageCredentials,
     type: TType,
   ): credentials is BackstageCredentials<BackstagePrincipalTypes[TType]>;
-  // (undocumented)
   listPublicServiceKeys(): Promise<{
     keys: JsonObject[];
   }>;
@@ -116,14 +109,14 @@ export interface BackendPluginRegistrationPoints {
   }): void;
 }
 
-// @public (undocumented)
+// @public
 export type BackstageCredentials<TPrincipal = unknown> = {
   $$type: '@backstage/BackstageCredentials';
   expiresAt?: Date;
   principal: TPrincipal;
 };
 
-// @public (undocumented)
+// @public
 export type BackstageNonePrincipal = {
   type: 'none';
 };
@@ -136,7 +129,7 @@ export type BackstagePrincipalAccessRestrictions = {
   };
 };
 
-// @public (undocumented)
+// @public
 export type BackstagePrincipalTypes = {
   user: BackstageUserPrincipal;
   service: BackstageServicePrincipal;
@@ -144,14 +137,14 @@ export type BackstagePrincipalTypes = {
   unknown: unknown;
 };
 
-// @public (undocumented)
+// @public
 export type BackstageServicePrincipal = {
   type: 'service';
   subject: string;
   accessRestrictions?: BackstagePrincipalAccessRestrictions;
 };
 
-// @public (undocumented)
+// @public
 export interface BackstageUserInfo {
   // (undocumented)
   ownershipEntityRefs: string[];
@@ -159,7 +152,7 @@ export interface BackstageUserInfo {
   userEntityRef: string;
 }
 
-// @public (undocumented)
+// @public
 export type BackstageUserPrincipal = {
   type: 'user';
   userEntityRef: string;
@@ -334,9 +327,8 @@ export type ExtensionPoint<T> = {
 // @public @deprecated (undocumented)
 export type ExtensionPointConfig = CreateExtensionPointOptions;
 
-// @public (undocumented)
+// @public
 export interface HttpAuthService {
-  // (undocumented)
   credentials<TAllowed extends keyof BackstagePrincipalTypes = 'unknown'>(
     req: Request_2<any, any, any, any, any>,
     options?: {
@@ -344,7 +336,6 @@ export interface HttpAuthService {
       allowLimitedAccess?: boolean;
     },
   ): Promise<BackstageCredentials<BackstagePrincipalTypes[TAllowed]>>;
-  // (undocumented)
   issueUserCookie(
     res: Response_2,
     options?: {
@@ -355,15 +346,13 @@ export interface HttpAuthService {
   }>;
 }
 
-// @public (undocumented)
+// @public
 export interface HttpRouterService {
-  // (undocumented)
   addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
-  // (undocumented)
   use(handler: Handler): void;
 }
 
-// @public (undocumented)
+// @public
 export interface HttpRouterServiceAuthPolicy {
   // (undocumented)
   allow: 'unauthenticated' | 'user-cookie';
@@ -371,7 +360,7 @@ export interface HttpRouterServiceAuthPolicy {
   path: string;
 }
 
-// @public (undocumented)
+// @public @deprecated
 export interface IdentityService extends IdentityApi {}
 
 export { isChildPath };
@@ -379,7 +368,7 @@ export { isChildPath };
 // @public
 export function isDatabaseConflictError(e: unknown): boolean;
 
-// @public (undocumented)
+// @public
 export interface LifecycleService {
   addShutdownHook(
     hook: LifecycleServiceShutdownHook,
@@ -421,14 +410,12 @@ export interface LoggerService {
   warn(message: string, meta?: Error | JsonObject): void;
 }
 
-// @public (undocumented)
+// @public
 export interface PermissionsService extends PermissionEvaluator {
-  // (undocumented)
   authorize(
     requests: AuthorizePermissionRequest[],
     options?: PermissionsServiceRequestOptions,
   ): Promise<AuthorizePermissionResponse[]>;
-  // (undocumented)
   authorizeConditional(
     requests: QueryPermissionRequest[],
     options?: PermissionsServiceRequestOptions,
@@ -444,9 +431,8 @@ export type PermissionsServiceRequestOptions =
       credentials: BackstageCredentials;
     };
 
-// @public (undocumented)
+// @public
 export interface PluginMetadataService {
-  // (undocumented)
   getId(): string;
 }
 
@@ -535,18 +521,18 @@ export function resolvePackagePath(name: string, ...paths: string[]): string;
 // @public
 export function resolveSafeChildPath(base: string, path: string): string;
 
-// @public (undocumented)
+// @public
 export interface RootConfigService extends Config {}
 
-// @public (undocumented)
+// @public
 export interface RootHttpRouterService {
   use(path: string, handler: Handler): void;
 }
 
-// @public (undocumented)
+// @public
 export interface RootLifecycleService extends LifecycleService {}
 
-// @public (undocumented)
+// @public
 export interface RootLoggerService extends LoggerService {}
 
 // @public (undocumented)
@@ -686,7 +672,7 @@ export interface ServiceRefConfig<TService, TScope extends 'root' | 'plugin'> {
   scope?: TScope;
 }
 
-// @public
+// @public @deprecated
 export interface TokenManagerService {
   authenticate(token: string): Promise<void>;
   getToken(): Promise<{
@@ -701,9 +687,8 @@ export interface UrlReaderService {
   search(url: string, options?: SearchOptions): Promise<SearchResponse>;
 }
 
-// @public (undocumented)
+// @public
 export interface UserInfoService {
-  // (undocumented)
   getUserInfo(credentials: BackstageCredentials): Promise<BackstageUserInfo>;
 }
 ```

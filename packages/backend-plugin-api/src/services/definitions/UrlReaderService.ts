@@ -19,6 +19,8 @@ import { Readable } from 'stream';
 /**
  * A generic interface for fetching plain data from URLs.
  *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/url-reader | service documentation} for more details.
+ *
  * @public
  */
 export interface UrlReaderService {

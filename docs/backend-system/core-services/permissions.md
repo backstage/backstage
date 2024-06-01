@@ -16,36 +16,42 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { Router } from 'express';
+import { NotAllowedError } from '@backstage/errors';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import Router from 'express-promise-router';
 
-createBackendPlugin({
+export default createBackendPlugin({
   pluginId: 'example',
   register(env) {
     env.registerInit({
       deps: {
         permissions: coreServices.permissions,
-        http: coreServices.httpRouter,
+        httpRouter: coreServices.httpRouter,
+        httpAuth: coreServices.httpAuth,
       },
-      async init({ permissions, http }) {
-        const router = Router();
-        router.get('/test-me', (request, response) => {
-          // use the identity service to pull out the token from request headers
-          const { token } = await identity.getIdentity({
-            request,
-          });
-
-          // ask the permissions framework what the decision is for the permission
+      async init({ permissions, httpRouter, httpAuth }) {
+        const endpoints = Router();
+        endpoints.get('/test-me', (request, response) => {
+          // Ask the permissions framework what the decision is for the given
+          // permission, for the principal that made the original request. The
+          // `httpAuth` service helps us extract those credentials. We authorize
+          // a single permission here, so the result will be an array with one
+          // element accordingly.
           const permissionResponse = await permissions.authorize(
-            [
-              {
-                permission: myCustomPermission,
-              },
-            ],
-            { token },
+            [{ permission: myCustomPermission }],
+            { credentials: await httpAuth.credentials(request) },
           );
+
+          if (permissionResponse[0].result !== AuthorizeResult.ALLOW) {
+            throw new NotAllowedError(
+              'You are not permitted to perform this action',
+            );
+          }
+
+          // TODO: Actual code goes here
         });
 
-        http.use(router);
+        httpRouter.use(endpoints);
       },
     });
   },
