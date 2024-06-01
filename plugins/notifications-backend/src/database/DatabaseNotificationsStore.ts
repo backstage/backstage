@@ -46,8 +46,9 @@ const NOTIFICATION_COLUMNS = [
   'user',
   'read',
   'saved',
-  'm.name as metadata_name',
-  'm.value as metadata_value',
+  'name',
+  'value',
+  'type',
 ];
 
 export const normalizeSeverity = (input?: string): NotificationSeverity => {
@@ -89,25 +90,52 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   };
 
   private mapToNotifications = (rows: any[]): Notification[] => {
-    return rows.map(row => ({
-      id: row.id,
-      user: row.user,
-      created: new Date(row.created),
-      saved: row.saved,
-      read: row.read,
-      updated: row.updated,
-      origin: row.origin,
-      payload: {
-        title: row.title,
-        description: row.description,
-        link: row.link,
-        topic: row.topic,
-        severity: row.severity,
-        scope: row.scope,
-        icon: row.icon,
-        metadata: row.metadata,
-      },
-    }));
+    return Object.values(
+      rows.reduce((acc, row) => {
+        const metadata = row.name
+          ? {
+              name: row.name,
+              value: row.value,
+              type: row.type,
+            }
+          : undefined;
+        if (acc.has(row.id)) {
+          if (metadata) {
+            acc.get(row.id).payload.metadata?.push(metadata);
+          }
+        } else {
+          acc[row.id] = {
+            id: row.id,
+            user: row.user,
+            created: new Date(row.created),
+            saved: row.saved,
+            read: row.read,
+            updated: row.updated,
+            origin: row.origin,
+            payload: {
+              title: row.title,
+              description: row.description,
+              link: row.link,
+              topic: row.topic,
+              severity: row.severity,
+              scope: row.scope,
+              icon: row.icon,
+              ...(metadata && { metadata: [metadata] }),
+            },
+          };
+        }
+        return acc;
+      }, new Map<string, Notification>()),
+    );
+  };
+
+  private mapNotificationToMetadataDbRows = (notification: Notification) => {
+    return (
+      notification.payload?.metadata?.map(metadata => ({
+        originating_id: notification.id,
+        ...metadata,
+      })) ?? []
+    );
   };
 
   private mapNotificationToDbRow = (notification: Notification) => {
@@ -120,7 +148,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload?.link,
       title: notification.payload?.title,
       description: notification.payload?.description,
-      metadata: notification.payload?.metadata,
       severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
       saved: notification.saved,
@@ -137,7 +164,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload?.link,
       title: notification.payload?.title,
       description: notification.payload?.description,
-      metadata: notification.payload?.metadata,
       severity: normalizeSeverity(notification.payload?.severity),
       scope: notification.payload?.scope,
     };
@@ -149,7 +175,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         'broadcast_metadata as m',
         'broadcast.id',
         '=',
-        'metadata.originating_broadcast_id',
+        'm.originating_id',
       )
       .leftJoin(
         'broadcast_user_status',
@@ -170,7 +196,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         'notification_metadata as m',
         'notification.id',
         '=',
-        'metadata.originating_notification_id',
+        'm.originating_id',
       )
       .select(NOTIFICATION_COLUMNS)
       .unionAll([this.getBroadcastUnion()])
@@ -212,10 +238,26 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     }
 
     if (options.metadata) {
-      Object.keys(options.metadata ?? {}).forEach(key => {
-        const value = options.metadata?.[key];
-        query.orWhereRaw(`(LOWER(metadata_name) LIKE LOWER(?)`, [`%${value}%`]);
-      });
+      const count = Object.keys(options.metadata ?? {}).length;
+
+      if (count > 0) {
+        const mQuery = this.db('notification_metadata').select(
+          'originating_id',
+        );
+
+        Object.keys(options.metadata ?? {}).forEach(key => {
+          const value = options.metadata?.[key];
+          mQuery.orWhereRaw(
+            `(LOWER(name) LIKE LOWER(?) AND LOWER(value) LIKE LOWER(?))`,
+            [key, `%${value}%`],
+          );
+        });
+        mQuery
+          .groupBy('originating_id')
+          .having(this.db.raw(`COUNT(DISTINCT name) = ${count}`));
+
+        query.whereIn('id', mQuery);
+      }
     }
 
     if (options.ids) {
@@ -263,12 +305,27 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     await this.db
       .insert(this.mapNotificationToDbRow(notification))
       .into('notification');
+
+    const metadataRows = this.mapNotificationToMetadataDbRows(notification);
+
+    if (metadataRows.length > 0) {
+      await this.db.insert(metadataRows).into('notification_metadata');
+    }
   }
 
   async saveBroadcast(notification: Notification) {
     await this.db
       .insert(this.mapBroadcastToDbRow(notification))
       .into('broadcast');
+
+    const metadataRows = this.mapNotificationToMetadataDbRows(notification);
+
+    if (metadataRows.length > 0) {
+      await this.db
+        .insert(this.mapNotificationToMetadataDbRows(notification))
+        .into('broadcast_metadata');
+    }
+
     if (notification.saved || notification.read) {
       await this.db
         .insert({
@@ -374,6 +431,12 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .select('*')
       .from(
         this.db('notification')
+          .leftJoin(
+            'notification_metadata as m',
+            'notification.id',
+            '=',
+            'm.originating_id',
+          )
           .select(NOTIFICATION_COLUMNS)
           .unionAll([this.getBroadcastUnion()])
           .as('notifications'),

@@ -17,7 +17,7 @@
 exports.up = async function up(knex) {
   await knex.schema.createTable('notification_metadata', table => {
     table
-      .string('originating_notification_id')
+      .uuid('originating_id')
       .references('id')
       .inTable('notification')
       .onDelete('CASCADE')
@@ -32,7 +32,7 @@ exports.up = async function up(knex) {
 
   await knex.schema.createTable('broadcast_metadata', table => {
     table
-      .string('originating_broadcast_id')
+      .uuid('originating_id')
       .references('id')
       .inTable('broadcast')
       .onDelete('CASCADE')

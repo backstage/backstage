@@ -67,6 +67,18 @@ const testNotification1: Notification = {
     topic: 'efgh-topic',
     link: '/catalog',
     severity: 'critical',
+    metadata: [
+      {
+        name: 'deadline',
+        value: '2017-05-15T08:30:00',
+        type: 'date',
+      },
+      {
+        name: 'name',
+        value: 'John',
+        type: 'string',
+      },
+    ],
   },
 };
 const testNotification2: Notification = {
@@ -80,6 +92,13 @@ const testNotification2: Notification = {
     link: '/catalog',
     severity: 'normal',
     scope: 'scaffolder-1234',
+    metadata: [
+      {
+        name: 'name',
+        value: 'Chris',
+        type: 'string',
+      },
+    ],
   },
 };
 const testNotification3: Notification = {
@@ -147,6 +166,13 @@ const otherUserNotification: Notification = {
     title: 'Notification Other - please do not find me',
     link: '/catalog',
     severity: 'normal',
+    metadata: [
+      {
+        name: 'name',
+        value: 'Roy',
+        type: 'string',
+      },
+    ],
   },
 };
 
@@ -182,6 +208,10 @@ describe.each(databases.eachSupportedId())(
         expect(notification?.payload?.topic).toBe('efgh-topic');
         expect(notification?.payload?.link).toBe('/catalog');
         expect(notification?.payload?.severity).toBe('critical');
+        expect(
+          notification?.payload?.metadata?.find(m => m.name === 'deadline')
+            ?.value,
+        ).toBe('2017-05-15T08:30:00');
       });
     });
 
@@ -270,6 +300,22 @@ describe.each(databases.eachSupportedId())(
         });
         expect(notifications.length).toBe(1);
         expect(notifications.at(0)?.id).toEqual(id2);
+      });
+
+      it('should filter notifications based on metadata', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveBroadcast(testNotification2);
+        await storage.saveNotification(otherUserNotification);
+
+        const notifications = await storage.getNotifications({
+          user,
+          metadata: {
+            deadline: '2017-05-15T08:30:00',
+            name: 'John',
+          },
+        });
+        expect(notifications.length).toBe(1);
+        expect(notifications.at(0)?.id).toEqual(id1);
       });
     });
 
