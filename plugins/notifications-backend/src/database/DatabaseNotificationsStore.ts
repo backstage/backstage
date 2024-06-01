@@ -87,43 +87,43 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   };
 
   private mapToNotifications = (rows: any[]): Notification[] => {
-    return Object.values(
-      rows.reduce((acc, row) => {
-        const metadata = row.name
-          ? {
-              name: row.name,
-              value: row.value,
-              type: row.type,
-            }
-          : undefined;
-        if (acc.has(row.id)) {
-          if (metadata) {
-            acc.get(row.id).payload.metadata?.push(metadata);
+    const res = rows.reduce((acc, row) => {
+      const metadata = row.name
+        ? {
+            name: row.name,
+            value: row.value,
+            type: row.type,
           }
-        } else {
-          acc[row.id] = {
-            id: row.id,
-            user: row.user,
-            created: new Date(row.created),
-            saved: row.saved,
-            read: row.read,
-            updated: row.updated,
-            origin: row.origin,
-            payload: {
-              title: row.title,
-              description: row.description,
-              link: row.link,
-              topic: row.topic,
-              severity: row.severity,
-              scope: row.scope,
-              icon: row.icon,
-              ...(metadata && { metadata: [metadata] }),
-            },
-          };
+        : undefined;
+      if (acc.has(row.id)) {
+        if (metadata) {
+          acc.get(row.id).payload.metadata?.push(metadata);
         }
-        return acc;
-      }, new Map<string, Notification>()),
-    );
+      } else {
+        acc.set(row.id, {
+          id: row.id,
+          user: row.user,
+          created: new Date(row.created),
+          saved: row.saved,
+          read: row.read,
+          updated: row.updated,
+          origin: row.origin,
+          payload: {
+            title: row.title,
+            description: row.description,
+            link: row.link,
+            topic: row.topic,
+            severity: row.severity,
+            scope: row.scope,
+            icon: row.icon,
+            ...(metadata && { metadata: [metadata] }),
+          },
+        });
+      }
+      return acc;
+    }, new Map<string, Notification>());
+
+    return [...res.values()];
   };
 
   private mapNotificationToMetadataDbRows = (notification: Notification) => {
@@ -396,7 +396,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       link: notification.payload.link,
       topic: notification.payload.topic,
       updated: new Date(),
-      metadata: notification.payload?.metadata,
       severity: normalizeSeverity(notification.payload?.severity),
       read: null,
     };
@@ -404,10 +403,30 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const notificationQuery = this.db('notification')
       .where('id', id)
       .where('user', notification.user);
+
+    const notificationMetadataQuery = this.db('notification_metadata').where(
+      'originating_id',
+      id,
+    );
+
     const broadcastQuery = this.db('broadcast').where('id', id);
 
+    const broadcastMetadataQuery = this.db('broadcast_metadata').where(
+      'id',
+      id,
+    );
+
+    const metadata = notification.payload?.metadata;
     await Promise.all([
       notificationQuery.update(updateColumns),
+      ...[
+        metadata
+          ? [
+              notificationMetadataQuery.update(notification.payload?.metadata),
+              broadcastMetadataQuery.update(notification.payload?.metadata),
+            ]
+          : [],
+      ],
       broadcastQuery.update({ ...updateColumns, read: undefined }),
     ]);
 
@@ -415,8 +434,8 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   }
 
   async getNotification(options: { id: string }): Promise<Notification | null> {
-    const rows = await this.db
-      .select('*')
+    const subQuery = this.db
+      .select('id')
       .from(
         this.db('notification')
           .select(NOTIFICATION_COLUMNS)
@@ -425,6 +444,17 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       )
       .where('id', options.id)
       .limit(1);
+
+    const query = this.db('notification')
+      .leftJoin(
+        'notification_metadata',
+        'notification.id',
+        'notification_metadata.originating_id',
+      )
+      .select('*')
+      .whereIn('notification.id', subQuery);
+
+    const rows = await query;
     if (!rows || rows.length === 0) {
       return null;
     }
