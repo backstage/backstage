@@ -19,6 +19,8 @@ import { JsonObject } from '@backstage/types';
 /**
  * A service that provides a logging facility.
  *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/logger | service documentation} for more details.
+ *
  * @public
  */
 export interface LoggerService {

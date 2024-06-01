@@ -16,5 +16,11 @@
 
 import { LoggerService } from './LoggerService';
 
-/** @public */
+/**
+ * Root-level logging.
+ *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/root-logger | service documentation} for more details.
+ *
+ * @public
+ */
 export interface RootLoggerService extends LoggerService {}
