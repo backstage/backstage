@@ -414,7 +414,6 @@ export const createPublishGithubPullRequestAction = (
           }
         }
 
-
         if (targetBranchName) {
           createOptions.base = targetBranchName;
         }
