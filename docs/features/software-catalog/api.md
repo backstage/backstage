@@ -482,10 +482,7 @@ Request body is JSON, on the form
 ```json
 {
   "location": "<string>",
-  "entity": {
-    "proident_f": {},
-    "culpa_ca": {}
-  }
+  "entity": "<Entity>"
 }
 ```
 
@@ -545,28 +542,7 @@ Response type is JSON, on the form
 
 ```json
 {
-  "facets": {
-    "exercitation84": [
-      {
-        "value": "<string>",
-        "count": "<number>"
-      },
-      {
-        "value": "<string>",
-        "count": "<number>"
-      }
-    ],
-    "consectetur_1": [
-      {
-        "value": "<string>",
-        "count": "<number>"
-      },
-      {
-        "value": "<string>",
-        "count": "<number>"
-      }
-    ]
-  }
+  "facets": "<EntityFacet>"
 }
 ```
 
@@ -644,172 +620,12 @@ And Response type is JSON, on the form
           "field": "<string>"
         }
       ],
-      "entity": {
-        "apiVersion": "<string>",
-        "kind": "<string>",
-        "metadata": {},
-        "spec": {
-          "ullamco_b24": {}
-        },
-        "relations": [
-          {
-            "targetRef": "<string>",
-            "type": "<string>"
-          },
-          {
-            "targetRef": "<string>",
-            "type": "<string>"
-          }
-        ]
-      }
-    },
-    {
-      "fields": [
-        {
-          "description": "<string>",
-          "value": "<string>",
-          "state": "needsUserInput",
-          "field": "<string>"
-        },
-        {
-          "description": "<string>",
-          "value": "<string>",
-          "state": "analysisSuggestedValue",
-          "field": "<string>"
-        }
-      ],
-      "entity": {
-        "apiVersion": "<string>",
-        "kind": "<string>",
-        "metadata": {},
-        "spec": {
-          "velita": {},
-          "aliquip_d": {},
-          "officia__e8": {}
-        },
-        "relations": [
-          {
-            "targetRef": "<string>",
-            "type": "<string>"
-          },
-          {
-            "targetRef": "<string>",
-            "type": "<string>"
-          }
-        ]
-      }
+      "entity": "<Entity>"
     }
   ],
   "existingEntityFiles": [
     {
-      "entity": {
-        "metadata": {
-          "name": "<string>",
-          "links": [
-            {
-              "url": "<string>",
-              "type": "<string>",
-              "icon": "<string>",
-              "title": "<string>"
-            },
-            {
-              "url": "<string>",
-              "type": "<string>",
-              "icon": "<string>",
-              "title": "<string>"
-            }
-          ],
-          "tags": ["<string>", "<string>"],
-          "annotations": {
-            "nostrud__": "<string>",
-            "ipsumd": "<string>",
-            "amet_bc2": "<string>"
-          },
-          "labels": {
-            "ea1c": "<string>"
-          },
-          "description": "<string>",
-          "title": "<string>",
-          "namespace": "<string>",
-          "etag": "<string>",
-          "uid": "<string>"
-        },
-        "kind": "<string>",
-        "apiVersion": "<string>",
-        "relations": [
-          {
-            "targetRef": "<string>",
-            "type": "<string>"
-          },
-          {
-            "targetRef": "<string>",
-            "type": "<string>"
-          }
-        ],
-        "spec": {
-          "culpa982": {},
-          "dolorb": {},
-          "mollitb7e": {}
-        }
-      },
-      "isRegistered": "<boolean>",
-      "location": {
-        "target": "<string>",
-        "type": "<string>"
-      }
-    },
-    {
-      "entity": {
-        "metadata": {
-          "name": "<string>",
-          "links": [
-            {
-              "url": "<string>",
-              "type": "<string>",
-              "icon": "<string>",
-              "title": "<string>"
-            },
-            {
-              "url": "<string>",
-              "type": "<string>",
-              "icon": "<string>",
-              "title": "<string>"
-            }
-          ],
-          "tags": ["<string>", "<string>"],
-          "annotations": {
-            "sint_69": "<string>",
-            "ex5b7": "<string>"
-          },
-          "labels": {
-            "proidentc1": "<string>",
-            "ullamco_c": "<string>",
-            "do_8": "<string>"
-          },
-          "description": "<string>",
-          "title": "<string>",
-          "namespace": "<string>",
-          "etag": "<string>",
-          "uid": "<string>"
-        },
-        "kind": "<string>",
-        "apiVersion": "<string>",
-        "relations": [
-          {
-            "targetRef": "<string>",
-            "type": "<string>"
-          },
-          {
-            "targetRef": "<string>",
-            "type": "<string>"
-          }
-        ],
-        "spec": {
-          "ine": {},
-          "Ute1": {},
-          "fugiat80": {}
-        }
-      },
+      "entity": "<Entity>",
       "isRegistered": "<boolean>",
       "location": {
         "target": "<string>",
