@@ -89,6 +89,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   };
 
   private mapToNotifications = (rows: any[]): Notification[] => {
+    let order = 0;
     const res = [
       ...rows
         .reduce((acc, row) => {
@@ -101,35 +102,39 @@ export class DatabaseNotificationsStore implements NotificationsStore {
             : undefined;
           if (acc.has(row.id)) {
             if (metadata) {
-              acc.get(row.id).payload.metadata?.push(metadata);
+              acc.get(row.id).notification.payload.metadata?.push(metadata);
             }
           } else {
+            order += 1;
             acc.set(row.id, {
-              id: row.id,
-              user: row.user,
-              created: new Date(row.created),
-              saved: row.saved,
-              read: row.read,
-              updated: row.updated,
-              origin: row.origin,
-              payload: {
-                title: row.title,
-                description: row.description,
-                link: row.link,
-                topic: row.topic,
-                severity: row.severity,
-                scope: row.scope,
-                icon: row.icon,
-                ...(metadata && { metadata: [metadata] }),
+              order,
+              notification: {
+                id: row.id,
+                user: row.user,
+                created: new Date(row.created),
+                saved: row.saved,
+                read: row.read,
+                updated: row.updated,
+                origin: row.origin,
+                payload: {
+                  title: row.title,
+                  description: row.description,
+                  link: row.link,
+                  topic: row.topic,
+                  severity: row.severity,
+                  scope: row.scope,
+                  icon: row.icon,
+                  ...(metadata && { metadata: [metadata] }),
+                },
               },
             });
           }
           return acc;
-        }, new Map<string, Notification>())
+        }, new Map<string, { order: number; notification: Notification }>())
         .values(),
-    ] as Notification[];
+    ] as { order: number; notification: Notification }[];
 
-    return res.sort((a, b) => b.created.getTime() - a.created.getTime());
+    return res.sort((a, b) => a.order - b.order).map(e => e.notification);
   };
 
   private mapNotificationToMetadataDbRows = (notification: Notification) => {
@@ -279,16 +284,28 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   };
 
   async getNotifications(options: NotificationGetOptions) {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
+    const notificationQuery = this.getNotificationsBaseQuery(options).as('n');
 
     const metadataSubQuery = this.db('notification_metadata')
       .select('*')
-      .unionAll(this.db('broadcast_metadata').select('*'));
+      .unionAll(this.db('broadcast_metadata').select('*'))
+      .as('m');
 
-    const query = this.db.select('*').from(metadataSubQuery);
+    const query = this.db
+      .select('*')
+      .from(notificationQuery)
+      .leftJoin(metadataSubQuery, 'm.originating_id', 'n.id');
 
-    const fullQuery = `${query.toQuery()}, (${notificationQuery.toQuery()}) where originating_id = id`;
-    const notifications = await this.db.raw(fullQuery);
+    const { orderField } = options;
+    if (orderField && orderField.length > 0) {
+      orderField.forEach(orderBy => {
+        query.orderBy(orderBy.field, orderBy.order);
+      });
+    } else if (!orderField) {
+      query.orderBy('created', 'desc');
+    }
+
+    const notifications = await query;
     return this.mapToNotifications(notifications);
   }
 
