@@ -89,43 +89,47 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   };
 
   private mapToNotifications = (rows: any[]): Notification[] => {
-    const res = rows.reduce((acc, row) => {
-      const metadata = row.name
-        ? {
-            name: row.name,
-            value: row.value,
-            type: row.type,
+    const res = [
+      ...rows
+        .reduce((acc, row) => {
+          const metadata = row.name
+            ? {
+                name: row.name,
+                value: row.value,
+                type: row.type,
+              }
+            : undefined;
+          if (acc.has(row.id)) {
+            if (metadata) {
+              acc.get(row.id).payload.metadata?.push(metadata);
+            }
+          } else {
+            acc.set(row.id, {
+              id: row.id,
+              user: row.user,
+              created: new Date(row.created),
+              saved: row.saved,
+              read: row.read,
+              updated: row.updated,
+              origin: row.origin,
+              payload: {
+                title: row.title,
+                description: row.description,
+                link: row.link,
+                topic: row.topic,
+                severity: row.severity,
+                scope: row.scope,
+                icon: row.icon,
+                ...(metadata && { metadata: [metadata] }),
+              },
+            });
           }
-        : undefined;
-      if (acc.has(row.id)) {
-        if (metadata) {
-          acc.get(row.id).payload.metadata?.push(metadata);
-        }
-      } else {
-        acc.set(row.id, {
-          id: row.id,
-          user: row.user,
-          created: new Date(row.created),
-          saved: row.saved,
-          read: row.read,
-          updated: row.updated,
-          origin: row.origin,
-          payload: {
-            title: row.title,
-            description: row.description,
-            link: row.link,
-            topic: row.topic,
-            severity: row.severity,
-            scope: row.scope,
-            icon: row.icon,
-            ...(metadata && { metadata: [metadata] }),
-          },
-        });
-      }
-      return acc;
-    }, new Map<string, Notification>());
+          return acc;
+        }, new Map<string, Notification>())
+        .values(),
+    ] as Notification[];
 
-    return [...res.values()];
+    return res.sort((a, b) => b.created.getTime() - a.created.getTime());
   };
 
   private mapNotificationToMetadataDbRows = (notification: Notification) => {
@@ -276,7 +280,15 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   async getNotifications(options: NotificationGetOptions) {
     const notificationQuery = this.getNotificationsBaseQuery(options);
-    const notifications = await notificationQuery.select(NOTIFICATION_COLUMNS);
+
+    const metadataSubQuery = this.db('notification_metadata')
+      .select('*')
+      .unionAll(this.db('broadcast_metadata').select('*'));
+
+    const query = this.db.select('*').from(metadataSubQuery);
+
+    const fullQuery = `${query.toQuery()}, (${notificationQuery.toQuery()}) where originating_id = id`;
+    const notifications = await this.db.raw(fullQuery);
     return this.mapToNotifications(notifications);
   }
 

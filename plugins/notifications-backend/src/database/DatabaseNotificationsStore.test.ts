@@ -324,6 +324,22 @@ describe.each(databases.eachSupportedId())(
         expect(notifications.length).toBe(1);
         expect(notifications.at(0)?.id).toEqual(id1);
       });
+
+      it('should filter notifications in metadata based on a partial match', async () => {
+        await storage.saveNotification(testNotification2);
+        await storage.saveBroadcast(testNotification3);
+        await storage.saveNotification(otherUserNotification);
+
+        const notifications = await storage.getNotifications({
+          user,
+          metadata: {
+            name: 'chr',
+          },
+        });
+        expect(notifications.length).toBe(2);
+        expect(notifications.at(0)?.id).toEqual(id2);
+        expect(notifications.at(1)?.id).toEqual(id3);
+      });
     });
 
     describe('getNotifications filters on severity', () => {
