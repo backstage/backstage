@@ -17,7 +17,10 @@ import {
   DatabaseManager,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
-import { Notification } from '@backstage/plugin-notifications-common';
+import {
+  Notification,
+  NotificationPayloadMetadata,
+} from '@backstage/plugin-notifications-common';
 import express from 'express';
 import request from 'supertest';
 
@@ -93,22 +96,46 @@ describe('createRouter', () => {
           recipients: { type: 'broadcast' },
           payload: {
             title: 'upgrade',
-            metadata: {
-              backstage: 'outdated',
-              nodejs: 'unsupported',
-            },
+            metadata: [
+              {
+                name: 'backstage',
+                value: 'outdated',
+                type: 'string',
+              },
+              {
+                name: 'nodejs',
+                value: 'unsupported',
+                type: 'string',
+              },
+            ],
           },
         });
 
       expect(response.status).toEqual(200);
 
       const client = await database.getClient();
-      const broadcastNotifications = await client.from('broadcast').select('*');
-      expect(broadcastNotifications.length).toBe(1);
-      expect(JSON.parse(broadcastNotifications[0].metadata)).toEqual({
-        backstage: 'outdated',
-        nodejs: 'unsupported',
-      });
+      const broadcastNotifications = (await client
+        .from('broadcast_metadata')
+        .select('*')) as NotificationPayloadMetadata;
+      expect(broadcastNotifications.length).toBe(2);
+      expect(
+        broadcastNotifications.map(bn => ({
+          name: bn.name,
+          value: bn.value,
+          type: bn.type,
+        })),
+      ).toStrictEqual([
+        {
+          name: 'backstage',
+          value: 'outdated',
+          type: 'string',
+        },
+        {
+          name: 'nodejs',
+          value: 'unsupported',
+          type: 'string',
+        },
+      ]);
 
       app = express().use(
         await createCustomRouter(
