@@ -19,6 +19,7 @@ import { JsonValue } from '@backstage/types';
 /** @public */
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
+/** @public */
 export type NotificationPayloadMetadata = Array<{
   name: string;
   value: JsonValue;
