@@ -202,6 +202,17 @@ export function AboutContent(props: AboutContentProps) {
           <Chip key={t} size="small" label={t} />
         ))}
       </AboutField>
+      <AboutField
+        label="Labels"
+        value="No labels"
+        gridSizes={{ xs: 12, sm: 6, lg: 4 }}
+      >
+        {Object.entries(entity.metadata.labels || {}).map(([key, value]) => (
+          <Grid item key={key}>
+            <Chip key={key} size="small" label={`${key}: ${value}`} />
+          </Grid>
+        ))}
+      </AboutField>
       {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (
         <AboutField label="Targets" gridSizes={{ xs: 12 }}>
           <LinksGridList

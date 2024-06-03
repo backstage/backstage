@@ -37,6 +37,9 @@ describe('<AboutContent />', () => {
           name: 'software',
           description: 'This is the description',
           tags: ['tag-1'],
+          labels: {
+            'label-1': 'foo-bar',
+          },
         },
         spec: {
           owner: 'o',
@@ -86,10 +89,15 @@ describe('<AboutContent />', () => {
       expect(screen.getByText('Lifecycle').nextSibling).toHaveTextContent('l');
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: foo-bar',
+      );
     });
 
     it('highlights missing required fields', async () => {
       delete entity.metadata.tags;
+      delete entity.metadata.labels;
       entity.spec = {};
       entity.relations = [];
 
@@ -126,6 +134,9 @@ describe('<AboutContent />', () => {
           name: 'software',
           description: 'This is the description',
           tags: ['tag-1'],
+          labels: {
+            'label-1': 'foo-bar',
+          },
         },
         spec: {
           type: 'openapi',
@@ -176,10 +187,15 @@ describe('<AboutContent />', () => {
       );
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: foo-bar',
+      );
     });
 
     it('highlights missing required fields', async () => {
       delete entity.metadata.tags;
+      delete entity.metadata.labels;
       delete entity.spec!.type;
       delete entity.spec!.lifecycle;
       delete entity.spec!.system;
@@ -213,6 +229,10 @@ describe('<AboutContent />', () => {
       );
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'No labels',
+      );
     });
   });
 
@@ -227,6 +247,9 @@ describe('<AboutContent />', () => {
           name: 'software',
           description: 'This is the description',
           tags: ['tag-1'],
+          labels: {
+            'label-1': 'foo-bar',
+          },
         },
         spec: {
           owner: 'guest',
@@ -284,10 +307,15 @@ describe('<AboutContent />', () => {
       );
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: foo-bar',
+      );
     });
 
     it('highlights missing required fields', async () => {
       delete entity.metadata.tags;
+      delete entity.metadata.labels;
       delete entity.spec!.type;
       delete entity.spec!.lifecycle;
       delete entity.spec!.system;
@@ -321,6 +349,10 @@ describe('<AboutContent />', () => {
       );
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'No labels',
+      );
     });
   });
 
@@ -335,6 +367,9 @@ describe('<AboutContent />', () => {
           name: 'software',
           description: 'This is the description',
           tags: ['tag-1'],
+          labels: {
+            'label-1': 'foo-bar',
+          },
         },
         spec: {
           owner: 'guest',
@@ -370,10 +405,15 @@ describe('<AboutContent />', () => {
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: foo-bar',
+      );
     });
 
     it('highlights missing required fields', async () => {
       delete entity.metadata.tags;
+      delete entity.metadata.labels;
       entity.relations = [];
 
       await renderInTestApp(<AboutContent entity={entity} />, {
@@ -397,6 +437,10 @@ describe('<AboutContent />', () => {
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'No labels',
+      );
     });
   });
 
@@ -411,6 +455,9 @@ describe('<AboutContent />', () => {
           name: 'software',
           description: 'This is the description',
           tags: ['tag-1'],
+          labels: {
+            'label-1': 'foo-bar',
+          },
         },
         spec: {
           type: 'root',
@@ -447,10 +494,15 @@ describe('<AboutContent />', () => {
       expect(screen.getByText('Targets').nextSibling).toHaveTextContent(
         'https://backstage.io',
       );
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: foo-bar',
+      );
     });
 
     it('highlights missing required fields', async () => {
       delete entity.metadata.tags;
+      delete entity.metadata.labels;
       delete entity.spec!.type;
 
       await renderInTestApp(<AboutContent entity={entity} />, {
@@ -475,6 +527,10 @@ describe('<AboutContent />', () => {
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'No labels',
+      );
     });
   });
 
@@ -489,6 +545,9 @@ describe('<AboutContent />', () => {
           name: 'software',
           description: 'This is the description',
           tags: ['tag-1'],
+          labels: {
+            'label-1': 'foo-bar',
+          },
         },
         spec: {
           type: 's3',
@@ -534,10 +593,15 @@ describe('<AboutContent />', () => {
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: foo-bar',
+      );
     });
 
     it('highlights missing required fields', async () => {
       delete entity.metadata.tags;
+      delete entity.metadata.labels;
       delete entity.spec!.type;
       delete entity.spec!.system;
       entity.relations = [];
@@ -567,6 +631,10 @@ describe('<AboutContent />', () => {
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'No labels',
+      );
     });
   });
 
@@ -581,6 +649,9 @@ describe('<AboutContent />', () => {
           name: 'software',
           description: 'This is the description',
           tags: ['tag-1'],
+          labels: {
+            'label-1': 'foo-bar',
+          },
         },
         spec: {
           owner: 'guest',
@@ -624,10 +695,15 @@ describe('<AboutContent />', () => {
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('tag-1');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'label-1: foo-bar',
+      );
     });
 
     it('highlights missing required fields', async () => {
       delete entity.metadata.tags;
+      delete entity.metadata.labels;
       delete entity.spec!.domain;
       entity.relations = [];
 
@@ -655,6 +731,10 @@ describe('<AboutContent />', () => {
       expect(screen.queryByText('Lifecycle')).not.toBeInTheDocument();
       expect(screen.getByText('Tags')).toBeInTheDocument();
       expect(screen.getByText('Tags').nextSibling).toHaveTextContent('No Tags');
+      expect(screen.getByText('Labels')).toBeInTheDocument();
+      expect(screen.getByText('Labels').nextSibling).toHaveTextContent(
+        'No labels',
+      );
     });
   });
 });
