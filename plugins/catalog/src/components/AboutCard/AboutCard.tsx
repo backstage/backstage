@@ -172,7 +172,7 @@ export function AboutCard(props: AboutCardProps) {
 
   const subHeaderLinks = [viewInSource];
 
-  if (!viewInTechDocs?.disabled) {
+  if (viewTechdocLink) {
     subHeaderLinks.push(viewInTechDocs);
   }
 
