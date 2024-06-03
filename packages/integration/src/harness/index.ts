@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 export { HarnessIntegration } from './HarnessIntegration';
-export { getHarnessRequestOptions, getHarnessFileContentsUrl } from './core';
+export {
+  getHarnessRequestOptions,
+  getHarnessFileContentsUrl,
+  getHarnessArchiveUrl,
+  getHarnessLatestCommitUrl,
+  parseHarnessUrl,
+} from './core';
 export { readHarnessConfig } from './config';
 export type { HarnessIntegrationConfig } from './config';
