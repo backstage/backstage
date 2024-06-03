@@ -21,6 +21,7 @@ import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { EventsService } from '@backstage/plugin-events-node';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
+import { HealthService } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterFactoryOptions } from '@backstage/backend-app-api';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
@@ -195,6 +196,15 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<EventsService> | undefined,
       ) => ServiceMock<EventsService>;
+  }
+  // (undocumented)
+  export namespace health {
+    const // (undocumented)
+      factory: () => ServiceFactory<HealthService, 'root'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<HealthService> | undefined,
+      ) => ServiceMock<HealthService>;
   }
   export function httpAuth(options?: {
     pluginId?: string;
