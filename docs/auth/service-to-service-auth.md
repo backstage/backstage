@@ -27,6 +27,45 @@ any configuration. They generate self-signed tokens automatically for making
 requests to other Backstage backend plugins, and the receivers use the caller's
 public key set endpoint to be able to perform verification.
 
+A backend plugin wishing to make a request to another backend plugin acquires
+the required token as follows, where `auth` and `httpAuth` are assumed to be
+injected from `coreServices.auth` and `coreServices.httpAuth`, respectively:
+
+```ts
+const credentials = await httpAuth.credentials(req);
+const { token } = await auth.getPluginRequestToken({
+  onBehalfOf: credentials,
+  targetPluginId: '<plugin-id>', // e.g. 'catalog'
+});
+```
+
+In this example we are assuming that we are in an Express request handler, and
+we extract the caller credentials (typically a user or a service) out of its
+`req` and make the upstream request on-behalf-of that principal. Prefer to use
+this pattern wherever there's an incoming set of credentials to refer to.
+
+If you want to initiate a request entirely as your own service, not on behalf of
+anybody else, you can do so as follows:
+
+```ts
+const { token } = await auth.getPluginRequestToken({
+  onBehalfOf: await auth.getOwnServiceCredentials(),
+  targetPluginId: '<plugin-id>', // e.g. 'catalog'
+});
+```
+
+Callers pass along the tokens verbatim with requests in the `Authorization`
+header:
+
+```yaml
+Authorization: Bearer eyJhbG...
+```
+
+You may occasionally also see some code, e.g. clients to other systems, that
+accept a `credentials` argument directly instead of a token. For those, just
+pass in the credentials as acquired above, instead of making a token. The client
+code will know what to do with those credentials internally.
+
 This flow has only one configuration option to set in your app-config:
 `backend.auth.dangerouslyDisableDefaultAuthPolicy`, which can be set to `true`
 if you for some reason need to completely disable both the issuing and
@@ -73,8 +112,8 @@ The subjects must be strings without whitespace. They are used for identifying
 each caller, and become part of the credentials object that request recipient
 plugins get.
 
-Callers pass along the tokens verbatim with requests in the `Authorization`
-header:
+Callers must pass along tokens verbatim with requests in the `Authorization`
+header when calling Backstage plugins:
 
 ```yaml
 Authorization: Bearer eZv5o+fW3KnR3kVabMW4ZcDNLPl8nmMW
@@ -124,6 +163,13 @@ The subject returned from the token verification will become part of the
 credentials object that the request recipient plugins get. All subjects will have the prefix
 `external:`, but you can also provide a custom subjectPrefix which will get appended before the
 subject returned from your JWKS service (ex. `external:custom-prefix:sub`).
+
+Callers must pass along tokens with requests in the `Authorization` header when
+calling Backstage plugins:
+
+```yaml
+Authorization: Bearer eyJhbG...
+```
 
 ## Legacy Tokens
 
