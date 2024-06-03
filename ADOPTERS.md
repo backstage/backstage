@@ -270,3 +270,4 @@ _You can do this by using the [Adopter form](https://info.backstage.spotify.com/
 | [OP Financial Group](https://www.op.fi/op-financial-group) | [Heikki Hellgren](https://github.com/drodil), [Jyrki Koistinen](https://github.com/snyvision) | We are using Backstage as a gateway into our internal development platform offering to simplify complexity. |
 | [Scania](https://www.scania.com) | [Santosh Rangavajjula](https://linkedin.com/in/rsbth) | We are implementing backstage at Scania to consolidate operational information from Gitlab, Jira, Confluence, Artifactory, Servicenow and other tools into one place. |
 | [Senora.dev](https://senora.dev) | [Shaked Braimok Yosef](https://github.com/ShakedBraimok) |  We are using Backstage as a service catalog for our costumers. |
+| [Covestro](https://www.covestro.com) | [Julien Gedeon](https://github.com/cvvcv1) | We use Backstage as our Internal developer portal for the Digital R&D department. |

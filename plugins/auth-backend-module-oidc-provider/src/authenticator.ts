@@ -202,8 +202,15 @@ export const oidcAuthenticator = createOAuthAuthenticator({
 
   async logout(input, ctx) {
     const { client } = await ctx.promise;
+    const issuer = client.issuer;
+    /**
+     * https://github.com/panva/node-openid-client/blob/main/lib/client.js#L1398
+     * client.revoke will check revocation_endpoint and if undefined throw error。
+     *
+     * if oidc server do not provide revocation_endpoint，we should not call revoke function
+     */
 
-    if (input.refreshToken) {
+    if (input.refreshToken && issuer.revocation_endpoint) {
       await client.revoke(input.refreshToken);
     }
   },

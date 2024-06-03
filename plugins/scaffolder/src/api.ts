@@ -41,7 +41,10 @@ import {
 } from '@backstage/plugin-scaffolder-react';
 
 import queryString from 'qs';
-import { EventSourcePolyfill } from 'event-source-polyfill';
+import {
+  EventSourceMessage,
+  fetchEventSource,
+} from '@microsoft/fetch-event-source';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -226,11 +229,8 @@ export class ScaffolderClient implements ScaffolderApi {
         params.set('after', String(Number(after)));
       }
 
-      Promise.all([
-        this.discoveryApi.getBaseUrl('scaffolder'),
-        this.identityApi?.getCredentials(),
-      ]).then(
-        ([baseUrl, credentials]) => {
+      this.discoveryApi.getBaseUrl('scaffolder').then(
+        baseUrl => {
           const url = `${baseUrl}/v2/tasks/${encodeURIComponent(
             taskId,
           )}/eventstream`;
@@ -245,22 +245,25 @@ export class ScaffolderClient implements ScaffolderApi {
             }
           };
 
-          const eventSource = new EventSourcePolyfill(url, {
-            withCredentials: true,
-            headers: credentials?.token
-              ? { Authorization: `Bearer ${credentials.token}` }
-              : {},
-          });
-          eventSource.addEventListener('log', processEvent);
-          eventSource.addEventListener('recovered', processEvent);
-          eventSource.addEventListener('cancelled', processEvent);
-          eventSource.addEventListener('completion', (event: any) => {
-            processEvent(event);
-            eventSource.close();
-            subscriber.complete();
-          });
-          eventSource.addEventListener('error', event => {
-            subscriber.error(event);
+          const ctrl = new AbortController();
+          fetchEventSource(url, {
+            fetch: this.fetchApi.fetch,
+            signal: ctrl.signal,
+            onmessage(e: EventSourceMessage) {
+              if (e.event === 'log') {
+                processEvent(e);
+                return;
+              } else if (e.event === 'completion') {
+                processEvent(e);
+                subscriber.complete();
+                ctrl.abort();
+                return;
+              }
+              processEvent(e);
+            },
+            onerror(err) {
+              subscriber.error(err);
+            },
           });
         },
         error => {

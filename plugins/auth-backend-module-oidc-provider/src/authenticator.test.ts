@@ -493,5 +493,52 @@ describe('oidcAuthenticator', () => {
         new Error('Refresh failed'),
       );
     });
+
+    it('should not revoke refreshToken when issuer revocation_endpoint is undefined', async () => {
+      const refreshToken = 'revokeRefreshToken2';
+      const refreshRequest = {
+        scope: 'testScope',
+        refreshToken,
+        req: {} as express.Request,
+      };
+      const logoutRequest = {
+        refreshToken,
+        req: {} as express.Request,
+      };
+
+      // override .well-known endpoint response, set revocation_endpoint to undefined
+      mswServer.use(
+        rest.get(
+          'https://oidc.test/.well-known/openid-configuration',
+          (_req, res, ctx) =>
+            res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json({
+                ...issuerMetadata,
+                revocation_endpoint: undefined,
+              }),
+            ),
+        ),
+      );
+
+      const newImplementation = oidcAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+        }),
+      });
+
+      await oidcAuthenticator.logout?.(logoutRequest, newImplementation);
+
+      const refreshResponse = await oidcAuthenticator.refresh(
+        refreshRequest,
+        newImplementation,
+      );
+
+      expect(refreshResponse.session.refreshToken).toBe('refreshToken');
+    });
   });
 });
