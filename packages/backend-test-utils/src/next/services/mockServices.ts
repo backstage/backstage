@@ -24,6 +24,7 @@ import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
+import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
@@ -380,6 +381,14 @@ export namespace mockServices {
     export const mock = simpleMock(coreServices.permissions, () => ({
       authorize: jest.fn(),
       authorizeConditional: jest.fn(),
+    }));
+  }
+
+  export namespace rootHealth {
+    export const factory = rootHealthServiceFactory;
+    export const mock = simpleMock(coreServices.health, () => ({
+      getLiveness: jest.fn(),
+      getReadiness: jest.fn(),
     }));
   }
 
