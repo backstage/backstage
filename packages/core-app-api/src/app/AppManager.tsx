@@ -297,22 +297,22 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
         return loadedConfig.node;
       }
 
-      if (!routeBindings) {
-        routeBindings = resolveRouteBindings(
-          this.bindRoutes,
-          loadedConfig.api,
-          this.plugins,
-        );
-
+      if (routeValidationError) {
+        throw routeValidationError;
+      } else if (!routeBindings) {
         try {
+          routeBindings = resolveRouteBindings(
+            this.bindRoutes,
+            loadedConfig.api,
+            this.plugins,
+          );
+
           validateRouteParameters(routing.paths, routing.parents);
           validateRouteBindings(routeBindings, this.plugins);
         } catch (error) {
           routeValidationError = error;
           throw error;
         }
-      } else if (routeValidationError) {
-        throw routeValidationError;
       }
 
       // We can't register feature flags just after the element traversal, because the
