@@ -75,6 +75,8 @@ export type GaugeProps = {
   size?: 'normal' | 'small';
   description?: ReactNode;
   getColor?: GaugePropsGetColor;
+  relativeToMax?: boolean;
+  decimalDigits?: number;
 };
 
 /** @public */
@@ -93,6 +95,7 @@ const defaultGaugeProps = {
   inverse: false,
   unit: '%',
   max: 100,
+  relativeToMax: false,
 };
 
 export const getProgressColor: GaugePropsGetColor = ({
@@ -129,13 +132,36 @@ export function Gauge(props: GaugeProps) {
   const { getColor = getProgressColor, size = 'normal' } = props;
   const classes = useStyles(props);
   const { palette } = useTheme();
-  const { value, fractional, inverse, unit, max, description } = {
+  const {
+    value,
+    fractional,
+    inverse,
+    unit,
+    max,
+    description,
+    relativeToMax,
+    decimalDigits,
+  } = {
     ...defaultGaugeProps,
     ...props,
   };
 
-  const asPercentage = fractional ? Math.round(value * max) : value;
-  const asActual = max !== 100 ? Math.round(value) : asPercentage;
+  let asPercentage: number;
+  if (relativeToMax) {
+    asPercentage = (value / max) * 100;
+  } else {
+    asPercentage = fractional ? Math.round(value * max) : value;
+  }
+  let asActual: number;
+  if (relativeToMax) {
+    asActual = value;
+  } else {
+    asActual = max !== 100 ? Math.round(value) : asPercentage;
+  }
+  const asDisplay =
+    decimalDigits === undefined
+      ? asActual.toString()
+      : asActual.toFixed(decimalDigits);
 
   const [isHovering, setIsHovering] = useState(false);
 
@@ -164,7 +190,12 @@ export function Gauge(props: GaugeProps) {
         percent={asPercentage}
         strokeWidth={12}
         trailWidth={12}
-        strokeColor={getColor({ palette, value: asActual, inverse, max })}
+        strokeColor={getColor({
+          palette,
+          value: asPercentage,
+          inverse,
+          max: relativeToMax ? 100 : max,
+        })}
         className={classes.circle}
       />
       {description && isHovering ? (
@@ -175,7 +206,7 @@ export function Gauge(props: GaugeProps) {
             [classes.overlaySmall]: size === 'small',
           })}
         >
-          {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
+          {isNaN(value) ? 'N/A' : `${asDisplay}${unit}`}
         </Box>
       )}
     </Box>
