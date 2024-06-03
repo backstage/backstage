@@ -204,7 +204,9 @@ export function convertLegacyRouteRef(
         return legacyRefStr;
       },
       // This might already be implemented in the legacy ref, but we override it just to be sure
-      getDefaultTarget: newRef.getDefaultTarget,
+      getDefaultTarget() {
+        return newRef.getDefaultTarget();
+      },
       setId(id: string) {
         newRef.setId(id);
       },
