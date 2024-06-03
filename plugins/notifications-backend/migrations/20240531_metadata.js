@@ -28,6 +28,10 @@ exports.up = async function up(knex) {
     table.string('value').notNullable();
 
     table.index(['name'], 'notification_metadata_name_idx');
+
+    table.unique(['originating_id', 'name'], {
+      indexName: 'notification_metadata_id_name_idx',
+    });
   });
 
   await knex.schema.createTable('broadcast_metadata', table => {
@@ -43,6 +47,10 @@ exports.up = async function up(knex) {
     table.string('value').notNullable();
 
     table.index(['name'], 'broadcast_metadata_name_idx');
+
+    table.unique(['originating_id', 'name'], {
+      indexName: 'broadcast_metadata_id_name_idx',
+    });
   });
 };
 
