@@ -43,6 +43,7 @@ import {
   urlReaderServiceFactory,
   discoveryServiceFactory,
   HostDiscovery,
+  healthServiceFactory,
 } from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -416,5 +417,10 @@ export namespace mockServices {
       publish: jest.fn(),
       subscribe: jest.fn(),
     }));
+  }
+
+  export namespace health {
+    export const factory = healthServiceFactory;
+    export const mock = simpleMock(coreServices.health, () => ({}));
   }
 }
