@@ -302,6 +302,11 @@ export async function createRouter(
       opts.read = false;
       // or keep undefined
     }
+
+    if (req.query.topic) {
+      opts.topic = req.query.topic.toString();
+    }
+
     if (req.query.saved === 'true') {
       opts.saved = true;
     } else if (req.query.saved === 'false') {
