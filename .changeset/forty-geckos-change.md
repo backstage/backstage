@@ -2,4 +2,4 @@
 '@backstage/plugin-api-docs': patch
 ---
 
-Custom columns can now be optionally provided to ConsumingComponentsCard and ProvidingComponentsCard
+`ConsumingComponentsCard` and `ProvidingComponentsCard` will now optionally accept `columns` to override which table columns are displayed
