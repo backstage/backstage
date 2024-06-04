@@ -58,6 +58,7 @@ export const oneLoginAuthenticator = createOAuthAuthenticator({
   },
 
   async start(input, helper) {
+    input.scope = 'openid';
     return helper.start(input, {
       accessType: 'offline',
       prompt: 'consent',
@@ -69,6 +70,7 @@ export const oneLoginAuthenticator = createOAuthAuthenticator({
   },
 
   async refresh(input, helper) {
+    input.scope = 'openid';
     return helper.refresh(input);
   },
 });
