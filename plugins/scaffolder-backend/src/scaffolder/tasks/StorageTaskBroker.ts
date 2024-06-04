@@ -34,6 +34,7 @@ import {
   AuthService,
   BackstageCredentials,
 } from '@backstage/backend-plugin-api';
+import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 
 type TaskState = {
   checkpoints: {
@@ -71,8 +72,8 @@ export class TaskManager implements TaskContext {
       storage,
       abortSignal,
       logger,
+      DefaultWorkspaceService.create(task, storage, config),
       auth,
-      config,
     );
     agent.startTimeout();
     return agent;
@@ -84,8 +85,8 @@ export class TaskManager implements TaskContext {
     private readonly storage: TaskStore,
     private readonly signal: AbortSignal,
     private readonly logger: Logger,
+    private readonly workspaceService: WorkspaceService,
     private readonly auth?: AuthService,
-    private readonly config?: Config,
   ) {}
 
   get spec() {
@@ -112,9 +113,7 @@ export class TaskManager implements TaskContext {
     taskId: string;
     targetPath: string;
   }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
-      this.storage.rehydrateWorkspace?.(options);
-    }
+    await this.workspaceService.rehydrateWorkspace(options);
   }
 
   get done() {
@@ -163,18 +162,11 @@ export class TaskManager implements TaskContext {
   }
 
   async serializeWorkspace?(options: { path: string }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
-      await this.storage.serializeWorkspace?.({
-        path: options.path,
-        taskId: this.task.taskId,
-      });
-    }
+    await this.workspaceService.serializeWorkspace(options);
   }
 
   async cleanWorkspace?(): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
-      await this.storage.cleanWorkspace?.({ taskId: this.task.taskId });
-    }
+    await this.workspaceService.cleanWorkspace();
   }
 
   async complete(
@@ -209,14 +201,6 @@ export class TaskManager implements TaskContext {
         );
       }
     }, 1000);
-  }
-
-  private isWorkspaceSerializationEnabled(): boolean {
-    return (
-      this.config?.getOptionalBoolean(
-        'scaffolder.EXPERIMENTAL_workspaceSerialization',
-      ) ?? false
-    );
   }
 
   async getInitiatorCredentials(): Promise<BackstageCredentials> {
