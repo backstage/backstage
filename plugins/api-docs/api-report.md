@@ -9,6 +9,7 @@ import { ApiEntity } from '@backstage/catalog-model';
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
+import { ComponentEntity } from '@backstage/catalog-model';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { InfoCardVariants } from '@backstage/core-components';
@@ -94,6 +95,7 @@ export const ConsumedApisCard: (props: {
 // @public (undocumented)
 export const ConsumingComponentsCard: (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ComponentEntity>[];
 }) => React_2.JSX.Element;
 
 // @public
@@ -124,6 +126,7 @@ export const EntityConsumedApisCard: (props: {
 // @public (undocumented)
 export const EntityConsumingComponentsCard: (props: {
   variant?: InfoCardVariants | undefined;
+  columns?: TableColumn<ComponentEntity>[] | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -141,6 +144,7 @@ export const EntityProvidedApisCard: (props: {
 // @public (undocumented)
 export const EntityProvidingComponentsCard: (props: {
   variant?: InfoCardVariants | undefined;
+  columns?: TableColumn<ComponentEntity>[] | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -191,6 +195,7 @@ export const ProvidedApisCard: (props: {
 // @public (undocumented)
 export const ProvidingComponentsCard: (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ComponentEntity>[];
 }) => React_2.JSX.Element;
 
 // @public (undocumented)
