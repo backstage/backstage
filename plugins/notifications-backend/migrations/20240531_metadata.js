@@ -24,8 +24,8 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('The entity that provided the relation');
     table.string('name', 255).notNullable();
-    table.text('type').notNullable();
-    table.string('value').notNullable();
+    table.string('type').notNullable();
+    table.text('value').notNullable();
 
     table.index(['name'], 'notification_metadata_name_idx');
 
@@ -43,8 +43,8 @@ exports.up = async function up(knex) {
       .notNullable()
       .comment('The entity that provided the relation');
     table.string('name', 255).notNullable();
-    table.text('type').notNullable();
-    table.string('value').notNullable();
+    table.string('type').notNullable();
+    table.text('value').notNullable();
 
     table.index(['name'], 'broadcast_metadata_name_idx');
 
