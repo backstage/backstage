@@ -5358,11 +5358,12 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
+    "@backstage/types": "workspace:^"
     "@types/node-fetch": ^2.5.12
-    bottleneck: ^2.19.5
     luxon: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
+    p-throttle: ^6.1.0
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -35861,6 +35862,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"p-throttle@npm:^6.1.0":
+  version: 6.1.0
+  resolution: "p-throttle@npm:6.1.0"
+  checksum: c1947cca8844564c3d86f8c09067add5e7398b87898cb1f1aea5c48d2c211590d039a316d28a4b0d95364ffa0213c01dff6bf71175c468eab0e381f77715dbdb
+  languageName: node
+  linkType: hard
+
 "p-timeout@npm:^3.2.0":
   version: 3.2.0
   resolution: "p-timeout@npm:3.2.0"
@@ -39799,7 +39807,6 @@ __metadata:
     "@types/webpack": ^5.28.0
     "@useoptic/optic": ^0.50.10
     array-to-table: ^1.0.1
-    bottleneck: ^2.19.5
     command-exists: ^1.2.9
     cross-env: ^7.0.0
     e2e-test: "workspace:*"

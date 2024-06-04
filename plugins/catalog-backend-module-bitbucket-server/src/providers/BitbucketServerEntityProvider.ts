@@ -25,6 +25,7 @@ import {
 import {
   EntityProvider,
   EntityProviderConnection,
+  LocationSpec,
 } from '@backstage/plugin-catalog-node';
 import * as uuid from 'uuid';
 import { BitbucketServerClient, paginated } from '../lib';
@@ -37,6 +38,8 @@ import {
   defaultBitbucketServerLocationParser,
 } from './BitbucketServerLocationParser';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import pThrottle from 'p-throttle';
+import { durationToMilliseconds } from '@backstage/types';
 
 /**
  * Discovers catalog files located in Bitbucket Server.
@@ -204,7 +207,8 @@ export class BitbucketServerEntityProvider implements EntityProvider {
         if (this.config?.filters?.skipArchivedRepos && repository.archived) {
           continue;
         }
-        for await (const entity of this.parser({
+
+        const options: ParseOptions = {
           client,
           logger: this.logger,
           location: {
@@ -212,11 +216,36 @@ export class BitbucketServerEntityProvider implements EntityProvider {
             target: `${repository.links.self[0].href}${this.config.catalogPath}`,
             presence: 'optional',
           },
-        })) {
-          result.push(entity);
+        };
+
+        if (this.config.throttling) {
+          const throttle = pThrottle({
+            limit: this.config.throttling.count,
+            interval: durationToMilliseconds(this.config.throttling.interval),
+          });
+
+          const throttled = throttle(async () => {
+            await this.parseEntities(result, options);
+          });
+
+          await throttled();
+        } else {
+          await this.parseEntities(result, options);
         }
       }
     }
     return result;
   }
+
+  private async parseEntities(entities: Entity[], options: ParseOptions) {
+    for await (const entity of this.parser(options)) {
+      entities.push(entity);
+    }
+  }
+}
+
+interface ParseOptions {
+  client: BitbucketServerClient;
+  location: LocationSpec;
+  logger: LoggerService;
 }
