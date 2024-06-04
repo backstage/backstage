@@ -33,22 +33,14 @@ import {
   OAuthRequestDialog,
   SignInPage,
 } from '@backstage/core-components';
-import { apiDocsPlugin, ApiExplorerPage } from '@backstage/plugin-api-docs';
-import {
-  CatalogEntityPage,
-  CatalogIndexPage,
-  catalogPlugin,
-} from '@backstage/plugin-catalog';
+import { ApiExplorerPage } from '@backstage/plugin-api-docs';
+import { CatalogEntityPage, CatalogIndexPage } from '@backstage/plugin-catalog';
 
 import { CatalogGraphPage } from '@backstage/plugin-catalog-graph';
-import {
-  CatalogImportPage,
-  catalogImportPlugin,
-} from '@backstage/plugin-catalog-import';
-import { orgPlugin } from '@backstage/plugin-org';
+import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 import { HomepageCompositionRoot, VisitListener } from '@backstage/plugin-home';
 
-import { ScaffolderPage, scaffolderPlugin } from '@backstage/plugin-scaffolder';
+import { ScaffolderPage } from '@backstage/plugin-scaffolder';
 import {
   ScaffolderFieldExtensions,
   ScaffolderLayouts,
@@ -56,7 +48,6 @@ import {
 import { SearchPage } from '@backstage/plugin-search';
 import {
   TechDocsIndexPage,
-  techdocsPlugin,
   TechDocsReaderPage,
 } from '@backstage/plugin-techdocs';
 import { TechDocsAddons } from '@backstage/plugin-techdocs-react';
@@ -118,23 +109,6 @@ const app = createApp({
         />
       );
     },
-  },
-  bindRoutes({ bind }) {
-    bind(catalogPlugin.externalRoutes, {
-      createComponent: scaffolderPlugin.routes.root,
-      viewTechDoc: techdocsPlugin.routes.docRoot,
-      createFromTemplate: scaffolderPlugin.routes.selectedTemplate,
-    });
-    bind(apiDocsPlugin.externalRoutes, {
-      registerApi: catalogImportPlugin.routes.importPage,
-    });
-    bind(scaffolderPlugin.externalRoutes, {
-      registerComponent: catalogImportPlugin.routes.importPage,
-      viewTechDoc: techdocsPlugin.routes.docRoot,
-    });
-    bind(orgPlugin.externalRoutes, {
-      catalogIndex: catalogPlugin.routes.catalogIndex,
-    });
   },
 });
 
