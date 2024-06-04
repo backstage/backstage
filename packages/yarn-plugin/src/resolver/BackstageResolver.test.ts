@@ -40,6 +40,10 @@ describe('BackstageResolver', () => {
       .spyOn(ppath, 'cwd')
       .mockReturnValue(npath.toPortablePath(mockDir.path));
 
+    jest
+      .spyOn(process, 'cwd')
+      .mockReturnValue(npath.toPortablePath(mockDir.path));
+
     mockDir.setContent({
       'backstage.json': JSON.stringify({
         version: '1.23.45',

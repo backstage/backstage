@@ -14,46 +14,18 @@
  * limitations under the License.
  */
 
-import { PortablePath, ppath, xfs } from '@yarnpkg/fslib';
+import { ppath, xfs } from '@yarnpkg/fslib';
 import { valid as semverValid } from 'semver';
 import { getManifestByVersion } from '@backstage/release-manifests';
+import { BACKSTAGE_JSON, findPaths } from '@backstage/cli-common';
 import { Descriptor, structUtils } from '@yarnpkg/core';
 import { PROTOCOL } from './constants';
 
-const isWorkspaceRoot = (dir: PortablePath) => {
-  const manifestPath = ppath.join(dir, 'package.json');
-
-  if (xfs.existsSync(manifestPath)) {
-    const manifest = xfs.readJsonSync(manifestPath);
-
-    if (manifest.workspaces) {
-      return true;
-    }
-  }
-
-  return false;
-};
-
-const findWorkspaceRoot = () => {
-  const cwd = ppath.cwd();
-  let currentDir = cwd;
-
-  while (!isWorkspaceRoot(currentDir)) {
-    const parentDir = ppath.dirname(currentDir);
-
-    if (parentDir === currentDir) {
-      throw new Error(`Workspace root not found from ${cwd}`);
-    }
-
-    currentDir = parentDir;
-  }
-
-  return currentDir;
-};
-
 export const getCurrentBackstageVersion = () => {
+  const workspaceRoot = ppath.resolve(findPaths(ppath.cwd()).targetRoot);
+
   const backstageJson = xfs.readJsonSync(
-    ppath.join(findWorkspaceRoot(), 'backstage.json'),
+    ppath.join(workspaceRoot, BACKSTAGE_JSON),
   );
 
   const backstageVersion = semverValid(backstageJson.version);

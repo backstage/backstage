@@ -30,6 +30,7 @@
     "watch": "./src"
   },
   "dependencies": {
+    "@backstage/cli-common": "workspace:^",
     "@backstage/release-manifests": "workspace:^",
     "@yarnpkg/core": "^4.0.3",
     "@yarnpkg/fslib": "^3.0.2",
