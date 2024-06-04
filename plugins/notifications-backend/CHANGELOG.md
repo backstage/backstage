@@ -1,5 +1,22 @@
 # @backstage/plugin-notifications-backend
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+  - @backstage/plugin-events-node@0.3.5-next.1
+  - @backstage/plugin-notifications-node@0.2.0-next.2
+  - @backstage/plugin-signals-node@0.1.5-next.2
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-notifications-common@0.0.3
+
 ## 0.3.0-next.1
 
 ### Minor Changes

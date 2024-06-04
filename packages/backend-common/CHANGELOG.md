@@ -1,5 +1,27 @@
 # @backstage/backend-common
 
+## 0.23.0-next.2
+
+### Minor Changes
+
+- 395b973: Implemented `readTree` for Harness provider to support TechDocs functionality
+
+### Patch Changes
+
+- 0634fdc: Deprecated `dropDatabase`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/integration@1.12.0-next.0
+  - @backstage/backend-app-api@0.7.6-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.23.0-next.1
 
 ### Minor Changes
