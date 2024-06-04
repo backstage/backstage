@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
+export { DefaultSchedulerService } from './lib/DefaultSchedulerService';
 export { schedulerServiceFactory } from './schedulerServiceFactory';
