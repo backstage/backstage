@@ -1,5 +1,20 @@
 # @backstage/core-components
 
+## 0.14.8-next.1
+
+### Patch Changes
+
+- a0b46f6: Having tooltip inherit font size for consistency in catalog table columns
+- eae0e4d: Fixed an issue causing `SidebarSubmenu` text to not follow the theme color
+- 3e175c8: Removed max width from `Select` component.
+- 57d7582: Fixed a bug in `SupportButton` where the title was rendered with the characteristics of a button.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6-next.0
+  - @backstage/version-bridge@1.0.8
+
 ## 0.14.8-next.0
 
 ### Patch Changes

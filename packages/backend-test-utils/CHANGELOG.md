@@ -1,5 +1,19 @@
 # @backstage/backend-test-utils
 
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 0634fdc: Refactored `TestDatabases` to no longer depend on `backend-common`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-app-api@0.7.6-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+  - @backstage/plugin-events-node@0.3.5-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.0-next.1
 
 ### Minor Changes

@@ -1,5 +1,34 @@
 # @backstage/plugin-scaffolder
 
+## 1.21.0-next.2
+
+### Minor Changes
+
+- 60085dd: Added the following default targets for external routes:
+
+  - `registerComponent` binds to the catalog import page.
+  - `viewTechDoc` binds to the TechDocs entity documentation page.
+
+### Patch Changes
+
+- cbebad1: Internal updates to allow reusing Backstage's `fetchApi` implementation for event source requests. This allows you to for example, override the `Authorization` header.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.1
+  - @backstage/core-compat-api@0.2.6-next.1
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/integration@1.12.0-next.0
+  - @backstage/frontend-plugin-api@0.6.6-next.1
+  - @backstage/integration-react@1.1.28-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.1
+  - @backstage/plugin-scaffolder-react@1.8.7-next.2
+  - @backstage/plugin-permission-react@0.4.23-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-scaffolder-common@1.5.3-next.0
+
 ## 1.20.2-next.1
 
 ### Patch Changes

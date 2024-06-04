@@ -1,5 +1,17 @@
 # @backstage/integration
 
+## 1.12.0-next.0
+
+### Minor Changes
+
+- 395b973: Implemented `readTree` for Harness provider to support TechDocs functionality
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.11.0
 
 ### Minor Changes

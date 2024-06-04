@@ -1,5 +1,14 @@
 # @backstage/create-app
 
+## 0.5.16-next.2
+
+### Patch Changes
+
+- 78363f6: Bumped TypeScript to version `5.4`.
+- 81507c8: Updated `node-gyp` to v10
+- Updated dependencies
+  - @backstage/cli-common@0.1.13
+
 ## 0.5.16-next.1
 
 ### Patch Changes

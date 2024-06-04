@@ -1,5 +1,16 @@
 # @backstage/core-plugin-api
 
+## 1.9.3-next.0
+
+### Patch Changes
+
+- 35fbe09: Added a new `defaultTarget` option to `createExternalRouteRef`. I lets you specify a default target of the route by name, for example `'catalog.catalogIndex'`, which will be used if the target route is present in the app and there is no explicit route binding.
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 1.9.2
 
 ### Patch Changes
