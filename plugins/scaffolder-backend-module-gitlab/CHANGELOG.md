@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.4.1-next.2
+
+### Patch Changes
+
+- cf96041: Added `gitlab:issue:edit` action to edit existing GitLab issues
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/integration@1.12.0-next.0
+  - @backstage/plugin-scaffolder-node@0.4.5-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.4.1-next.1
 
 ### Patch Changes
