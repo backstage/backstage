@@ -33,6 +33,16 @@ export class BackstageResolver implements Resolver {
 
   shouldPersistResolution = () => true;
 
+  /**
+   * Called for each dependency present in the dependency list of a package
+   * definition. If it returns a new descriptor, this new descriptor will be
+   * used.
+   *
+   * In this plugin, we convert the specific range "backstage:^" to
+   * "backstage:<version from backstage.json>". This new range will be the one
+   * stored in lockfile entries, ensuring that we re-resolve the package when
+   * the version in backstage.json changes.
+   */
   bindDescriptor(descriptor: Descriptor): Descriptor {
     if (descriptor.range !== 'backstage:^') {
       throw new Error(
@@ -50,6 +60,12 @@ export class BackstageResolver implements Resolver {
     );
   }
 
+  /**
+   * Given a descriptor, return the list of locators that potentially satisfy
+   * it. The implementation in this plugin converts a `backstage:` range with a
+   * concrete version into the appropriate concrete npm version for that
+   * backstage release.
+   */
   async getCandidates(descriptor: Descriptor): Promise<Locator[]> {
     const range = structUtils.parseRange(descriptor.range);
     if (range.protocol !== BackstageResolver.protocol) {
@@ -76,19 +92,33 @@ export class BackstageResolver implements Resolver {
     ];
   }
 
+  /**
+   * This plugin does not need to support any locators itself, since the
+   * `getCandidates` method will always convert `backstage:` versions into
+   * `npm:` versions which can be handled as usual.
+   */
   supportsLocator = () => false;
 
+  /**
+   * This resolver never transforms the packages that are actually depended on,
+   * only replaces versions. As such there's never a need to add additional
+   * dependencies.
+   */
   getResolutionDependencies = () => ({});
 
+  /**
+   * Candidate versions produced by this resolver always use the `npm:`
+   *  protocol, so this function will never be called.
+   */
   async getSatisfying(): Promise<{ locators: Locator[]; sorted: boolean }> {
-    // Candidate versions produced by this resolver always use the `npm:`
-    // protocol, so this function will never be called.
     throw new Error('Unreachable');
   }
 
+  /**
+   * Once transformed into locators (through getCandidates), the versions are
+   * resolved by the NpmSemverResolver
+   */
   async resolve(): Promise<Package> {
-    // Once transformed into locators (through getCandidates), the versions are
-    // resolved by the NpmSemverResolver
     throw new Error(`Unreachable`);
   }
 }
