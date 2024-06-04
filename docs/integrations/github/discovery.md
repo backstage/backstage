@@ -145,6 +145,7 @@ If you do so, `default` will be used as provider ID.
 - **`filters`** _(optional)_:
   - **`branch`** _(optional)_:
     String used to filter results based on the branch name.
+    Defaults to the default Branch of the repository.
   - **`repository`** _(optional)_:
     Regular expression used to filter results based on the repository name.
   - **`topic`** _(optional)_:
