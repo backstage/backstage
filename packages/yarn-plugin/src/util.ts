@@ -86,7 +86,14 @@ export const getPackageVersion = async (descriptor: Descriptor) => {
   );
 
   if (!manifestEntry) {
-    throw new Error(`Package ${ident} not found in manifest`);
+    throw new Error(
+      `Package ${ident} not found in manifest for Backstage v${range.selector}. ` +
+        `This means the specified package is not included in this Backstage ` +
+        `release. This may imply the package has been replaced with an alternative - ` +
+        `please review the documentation for the package. If you need to continue ` +
+        `using this package, it will be necessary to switch to manually managing its ` +
+        `version.`,
+    );
   }
 
   return manifestEntry.version;
