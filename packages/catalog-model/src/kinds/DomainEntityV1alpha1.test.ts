@@ -32,6 +32,7 @@ describe('DomainV1alpha1Validator', () => {
       spec: {
         owner: 'me',
         subdomainOf: 'parent-domain',
+        type: 'domain-type',
       },
     };
   });
@@ -83,5 +84,15 @@ describe('DomainV1alpha1Validator', () => {
   it('rejects empty subdomainOf', async () => {
     (entity as any).spec.subdomainOf = '';
     await expect(validator.check(entity)).rejects.toThrow(/subdomainOf/);
+  });
+
+  it('accepts missing type', async () => {
+    delete (entity as any).spec.type;
+    await expect(validator.check(entity)).resolves.toBe(true);
+  });
+
+  it('rejects empty type', async () => {
+    (entity as any).spec.type = '';
+    await expect(validator.check(entity)).rejects.toThrow(/type/);
   });
 });
