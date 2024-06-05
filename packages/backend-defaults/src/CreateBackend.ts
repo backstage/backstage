@@ -26,11 +26,11 @@ import {
   rootLoggerServiceFactory,
   tokenManagerServiceFactory,
   userInfoServiceFactory,
-  healthServiceFactory,
 } from '@backstage/backend-app-api';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { discoveryServiceFactory } from '@backstage/backend-defaults/discovery';
+import { healthServiceFactory } from '@backstage/backend-defaults/health';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
 import { rootConfigServiceFactory } from '@backstage/backend-defaults/rootConfig';

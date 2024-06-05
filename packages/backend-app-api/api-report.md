@@ -138,9 +138,6 @@ export interface ExtendedHttpServer extends http.Server {
   stop(): Promise<void>;
 }
 
-// @public (undocumented)
-export const healthServiceFactory: () => ServiceFactory<HealthService, 'root'>;
-
 // @public @deprecated
 export class HostDiscovery implements DiscoveryService {
   static fromConfig(
@@ -295,6 +292,8 @@ export interface RootHttpRouterConfigureContext {
   applyDefaults: () => void;
   // (undocumented)
   config: RootConfigService;
+  // (undocumented)
+  health: HealthService;
   // (undocumented)
   lifecycle: LifecycleService;
   // (undocumented)

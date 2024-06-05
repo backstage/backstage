@@ -19,7 +19,6 @@ export * from './cache';
 export * from './config';
 export * from './database';
 export * from './discovery';
-export * from './health';
 export * from './httpAuth';
 export * from './httpRouter';
 export * from './identity';
