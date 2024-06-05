@@ -164,10 +164,26 @@ List any dependencies that this work has on other BEPs or features.
 
 ## Alternatives
 
-TBD
+### Separate Metadata File
 
-<!--
-What other approaches did you consider, and why did you rule them out? These do
-not need to be as detailed as the proposal, but should include enough
-information to express the idea and why it was not acceptable.
--->
+This proposal suggests that we keep metadata in the `package.json` file. An alternative would be to define a separate metadata file, for example `backstage.json` or `backstage.yaml`.
+
+A benefit of this approach is that we do not pollute the `package.json` file with additional metadata, which can help keep overall metadata easier to browse and understand. It also allows us to use our own format, such as allowing comments in JSON, or using YAML for easier readability.
+
+A downside of this approach is that it introduces a bit more complexity and friction in the tooling and package publishing, because we need to make sure that the metadata file is always included in the published package. We also end up with additional logic for finding and parsing this file, whereas resolving and parsing `package.json` is already a solved problem.
+
+One of the larger benefits of keeping package metadata `package.json` is that it makes the data immediately available in registry APIs. It avoids the need to download and parse additional files to get the metadata for a package. For this reason we believe that we should stick to using `package.json` for metadata for the time being. If we for some reason in the future find that we need to use a separate file, for example because the metadata becomes too large, we can always evolve the `backstage` field in a couple of different ways:
+
+```json
+{
+  // Moving all data to a separate file
+  "backstage": "backstage.json"
+}
+{
+  // Moving some data to a separate file
+  "backstage": {
+    "role": "frontend-plugin",
+    "metadata": "backstage.json"
+  }
+}
+```
