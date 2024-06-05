@@ -1,3 +1,6 @@
+import { mockServices } from '@backstage/backend-test-utils';
+import { DefaultHealthService } from './healthServiceFactory';
+
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -13,22 +16,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { mockServices } from '@backstage/backend-test-utils';
-import request from 'supertest';
-import { createHealthRouter } from './createHealthRouter';
-import express from 'express';
-
-describe('createHealthRouter', () => {
+describe('DefaultHealthService', () => {
   describe('readiness', () => {
     it(`should return a 500 response if the server hasn't started yet`, async () => {
-      const hc = createHealthRouter({
+      const service = new DefaultHealthService({
         lifecycle: mockServices.rootLifecycle.mock(),
       });
-      const app = express().use(hc);
-
-      const response = await request(app).get('/v1/readiness');
-      expect(response.status).toBe(500);
+      await expect(service.getReadiness()).resolves.toEqual({ status: 503 });
     });
 
     it('should return 200 if the server has started', async () => {
@@ -38,12 +32,16 @@ describe('createHealthRouter', () => {
         fn => (mockServerStartedFn = fn),
       );
 
-      const hc = createHealthRouter({ lifecycle });
-      const app = express().use(hc);
+      const service = new DefaultHealthService({
+        lifecycle: mockServices.rootLifecycle.mock(),
+      });
 
       mockServerStartedFn();
-      const response = await request(app).get('/v1/readiness').expect(200);
-      expect(response.body).toEqual({ status: 'ok' });
+
+      await expect(service.getReadiness()).resolves.toEqual({
+        status: 200,
+        payload: { status: 'ok' },
+      });
     });
 
     it(`should return a 500 response if the server has stopped`, async () => {
@@ -57,25 +55,28 @@ describe('createHealthRouter', () => {
         fn => (mockServerStoppedFn = fn),
       );
 
-      const hc = createHealthRouter({ lifecycle });
-      const app = express().use(hc);
+      const service = new DefaultHealthService({
+        lifecycle: mockServices.rootLifecycle.mock(),
+      });
 
       mockServerStartedFn();
       mockServerStoppedFn();
-      const response = await request(app).get('/v1/readiness');
-      expect(response.status).toBe(500);
+      await expect(service.getReadiness()).resolves.toEqual({
+        status: 503,
+      });
     });
   });
 
   describe('liveness', () => {
     it('should return 200 if the server has started', async () => {
-      const lifecycle = mockServices.rootLifecycle.mock();
+      const service = new DefaultHealthService({
+        lifecycle: mockServices.rootLifecycle.mock(),
+      });
 
-      const hc = createHealthRouter({ lifecycle });
-      const app = express().use(hc);
-
-      const response = await request(app).get('/v1/liveness').expect(200);
-      expect(response.body).toEqual({ status: 'ok' });
+      await expect(service.getLiveness()).resolves.toEqual({
+        status: 200,
+        payload: { status: 'ok' },
+      });
     });
   });
 });
