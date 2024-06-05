@@ -1,6 +1,5 @@
 ---
-'@backstage/plugin-catalog-backend-module-bitbucket-server': minor
-'@backstage/integration': minor
+'@backstage/plugin-catalog-backend-module-bitbucket-server': patch
 ---
 
 Added throttling to the BitbucketServerEntityProvider

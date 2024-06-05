@@ -56,6 +56,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
+  private parseFunction: (opt: ParseOptions) => Promise<AsyncIterable<Entity>>;
 
   static fromConfig(
     config: Config,
@@ -116,6 +117,21 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       target: this.getProviderName(),
     });
     this.scheduleFn = this.createScheduleFn(taskRunner);
+
+    if (this.config.throttling) {
+      const throttle = pThrottle({
+        limit: this.config.throttling.count,
+        interval: durationToMilliseconds(this.config.throttling.interval),
+      });
+
+      this.parseFunction = throttle((opt: ParseOptions) => {
+        return this.parse(opt);
+      });
+    } else {
+      this.parseFunction = (opt: ParseOptions) => {
+        return Promise.resolve(this.parse(opt));
+      };
+    }
   }
 
   private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
@@ -187,25 +203,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     );
     const result: Entity[] = [];
 
-    let parseFunction:
-      | ((opt: ParseOptions) => Promise<AsyncIterable<Entity>>)
-      | undefined;
-
-    if (this.config.throttling) {
-      const throttle = pThrottle({
-        limit: this.config.throttling.count,
-        interval: durationToMilliseconds(this.config.throttling.interval),
-      });
-
-      parseFunction = throttle((opt: ParseOptions) => {
-        return this.parse(opt);
-      });
-    } else {
-      parseFunction = (opt: ParseOptions) => {
-        return Promise.resolve(this.parse(opt));
-      };
-    }
-
     for await (const project of projects) {
       if (
         this.config?.filters?.projectKey &&
@@ -240,7 +237,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
           },
         };
 
-        await this.parseEntities(result, options, parseFunction);
+        await this.parseEntities(result, options, this.parseFunction);
       }
     }
     return result;
@@ -250,22 +247,11 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     return this.parser(options);
   }
 
-  private lastCalled: number | null = null;
-
   private async parseEntities(
     entities: Entity[],
     options: ParseOptions,
     parseFn: (opt: ParseOptions) => Promise<AsyncIterable<Entity>>,
   ) {
-    const now = Date.now();
-    if (this.lastCalled !== null) {
-      const duration = now - this.lastCalled;
-      this.logger.debug(`Time since last call: ${duration}ms`);
-    }
-    this.lastCalled = now;
-
-    this.logger.debug(`Parsing entities from ${options.location.target}`);
-
     for await (const entity of await parseFn(options)) {
       entities.push(entity);
     }
