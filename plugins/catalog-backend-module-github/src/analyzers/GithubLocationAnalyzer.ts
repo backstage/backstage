@@ -77,7 +77,7 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
 
     const catalogFile = catalogFilename || 'catalog-info.yaml';
 
-    const query = `filename:${catalogFile} repo:${owner}/${repo}`;
+    const query = `filename:${catalogFile} extension:yaml OR extension:yml repo:${owner}/${repo}`;
 
     const integration = this.integrations.github.byUrl(url);
     if (!integration) {
