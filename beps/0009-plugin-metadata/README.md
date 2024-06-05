@@ -135,7 +135,16 @@ The `backstage.pluginPackage` field is required when publishing a package with a
 
 ## Design Details
 
-_-_
+### Package Relationships Conflict Resolution
+
+Conflicts in the defined metadata are handled as follows:
+
+- The union of all `pluginPackages` is always used. If there are multiple packages defined for the same role, conflicts are resolved using the `backstage.moved` field if possible, but otherwise all packages are rejected.
+- All plugin packages with references to each other must have the same `pluginId`, or they are all rejected.
+- A module must have the same `pluginId` as the plugin it is a module for, or it is rejected.
+- If the role of a package does not match the definition in the `pluginPackages` field, the package is rejected.
+
+When metadata is "rejected" the consumer should either throw an error, or treat the conflicted fields as if they do not exist.
 
 ### References & Prior Art
 
