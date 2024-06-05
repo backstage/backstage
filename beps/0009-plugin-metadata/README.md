@@ -49,7 +49,7 @@ This metadata will be used to improve tooling in and around Backstage, such as p
 We want to provide a new set of standardized fields that makes it possible to build tooling that improves the following interactions with the Backstage ecosystem:
 
 - Browsing packages related to a plugin, i.e. listing all available library packages and frontend/backend variants of a specific plugin.
-- Discoverability of plugin modules. Given a plugin you should be able to identify all of its modules.
+- Discoverability of plugin modules. Given a plugin you should be able to identify all of its modules, and given a module you should be able to discovery its plugin.
 
 Furthermore this proposal should also lay the foundation for how we define additional metadata fields in the future. How they are validated, documented, and surfaced in the Backstage ecosystem.
 
