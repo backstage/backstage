@@ -17,13 +17,18 @@ import {
   DatabaseManager,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
+import {
+  Notification,
+  NotificationPayloadMetadata,
+} from '@backstage/plugin-notifications-common';
 import express from 'express';
 import request from 'supertest';
 
 import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { SignalsService } from '@backstage/plugin-signals-node';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -41,26 +46,35 @@ function createDatabase(): PluginDatabaseManager {
 describe('createRouter', () => {
   let app: express.Express;
 
-  const signalService: jest.Mocked<SignalsService> = {
+  const signals: jest.Mocked<SignalsService> = {
     publish: jest.fn(),
   };
 
   const discovery = mockServices.discovery();
   const userInfo = mockServices.userInfo();
-  const httpAuth = mockServices.httpAuth();
   const auth = mockServices.auth();
+  const database = createDatabase();
 
-  beforeAll(async () => {
-    const router = await createRouter({
+  const createCustomRouter = async (httpAuth: HttpAuthService) => {
+    return createRouter({
       logger: mockServices.logger.mock(),
-      database: createDatabase(),
+      database,
       discovery,
-      signals: signalService,
+      signals,
       userInfo,
       httpAuth,
       auth,
     });
-    app = express().use(router);
+  };
+
+  beforeAll(async () => {
+    app = express().use(
+      await createCustomRouter(
+        mockServices.httpAuth({
+          defaultCredentials: mockCredentials.service(),
+        }),
+      ),
+    );
   });
 
   beforeEach(() => {
@@ -73,6 +87,75 @@ describe('createRouter', () => {
 
       expect(response.status).toEqual(200);
       expect(response.body).toEqual({ status: 'ok' });
+    });
+
+    it('should allow to request metadata via api', async () => {
+      const response = await request(app)
+        .post('/')
+        .send({
+          recipients: { type: 'broadcast' },
+          payload: {
+            title: 'upgrade',
+            metadata: [
+              {
+                name: 'backstage',
+                value: 'outdated',
+                type: 'string',
+              },
+              {
+                name: 'nodejs',
+                value: 'unsupported',
+                type: 'string',
+              },
+            ],
+          },
+        });
+
+      expect(response.status).toEqual(200);
+
+      const client = await database.getClient();
+      const broadcastNotifications = (await client
+        .from('broadcast_metadata')
+        .select('*')) as NotificationPayloadMetadata;
+      expect(broadcastNotifications.length).toBe(2);
+      expect(
+        broadcastNotifications.map(bn => ({
+          name: bn.name,
+          value: bn.value,
+          type: bn.type,
+        })),
+      ).toStrictEqual([
+        {
+          name: 'backstage',
+          value: 'outdated',
+          type: 'string',
+        },
+        {
+          name: 'nodejs',
+          value: 'unsupported',
+          type: 'string',
+        },
+      ]);
+
+      app = express().use(
+        await createCustomRouter(
+          mockServices.httpAuth({
+            defaultCredentials: mockCredentials.user(),
+          }),
+        ),
+      );
+
+      const queryResponse = await request(app).get(
+        '/?metadata.backstage=outdated',
+      );
+
+      expect(queryResponse.status).toEqual(200);
+      const { notifications } = queryResponse.body as {
+        notifications: Notification[];
+      };
+
+      expect(notifications.length).toEqual(1);
+      expect(notifications[0].origin).toEqual('external:test-service');
     });
   });
 });

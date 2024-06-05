@@ -48,6 +48,8 @@ const NOTIFICATION_COLUMNS = [
   'saved',
 ];
 
+const METADATA_COLUMNS = ['type', 'name', 'value'];
+
 export const normalizeSeverity = (input?: string): NotificationSeverity => {
   let lower = (input ?? 'normal').toLowerCase() as NotificationSeverity;
   if (notificationSeverities.indexOf(lower) < 0) {
@@ -87,24 +89,61 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   };
 
   private mapToNotifications = (rows: any[]): Notification[] => {
-    return rows.map(row => ({
-      id: row.id,
-      user: row.user,
-      created: new Date(row.created),
-      saved: row.saved,
-      read: row.read,
-      updated: row.updated,
-      origin: row.origin,
-      payload: {
-        title: row.title,
-        description: row.description,
-        link: row.link,
-        topic: row.topic,
-        severity: row.severity,
-        scope: row.scope,
-        icon: row.icon,
-      },
-    }));
+    let order = 0;
+    const res = [
+      ...rows
+        .reduce((acc, row) => {
+          const metadata = row.name
+            ? {
+                name: row.name,
+                value: row.value,
+                type: row.type,
+              }
+            : undefined;
+          if (acc.has(row.id)) {
+            if (metadata) {
+              acc.get(row.id).notification.payload.metadata?.push(metadata);
+            }
+          } else {
+            order += 1;
+            acc.set(row.id, {
+              order,
+              notification: {
+                id: row.id,
+                user: row.user,
+                created: new Date(row.created),
+                saved: row.saved,
+                read: row.read,
+                updated: row.updated,
+                origin: row.origin,
+                payload: {
+                  title: row.title,
+                  description: row.description,
+                  link: row.link,
+                  topic: row.topic,
+                  severity: row.severity,
+                  scope: row.scope,
+                  icon: row.icon,
+                  ...(metadata && { metadata: [metadata] }),
+                },
+              },
+            });
+          }
+          return acc;
+        }, new Map<string, { order: number; notification: Notification }>())
+        .values(),
+    ] as { order: number; notification: Notification }[];
+
+    return res.sort((a, b) => a.order - b.order).map(e => e.notification);
+  };
+
+  private mapNotificationToMetadataDbRows = (notification: Notification) => {
+    return (
+      notification.payload?.metadata?.map(metadata => ({
+        originating_id: notification.id,
+        ...metadata,
+      })) ?? []
+    );
   };
 
   private mapNotificationToDbRow = (notification: Notification) => {
@@ -194,6 +233,31 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       );
     }
 
+    if (options.metadata) {
+      const count = Object.keys(options.metadata ?? {}).length;
+
+      const notificationMetadataQuery = (tableName: string) => {
+        const mQuery = this.db(tableName).select('originating_id');
+
+        Object.keys(options.metadata ?? {}).forEach(key => {
+          const value = options.metadata?.[key];
+          mQuery.orWhereRaw(
+            `(LOWER(name) LIKE LOWER(?) AND LOWER(value) LIKE LOWER(?))`,
+            [key, `%${value}%`],
+          );
+        });
+        mQuery
+          .groupBy('originating_id')
+          .having(this.db.raw(`COUNT(DISTINCT name) = ${count}`));
+        return mQuery;
+      };
+
+      if (count > 0) {
+        query.whereIn('id', notificationMetadataQuery('notification_metadata'));
+        query.orWhereIn('id', notificationMetadataQuery('broadcast_metadata'));
+      }
+    }
+
     if (options.ids) {
       query.whereIn('id', options.ids);
     }
@@ -220,8 +284,28 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   };
 
   async getNotifications(options: NotificationGetOptions) {
-    const notificationQuery = this.getNotificationsBaseQuery(options);
-    const notifications = await notificationQuery.select(NOTIFICATION_COLUMNS);
+    const notificationQuery = this.getNotificationsBaseQuery(options).as('n');
+
+    const metadataSubQuery = this.db('notification_metadata')
+      .select('*')
+      .unionAll(this.db('broadcast_metadata').select('*'))
+      .as('m');
+
+    const query = this.db
+      .select('*')
+      .from(notificationQuery)
+      .leftJoin(metadataSubQuery, 'm.originating_id', 'n.id');
+
+    const { orderField } = options;
+    if (orderField && orderField.length > 0) {
+      orderField.forEach(orderBy => {
+        query.orderBy(orderBy.field, orderBy.order);
+      });
+    } else if (!orderField) {
+      query.orderBy('created', 'desc');
+    }
+
+    const notifications = await query;
     return this.mapToNotifications(notifications);
   }
 
@@ -239,12 +323,25 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     await this.db
       .insert(this.mapNotificationToDbRow(notification))
       .into('notification');
+
+    const metadataRows = this.mapNotificationToMetadataDbRows(notification);
+
+    if (metadataRows.length > 0) {
+      await this.db.insert(metadataRows).into('notification_metadata');
+    }
   }
 
   async saveBroadcast(notification: Notification) {
     await this.db
       .insert(this.mapBroadcastToDbRow(notification))
       .into('broadcast');
+
+    const metadataRows = this.mapNotificationToMetadataDbRows(notification);
+
+    if (metadataRows.length > 0) {
+      await this.db.insert(metadataRows).into('broadcast_metadata');
+    }
+
     if (notification.saved || notification.read) {
       await this.db
         .insert({
@@ -334,10 +431,30 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const notificationQuery = this.db('notification')
       .where('id', id)
       .where('user', notification.user);
+
+    const notificationMetadataQuery = this.db('notification_metadata').where(
+      'originating_id',
+      id,
+    );
+
     const broadcastQuery = this.db('broadcast').where('id', id);
 
+    const broadcastMetadataQuery = this.db('broadcast_metadata').where(
+      'id',
+      id,
+    );
+
+    const metadata = notification.payload?.metadata;
     await Promise.all([
       notificationQuery.update(updateColumns),
+      ...[
+        metadata
+          ? [
+              notificationMetadataQuery.update(notification.payload?.metadata),
+              broadcastMetadataQuery.update(notification.payload?.metadata),
+            ]
+          : [],
+      ],
       broadcastQuery.update({ ...updateColumns, read: undefined }),
     ]);
 
@@ -345,16 +462,37 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   }
 
   async getNotification(options: { id: string }): Promise<Notification | null> {
-    const rows = await this.db
-      .select('*')
+    const query = this.db
+      .select([...NOTIFICATION_COLUMNS, ...METADATA_COLUMNS])
       .from(
         this.db('notification')
-          .select(NOTIFICATION_COLUMNS)
-          .unionAll([this.getBroadcastUnion()])
+          .leftJoin(
+            'notification_metadata',
+            'notification.id',
+            'notification_metadata.originating_id',
+          )
+          .select([...NOTIFICATION_COLUMNS, ...METADATA_COLUMNS])
+          .unionAll([
+            this.db('broadcast')
+              .leftJoin(
+                'broadcast_user_status',
+                'id',
+                '=',
+                'broadcast_user_status.broadcast_id',
+              )
+              .leftJoin(
+                'broadcast_metadata',
+                'broadcast.id',
+                'broadcast_metadata.originating_id',
+              )
+              .select([...NOTIFICATION_COLUMNS, ...METADATA_COLUMNS]),
+          ])
           .as('notifications'),
       )
       .where('id', options.id)
       .limit(1);
+
+    const rows = await query;
     if (!rows || rows.length === 0) {
       return null;
     }

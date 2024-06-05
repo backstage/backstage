@@ -15,7 +15,7 @@
  */
 
 import { Knex } from 'knex';
-import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
+import { isDockerDisabledForTests } from '../util';
 import { MysqlEngine } from './mysql';
 import { PostgresEngine } from './postgres';
 import { SqliteEngine } from './sqlite';
