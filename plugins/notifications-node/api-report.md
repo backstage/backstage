@@ -8,7 +8,7 @@ import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
-import { NotificationSeverity } from '@backstage/plugin-notifications-common';
+import { NotificationProcessorFilters as NotificationProcessorFilters_2 } from '@backstage/plugin-notifications-common';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
@@ -38,12 +38,8 @@ export interface NotificationProcessor {
   ): Promise<NotificationSendOptions>;
 }
 
-// @public (undocumented)
-export type NotificationProcessorFilters = {
-  minSeverity?: NotificationSeverity;
-  maxSeverity?: NotificationSeverity;
-  excludedTopics?: string[];
-};
+// @public @deprecated (undocumented)
+export type NotificationProcessorFilters = NotificationProcessorFilters_2;
 
 // @public (undocumented)
 export type NotificationRecipients =

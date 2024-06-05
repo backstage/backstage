@@ -16,7 +16,7 @@
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
   Notification,
-  NotificationSeverity,
+  NotificationProcessorFilters as NotificationProcessorFiltersCommon,
 } from '@backstage/plugin-notifications-common';
 import { NotificationSendOptions } from './service';
 
@@ -119,9 +119,6 @@ export const notificationsProcessingExtensionPoint =
 
 /**
  * @public
+ * @deprecated Please import from `@backstage/plugin-notifications-common` instead
  */
-export type NotificationProcessorFilters = {
-  minSeverity?: NotificationSeverity;
-  maxSeverity?: NotificationSeverity;
-  excludedTopics?: string[];
-};
+export type NotificationProcessorFilters = NotificationProcessorFiltersCommon;
