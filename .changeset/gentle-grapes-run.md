@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-catalog': minor
+'@backstage/plugin-catalog': patch
 ---
 
 add labels to EntityAboutCard
