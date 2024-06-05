@@ -347,5 +347,7 @@ Each entry has one or more of the following fields:
     - plugin: my-plugin
       permissionAttribute:
         # updates and deletes will be rejected
-        action: create, read
+        action:
+          - create
+          - read
   ```
