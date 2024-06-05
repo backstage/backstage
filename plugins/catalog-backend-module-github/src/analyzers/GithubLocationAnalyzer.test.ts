@@ -112,7 +112,7 @@ describe('GithubLocationAnalyzer', () => {
 
   it('should analyze', async () => {
     octokit.search.code.mockImplementation((opts: { q: string }) => {
-      if (opts.q === 'filename:catalog/-info.yaml$/ repo:foo/bar') {
+      if (opts.q === 'filename:/catalog-info.yaml$/ repo:foo/bar') {
         return Promise.resolve({
           data: { items: [{ path: 'catalog-info.yaml' }], total_count: 1 },
         });
