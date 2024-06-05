@@ -62,6 +62,7 @@
     "@backstage/plugin-events-node": "workspace:^",
     "@octokit/graphql": "^5.0.0",
     "@octokit/rest": "^19.0.3",
+    "escape-string-regexp": "^5.0.0",
     "git-url-parse": "^14.0.0",
     "lodash": "^4.17.21",
     "minimatch": "^9.0.0",
