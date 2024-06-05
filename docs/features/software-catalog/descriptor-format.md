@@ -1303,6 +1303,18 @@ which the domain is a part, e.g. `audio`. This field is optional.
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | [`Domain`](#kind-domain) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
+### `spec.type` [optional]
+
+The type of domain. There is currently no enforced set of values for this field,
+so it is left up to the adopting organization to choose a nomenclature that
+matches their catalog hierarchy. This field is optional.
+
+Some common values for this field could be:
+
+- `product-area`
+- `product-group`
+- `bundle`
+
 ## Kind: Location
 
 Describes the following entity kind:
