@@ -22,7 +22,13 @@ describe('DefaultHealthService', () => {
       const service = new DefaultHealthService({
         lifecycle: mockServices.rootLifecycle.mock(),
       });
-      await expect(service.getReadiness()).resolves.toEqual({ status: 503 });
+      await expect(service.getReadiness()).resolves.toEqual({
+        status: 503,
+        payload: {
+          message: 'Backend has not started yet',
+          status: 'error',
+        },
+      });
     });
 
     it('should return 200 if the server has started', async () => {
@@ -33,7 +39,7 @@ describe('DefaultHealthService', () => {
       );
 
       const service = new DefaultHealthService({
-        lifecycle: mockServices.rootLifecycle.mock(),
+        lifecycle,
       });
 
       mockServerStartedFn();
@@ -63,6 +69,10 @@ describe('DefaultHealthService', () => {
       mockServerStoppedFn();
       await expect(service.getReadiness()).resolves.toEqual({
         status: 503,
+        payload: {
+          message: 'Backend has not started yet',
+          status: 'error',
+        },
       });
     });
   });

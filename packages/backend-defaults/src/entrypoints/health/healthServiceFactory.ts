@@ -37,6 +37,7 @@ export class DefaultHealthService implements HealthService {
   async getLiveness(): Promise<{ status: number; payload?: any }> {
     return { status: 200, payload: { status: 'ok' } };
   }
+
   async getReadiness(): Promise<{ status: number; payload?: any }> {
     if (!this.#isRunning) {
       return {
