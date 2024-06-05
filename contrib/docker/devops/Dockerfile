@@ -1,4 +1,4 @@
-ARG IMAGE_TAG=16-alpine
+ARG IMAGE_TAG=20-alpine
 
 FROM node:${IMAGE_TAG}
 
