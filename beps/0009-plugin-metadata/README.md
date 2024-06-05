@@ -163,6 +163,35 @@ None
 
 ## Alternatives
 
+### Simplified Library Relationships
+
+Rather than listing libraries for each role, we could simply have an array of libraries that are available for the plugin:
+
+```json
+{
+  "name": "@backstage/plugin-catalog",
+  "backstage": {
+    "role": "frontend-plugin",
+    "pluginId": "catalog",
+    "pluginPackages": {
+      "frontend-plugin": "@backstage/plugin-catalog",
+      "backend-plugin": "@backstage/plugin-catalog-backend",
+      "libraries": [
+        "@backstage/plugin-catalog-react",
+        "@backstage/plugin-catalog-node",
+        "@backstage/plugin-catalog-common"
+      ]
+    }
+  }
+}
+```
+
+A benefit of this approach is that it keeps the metadata simpler and reduces the need for conflict resolution logic since we can use the union of all listed library packages.
+
+It also allows for the use-case of having multiple libraries of the same role, in case that would provide a benefit. Examples of this are the `@backstage/catalog-client` and `@backstage/catalog-model` packages.
+
+A downside of this approach could be that it may encourage a larger number of library packages, which is not necessarily what we want. Another downside is that the role of each package is not immediately available.
+
 ### Separate Metadata File
 
 This proposal suggests that we keep metadata in the `package.json` file. An alternative would be to define a separate metadata file, for example `backstage.json` or `backstage.yaml`.
