@@ -34,9 +34,7 @@ When editing BEPs, aim for tightly-scoped, single-topic PRs to keep discussions 
 
 ## Summary
 
-<!--
-The summary of the BEP is a few paragraphs long and give a high-level overview of the features to be implemented. It should be possible to read *only* the summary and understand what the BEP is proposing to accomplish and what impact it has for users.
--->
+The goal of this BEP is to define a strategy for how we define metadata for Backstage packages, as well as define a new set of metadata for how to associate packages with each other. The proposed solution is to store all plugin metadata in `package.json` under the `backstage` field, unless there is an existing field that can be used instead. Each piece of metadata is documented in the Backstage documentation, and as much of the metadata as possible is generated and validated by the Backstage CLI. The validation is structured in such a way that it does not interfere with internal Backstage setups, and only applies when publishing packages to NPM.
 
 ## Motivation
 
