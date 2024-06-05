@@ -35,7 +35,6 @@ import {
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { AuthService } from '@backstage/backend-plugin-api';
-import escapeStringRegexp from 'escape-string-regexp';
 
 /** @public */
 export type GithubLocationAnalyzerOptions = {
@@ -77,10 +76,10 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
     const { owner, name: repo } = parseGitUrl(url);
 
     const catalogFile = catalogFilename || 'catalog-info.yaml';
+    const fileParts = catalogFile.split('.');
+    const extension = fileParts[fileParts.length - 1];
 
-    const query = `filename:/${escapeStringRegexp(
-      catalogFile,
-    )}$/ repo:${owner}/${repo}`;
+    const query = `filename:${catalogFile} extension:${extension} repo:${owner}/${repo}`;
 
     const integration = this.integrations.github.byUrl(url);
     if (!integration) {

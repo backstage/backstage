@@ -112,7 +112,7 @@ describe('GithubLocationAnalyzer', () => {
 
   it('should analyze', async () => {
     octokit.search.code.mockImplementation((opts: { q: string }) => {
-      if (opts.q === 'filename:/catalog-info.yaml$/ repo:foo/bar') {
+      if (opts.q === 'filename:catalog-info.yaml extension:yaml repo:foo/bar') {
         return Promise.resolve({
           data: { items: [{ path: 'catalog-info.yaml' }], total_count: 1 },
         });
@@ -139,7 +139,7 @@ describe('GithubLocationAnalyzer', () => {
 
   it('should use the provided entity filename for search', async () => {
     octokit.search.code.mockImplementation((opts: { q: string }) => {
-      if (opts.q === 'filename:/anvil.yaml$/ repo:foo/bar') {
+      if (opts.q === 'filename:anvil.yaml extension:yaml repo:foo/bar') {
         return Promise.resolve({
           data: { items: [{ path: 'anvil.yaml' }], total_count: 1 },
         });
