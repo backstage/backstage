@@ -13,3 +13,4 @@ metadata:
 spec:
   owner: team-a
   subdomainOf: audio
+  type: product-group
