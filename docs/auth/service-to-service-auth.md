@@ -323,10 +323,12 @@ Each entry has one or more of the following fields:
   ```yaml
   accessRestrictions:
     - plugin: my-plugin
-      # any other permission check will be rejected
+      # Any other permission check will be rejected.
       permission:
         - my-plugin.add-item
         - my-plugin.remove-item
+      # Also supports the shorthand form:
+      # permission: my-plugin.add-item, my-plugin.remove-item
   ```
 
 - **`permissionAttribute`**: Optional. A key-value object of permission attributes
@@ -348,8 +350,10 @@ Each entry has one or more of the following fields:
   accessRestrictions:
     - plugin: my-plugin
       permissionAttribute:
-        # updates and deletes will be rejected
+        # Updates and deletes will be rejected.
         action:
           - create
           - read
+        # Also supports the shorthand form:
+        # action: create, read
   ```
