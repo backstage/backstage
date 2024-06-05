@@ -155,21 +155,11 @@ The following resources have been used to inform this proposal:
 
 ## Release Plan
 
-TBD
-
-<!--
-This section should describe the rollout process for any new features. It must take our version policies into account and plan for a phased rollout if this change affects any existing stable APIs.
-
-If there is any particular feedback to be gathered during the rollout, this should be described here as well.
--->
+The new metadata fields and any generation and validation of fields will initially be rolled out as part of the `repo fix` command in the Backstage CLI. In addition we will also add validation to the `yarn prepack` command in such a way that it does not interfere with backend package bundling, but does apply when packing packages for publishing. These changes will all be rolled out in a single release of the Backstage CLI, meaning that anyone publishing Backstage packages using the Backstage CLI will be required to provide the new metadata.
 
 ## Dependencies
 
 None
-
-<!--
-List any dependencies that this work has on other BEPs or features.
--->
 
 ## Alternatives
 
