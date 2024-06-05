@@ -324,7 +324,9 @@ Each entry has one or more of the following fields:
   accessRestrictions:
     - plugin: my-plugin
       # any other permission check will be rejected
-      permission: my-plugin.add-item, my-plugin.remove-item
+      permission:
+        - my-plugin.add-item
+        - my-plugin.remove-item
   ```
 
 - **`permissionAttribute`**: Optional. A key-value object of permission attributes
