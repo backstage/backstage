@@ -329,7 +329,18 @@ export type ExtensionPoint<T> = {
 export type ExtensionPointConfig = CreateExtensionPointOptions;
 
 // @public (undocumented)
-export interface HealthService {}
+export interface HealthService {
+  // (undocumented)
+  getLiveness(): Promise<{
+    status: number;
+    payload?: any;
+  }>;
+  // (undocumented)
+  getReadiness(): Promise<{
+    status: number;
+    payload?: any;
+  }>;
+}
 
 // @public
 export interface HttpAuthService {

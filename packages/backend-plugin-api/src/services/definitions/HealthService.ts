@@ -17,4 +17,7 @@
 /**
  * @public
  */
-export interface HealthService {}
+export interface HealthService {
+  getLiveness(): Promise<{ status: number; payload?: any }>;
+  getReadiness(): Promise<{ status: number; payload?: any }>;
+}

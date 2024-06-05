@@ -43,7 +43,6 @@ import {
   urlReaderServiceFactory,
   discoveryServiceFactory,
   HostDiscovery,
-  healthServiceFactory,
 } from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -57,6 +56,7 @@ import {
   eventsServiceFactory,
   eventsServiceRef,
 } from '@backstage/plugin-events-node';
+import { healthServiceFactory } from '@backstage/backend-defaults/health';
 
 /** @internal */
 function createLoggerMock() {
@@ -421,6 +421,9 @@ export namespace mockServices {
 
   export namespace health {
     export const factory = healthServiceFactory;
-    export const mock = simpleMock(coreServices.health, () => ({}));
+    export const mock = simpleMock(coreServices.health, () => ({
+      getLiveness: jest.fn(),
+      getReadiness: jest.fn(),
+    }));
   }
 }

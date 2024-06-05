@@ -20,6 +20,7 @@ import {
   createServiceFactory,
   LifecycleService,
   LoggerService,
+  HealthService,
 } from '@backstage/backend-plugin-api';
 import express, { RequestHandler, Express } from 'express';
 import type { Server } from 'node:http';
@@ -29,6 +30,7 @@ import {
   readHttpServerOptions,
 } from '../../../http';
 import { DefaultRootHttpRouter } from './DefaultRootHttpRouter';
+import { createHealthRouter } from './createHealthRouter';
 
 /**
  * @public
@@ -41,6 +43,7 @@ export interface RootHttpRouterConfigureContext {
   config: RootConfigService;
   logger: LoggerService;
   lifecycle: LifecycleService;
+  health: HealthService;
   applyDefaults: () => void;
 }
 
@@ -69,8 +72,9 @@ export const rootHttpRouterServiceFactory = createServiceFactory(
       config: coreServices.rootConfig,
       rootLogger: coreServices.rootLogger,
       lifecycle: coreServices.rootLifecycle,
+      health: coreServices.health,
     },
-    async factory({ config, rootLogger, lifecycle }) {
+    async factory({ config, rootLogger, lifecycle, health }) {
       const { indexPath, configure = defaultConfigure } = options ?? {};
       const logger = rootLogger.child({ service: 'rootHttpRouter' });
       const app = express();
@@ -78,6 +82,8 @@ export const rootHttpRouterServiceFactory = createServiceFactory(
       const router = DefaultRootHttpRouter.create({ indexPath });
       const middleware = MiddlewareFactory.create({ config, logger });
       const routes = router.handler();
+
+      const healthRouter = createHealthRouter({ health });
       const server = await createHttpServer(
         app,
         readHttpServerOptions(config.getOptionalConfig('backend')),
@@ -92,11 +98,13 @@ export const rootHttpRouterServiceFactory = createServiceFactory(
         config,
         logger,
         lifecycle,
+        health,
         applyDefaults() {
           app.use(middleware.helmet());
           app.use(middleware.cors());
           app.use(middleware.compression());
           app.use(middleware.logging());
+          app.use(healthRouter);
           app.use(routes);
           app.use(middleware.notFound());
           app.use(middleware.error());
