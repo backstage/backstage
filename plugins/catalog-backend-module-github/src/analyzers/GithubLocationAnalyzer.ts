@@ -77,9 +77,12 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
 
     const catalogFile = catalogFilename || 'catalog-info.yaml';
     const fileParts = catalogFile.split('.');
-    const extension = fileParts[fileParts.length - 1];
+    const extension =
+      fileParts.length > 0
+        ? `extension:${fileParts[fileParts.length - 1]}`
+        : '';
 
-    const query = `filename:${catalogFile} extension:${extension} repo:${owner}/${repo}`;
+    const query = `filename:${catalogFile} ${extension} repo:${owner}/${repo}`;
 
     const integration = this.integrations.github.byUrl(url);
     if (!integration) {
