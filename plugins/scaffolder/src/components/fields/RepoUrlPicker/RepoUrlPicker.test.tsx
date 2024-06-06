@@ -254,7 +254,7 @@ describe('RepoUrlPicker', () => {
       });
 
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
-        url: 'https://github.com/backstage/repo123',
+        host: 'github.com',
         additionalScope: {
           repoWrite: true,
           customScopes: {
@@ -321,7 +321,7 @@ describe('RepoUrlPicker', () => {
       });
 
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
-        url: 'https://gitlab.example.com/backstage/mysubgroup/repo123',
+        host: 'gitlab.example.com',
         additionalScope: {
           repoWrite: true,
         },
@@ -375,7 +375,7 @@ describe('RepoUrlPicker', () => {
       });
 
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
-        url: 'https://server.bitbucket.org/backstage/repo123',
+        host: 'server.bitbucket.org',
         additionalScope: {
           repoWrite: true,
         },
