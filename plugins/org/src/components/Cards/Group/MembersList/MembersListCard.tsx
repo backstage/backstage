@@ -138,16 +138,19 @@ export const MembersListCard = (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
   showAggregateMembersToggle?: boolean;
-  relationship?: string;
+  relationType?: string;
+  /** @deprecated Please use `relationAggregation` instead */
   relationsType?: EntityRelationAggregation;
+  relationAggregation?: EntityRelationAggregation;
 }) => {
   const {
     memberDisplayTitle = 'Members',
     pageSize = 50,
     showAggregateMembersToggle,
-    relationship = 'memberof',
-    relationsType = 'direct',
+    relationType = 'memberof',
   } = props;
+  const relationAggregation =
+    props.relationAggregation ?? props.relationsType ?? 'direct';
   const classes = useListStyles();
 
   const { entity: groupEntity } = useEntity<GroupEntity>();
@@ -167,7 +170,7 @@ export const MembersListCard = (props: {
   };
 
   const [showAggregateMembers, setShowAggregateMembers] = useState(
-    relationsType === 'aggregated',
+    relationAggregation === 'aggregated',
   );
 
   const { loading: loadingDescendantMembers, value: descendantMembers } =
@@ -179,7 +182,7 @@ export const MembersListCard = (props: {
       return await getAllDesendantMembersForGroupEntity(
         groupEntity,
         catalogApi,
-        relationship,
+        relationType,
       );
     }, [catalogApi, groupEntity, showAggregateMembers]);
   const {
@@ -190,7 +193,7 @@ export const MembersListCard = (props: {
     const membersList = await catalogApi.getEntities({
       filter: {
         kind: 'User',
-        [`relations.${relationship.toLocaleLowerCase('en-US')}`]: [
+        [`relations.${relationType.toLocaleLowerCase('en-US')}`]: [
           stringifyEntityRef({
             kind: 'group',
             namespace: groupNamespace.toLocaleLowerCase('en-US'),

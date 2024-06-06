@@ -160,7 +160,7 @@ describe('MemberTab Test', () => {
     await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={groupEntity}>
-          <MembersListCard relationship="leaderOf" />
+          <MembersListCard relationType="leaderOf" />
         </EntityProvider>
       </TestApiProvider>,
       {
@@ -376,7 +376,7 @@ describe('MemberTab Test', () => {
             <EntityLayout.Route path="/" title="Title">
               <MembersListCard
                 showAggregateMembersToggle
-                relationsType="aggregated"
+                relationAggregation="aggregated"
               />
             </EntityLayout.Route>
           </EntityLayout>
@@ -414,7 +414,7 @@ describe('MemberTab Test', () => {
         <EntityProvider entity={groupA}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="Title">
-              <MembersListCard relationsType="aggregated" />
+              <MembersListCard relationAggregation="aggregated" />
             </EntityLayout.Route>
           </EntityLayout>
         </EntityProvider>
