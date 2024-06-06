@@ -23,8 +23,9 @@ export const EntityMembersListCard: (props: {
   memberDisplayTitle?: string | undefined;
   pageSize?: number | undefined;
   showAggregateMembersToggle?: boolean | undefined;
-  relationship?: string | undefined;
+  relationType?: string | undefined;
   relationsType?: EntityRelationAggregation | undefined;
+  relationAggregation?: EntityRelationAggregation | undefined;
 }) => JSX_2.Element;
 
 // @public (undocumented)
@@ -33,6 +34,7 @@ export const EntityOwnershipCard: (props: {
   entityFilterKind?: string[] | undefined;
   hideRelationsToggle?: boolean | undefined;
   relationsType?: EntityRelationAggregation | undefined;
+  relationAggregation?: EntityRelationAggregation | undefined;
   entityLimit?: number | undefined;
 }) => JSX_2.Element;
 
@@ -56,8 +58,9 @@ export const MembersListCard: (props: {
   memberDisplayTitle?: string;
   pageSize?: number;
   showAggregateMembersToggle?: boolean;
-  relationship?: string;
+  relationType?: string;
   relationsType?: EntityRelationAggregation;
+  relationAggregation?: EntityRelationAggregation;
 }) => React_2.JSX.Element;
 
 // @public
@@ -84,6 +87,7 @@ export const OwnershipCard: (props: {
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
   relationsType?: EntityRelationAggregation;
+  relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
 }) => React_2.JSX.Element;
 

@@ -107,19 +107,27 @@ export const ComponentsGrid = ({
   className,
   entity,
   relationsType,
+  relationAggregation,
   entityFilterKind,
   entityLimit = 6,
 }: {
   className?: string;
   entity: Entity;
-  relationsType: EntityRelationAggregation;
+  /** @deprecated Please use relationAggregation instead */
+  relationsType?: EntityRelationAggregation;
+  relationAggregation?: EntityRelationAggregation;
   entityFilterKind?: string[];
   entityLimit?: number;
 }) => {
   const catalogLink = useRouteRef(catalogIndexRouteRef);
+  if (!relationsType && !relationAggregation) {
+    throw new Error(
+      'The relationAggregation property must be set as an EntityRelationAggregation type.',
+    );
+  }
   const { componentsWithCounters, loading, error } = useGetEntities(
     entity,
-    relationsType,
+    (relationAggregation ?? relationsType)!, // we can safely use the non-null assertion here because of the run-time check above
     entityFilterKind,
     entityLimit,
   );

@@ -125,11 +125,11 @@ const getChildOwnershipEntityRefs = async (
 
 const getOwners = async (
   entity: Entity,
-  relations: EntityRelationAggregation,
+  relationAggregation: EntityRelationAggregation,
   catalogApi: CatalogApi,
 ): Promise<string[]> => {
   const isGroup = entity.kind === 'Group';
-  const isAggregated = relations === 'aggregated';
+  const isAggregated = relationAggregation === 'aggregated';
   const isUserEntity = entity.kind === 'User';
 
   if (isAggregated && isGroup) {
@@ -166,7 +166,7 @@ const getOwnedEntitiesByOwners = (
 
 export function useGetEntities(
   entity: Entity,
-  relations: EntityRelationAggregation,
+  relationAggregation: EntityRelationAggregation,
   entityFilterKind?: string[],
   entityLimit = 6,
 ): {
@@ -189,7 +189,7 @@ export function useGetEntities(
     error,
     value: componentsWithCounters,
   } = useAsync(async () => {
-    const owners = await getOwners(entity, relations, catalogApi);
+    const owners = await getOwners(entity, relationAggregation, catalogApi);
 
     const ownedEntitiesList = await getOwnedEntitiesByOwners(
       owners,
@@ -230,7 +230,7 @@ export function useGetEntities(
       kind: string;
       queryParams: string;
     }>;
-  }, [catalogApi, entity, relations]);
+  }, [catalogApi, entity, relationAggregation]);
 
   return {
     componentsWithCounters,
