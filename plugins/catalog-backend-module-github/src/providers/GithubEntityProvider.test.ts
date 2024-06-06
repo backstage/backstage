@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
@@ -25,6 +24,7 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
 import { EventParams } from '@backstage/plugin-events-node';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../lib/github', () => {
   return {
@@ -44,10 +44,10 @@ class PersistingTaskRunner implements TaskRunner {
   }
 }
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('GithubEntityProvider', () => {
-  afterEach(() => jest.resetAllMocks());
+  afterEach(() => jest.clearAllMocks());
 
   it('no provider config', () => {
     const schedule = new PersistingTaskRunner();

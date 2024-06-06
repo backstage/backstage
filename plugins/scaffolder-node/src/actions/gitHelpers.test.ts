@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { Git } from '../scm';
 import {
   commitAndPushRepo,
@@ -24,6 +24,7 @@ import {
   createBranch,
   cloneRepo,
 } from './gitHelpers';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../scm', () => ({
   Git: {
@@ -40,14 +41,13 @@ jest.mock('../scm', () => ({
       clone: jest.fn(),
     }),
   },
-  getVoidLogger: jest.requireActual('@backstage/backend-common').getVoidLogger,
 }));
 jest.mock('fs-extra', () => ({
   cpSync: jest.fn(),
 }));
 
 const mockedGit = Git.fromAuth({
-  logger: getVoidLogger(),
+  logger: loggerToWinstonLogger(mockServices.logger.mock()),
 });
 
 describe('initRepoAndPush', () => {
@@ -64,7 +64,7 @@ describe('initRepoAndPush', () => {
           username: 'test-user',
           password: 'test-password',
         },
-        logger: getVoidLogger(),
+        logger: loggerToWinstonLogger(mockServices.logger.mock()),
       });
     });
 
@@ -120,7 +120,7 @@ describe('initRepoAndPush', () => {
       auth: {
         token: 'test-token',
       },
-      logger: getVoidLogger(),
+      logger: loggerToWinstonLogger(mockServices.logger.mock()),
     });
 
     expect(mockedGit.init).toHaveBeenCalledWith({
@@ -138,7 +138,7 @@ describe('initRepoAndPush', () => {
         username: 'test-user',
         password: 'test-password',
       },
-      logger: getVoidLogger(),
+      logger: loggerToWinstonLogger(mockServices.logger.mock()),
     });
 
     expect(mockedGit.init).toHaveBeenCalledWith({
@@ -159,7 +159,7 @@ describe('initRepoAndPush', () => {
         username: 'test-user',
         password: 'test-password',
       },
-      logger: getVoidLogger(),
+      logger: loggerToWinstonLogger(mockServices.logger.mock()),
     });
 
     expect(mockedGit.commit).toHaveBeenCalledWith({
@@ -190,7 +190,7 @@ describe('commitAndPushRepo', () => {
           username: 'test-user',
           password: 'test-password',
         },
-        logger: getVoidLogger(),
+        logger: loggerToWinstonLogger(mockServices.logger.mock()),
         commitMessage: 'commit message',
       });
     });
@@ -246,7 +246,7 @@ describe('commitAndPushRepo', () => {
         username: 'test-user',
         password: 'test-password',
       },
-      logger: getVoidLogger(),
+      logger: loggerToWinstonLogger(mockServices.logger.mock()),
       commitMessage: 'commit message',
       branch: 'otherbranch',
     });
@@ -269,7 +269,7 @@ describe('commitAndPushRepo', () => {
         username: 'test-user',
         password: 'test-password',
       },
-      logger: getVoidLogger(),
+      logger: loggerToWinstonLogger(mockServices.logger.mock()),
       commitMessage: 'commit message',
       remoteRef: 'refs/for/master',
     });
@@ -297,7 +297,7 @@ describe('commitAndPushRepo', () => {
         username: 'test-user',
         password: 'test-password',
       },
-      logger: getVoidLogger(),
+      logger: loggerToWinstonLogger(mockServices.logger.mock()),
       branch: 'master',
     });
 
@@ -560,7 +560,7 @@ describe('commitAndPushBranch', () => {
         name: 'gitCommitter',
         email: 'gitCommitter@backstage.io',
       },
-      logger: getVoidLogger(),
+      logger: loggerToWinstonLogger(mockServices.logger.mock()),
     });
 
     expect(mockedGit.commit).toHaveBeenCalledWith({

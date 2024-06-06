@@ -130,8 +130,12 @@ catalog:
 
 This provider supports multiple organizations via unique provider IDs.
 
-> **Note:** It is possible but certainly not recommended to skip the provider ID level.
-> If you do so, `default` will be used as provider ID.
+:::note Note
+
+It is possible but certainly not recommended to skip the provider ID level.
+If you do so, `default` will be used as provider ID.
+
+:::
 
 - **`catalogPath`** _(optional)_:
   Default: `/catalog-info.yaml`.
@@ -141,6 +145,7 @@ This provider supports multiple organizations via unique provider IDs.
 - **`filters`** _(optional)_:
   - **`branch`** _(optional)_:
     String used to filter results based on the branch name.
+    Defaults to the default Branch of the repository.
   - **`repository`** _(optional)_:
     Regular expression used to filter results based on the repository name.
   - **`topic`** _(optional)_:

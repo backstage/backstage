@@ -1,5 +1,41 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.4.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.1
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.8.0-next.0
+
+## 0.4.0-next.1
+
+### Minor Changes
+
+- 4f92394: Migrate from identityApi to fetchApi in frontend plugins.
+- 0177f75: Update kubernetes plugins to use autoscaling/v2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.8.0-next.0
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-kubernetes-common@0.7.6
+
 ## 0.3.5
 
 ### Patch Changes

@@ -392,6 +392,7 @@ export const createPublishGithubPullRequestAction: (
     forceFork?: boolean | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
+    forceEmptyGitAuthor?: boolean | undefined;
   },
   JsonObject
 >;

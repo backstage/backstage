@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-user-settings-backend",
-  "version": "0.2.17",
+  "version": "0.2.18-next.2",
   "description": "The Backstage backend plugin to manage user settings",
   "backstage": {
     "role": "backend-plugin"
@@ -60,6 +60,7 @@
     "yn": "^4.0.0"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/supertest": "^2.0.8",

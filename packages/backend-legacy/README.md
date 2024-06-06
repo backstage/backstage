@@ -31,7 +31,7 @@ The backend starts up on port 7007 per default.
 
 ### Debugging
 
-The backend is a node process that can be inspected to allow breakpoints and live debugging. To enable this, pass the `--inspect` flag to [backend:dev](https://backstage.io/docs/local-dev/cli-build-system#backend-development).
+The backend is a node process that can be inspected to allow breakpoints and live debugging. To enable this, pass the `--inspect` flag to [backend:dev](https://backstage.io/docs/tooling/cli/build-system#backend-development).
 
 To debug the backend in [Visual Studio Code](https://code.visualstudio.com/):
 

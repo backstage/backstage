@@ -1,5 +1,63 @@
 # @backstage/backend-common
 
+## 0.23.0-next.2
+
+### Minor Changes
+
+- 395b973: Implemented `readTree` for Harness provider to support TechDocs functionality
+
+### Patch Changes
+
+- 0634fdc: Deprecated `dropDatabase`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/integration@1.12.0-next.0
+  - @backstage/backend-app-api@0.7.6-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.23.0-next.1
+
+### Minor Changes
+
+- 02103be: Deprecated and moved over core services to `@backstage/backend-defaults`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/config-loader@1.8.0
+  - @backstage/plugin-auth-node@0.4.14-next.1
+
+## 0.22.1-next.0
+
+### Patch Changes
+
+- c6c0919: Updated configuration schema to include the `useRedisSets` cache config option.
+- 1779188: In preparation to the new backend system stable release, the `isDatabaseConflictError` helper have been moved to the `@backstage/backend-plugin-api` package and deprecated from `@backstage/backend-common`.
+- 8869b8e: We are deprecating the legacy `createServiceBuilder` factory, so if you are still using it, please checkout the migration guide and [migrate](https://backstage.io/docs/backend-system/building-plugins-and-modules/migrating) your plugin to use the new backend system.
+- 3bd04bb: We are deprecating the legacy router handlers and contexts in preparation for the new backend system stable release.
+- 6a576dc: Deprecate legacy service logger helpers and stop using `getVoidLogger` in tests.
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.11.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.22.0
 
 ### Minor Changes

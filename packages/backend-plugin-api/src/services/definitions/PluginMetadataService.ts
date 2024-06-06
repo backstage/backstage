@@ -15,8 +15,15 @@
  */
 
 /**
+ * Access metadata about the current plugin.
+ *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/plugin-metadata | service documentation} for more details.
+ *
  * @public
  */
 export interface PluginMetadataService {
+  /**
+   * The ID of the current plugin.
+   */
   getId(): string;
 }

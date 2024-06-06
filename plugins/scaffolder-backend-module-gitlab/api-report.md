@@ -149,8 +149,8 @@ export function createPublishGitlabAction(options: {
           squash_option?:
             | 'always'
             | 'never'
-            | 'default_on'
             | 'default_off'
+            | 'default_on'
             | undefined;
           topics?: string[] | undefined;
           visibility?: 'internal' | 'private' | 'public' | undefined;
@@ -202,8 +202,68 @@ export const createPublishGitlabMergeRequestAction: (options: {
 >;
 
 // @public
+export const createTriggerGitlabPipelineAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    branch: string;
+    repoUrl: string;
+    projectId: number;
+    tokenDescription: string;
+    token?: string | undefined;
+  },
+  {
+    pipelineUrl: string;
+  }
+>;
+
+// @public
+export const editGitlabIssueAction: (options: {
+  integrations: ScmIntegrationRegistry;
+}) => TemplateAction<
+  {
+    repoUrl: string;
+    projectId: number;
+    issueIid: number;
+    title?: string | undefined;
+    labels?: string | undefined;
+    description?: string | undefined;
+    weight?: number | undefined;
+    token?: string | undefined;
+    assignees?: number[] | undefined;
+    addLabels?: string | undefined;
+    confidential?: boolean | undefined;
+    milestoneId?: number | undefined;
+    removeLabels?: string | undefined;
+    stateEvent?: IssueStateEvent | undefined;
+    discussionLocked?: boolean | undefined;
+    epicId?: number | undefined;
+    dueDate?: string | undefined;
+    updatedAt?: string | undefined;
+    issueType?: IssueType | undefined;
+  },
+  {
+    state: string;
+    title: string;
+    projectId: number;
+    updatedAt: string;
+    issueUrl: string;
+    issueId: number;
+    issueIid: number;
+  }
+>;
+
+// @public
 const gitlabModule: () => BackendFeature;
 export default gitlabModule;
+
+// @public
+export enum IssueStateEvent {
+  // (undocumented)
+  CLOSE = 'close',
+  // (undocumented)
+  REOPEN = 'reopen',
+}
 
 // @public
 export enum IssueType {
@@ -211,6 +271,8 @@ export enum IssueType {
   INCIDENT = 'incident',
   // (undocumented)
   ISSUE = 'issue',
+  // (undocumented)
+  TASK = 'task',
   // (undocumented)
   TEST = 'test_case',
 }

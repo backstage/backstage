@@ -16,17 +16,17 @@
 
 import { ConfigReader } from '@backstage/config';
 import * as jose from 'jose';
-import { getVoidLogger } from '../logging';
 import { ServerTokenManager } from './ServerTokenManager';
 import { TokenManager } from './types';
 import { DateTime } from 'luxon';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const emptyConfig = new ConfigReader({});
 const configWithSecret = new ConfigReader({
   backend: { auth: { keys: [{ secret: 'a-secret-key' }] } },
 });
 const env = process.env;
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('ServerTokenManager', () => {
   beforeEach(() => {

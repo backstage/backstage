@@ -1,5 +1,43 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.3.0-next.2
+
+### Minor Changes
+
+- 403394a: Allow empty author info in createPullRequest action for Github
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/integration@1.12.0-next.0
+  - @backstage/plugin-scaffolder-node@0.4.5-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.2.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-scaffolder-node@0.4.5-next.1
+
+## 0.2.9-next.0
+
+### Patch Changes
+
+- f145a04: Added handling for dry run to githubPullRequest and githubWebhook and added tests for this functionality
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-scaffolder-node@0.4.5-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.11.0
+
 ## 0.2.8
 
 ### Patch Changes

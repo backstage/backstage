@@ -25,22 +25,8 @@ import { catalogImportApiRef, CatalogImportClient } from '../../api';
 import { DefaultImportPage } from './DefaultImportPage';
 
 describe('<DefaultImportPage />', () => {
-  const identityApi = {
-    getUserId: () => {
-      return 'user';
-    },
-    getProfile: () => {
-      return {};
-    },
-    getIdToken: () => {
-      return Promise.resolve('token');
-    },
-    signOut: () => {
-      return Promise.resolve();
-    },
-    getProfileInfo: jest.fn(),
-    getBackstageIdentity: jest.fn(),
-    getCredentials: jest.fn(),
+  const fetchApi = {
+    fetch: jest.fn(),
   };
 
   let apis: TestApiRegistry;
@@ -56,7 +42,7 @@ describe('<DefaultImportPage />', () => {
           scmAuthApi: {
             getCredentials: async () => ({ token: 'token', headers: {} }),
           },
-          identityApi,
+          fetchApi,
           scmIntegrationsApi: {} as any,
           catalogApi: {} as any,
           configApi: {} as any,

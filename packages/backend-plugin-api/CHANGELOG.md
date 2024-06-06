@@ -1,5 +1,41 @@
 # @backstage/backend-plugin-api
 
+## 0.6.19-next.2
+
+### Patch Changes
+
+- 3aa3fc7: Marked the `TokenManagerService` and `IdentityService` types as deprecated
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.14-next.2
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.6.19-next.1
+
+### Patch Changes
+
+- 9e63318: Added an optional `accessRestrictions` to external access service tokens and service principals in general, such that you can limit their access to certain plugins or permissions.
+- 0665b7e: Renamed `BackendPluginConfig`, `BackendModuleConfig`, and `ExtensionPointConfig` respectively to `CreateBackendPluginOptions`, `CreateBackendModuleOptions`, and `CreateExtensionPointOptions` to standardize frontend and backend factories signatures.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.14-next.1
+
+## 0.6.19-next.0
+
+### Patch Changes
+
+- 6551b3d: Moved the declaration of the `SchedulerService` here, along with prefixed versions of all of the types it depends on, from `@backstage/backend-tasks`
+- 1779188: Start using the `isDatabaseConflictError` helper from the `@backstage/backend-plugin-api` package in order to avoid dependency with the soon to deprecate `@backstage/backend-common` package.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.14-next.0
+  - @backstage/cli-common@0.1.13
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 0.6.18
 
 ### Patch Changes

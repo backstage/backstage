@@ -16,7 +16,6 @@
 
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
-import { getVoidLogger } from '../logging';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { AwsCodeCommitUrlReader, parseUrl } from './AwsCodeCommitUrlReader';
 import { UrlReaderPredicateTuple } from './types';
@@ -34,6 +33,7 @@ import {
   AwsCodeCommitIntegration,
   readAwsCodeCommitIntegrationConfig,
 } from '@backstage/integration';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const AMAZON_AWS_CODECOMMIT_HOST = 'console.aws.amazon.com';
 
@@ -202,7 +202,7 @@ describe('AwsCodeCommitUrlReader', () => {
   const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
     return AwsCodeCommitUrlReader.factory({
       config: new ConfigReader(config),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       treeResponseFactory,
     });
   };

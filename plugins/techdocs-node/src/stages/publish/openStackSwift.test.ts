@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import {
   Entity,
   CompoundEntityRef,
@@ -28,7 +28,10 @@ import path from 'path';
 import { OpenStackSwiftPublish } from './openStackSwift';
 import { PublisherBase, TechDocsMetadata } from './types';
 import { Stream, Readable } from 'stream';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
 
 const mockDir = createMockDirectory();
 
@@ -169,7 +172,7 @@ const getPosixEntityRootDir = (entity: Entity) => {
   );
 };
 
-const logger = getVoidLogger();
+const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
 let publisher: PublisherBase;
 

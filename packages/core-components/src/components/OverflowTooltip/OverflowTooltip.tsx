@@ -34,6 +34,7 @@ const useStyles = makeStyles(
       overflow: 'visible !important',
     },
     typo: {
+      fontSize: 'inherit',
       overflow: 'hidden',
       textOverflow: 'ellipsis',
       display: '-webkit-box',
@@ -52,7 +53,9 @@ export function OverflowTooltip(props: Props) {
       title={props.title ?? (props.text || '')}
       placement={props.placement}
     >
-      <Typography className={classes.typo}>{props.text}</Typography>
+      <Typography className={classes.typo} variant="inherit">
+        {props.text}
+      </Typography>
     </Tooltip>
   );
 }

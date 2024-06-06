@@ -481,6 +481,7 @@ export function createPermissionIntegrationRouter<
     },
   );
 
+  // TODO(belugas): Remove this when dropping support to the legacy backend system because setting the error handler manually is no logger required in the new system.
   router.use(errorHandler());
 
   return router;

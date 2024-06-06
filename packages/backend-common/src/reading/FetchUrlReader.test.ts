@@ -16,10 +16,12 @@
 
 import { ConfigReader } from '@backstage/config';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { getVoidLogger } from '../logging';
 import { FetchUrlReader } from './FetchUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 
@@ -105,7 +107,7 @@ describe('FetchUrlReader', () => {
           },
         },
       }),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       treeResponseFactory: DefaultReadTreeResponseFactory.create({
         config: new ConfigReader({}),
       }),
@@ -155,7 +157,7 @@ describe('FetchUrlReader', () => {
             },
           },
         }),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         treeResponseFactory: DefaultReadTreeResponseFactory.create({
           config: new ConfigReader({}),
         }),

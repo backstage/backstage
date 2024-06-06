@@ -31,6 +31,7 @@ import {
   SecureTemplateRenderer,
 } from '../../lib/templating/SecureTemplater';
 import {
+  TaskRecovery,
   TaskSpec,
   TaskSpecV1beta3,
   TaskStep,
@@ -52,7 +53,6 @@ import {
 } from '@backstage/plugin-permission-common';
 import { scaffolderActionRules } from '../../service/rules';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
-import { TaskRecovery } from '@backstage/plugin-scaffolder-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { BackstageLoggerTransport, WinstonLogger } from './logger';
@@ -272,10 +272,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       if (task.isDryRun) {
         const redactedSecrets = Object.fromEntries(
-          Object.entries(task.secrets ?? {}).map(secret => [
-            secret[0],
-            '[REDACTED]',
-          ]),
+          Object.entries(task.secrets ?? {}).map(secret => [secret[0], '***']),
         );
         const debugInput =
           (step.input &&

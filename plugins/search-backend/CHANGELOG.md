@@ -1,5 +1,54 @@
 # @backstage/plugin-search-backend
 
+## 1.5.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/backend-defaults@0.3.0-next.2
+  - @backstage/plugin-permission-node@0.7.30-next.2
+  - @backstage/backend-openapi-utils@0.1.12-next.1
+  - @backstage/plugin-search-backend-node@1.2.24-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-common@1.2.11
+
+## 1.5.10-next.1
+
+### Patch Changes
+
+- 34dc47d: Move @backstage/repo-tools to devDependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.1
+  - @backstage/backend-defaults@0.3.0-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-search-backend-node@1.2.24-next.1
+
+## 1.5.10-next.0
+
+### Patch Changes
+
+- 8869b8e: Updated local development setup.
+- 5b6f979: Split backend search plugin startup into "init" and "start" stages to ensure necessary initialization has happened before startup
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-search-backend-node@1.2.24-next.0
+  - @backstage/backend-defaults@0.2.19-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/repo-tools@0.9.1-next.0
+  - @backstage/plugin-permission-node@0.7.30-next.0
+  - @backstage/backend-openapi-utils@0.1.12-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.13
+  - @backstage/plugin-search-common@1.2.11
+
 ## 1.5.8
 
 ### Patch Changes

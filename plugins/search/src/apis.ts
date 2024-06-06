@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { SearchApi } from '@backstage/plugin-search-react';
 import { SearchQuery, SearchResultSet } from '@backstage/plugin-search-common';
@@ -23,25 +23,19 @@ import qs from 'qs';
 
 export class SearchClient implements SearchApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
 
-  constructor(options: {
-    discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
-  }) {
+  constructor(options: { discoveryApi: DiscoveryApi; fetchApi: FetchApi }) {
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
   }
 
   async query(query: SearchQuery): Promise<SearchResultSet> {
-    const { token } = await this.identityApi.getCredentials();
     const queryString = qs.stringify(query);
     const url = `${await this.discoveryApi.getBaseUrl(
       'search',
     )}/query?${queryString}`;
-    const response = await fetch(url, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    });
+    const response = await this.fetchApi.fetch(url);
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);

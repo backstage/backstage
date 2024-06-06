@@ -1,5 +1,72 @@
 # @backstage/plugin-scaffolder
 
+## 1.21.0-next.2
+
+### Minor Changes
+
+- 60085dd: Added the following default targets for external routes:
+
+  - `registerComponent` binds to the catalog import page.
+  - `viewTechDoc` binds to the TechDocs entity documentation page.
+
+### Patch Changes
+
+- cbebad1: Internal updates to allow reusing Backstage's `fetchApi` implementation for event source requests. This allows you to for example, override the `Authorization` header.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.1
+  - @backstage/core-compat-api@0.2.6-next.1
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/integration@1.12.0-next.0
+  - @backstage/frontend-plugin-api@0.6.6-next.1
+  - @backstage/integration-react@1.1.28-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.1
+  - @backstage/plugin-scaffolder-react@1.8.7-next.2
+  - @backstage/plugin-permission-react@0.4.23-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-scaffolder-common@1.5.3-next.0
+
+## 1.20.2-next.1
+
+### Patch Changes
+
+- 75dcd7e: Fixing bug in `formData` type as it should be `optional` as it's possibly undefined
+- bcec60f: updated the ContextMenu, ActionsPage, OngoingTask and TemplateCard frontend components to support the new scaffolder permissions:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.8.7-next.1
+  - @backstage/plugin-scaffolder-common@1.5.3-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+
+## 1.20.1-next.0
+
+### Patch Changes
+
+- 612a453: Change owner to project for azure host
+- Updated dependencies
+  - @backstage/plugin-scaffolder-react@1.8.6-next.0
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-compat-api@0.2.6-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/errors@1.2.4
+  - @backstage/frontend-plugin-api@0.6.6-next.0
+  - @backstage/integration@1.11.0
+  - @backstage/integration-react@1.1.27
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+  - @backstage/plugin-permission-react@0.4.22
+  - @backstage/plugin-scaffolder-common@1.5.2
+
 ## 1.20.0
 
 ### Minor Changes

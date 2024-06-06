@@ -151,7 +151,11 @@ export function SupportButton(props: SupportButtonProps) {
           autoFocusItem={Boolean(anchorEl)}
         >
           {title && (
-            <MenuItem alignItems="flex-start" className={classes.menuItem}>
+            <MenuItem
+              button={false}
+              alignItems="flex-start"
+              className={classes.menuItem}
+            >
               <Typography variant="subtitle1">{title}</Typography>
             </MenuItem>
           )}

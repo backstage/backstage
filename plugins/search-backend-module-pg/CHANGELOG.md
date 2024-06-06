@@ -1,5 +1,40 @@
 # @backstage/plugin-search-backend-module-pg
 
+## 0.5.28-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/backend-app-api@0.7.6-next.2
+  - @backstage/plugin-search-backend-node@1.2.24-next.2
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-common@1.2.11
+
+## 0.5.28-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-search-backend-node@1.2.24-next.1
+
+## 0.5.28-next.0
+
+### Patch Changes
+
+- 6a576dc: Replace the usage of `getVoidLogger` with `mockServices.logger.mock` in order to remove the dependency with the soon-to-be-deprecated `backend-common` package.
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-search-backend-node@1.2.24-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-search-common@1.2.11
+
 ## 0.5.27
 
 ### Patch Changes

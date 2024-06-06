@@ -16,5 +16,12 @@
 
 import { IdentityApi } from '@backstage/plugin-auth-node';
 
-/** @public */
+/**
+ * This is the legacy service for identity handling in Backstage. Please migrate to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
+ *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/identity | service documentation} for more details.
+ *
+ * @public
+ * @deprecated Please {@link https://backstage.io/docs/tutorials/auth-service-migration | migrate} to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
+ */
 export interface IdentityService extends IdentityApi {}

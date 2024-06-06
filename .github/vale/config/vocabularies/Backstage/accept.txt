@@ -435,7 +435,6 @@ transpilers
 truthy
 TSDoc
 typeahead
-Uffizzi
 ui
 unbreak
 Unconference
@@ -447,6 +446,7 @@ unregistering
 unregistration
 untracked
 upsert
+upstreams
 upvote
 URIs
 url

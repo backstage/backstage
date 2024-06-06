@@ -231,6 +231,18 @@ describe('createPublishGithubPullRequestAction', () => {
       );
       expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 123);
     });
+
+    it('sets correct outputs during dry run', async () => {
+      ctx.isDryRun = true;
+      await instance.handler(ctx);
+
+      expect(ctx.output).toHaveBeenCalledWith('targetBranchName', 'new-app');
+      expect(ctx.output).toHaveBeenCalledWith(
+        'remoteUrl',
+        'github.com?owner=myorg&repo=myrepo',
+      );
+      expect(ctx.output).toHaveBeenCalledWith('pullRequestNumber', 43);
+    });
   });
 
   describe('with sourcePath', () => {
@@ -1009,6 +1021,41 @@ describe('createPublishGithubPullRequestAction', () => {
             author: {
               email: 'scaffolder@backstage.io',
               name: 'Foo Bar',
+            },
+          },
+        ],
+      });
+    });
+    it('discards author name and email if forceEmptyGitAuthor is set', async () => {
+      input.forceEmptyGitAuthor = true;
+      const clientFactory = jest.fn(async () => fakeClient as any);
+      const githubCredentialsProvider: GithubCredentialsProvider = {
+        getCredentials: jest.fn(),
+      };
+
+      const instanceWithConfig = createPublishGithubPullRequestAction({
+        integrations,
+        githubCredentialsProvider,
+        clientFactory,
+      });
+
+      await instanceWithConfig.handler(ctx);
+
+      expect(fakeClient.createPullRequest).toHaveBeenCalledWith({
+        owner: 'myorg',
+        repo: 'myrepo',
+        title: 'Create my new app',
+        head: 'new-app',
+        body: 'This PR is really good',
+        changes: [
+          {
+            commit: 'Create my new app',
+            files: {
+              'file.txt': {
+                content: Buffer.from('Hello there!').toString('base64'),
+                encoding: 'base64',
+                mode: '100644',
+              },
             },
           },
         ],

@@ -1,5 +1,58 @@
 # @backstage/backend-defaults
 
+## 0.3.0-next.2
+
+### Patch Changes
+
+- 0634fdc: Deprecated `dropDatabase`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/plugin-permission-node@0.7.30-next.2
+  - @backstage/backend-app-api@0.7.6-next.2
+  - @backstage/plugin-events-node@0.3.5-next.1
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 02103be: Deprecated and moved over core services to `@backstage/backend-defaults`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/config-loader@1.8.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+
+## 0.2.19-next.0
+
+### Patch Changes
+
+- 6551b3d: Added core service factories and implementations from
+  `@backstage/backend-app-api`. They are now available as subpath exports, e.g.
+  `@backstage/backend-defaults/scheduler` is where the service factory and default
+  implementation of `coreServices.scheduler` now lives. They have been marked as
+  deprecated in their old locations.
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-permission-node@0.7.30-next.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.18
 
 ### Patch Changes

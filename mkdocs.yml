@@ -33,12 +33,6 @@ nav:
           - Create a component: 'getting-started/create-a-component.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
       - Key Concepts: 'getting-started/concepts.md'
-  - Local Development:
-      - CLI:
-          - Overview: 'local-dev/cli-overview.md'
-          - Build System: 'local-dev/cli-build-system.md'
-          - Commands: 'local-dev/cli-commands.md'
-      - Linking in Local Packages: 'local-dev/linking-local-packages.md'
   - Core Features:
       - Software Catalog:
           - Overview: 'features/software-catalog/index.md'
@@ -178,6 +172,14 @@ nav:
       - Contributing New Providers: 'auth/add-auth-provider.md'
       - Service to Service Auth: 'auth/service-to-service-auth.md'
       - Troubleshooting Auth: 'auth/troubleshooting.md'
+  - Tooling:
+      - Backstage CLI:
+          - Overview: 'tooling/cli/01-overview.md'
+          - Build System: 'tooling/cli/02-build-system.md'
+          - Commands: 'tooling/cli/03-commands.md'
+      - Local Development:
+          - Linking in Local Packages: 'tooling/local-dev/linking-local-packages.md'
+          - Debugging Backstage: 'tooling/local-dev/debugging.md'
   - Deployment:
       - Deploying Backstage: 'deployment/index.md'
       - Scaling: 'deployment/scaling.md'
