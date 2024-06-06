@@ -94,6 +94,9 @@ backend:
         options:
           token: ${CICD_TOKEN}
           subject: cicd-system-completion-events
+        # Restrictions are optional; see below
+        accessRestrictions:
+          - plugin: events
       - type: static
         options:
           token: ${ADMIN_CURL_TOKEN}
@@ -260,3 +263,97 @@ header:
 ```yaml
 Authorization: Bearer eZv5o+fW3KnR3kVabMW4ZcDNLPl8nmMW
 ```
+
+## Access Restrictions
+
+Each `externalAccess` entry may optionally have an `accessRestrictions` key,
+which limits what that particular access method can do. Let's look at an
+example:
+
+```yaml title="in e.g. app-config.production.yaml"
+backend:
+  auth:
+    externalAccess:
+      - type: static
+        options:
+          token: ${CICD_TOKEN}
+          subject: cicd-system-completion-events
+        accessRestrictions:
+          - plugin: events
+```
+
+In this short example there's only one entry. It says that for anyone trying to
+make access with the CICD token, they will be rejected if they try to contact
+anything but the `events` backend plugin. You could add additional entries to
+the array that allow targeting more plugins if that's what you want.
+
+:::note Note
+
+If no `accessRestrictions` are added, the access method has unlimited access to
+all functionality of all plugins. It is recommended that you try to specify
+access restrictions whenever possible, to reduce risk.
+
+:::
+
+Each entry has one or more of the following fields:
+
+- **`plugin`**: Required. A plugin ID as a string, for example `'catalog'`. Permits
+  access to make requests to this plugin. Can be further refined by setting
+  additional fields as per below.
+
+  Example:
+
+  ```yaml
+  accessRestrictions:
+    # access to any other plugin will be rejected
+    - plugin: my-plugin
+  ```
+
+- **`permission`**: Optional. A collection (comma/space separated string or
+  string array) of permission names. If given, this method is limited to only
+  performing actions with these named permissions in the plugin with the ID
+  given above.
+
+  Note that this only applies where permissions checks are enabled in the first
+  place. Endpoints that are not protected by the permissions system at all, are
+  not affected by this setting.
+
+  Example:
+
+  ```yaml
+  accessRestrictions:
+    - plugin: my-plugin
+      # Any other permission check will be rejected.
+      permission:
+        - my-plugin.add-item
+        - my-plugin.remove-item
+      # Also supports the shorthand form:
+      # permission: my-plugin.add-item, my-plugin.remove-item
+  ```
+
+- **`permissionAttribute`**: Optional. A key-value object of permission attributes
+  where each value is a collection (comma/space separated string or string
+  array) of allowed such values. If given, this method is limited to only
+  performing actions whose permissions have these attributes.
+
+  Note that this only applies where permissions checks are
+  enabled in the first place. Endpoints that are not protected by
+  the permissions system at all, are not affected by this
+  setting.
+
+  In practice, this is typically used to limit by the `action` attribute, for
+  `'create'`, `'read'`, `'update'`, or `'delete'` values.
+
+  Example:
+
+  ```yaml
+  accessRestrictions:
+    - plugin: my-plugin
+      permissionAttribute:
+        # Updates and deletes will be rejected.
+        action:
+          - create
+          - read
+        # Also supports the shorthand form:
+        # action: create, read
+  ```
