@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-syntax */
 /*
  * Copyright 2021 The Backstage Authors
  *
@@ -21,6 +22,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
 import { BitbucketCloudClient } from '@backstage/plugin-bitbucket-cloud-common';
+import Autocomplete from '@material-ui/lab/Autocomplete';
+import TextField from '@material-ui/core/TextField';
 
 /**
  * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
@@ -83,11 +86,15 @@ export const BitbucketRepoPicker = (props: {
       if (!workspace) {
         setAvailableProjects([]);
       } else {
-        for await (const page of client
-          .listProjectsByWorkspace(workspace)
-          .iteratePages()) {
-          const keys = [...page.values!].map(p => p.key!);
-          setAvailableProjects([...availableProjects, ...keys]);
+        try {
+          for await (const page of client
+            .listProjectsByWorkspace(workspace)
+            .iteratePages()) {
+            const keys = [...page.values!].map(p => p.key!);
+            setAvailableProjects([...availableProjects, ...keys]);
+          }
+        } catch {
+          setAvailableProjects([]);
         }
       }
   };
@@ -160,15 +167,17 @@ export const BitbucketRepoPicker = (props: {
             items={projectItems}
           />
         ) : (
-          <>
-            <InputLabel htmlFor="projectInput">Project</InputLabel>
-            <Input
-              id="projectInput"
-              onChange={e => onChange({ project: e.target.value })}
-              value={project}
-              onBlur={() => onChangeProject()}
-            />
-          </>
+          <Autocomplete
+            value={project}
+            onChange={(_, newValue) => {
+              onChange({ project: newValue || '' });
+            }}
+            options={availableProjects}
+            renderInput={params => <TextField {...params} label="Project" />}
+            freeSolo
+            onBlur={() => onChangeProject()}
+            autoSelect
+          />
         )}
         <FormHelperText>
           The Project that this repo will belong to
