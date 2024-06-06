@@ -213,7 +213,7 @@ describe('RepoUrlPicker', () => {
           <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
         );
       };
-      const { getAllByRole, getByTestId } = await renderInTestApp(
+      const { getByTestId } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -243,12 +243,7 @@ describe('RepoUrlPicker', () => {
         </TestApiProvider>,
       );
 
-      const [ownerInput, repoInput] = getAllByRole('textbox');
-
       await act(async () => {
-        fireEvent.change(ownerInput, { target: { value: 'backstage' } });
-        fireEvent.change(repoInput, { target: { value: 'repo123' } });
-
         // need to wait for the debounce to finish
         await new Promise(resolve => setTimeout(resolve, 600));
       });
@@ -278,7 +273,7 @@ describe('RepoUrlPicker', () => {
           <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
         );
       };
-      const { getAllByRole } = await renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -308,14 +303,7 @@ describe('RepoUrlPicker', () => {
         </TestApiProvider>,
       );
 
-      const [projectInput, repoInput] = getAllByRole('textbox');
-
       await act(async () => {
-        fireEvent.change(projectInput, {
-          target: { value: 'backstage/mysubgroup' },
-        });
-        fireEvent.change(repoInput, { target: { value: 'repo123' } });
-
         // need to wait for the debounce to finish
         await new Promise(resolve => setTimeout(resolve, 600));
       });
@@ -327,6 +315,7 @@ describe('RepoUrlPicker', () => {
         },
       });
     });
+
     it('should call the scmAuthApi with the correct params if only a project is set', async () => {
       const SecretsComponent = () => {
         const { secrets } = useTemplateSecrets();
@@ -334,7 +323,7 @@ describe('RepoUrlPicker', () => {
           <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
         );
       };
-      const { getAllByRole, getByTestId } = await renderInTestApp(
+      const { getByTestId } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -364,12 +353,7 @@ describe('RepoUrlPicker', () => {
         </TestApiProvider>,
       );
 
-      const [projectInput, repoInput] = getAllByRole('textbox');
-
       await act(async () => {
-        fireEvent.change(projectInput, { target: { value: 'backstage' } });
-        fireEvent.change(repoInput, { target: { value: 'repo123' } });
-
         // need to wait for the debounce to finish
         await new Promise(resolve => setTimeout(resolve, 600));
       });
@@ -397,7 +381,7 @@ describe('RepoUrlPicker', () => {
           <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
         );
       };
-      const { getAllByRole, getByTestId } = await renderInTestApp(
+      const { getByTestId } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -427,12 +411,7 @@ describe('RepoUrlPicker', () => {
         </TestApiProvider>,
       );
 
-      const [ownerInput, repoInput] = getAllByRole('textbox');
-
       await act(async () => {
-        fireEvent.change(ownerInput, { target: { value: 'backstage' } });
-        fireEvent.change(repoInput, { target: { value: 'repo123' } });
-
         // need to wait for the debounce to finish
         await new Promise(resolve => setTimeout(resolve, 600));
       });
