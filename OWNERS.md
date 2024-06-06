@@ -117,7 +117,6 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 | André Wanlin         | Spotify      | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
 | Bethany Griggs       | Red Hat      | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
 | Nick Boldt           | Red Hat      | [nickboldt](https://github.com/nickboldt)   | `nboldt`     |
-| Tomas Kral           | Red Hat      | [kadel](https://github.com/kadel)           | `tomkral`    |
 | Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
 
 ### Events
