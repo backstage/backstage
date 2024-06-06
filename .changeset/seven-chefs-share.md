@@ -2,4 +2,4 @@
 '@backstage/integration-react': patch
 ---
 
-Property `url` of class `ScmAuthTokenOptions` has been replaced with `host`
+Replaced property `url` of class `ScmAuthTokenOptions` with `host`
