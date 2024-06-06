@@ -468,8 +468,7 @@ Request body is JSON, on the form
 
 ```json
 {
-  "entityRef": "<string>",
-  "authorizationToken": "<string>"
+  "entityRef": "<string>"
 }
 ```
 
@@ -482,7 +481,7 @@ Request body is JSON, on the form
 ```json
 {
   "location": "<string>",
-  "entity": "<Entity>"
+  "entity": {}
 }
 ```
 
@@ -542,7 +541,12 @@ Response type is JSON, on the form
 
 ```json
 {
-  "facets": "<EntityFacet>"
+  "facets": [
+    {
+      "value": "<string>",
+      "count": 1
+    }
+  ]
 }
 ```
 
@@ -615,12 +619,12 @@ And Response type is JSON, on the form
         },
         {
           "description": "<string>",
-          "value": "<string>",
+          "value": {},
           "state": "analysisSuggestedNoValue",
           "field": "<string>"
         }
       ],
-      "entity": "<Entity>"
+      "entity": {}
     }
   ],
   "existingEntityFiles": [
