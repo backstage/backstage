@@ -14,37 +14,38 @@
  * limitations under the License.
  */
 
-import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
-import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import {
+  TestDatabaseId,
+  TestDatabases,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { Duration } from 'luxon';
 import waitForExpect from 'wait-for-expect';
-import { TaskScheduler } from './TaskScheduler';
+import { DefaultSchedulerService } from './DefaultSchedulerService';
 import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 
 jest.setTimeout(60_000);
 
 describe('TaskScheduler', () => {
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
   const databases = TestDatabases.create();
   const testScopedSignal = createTestScopedSignal();
 
   async function createDatabase(
     databaseId: TestDatabaseId,
-  ): Promise<DatabaseManager> {
+  ): Promise<DatabaseService> {
     const knex = await databases.init(databaseId);
-    const databaseManager: Partial<DatabaseManager> = {
-      forPlugin: () => ({
-        getClient: async () => knex,
-      }),
+    return {
+      getClient: async () => knex,
     };
-    return databaseManager as DatabaseManager;
   }
 
   it.each(databases.eachSupportedId())(
     'can return a working v1 plugin impl, %p',
     async databaseId => {
       const database = await createDatabase(databaseId);
-      const manager = new TaskScheduler(database, logger).forPlugin('test');
+      const manager = DefaultSchedulerService.create({ database, logger });
       const fn = jest.fn();
 
       await manager.scheduleTask({
@@ -65,7 +66,7 @@ describe('TaskScheduler', () => {
     'can return a working v2 plugin impl, %p',
     async databaseId => {
       const database = await createDatabase(databaseId);
-      const manager = new TaskScheduler(database, logger).forPlugin('test');
+      const manager = DefaultSchedulerService.create({ database, logger });
       const fn = jest.fn();
 
       await manager.scheduleTask({
