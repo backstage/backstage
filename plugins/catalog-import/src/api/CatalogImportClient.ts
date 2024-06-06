@@ -260,7 +260,7 @@ the component will become available.\n\nFor more information, read an \
     } = options;
 
     const { token } = await this.scmAuthApi.getCredentials({
-      url: repositoryUrl,
+      host: new URL(repositoryUrl).host,
       additionalScope: {
         repoWrite: true,
       },
