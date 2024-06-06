@@ -29,7 +29,7 @@ import {
   TechDocsMetadata,
   TechDocsStorageApi,
 } from '@backstage/plugin-techdocs-react';
-import { EventSourcePolyfill } from 'event-source-polyfill';
+import { fetchEventSource } from '@microsoft/fetch-event-source';
 
 /**
  * API to talk to `techdocs-backend`.
@@ -124,18 +124,17 @@ export class TechDocsClient implements TechDocsApi {
 export class TechDocsStorageClient implements TechDocsStorageApi {
   public configApi: Config;
   public discoveryApi: DiscoveryApi;
-  public identityApi: IdentityApi;
   private fetchApi: FetchApi;
 
   constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
     fetchApi: FetchApi;
+    /** @deprecated identityApi is not needed any more */
+    identityApi?: IdentityApi;
   }) {
     this.configApi = options.configApi;
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
     this.fetchApi = options.fetchApi;
   }
 
@@ -213,47 +212,32 @@ export class TechDocsStorageClient implements TechDocsStorageApi {
 
     const apiOrigin = await this.getApiOrigin();
     const url = `${apiOrigin}/sync/${namespace}/${kind}/${name}`;
-    const { token } = await this.identityApi.getCredentials();
 
     return new Promise((resolve, reject) => {
-      // Polyfill is used to add support for custom headers and auth
-      const source = new EventSourcePolyfill(url, {
-        withCredentials: true,
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-
-      source.addEventListener('log', (e: any) => {
-        if (e.data) {
-          logHandler(JSON.parse(e.data));
-        }
-      });
-
-      source.addEventListener('finish', (e: any) => {
-        let updated: boolean = false;
-
-        if (e.data) {
-          ({ updated } = JSON.parse(e.data));
-        }
-
-        resolve(updated ? 'updated' : 'cached');
-      });
-
-      source.onerror = (e: any) => {
-        source.close();
-
-        switch (e.status) {
-          // the endpoint returned a 404 status
-          case 404:
-            reject(new NotFoundError(e.message));
-            return;
-
-          // also handles the event-stream close. the reject is ignored if the Promise was already
-          // resolved by a finish event.
-          default:
+      const ctrl = new AbortController();
+      fetchEventSource(url, {
+        fetch: this.fetchApi.fetch,
+        signal: ctrl.signal,
+        onmessage(e: any) {
+          if (e.event === 'log') {
+            if (e.data) {
+              logHandler(JSON.parse(e.data));
+            }
+          } else if (e.event === 'finish') {
+            let updated: boolean = false;
+            if (e.data) {
+              ({ updated } = JSON.parse(e.data));
+            }
+            resolve(updated ? 'updated' : 'cached');
+          } else if (e.event === 'error') {
             reject(new Error(e.data));
-            return;
-        }
-      };
+          }
+        },
+        onerror(err) {
+          ctrl.abort();
+          reject(err);
+        },
+      });
     });
   }
 

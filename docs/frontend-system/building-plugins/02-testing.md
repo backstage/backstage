@@ -10,7 +10,11 @@ description: Testing plugins in the frontend system
 
 # Testing Frontend Plugins
 
-> NOTE: The new frontend system is in alpha, and some plugins do not yet fully implement it.
+:::note Note
+
+The new frontend system is in alpha, and some plugins do not yet fully implement it.
+
+:::
 
 Utilities for testing frontend features and components are available in `@backstage/frontend-test-utils`.
 

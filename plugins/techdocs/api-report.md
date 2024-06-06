@@ -465,8 +465,8 @@ export class TechDocsStorageClient implements TechDocsStorageApi_2 {
   constructor(options: {
     configApi: Config;
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
     fetchApi: FetchApi;
+    identityApi?: IdentityApi;
   });
   // (undocumented)
   configApi: Config;
@@ -485,8 +485,6 @@ export class TechDocsStorageClient implements TechDocsStorageApi_2 {
   getEntityDocs(entityId: CompoundEntityRef, path: string): Promise<string>;
   // (undocumented)
   getStorageUrl(): Promise<string>;
-  // (undocumented)
-  identityApi: IdentityApi;
   syncEntityDocs(
     entityId: CompoundEntityRef,
     logHandler?: (line: string) => void,
