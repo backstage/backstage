@@ -32,7 +32,7 @@ $ yarn backstage-cli new
 > scaffolder-module - An module exporting custom actions for @backstage/plugin-scaffolder-backend
 ```
 
-You can find a [list](../../local-dev/cli-commands.md) of all commands provided by the Backstage CLI.
+You can find a [list](../../tooling/cli/03-commands.md) of all commands provided by the Backstage CLI.
 
 When prompted, select the option to generate a scaffolder module. This creates a solid foundation for your custom action. Enter the name of the module you wish to create, and the CLI will generate the required files and directory structure.
 
