@@ -27,11 +27,11 @@ import {
  */
 export interface ScmAuthTokenOptions extends AuthRequestOptions {
   /**
-   * The URL of the SCM resource to be accessed.
+   * The host of the SCM resource to be accessed.
    *
-   * @example https://github.com/backstage/backstage
+   * @example github.com
    */
-  url: string;
+  host: string;
 
   /**
    * Whether to request additional access scope.
