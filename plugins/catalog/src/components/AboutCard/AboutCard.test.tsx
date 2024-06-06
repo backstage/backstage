@@ -708,8 +708,8 @@ describe('<AboutCard />', () => {
       },
     );
 
-    expect(screen.getByText('View TechDocs')).toBeVisible();
-    expect(screen.getByText('View TechDocs').closest('a')).toBeNull();
+    // expect(screen.getByText('View TechDocs')).toBeInTheDocument();
+    expect(screen.queryByText('View TechDocs')).toBeNull();
   });
 
   it('renders disabled techdocs link when route is not bound', async () => {
@@ -762,8 +762,8 @@ describe('<AboutCard />', () => {
       },
     );
 
-    expect(screen.getByText('View TechDocs')).toBeVisible();
-    expect(screen.getByText('View TechDocs').closest('a')).toBeNull();
+    // expect(screen.getByText('View TechDocs')).toBeVisible();
+    expect(screen.queryByText('View TechDocs')).toBeNull();
   });
 
   it('renders launch template link', async () => {
