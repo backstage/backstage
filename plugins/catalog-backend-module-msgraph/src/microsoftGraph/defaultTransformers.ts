@@ -126,7 +126,7 @@ export async function defaultUserTransformer(
     return undefined;
   }
 
-  const name = normalizeEntityName(user.mail);
+  const name = normalizeEntityName(user.id);
   const entity: UserEntity = {
     apiVersion: 'backstage.io/v1alpha1',
     kind: 'User',
