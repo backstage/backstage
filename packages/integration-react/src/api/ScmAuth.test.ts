@@ -37,9 +37,7 @@ describe('ScmAuth', () => {
       }),
     );
 
-    await expect(
-      api.getCredentials({ url: 'https://github.com/backstage/backstage' }),
-    ).resolves.toEqual({
+    await expect(api.getCredentials({ host: 'github.com' })).resolves.toEqual({
       token: 'github-access-token',
       headers: {
         Authorization: 'Bearer github-access-token',
@@ -47,7 +45,7 @@ describe('ScmAuth', () => {
     });
     await expect(
       api.getCredentials({
-        url: 'https://ghe.example.com/backstage/backstage',
+        host: 'ghe.example.com',
         additionalScope: {
           repoWrite: true,
         },
@@ -80,13 +78,13 @@ describe('ScmAuth', () => {
 
     const githubAuth = ScmAuth.forGithub(mockAuthApi);
     await expect(
-      githubAuth.getCredentials({ url: 'http://example.com' }),
+      githubAuth.getCredentials({ host: 'example.com' }),
     ).resolves.toMatchObject({
       token: 'repo read:org read:user',
     });
     await expect(
       githubAuth.getCredentials({
-        url: 'http://example.com',
+        host: 'example.com',
         additionalScope: { repoWrite: true },
       }),
     ).resolves.toMatchObject({
@@ -95,13 +93,13 @@ describe('ScmAuth', () => {
 
     const gitlabAuth = ScmAuth.forGitlab(mockAuthApi);
     await expect(
-      gitlabAuth.getCredentials({ url: 'http://example.com' }),
+      gitlabAuth.getCredentials({ host: 'example.com' }),
     ).resolves.toMatchObject({
       token: 'read_user read_api read_repository',
     });
     await expect(
       gitlabAuth.getCredentials({
-        url: 'http://example.com',
+        host: 'example.com',
         additionalScope: { repoWrite: true },
       }),
     ).resolves.toMatchObject({
@@ -110,14 +108,14 @@ describe('ScmAuth', () => {
 
     const azureAuth = ScmAuth.forAzure(mockAuthApi);
     await expect(
-      azureAuth.getCredentials({ url: 'http://example.com' }),
+      azureAuth.getCredentials({ host: 'example.com' }),
     ).resolves.toMatchObject({
       token:
         '499b84ac-1321-427f-aa17-267ca6975798/vso.build 499b84ac-1321-427f-aa17-267ca6975798/vso.code 499b84ac-1321-427f-aa17-267ca6975798/vso.graph 499b84ac-1321-427f-aa17-267ca6975798/vso.project 499b84ac-1321-427f-aa17-267ca6975798/vso.profile',
     });
     await expect(
       azureAuth.getCredentials({
-        url: 'http://example.com',
+        host: 'example.com',
         additionalScope: { repoWrite: true },
       }),
     ).resolves.toMatchObject({
@@ -127,13 +125,13 @@ describe('ScmAuth', () => {
 
     const bitbucketAuth = ScmAuth.forBitbucket(mockAuthApi);
     await expect(
-      bitbucketAuth.getCredentials({ url: 'http://example.com' }),
+      bitbucketAuth.getCredentials({ host: 'example.com' }),
     ).resolves.toMatchObject({
       token: 'account team pullrequest snippet issue',
     });
     await expect(
       bitbucketAuth.getCredentials({
-        url: 'http://example.com',
+        host: 'example.com',
         additionalScope: { repoWrite: true },
       }),
     ).resolves.toMatchObject({
@@ -152,7 +150,7 @@ describe('ScmAuth', () => {
     const githubAuth = ScmAuth.forGithub(mockAuthApi);
     await expect(
       githubAuth.getCredentials({
-        url: 'http://example.com',
+        host: 'example.com',
         additionalScope: {
           customScopes: { github: ['org:read', 'workflow'] },
         },
@@ -164,7 +162,7 @@ describe('ScmAuth', () => {
     const gitlabAuth = ScmAuth.forGitlab(mockAuthApi);
     await expect(
       gitlabAuth.getCredentials({
-        url: 'http://example.com',
+        host: 'example.com',
         additionalScope: { customScopes: { gitlab: ['write_repository'] } },
       }),
     ).resolves.toMatchObject({
@@ -174,7 +172,7 @@ describe('ScmAuth', () => {
     const azureAuth = ScmAuth.forAzure(mockAuthApi);
     await expect(
       azureAuth.getCredentials({
-        url: 'http://example.com',
+        host: 'example.com',
         additionalScope: {
           customScopes: {
             azure: ['499b84ac-1321-427f-aa17-267ca6975798/vso.org'],
@@ -189,7 +187,7 @@ describe('ScmAuth', () => {
     const bitbucketAuth = ScmAuth.forBitbucket(mockAuthApi);
     await expect(
       bitbucketAuth.getCredentials({
-        url: 'http://example.com',
+        host: 'example.com',
         additionalScope: {
           customScopes: { bitbucket: ['snippet:write', 'issue:write'] },
         },
@@ -204,47 +202,39 @@ describe('ScmAuth', () => {
       getAccessToken: jest.fn(),
     };
 
-    const expectUrlSupport = (scm: ScmAuth, url: string) => {
-      expect(scm.isUrlSupported(new URL(url))).toBe(true);
-      expect(scm.isUrlSupported(new URL('https://not.supported.com'))).toBe(
-        false,
-      );
+    const expectHostSupport = (scm: ScmAuth, host: string) => {
+      expect(scm.isHostSupported(host)).toBe(true);
+      expect(scm.isHostSupported('not.supported.com')).toBe(false);
     };
 
-    expectUrlSupport(ScmAuth.forGithub(mockAuthApi), 'https://github.com');
-    expectUrlSupport(ScmAuth.forGitlab(mockAuthApi), 'https://gitlab.com');
-    expectUrlSupport(
-      ScmAuth.forAzure(mockAuthApi, {}),
-      'https://dev.azure.com',
-    );
-    expectUrlSupport(
-      ScmAuth.forBitbucket(mockAuthApi, {}),
-      'https://bitbucket.org',
-    );
-    expectUrlSupport(
+    expectHostSupport(ScmAuth.forGithub(mockAuthApi), 'github.com');
+    expectHostSupport(ScmAuth.forGitlab(mockAuthApi), 'gitlab.com');
+    expectHostSupport(ScmAuth.forAzure(mockAuthApi, {}), 'dev.azure.com');
+    expectHostSupport(ScmAuth.forBitbucket(mockAuthApi, {}), 'bitbucket.org');
+    expectHostSupport(
       ScmAuth.forGithub(mockAuthApi, { host: 'example.com' }),
-      'https://example.com/abc',
+      'example.com',
     );
-    expectUrlSupport(
+    expectHostSupport(
       ScmAuth.forGitlab(mockAuthApi, { host: 'example.com' }),
-      'http://example.com',
+      'example.com',
     );
-    expectUrlSupport(
+    expectHostSupport(
       ScmAuth.forAzure(mockAuthApi, { host: 'example.com' }),
-      'https://example.com',
+      'example.com',
     );
-    expectUrlSupport(
+    expectHostSupport(
       ScmAuth.forBitbucket(mockAuthApi, { host: 'example.com:8080' }),
-      'https://example.com:8080',
+      'example.com:8080',
     );
   });
 
-  it('should throw an error for unknown URLs', async () => {
+  it('should throw an error for unknown hosts', async () => {
     const emptyMux = ScmAuth.merge();
     await expect(
-      emptyMux.getCredentials({ url: 'http://example.com' }),
+      emptyMux.getCredentials({ host: 'example.com' }),
     ).rejects.toThrow(
-      "No auth provider available for 'http://example.com', see https://backstage.io/link?scm-auth",
+      "No auth provider available for 'example.com', see https://backstage.io/link?scm-auth",
     );
 
     const scmAuth = ScmAuth.merge(
@@ -257,17 +247,17 @@ describe('ScmAuth', () => {
       }),
     );
     await expect(
-      scmAuth.getCredentials({ url: 'http://example.com' }),
+      scmAuth.getCredentials({ host: 'example.com' }),
     ).resolves.toMatchObject({ token: 'token' });
     await expect(
-      scmAuth.getCredentials({ url: 'http://not.example.com' }),
+      scmAuth.getCredentials({ host: 'not.example.com' }),
     ).rejects.toThrow(
-      "No auth provider available for 'http://not.example.com', see https://backstage.io/link?scm-auth",
+      "No auth provider available for 'not.example.com', see https://backstage.io/link?scm-auth",
     );
     await expect(
-      scmAuth.getCredentials({ url: 'http://example.com:8080' }),
+      scmAuth.getCredentials({ host: 'example.com:8080' }),
     ).rejects.toThrow(
-      "No auth provider available for 'http://example.com:8080', see https://backstage.io/link?scm-auth",
+      "No auth provider available for 'example.com:8080', see https://backstage.io/link?scm-auth",
     );
   });
 });
