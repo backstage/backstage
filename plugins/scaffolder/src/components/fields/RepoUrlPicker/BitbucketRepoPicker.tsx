@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
+import { BitbucketCloudClient } from '@backstage/plugin-bitbucket-cloud-common';
 
 /**
  * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
@@ -36,6 +37,7 @@ export const BitbucketRepoPicker = (props: {
   onChange: (state: RepoUrlPickerState) => void;
   state: RepoUrlPickerState;
   rawErrors: string[];
+  accessToken?: string;
 }) => {
   const {
     allowedOwners = [],
@@ -43,6 +45,7 @@ export const BitbucketRepoPicker = (props: {
     onChange,
     rawErrors,
     state,
+    accessToken,
   } = props;
   const { host, workspace, project } = state;
   const ownerItems: SelectItem[] = allowedOwners
@@ -57,6 +60,53 @@ export const BitbucketRepoPicker = (props: {
       onChange({ workspace: allowedOwners[0] });
     }
   }, [allowedOwners, host, onChange]);
+
+  const [client, setClient] = useState<BitbucketCloudClient>();
+  const [availableProjects, setAvailableProjects] = useState<string[]>([]);
+  const [availableRepositories, setAvailableRepositories] = useState<string[]>(
+    [],
+  );
+
+  useEffect(() => {
+    if (accessToken)
+      setClient(
+        BitbucketCloudClient.fromConfig({
+          host: 'bitbucket.org',
+          apiBaseUrl: 'https://api.bitbucket.org/2.0',
+          accessToken,
+        }),
+      );
+  }, [accessToken]);
+
+  const onChangeWorkspace = async () => {
+    if (client)
+      if (!workspace) {
+        setAvailableProjects([]);
+      } else {
+        for await (const page of client
+          .listProjectsByWorkspace(workspace)
+          .iteratePages()) {
+          const keys = [...page.values!].map(p => p.key!);
+          setAvailableProjects([...availableProjects, ...keys]);
+        }
+      }
+  };
+
+  const onChangeProject = async () => {
+    if (client && workspace)
+      if (!project) {
+        setAvailableRepositories([]);
+      } else {
+        for await (const page of client
+          .listRepositoriesByWorkspace(workspace, {
+            q: `project.key="${project}"`,
+          })
+          .iteratePages()) {
+          const keys = [...page.values!].map(p => p.slug!);
+          setAvailableRepositories([...availableRepositories, ...keys]);
+        }
+      }
+  };
 
   return (
     <>
@@ -84,6 +134,7 @@ export const BitbucketRepoPicker = (props: {
                 id="workspaceInput"
                 onChange={e => onChange({ workspace: e.target.value })}
                 value={workspace}
+                onBlur={() => onChangeWorkspace()}
               />
             </>
           )}
@@ -115,6 +166,7 @@ export const BitbucketRepoPicker = (props: {
               id="projectInput"
               onChange={e => onChange({ project: e.target.value })}
               value={project}
+              onBlur={() => onChangeProject()}
             />
           </>
         )}

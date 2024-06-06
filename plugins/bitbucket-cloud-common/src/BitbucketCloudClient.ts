@@ -69,6 +69,22 @@ export class BitbucketCloudClient {
     );
   }
 
+  listProjectsByWorkspace(
+    workspace: string,
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedProjects, Models.Project> {
+    const workspaceEnc = encodeURIComponent(workspace);
+
+    return new WithPagination(
+      paginationOptions =>
+        this.createUrl(`/workspaces/${workspaceEnc}/projects`, {
+          ...paginationOptions,
+          ...options,
+        }),
+      url => this.getTypeMapped(url),
+    );
+  }
+
   private createUrl(endpoint: string, options?: RequestOptions): URL {
     const request = new URL(this.config.apiBaseUrl + endpoint);
     for (const key in options) {
@@ -114,6 +130,9 @@ export class BitbucketCloudClient {
       );
       headers.Authorization = `Basic ${buffer.toString('base64')}`;
     }
+
+    if (this.config.accessToken)
+      headers.Authorization = `Bearer ${this.config.accessToken}`;
 
     return headers;
   }
