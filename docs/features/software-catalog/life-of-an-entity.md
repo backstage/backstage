@@ -384,7 +384,7 @@ enable the automated clean up with the following app-config option.
 ```
 
 catalog:
-orphanStrategy: delete
+  orphanStrategy: delete
 
 ```
 
