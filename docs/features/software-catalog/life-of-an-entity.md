@@ -382,10 +382,8 @@ However, if you want to delete orphaned entities automatically anyway, you can
 enable the automated clean up with the following app-config option.
 
 ```
-
 catalog:
   orphanStrategy: delete
-
 ```
 
 ## Implicit Deletion
