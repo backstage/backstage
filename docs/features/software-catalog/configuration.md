@@ -195,7 +195,27 @@ Now you can install the events backend plugin in your backend.
 backend.add(import('@backstage/plugin-events-backend/alpha'));
 ```
 
-Next, create a backend module that subscribes to the catalog error events. The topic is `experimental.catalog.errors`.
+### Logging Errors
+
+If you want to log catalog errors you can install the `@backstage/plugin-catalog-backend-module-logs` module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
+```
+
+This will log errors with a level of `warn`.
+
+You should now see logs as the catalog emits events. Example:
+
+```
+[1] 2024-06-07T00:00:28.787Z events warn Policy check failed for user:default/guest; caused by Error: Malformed envelope, /metadata/tags must be array entity=user:default/guest location=file:/Users/foobar/code/backstage-demo-instance/examples/org.yaml
+```
+
+### Custom Error Handling
+
+If you wish to handle catalog errors with logic the following should help you get started.
+
+Create a backend module that subscribes to the catalog error events. The topic is `experimental.catalog.errors`.
 
 ```ts title="packages/backend/src/index.ts"
 import { CATALOG_ERRORS_TOPIC } from '@backstage/plugin-catalog-backend';
@@ -231,6 +251,7 @@ const eventsModuleCatalogErrors = createBackendModule({
           async onEvent(params: EventParams): Promise<void> {
             const event = params as EventsParamsWithPayload;
             const { entity, location, errors } = event.eventPayload;
+            // Add custom logic here for responding to errors
             for (const error of errors) {
               logger.warn(error.message, {
                 entity,
@@ -249,10 +270,4 @@ Now install your module.
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(eventsModuleCatalogErrors);
-```
-
-You should now see logs as the catalog emits events. Example:
-
-```
-[1] 2024-06-07T00:00:28.787Z events warn Policy check failed for user:default/guest; caused by Error: Malformed envelope, /metadata/tags must be array entity=user:default/guest location=file:/Users/foobar/code/backstage-demo-instance/examples/org.yaml
 ```

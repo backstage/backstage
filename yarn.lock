@@ -5440,6 +5440,19 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-catalog-backend-module-logs@workspace:plugins/catalog-backend-module-logs":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-catalog-backend-module-logs@workspace:plugins/catalog-backend-module-logs"
+  dependencies:
+    "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
+    "@backstage/plugin-events-node": "workspace:^"
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-catalog-backend-module-msgraph@workspace:plugins/catalog-backend-module-msgraph":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-msgraph@workspace:plugins/catalog-backend-module-msgraph"
