@@ -44,6 +44,9 @@ export const OwnerPicker = (props: OwnerPickerProps) => {
     'ui:options': {
       catalogFilter,
       defaultKind: 'Group',
+      optionLabelSchema:
+        uiSchema['ui:options']?.optionLabelSchema ??
+        '@{{spec.profile.displayName}} (@{{spec.profile.email}})',
       allowArbitraryValues:
         uiSchema['ui:options']?.allowArbitraryValues ?? true,
       ...(defaultNamespace !== undefined ? { defaultNamespace } : {}),

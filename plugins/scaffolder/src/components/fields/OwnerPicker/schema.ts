@@ -33,6 +33,12 @@ export const OwnerPickerFieldSchema = makeFieldSchemaFromZod(
       .describe(
         'DEPRECATED: Use `catalogFilter` instead. List of kinds of entities to derive options from. Defaults to Group and User',
       ),
+    optionLabelSchema: z
+      .string()
+      .optional()
+      .describe(
+        'Option label schema to be used. For example "@{{metadata.title}} (@{{metadata.name}})". Does not work with allowArbitraryValues enabled.',
+      ),
     allowArbitraryValues: z
       .boolean()
       .optional()

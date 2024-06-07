@@ -111,6 +111,46 @@ describe('<EntityPicker />', () => {
     });
   });
 
+  describe('with optionLabelSchema', () => {
+    beforeEach(() => {
+      uiSchema = {
+        'ui:options': {
+          allowArbitraryValues: false,
+          optionLabelSchema:
+            '@{{kind}} - @{{metadata.name}}: @{{ metadata.title }}',
+        },
+      };
+      props = {
+        onChange,
+        schema,
+        required,
+        uiSchema,
+        rawErrors,
+        formData,
+      } as unknown as FieldProps;
+
+      catalogApi.getEntities.mockResolvedValue({ items: entities });
+    });
+
+    it('fetches custom fields for label', async () => {
+      await renderInTestApp(
+        <Wrapper>
+          <EntityPicker {...props} />
+        </Wrapper>,
+      );
+
+      expect(catalogApi.getEntities).toHaveBeenCalledWith({
+        fields: [
+          'metadata.name',
+          'metadata.namespace',
+          'kind',
+          'metadata.title',
+        ],
+        filter: undefined,
+      });
+    });
+  });
+
   describe('with allowedKinds', () => {
     beforeEach(() => {
       uiSchema = { 'ui:options': { allowedKinds: ['User'] } };
