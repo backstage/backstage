@@ -15,7 +15,7 @@
  */
 
 import { ServiceRef } from '../services/system/types';
-import { BackendFeature } from '../types';
+import { BackendFeatureCompat } from '../types';
 
 /**
  * TODO
@@ -73,7 +73,7 @@ export interface BackendModuleRegistrationPoints {
 }
 
 /** @internal */
-export interface InternalBackendFeature extends BackendFeature {
+export interface InternalBackendFeature extends BackendFeatureCompat {
   version: 'v1';
   getRegistrations(): Array<
     InternalBackendPluginRegistration | InternalBackendModuleRegistration

@@ -35,7 +35,7 @@ describe('searchStackOverflowCollatorModule', () => {
         [searchIndexRegistryExtensionPoint, extensionPointMock],
       ],
       features: [
-        searchStackOverflowCollatorModule(),
+        searchStackOverflowCollatorModule,
         mockServices.rootConfig.factory({
           data: {
             stackoverflow: {

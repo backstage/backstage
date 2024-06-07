@@ -45,7 +45,7 @@ describe('catalogModuleIncrementalIngestionEntityProvider', () => {
       ],
       features: [
         httpRouterMock.factory,
-        catalogModuleIncrementalIngestionEntityProvider(),
+        catalogModuleIncrementalIngestionEntityProvider,
         createBackendModule({
           pluginId: 'catalog',
           moduleId: 'incremental-test',

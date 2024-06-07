@@ -63,7 +63,7 @@ async function main() {
     }),
   );
   backend.add(import('@backstage/plugin-catalog-backend/alpha'));
-  backend.add(catalogModuleIncrementalIngestionEntityProvider());
+  backend.add(catalogModuleIncrementalIngestionEntityProvider);
   backend.add(
     createBackendModule({
       pluginId: 'catalog',

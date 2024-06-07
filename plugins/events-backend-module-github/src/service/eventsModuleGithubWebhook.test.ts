@@ -48,7 +48,7 @@ describe('eventsModuleGithubWebhook', () => {
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       features: [
-        eventsModuleGithubWebhook(),
+        eventsModuleGithubWebhook,
         mockServices.rootConfig.factory({
           data: {
             events: {

@@ -56,7 +56,7 @@ describe('catalogModuleAwsS3EntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
-        catalogModuleAwsS3EntityProvider(),
+        catalogModuleAwsS3EntityProvider,
         mockServices.rootConfig.factory({ data: config }),
         scheduler.factory,
       ],

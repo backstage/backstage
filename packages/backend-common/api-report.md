@@ -13,7 +13,7 @@ import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
-import { BackendFeature } from '@backstage/backend-plugin-api';
+import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
@@ -428,7 +428,7 @@ export const legacyPlugin: (
       >
     >;
   }>,
-) => BackendFeature;
+) => BackendFeatureCompat;
 
 // @public
 export type LegacyRootDatabaseService = {
@@ -466,7 +466,7 @@ export function makeLegacyPlugin<
   createRouterImport: Promise<{
     default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
   }>,
-) => BackendFeature;
+) => BackendFeatureCompat;
 
 // @public @deprecated
 export function notFoundHandler(): RequestHandler;

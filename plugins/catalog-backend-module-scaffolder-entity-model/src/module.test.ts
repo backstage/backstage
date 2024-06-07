@@ -24,7 +24,7 @@ describe('catalogModuleScaffolderEntityModel', () => {
     const extensionPoint = { addProcessor: jest.fn() };
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
-      features: [catalogModuleScaffolderEntityModel()],
+      features: [catalogModuleScaffolderEntityModel],
     });
 
     expect(extensionPoint.addProcessor).toHaveBeenCalledWith(

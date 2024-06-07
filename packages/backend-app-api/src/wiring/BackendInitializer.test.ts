@@ -153,7 +153,7 @@ describe('BackendInitializer', () => {
             async init() {},
           });
         },
-      })(),
+      }),
     );
     await init.start();
 
@@ -184,7 +184,7 @@ describe('BackendInitializer', () => {
             },
           });
         },
-      })(),
+      }),
     );
 
     init.add(
@@ -201,7 +201,7 @@ describe('BackendInitializer', () => {
             },
           });
         },
-      })(),
+      }),
     );
 
     init.add(
@@ -217,7 +217,7 @@ describe('BackendInitializer', () => {
             },
           });
         },
-      })(),
+      }),
     );
     await init.start();
   });
@@ -235,7 +235,7 @@ describe('BackendInitializer', () => {
             },
           });
         },
-      })(),
+      }),
     );
     await expect(init.start()).rejects.toThrow(
       "Plugin 'test' startup failed; caused by Error: NOPE",
@@ -257,7 +257,7 @@ describe('BackendInitializer', () => {
             },
           });
         },
-      })(),
+      }),
     );
     await expect(init.start()).rejects.toThrow(
       "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
@@ -275,7 +275,7 @@ describe('BackendInitializer', () => {
             async init() {},
           });
         },
-      })(),
+      }),
     );
     init.add(
       createBackendPlugin({
@@ -286,7 +286,7 @@ describe('BackendInitializer', () => {
             async init() {},
           });
         },
-      })(),
+      }),
     );
     await expect(init.start()).rejects.toThrow(
       "Plugin 'test' is already registered",
@@ -306,7 +306,7 @@ describe('BackendInitializer', () => {
             async init() {},
           });
         },
-      })(),
+      }),
     );
     init.add(
       createBackendModule({
@@ -318,7 +318,7 @@ describe('BackendInitializer', () => {
             async init() {},
           });
         },
-      })(),
+      }),
     );
     await expect(init.start()).rejects.toThrow(
       "Module 'mod' for plugin 'test' is already registered",
@@ -348,7 +348,7 @@ describe('BackendInitializer', () => {
             async init() {},
           });
         },
-      })(),
+      }),
     );
     init.add(
       createBackendModule({
@@ -361,7 +361,7 @@ describe('BackendInitializer', () => {
             async init() {},
           });
         },
-      })(),
+      }),
     );
     await expect(init.start()).rejects.toThrow(
       "Circular dependency detected for modules of plugin 'test', 'mod-a' -> 'mod-b' -> 'mod-a'",
@@ -381,7 +381,7 @@ describe('BackendInitializer', () => {
             async init() {},
           });
         },
-      })(),
+      }),
     );
     init.add(testPlugin);
     init.add(
@@ -394,7 +394,7 @@ describe('BackendInitializer', () => {
             async init() {},
           });
         },
-      })(),
+      }),
     );
     await expect(init.start()).rejects.toThrow(
       "Illegal dependency: Module 'mod' for plugin 'test' attempted to depend on extension point 'a' for plugin 'test-a'. Extension points can only be used within their plugin's scope.",
