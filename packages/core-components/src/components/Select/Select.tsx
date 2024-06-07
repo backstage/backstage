@@ -254,7 +254,7 @@ export function SelectComponent(props: SelectProps) {
             getContentAnchorEl: null,
           }}
         >
-          {placeholder && !multiple && (
+          {!!placeholder && !multiple && (
             <MenuItem value={[]}>{placeholder}</MenuItem>
           )}
           {native
