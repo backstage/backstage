@@ -60,7 +60,7 @@ describe('catalogModuleGithubOrgEntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
-        catalogModuleGithubOrgEntityProvider(),
+        catalogModuleGithubOrgEntityProvider,
         mockServices.rootConfig.factory({ data: config }),
         scheduler.factory,
       ],

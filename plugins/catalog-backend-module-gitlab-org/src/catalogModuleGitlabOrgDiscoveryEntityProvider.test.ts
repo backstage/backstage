@@ -83,7 +83,7 @@ describe('catalogModuleGitlabOrgDiscoveryEntityProvider', () => {
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
         eventsServiceFactory(),
-        catalogModuleGitlabOrgDiscoveryEntityProvider(),
+        catalogModuleGitlabOrgDiscoveryEntityProvider,
         mockServices.rootConfig.factory({ data: config }),
         mockServices.logger.factory(),
         scheduler.factory,

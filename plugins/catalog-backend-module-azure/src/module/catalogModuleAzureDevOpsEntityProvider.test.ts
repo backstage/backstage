@@ -59,7 +59,7 @@ describe('catalogModuleAzureDevOpsEntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
-        catalogModuleAzureDevOpsEntityProvider(),
+        catalogModuleAzureDevOpsEntityProvider,
         mockServices.rootConfig.factory({ data: config }),
         mockServices.logger.factory(),
         scheduler.factory,

@@ -133,7 +133,7 @@ function createExtensionPointTestModules(
     ref: ExtensionPoint<unknown>,
     impl: unknown,
   ][],
-): Array<() => BackendFeature> {
+): Array<BackendFeature> {
   if (!extensionPointTuples) {
     return [];
   }

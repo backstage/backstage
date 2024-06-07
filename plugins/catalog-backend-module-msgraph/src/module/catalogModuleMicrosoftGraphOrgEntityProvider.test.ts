@@ -61,7 +61,7 @@ describe('catalogModuleMicrosoftGraphOrgEntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
-        catalogModuleMicrosoftGraphOrgEntityProvider(),
+        catalogModuleMicrosoftGraphOrgEntityProvider,
         mockServices.rootConfig.factory({ data: config }),
         scheduler.factory,
       ],

@@ -64,6 +64,12 @@ export interface BackendFeature {
 }
 
 // @public @deprecated (undocumented)
+export interface BackendFeatureCompat extends BackendFeature {
+  // @deprecated (undocumented)
+  (): this;
+}
+
+// @public @deprecated (undocumented)
 export type BackendModuleConfig = CreateBackendModuleOptions;
 
 // @public
@@ -208,7 +214,7 @@ export namespace coreServices {
 // @public
 export function createBackendModule(
   options: CreateBackendModuleOptions,
-): () => BackendFeature;
+): BackendFeatureCompat;
 
 // @public
 export interface CreateBackendModuleOptions {
@@ -221,7 +227,7 @@ export interface CreateBackendModuleOptions {
 // @public
 export function createBackendPlugin(
   options: CreateBackendPluginOptions,
-): () => BackendFeature;
+): BackendFeatureCompat;
 
 // @public
 export interface CreateBackendPluginOptions {

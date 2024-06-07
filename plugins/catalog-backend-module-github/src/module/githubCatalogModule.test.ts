@@ -69,7 +69,7 @@ describe('githubCatalogModule', () => {
         [catalogAnalysisExtensionPoint, analysisExtensionPoint],
       ],
       features: [
-        githubCatalogModule(),
+        githubCatalogModule,
         mockServices.rootConfig.factory({ data: config }),
         scheduler.factory,
       ],

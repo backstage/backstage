@@ -28,7 +28,7 @@ describe('searchModuleCatalogCollator', () => {
       extensionPoints: [
         [searchIndexRegistryExtensionPoint, extensionPointMock],
       ],
-      features: [searchModuleCatalogCollator()],
+      features: [searchModuleCatalogCollator],
     });
 
     expect(extensionPointMock.addCollator).toHaveBeenCalledTimes(1);
@@ -50,7 +50,7 @@ describe('searchModuleCatalogCollator', () => {
           ],
         ],
         features: [
-          searchModuleCatalogCollator(),
+          searchModuleCatalogCollator,
           mockServices.rootConfig.factory({
             data: {
               search: {

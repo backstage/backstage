@@ -21,7 +21,7 @@ import searchPlugin from './alpha';
 describe('searchPlugin', () => {
   it('should serve search results on query endpoint', async () => {
     const { server } = await startTestBackend({
-      features: [searchPlugin()],
+      features: [searchPlugin],
     });
 
     const response = await request(server).get('/api/search/query');

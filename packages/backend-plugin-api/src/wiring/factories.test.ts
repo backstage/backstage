@@ -33,19 +33,25 @@ describe('createExtensionPoint', () => {
 
 describe('createBackendPlugin', () => {
   it('should create a BackendPlugin', () => {
-    const plugin = createBackendPlugin({
+    const result = createBackendPlugin({
       pluginId: 'x',
       register(r) {
         r.registerInit({ deps: {}, async init() {} });
       },
     });
-    expect(plugin).toBeDefined();
-    expect(plugin()).toEqual({
-      $$type: '@backstage/BackendFeature',
-      version: 'v1',
-      getRegistrations: expect.any(Function),
-    });
-    expect((plugin() as InternalBackendFeature).getRegistrations()).toEqual([
+
+    // legacy form
+    const legacy = result() as unknown as InternalBackendFeature;
+    expect(legacy.$$type).toEqual('@backstage/BackendFeature');
+    expect(legacy.version).toEqual('v1');
+    expect(legacy.getRegistrations).toEqual(expect.any(Function));
+
+    // new form
+    const plugin = result as unknown as InternalBackendFeature;
+    expect(plugin.$$type).toEqual('@backstage/BackendFeature');
+    expect(plugin.version).toEqual('v1');
+    expect(plugin.getRegistrations).toEqual(expect.any(Function));
+    expect(plugin.getRegistrations()).toEqual([
       {
         type: 'plugin',
         pluginId: 'x',
@@ -56,6 +62,7 @@ describe('createBackendPlugin', () => {
         },
       },
     ]);
+
     // @ts-expect-error
     expect(plugin({ a: 'a' })).toBeDefined();
   });
@@ -63,21 +70,26 @@ describe('createBackendPlugin', () => {
 
 describe('createBackendModule', () => {
   it('should create a BackendModule', () => {
-    const mod = createBackendModule({
+    const result = createBackendModule({
       pluginId: 'x',
       moduleId: 'y',
       register(r) {
         r.registerInit({ deps: {}, async init() {} });
       },
     });
-    expect(mod).toBeDefined();
-    expect(mod()).toBeDefined();
-    expect(mod()).toEqual({
-      $$type: '@backstage/BackendFeature',
-      version: 'v1',
-      getRegistrations: expect.any(Function),
-    });
-    expect((mod() as InternalBackendFeature).getRegistrations()).toEqual([
+
+    // legacy form
+    const legacy = result() as unknown as InternalBackendFeature;
+    expect(legacy.$$type).toEqual('@backstage/BackendFeature');
+    expect(legacy.version).toEqual('v1');
+    expect(legacy.getRegistrations).toEqual(expect.any(Function));
+
+    // new form
+    const module = result as unknown as InternalBackendFeature;
+    expect(module.$$type).toEqual('@backstage/BackendFeature');
+    expect(module.version).toEqual('v1');
+    expect(module.getRegistrations).toEqual(expect.any(Function));
+    expect(module.getRegistrations()).toEqual([
       {
         type: 'module',
         pluginId: 'x',
@@ -89,7 +101,8 @@ describe('createBackendModule', () => {
         },
       },
     ]);
+
     // @ts-expect-error
-    expect(mod({ a: 'a' })).toBeDefined();
+    expect(module({ a: 'a' })).toBeDefined();
   });
 });

@@ -12,7 +12,7 @@ import { AuthResolverContext as AuthResolverContext_2 } from '@backstage/plugin-
 import { AuthService } from '@backstage/backend-plugin-api';
 import { AwsAlbResult as AwsAlbResult_2 } from '@backstage/plugin-auth-backend-module-aws-alb-provider';
 import { AzureEasyAuthResult } from '@backstage/plugin-auth-backend-module-azure-easyauth-provider';
-import { BackendFeature } from '@backstage/backend-plugin-api';
+import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
 import { BackstageSignInResult } from '@backstage/plugin-auth-node';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CatalogApi } from '@backstage/catalog-client';
@@ -57,7 +57,7 @@ export type AuthHandlerResult = {
 };
 
 // @public
-const authPlugin: () => BackendFeature;
+const authPlugin: BackendFeatureCompat;
 export default authPlugin;
 
 // @public @deprecated (undocumented)
