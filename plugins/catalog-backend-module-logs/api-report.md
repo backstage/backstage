@@ -5,8 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
-// Warning: (ae-missing-release-tag) "catalogModuleLogs" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
 const catalogModuleLogs: () => BackendFeature;
 export default catalogModuleLogs;

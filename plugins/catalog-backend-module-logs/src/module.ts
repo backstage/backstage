@@ -14,9 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Logs catalog errors from events.
- */
 import {
   coreServices,
   createBackendModule,
@@ -34,6 +31,7 @@ interface EventsParamsWithPayload extends EventParams {
   eventPayload: EventsPayload;
 }
 
+/** @public */
 export const catalogModuleLogs = createBackendModule({
   pluginId: 'catalog',
   moduleId: 'logs',
