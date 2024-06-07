@@ -52,8 +52,11 @@ describe('UserInfoDatabaseHandler', () => {
 
       it('addUserInfo', async () => {
         const userInfo = {
-          userEntityRef: 'user:default/foo',
-          ownershipEntityRefs: ['group:default/foo-group', 'group:default/bar'],
+          claims: {
+            sub: 'user:default/foo',
+            ent: ['group:default/foo-group', 'group:default/bar'],
+            exp: 1234567890,
+          },
         };
 
         await dbHandler.addUserInfo(userInfo);
@@ -62,44 +65,41 @@ describe('UserInfoDatabaseHandler', () => {
           .where('user_entity_ref', 'user:default/foo')
           .first();
         expect(savedUserInfo).toEqual({
-          user_entity_ref: userInfo.userEntityRef,
-          user_info: JSON.stringify({
-            ownershipEntityRefs: userInfo.ownershipEntityRefs,
-          }),
+          user_entity_ref: 'user:default/foo',
+          user_info: JSON.stringify(userInfo),
+          exp: expect.anything(),
         });
 
-        userInfo.ownershipEntityRefs = [
-          'group:default/group1',
-          'group:default/group2',
-        ];
+        userInfo.claims.ent = ['group:default/group1', 'group:default/group2'];
         await dbHandler.addUserInfo(userInfo);
 
         const updatedUserInfo = await knex('user_info')
           .where('user_entity_ref', 'user:default/foo')
           .first();
         expect(updatedUserInfo).toEqual({
-          user_entity_ref: userInfo.userEntityRef,
-          user_info: JSON.stringify({
-            ownershipEntityRefs: userInfo.ownershipEntityRefs,
-          }),
+          user_entity_ref: 'user:default/foo',
+          user_info: JSON.stringify(userInfo),
+          exp: expect.anything(),
         });
       });
 
       it('getUserInfo', async () => {
         const userInfo = {
-          userEntityRef: 'user:default/backstage-user',
-          ownershipEntityRefs: ['group:default/group1', 'group:default/group2'],
+          claims: {
+            sub: 'user:default/backstage-user',
+            ent: ['group:default/group1', 'group:default/group2'],
+            exp: 1234567890,
+          },
         };
 
         await knex('user_info').insert({
-          user_entity_ref: userInfo.userEntityRef,
-          user_info: JSON.stringify({
-            ownershipEntityRefs: userInfo.ownershipEntityRefs,
-          }),
+          user_entity_ref: 'user:default/backstage-user',
+          user_info: JSON.stringify(userInfo),
+          exp: knex.fn.now(),
         });
 
         const savedUserInfo = await dbHandler.getUserInfo(
-          userInfo.userEntityRef,
+          'user:default/backstage-user',
         );
         expect(savedUserInfo).toEqual(userInfo);
       });

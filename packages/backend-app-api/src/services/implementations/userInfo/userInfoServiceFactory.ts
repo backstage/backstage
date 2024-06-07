@@ -47,7 +47,7 @@ export class DefaultUserInfoService implements UserInfoService {
     if (!internalCredentials.token) {
       throw new Error('User credentials is unexpectedly missing token');
     }
-    const { sub: userEntityRef, ent: ownershipEntityRefs } = decodeJwt(
+    const { sub: userEntityRef, ent: tokenEnt } = decodeJwt(
       internalCredentials.token,
     );
 
@@ -55,30 +55,38 @@ export class DefaultUserInfoService implements UserInfoService {
       throw new Error('User entity ref must be a string');
     }
 
-    // Return user info if it's already available in the token (ie. it is a full token)
-    if (
-      Array.isArray(ownershipEntityRefs) &&
-      ownershipEntityRefs.every(ref => typeof ref === 'string')
-    ) {
-      return { userEntityRef, ownershipEntityRefs };
-    }
+    let ownershipEntityRefs = tokenEnt;
 
-    const userInfoResp = await fetch(
-      `${await this.discovery.getBaseUrl('auth')}/v1/userinfo`,
-      {
-        headers: {
-          Authorization: `Bearer ${internalCredentials.token}`,
+    if (!ownershipEntityRefs) {
+      const userInfoResp = await fetch(
+        `${await this.discovery.getBaseUrl('auth')}/v1/userinfo`,
+        {
+          headers: {
+            Authorization: `Bearer ${internalCredentials.token}`,
+          },
         },
-      },
-    );
+      );
 
-    if (!userInfoResp.ok) {
-      throw await ResponseError.fromResponse(userInfoResp);
+      if (!userInfoResp.ok) {
+        throw await ResponseError.fromResponse(userInfoResp);
+      }
+
+      const {
+        claims: { ent },
+      } = await userInfoResp.json();
+      ownershipEntityRefs = ent;
     }
 
-    const { sub, ent } = await userInfoResp.json();
+    if (!ownershipEntityRefs) {
+      throw new Error('Ownership entity refs can not be determined');
+    } else if (
+      !Array.isArray(ownershipEntityRefs) ||
+      ownershipEntityRefs.some(ref => typeof ref !== 'string')
+    ) {
+      throw new Error('Ownership entity refs must be an array of strings');
+    }
 
-    return { userEntityRef: sub, ownershipEntityRefs: ent };
+    return { userEntityRef, ownershipEntityRefs };
   }
 }
 

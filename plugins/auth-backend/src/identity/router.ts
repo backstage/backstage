@@ -93,19 +93,10 @@ export function bindOidcRouter(
       );
     }
 
-    const { sub: userEntityRef, ent: ownershipEntityRefs } = decodeJwt(token);
+    const { sub: userEntityRef } = decodeJwt(token);
 
     if (typeof userEntityRef !== 'string') {
       throw new Error('Invalid user token, user entity ref must be a string');
-    }
-
-    // Return user info if it's already available in the token (ie. it is a full token)
-    if (
-      Array.isArray(ownershipEntityRefs) &&
-      ownershipEntityRefs.every(ref => typeof ref === 'string')
-    ) {
-      res.json({ sub: userEntityRef, ent: ownershipEntityRefs });
-      return;
     }
 
     const userInfo = await userInfoDatabaseHandler.getUserInfo(userEntityRef);
@@ -114,9 +105,6 @@ export function bindOidcRouter(
       return;
     }
 
-    res.json({
-      sub: userInfo.userEntityRef,
-      ent: userInfo.ownershipEntityRefs,
-    });
+    res.json(userInfo);
   });
 }

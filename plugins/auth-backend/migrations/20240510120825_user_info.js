@@ -33,6 +33,11 @@ exports.up = async function up(knex) {
       .text('user_info', 'longtext')
       .notNullable()
       .comment('User info blob, JSON serialized');
+
+    table
+      .timestamp('exp')
+      .notNullable()
+      .comment('Expiration timestamp of the user info');
   });
 };
 

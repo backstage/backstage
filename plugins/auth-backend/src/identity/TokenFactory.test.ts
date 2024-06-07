@@ -88,8 +88,7 @@ describe('TokenFactory', () => {
     );
 
     expect(mockUserInfoDatabaseHandler.addUserInfo).toHaveBeenCalledWith({
-      userEntityRef: entityRef,
-      ownershipEntityRefs: [entityRef],
+      claims: verifyResult.payload,
     });
 
     // Emulate the reconstruction of a limited user token

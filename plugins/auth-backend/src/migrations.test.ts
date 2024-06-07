@@ -81,15 +81,25 @@ describe('migrations', () => {
       await migrateUpOnce(knex);
 
       const user_info = JSON.stringify({
-        ownershipEntityRefs: ['group:default/group1', 'group:default/group2'],
+        claims: {
+          ent: ['group:default/group1', 'group:default/group2'],
+        },
       });
 
       await knex
-        .insert({ user_entity_ref: 'user:default/backstage-user', user_info })
+        .insert({
+          user_entity_ref: 'user:default/backstage-user',
+          user_info,
+          exp: knex.fn.now(),
+        })
         .into('user_info');
 
       await expect(knex('user_info')).resolves.toEqual([
-        { user_entity_ref: 'user:default/backstage-user', user_info },
+        {
+          user_entity_ref: 'user:default/backstage-user',
+          user_info,
+          exp: expect.anything(),
+        },
       ]);
 
       await migrateDownOnce(knex);

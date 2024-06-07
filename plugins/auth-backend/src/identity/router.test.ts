@@ -28,7 +28,12 @@ describe('bindOidcRouter', () => {
   it('should return user info for full tokens', async () => {
     const auth = mockServices.auth.mock();
     const mockUserInfoDatabaseHandler = {
-      getUserInfo: jest.fn().mockResolvedValue(undefined),
+      getUserInfo: jest.fn().mockResolvedValue({
+        claims: {
+          sub: 'k/ns:n',
+          ent: ['k/ns:a', 'k/ns:b'],
+        },
+      }),
     } as unknown as UserInfoDatabaseHandler;
 
     const { server } = await startTestBackend({
@@ -70,19 +75,25 @@ describe('bindOidcRouter', () => {
         )}.s`,
       )
       .expect(200, {
-        sub: 'k/ns:n',
-        ent: ['k/ns:a', 'k/ns:b'],
+        claims: {
+          sub: 'k/ns:n',
+          ent: ['k/ns:a', 'k/ns:b'],
+        },
       });
 
-    expect(mockUserInfoDatabaseHandler.getUserInfo).not.toHaveBeenCalled();
+    expect(mockUserInfoDatabaseHandler.getUserInfo).toHaveBeenCalledWith(
+      'k/ns:n',
+    );
   });
 
   it('should return user info for limited tokens', async () => {
     const auth = mockServices.auth.mock();
     const mockUserInfoDatabaseHandler = {
       getUserInfo: jest.fn().mockResolvedValue({
-        userEntityRef: 'k/ns:n',
-        ownershipEntityRefs: ['k/ns:a', 'k/ns:b'],
+        claims: {
+          sub: 'k/ns:n',
+          ent: ['k/ns:a', 'k/ns:b'],
+        },
       }),
     } as unknown as UserInfoDatabaseHandler;
 
@@ -123,8 +134,10 @@ describe('bindOidcRouter', () => {
         `Bearer h.${btoa(JSON.stringify({ sub: 'k/ns:n' }))}.s`,
       )
       .expect(200, {
-        sub: 'k/ns:n',
-        ent: ['k/ns:a', 'k/ns:b'],
+        claims: {
+          sub: 'k/ns:n',
+          ent: ['k/ns:a', 'k/ns:b'],
+        },
       });
 
     expect(mockUserInfoDatabaseHandler.getUserInfo).toHaveBeenCalledWith(

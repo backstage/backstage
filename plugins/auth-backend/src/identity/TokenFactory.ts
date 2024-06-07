@@ -38,10 +38,8 @@ const MAX_TOKEN_LENGTH = 32768; // At 64 bytes per entity ref this still leaves 
 
 /**
  * The payload contents of a valid Backstage JWT token
- *
- * @internal
  */
-interface BackstageTokenPayload {
+export interface BackstageTokenPayload {
   /**
    * The issuer of the token, currently the discovery URL of the auth backend
    */
@@ -222,10 +220,7 @@ export class TokenFactory implements TokenIssuer {
 
     // Store the user info in the database upon successful token
     // issuance so that it can be retrieved later by limited user tokens
-    await this.userInfoDatabaseHandler.addUserInfo({
-      userEntityRef: sub,
-      ownershipEntityRefs: ent,
-    });
+    await this.userInfoDatabaseHandler.addUserInfo({ claims });
 
     return token;
   }

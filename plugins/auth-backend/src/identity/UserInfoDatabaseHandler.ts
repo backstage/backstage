@@ -14,35 +14,40 @@
  * limitations under the License.
  */
 
-import { BackstageUserInfo } from '@backstage/backend-plugin-api';
+import { DateTime } from 'luxon';
 import { Knex } from 'knex';
+
+import { BackstageTokenPayload } from './TokenFactory';
 
 const TABLE = 'user_info';
 
 type Row = {
   user_entity_ref: string;
   user_info: string;
+  exp: string;
 };
 
-// TODO: How do we prune stale users?
+type UserInfo = {
+  claims: Omit<BackstageTokenPayload, 'aud' | 'iat' | 'iss' | 'uip'>;
+};
+
 export class UserInfoDatabaseHandler {
   constructor(private readonly client: Knex) {}
 
-  async addUserInfo(userInfo: BackstageUserInfo): Promise<void> {
+  async addUserInfo(userInfo: UserInfo): Promise<void> {
     await this.client<Row>(TABLE)
       .insert({
-        user_entity_ref: userInfo.userEntityRef,
-        user_info: JSON.stringify({
-          ownershipEntityRefs: userInfo.ownershipEntityRefs,
-        }),
+        user_entity_ref: userInfo.claims.sub as string,
+        user_info: JSON.stringify(userInfo),
+        exp: DateTime.fromSeconds(userInfo.claims.exp as number, {
+          zone: 'utc',
+        }).toSQL({ includeOffset: false }),
       })
       .onConflict('user_entity_ref')
       .merge();
   }
 
-  async getUserInfo(
-    userEntityRef: string,
-  ): Promise<BackstageUserInfo | undefined> {
+  async getUserInfo(userEntityRef: string): Promise<UserInfo | undefined> {
     const info = await this.client<Row>(TABLE)
       .where({ user_entity_ref: userEntityRef })
       .first();
@@ -51,10 +56,7 @@ export class UserInfoDatabaseHandler {
       return undefined;
     }
 
-    const { ownershipEntityRefs } = JSON.parse(info.user_info);
-    return {
-      userEntityRef: info.user_entity_ref,
-      ownershipEntityRefs,
-    };
+    const userInfo = JSON.parse(info.user_info);
+    return userInfo;
   }
 }
