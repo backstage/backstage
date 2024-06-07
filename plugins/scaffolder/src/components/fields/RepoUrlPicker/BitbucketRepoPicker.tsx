@@ -97,7 +97,11 @@ export const BitbucketRepoPicker = (props: {
           }
       };
 
-      updateAvailableWorkspaces();
+      try {
+        updateAvailableWorkspaces();
+      } catch {
+        setAvailableWorkspaces([]);
+      }
     },
     500,
     [client, host],
@@ -126,7 +130,11 @@ export const BitbucketRepoPicker = (props: {
           }
       };
 
-      updateAvailableRepositories();
+      try {
+        updateAvailableRepositories();
+      } catch {
+        onChange({ availableRepos: [] });
+      }
     },
     500,
     [client, workspace, project, onChange],
@@ -153,7 +161,11 @@ export const BitbucketRepoPicker = (props: {
           }
       };
 
-      updateAvailableProjects();
+      try {
+        updateAvailableProjects();
+      } catch {
+        setAvailableProjects([]);
+      }
     },
     500,
     [client, workspace],
