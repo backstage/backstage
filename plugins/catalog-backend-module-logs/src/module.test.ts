@@ -20,7 +20,7 @@ import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 
-describe('eventsModuleLogs', () => {
+describe('catalogModuleLogs', () => {
   it('should be correctly wired and set up', async () => {
     const events = new TestEventsService();
     const eventsServiceFactory = createServiceFactory({
