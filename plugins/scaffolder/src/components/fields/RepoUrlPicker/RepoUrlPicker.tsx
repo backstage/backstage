@@ -232,6 +232,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           setState(prevState => ({ ...prevState, repoName: repo }))
         }
         rawErrors={rawErrors}
+        availableRepos={state.availableRepos}
       />
     </>
   );

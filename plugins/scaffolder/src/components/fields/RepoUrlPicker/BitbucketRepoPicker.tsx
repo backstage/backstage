@@ -17,8 +17,6 @@
 import React, { useEffect, useState } from 'react';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
 import { BitbucketCloudClient } from '@backstage/plugin-bitbucket-cloud-common';
@@ -65,10 +63,8 @@ export const BitbucketRepoPicker = (props: {
   }, [allowedOwners, host, onChange]);
 
   const [client, setClient] = useState<BitbucketCloudClient>();
+  const [availableWorkspaces, setAvailableWorkspaces] = useState<string[]>([]);
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
-  const [availableRepositories, setAvailableRepositories] = useState<string[]>(
-    [],
-  );
 
   useEffect(() => {
     if (accessToken)
@@ -81,39 +77,78 @@ export const BitbucketRepoPicker = (props: {
       );
   }, [accessToken]);
 
-  const onChangeWorkspace = async () => {
-    if (client)
-      if (!workspace) {
-        setAvailableProjects([]);
-      } else {
-        try {
-          for await (const page of client
-            .listProjectsByWorkspace(workspace)
-            .iteratePages()) {
-            const keys = [...page.values!].map(p => p.key!);
-            setAvailableProjects([...availableProjects, ...keys]);
-          }
-        } catch {
-          setAvailableProjects([]);
-        }
-      }
-  };
+  // Update available workspaces when host changes
+  useEffect(() => {
+    const updateAvailableWorkspaces = async () => {
+      if (client)
+        if (!host) {
+          setAvailableWorkspaces([]);
+        } else {
+          const result: string[] = [];
 
-  const onChangeProject = async () => {
-    if (client && workspace)
-      if (!project) {
-        setAvailableRepositories([]);
-      } else {
-        for await (const page of client
-          .listRepositoriesByWorkspace(workspace, {
-            q: `project.key="${project}"`,
-          })
-          .iteratePages()) {
-          const keys = [...page.values!].map(p => p.slug!);
-          setAvailableRepositories([...availableRepositories, ...keys]);
+          for await (const page of client.listWorkspaces().iteratePages()) {
+            const keys = [...page.values!].map(p => p.slug!);
+            result.push(...keys);
+          }
+
+          setAvailableWorkspaces(result);
         }
-      }
-  };
+    };
+
+    updateAvailableWorkspaces();
+  }, [client, host]);
+
+  // Update available repositories when workspace or project changes
+  useEffect(() => {
+    const updateAvailableRepositories = async () => {
+      if (client && workspace)
+        if (!project) {
+          onChange({ availableRepos: [] });
+        } else {
+          const availableRepos: string[] = [];
+
+          for await (const page of client
+            .listRepositoriesByWorkspace(workspace, {
+              q: `project.key="${project}"`,
+            })
+            .iteratePages()) {
+            const keys = [...page.values!].map(p => p.slug!);
+            availableRepos.push(...keys);
+          }
+
+          onChange({ availableRepos });
+        }
+    };
+
+    updateAvailableRepositories();
+  }, [client, workspace, project, onChange]);
+
+  // Update available projects when workspace changes
+  useEffect(() => {
+    const updateAvailableProjects = async () => {
+      if (client)
+        if (!workspace) {
+          setAvailableProjects([]);
+        } else {
+          try {
+            const result: string[] = [];
+
+            for await (const page of client
+              .listProjectsByWorkspace(workspace)
+              .iteratePages()) {
+              const keys = [...page.values!].map(p => p.key!);
+              result.push(...keys);
+            }
+
+            setAvailableProjects(result);
+          } catch {
+            setAvailableProjects([]);
+          }
+        }
+    };
+
+    updateAvailableProjects();
+  }, [client, workspace]);
 
   return (
     <>
@@ -135,15 +170,18 @@ export const BitbucketRepoPicker = (props: {
               items={ownerItems}
             />
           ) : (
-            <>
-              <InputLabel htmlFor="workspaceInput">Workspace</InputLabel>
-              <Input
-                id="workspaceInput"
-                onChange={e => onChange({ workspace: e.target.value })}
-                value={workspace}
-                onBlur={() => onChangeWorkspace()}
-              />
-            </>
+            <Autocomplete
+              value={workspace}
+              onChange={(_, newValue) => {
+                onChange({ workspace: newValue || '' });
+              }}
+              options={availableWorkspaces}
+              renderInput={params => (
+                <TextField {...params} label="Workspace" required />
+              )}
+              freeSolo
+              autoSelect
+            />
           )}
           <FormHelperText>
             The Workspace that this repo will belong to
@@ -173,9 +211,10 @@ export const BitbucketRepoPicker = (props: {
               onChange({ project: newValue || '' });
             }}
             options={availableProjects}
-            renderInput={params => <TextField {...params} label="Project" />}
+            renderInput={params => (
+              <TextField {...params} label="Project" required />
+            )}
             freeSolo
-            onBlur={() => onChangeProject()}
             autoSelect
           />
         )}

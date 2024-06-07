@@ -85,6 +85,16 @@ export class BitbucketCloudClient {
     );
   }
 
+  listWorkspaces(
+    options?: FilterAndSortOptions & PartialResponseOptions,
+  ): WithPagination<Models.PaginatedWorkspaces, Models.Workspace> {
+    return new WithPagination(
+      paginationOptions =>
+        this.createUrl('/workspaces', { ...paginationOptions, ...options }),
+      url => this.getTypeMapped(url),
+    );
+  }
+
   private createUrl(endpoint: string, options?: RequestOptions): URL {
     const request = new URL(this.config.apiBaseUrl + endpoint);
     for (const key in options) {
