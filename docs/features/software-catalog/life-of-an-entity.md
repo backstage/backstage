@@ -197,8 +197,8 @@ cannot be parsed successfully, etc.
 
 There are two main ways that these errors are surfaced.
 
-First, the catalog backend will emit [events](https://github.com/backstage/backstage/tree/master/plugins/events-node) you can subscribe to that should contain
-sufficient information for a reader to find the causes for errors.
+First, the catalog backend will emit events using the [events backend plugin](https://github.com/backstage/backstage/tree/master/plugins/events-node). You can subscribe to the events. The events should contain
+sufficient information for a reader to find the causes for errors. See the configuration documentation [here](./configuration.md#subscribing-to-catalog-errors) for how to subscribe and log these error events.
 Since these events are typically not easily found by end users, this can mainly be a useful
 tool for Backstage operators who want to debug problems either with statically
 registered entities that are under their control, or to help end users find
@@ -213,118 +213,6 @@ callout component (`EntityProcessingErrorsPanel`) there.
 
 We are still working to improve the surfacing and observability around
 processing loop errors.
-
-### Subscribing to Catalog Errors
-
-Errors are published to the [events plugin](https://github.com/backstage/backstage/tree/master/plugins/events-node): `@backstage/plugin-events-node`. You can subscribe to events and respond to errors, for example you may wish to log them.
-
-#### New Backend System
-
-Make sure you have the events plugin installed.
-
-```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-events-backend/alpha'));
-```
-
-Create a backend module that subscribes to the catalog error events. The topic is `experimental.catalog.errors`.
-
-```ts title="packages/backend/src/index.ts"
-import { CATALOG_ERRORS_TOPIC } from '@backstage/plugin-catalog-backend';
-import {
-  coreServices,
-  createBackendModule,
-} from '@backstage/backend-plugin-api';
-import { eventsServiceRef, EventParams } from '@backstage/plugin-events-node';
-
-interface EventsPayload {
-  entity: string;
-  location?: string;
-  errors: Error[];
-}
-
-interface EventsParamsWithPayload extends EventParams {
-  eventPayload: EventsPayload;
-}
-
-const eventsModuleCatalogErrors = createBackendModule({
-  pluginId: 'events',
-  moduleId: 'catalog-errors',
-  register(env) {
-    env.registerInit({
-      deps: {
-        events: eventsServiceRef,
-        logger: coreServices.logger,
-      },
-      async init({ events, logger }) {
-        events.subscribe({
-          id: 'catalog',
-          topics: [CATALOG_ERRORS_TOPIC],
-          async onEvent(params: EventParams): Promise<void> {
-            const event = params as EventsParamsWithPayload;
-            const { entity, location, errors } = event.eventPayload;
-            for (const error of errors) {
-              logger.warn(error.message, {
-                entity,
-                location,
-              });
-            }
-          },
-        });
-      },
-    });
-  },
-});
-```
-
-Now install your module.
-
-```ts title="packages/backend/src/index.ts"
-backend.add(eventsModuleCatalogErrors);
-```
-
-You should now see logs as the catalog emits events. Example:
-
-```
-[1] 2024-06-07T00:00:28.787Z events warn Policy check failed for user:default/guest; caused by Error: Malformed envelope, /metadata/tags must be array entity=user:default/guest location=file:/Users/foobar/code/backstage-demo-instance/examples/org.yaml
-```
-
-#### Legacy Backend
-
-Make sure you have the events plugin installed. See the legacy backend instructions [here](https://github.com/backstage/backstage/tree/master/plugins/events-node#legacy-backend-system).
-
-Subscribe to the events using the `eventBroker` set in the environment.
-
-```ts
-import { CATALOG_ERRORS_TOPIC } from '@backstage/plugin-catalog-backend';
-
-env.eventBroker.subscribe({
-  supportsEventTopics(): string[] {
-    return [CATALOG_ERRORS_TOPIC];
-  },
-
-  async onEvent(
-    params: EventParams<{
-      entity: string;
-      location?: string;
-      errors: Array<Error>;
-    }>,
-  ): Promise<void> {
-    const { entity, location, errors } = params.eventPayload;
-    for (const error of errors) {
-      env.logger.warn(error.message, {
-        entity,
-        location,
-      });
-    }
-  },
-});
-```
-
-You should now see logs as the catalog emits events. Example:
-
-```
-[1] 2024-06-07T00:00:28.787Z events warn Policy check failed for user:default/guest; caused by Error: Malformed envelope, /metadata/tags must be array entity=user:default/guest location=file:/Users/foobar/code/backstage-demo-instance/examples/org.yaml
-```
 
 ## Orphaning
 
