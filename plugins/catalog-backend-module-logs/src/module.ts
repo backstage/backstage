@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+/**
+ * Logs catalog errors from events.
+ *
+ * @public
+ */
 import {
   coreServices,
   createBackendModule,

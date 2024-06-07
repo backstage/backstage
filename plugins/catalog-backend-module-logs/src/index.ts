@@ -18,6 +18,7 @@
  * The logs backend module for the catalog plugin.
  *
  * @packageDocumentation
+ * @public
  */
 
 export { catalogModuleLogs as default } from './module';
