@@ -199,6 +199,15 @@ backend.add(import('@backstage/plugin-events-backend/alpha'));
 
 If you want to log catalog errors you can install the `@backstage/plugin-catalog-backend-module-logs` module.
 
+Install the catalog logs module.
+
+```ts
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-logs
+```
+
+Add the module to your backend.
+
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
 ```

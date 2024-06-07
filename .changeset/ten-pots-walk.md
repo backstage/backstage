@@ -1,6 +1,8 @@
-# backstage-plugin-catalog-backend-module-logs
+---
+'@backstage/plugin-catalog-backend-module-logs': patch
+---
 
-A module that subscribes to catalog related events and logs them.
+Creates a new module to make logging catalog errors simple. This module subscribes to catalog events and logs them.
 
 Catalog errors are published to the [events plugin](https://github.com/backstage/backstage/tree/master/plugins/events-node): `@backstage/plugin-events-node`. You can subscribe to events and respond to errors, for example you may wish to log them.
 
@@ -13,17 +15,15 @@ yarn --cwd packages/backend add @backstage/plugin-events-node
 
 Now you can install the events backend plugin in your backend.
 
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-events-backend/alpha'));
+```
+
 Install the catalog logs module.
 
 ```ts
 # From your Backstage root directory
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-logs
-```
-
-Add the module to your backend.
-
-```ts title="packages/backend/src/index.ts"
-backend.add(import('@backstage/plugin-events-backend/alpha'));
 ```
 
 Now install the catalog logs module.
