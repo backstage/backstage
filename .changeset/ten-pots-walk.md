@@ -26,7 +26,7 @@ Install the catalog logs module.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-logs
 ```
 
-Now install the catalog logs module.
+Add the module to your backend.
 
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
