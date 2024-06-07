@@ -22,6 +22,7 @@ import { RepoUrlPickerState } from './types';
 import { BitbucketCloudClient } from '@backstage/plugin-bitbucket-cloud-common';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
+import useDebounce from 'react-use/esm/useDebounce';
 
 /**
  * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
@@ -78,59 +79,67 @@ export const BitbucketRepoPicker = (props: {
   }, [accessToken]);
 
   // Update available workspaces when host changes
-  useEffect(() => {
-    const updateAvailableWorkspaces = async () => {
-      if (client)
-        if (!host) {
-          setAvailableWorkspaces([]);
-        } else {
-          const result: string[] = [];
+  useDebounce(
+    () => {
+      const updateAvailableWorkspaces = async () => {
+        if (client)
+          if (!host) {
+            setAvailableWorkspaces([]);
+          } else {
+            const result: string[] = [];
 
-          for await (const page of client.listWorkspaces().iteratePages()) {
-            const keys = [...page.values!].map(p => p.slug!);
-            result.push(...keys);
+            for await (const page of client.listWorkspaces().iteratePages()) {
+              const keys = [...page.values!].map(p => p.slug!);
+              result.push(...keys);
+            }
+
+            setAvailableWorkspaces(result);
           }
+      };
 
-          setAvailableWorkspaces(result);
-        }
-    };
-
-    updateAvailableWorkspaces();
-  }, [client, host]);
+      updateAvailableWorkspaces();
+    },
+    500,
+    [client, host],
+  );
 
   // Update available repositories when workspace or project changes
-  useEffect(() => {
-    const updateAvailableRepositories = async () => {
-      if (client && workspace)
-        if (!project) {
-          onChange({ availableRepos: [] });
-        } else {
-          const availableRepos: string[] = [];
+  useDebounce(
+    () => {
+      const updateAvailableRepositories = async () => {
+        if (client && workspace)
+          if (!project) {
+            onChange({ availableRepos: [] });
+          } else {
+            const availableRepos: string[] = [];
 
-          for await (const page of client
-            .listRepositoriesByWorkspace(workspace, {
-              q: `project.key="${project}"`,
-            })
-            .iteratePages()) {
-            const keys = [...page.values!].map(p => p.slug!);
-            availableRepos.push(...keys);
+            for await (const page of client
+              .listRepositoriesByWorkspace(workspace, {
+                q: `project.key="${project}"`,
+              })
+              .iteratePages()) {
+              const keys = [...page.values!].map(p => p.slug!);
+              availableRepos.push(...keys);
+            }
+
+            onChange({ availableRepos });
           }
+      };
 
-          onChange({ availableRepos });
-        }
-    };
-
-    updateAvailableRepositories();
-  }, [client, workspace, project, onChange]);
+      updateAvailableRepositories();
+    },
+    500,
+    [client, workspace, project, onChange],
+  );
 
   // Update available projects when workspace changes
-  useEffect(() => {
-    const updateAvailableProjects = async () => {
-      if (client)
-        if (!workspace) {
-          setAvailableProjects([]);
-        } else {
-          try {
+  useDebounce(
+    () => {
+      const updateAvailableProjects = async () => {
+        if (client)
+          if (!workspace) {
+            setAvailableProjects([]);
+          } else {
             const result: string[] = [];
 
             for await (const page of client
@@ -141,14 +150,14 @@ export const BitbucketRepoPicker = (props: {
             }
 
             setAvailableProjects(result);
-          } catch {
-            setAvailableProjects([]);
           }
-        }
-    };
+      };
 
-    updateAvailableProjects();
-  }, [client, workspace]);
+      updateAvailableProjects();
+    },
+    500,
+    [client, workspace],
+  );
 
   return (
     <>
@@ -172,7 +181,7 @@ export const BitbucketRepoPicker = (props: {
           ) : (
             <Autocomplete
               value={workspace}
-              onChange={(_, newValue) => {
+              onInputChange={(_, newValue) => {
                 onChange({ workspace: newValue || '' });
               }}
               options={availableWorkspaces}
@@ -207,7 +216,7 @@ export const BitbucketRepoPicker = (props: {
         ) : (
           <Autocomplete
             value={project}
-            onChange={(_, newValue) => {
+            onInputChange={(_, newValue) => {
               onChange({ project: newValue || '' });
             }}
             options={availableProjects}
