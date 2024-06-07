@@ -16,8 +16,6 @@
 
 /**
  * Logs catalog errors from events.
- *
- * @public
  */
 import {
   coreServices,
