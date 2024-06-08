@@ -428,17 +428,18 @@ export function fixPluginPackages(
   }
 }
 
+type PackageFixer = (pkg: FixablePackage, packages: FixablePackage[]) => void;
+
 export async function command(opts: OptionValues): Promise<void> {
   const packages = await readFixablePackages();
   const fixRepositoryField = createRepositoryFieldFixer();
 
-  const fixers = [
-    fixPackageExports,
-    fixSideEffects,
-    fixRepositoryField,
-    fixPluginId,
-    fixPluginPackages,
-  ];
+  const fixers: PackageFixer[] = [fixPackageExports, fixSideEffects];
+
+  // Fixers that only apply to repos that publish packages
+  if (opts.publish) {
+    fixers.push(fixRepositoryField, fixPluginId, fixPluginPackages);
+  }
 
   for (const fixer of fixers) {
     for (const pkg of packages) {
