@@ -432,12 +432,18 @@ export async function command(opts: OptionValues): Promise<void> {
   const packages = await readFixablePackages();
   const fixRepositoryField = createRepositoryFieldFixer();
 
-  for (const pkg of packages) {
-    fixPackageExports(pkg);
-    fixSideEffects(pkg);
-    fixRepositoryField(pkg);
-    fixPluginId(pkg);
-    fixPluginPackages(pkg, packages);
+  const fixers = [
+    fixPackageExports,
+    fixSideEffects,
+    fixRepositoryField,
+    fixPluginId,
+    fixPluginPackages,
+  ];
+
+  for (const fixer of fixers) {
+    for (const pkg of packages) {
+      fixer(pkg, packages);
+    }
   }
 
   if (opts.check) {
