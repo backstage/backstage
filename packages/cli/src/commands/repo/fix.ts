@@ -306,6 +306,128 @@ export function fixPluginId(pkg: FixablePackage) {
   pkg.changed = true;
 }
 
+export function fixPluginPackages(
+  pkg: FixablePackage,
+  repoPackages: FixablePackage[],
+) {
+  const pkgBackstage = pkg.packageJson.backstage;
+  const role = pkgBackstage?.role;
+  if (!role) {
+    return;
+  }
+
+  if (role === 'backend' || role === 'frontend' || role === 'cli') {
+    return;
+  }
+
+  const pluginId = pkgBackstage.pluginId;
+  if (!pluginId) {
+    // Might be a plugin-less library, skip
+    if (
+      role === 'common-library' ||
+      role === 'web-library' ||
+      role === 'node-library'
+    ) {
+      return;
+    }
+    throw new Error(`Missing backstage.pluginId in ${pkg.packageJson.name}`);
+  }
+
+  if (role === 'backend-plugin-module' || role === 'frontend-plugin-module') {
+    const targetRole = role.replace('-module', '');
+
+    const pluginPkg = repoPackages.find(
+      p =>
+        p.packageJson.backstage?.pluginId === pluginId &&
+        p.packageJson.backstage?.role === targetRole,
+    );
+    if (!pluginPkg) {
+      // If we can't find a matching package in the repo but one is declared, skip
+      if (pkgBackstage.pluginPackage) {
+        return;
+      }
+      const path = relativePath(
+        paths.targetRoot,
+        resolvePath(pkg.dir, 'package.json'),
+      );
+      throw new Error(
+        `Failed to find plugin package for ${pkg.packageJson.name}, please set backstage.pluginPackage manually in ${path}`,
+      );
+    }
+
+    if (pkgBackstage.pluginPackage !== pluginPkg.packageJson.name) {
+      pkgBackstage.pluginPackage = pluginPkg.packageJson.name;
+      pkg.changed = true;
+    }
+  } else {
+    let frontend: string | undefined = undefined;
+    let backend: string | undefined = undefined;
+    let libraries: string[] | undefined = [];
+
+    for (const repoPkg of repoPackages) {
+      if (repoPkg.packageJson.backstage?.pluginId !== pluginId) {
+        continue;
+      }
+      const repoPkgRole = repoPkg.packageJson.backstage?.role;
+      const repoPkgName = repoPkg.packageJson.name;
+      if (repoPkgRole === 'frontend-plugin') {
+        if (frontend) {
+          throw new Error(
+            `Duplicate frontend plugin for '${pluginId}', ${frontend} and ${repoPkgName}`,
+          );
+        }
+        frontend = repoPkgName;
+      } else if (repoPkgRole === 'backend-plugin') {
+        if (backend) {
+          throw new Error(
+            `Duplicate backend plugin for '${pluginId}', ${backend} and ${repoPkgName}`,
+          );
+        }
+        backend = repoPkgName;
+      } else if (
+        repoPkgRole === 'common-library' ||
+        repoPkgRole === 'web-library' ||
+        repoPkgRole === 'node-library'
+      ) {
+        libraries.push(repoPkgName);
+      }
+    }
+
+    if (libraries.length === 0) {
+      // If there are no libraries, avoid an empty array in package.json
+      libraries = undefined;
+    } else {
+      // Sort libraries to ensure consistent order
+      libraries.sort();
+    }
+
+    if (!pkgBackstage.pluginPackages) {
+      pkgBackstage.pluginPackages = {
+        frontend,
+        backend,
+        libraries,
+      };
+      pkg.changed = true;
+    } else {
+      if (pkgBackstage.pluginPackages.frontend !== frontend) {
+        pkgBackstage.pluginPackages.frontend = frontend;
+        pkg.changed = true;
+      }
+      if (pkgBackstage.pluginPackages.backend !== backend) {
+        pkgBackstage.pluginPackages.backend = backend;
+        pkg.changed = true;
+      }
+      if (
+        pkgBackstage.pluginPackages.libraries?.join(',') !==
+        libraries?.join(',')
+      ) {
+        pkgBackstage.pluginPackages.libraries = libraries;
+        pkg.changed = true;
+      }
+    }
+  }
+}
+
 export async function command(opts: OptionValues): Promise<void> {
   const packages = await readFixablePackages();
   const fixRepositoryField = createRepositoryFieldFixer();
@@ -315,6 +437,7 @@ export async function command(opts: OptionValues): Promise<void> {
     fixSideEffects(pkg);
     fixRepositoryField(pkg);
     fixPluginId(pkg);
+    fixPluginPackages(pkg, packages);
   }
 
   if (opts.check) {

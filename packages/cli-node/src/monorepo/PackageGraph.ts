@@ -47,6 +47,12 @@ export interface BackstagePackageJson {
     role?: PackageRole;
     moved?: string;
     pluginId?: string;
+    pluginPackage?: string;
+    pluginPackages?: {
+      frontend?: string;
+      backend?: string;
+      libraries?: string[];
+    };
   };
 
   exports?: JsonValue;
