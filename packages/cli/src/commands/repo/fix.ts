@@ -25,6 +25,7 @@ import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import { resolve as resolvePath, posix, relative as relativePath } from 'path';
 import { paths } from '../../lib/paths';
+import { publishPreflightCheck } from '../../lib/publishing';
 
 /**
  * A mutable object representing a package.json file with potential fixes.
@@ -438,7 +439,13 @@ export async function command(opts: OptionValues): Promise<void> {
 
   // Fixers that only apply to repos that publish packages
   if (opts.publish) {
-    fixers.push(fixRepositoryField, fixPluginId, fixPluginPackages);
+    fixers.push(
+      fixRepositoryField,
+      fixPluginId,
+      fixPluginPackages,
+      // Run the publish preflight check too, to make sure we don't uncover errors during publishing
+      publishPreflightCheck,
+    );
   }
 
   for (const fixer of fixers) {
