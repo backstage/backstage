@@ -18,6 +18,7 @@ import {
   BackstagePackage,
   BackstagePackageJson,
   PackageGraph,
+  PackageRole,
   PackageRoles,
 } from '@backstage/cli-node';
 import { OptionValues } from 'commander';
@@ -239,6 +240,72 @@ export function createRepositoryFieldFixer() {
   };
 }
 
+function guessPluginId(role: PackageRole, pkgName: string): string | undefined {
+  switch (role) {
+    case 'frontend':
+    case 'frontend-plugin':
+      return pkgName.match(/plugin-(.*)/)?.[1];
+    case 'frontend-plugin-module':
+      return pkgName.match(/plugin-(.*)-module-/)?.[1];
+    case 'backend-plugin':
+      return pkgName.match(/plugin-(.*)-backend$/)?.[1];
+    case 'backend-plugin-module':
+      return pkgName.match(/plugin-(.*)-backend-module-/)?.[1];
+    case 'common-library':
+      return pkgName.match(/plugin-(.*)-(?:common)$/)?.[1];
+    case 'web-library':
+      return pkgName.match(/plugin-(.*)-(?:react|test-utils)/)?.[1];
+    case 'node-library':
+      return pkgName.match(/plugin-(.*)-(?:node|backend)-?/)?.[1];
+    default:
+      throw new Error(`Invalid backstage.role in ${pkgName}, got '${role}'`);
+  }
+}
+
+export function fixPluginId(pkg: FixablePackage) {
+  const role = pkg.packageJson.backstage?.role;
+  if (!role) {
+    return;
+  }
+
+  if (role === 'backend' || role === 'frontend' || role === 'cli') {
+    return;
+  }
+
+  const currentId = pkg.packageJson.backstage?.pluginId;
+  if (currentId !== undefined) {
+    if (typeof currentId !== 'string') {
+      throw new Error(
+        `Invalid backstage.pluginId in ${pkg.packageJson.name}, must be a string`,
+      );
+    }
+    return;
+  }
+
+  const guessedPluginId = guessPluginId(role, pkg.packageJson.name);
+  if (
+    !guessedPluginId &&
+    (role === 'frontend-plugin' ||
+      role === 'frontend-plugin-module' ||
+      role === 'backend-plugin' ||
+      role === 'backend-plugin-module')
+  ) {
+    const path = relativePath(
+      paths.targetRoot,
+      resolvePath(pkg.dir, 'package.json'),
+    );
+    throw new Error(
+      `Failed to guess plugin ID for ${pkg.packageJson.name}, please set backstage.pluginId manually in ${path}`,
+    );
+  }
+
+  pkg.packageJson.backstage = {
+    ...pkg.packageJson.backstage,
+    pluginId: guessedPluginId,
+  };
+  pkg.changed = true;
+}
+
 export async function command(opts: OptionValues): Promise<void> {
   const packages = await readFixablePackages();
   const fixRepositoryField = createRepositoryFieldFixer();
@@ -247,6 +314,7 @@ export async function command(opts: OptionValues): Promise<void> {
     fixPackageExports(pkg);
     fixSideEffects(pkg);
     fixRepositoryField(pkg);
+    fixPluginId(pkg);
   }
 
   if (opts.check) {
