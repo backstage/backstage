@@ -259,7 +259,9 @@ function guessPluginId(role: PackageRole, pkgName: string): string | undefined {
     case 'node-library':
       return pkgName.match(/plugin-(.*)-(?:node|backend)-?/)?.[1];
     default:
-      throw new Error(`Invalid backstage.role in ${pkgName}, got '${role}'`);
+      throw new Error(
+        `Invalid 'backstage.role' field in "${pkgName}", got '${role}'`,
+      );
   }
 }
 
@@ -277,7 +279,7 @@ export function fixPluginId(pkg: FixablePackage) {
   if (currentId !== undefined) {
     if (typeof currentId !== 'string') {
       throw new Error(
-        `Invalid backstage.pluginId in ${pkg.packageJson.name}, must be a string`,
+        `Invalid 'backstage.pluginId' field in "${pkg.packageJson.name}", must be a string`,
       );
     }
     return;
@@ -296,7 +298,7 @@ export function fixPluginId(pkg: FixablePackage) {
       resolvePath(pkg.dir, 'package.json'),
     );
     throw new Error(
-      `Failed to guess plugin ID for ${pkg.packageJson.name}, please set backstage.pluginId manually in ${path}`,
+      `Failed to guess plugin ID for "${pkg.packageJson.name}", please set the 'backstage.pluginId' field manually in "${path}"`,
     );
   }
 
@@ -306,6 +308,22 @@ export function fixPluginId(pkg: FixablePackage) {
   };
   pkg.changed = true;
 }
+
+const backendPluginPackageNameByPluginId = new Map(
+  [
+    'app',
+    'auth',
+    'catalog',
+    'events',
+    'kubernetes',
+    'notifications',
+    'permission',
+    'scaffolder',
+    'search',
+    'signals',
+    'techdocs',
+  ].map(pluginId => [pluginId, `@backstage/plugin-${pluginId}-backend`]),
+);
 
 export function fixPluginPackages(
   pkg: FixablePackage,
@@ -331,18 +349,23 @@ export function fixPluginPackages(
     ) {
       return;
     }
-    throw new Error(`Missing backstage.pluginId in ${pkg.packageJson.name}`);
+    throw new Error(
+      `Missing 'backstage.pluginId' field in "${pkg.packageJson.name}"`,
+    );
   }
 
   if (role === 'backend-plugin-module' || role === 'frontend-plugin-module') {
     const targetRole = role.replace('-module', '');
 
-    const pluginPkg = repoPackages.find(
-      p =>
-        p.packageJson.backstage?.pluginId === pluginId &&
-        p.packageJson.backstage?.role === targetRole,
-    );
-    if (!pluginPkg) {
+    // Try to find a plugin package in the same repo, but otherwise fall back to looking up the package name by ID of @backstage/* plugins
+    const pluginPkgName =
+      repoPackages.find(
+        p =>
+          p.packageJson.backstage?.pluginId === pluginId &&
+          p.packageJson.backstage?.role === targetRole,
+      )?.packageJson.name ?? backendPluginPackageNameByPluginId.get(pluginId);
+
+    if (!pluginPkgName) {
       // If we can't find a matching package in the repo but one is declared, skip
       if (pkgBackstage.pluginPackage) {
         return;
@@ -351,13 +374,16 @@ export function fixPluginPackages(
         paths.targetRoot,
         resolvePath(pkg.dir, 'package.json'),
       );
+      const suggestedRole =
+        role === 'frontend-plugin-module' ? 'web-library' : 'node-library';
       throw new Error(
-        `Failed to find plugin package for ${pkg.packageJson.name}, please set backstage.pluginPackage manually in ${path}`,
+        `Failed to find plugin package for "${pkg.packageJson.name}", please declare the name of the plugin package that this package is a module for in the 'backstage.pluginPackage' field in "${path}". ` +
+          `It is also possible that this package is not a module, and should use the '${suggestedRole}' role instead.`,
       );
     }
 
-    if (pkgBackstage.pluginPackage !== pluginPkg.packageJson.name) {
-      pkgBackstage.pluginPackage = pluginPkg.packageJson.name;
+    if (pkgBackstage.pluginPackage !== pluginPkgName) {
+      pkgBackstage.pluginPackage = pluginPkgName;
       pkg.changed = true;
     }
   } else {
@@ -374,14 +400,14 @@ export function fixPluginPackages(
       if (repoPkgRole === 'frontend-plugin') {
         if (frontend) {
           throw new Error(
-            `Duplicate frontend plugin for '${pluginId}', ${frontend} and ${repoPkgName}`,
+            `Duplicate frontend plugin for '${pluginId}', "${frontend}" and "${repoPkgName}"`,
           );
         }
         frontend = repoPkgName;
       } else if (repoPkgRole === 'backend-plugin') {
         if (backend) {
           throw new Error(
-            `Duplicate backend plugin for '${pluginId}', ${backend} and ${repoPkgName}`,
+            `Duplicate backend plugin for '${pluginId}', "${backend}" and "${repoPkgName}"`,
           );
         }
         backend = repoPkgName;
