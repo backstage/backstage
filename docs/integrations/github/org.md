@@ -96,6 +96,7 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 - `githubUrl`: The target that this provider should consume
 - `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
 - `schedule`: The refresh schedule to use, matches the structure of [`TaskScheduleDefinitionConfig`](https://backstage.io/docs/reference/backend-tasks.taskscheduledefinitionconfig/)
+- `neverUseDefaultNamespace` (optional): Generated group entities will use the org name as the namespace, even if only a single org is provided.
 
 ### Events Support
 

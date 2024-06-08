@@ -221,6 +221,13 @@ export interface Config {
              * The refresh schedule to use.
              */
             schedule: TaskScheduleDefinitionConfig;
+
+            /**
+             * Use the GitHub organization as namespace even if only one organization
+             * is provided. By default, if not provided, a single org will use the
+             * default namespace.
+             */
+            neverUseDefaultNamespace?: boolean;
           }
         | Array<{
             /**
@@ -250,6 +257,13 @@ export interface Config {
              * The refresh schedule to use.
              */
             schedule: TaskScheduleDefinitionConfig;
+
+            /**
+             * Use the GitHub organization as namespace even if only one organization
+             * is provided. By default, if not provided, a single org will use the
+             * default namespace.
+             */
+            neverUseDefaultNamespace?: boolean;
           }>;
     };
   };
