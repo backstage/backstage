@@ -51,6 +51,8 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
+    "@backstage/plugin-signals-node": "workspace:^",
+    "@backstage/plugin-user-settings-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "@types/express": "^4.17.6",
     "express": "^4.17.1",
