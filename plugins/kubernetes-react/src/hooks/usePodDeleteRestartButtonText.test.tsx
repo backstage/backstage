@@ -23,7 +23,7 @@ import React from 'react';
 import { usePodDeleteRestartButtonText } from './usePodDeleteRestartButtonText';
 
 describe('usePodDeleteResetButtonText', () => {
-  let haveResetButtonText: boolean | undefined;
+  let haveRestartButtonText: boolean | undefined;
 
   const apiWrapper = ({ children }: PropsWithChildren) => (
     <TestApiProvider
@@ -33,7 +33,7 @@ describe('usePodDeleteResetButtonText', () => {
           new ConfigReader({
             kubernetes: {
               frontend: {
-                podDelete: { restartButtonText: haveResetButtonText },
+                podDelete: { restartButtonText: haveRestartButtonText },
               },
             },
           }),
@@ -55,7 +55,7 @@ describe('usePodDeleteResetButtonText', () => {
       returnValue: true,
     },
   ])('Should return $returnValue if $condition', async ({ returnValue }) => {
-    haveResetButtonText = returnValue;
+    haveRestartButtonText = returnValue;
 
     const { result } = renderHook(() => usePodDeleteRestartButtonText(), {
       wrapper: apiWrapper,
