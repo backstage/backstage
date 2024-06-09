@@ -32,7 +32,7 @@ import { PodScope } from './types';
  */
 export interface PodDeleteButtonProps {
   podScope: PodScope;
-  buttonText?: string;
+  restartButtonTextEnable?: boolean;
 }
 
 /**
@@ -42,12 +42,12 @@ export interface PodDeleteButtonProps {
  */
 export const PodDeleteButton = ({
   podScope,
-  buttonText,
+  restartButtonTextEnable,
 }: PodDeleteButtonProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const [hasError, setHasError] = useState(false);
   const deletePod = usePodDelete();
-  const getButtonText = buttonText ?? 'Delete Pod';
+  const getButtonText = restartButtonTextEnable ? 'Restart Pod' : 'Delete Pod';
 
   const handleDeleteClick = async () => {
     setIsLoading(true);

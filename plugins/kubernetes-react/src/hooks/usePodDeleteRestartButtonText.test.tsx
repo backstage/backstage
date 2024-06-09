@@ -20,10 +20,10 @@ import { renderHook } from '@testing-library/react';
 import { PropsWithChildren } from 'react';
 import React from 'react';
 
-import { usePodDeleteButtonText } from './usePodDeleteButtonText';
+import { usePodDeleteRestartButtonText } from './usePodDeleteRestartButtonText';
 
-describe('usePodDeleteButtonText', () => {
-  let haveButtonText: string | undefined;
+describe('usePodDeleteResetButtonText', () => {
+  let haveResetButtonText: boolean | undefined;
 
   const apiWrapper = ({ children }: PropsWithChildren) => (
     <TestApiProvider
@@ -33,7 +33,7 @@ describe('usePodDeleteButtonText', () => {
           new ConfigReader({
             kubernetes: {
               frontend: {
-                podDelete: { buttonText: haveButtonText },
+                podDelete: { restartButtonText: haveResetButtonText },
               },
             },
           }),
@@ -49,11 +49,15 @@ describe('usePodDeleteButtonText', () => {
       condition: 'missing config',
       returnValue: undefined,
     },
-    { condition: 'custom text', returnValue: 'Restart pod' },
+    { condition: 'disabled', returnValue: false },
+    {
+      condition: 'enabled',
+      returnValue: true,
+    },
   ])('Should return $returnValue if $condition', async ({ returnValue }) => {
-    haveButtonText = returnValue;
+    haveResetButtonText = returnValue;
 
-    const { result } = renderHook(() => usePodDeleteButtonText(), {
+    const { result } = renderHook(() => usePodDeleteRestartButtonText(), {
       wrapper: apiWrapper,
     });
 

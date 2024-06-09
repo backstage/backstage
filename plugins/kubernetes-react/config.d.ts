@@ -41,10 +41,10 @@ export interface Config {
          */
         enabled?: boolean;
         /**
-         * Override the `podDelete` button text
+         * Control the `podDelete` button text
          * @visibility frontend
          */
-        buttonText?: string;
+        restartButtonText?: boolean;
       };
     };
   };

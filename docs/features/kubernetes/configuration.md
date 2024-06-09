@@ -67,7 +67,7 @@ This configures the behavior of the delete pod button in the container panel.
 Valid configurations are:
 
 - `enabled`
-- `buttonText`
+- `restartButtonText`
 
 ##### `enabled`
 
@@ -80,9 +80,16 @@ Valid values are:
 
 The default value is `false`.
 
-##### `buttonText`
+##### `restartButtonText`
 
-This configuration allows you to override the button text. The default value is **Delete Pod**, which might be intimidating for audiences with minimal knowledge. For instance, you can change it to **Restart pod**.
+This configuration allows you to switch the button text from **Delete Pod**, which might be intimidating for audiences with minimal knowledge, to **Restart pod**.
+
+Valid values are:
+
+- `true`
+- `false`
+
+The default value is `false`.
 
 ### `serviceLocatorMethod`
 
