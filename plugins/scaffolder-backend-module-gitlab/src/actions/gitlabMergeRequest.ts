@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
+import { InputError } from '@backstage/errors';
+import { ScmIntegrationRegistry } from '@backstage/integration';
 import {
   createTemplateAction,
   parseRepoUrl,
@@ -21,11 +24,8 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Types } from '@gitbeaker/core';
 import path from 'path';
-import { ScmIntegrationRegistry } from '@backstage/integration';
-import { InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
-import { createGitlabApi } from './helpers';
 import { examples } from './gitlabMergeRequest.examples';
+import { createGitlabApi } from './helpers';
 
 /**
  * Create a new action that creates a gitlab merge request.
@@ -51,6 +51,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
     projectid?: string;
     removeSourceBranch?: boolean;
     assignee?: string;
+    autoMerge?: boolean;
   }>({
     id: 'publish:gitlab:merge-request',
     examples,
@@ -123,6 +124,12 @@ export const createPublishGitlabMergeRequestAction = (options: {
             title: 'Merge Request Assignee',
             type: 'string',
             description: 'User this merge request will be assigned to',
+          },
+          autoMerge: {
+            title: 'Merge Request Auto Merge',
+            type: 'boolean',
+            description:
+              'Set auto-merge for an MR after the pipelines successful execution. Skipped pipeline counts as successful depends on a repository configuration Default: false',
           },
         },
       },
@@ -234,7 +241,7 @@ export const createPublishGitlabMergeRequestAction = (options: {
       }
 
       try {
-        const mergeRequestUrl = await api.MergeRequests.create(
+        const mergeRequest = await api.MergeRequests.create(
           repoID,
           branchName,
           String(targetBranch),
@@ -244,13 +251,32 @@ export const createPublishGitlabMergeRequestAction = (options: {
             removeSourceBranch: removeSourceBranch ? removeSourceBranch : false,
             assigneeId,
           },
-        ).then((mergeRequest: { web_url: string }) => {
-          return mergeRequest.web_url;
-        });
+        );
+
+        const autoMerge = ctx.input.autoMerge ? true : false;
+        if (autoMerge) {
+          let mergeStatus = '';
+          // Wait untill the MR is ready to be merged automatically
+          while (mergeStatus !== 'can_be_merged') {
+            const mr = await api.MergeRequests.show(repoID, mergeRequest.iid);
+            mergeStatus = mr.merge_status;
+
+            if (mergeStatus === 'cannot_be_merged') {
+              throw new InputError(
+                `Merge Request ${mr.id} cannot be merged automatically due to conflicts. Please resolve the conflicts and merge manually.`,
+              );
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 3000));
+          }
+          // Merge the MR
+          await api.MergeRequests.accept(repoID, mergeRequest.iid);
+        }
+
         ctx.output('projectid', repoID);
         ctx.output('targetBranchName', targetBranch);
         ctx.output('projectPath', repoID);
-        ctx.output('mergeRequestUrl', mergeRequestUrl);
+        ctx.output('mergeRequestUrl', mergeRequest.web_url);
       } catch (e) {
         throw new InputError(`Merge request creation failed${e}`);
       }
