@@ -67,6 +67,7 @@ export const scaffolderTaskBrokerExtensionPoint =
  */
 export interface ScaffolderTemplatingExtensionPoint {
   addTemplateFilters(filters: Record<string, TemplateFilter>): void;
+
   addTemplateGlobals(filters: Record<string, TemplateGlobal>): void;
 }
 
@@ -109,11 +110,52 @@ export interface ScaffolderAutocompleteExtensionPoint {
 }
 
 /**
- * Extension point for adding template filters and globals.
+ * Extension point for adding autocomplete handlers.
  *
  * @alpha
  */
 export const scaffolderAutocompleteExtensionPoint =
   createExtensionPoint<ScaffolderAutocompleteExtensionPoint>({
     id: 'scaffolder.autocomplete',
+  });
+
+/**
+ * This provider has to be implemented to make it possible to serialize/deserialize scaffolder workspace.
+ *
+ * @alpha
+ */
+export interface WorkspaceProvider {
+  serializeWorkspace({
+    path,
+    taskId,
+  }: {
+    path: string;
+    taskId: string;
+  }): Promise<void>;
+
+  cleanWorkspace(options: { taskId: string }): Promise<void>;
+
+  rehydrateWorkspace(options: {
+    taskId: string;
+    targetPath: string;
+  }): Promise<void>;
+}
+
+/**
+ * Extension point for adding workspace providers.
+ *
+ * @alpha
+ */
+export interface ScaffolderWorkspaceProviderExtensionPoint {
+  addProviders(providers: Record<string, WorkspaceProvider>): void;
+}
+
+/**
+ * Extension point for adding workspace providers.
+ *
+ * @alpha
+ */
+export const scaffolderWorkspaceProviderExtensionPoint =
+  createExtensionPoint<ScaffolderWorkspaceProviderExtensionPoint>({
+    id: 'scaffolder.workspace.provider',
   });

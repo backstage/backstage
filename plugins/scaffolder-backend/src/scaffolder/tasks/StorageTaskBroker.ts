@@ -35,6 +35,7 @@ import {
   BackstageCredentials,
 } from '@backstage/backend-plugin-api';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
+import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 
 type TaskState = {
   checkpoints: {
@@ -66,13 +67,21 @@ export class TaskManager implements TaskContext {
     logger: Logger,
     auth?: AuthService,
     config?: Config,
+    additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
   ) {
+    const workspaceService = DefaultWorkspaceService.create(
+      task,
+      storage,
+      additionalWorkspaceProviders,
+      config,
+    );
+
     const agent = new TaskManager(
       task,
       storage,
       abortSignal,
       logger,
-      DefaultWorkspaceService.create(task, storage, config),
+      workspaceService,
       auth,
     );
     agent.startTimeout();
@@ -262,6 +271,10 @@ export class StorageTaskBroker implements TaskBroker {
     private readonly logger: Logger,
     private readonly config?: Config,
     private readonly auth?: AuthService,
+    private readonly additionalWorkspaceProviders?: Record<
+      string,
+      WorkspaceProvider
+    >,
   ) {}
 
   async list(options?: {
@@ -350,6 +363,7 @@ export class StorageTaskBroker implements TaskBroker {
           this.logger,
           this.auth,
           this.config,
+          this.additionalWorkspaceProviders,
         );
       }
 

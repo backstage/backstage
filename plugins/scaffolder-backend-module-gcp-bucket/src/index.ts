@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-export type {
-  TaskSecrets,
-  SerializedTask,
-  SerializedTaskEvent,
-  TaskBroker,
-  TaskBrokerDispatchOptions,
-  TaskBrokerDispatchResult,
-  TaskCompletionState,
-  TaskContext,
-  TaskEventType,
-  TaskStatus,
-} from './types';
+/**
+ * A module for the scaffolder backend that lets you interact with azure
+ *
+ * @packageDocumentation
+ */
 
-export * from './serializer';
+export { gcpBucketModule as default } from './module';

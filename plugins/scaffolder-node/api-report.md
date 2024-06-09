@@ -256,6 +256,9 @@ export const parseRepoUrl: (
   project?: string | undefined;
 };
 
+// @public
+export const restoreWorkspace: (path: string, buffer?: Buffer) => Promise<void>;
+
 // @public (undocumented)
 export interface SerializedFile {
   // (undocumented)
@@ -297,6 +300,9 @@ export type SerializedTaskEvent = {
   type: TaskEventType;
   createdAt: string;
 };
+
+// @public
+export const serializeWorkspace: (path: string) => Promise<Buffer>;
 
 // @public
 export interface TaskBroker {

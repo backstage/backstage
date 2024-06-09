@@ -40,7 +40,10 @@ import { DateTime, Duration } from 'luxon';
 import { TaskRecovery, TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { trimEventsTillLastRecovery } from './taskRecoveryHelper';
 import { intervalFromNowTill } from './dbUtil';
-import { restoreWorkspace, serializeWorkspace } from './serializer';
+import {
+  restoreWorkspace,
+  serializeWorkspace,
+} from '@backstage/plugin-scaffolder-node';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',

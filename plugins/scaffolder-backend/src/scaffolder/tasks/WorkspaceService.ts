@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-import { TaskStore } from './types';
-
-import { CurrentClaimedTask } from './StorageTaskBroker';
 import { Config } from '@backstage/config';
-
-type WorkspaceSerializationProvider = 'database' | 'googleCloudBucket';
+import { CurrentClaimedTask } from './StorageTaskBroker';
+import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
+import { DatabaseWorkspaceProvider } from './DatabaseWorkspaceProvider';
+import { TaskStore } from './types';
 
 export interface WorkspaceService {
   serializeWorkspace(options: { path: string }): Promise<void>;
@@ -33,33 +32,40 @@ export interface WorkspaceService {
 }
 
 export class DefaultWorkspaceService implements WorkspaceService {
-  static create(task: CurrentClaimedTask, storage: TaskStore, config?: Config) {
-    return new DefaultWorkspaceService(task, storage, config);
+  static create(
+    task: CurrentClaimedTask,
+    storage: TaskStore,
+    additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
+    config?: Config,
+  ) {
+    const workspaceProviderName =
+      config?.getOptionalString(
+        'scaffolder.EXPERIMENTAL_workspaceSerializationProvider',
+      ) ?? 'database';
+    const workspaceProvider =
+      additionalWorkspaceProviders?.[workspaceProviderName] ??
+      DatabaseWorkspaceProvider.create(storage);
+    return new DefaultWorkspaceService(task, workspaceProvider);
   }
 
   private constructor(
     private readonly task: CurrentClaimedTask,
-    private readonly storage: TaskStore,
+    private readonly workspaceProvider: WorkspaceProvider,
     private readonly config?: Config,
   ) {}
 
   public async serializeWorkspace(options: { path: string }): Promise<void> {
     if (this.isWorkspaceSerializationEnabled()) {
-      const provider = this.getWorkspaceSerializationProvider();
-      switch (provider) {
-        case 'database':
-          this.storage.serializeWorkspace?.({
-            path: options.path,
-            taskId: this.task.taskId,
-          });
-          return;
-        case 'googleCloudBucket':
-          return;
-        default:
-          throw new Error(
-            `Workspace serialization provider ${provider} is not supported`,
-          );
-      }
+      await this.workspaceProvider.serializeWorkspace({
+        path: options.path,
+        taskId: this.task.taskId,
+      });
+    }
+  }
+
+  public async cleanWorkspace(): Promise<void> {
+    if (this.isWorkspaceSerializationEnabled()) {
+      await this.workspaceProvider.cleanWorkspace({ taskId: this.task.taskId });
     }
   }
 
@@ -68,11 +74,9 @@ export class DefaultWorkspaceService implements WorkspaceService {
     targetPath: string;
   }): Promise<void> {
     if (this.isWorkspaceSerializationEnabled()) {
-      this.storage.rehydrateWorkspace?.(options);
+      await this.workspaceProvider.rehydrateWorkspace(options);
     }
   }
-
-  public async cleanWorkspace(): Promise<void> {}
 
   private isWorkspaceSerializationEnabled(): boolean {
     return (
@@ -80,11 +84,5 @@ export class DefaultWorkspaceService implements WorkspaceService {
         'scaffolder.EXPERIMENTAL_workspaceSerialization',
       ) ?? false
     );
-  }
-
-  private getWorkspaceSerializationProvider(): WorkspaceSerializationProvider {
-    return (this.config?.getOptionalString(
-      'scaffolder.EXPERIMENTAL_workspaceSerializationProvider',
-    ) ?? 'database') as WorkspaceSerializationProvider;
   }
 }

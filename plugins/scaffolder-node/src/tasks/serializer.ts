@@ -20,13 +20,22 @@ import { promisify } from 'util';
 import { pipeline as pipelineCb, Readable } from 'stream';
 
 const pipeline = promisify(pipelineCb);
-
+/**
+ * Serializes provided path into tar archive
+ *
+ * @public
+ */
 export const serializeWorkspace = async (path: string): Promise<Buffer> => {
-  return await new Promise<Buffer>(async resolve => {
+  return new Promise<Buffer>(async resolve => {
     await pipeline(tar.create({ cwd: path }, ['']), concatStream(resolve));
   });
 };
 
+/**
+ * Rehydrates the provided buffer of tar archive into the provide destination path
+ *
+ * @public
+ */
 export const restoreWorkspace = async (path: string, buffer?: Buffer) => {
   if (buffer) {
     await pipeline(

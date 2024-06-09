@@ -68,5 +68,33 @@ export interface ScaffolderTemplatingExtensionPoint {
 // @alpha
 export const scaffolderTemplatingExtensionPoint: ExtensionPoint<ScaffolderTemplatingExtensionPoint>;
 
+// @alpha
+export interface ScaffolderWorkspaceProviderExtensionPoint {
+  // (undocumented)
+  addProviders(providers: Record<string, WorkspaceProvider>): void;
+}
+
+// @alpha
+export const scaffolderWorkspaceProviderExtensionPoint: ExtensionPoint<ScaffolderWorkspaceProviderExtensionPoint>;
+
+// @alpha
+export interface WorkspaceProvider {
+  // (undocumented)
+  cleanWorkspace(options: { taskId: string }): Promise<void>;
+  // (undocumented)
+  rehydrateWorkspace(options: {
+    taskId: string;
+    targetPath: string;
+  }): Promise<void>;
+  // (undocumented)
+  serializeWorkspace({
+    path,
+    taskId,
+  }: {
+    path: string;
+    taskId: string;
+  }): Promise<void>;
+}
+
 // (No @packageDocumentation comment for this package)
 ```

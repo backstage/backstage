@@ -6779,6 +6779,22 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-scaffolder-backend-module-gcp-bucket@workspace:plugins/scaffolder-backend-module-gcp-bucket":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-scaffolder-backend-module-gcp-bucket@workspace:plugins/scaffolder-backend-module-gcp-bucket"
+  dependencies:
+    "@backstage/backend-plugin-api": "workspace:^"
+    "@backstage/cli": "workspace:^"
+    "@backstage/config": "workspace:^"
+    "@backstage/errors": "workspace:^"
+    "@backstage/integration": "workspace:^"
+    "@backstage/plugin-scaffolder-node": "workspace:^"
+    "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
+    "@google-cloud/storage": ^7.11.2
+    raw-body: ^2.4.1
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-scaffolder-backend-module-gerrit@workspace:^, @backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-scaffolder-backend-module-gerrit@workspace:plugins/scaffolder-backend-module-gerrit"
@@ -7042,11 +7058,13 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-common": "workspace:^"
     "@backstage/types": "workspace:^"
+    concat-stream: ^2.0.0
     fs-extra: ^11.2.0
     globby: ^11.0.0
     isomorphic-git: ^1.23.0
     jsonschema: ^1.2.6
     p-limit: ^3.1.0
+    tar: ^6.1.12
     winston: ^3.2.1
     zod: ^3.22.4
     zod-to-json-schema: ^3.20.4
@@ -9354,9 +9372,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google-cloud/storage@npm:^7.0.0":
-  version: 7.10.1
-  resolution: "@google-cloud/storage@npm:7.10.1"
+"@google-cloud/storage@npm:^7.0.0, @google-cloud/storage@npm:^7.11.2":
+  version: 7.11.2
+  resolution: "@google-cloud/storage@npm:7.11.2"
   dependencies:
     "@google-cloud/paginator": ^5.0.0
     "@google-cloud/projectify": ^4.0.0
@@ -9364,16 +9382,16 @@ __metadata:
     abort-controller: ^3.0.0
     async-retry: ^1.3.3
     duplexify: ^4.1.3
-    ent: ^2.2.0
     fast-xml-parser: ^4.3.0
     gaxios: ^6.0.2
     google-auth-library: ^9.6.3
+    html-entities: ^2.5.2
     mime: ^3.0.0
     p-limit: ^3.0.1
     retry-request: ^7.0.0
     teeny-request: ^9.0.0
     uuid: ^8.0.0
-  checksum: 0605f8abf67cde98bc48b05c749b569416af821fcc3eb8ed3fac6dc5ade9c1f2f3210404c85e30525260ea4f34785d7436f7684e6eacd083613237669badff25
+  checksum: 763cd560245006e11a060fdbd5edff5d6bfe22b0c0b06dfe88af43b7b14458598c00a71c4e1b079e9ab09096d7d262bdc27fa77d76a8969af0765f23c93f8405
   languageName: node
   linkType: hard
 
@@ -25281,13 +25299,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ent@npm:^2.2.0":
-  version: 2.2.0
-  resolution: "ent@npm:2.2.0"
-  checksum: f588b5707d6fef36011ea10d530645912a69530a1eb0831f8708c498ac028363a7009f45cfadd28ceb4dafd9ac17ec15213f88d09ce239cd033cfe1328dd7d7d
-  languageName: node
-  linkType: hard
-
 "entities@npm:^2.0.0":
   version: 2.2.0
   resolution: "entities@npm:2.2.0"
@@ -28821,10 +28832,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"html-entities@npm:^2.1.0, html-entities@npm:^2.4.0":
-  version: 2.4.0
-  resolution: "html-entities@npm:2.4.0"
-  checksum: 25bea32642ce9ebd0eedc4d24381883ecb0335ccb8ac26379a0958b9b16652fdbaa725d70207ce54a51db24103436a698a8e454397d3ba8ad81460224751f1dc
+"html-entities@npm:^2.1.0, html-entities@npm:^2.4.0, html-entities@npm:^2.5.2":
+  version: 2.5.2
+  resolution: "html-entities@npm:2.5.2"
+  checksum: b23f4a07d33d49ade1994069af4e13d31650e3fb62621e92ae10ecdf01d1a98065c78fd20fdc92b4c7881612210b37c275f2c9fba9777650ab0d6f2ceb3b99b6
   languageName: node
   linkType: hard
 
