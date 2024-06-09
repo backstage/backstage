@@ -33,7 +33,10 @@ import { ErrorList } from '../ErrorList';
 import { usePodMetrics } from '../../../hooks/usePodMetrics';
 import { ResourceUtilization } from '../../ResourceUtilization';
 import { bytesToMiB, formatMillicores } from '../../../utils/resources';
-import { useIsPodDeleteEnabled, usePodDeleteButtonText } from '../../../hooks';
+import {
+  useIsPodDeleteEnabled,
+  usePodDeleteRestartButtonText,
+} from '../../../hooks';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -79,7 +82,7 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
   const classes = useDrawerContentStyles();
   const podMetrics = usePodMetrics(podAndErrors.cluster.name, podAndErrors.pod);
   const isPodDeleteEnabled = useIsPodDeleteEnabled();
-  const usePodDeleteCustomButtonText = usePodDeleteButtonText();
+  const podDeleteButtonTextEnabled = usePodDeleteRestartButtonText();
 
   return (
     <KubernetesDrawer
@@ -106,7 +109,7 @@ export const PodDrawer = ({ podAndErrors, open }: PodDrawerProps) => {
               podNamespace: podAndErrors.pod.metadata?.namespace ?? 'default',
               cluster: podAndErrors.cluster,
             }}
-            buttonText={usePodDeleteCustomButtonText}
+            restartButtonTextEnable={podDeleteButtonTextEnabled}
           />
         )}
         {podMetrics && (
