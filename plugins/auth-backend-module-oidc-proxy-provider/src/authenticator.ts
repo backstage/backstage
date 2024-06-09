@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,39 +17,44 @@
 import { AuthenticationError } from '@backstage/errors';
 import { createProxyAuthenticator } from '@backstage/plugin-auth-node';
 import { createTokenValidator } from './helpers';
-import { GcpIapResult } from './types';
+import { OidcProxyResult } from './types';
 
 /**
- * The header name used by the IAP.
+ * DEFAULT_OIDC_ID_TOKEN_HEADER represents the default http request header used
+ * when an alternative header has not been explicitly configured.
  */
-const DEFAULT_IAP_JWT_HEADER = 'x-goog-iap-jwt-assertion';
+const DEFAULT_OIDC_ID_TOKEN_HEADER = 'x-oidc-id-token';
 
 /** @public */
-export const gcpIapAuthenticator = createProxyAuthenticator({
-  defaultProfileTransform: async (result: GcpIapResult) => {
-    return { profile: { email: result.iapToken.email } };
+export const oidcProxyAuthenticator = createProxyAuthenticator({
+  defaultProfileTransform: async (result: OidcProxyResult) => {
+    return { profile: { email: result.idToken.email } };
   },
   initialize({ config }) {
-    const audience = config.getString('audience');
-    const jwtHeader =
-      config.getOptionalString('jwtHeader') ?? DEFAULT_IAP_JWT_HEADER;
+    const iss = config.getString('issuer');
+    const aud = config.getString('audience');
+    const oidcIdTokenHeader =
+      config.getOptionalString('oidcIdTokenHeader') ??
+      DEFAULT_OIDC_ID_TOKEN_HEADER;
 
-    const tokenValidator = createTokenValidator(audience);
+    const tokenValidator = createTokenValidator(iss, aud);
 
-    return { jwtHeader, tokenValidator };
+    return { oidcIdTokenHeader, tokenValidator };
   },
-  async authenticate({ req }, { jwtHeader, tokenValidator }) {
-    const token = req.header(jwtHeader);
+  async authenticate({ req }, { oidcIdTokenHeader, tokenValidator }) {
+    const token = req.header(oidcIdTokenHeader);
 
     if (!token || typeof token !== 'string') {
-      throw new AuthenticationError('Missing Google IAP header');
+      throw new AuthenticationError(
+        `could not authenticate: missing header ${oidcIdTokenHeader}`,
+      );
     }
 
-    const iapToken = await tokenValidator(token);
+    const idToken = await tokenValidator(token);
 
     return {
-      result: { iapToken },
-      providerInfo: { iapToken },
+      result: { idToken },
+      providerInfo: { idToken },
     };
   },
 });

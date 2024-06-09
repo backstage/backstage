@@ -457,6 +457,19 @@ export const providers: Readonly<{
     }) => AuthProviderFactory_2;
     resolvers: Readonly<cloudflareAccessSignInResolvers>;
   }>;
+  easyAuth: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<AzureEasyAuthResult> | undefined;
+            signIn: {
+              resolver: SignInResolver_2<AzureEasyAuthResult>;
+            };
+          }
+        | undefined,
+    ) => AuthProviderFactory_2;
+    resolvers: never;
+  }>;
   gcpIap: Readonly<{
     create: (options: {
       authHandler?: AuthHandler<GcpIapResult_2> | undefined;
@@ -579,6 +592,15 @@ export const providers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver_2<unknown>;
     }>;
   }>;
+  oidcProxy: Readonly<{
+    create: (options: {
+      authHandler?: AuthHandler<OidcProxyResult> | undefined;
+      signIn: {
+        resolver: SignInResolver_2<OidcProxyResult>;
+      };
+    }) => AuthProviderFactory_2;
+    resolvers: never;
+  }>;
   okta: Readonly<{
     create: (
       options?:
@@ -629,19 +651,6 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       nameIdMatchingUserEntityName(): SignInResolver_2<SamlAuthResult>;
     }>;
-  }>;
-  easyAuth: Readonly<{
-    create: (
-      options?:
-        | {
-            authHandler?: AuthHandler<AzureEasyAuthResult> | undefined;
-            signIn: {
-              resolver: SignInResolver_2<AzureEasyAuthResult>;
-            };
-          }
-        | undefined,
-    ) => AuthProviderFactory_2;
-    resolvers: never;
   }>;
 }>;
 

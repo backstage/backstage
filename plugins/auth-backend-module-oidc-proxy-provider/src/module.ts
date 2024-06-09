@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,13 +20,13 @@ import {
   commonSignInResolvers,
   createProxyAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
-import { gcpIapAuthenticator } from './authenticator';
-import { gcpIapSignInResolvers } from './resolvers';
+import { oidcProxyAuthenticator } from './authenticator';
+import { oidcProxySignInResolvers } from './resolvers';
 
 /** @public */
-export const authModuleGcpIapProvider = createBackendModule({
+export const authModuleOidcProxyProvider = createBackendModule({
   pluginId: 'auth',
-  moduleId: 'gcp-iap-provider',
+  moduleId: 'oidc-proxy-provider',
   register(reg) {
     reg.registerInit({
       deps: {
@@ -34,11 +34,11 @@ export const authModuleGcpIapProvider = createBackendModule({
       },
       async init({ providers }) {
         providers.registerProvider({
-          providerId: 'gcpIap',
+          providerId: 'oidcProxy',
           factory: createProxyAuthProviderFactory({
-            authenticator: gcpIapAuthenticator,
+            authenticator: oidcProxyAuthenticator,
             signInResolverFactories: {
-              ...gcpIapSignInResolvers,
+              ...oidcProxySignInResolvers,
               ...commonSignInResolvers,
             },
           }),

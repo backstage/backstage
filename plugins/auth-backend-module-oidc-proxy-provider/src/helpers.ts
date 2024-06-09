@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,53 +15,64 @@
  */
 
 import { AuthenticationError } from '@backstage/errors';
-import { OAuth2Client } from 'google-auth-library';
-import { GcpIapTokenInfo } from './types';
+import { KeyLike, createRemoteJWKSet, jwtVerify } from 'jose';
+import fetch from 'node-fetch';
+import { IDTokenInfo } from './types';
 
 export function createTokenValidator(
-  audience: string,
-  providedClient?: OAuth2Client,
-): (token: string) => Promise<GcpIapTokenInfo> {
-  const client = providedClient ?? new OAuth2Client();
+  iss: string,
+  aud: string,
+  providedJwks?: KeyLike | Uint8Array,
+): (token: string) => Promise<IDTokenInfo> {
+  let jwksUri: string = '';
 
   return async function tokenValidator(token) {
-    // TODO(freben): Rate limit the public key reads. It may be sensible to
-    // cache these for some reasonable time rather than asking for the public
-    // keys on every single sign-in. But since the rate of events here is so
-    // slow, I decided to keep it simple for now.
-    const response = await client.getIapPublicKeys().catch(error => {
-      throw new AuthenticationError(
-        `Unable to list Google IAP token verification keys, ${error}`,
-      );
-    });
-    const ticket = await client
-      .verifySignedJwtWithCertsAsync(token, response.pubkeys, audience, [
-        'https://cloud.google.com/iap',
-      ])
-      .catch(error => {
-        throw new AuthenticationError(
-          `Google IAP token verification failed, ${error}`,
-        );
+    try {
+      // Perform discovery once to avoid two round trips on every authentication request.
+      if (jwksUri === '' && providedJwks === undefined) {
+        jwksUri = await getJwksUri(iss);
+      }
+      // Verify the token was signed by the issuer.  Performs one round trip to
+      // the jwks uri every authentication request to fetch the current key set
+      // from the issuer.  May be optimized in the future, but this happens only
+      // at sign-in, not for every request to the backend.
+      //
+      // Refer to https://github.com/panva/jose/blob/v5.4.0/docs/functions/jwks_remote.createRemoteJWKSet.md#returns-1
+      const jwks =
+        providedJwks ?? (await createRemoteJWKSet(new URL(jwksUri))());
+      const { payload } = await jwtVerify(token, jwks, {
+        issuer: iss,
+        audience: aud,
       });
 
-    const payload = ticket.getPayload();
-    if (!payload) {
-      throw new AuthenticationError(
-        'Google IAP token verification failed, token had no payload',
-      );
-    }
+      if (!payload.sub) {
+        throw new Error('missing sub claim');
+      }
 
-    if (!payload.sub) {
-      throw new AuthenticationError(
-        'Google IAP token payload is missing subject claim',
-      );
-    }
-    if (!payload.email) {
-      throw new AuthenticationError(
-        'Google IAP token payload is missing email claim',
-      );
-    }
+      if (!payload.email) {
+        throw new Error('missing email claim');
+      }
 
-    return payload as unknown as GcpIapTokenInfo;
+      return payload as unknown as IDTokenInfo;
+    } catch (err) {
+      throw new AuthenticationError(
+        `could not validate id token: ${err.message}`,
+      );
+    }
   };
+}
+
+async function getJwksUri(iss: string): Promise<string> {
+  const resp = await fetch(`${iss}/.well-known/openid-configuration`);
+  if (!resp.ok) {
+    throw new Error(`could not fetch discovery document: ${resp.statusText}`);
+  }
+  return resp.json().then(discoveryDocument => {
+    if (!discoveryDocument.jwks_uri) {
+      throw new Error(
+        `missing jwks_uri from ${iss}/.well-known-openid-configuration`,
+      );
+    }
+    return discoveryDocument.jwks_uri;
+  });
 }

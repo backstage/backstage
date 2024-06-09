@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,20 +18,24 @@ export interface Config {
   auth?: {
     providers?: {
       /**
-       * Configuration for the Google Cloud Platform Identity-Aware Proxy (IAP) auth provider.
+       * Configuration for the Holos Platform identity aware proxy auth provider.
        */
-      gcpIap?: {
+      oidcProxy?: {
         [authEnv: string]: {
           /**
-           * The audience to use when validating incoming JWT tokens.
-           * See https://backstage.io/docs/auth/google/gcp-iap-auth
+           * The issuer (iss claim) to use when validating incoming ID tokens.
+           */
+          issuer: string;
+
+          /**
+           * The audience (aud claim) to use when validating incoming ID tokens.
            */
           audience: string;
 
           /**
-           * The name of the header to read the JWT token from, defaults to `'x-goog-iap-jwt-assertion'`.
+           * The name of the header to read the ID token from, defaults to `'x-oidc-id-token'`.
            */
-          jwtHeader?: string;
+          idTokenHeader?: string;
         };
       };
     };
