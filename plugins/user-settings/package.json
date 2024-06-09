@@ -56,6 +56,8 @@
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-signals-react": "workspace:^",
+    "@backstage/plugin-user-settings-common": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.2",
