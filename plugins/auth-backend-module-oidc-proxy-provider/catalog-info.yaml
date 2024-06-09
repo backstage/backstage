@@ -1,9 +1,9 @@
 apiVersion: backstage.io/v1alpha1
 kind: Component
 metadata:
-  name: backstage-plugin-auth-backend-module-gcp-iap-provider
-  title: '@backstage/plugin-auth-backend-module-gcp-iap-provider'
-  description: A GCP IAP auth provider module for the Backstage auth backend
+  name: backstage-plugin-auth-backend-module-oidc-proxy-provider
+  title: '@backstage/plugin-auth-backend-module-oidc-proxy-provider'
+  description: A Holos Platform auth provider module for the Backstage auth backend, generally useful with OIDC ID tokens set in HTTP request headers by external auth proxies.
 spec:
   lifecycle: experimental
   type: backstage-backend-plugin-module

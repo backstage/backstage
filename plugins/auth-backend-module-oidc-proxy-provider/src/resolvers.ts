@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,29 +18,36 @@ import {
   createSignInResolverFactory,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
-import { GcpIapResult } from './types';
+import { OidcProxyResult } from './types';
 
 /**
- * Available sign-in resolvers for the Google auth provider.
+ * Available sign-in resolvers for the auth provider.
  *
  * @public
  */
-export namespace gcpIapSignInResolvers {
+export namespace oidcProxySignInResolvers {
   /**
-   * Looks up the user by matching their email to the `google.com/email` annotation.
+   * Looks up the user by matching id token email claim to the
+   * `openid.net/email` annotation of the backstage entity.
+   *
+   * Note, email addresses may be reused by different identities over time
+   * within the scope of an issuer per the oidc specification.  Disable this
+   * resolver if identities must be guaranteed unique over time.
    */
   export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
     create() {
-      return async (info: SignInInfo<GcpIapResult>, ctx) => {
-        const email = info.result.iapToken.email;
+      return async (info: SignInInfo<OidcProxyResult>, ctx) => {
+        const email = info.result.idToken.email;
 
         if (!email) {
-          throw new Error('Google IAP sign-in result is missing email');
+          throw new Error(
+            'could not sign in: oidc-proxy provider: missing email claim from id token',
+          );
         }
 
         return ctx.signInWithCatalogUser({
           annotations: {
-            'google.com/email': email,
+            'openid.net/email': email,
           },
         });
       };
@@ -48,16 +55,35 @@ export namespace gcpIapSignInResolvers {
   });
 
   /**
-   * Looks up the user by matching their user ID to the `google.com/user-id` annotation.
+   * Looks up the user by matching the id token iss + sub to the
+   * `openid.net/iss` and `openid.net/sub` annotations of the backstage entity.
+   *
+   * Note, this resolver method is the only method guaranteed by the oidc spec
+   * to result in a unique resolution of an id token to a backstage entity over
+   * time.  Email addresses may be reused within the scope of an issuer, subject
+   * identifier may not be reused.
    */
   export const idMatchingUserEntityAnnotation = createSignInResolverFactory({
     create() {
-      return async (info: SignInInfo<GcpIapResult>, ctx) => {
-        const userId = info.result.iapToken.sub.split(':')[1];
+      return async (info: SignInInfo<OidcProxyResult>, ctx) => {
+        const iss = info.result.idToken.iss;
+        const sub = info.result.idToken.sub;
+
+        if (!iss) {
+          throw new Error(
+            'could not sign in: oidc-proxy provider: missing iss claim from id token',
+          );
+        }
+        if (!sub) {
+          throw new Error(
+            'could not sign in: oidc-proxy provider: missing sub claim from id token',
+          );
+        }
 
         return ctx.signInWithCatalogUser({
           annotations: {
-            'google.com/user-id': userId,
+            'openid.net/iss': iss,
+            'openid.net/sub': sub,
           },
         });
       };

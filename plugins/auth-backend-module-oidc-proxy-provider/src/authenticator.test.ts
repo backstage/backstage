@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { Request } from 'express';
-import { gcpIapAuthenticator } from './authenticator';
+import { oidcProxyAuthenticator } from './authenticator';
 
 beforeEach(() => {
   jest.clearAllMocks();
@@ -27,62 +27,72 @@ jest.mock('./helpers', () => ({
   },
 }));
 
-describe('GcpIapProvider', () => {
-  it('should find default JWT header', async () => {
-    const ctx = gcpIapAuthenticator.initialize({
-      config: mockServices.rootConfig({ data: { audience: 'my-audience' } }),
-    });
-    await expect(
-      gcpIapAuthenticator.authenticate(
-        {
-          req: {
-            header(name: string) {
-              return name === 'x-goog-iap-jwt-assertion'
-                ? 'my-token'
-                : undefined;
-            },
-          } as Request,
-        },
-        ctx,
-      ),
-    ).resolves.toEqual({
-      result: { iapToken: { sub: 's', email: 'e' } },
-      providerInfo: { iapToken: { sub: 's', email: 'e' } },
-    });
-  });
-
-  it('should find custom JWT header', async () => {
-    const jwtHeader = 'x-custom-header';
-    const ctx = gcpIapAuthenticator.initialize({
+describe('OidcProxyProvider', () => {
+  it('should find default id token header', async () => {
+    const ctx = oidcProxyAuthenticator.initialize({
       config: mockServices.rootConfig({
-        data: { audience: 'my-audience', jwtHeader },
+        data: {
+          issuer: 'https://login.example.com',
+          audience: '999999999999999999@holos_platform',
+        },
       }),
     });
     await expect(
-      gcpIapAuthenticator.authenticate(
+      oidcProxyAuthenticator.authenticate(
         {
           req: {
             header(name: string) {
-              return name === jwtHeader ? 'my-token' : undefined;
+              return name === 'x-oidc-id-token' ? 'my-token' : undefined;
             },
           } as Request,
         },
         ctx,
       ),
     ).resolves.toEqual({
-      result: { iapToken: { sub: 's', email: 'e' } },
-      providerInfo: { iapToken: { sub: 's', email: 'e' } },
+      result: { idToken: { sub: 's', email: 'e' } },
+      providerInfo: { idToken: { sub: 's', email: 'e' } },
+    });
+  });
+
+  it('should find custom id token header', async () => {
+    const oidcIdTokenHeader = 'x-custom-header';
+    const ctx = oidcProxyAuthenticator.initialize({
+      config: mockServices.rootConfig({
+        data: {
+          issuer: 'https://login.example.com',
+          audience: '999999999999999999@holos_platform',
+          oidcIdTokenHeader: oidcIdTokenHeader,
+        },
+      }),
+    });
+    await expect(
+      oidcProxyAuthenticator.authenticate(
+        {
+          req: {
+            header(name: string) {
+              return name === oidcIdTokenHeader ? 'my-token' : undefined;
+            },
+          } as Request,
+        },
+        ctx,
+      ),
+    ).resolves.toEqual({
+      result: { idToken: { sub: 's', email: 'e' } },
+      providerInfo: { idToken: { sub: 's', email: 'e' } },
     });
   });
 
   it('should throw if header is missing', async () => {
-    const ctx = gcpIapAuthenticator.initialize({
+    const ctx = oidcProxyAuthenticator.initialize({
       config: mockServices.rootConfig({
-        data: { audience: 'my-audience' },
+        data: {
+          issuer: 'https://login.example.com',
+          audience: '999999999999999999@holos_platform',
+        },
       }),
     });
     await expect(
-      gcpIapAuthenticator.authenticate(
+      oidcProxyAuthenticator.authenticate(
         {
           req: {
             header(_name: string) {
@@ -92,6 +102,6 @@ describe('GcpIapProvider', () => {
         },
         ctx,
       ),
-    ).rejects.toThrow('Missing Google IAP header');
+    ).rejects.toThrow('could not authenticate: missing header x-oidc-id-token');
   });
 });
