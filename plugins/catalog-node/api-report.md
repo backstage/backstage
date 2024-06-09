@@ -111,6 +111,7 @@ export type DeferredEntity = {
 export type EntitiesSearchFilter = {
   key: string;
   values?: string[];
+  patterns?: string[];
 };
 
 // @public

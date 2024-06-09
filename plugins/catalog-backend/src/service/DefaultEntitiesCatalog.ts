@@ -132,6 +132,21 @@ function addCondition(
       } else if (values) {
         this.andWhere('value', 'in', values);
       }
+
+      if (filter.patterns && filter.patterns.length > 0) {
+        this.orWhere(function patternFilter() {
+          // by default pg like is case sensitive however sqlite, mysql are case insensitive
+          for (const pattern of filter.patterns!) {
+            if (db.client.config.client === 'pg') {
+              // pg: prefer ilike to use indexes when patterns start with constant strings
+              this.orWhereILike('value', pattern);
+            } else {
+              // raw to prevent collation being auto inserted into query using mysql
+              this.orWhereRaw('value like ?', pattern);
+            }
+          }
+        });
+      }
     });
   queryBuilder.andWhere(entityIdField, negate ? 'not in' : 'in', matchQuery);
 }
