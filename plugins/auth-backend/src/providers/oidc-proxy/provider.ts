@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,24 @@
  * limitations under the License.
  */
 
-import { gcpIapAuthenticator } from '@backstage/plugin-auth-backend-module-gcp-iap-provider';
+import {
+  OidcProxyResult,
+  oidcProxyAuthenticator,
+} from '@backstage/plugin-auth-backend-module-oidc-proxy-provider';
 import {
   SignInResolver,
   createProxyAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
-import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 import { AuthHandler } from '../types';
-import { GcpIapResult } from './types';
+import { createAuthProviderIntegration } from '../createAuthProviderIntegration';
 
 /**
- * Auth provider integration for Google Identity-Aware Proxy auth
+ * Auth provider integration for integrations that provide an oidc id token in a
+ * http request header.
  *
  * @public
  */
-export const gcpIap = createAuthProviderIntegration({
+export const oidcProxy = createAuthProviderIntegration({
   create(options: {
     /**
      * The profile transformation function used to verify and convert the auth
@@ -36,7 +39,7 @@ export const gcpIap = createAuthProviderIntegration({
      * implementation just provides the authenticated email that the IAP
      * presented.
      */
-    authHandler?: AuthHandler<GcpIapResult>;
+    authHandler?: AuthHandler<OidcProxyResult>;
 
     /**
      * Configures sign-in for this provider.
@@ -45,13 +48,13 @@ export const gcpIap = createAuthProviderIntegration({
       /**
        * Maps an auth result to a Backstage identity for the user.
        */
-      resolver: SignInResolver<GcpIapResult>;
+      resolver: SignInResolver<OidcProxyResult>;
     };
   }) {
     return createProxyAuthProviderFactory({
-      authenticator: gcpIapAuthenticator,
-      profileTransform: options?.authHandler,
-      signInResolver: options?.signIn?.resolver,
+      authenticator: oidcProxyAuthenticator,
+      profileTransform: options.authHandler,
+      signInResolver: options.signIn.resolver,
     });
   },
 });

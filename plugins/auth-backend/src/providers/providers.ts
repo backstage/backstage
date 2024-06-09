@@ -27,6 +27,7 @@ import { microsoft } from './microsoft';
 import { oauth2 } from './oauth2';
 import { oauth2Proxy } from './oauth2-proxy';
 import { oidc } from './oidc';
+import { oidcProxy } from './oidc-proxy';
 import { okta } from './okta';
 import { onelogin } from './onelogin';
 import { saml } from './saml';
@@ -46,6 +47,7 @@ export const providers = Object.freeze({
   bitbucket,
   bitbucketServer,
   cfAccess,
+  easyAuth,
   gcpIap,
   github,
   gitlab,
@@ -54,10 +56,10 @@ export const providers = Object.freeze({
   oauth2,
   oauth2Proxy,
   oidc,
+  oidcProxy,
   okta,
   onelogin,
   saml,
-  easyAuth,
 });
 
 /**

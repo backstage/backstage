@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,110 +14,194 @@
  * limitations under the License.
  */
 
-import { OAuth2Client } from 'google-auth-library';
+import {
+  JWTPayload,
+  KeyLike,
+  SignJWT,
+  exportJWK,
+  generateKeyPair,
+  importJWK,
+} from 'jose';
 import { createTokenValidator } from './helpers';
 
-const mockJwt = 'a.b.c';
+const issuerURL = 'https://login.example.com';
+const projectAudience = '111111111111111111';
+const authProxyClientID = '444444444444444444@holos_platform';
+const emailAddress = 'emanon@example.com';
+const subject = '555555555555555555';
+
+// createJwks creates a valid json web key set to mock the oidc identity issuer.
+async function createJwks() {
+  const { publicKey, privateKey } = await generateKeyPair('RS256');
+  const jwk = await exportJWK(publicKey);
+  return { keys: [jwk], privateKey };
+}
+
+// issueIdToken issues a valid oidc id token signed by privateKey.
+async function issueIdToken(
+  privateKey: KeyLike | Uint8Array,
+  transform?: (payload: JWTPayload) => JWTPayload,
+) {
+  const mapClaims = (payload: JWTPayload) => {
+    if (transform) {
+      return transform(payload);
+    }
+    return payload;
+  };
+  const now = Math.floor(Date.now() / 1000);
+
+  const payload = mapClaims({
+    iss: issuerURL,
+    aud: [
+      projectAudience,
+      authProxyClientID,
+      '222222222222222222@holos_platform', // project app 1 client id
+      '333333333333333333@holos_platform', // project app 2 client id
+    ],
+    amr: ['user', 'mfa'],
+    auth_time: now,
+    iat: now,
+    exp: now + 3600,
+    azp: authProxyClientID,
+    sub: subject,
+    email: emailAddress,
+    email_verified: true,
+    name: 'Alice Doe',
+    given_name: 'Alice',
+    family_name: 'Doe',
+    preferred_username: 'emanon@example.com',
+    groups: ['prod-cluster-admin'],
+  });
+
+  return new SignJWT(payload)
+    .setProtectedHeader({ alg: 'RS256' })
+    .sign(privateKey);
+}
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
 describe('helpers', () => {
+  let jwks: KeyLike | Uint8Array;
+  let privateKey: KeyLike;
+
+  beforeAll(async () => {
+    const jwksData = await createJwks();
+    privateKey = jwksData.privateKey;
+    jwks = await importJWK(jwksData.keys[0]);
+  });
+
   describe('createTokenValidator', () => {
     it('runs the happy path', async () => {
-      const mockClient = {
-        getIapPublicKeys: async () => ({ pubkeys: '' }),
-        verifySignedJwtWithCertsAsync: async () => ({
-          getPayload: () => ({ sub: 's', email: 'e@mail.com' }),
-        }),
-      };
-      const validator = createTokenValidator(
-        'a',
-        mockClient as unknown as OAuth2Client,
-      );
-      await expect(validator(mockJwt)).resolves.toMatchObject({
-        sub: 's',
-        email: 'e@mail.com',
+      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const idToken = await issueIdToken(privateKey);
+      await expect(validator(idToken)).resolves.toMatchObject({
+        iss: issuerURL,
+        sub: subject,
+        email: emailAddress,
       });
     });
 
-    it('throws if listing keys fail', async () => {
-      const mockClient = {
-        getIapPublicKeys: async () => {
-          throw new Error('NOPE');
-        },
-      };
-      const validator = createTokenValidator(
-        'a',
-        mockClient as unknown as OAuth2Client,
-      );
-      await expect(validator(mockJwt)).rejects.toThrow(
-        'Unable to list Google IAP token verification keys, Error: NOPE',
+    it('rejects invalid signature', async () => {
+      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      // Issue a token signed by another jwks.
+      const jwksData = await createJwks();
+      const otherIdToken = await issueIdToken(jwksData.privateKey);
+      await expect(validator(otherIdToken)).rejects.toThrow(
+        'could not validate id token: signature verification failed',
       );
     });
 
-    it('throws if the verifying signature fails', async () => {
-      const mockClient = {
-        getIapPublicKeys: async () => ({ pubkeys: '' }),
-        verifySignedJwtWithCertsAsync: async () => {
-          throw new Error('NOPE');
-        },
-      };
-      const validator = createTokenValidator(
-        'a',
-        mockClient as unknown as OAuth2Client,
-      );
-      await expect(validator(mockJwt)).rejects.toThrow(
-        'Google IAP token verification failed, Error: NOPE',
+    it('rejects invalid token', async () => {
+      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+
+      await expect(validator('{}')).rejects.toThrow(
+        'could not validate id token: Invalid Compact JWS',
       );
     });
 
-    it('rejects empty payload', async () => {
-      const mockClient = {
-        getIapPublicKeys: async () => ({ pubkeys: '' }),
-        verifySignedJwtWithCertsAsync: async () => ({
-          getPayload: () => undefined,
-        }),
-      };
-      const validator = createTokenValidator(
-        'a',
-        mockClient as unknown as OAuth2Client,
-      );
-      await expect(validator(mockJwt)).rejects.toThrow(
-        'Google IAP token verification failed, token had no payload',
+    it('rejects missing iss', async () => {
+      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const idToken = await issueIdToken(privateKey, payload => {
+        delete payload.iss;
+        return payload;
+      });
+
+      await expect(validator(idToken)).rejects.toThrow(
+        'could not validate id token: missing required "iss" claim',
       );
     });
 
-    it('rejects payload without subject', async () => {
-      const mockClient = {
-        getIapPublicKeys: async () => ({ pubkeys: '' }),
-        verifySignedJwtWithCertsAsync: async () => ({
-          getPayload: () => ({ email: 'e@mail.com' }),
-        }),
-      };
-      const validator = createTokenValidator(
-        'a',
-        mockClient as unknown as OAuth2Client,
-      );
-      await expect(validator(mockJwt)).rejects.toThrow(
-        'Google IAP token payload is missing subject claim',
+    it('rejects missing sub', async () => {
+      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const idToken = await issueIdToken(privateKey, payload => {
+        delete payload.sub;
+        return payload;
+      });
+
+      await expect(validator(idToken)).rejects.toThrow(
+        'could not validate id token: missing sub claim',
       );
     });
 
-    it('rejects payload without email', async () => {
-      const mockClient = {
-        getIapPublicKeys: async () => ({ pubkeys: '' }),
-        verifySignedJwtWithCertsAsync: async () => ({
-          getPayload: () => ({ sub: 's' }),
-        }),
-      };
-      const validator = createTokenValidator(
-        'a',
-        mockClient as unknown as OAuth2Client,
+    it('rejects missing email', async () => {
+      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const idToken = await issueIdToken(privateKey, payload => {
+        delete payload.email;
+        return payload;
+      });
+
+      await expect(validator(idToken)).rejects.toThrow(
+        'could not validate id token: missing email claim',
       );
-      await expect(validator(mockJwt)).rejects.toThrow(
-        'Google IAP token payload is missing email claim',
+    });
+
+    it('rejects missing aud', async () => {
+      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const idToken = await issueIdToken(privateKey, payload => {
+        delete payload.aud;
+        return payload;
+      });
+
+      await expect(validator(idToken)).rejects.toThrow(
+        'could not validate id token: missing required "aud" claim',
+      );
+    });
+
+    it('rejects invalid iss', async () => {
+      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const idToken = await issueIdToken(privateKey, payload => {
+        payload.iss = 'https://other.example.com';
+        return payload;
+      });
+
+      await expect(validator(idToken)).rejects.toThrow(
+        'could not validate id token: unexpected "iss" claim value',
+      );
+    });
+
+    it('rejects invalid aud', async () => {
+      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const idToken = await issueIdToken(privateKey, payload => {
+        payload.aud = ['some-other-service'];
+        return payload;
+      });
+
+      await expect(validator(idToken)).rejects.toThrow(
+        'could not validate id token: unexpected "aud" claim value',
+      );
+    });
+
+    it('rejects expired token', async () => {
+      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const idToken = await issueIdToken(privateKey, payload => {
+        payload.exp = 1581033600;
+        return payload;
+      });
+
+      await expect(validator(idToken)).rejects.toThrow(
+        'could not validate id token: "exp" claim timestamp check failed',
       );
     });
   });
