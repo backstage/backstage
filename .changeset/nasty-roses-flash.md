@@ -1,5 +1,5 @@
 ---
-'@backstage/integration': patch
+'@backstage/integration': minor
 ---
 
 **BREAKING** Removed deprecated code from when casing was changed from `GitHub` to `Github` nearly two years ago. The following items have been removed:
