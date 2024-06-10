@@ -67,21 +67,24 @@ export const BitbucketRepoPicker = (props: {
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
 
   useEffect(() => {
-    if (accessToken)
+    if (host === 'bitbucket.org' && accessToken) {
       setClient(
         BitbucketCloudClient.fromConfig({
-          host: 'bitbucket.org',
+          host,
           apiBaseUrl: 'https://api.bitbucket.org/2.0',
           accessToken,
         }),
       );
-  }, [accessToken]);
+    } else {
+      setClient(undefined);
+    }
+  }, [host, accessToken]);
 
-  // Update available workspaces when host changes
+  // Update available workspaces when client is available
   useDebounce(
     () => {
       const updateAvailableWorkspaces = async () => {
-        if (client && host) {
+        if (client) {
           const result: string[] = [];
 
           for await (const page of client.listWorkspaces().iteratePages()) {
@@ -98,10 +101,10 @@ export const BitbucketRepoPicker = (props: {
       updateAvailableWorkspaces().catch(() => setAvailableWorkspaces([]));
     },
     500,
-    [client, host],
+    [client],
   );
 
-  // Update available projects when workspace changes
+  // Update available projects when client is available and workspace changes
   useDebounce(
     () => {
       const updateAvailableProjects = async () => {
@@ -127,7 +130,7 @@ export const BitbucketRepoPicker = (props: {
     [client, workspace],
   );
 
-  // Update available repositories when workspace or project changes
+  // Update available repositories when client is available and workspace or project changes
   useDebounce(
     () => {
       const updateAvailableRepositories = async () => {
