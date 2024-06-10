@@ -25,7 +25,7 @@ import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import limiterFactory from 'p-limit';
 import yn from 'yn';
-import { Connector, DatabaseConnector } from '../types';
+import { Connector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 
@@ -227,19 +227,6 @@ export async function dropMysqlDatabase(
 }
 
 /**
- * MySQL database connector.
- *
- * Exposes database connector functionality via an immutable object.
- */
-export const mysqlConnector: DatabaseConnector = Object.freeze({
-  createClient: createMysqlDatabaseClient,
-  ensureDatabaseExists: ensureMysqlDatabaseExists,
-  createNameOverride: defaultNameOverride,
-  parseConnectionString: parseMysqlConnectionString,
-  dropDatabase: dropMysqlDatabase,
-});
-
-/**
  * Provides a config lookup path for a plugin's config block.
  */
 function pluginPath(pluginId: string): string {
@@ -248,14 +235,13 @@ function pluginPath(pluginId: string): string {
 
 function normalizeConnection(
   connection: Knex.StaticConnectionConfig | JsonObject | string | undefined,
-  client: string,
 ): Partial<Knex.StaticConnectionConfig> {
   if (typeof connection === 'undefined' || connection === null) {
     return {};
   }
 
   return typeof connection === 'string' || connection instanceof String
-    ? mysqlConnector.parseConnectionString(connection as string, client)
+    ? parseMysqlConnectionString(connection as string)
     : connection;
 }
 
@@ -264,7 +250,7 @@ function createNameOverride(
   name: string,
 ): Partial<Knex.Config> {
   try {
-    return mysqlConnector.createNameOverride(name);
+    return defaultNameOverride(name);
   } catch (e) {
     throw new InputError(
       `Unable to create database name override for '${client}' connector`,
@@ -281,7 +267,7 @@ export class MysqlConnector implements Connector {
 
   async getClient(
     pluginId: string,
-    deps?: {
+    _deps?: {
       lifecycle: LifecycleService;
       pluginMetadata: PluginMetadataService;
     },
@@ -293,7 +279,7 @@ export class MysqlConnector implements Connector {
     const databaseName = this.getDatabaseName(pluginId);
     if (databaseName && this.getEnsureExistsConfig(pluginId)) {
       try {
-        await mysqlConnector.ensureDatabaseExists!(pluginConfig, databaseName);
+        await ensureMysqlDatabaseExists(pluginConfig, databaseName);
       } catch (error) {
         throw new Error(
           `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
@@ -313,10 +299,9 @@ export class MysqlConnector implements Connector {
       this.getDatabaseOverrides(pluginId),
     );
 
-    const client = mysqlConnector.createClient(
+    const client = createMysqlDatabaseClient(
       pluginConfig,
       databaseClientOverrides,
-      deps,
     );
 
     return client;
@@ -418,12 +403,9 @@ export class MysqlConnector implements Connector {
    * unless `pluginDivisionMode` is set to `schema`.
    */
   private getConnectionConfig(pluginId: string): Knex.StaticConnectionConfig {
-    const { client, overridden } = this.getClientType(pluginId);
+    const { overridden } = this.getClientType(pluginId);
 
-    let baseConnection = normalizeConnection(
-      this.config.get('connection'),
-      this.config.getString('client'),
-    );
+    let baseConnection = normalizeConnection(this.config.get('connection'));
 
     // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`. The
     // `database` property from the base connection is omitted unless `pluginDivisionMode`
@@ -435,7 +417,6 @@ export class MysqlConnector implements Connector {
     // get and normalize optional plugin specific database connection
     const connection = normalizeConnection(
       this.config.getOptional(`${pluginPath(pluginId)}.connection`),
-      client,
     );
 
     return {
