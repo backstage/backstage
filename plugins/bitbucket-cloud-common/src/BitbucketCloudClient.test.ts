@@ -116,7 +116,7 @@ describe('BitbucketCloudClient', () => {
           const response = {
             values: [
               {
-                type: 'repository',
+                type: 'project',
                 slug: 'project1',
               } as Models.Project,
             ],

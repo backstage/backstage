@@ -103,6 +103,33 @@ export const BitbucketRepoPicker = (props: {
     [client, host],
   );
 
+  // Update available projects when workspace changes
+  useDebounce(
+    () => {
+      const updateAvailableProjects = async () => {
+        if (client)
+          if (!workspace) {
+            setAvailableProjects([]);
+          } else {
+            const result: string[] = [];
+
+            for await (const page of client
+              .listProjectsByWorkspace(workspace)
+              .iteratePages()) {
+              const keys = [...page.values!].map(p => p.key!);
+              result.push(...keys);
+            }
+
+            setAvailableProjects(result);
+          }
+      };
+
+      updateAvailableProjects().catch(() => setAvailableProjects([]));
+    },
+    500,
+    [client, workspace],
+  );
+
   // Update available repositories when workspace or project changes
   useDebounce(
     () => {
@@ -132,33 +159,6 @@ export const BitbucketRepoPicker = (props: {
     },
     500,
     [client, workspace, project, onChange],
-  );
-
-  // Update available projects when workspace changes
-  useDebounce(
-    () => {
-      const updateAvailableProjects = async () => {
-        if (client)
-          if (!workspace) {
-            setAvailableProjects([]);
-          } else {
-            const result: string[] = [];
-
-            for await (const page of client
-              .listProjectsByWorkspace(workspace)
-              .iteratePages()) {
-              const keys = [...page.values!].map(p => p.key!);
-              result.push(...keys);
-            }
-
-            setAvailableProjects(result);
-          }
-      };
-
-      updateAvailableProjects().catch(() => setAvailableProjects([]));
-    },
-    500,
-    [client, workspace],
   );
 
   return (

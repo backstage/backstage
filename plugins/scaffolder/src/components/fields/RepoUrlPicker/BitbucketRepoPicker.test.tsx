@@ -16,7 +16,13 @@
 
 import React from 'react';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, waitFor } from '@testing-library/react';
+import { setupServer } from 'msw/node';
+import { rest } from 'msw';
+import { Models } from '@backstage/plugin-bitbucket-cloud-common';
+import userEvent from '@testing-library/user-event';
+
+const server = setupServer();
 
 describe('BitbucketRepoPicker', () => {
   it('renders a select if there is a list of allowed owners', async () => {
@@ -134,6 +140,131 @@ describe('BitbucketRepoPicker', () => {
 
       expect(await findByText('project1')).toBeInTheDocument();
       expect(await findByText('project2')).toBeInTheDocument();
+    });
+  });
+
+  describe('autocompletion', () => {
+    beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
+    beforeEach(() => {
+      // BitbucketCloudClient.listWorkspaces()
+      server.use(
+        rest.get('https://api.bitbucket.org/2.0/workspaces', (_, res, ctx) => {
+          const response = {
+            values: [
+              {
+                type: 'workspace',
+                slug: 'workspace1',
+              } as Models.Workspace,
+            ],
+          };
+          return res(ctx.json(response));
+        }),
+      );
+
+      // BitbucketCloudClient.listProjectsByWorkspace()
+      server.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/workspaces/workspace1/projects',
+          (_, res, ctx) => {
+            const response = {
+              values: [
+                {
+                  type: 'project',
+                  key: 'project1',
+                } as Models.Project,
+              ],
+            };
+            return res(ctx.json(response));
+          },
+        ),
+      );
+
+      // BitbucketCloudClient.listRepositoriesByWorkspace()
+      server.use(
+        rest.get(
+          'https://api.bitbucket.org/2.0/repositories/workspace1',
+          (_, res, ctx) => {
+            const response = {
+              values: [
+                {
+                  type: 'repository',
+                  slug: 'repo1',
+                } as Models.Repository,
+              ],
+            };
+            return res(ctx.json(response));
+          },
+        ),
+      );
+    });
+    afterAll(() => server.close());
+    afterEach(() => server.resetHandlers());
+
+    it('should populate workspaces if host is set and accessToken is provided', async () => {
+      const onChange = jest.fn();
+      const { getAllByRole, getByText } = render(
+        <BitbucketRepoPicker
+          onChange={onChange}
+          rawErrors={[]}
+          state={{ host: 'bitbucket.org' }}
+          accessToken="foo"
+        />,
+      );
+
+      // Open the Autcomplete dropdown
+      const workspaceInput = getAllByRole('textbox')[0];
+      await userEvent.click(workspaceInput);
+
+      // Verify that the available workspaces are shown
+      await waitFor(() => expect(getByText('workspace1')).toBeInTheDocument());
+
+      // Verify that selecting an option calls onChange
+      await userEvent.click(getByText('workspace1'));
+      expect(onChange).toHaveBeenCalledWith({ workspace: 'workspace1' });
+    });
+
+    it('should populate projects if host and workspace are set and accessToken is provided', async () => {
+      const onChange = jest.fn();
+      const { getAllByRole, getByText } = render(
+        <BitbucketRepoPicker
+          onChange={onChange}
+          rawErrors={[]}
+          state={{ host: 'bitbucket.org', workspace: 'workspace1' }}
+          accessToken="foo"
+        />,
+      );
+
+      // Open the Autcomplete dropdown
+      const projectInput = getAllByRole('textbox')[1];
+      await userEvent.click(projectInput);
+
+      // Verify that the available projects are shown
+      await waitFor(() => expect(getByText('project1')).toBeInTheDocument());
+
+      // Verify that selecting an option calls onChange
+      await userEvent.click(getByText('project1'));
+      expect(onChange).toHaveBeenCalledWith({ project: 'project1' });
+    });
+
+    it('should populate repositories if host, workspace and project are set and accessToken is provided', async () => {
+      const onChange = jest.fn();
+      render(
+        <BitbucketRepoPicker
+          onChange={onChange}
+          rawErrors={[]}
+          state={{
+            host: 'bitbucket.org',
+            workspace: 'workspace1',
+            project: 'project1',
+          }}
+          accessToken="foo"
+        />,
+      );
+
+      // Verify that the available repos are updated
+      await waitFor(() =>
+        expect(onChange).toHaveBeenCalledWith({ availableRepos: ['repo1'] }),
+      );
     });
   });
 });
