@@ -60,11 +60,7 @@ export interface BackstagePackageJson {
     /**
      * All packages that are part of the plugin. Must always and only be set for plugin packages and plugin library packages.
      */
-    pluginPackages?: {
-      frontend?: string;
-      backend?: string;
-      libraries?: string[];
-    };
+    pluginPackages?: string[];
   };
 
   exports?: JsonValue;

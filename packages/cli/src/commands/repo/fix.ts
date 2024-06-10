@@ -325,6 +325,14 @@ const backendPluginPackageNameByPluginId = new Map(
   ].map(pluginId => [pluginId, `@backstage/plugin-${pluginId}-backend`]),
 );
 
+const pluginPackageRoles: Array<string | undefined> = [
+  'frontend-plugin',
+  'backend-plugin',
+  'common-library',
+  'web-library',
+  'node-library',
+];
+
 export function fixPluginPackages(
   pkg: FixablePackage,
   repoPackages: FixablePackage[],
@@ -387,70 +395,22 @@ export function fixPluginPackages(
       pkg.changed = true;
     }
   } else {
-    let frontend: string | undefined = undefined;
-    let backend: string | undefined = undefined;
-    let libraries: string[] | undefined = [];
+    let pluginPackages: string[] | undefined = repoPackages
+      .filter(
+        p =>
+          p.packageJson.backstage?.pluginId === pluginId &&
+          pluginPackageRoles.includes(p.packageJson.backstage?.role),
+      )
+      .map(p => p.packageJson.name)
+      .sort();
 
-    for (const repoPkg of repoPackages) {
-      if (repoPkg.packageJson.backstage?.pluginId !== pluginId) {
-        continue;
-      }
-      const repoPkgRole = repoPkg.packageJson.backstage?.role;
-      const repoPkgName = repoPkg.packageJson.name;
-      if (repoPkgRole === 'frontend-plugin') {
-        if (frontend) {
-          throw new Error(
-            `Duplicate frontend plugin for '${pluginId}', "${frontend}" and "${repoPkgName}"`,
-          );
-        }
-        frontend = repoPkgName;
-      } else if (repoPkgRole === 'backend-plugin') {
-        if (backend) {
-          throw new Error(
-            `Duplicate backend plugin for '${pluginId}', "${backend}" and "${repoPkgName}"`,
-          );
-        }
-        backend = repoPkgName;
-      } else if (
-        repoPkgRole === 'common-library' ||
-        repoPkgRole === 'web-library' ||
-        repoPkgRole === 'node-library'
-      ) {
-        libraries.push(repoPkgName);
-      }
+    if (pluginPackages.length === 0) {
+      pluginPackages = undefined;
     }
 
-    if (libraries.length === 0) {
-      // If there are no libraries, avoid an empty array in package.json
-      libraries = undefined;
-    } else {
-      // Sort libraries to ensure consistent order
-      libraries.sort();
-    }
-
-    if (!pkgBackstage.pluginPackages) {
-      pkgBackstage.pluginPackages = {
-        frontend,
-        backend,
-        libraries,
-      };
+    if (pkgBackstage.pluginPackages?.join(',') !== pluginPackages?.join(',')) {
+      pkgBackstage.pluginPackages = pluginPackages;
       pkg.changed = true;
-    } else {
-      if (pkgBackstage.pluginPackages.frontend !== frontend) {
-        pkgBackstage.pluginPackages.frontend = frontend;
-        pkg.changed = true;
-      }
-      if (pkgBackstage.pluginPackages.backend !== backend) {
-        pkgBackstage.pluginPackages.backend = backend;
-        pkg.changed = true;
-      }
-      if (
-        pkgBackstage.pluginPackages.libraries?.join(',') !==
-        libraries?.join(',')
-      ) {
-        pkgBackstage.pluginPackages.libraries = libraries;
-        pkg.changed = true;
-      }
     }
   }
 }
