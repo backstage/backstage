@@ -47,6 +47,7 @@ This feature introduces a dedicated system for recording critical security-relat
 - Implement a separate audit log event stream for recording security-critical events.
 - Defining a specific data format for audit logs.
 - Ensure adherence to regulatory compliance requirements through comprehensive audit logging.
+- Provide access to the `WinstonLogger` transport layer to enable exporting logs to a file.
 
 ### Non-Goals
 
