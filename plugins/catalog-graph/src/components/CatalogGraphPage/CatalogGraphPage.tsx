@@ -121,7 +121,11 @@ export const CatalogGraphPage = (
     };
   } & Partial<EntityRelationsGraphProps>,
 ) => {
-  const { relationPairs = ALL_RELATION_PAIRS, initialState } = props;
+  const {
+    relationPairs = ALL_RELATION_PAIRS,
+    initialState,
+    entityFilter,
+  } = props;
 
   const navigate = useNavigate();
   const classes = useStyles();
@@ -256,6 +260,7 @@ export const CatalogGraphPage = (
                 onNodeClick={onNodeClick}
                 direction={direction}
                 relationPairs={relationPairs}
+                entityFilter={entityFilter}
                 className={classes.graph}
                 zoom="enabled"
                 curve={curve}

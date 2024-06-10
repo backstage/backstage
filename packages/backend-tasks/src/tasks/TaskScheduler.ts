@@ -33,7 +33,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
  * Deals with the scheduling of distributed tasks.
  *
  * @public
- * @deprecated Please migrate to the new backend system, and depend on `coreServices.scheduler` from  `@backstage/backend-plugin-api` instead.
+ * @deprecated Please migrate to the new backend system, and depend on `coreServices.scheduler` from  `@backstage/backend-plugin-api` instead, or use `DefaultSchedulerService` from `@backstage/backend-defaults`
  */
 export class TaskScheduler {
   /**
@@ -65,6 +65,7 @@ export class TaskScheduler {
    *
    * @param pluginId - The unique ID of the plugin, for example "catalog"
    * @returns A {@link PluginTaskScheduler} instance
+   * @deprecated Please migrate to the new backend system, and depend on `coreServices.scheduler` from  `@backstage/backend-plugin-api` instead, or use `DefaultSchedulerService` from `@backstage/backend-defaults`
    */
   forPlugin(pluginId: string): PluginTaskScheduler {
     return TaskScheduler.forPlugin({
@@ -74,6 +75,9 @@ export class TaskScheduler {
     });
   }
 
+  /**
+   * @deprecated Please migrate to the new backend system, and depend on `coreServices.scheduler` from  `@backstage/backend-plugin-api` instead, or use `DefaultSchedulerService` from `@backstage/backend-defaults`
+   */
   static forPlugin(opts: {
     pluginId: string;
     databaseManager: PluginDatabaseManager;

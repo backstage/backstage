@@ -71,6 +71,7 @@ export const CatalogGraphCard = (
     direction = Direction.LEFT_RIGHT,
     kinds,
     relations,
+    entityFilter,
     height,
     className,
     rootEntityNames,
@@ -140,6 +141,7 @@ export const CatalogGraphCard = (
         mergeRelations={mergeRelations}
         direction={direction}
         relationPairs={relationPairs}
+        entityFilter={entityFilter}
         zoom={zoom}
       />
     </InfoCard>

@@ -2,7 +2,6 @@ import React, { PropsWithChildren } from 'react';
 import { makeStyles } from '@material-ui/core';
 import HomeIcon from '@material-ui/icons/Home';
 import ExtensionIcon from '@material-ui/icons/Extension';
-import MapIcon from '@material-ui/icons/MyLocation';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
 import LogoFull from './LogoFull';
@@ -72,7 +71,7 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
         {/* End global nav */}
         <SidebarDivider />
         <SidebarScrollWrapper>
-          <SidebarItem icon={MapIcon} to="tech-radar" text="Tech Radar" />
+          {/* Items in this group will be scrollable if they run out of space */}
         </SidebarScrollWrapper>
       </SidebarGroup>
       <SidebarSpace />

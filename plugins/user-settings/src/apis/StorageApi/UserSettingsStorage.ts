@@ -25,7 +25,9 @@ import {
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { JsonValue, Observable } from '@backstage/types';
+import { SignalApi, SignalSubscriber } from '@backstage/plugin-signals-react';
 import ObservableImpl from 'zen-observable';
+import { UserSettingsSignal } from '@backstage/plugin-user-settings-common';
 
 const JSON_HEADERS = {
   'Content-Type': 'application/json; charset=utf-8',
@@ -57,6 +59,7 @@ export class UserSettingsStorage implements StorageApi {
     private readonly errorApi: ErrorApi,
     private readonly identityApi: IdentityApi,
     private readonly fallback: WebStorage,
+    private readonly signalApi?: SignalApi,
   ) {}
 
   static create(options: {
@@ -64,6 +67,7 @@ export class UserSettingsStorage implements StorageApi {
     discoveryApi: DiscoveryApi;
     errorApi: ErrorApi;
     identityApi: IdentityApi;
+    signalApi?: SignalApi;
     namespace?: string;
   }): UserSettingsStorage {
     return new UserSettingsStorage(
@@ -76,6 +80,7 @@ export class UserSettingsStorage implements StorageApi {
         namespace: options.namespace,
         errorApi: options.errorApi,
       }),
+      options.signalApi,
     );
   }
 
@@ -145,15 +150,33 @@ export class UserSettingsStorage implements StorageApi {
       this.observables.set(
         key,
         new ObservableImpl<StorageValueSnapshot<JsonValue>>(subscriber => {
+          let signalSubscription: SignalSubscriber | undefined;
           this.subscribers.add(subscriber);
 
-          // TODO(freben): Introduce server polling or similar, to ensure that different devices update when values change
-          Promise.resolve()
-            .then(() => this.get(key))
-            .then(snapshot => subscriber.next(snapshot))
-            .catch(error => this.errorApi.post(error));
+          const updateSnapshot = () => {
+            Promise.resolve()
+              .then(() => this.get(key))
+              .then(snapshot => subscriber.next(snapshot))
+              .catch(error => this.errorApi.post(error));
+          };
+
+          if (this.signalApi) {
+            signalSubscription = this.signalApi.subscribe(
+              `user-settings`,
+              (msg: UserSettingsSignal) => {
+                if (msg.key === key) {
+                  updateSnapshot();
+                }
+              },
+            );
+          }
+
+          updateSnapshot();
 
           return () => {
+            if (signalSubscription) {
+              signalSubscription.unsubscribe();
+            }
             this.subscribers.delete(subscriber);
           };
         }).filter(({ key: messageKey }) => messageKey === key),

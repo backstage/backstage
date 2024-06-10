@@ -20,13 +20,12 @@ import {
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
-import { InputError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import path from 'path';
-import { Connector, DatabaseConnector } from '../types';
+import { Connector } from '../types';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 
 /**
@@ -158,17 +157,6 @@ export function parseSqliteConnectionString(
 }
 
 /**
- * SQLite3 database connector.
- *
- * Exposes database connector functionality via an immutable object.
- */
-export const sqliteConnector: DatabaseConnector = Object.freeze({
-  createClient: createSqliteDatabaseClient,
-  createNameOverride: createSqliteNameOverride,
-  parseConnectionString: parseSqliteConnectionString,
-});
-
-/**
  * Provides a config lookup path for a plugin's config block.
  */
 function pluginPath(pluginId: string): string {
@@ -177,29 +165,14 @@ function pluginPath(pluginId: string): string {
 
 function normalizeConnection(
   connection: Knex.StaticConnectionConfig | JsonObject | string | undefined,
-  client: string,
 ): Partial<Knex.StaticConnectionConfig> {
   if (typeof connection === 'undefined' || connection === null) {
     return {};
   }
 
   return typeof connection === 'string' || connection instanceof String
-    ? sqliteConnector.parseConnectionString(connection as string, client)
+    ? parseSqliteConnectionString(connection as string)
     : connection;
-}
-
-function createNameOverride(
-  client: string,
-  name: string,
-): Partial<Knex.Config> {
-  try {
-    return sqliteConnector.createNameOverride(name);
-  } catch (e) {
-    throw new InputError(
-      `Unable to create database name override for '${client}' connector`,
-      e,
-    );
-  }
 }
 
 export class Sqlite3Connector implements Connector {
@@ -228,7 +201,7 @@ export class Sqlite3Connector implements Connector {
       this.getDatabaseOverrides(pluginId),
     );
 
-    const client = sqliteConnector.createClient(
+    const client = createSqliteDatabaseClient(
       pluginConfig,
       databaseClientOverrides,
       deps,
@@ -340,10 +313,7 @@ export class Sqlite3Connector implements Connector {
   private getConnectionConfig(pluginId: string): Knex.StaticConnectionConfig {
     const { client, overridden } = this.getClientType(pluginId);
 
-    let baseConnection = normalizeConnection(
-      this.config.get('connection'),
-      this.config.getString('client'),
-    );
+    let baseConnection = normalizeConnection(this.config.get('connection'));
 
     if (
       client.includes('sqlite3') &&
@@ -366,7 +336,6 @@ export class Sqlite3Connector implements Connector {
     // get and normalize optional plugin specific database connection
     const connection = normalizeConnection(
       this.config.getOptional(`${pluginPath(pluginId)}.connection`),
-      client,
     );
 
     return {
@@ -404,8 +373,6 @@ export class Sqlite3Connector implements Connector {
    */
   private getDatabaseOverrides(pluginId: string): Knex.Config {
     const databaseName = this.getDatabaseName(pluginId);
-    return databaseName
-      ? createNameOverride(this.getClientType(pluginId).client, databaseName)
-      : {};
+    return databaseName ? createSqliteNameOverride(databaseName) : {};
   }
 }

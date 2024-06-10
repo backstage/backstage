@@ -15,10 +15,11 @@
  */
 
 import {
-  createBackendPlugin,
   coreServices,
+  createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
+import { signalsServiceRef } from '@backstage/plugin-signals-node';
 
 /**
  * The user settings backend plugin.
@@ -33,9 +34,10 @@ export default createBackendPlugin({
         database: coreServices.database,
         identity: coreServices.identity,
         httpRouter: coreServices.httpRouter,
+        signals: signalsServiceRef,
       },
-      async init({ database, identity, httpRouter }) {
-        httpRouter.use(await createRouter({ database, identity }));
+      async init({ database, identity, httpRouter, signals }) {
+        httpRouter.use(await createRouter({ database, identity, signals }));
       },
     });
   },

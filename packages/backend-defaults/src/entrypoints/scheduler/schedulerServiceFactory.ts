@@ -18,7 +18,7 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduler } from './lib/TaskScheduler';
+import { DefaultSchedulerService } from './lib/DefaultSchedulerService';
 
 /**
  * The default service factory for {@link @backstage/backend-plugin-api#coreServices.scheduler}.
@@ -28,15 +28,10 @@ import { TaskScheduler } from './lib/TaskScheduler';
 export const schedulerServiceFactory = createServiceFactory({
   service: coreServices.scheduler,
   deps: {
-    plugin: coreServices.pluginMetadata,
     database: coreServices.database,
     logger: coreServices.logger,
   },
-  async factory({ plugin, database, logger }) {
-    return TaskScheduler.forPlugin({
-      pluginId: plugin.getId(),
-      databaseManager: database,
-      logger,
-    });
+  async factory({ database, logger }) {
+    return DefaultSchedulerService.create({ database, logger });
   },
 });
