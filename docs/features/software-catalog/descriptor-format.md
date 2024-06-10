@@ -1243,6 +1243,18 @@ system belongs to, e.g. `artists`. This field is optional.
 | --------------------------------------- | ------------------------------------------ | ----------------------------------------------------------------------------- |
 | [`Domain`](#kind-domain) (default)      | Same as this entity, typically `default`   | [`partOf`, and reverse `hasPart`](well-known-relations.md#partof-and-haspart) |
 
+### `spec.type` [optional]
+
+The type of system. There is currently no enforced set of values for this field,
+so it is left up to the adopting organization to choose a nomenclature that
+matches their catalog hierarchy. This field is optional.
+
+Some common values for this field could be:
+
+- `product`
+- `service`
+- `feature-set`
+
 ## Kind: Domain
 
 Describes the following entity kind:
