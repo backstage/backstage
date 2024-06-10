@@ -1,4 +1,3 @@
-/* eslint-disable no-restricted-syntax */
 /*
  * Copyright 2021 The Backstage Authors
  *
@@ -82,19 +81,18 @@ export const BitbucketRepoPicker = (props: {
   useDebounce(
     () => {
       const updateAvailableWorkspaces = async () => {
-        if (client)
-          if (!host) {
-            setAvailableWorkspaces([]);
-          } else {
-            const result: string[] = [];
+        if (client && host) {
+          const result: string[] = [];
 
-            for await (const page of client.listWorkspaces().iteratePages()) {
-              const keys = [...page.values!].map(p => p.slug!);
-              result.push(...keys);
-            }
-
-            setAvailableWorkspaces(result);
+          for await (const page of client.listWorkspaces().iteratePages()) {
+            const keys = [...page.values!].map(p => p.slug!);
+            result.push(...keys);
           }
+
+          setAvailableWorkspaces(result);
+        } else {
+          setAvailableWorkspaces([]);
+        }
       };
 
       updateAvailableWorkspaces().catch(() => setAvailableWorkspaces([]));
@@ -107,21 +105,20 @@ export const BitbucketRepoPicker = (props: {
   useDebounce(
     () => {
       const updateAvailableProjects = async () => {
-        if (client)
-          if (!workspace) {
-            setAvailableProjects([]);
-          } else {
-            const result: string[] = [];
+        if (client && workspace) {
+          const result: string[] = [];
 
-            for await (const page of client
-              .listProjectsByWorkspace(workspace)
-              .iteratePages()) {
-              const keys = [...page.values!].map(p => p.key!);
-              result.push(...keys);
-            }
-
-            setAvailableProjects(result);
+          for await (const page of client
+            .listProjectsByWorkspace(workspace)
+            .iteratePages()) {
+            const keys = [...page.values!].map(p => p.key!);
+            result.push(...keys);
           }
+
+          setAvailableProjects(result);
+        } else {
+          setAvailableProjects([]);
+        }
       };
 
       updateAvailableProjects().catch(() => setAvailableProjects([]));
@@ -134,23 +131,22 @@ export const BitbucketRepoPicker = (props: {
   useDebounce(
     () => {
       const updateAvailableRepositories = async () => {
-        if (client && workspace)
-          if (!project) {
-            onChange({ availableRepos: [] });
-          } else {
-            const availableRepos: string[] = [];
+        if (client && workspace && project) {
+          const availableRepos: string[] = [];
 
-            for await (const page of client
-              .listRepositoriesByWorkspace(workspace, {
-                q: `project.key="${project}"`,
-              })
-              .iteratePages()) {
-              const keys = [...page.values!].map(p => p.slug!);
-              availableRepos.push(...keys);
-            }
-
-            onChange({ availableRepos });
+          for await (const page of client
+            .listRepositoriesByWorkspace(workspace, {
+              q: `project.key="${project}"`,
+            })
+            .iteratePages()) {
+            const keys = [...page.values!].map(p => p.slug!);
+            availableRepos.push(...keys);
           }
+
+          onChange({ availableRepos });
+        } else {
+          onChange({ availableRepos: [] });
+        }
       };
 
       updateAvailableRepositories().catch(() =>
@@ -184,7 +180,7 @@ export const BitbucketRepoPicker = (props: {
             <Autocomplete
               value={workspace}
               onInputChange={(_, newValue) => {
-                onChange({ workspace: newValue || '' });
+                onChange({ workspace: String(newValue) });
               }}
               options={availableWorkspaces}
               renderInput={params => (
@@ -219,7 +215,7 @@ export const BitbucketRepoPicker = (props: {
           <Autocomplete
             value={project}
             onInputChange={(_, newValue) => {
-              onChange({ project: newValue || '' });
+              onChange({ project: String(newValue) });
             }}
             options={availableProjects}
             renderInput={params => (
