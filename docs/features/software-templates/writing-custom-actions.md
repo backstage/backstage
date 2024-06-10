@@ -38,7 +38,7 @@ When prompted, select the option to generate a scaffolder module. This creates a
 
 ## Writing your Custom Action
 
-After running the command, the CLI will create a new directory with the name you provided. This directory will be the working directory for creating the custom action. It will contain all the necessary files and boilerplate code to get started.
+After running the command, the CLI will create a new directory with your new scaffolder module. This directory will be the working directory for creating the custom action. It will contain all the necessary files and boilerplate code to get started.
 
 Let's create a simple action that adds a new file and some contents that are passed as `input` to the function. Within the generated directory, locate the file at `src/actions/example/example.ts`. Feel free to rename this file along with its generated unit test. We will replace the existing placeholder code with our custom action code as follows:
 
