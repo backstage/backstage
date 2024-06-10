@@ -2,7 +2,13 @@
   "name": "@backstage/plugin-auth-node",
   "version": "0.4.14-next.2",
   "backstage": {
-    "role": "node-library"
+    "role": "node-library",
+    "pluginId": "auth",
+    "pluginPackages": [
+      "@backstage/plugin-auth-backend",
+      "@backstage/plugin-auth-node",
+      "@backstage/plugin-auth-react"
+    ]
   },
   "publishConfig": {
     "access": "public",

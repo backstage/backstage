@@ -2,7 +2,13 @@
   "name": "@backstage/plugin-events-backend",
   "version": "0.3.6-next.2",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "events",
+    "pluginPackages": [
+      "@backstage/plugin-events-backend",
+      "@backstage/plugin-events-backend-test-utils",
+      "@backstage/plugin-events-node"
+    ]
   },
   "publishConfig": {
     "access": "public"

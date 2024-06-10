@@ -3,7 +3,16 @@
   "version": "1.8.7-next.2",
   "description": "A frontend library that helps other Backstage plugins interact with the Scaffolder",
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "pluginId": "scaffolder",
+    "pluginPackages": [
+      "@backstage/plugin-scaffolder",
+      "@backstage/plugin-scaffolder-backend",
+      "@backstage/plugin-scaffolder-common",
+      "@backstage/plugin-scaffolder-node",
+      "@backstage/plugin-scaffolder-node-test-utils",
+      "@backstage/plugin-scaffolder-react"
+    ]
   },
   "publishConfig": {
     "access": "public"

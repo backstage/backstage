@@ -3,7 +3,14 @@
   "version": "1.12.5-next.2",
   "description": "Common node.js functionalities for TechDocs, to be shared between techdocs-backend plugin and techdocs-cli",
   "backstage": {
-    "role": "node-library"
+    "role": "node-library",
+    "pluginId": "techdocs",
+    "pluginPackages": [
+      "@backstage/plugin-techdocs",
+      "@backstage/plugin-techdocs-backend",
+      "@backstage/plugin-techdocs-node",
+      "@backstage/plugin-techdocs-react"
+    ]
   },
   "publishConfig": {
     "access": "public",

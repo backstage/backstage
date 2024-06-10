@@ -3,7 +3,9 @@
   "version": "1.1.11-next.1",
   "description": "Plugin module for contributed TechDocs Addons",
   "backstage": {
-    "role": "frontend-plugin-module"
+    "role": "frontend-plugin-module",
+    "pluginId": "techdocs",
+    "pluginPackage": "@backstage/plugin-techdocs"
   },
   "publishConfig": {
     "access": "public",

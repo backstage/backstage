@@ -3,7 +3,15 @@
   "version": "1.23.0-next.2",
   "description": "The Backstage backend plugin that provides the Backstage catalog",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "catalog",
+    "pluginPackages": [
+      "@backstage/plugin-catalog",
+      "@backstage/plugin-catalog-backend",
+      "@backstage/plugin-catalog-common",
+      "@backstage/plugin-catalog-node",
+      "@backstage/plugin-catalog-react"
+    ]
   },
   "publishConfig": {
     "access": "public"

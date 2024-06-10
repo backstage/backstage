@@ -3,7 +3,15 @@
   "version": "1.0.23",
   "description": "Common functionalities for the catalog plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "pluginId": "catalog",
+    "pluginPackages": [
+      "@backstage/plugin-catalog",
+      "@backstage/plugin-catalog-backend",
+      "@backstage/plugin-catalog-common",
+      "@backstage/plugin-catalog-node",
+      "@backstage/plugin-catalog-react"
+    ]
   },
   "publishConfig": {
     "access": "public"

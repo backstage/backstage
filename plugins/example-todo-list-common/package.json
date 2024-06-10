@@ -2,7 +2,13 @@
   "name": "@internal/plugin-todo-list-common",
   "version": "1.0.18",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "pluginId": "todo-list",
+    "pluginPackages": [
+      "@internal/plugin-todo-list",
+      "@internal/plugin-todo-list-backend",
+      "@internal/plugin-todo-list-common"
+    ]
   },
   "publishConfig": {
     "access": "public",

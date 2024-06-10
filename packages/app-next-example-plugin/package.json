@@ -4,7 +4,10 @@
   "description": "Backstage internal example plugin",
   "backstage": {
     "role": "frontend-plugin",
-    "pluginId": "example"
+    "pluginId": "example",
+    "pluginPackages": [
+      "app-next-example-plugin"
+    ]
   },
   "publishConfig": {
     "access": "public",

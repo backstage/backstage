@@ -3,7 +3,9 @@
   "version": "0.3.0-next.2",
   "description": "The github module for @backstage/plugin-scaffolder-backend",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "scaffolder",
+    "pluginPackage": "@backstage/plugin-scaffolder-backend"
   },
   "publishConfig": {
     "access": "public"

@@ -3,7 +3,9 @@
   "version": "0.1.16-next.1",
   "description": "The github-provider backend module for the auth plugin.",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "auth",
+    "pluginPackage": "@backstage/plugin-auth-backend"
   },
   "publishConfig": {
     "access": "public",

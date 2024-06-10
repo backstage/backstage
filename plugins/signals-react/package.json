@@ -3,7 +3,14 @@
   "version": "0.0.4-next.0",
   "description": "Web library for the signals plugin",
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "pluginId": "signals",
+    "pluginPackages": [
+      "@backstage/plugin-signals",
+      "@backstage/plugin-signals-backend",
+      "@backstage/plugin-signals-node",
+      "@backstage/plugin-signals-react"
+    ]
   },
   "publishConfig": {
     "access": "public",
