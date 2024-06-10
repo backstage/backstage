@@ -20,7 +20,6 @@ import {
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
-import { InputError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { ensureDirSync } from 'fs-extra';
 import knexFactory, { Knex } from 'knex';
@@ -174,20 +173,6 @@ function normalizeConnection(
   return typeof connection === 'string' || connection instanceof String
     ? parseSqliteConnectionString(connection as string)
     : connection;
-}
-
-function createNameOverride(
-  client: string,
-  name: string,
-): Partial<Knex.Config> {
-  try {
-    return createSqliteNameOverride(name);
-  } catch (e) {
-    throw new InputError(
-      `Unable to create database name override for '${client}' connector`,
-      e,
-    );
-  }
 }
 
 export class Sqlite3Connector implements Connector {
@@ -388,8 +373,6 @@ export class Sqlite3Connector implements Connector {
    */
   private getDatabaseOverrides(pluginId: string): Knex.Config {
     const databaseName = this.getDatabaseName(pluginId);
-    return databaseName
-      ? createNameOverride(this.getClientType(pluginId).client, databaseName)
-      : {};
+    return databaseName ? createSqliteNameOverride(databaseName) : {};
   }
 }

@@ -245,20 +245,6 @@ function normalizeConnection(
     : connection;
 }
 
-function createNameOverride(
-  client: string,
-  name: string,
-): Partial<Knex.Config> {
-  try {
-    return defaultNameOverride(name);
-  } catch (e) {
-    throw new InputError(
-      `Unable to create database name override for '${client}' connector`,
-      e,
-    );
-  }
-}
-
 export class MysqlConnector implements Connector {
   constructor(
     private readonly config: Config,
@@ -454,8 +440,6 @@ export class MysqlConnector implements Connector {
    */
   private getDatabaseOverrides(pluginId: string): Knex.Config {
     const databaseName = this.getDatabaseName(pluginId);
-    return databaseName
-      ? createNameOverride(this.getClientType(pluginId).client, databaseName)
-      : {};
+    return databaseName ? defaultNameOverride(databaseName) : {};
   }
 }

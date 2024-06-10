@@ -19,7 +19,7 @@ import {
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
-import { ForwardedError, InputError } from '@backstage/errors';
+import { ForwardedError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
@@ -251,34 +251,6 @@ function normalizeConnection(
     : connection;
 }
 
-function createSchemaOverride(
-  client: string,
-  name: string,
-): Partial<Knex.Config | undefined> {
-  try {
-    return defaultSchemaOverride(name);
-  } catch (e) {
-    throw new InputError(
-      `Unable to create database schema override for '${client}' connector`,
-      e,
-    );
-  }
-}
-
-function createNameOverride(
-  client: string,
-  name: string,
-): Partial<Knex.Config> {
-  try {
-    return defaultNameOverride(name);
-  } catch (e) {
-    throw new InputError(
-      `Unable to create database name override for '${client}' connector`,
-      e,
-    );
-  }
-}
-
 export class PgConnector implements Connector {
   constructor(
     private readonly config: Config,
@@ -309,7 +281,7 @@ export class PgConnector implements Connector {
 
     let schemaOverrides;
     if (this.getPluginDivisionModeConfig() === 'schema') {
-      schemaOverrides = this.getSchemaOverrides(pluginId);
+      schemaOverrides = defaultSchemaOverride(pluginId);
       if (
         this.getEnsureSchemaExistsConfig(pluginId) ||
         this.getEnsureExistsConfig(pluginId)
@@ -501,17 +473,6 @@ export class PgConnector implements Connector {
   }
 
   /**
-   * Provides a partial `Knex.Config` database schema override for a given
-   * plugin.
-   *
-   * @param pluginId - Target plugin to get database schema override
-   * @returns Partial `Knex.Config` with database schema override
-   */
-  private getSchemaOverrides(pluginId: string): Knex.Config | undefined {
-    return createSchemaOverride(this.getClientType(pluginId).client, pluginId);
-  }
-
-  /**
    * Provides a partial `Knex.Config`• database name override for a given plugin.
    *
    * @param pluginId - Target plugin to get database name override
@@ -519,8 +480,6 @@ export class PgConnector implements Connector {
    */
   private getDatabaseOverrides(pluginId: string): Knex.Config {
     const databaseName = this.getDatabaseName(pluginId);
-    return databaseName
-      ? createNameOverride(this.getClientType(pluginId).client, databaseName)
-      : {};
+    return databaseName ? defaultNameOverride(databaseName) : {};
   }
 }
