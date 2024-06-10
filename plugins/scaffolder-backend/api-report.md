@@ -314,6 +314,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
+    autoMerge?: boolean | undefined;
   },
   JsonObject
 >;
