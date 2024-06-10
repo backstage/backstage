@@ -455,6 +455,7 @@ interface SystemEntityV1alpha1 extends Entity {
   spec: {
     owner: string;
     domain?: string;
+    type?: string;
   };
 }
 export { SystemEntityV1alpha1 as SystemEntity };
