@@ -95,7 +95,7 @@ Packages that are part of the same plugin should always be managed within the sa
 
 Each plugin package must define a `backstage.pluginId` field, which is the same identifier as is used in the implementation of the plugin. This field is inferred from the package name by the `backstage-cli repo fix` command if it is not present. It should only be defined for plugin package, for example `@backstage/errors` should not define a plugin ID. The `backstage.pluginId` field is required when publishing a package with a plugin or module role, or a library role with "plugin" in its name.
 
-The package relationships are defined in the `backstage.pluginPackages` field. The value of the fields in an object with three optional keys, `frontend`, `backend`, and `libraries`. The `frontend` and `backend` fields must be the name of the frontend and backend plugin packages if present, while the `libraries` is an array of all library packages that are related to this plugin. For example:
+The package relationships are defined in the `backstage.pluginPackages` field. The value of the field is an array with the names of all packages that belong to this plugin. For example:
 
 ```json
 {
@@ -103,15 +103,13 @@ The package relationships are defined in the `backstage.pluginPackages` field. T
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "catalog",
-    "pluginPackages": {
-      "frontend": "@backstage/plugin-catalog",
-      "backend": "@backstage/plugin-catalog-backend",
-      "libraries": [
-        "@backstage/plugin-catalog-react",
-        "@backstage/plugin-catalog-node",
-        "@backstage/plugin-catalog-common"
-      ]
-    }
+    "pluginPackages": [
+      "@backstage/plugin-catalog",
+      "@backstage/plugin-catalog-backend",
+      "@backstage/plugin-catalog-react",
+      "@backstage/plugin-catalog-node",
+      "@backstage/plugin-catalog-common"
+    ]
   }
 }
 ```
