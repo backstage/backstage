@@ -65,7 +65,7 @@ export const RepoUrlPickerRepoName = (props: {
           <Autocomplete
             value={repoName}
             onInputChange={(_, newValue) => {
-              onChange(newValue || '');
+              onChange(String(newValue));
             }}
             options={availableRepos || []}
             renderInput={params => (
