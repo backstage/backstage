@@ -3,7 +3,13 @@
   "version": "0.3.5-next.1",
   "description": "The plugin-events-node module for @backstage/plugin-events-backend",
   "backstage": {
-    "role": "node-library"
+    "role": "node-library",
+    "pluginId": "events",
+    "pluginPackages": [
+      "@backstage/plugin-events-backend",
+      "@backstage/plugin-events-backend-test-utils",
+      "@backstage/plugin-events-node"
+    ]
   },
   "publishConfig": {
     "access": "public"

@@ -3,7 +3,13 @@
   "version": "0.1.9",
   "description": "Common functionalities for the devtools plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "pluginId": "devtools",
+    "pluginPackages": [
+      "@backstage/plugin-devtools",
+      "@backstage/plugin-devtools-backend",
+      "@backstage/plugin-devtools-common"
+    ]
   },
   "publishConfig": {
     "access": "public",

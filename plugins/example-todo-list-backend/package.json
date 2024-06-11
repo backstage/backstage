@@ -2,7 +2,13 @@
   "name": "@internal/plugin-todo-list-backend",
   "version": "1.0.28-next.2",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "todo-list",
+    "pluginPackages": [
+      "@internal/plugin-todo-list",
+      "@internal/plugin-todo-list-backend",
+      "@internal/plugin-todo-list-common"
+    ]
   },
   "publishConfig": {
     "access": "public",

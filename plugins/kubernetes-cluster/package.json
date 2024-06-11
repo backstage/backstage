@@ -3,7 +3,11 @@
   "version": "0.0.12-next.2",
   "description": "A Backstage plugin that shows details of Kubernetes clusters",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "kubernetes-cluster",
+    "pluginPackages": [
+      "@backstage/plugin-kubernetes-cluster"
+    ]
   },
   "publishConfig": {
     "access": "public",

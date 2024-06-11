@@ -30,30 +30,29 @@ describe('AwsCodeCommitIntegration', () => {
               secretAccessKey: ' secret key ',
               roleArn: `role arn`,
               externalId: `external id`,
+              region: `region`,
             },
           ],
         },
       }),
     });
     expect(integrations.list().length).toBe(1); // including default
-    expect(integrations.list()[0].config.host).toBe(AMAZON_AWS_CODECOMMIT_HOST);
+    expect(integrations.list()[0].config.host).toBe(
+      `region.${AMAZON_AWS_CODECOMMIT_HOST}`,
+    );
     expect(integrations.list()[0].config.accessKeyId).toBe('access key');
     expect(integrations.list()[0].config.secretAccessKey).toBe('secret key');
     expect(integrations.list()[0].config.roleArn).toBe(`role arn`);
     expect(integrations.list()[0].config.externalId).toBe(`external id`);
+    expect(integrations.list()[0].config.region).toBe(`region`);
   });
-  it('has a working factory with default values when no data provided', () => {
+  it('does not have a working factory with default values when no data provided', () => {
     const integrations = AwsCodeCommitIntegration.factory({
       config: new ConfigReader({
         integrations: {},
       }),
     });
-    expect(integrations.list().length).toBe(1); // including default
-    expect(integrations.list()[0].config.host).toBe(AMAZON_AWS_CODECOMMIT_HOST);
-    expect(integrations.list()[0].config.accessKeyId).toBeUndefined();
-    expect(integrations.list()[0].config.secretAccessKey).toBeUndefined();
-    expect(integrations.list()[0].config.roleArn).toBeUndefined();
-    expect(integrations.list()[0].config.externalId).toBeUndefined();
+    expect(integrations.list().length).toBe(0); // including default
   });
 
   it('returns the basics', () => {

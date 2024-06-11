@@ -19,7 +19,7 @@ files before generating a documentation site.
 
 Since, the requirement for reading files is so essential for Backstage plugins,
 the
-[`@backstage/backend-common`](https://github.com/backstage/backstage/tree/master/packages/backend-common)
+[`coreServices.urlReader`](../reference/backend-plugin-api.coreservices.urlreader.md)
 package provides a dedicated API for reading from such URL based remote
 locations like GitHub, GitLab, Bitbucket, Google Cloud Storage, etc. This is
 commonly referred to as "URL Reader". It takes care of making authenticated
@@ -49,9 +49,8 @@ function makeCreateEnv(config: Config) {
 }
 ```
 
-This instance contains all
-[the default URL Reader providers](https://github.com/backstage/backstage/blob/master/packages/backend-common/src/reading/UrlReaders.ts)
-in the backend-common package including GitHub, GitLab, Bitbucket, Azure, Google
+This instance contains all the default URL Reader providers
+in the backend-defaults package including GitHub, GitLab, Bitbucket, Azure, Google
 GCS. As the need arises, more URL Readers are being written to support different
 providers.
 

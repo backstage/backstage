@@ -3,7 +3,16 @@
   "version": "1.5.3-next.0",
   "description": "Common functionalities for the scaffolder, to be shared between scaffolder and scaffolder-backend plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "pluginId": "scaffolder",
+    "pluginPackages": [
+      "@backstage/plugin-scaffolder",
+      "@backstage/plugin-scaffolder-backend",
+      "@backstage/plugin-scaffolder-common",
+      "@backstage/plugin-scaffolder-node",
+      "@backstage/plugin-scaffolder-node-test-utils",
+      "@backstage/plugin-scaffolder-react"
+    ]
   },
   "publishConfig": {
     "access": "public"

@@ -3,7 +3,14 @@
   "version": "1.4.12-next.2",
   "description": "The Backstage plugin that provides your backstage app with search",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "search",
+    "pluginPackages": [
+      "@backstage/plugin-search",
+      "@backstage/plugin-search-backend",
+      "@backstage/plugin-search-common",
+      "@backstage/plugin-search-react"
+    ]
   },
   "publishConfig": {
     "access": "public"

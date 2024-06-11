@@ -2,7 +2,14 @@
   "name": "@backstage/plugin-notifications-backend",
   "version": "0.3.0-next.2",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "notifications",
+    "pluginPackages": [
+      "@backstage/plugin-notifications",
+      "@backstage/plugin-notifications-backend",
+      "@backstage/plugin-notifications-common",
+      "@backstage/plugin-notifications-node"
+    ]
   },
   "publishConfig": {
     "access": "public",

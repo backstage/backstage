@@ -163,9 +163,9 @@ describe('vmwareCloudAuthenticator', () => {
       expect(searchParams.get('redirect_uri')).toBe('http://callbackUrl');
     });
 
-    it('requests scopes for ID and refresh token', async () => {
+    it('forwards scopes for ID and refresh token', async () => {
       const startResponse = await vmwareCloudAuthenticator.start(
-        startRequest,
+        { ...startRequest, scope: 'openid offline_access' },
         authenticatorCtx,
       );
       const { searchParams } = new URL(startResponse.url);

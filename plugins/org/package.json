@@ -3,7 +3,12 @@
   "version": "0.6.26-next.1",
   "description": "A Backstage plugin that helps you create entity pages for your organization",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "org",
+    "pluginPackages": [
+      "@backstage/plugin-org",
+      "@backstage/plugin-org-react"
+    ]
   },
   "publishConfig": {
     "access": "public"

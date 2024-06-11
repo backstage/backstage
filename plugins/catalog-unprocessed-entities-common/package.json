@@ -3,7 +3,12 @@
   "version": "0.0.1",
   "description": "Common functionalities for the catalog-unprocessed-entities plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "pluginId": "catalog-unprocessed-entities",
+    "pluginPackages": [
+      "@backstage/plugin-catalog-unprocessed-entities",
+      "@backstage/plugin-catalog-unprocessed-entities-common"
+    ]
   },
   "publishConfig": {
     "access": "public",

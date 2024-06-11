@@ -1,6 +1,6 @@
 ---
 title: Plugin Metadata
-status: provisional
+status: implementable
 authors:
   - '@Rugvip'
 owners:
@@ -95,7 +95,7 @@ Packages that are part of the same plugin should always be managed within the sa
 
 Each plugin package must define a `backstage.pluginId` field, which is the same identifier as is used in the implementation of the plugin. This field is inferred from the package name by the `backstage-cli repo fix` command if it is not present. It should only be defined for plugin package, for example `@backstage/errors` should not define a plugin ID. The `backstage.pluginId` field is required when publishing a package with a plugin or module role, or a library role with "plugin" in its name.
 
-The package relationships are defined in the `backstage.pluginPackages` field. The value of the field is an object where each key is the role of the package as defined by the `backstage.role` field, and the value is the package name. For example:
+The package relationships are defined in the `backstage.pluginPackages` field. The value of the field is an array with the names of all packages that belong to this plugin. For example:
 
 ```json
 {
@@ -103,18 +103,18 @@ The package relationships are defined in the `backstage.pluginPackages` field. T
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "catalog",
-    "pluginPackages": {
-      "frontend-plugin": "@backstage/plugin-catalog",
-      "backend-plugin": "@backstage/plugin-catalog-backend",
-      "web-library": "@backstage/plugin-catalog-react",
-      "node-library": "@backstage/plugin-catalog-node",
-      "common-library": "@backstage/plugin-catalog-common"
-    }
+    "pluginPackages": [
+      "@backstage/plugin-catalog",
+      "@backstage/plugin-catalog-backend",
+      "@backstage/plugin-catalog-react",
+      "@backstage/plugin-catalog-node",
+      "@backstage/plugin-catalog-common"
+    ]
   }
 }
 ```
 
-The `backstage.pluginPackages` field is generated and updated by the `backstage-cli repo fix` command based on the packages that are present in the workspace and their `backstage.pluginId` and `backstage.role` fields. There can only be a single package of each role with a given plugin ID. The `backstage.pluginPackages` field is required when publishing a package with a `backstage.pluginId` field that is not using a module role.
+The `backstage.pluginPackages` field is generated and updated by the `backstage-cli repo fix` command based on the packages that are present in the workspace and their `backstage.pluginId` and `backstage.role` fields. The `backstage.pluginPackages` field is required when publishing a package with a `backstage.pluginId` field that is not using a module role.
 
 Module packages define their target plugin both via the `backstage.pluginId` field, as well as via `backstage.pluginPackage`. For example:
 
@@ -155,15 +155,17 @@ The following resources have been used to inform this proposal:
 
 The new metadata fields and any generation and validation of fields will initially be rolled out as part of the `repo fix` command in the Backstage CLI. In addition we will also add validation to the `yarn prepack` command in such a way that it does not interfere with backend package bundling, but does apply when packing packages for publishing. These changes will all be rolled out in a single release of the Backstage CLI, meaning that anyone publishing Backstage packages using the Backstage CLI will be required to provide the new metadata.
 
+We will roll out these changes early on but be prepared to change the metadata structure if needed. Initially there will be very few consumers of this information, and it will be up to these consumers to handle the potentially varying versions of this metadata. We will aim to reach a stable state for the metadata as soon as possible, but we believe we need real world usage and feedback to get there.
+
 ## Dependencies
 
 None
 
 ## Alternatives
 
-### Simplified Library Relationships
+### Role-based Relationships
 
-Rather than listing libraries for each role, we could simply have an array of libraries that are available for the plugin:
+Rather than the proposed listing of related packages, we list packages by role instead. For example:
 
 ```json
 {
@@ -174,21 +176,17 @@ Rather than listing libraries for each role, we could simply have an array of li
     "pluginPackages": {
       "frontend-plugin": "@backstage/plugin-catalog",
       "backend-plugin": "@backstage/plugin-catalog-backend",
-      "libraries": [
-        "@backstage/plugin-catalog-react",
-        "@backstage/plugin-catalog-node",
-        "@backstage/plugin-catalog-common"
-      ]
+      "web-library": "@backstage/plugin-catalog-react",
+      "node-library": "@backstage/plugin-catalog-node",
+      "common-library": "@backstage/plugin-catalog-common"
     }
   }
 }
 ```
 
-A benefit of this approach is that it keeps the metadata simpler and reduces the need for conflict resolution logic since we can use the union of all listed library packages.
+A benefit of this approach is that we know the role of each package upfront, although we'd likely want to validate the role of each package either way.
 
-It also allows for the use-case of having multiple libraries of the same role, in case that would provide a benefit. Examples of this are the `@backstage/catalog-client` and `@backstage/catalog-model` packages.
-
-A downside of this approach could be that it may encourage a larger number of library packages, which is not necessarily what we want. Another downside is that the role of each package is not immediately available.
+Another benefit is that there's a more strict requirement for only having a single package per role for each plugin, although this can also be considered a downside and limiting flexibility.
 
 ### Separate Metadata File
 

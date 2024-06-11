@@ -3,7 +3,13 @@
   "version": "0.2.18-next.2",
   "description": "The Backstage backend plugin to manage user settings",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "user-settings",
+    "pluginPackages": [
+      "@backstage/plugin-user-settings",
+      "@backstage/plugin-user-settings-backend",
+      "@backstage/plugin-user-settings-common"
+    ]
   },
   "publishConfig": {
     "access": "public"
