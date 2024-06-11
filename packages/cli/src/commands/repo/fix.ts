@@ -18,12 +18,14 @@ import {
   BackstagePackage,
   BackstagePackageJson,
   PackageGraph,
+  PackageRole,
   PackageRoles,
 } from '@backstage/cli-node';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import { resolve as resolvePath, posix, relative as relativePath } from 'path';
 import { paths } from '../../lib/paths';
+import { publishPreflightCheck } from '../../lib/publishing';
 
 /**
  * A mutable object representing a package.json file with potential fixes.
@@ -239,14 +241,213 @@ export function createRepositoryFieldFixer() {
   };
 }
 
+function guessPluginId(role: PackageRole, pkgName: string): string | undefined {
+  switch (role) {
+    case 'frontend':
+    case 'frontend-plugin':
+      return pkgName.match(/plugin-(.*)/)?.[1];
+    case 'frontend-plugin-module':
+      return pkgName.match(/plugin-(.*)-module-/)?.[1];
+    case 'backend-plugin':
+      return pkgName.match(/plugin-(.*)-backend$/)?.[1];
+    case 'backend-plugin-module':
+      return pkgName.match(/plugin-(.*)-backend-module-/)?.[1];
+    case 'common-library':
+      return pkgName.match(/plugin-(.*)-(?:common)$/)?.[1];
+    case 'web-library':
+      return pkgName.match(/plugin-(.*)-(?:react|test-utils)/)?.[1];
+    case 'node-library':
+      return pkgName.match(/plugin-(.*)-(?:node|backend)-?/)?.[1];
+    default:
+      throw new Error(
+        `Invalid 'backstage.role' field in "${pkgName}", got '${role}'`,
+      );
+  }
+}
+
+export function fixPluginId(pkg: FixablePackage) {
+  const role = pkg.packageJson.backstage?.role;
+  if (!role) {
+    return;
+  }
+
+  if (role === 'backend' || role === 'frontend' || role === 'cli') {
+    return;
+  }
+
+  const currentId = pkg.packageJson.backstage?.pluginId;
+  if (currentId !== undefined) {
+    if (typeof currentId !== 'string') {
+      throw new Error(
+        `Invalid 'backstage.pluginId' field in "${pkg.packageJson.name}", must be a string`,
+      );
+    }
+    return;
+  }
+
+  const guessedPluginId = guessPluginId(role, pkg.packageJson.name);
+  if (
+    !guessedPluginId &&
+    (role === 'frontend-plugin' ||
+      role === 'frontend-plugin-module' ||
+      role === 'backend-plugin' ||
+      role === 'backend-plugin-module')
+  ) {
+    const path = relativePath(
+      paths.targetRoot,
+      resolvePath(pkg.dir, 'package.json'),
+    );
+    const msg = `Failed to guess plugin ID for "${pkg.packageJson.name}", please set the 'backstage.pluginId' field manually in "${path}"`;
+    if (role.endsWith('module')) {
+      const suggestedRole = role.startsWith('frontend')
+        ? 'web-library'
+        : 'node-library';
+      throw new Error(
+        `${msg}. It is also possible that this package is not a module, and should use the '${suggestedRole}' role instead.`,
+      );
+    } else {
+      throw new Error(msg);
+    }
+  }
+
+  if (guessedPluginId) {
+    pkg.packageJson.backstage = {
+      ...pkg.packageJson.backstage,
+      pluginId: guessedPluginId,
+    };
+    pkg.changed = true;
+  }
+}
+
+const backendPluginPackageNameByPluginId = new Map(
+  [
+    'app',
+    'auth',
+    'catalog',
+    'events',
+    'kubernetes',
+    'notifications',
+    'permission',
+    'scaffolder',
+    'search',
+    'signals',
+    'techdocs',
+  ].map(pluginId => [pluginId, `@backstage/plugin-${pluginId}-backend`]),
+);
+
+const pluginPackageRoles: Array<string | undefined> = [
+  'frontend-plugin',
+  'backend-plugin',
+  'common-library',
+  'web-library',
+  'node-library',
+];
+
+export function fixPluginPackages(
+  pkg: FixablePackage,
+  repoPackages: FixablePackage[],
+) {
+  const pkgBackstage = pkg.packageJson.backstage;
+  const role = pkgBackstage?.role;
+  if (!role) {
+    return;
+  }
+
+  if (role === 'backend' || role === 'frontend' || role === 'cli') {
+    return;
+  }
+
+  const pluginId = pkgBackstage.pluginId;
+  if (!pluginId) {
+    // Might be a plugin-less library, skip
+    if (
+      role === 'common-library' ||
+      role === 'web-library' ||
+      role === 'node-library'
+    ) {
+      return;
+    }
+    throw new Error(
+      `Missing 'backstage.pluginId' field in "${pkg.packageJson.name}"`,
+    );
+  }
+
+  if (role === 'backend-plugin-module' || role === 'frontend-plugin-module') {
+    const targetRole = role.replace('-module', '');
+
+    // Try to find a plugin package in the same repo, but otherwise fall back to looking up the package name by ID of @backstage/* plugins
+    const pluginPkgName =
+      repoPackages.find(
+        p =>
+          p.packageJson.backstage?.pluginId === pluginId &&
+          p.packageJson.backstage?.role === targetRole,
+      )?.packageJson.name ?? backendPluginPackageNameByPluginId.get(pluginId);
+
+    if (!pluginPkgName) {
+      // If we can't find a matching package in the repo but one is declared, skip
+      if (pkgBackstage.pluginPackage) {
+        return;
+      }
+      const path = relativePath(
+        paths.targetRoot,
+        resolvePath(pkg.dir, 'package.json'),
+      );
+      const suggestedRole =
+        role === 'frontend-plugin-module' ? 'web-library' : 'node-library';
+      throw new Error(
+        `Failed to find plugin package for "${pkg.packageJson.name}", please declare the name of the plugin package that this package is a module for in the 'backstage.pluginPackage' field in "${path}". ` +
+          `It is also possible that this package is not a module, and should use the '${suggestedRole}' role instead.`,
+      );
+    }
+
+    if (pkgBackstage.pluginPackage !== pluginPkgName) {
+      pkgBackstage.pluginPackage = pluginPkgName;
+      pkg.changed = true;
+    }
+  } else {
+    let pluginPackages: string[] | undefined = repoPackages
+      .filter(
+        p =>
+          p.packageJson.backstage?.pluginId === pluginId &&
+          pluginPackageRoles.includes(p.packageJson.backstage?.role),
+      )
+      .map(p => p.packageJson.name)
+      .sort();
+
+    if (pluginPackages.length === 0) {
+      pluginPackages = undefined;
+    }
+
+    if (pkgBackstage.pluginPackages?.join(',') !== pluginPackages?.join(',')) {
+      pkgBackstage.pluginPackages = pluginPackages;
+      pkg.changed = true;
+    }
+  }
+}
+
+type PackageFixer = (pkg: FixablePackage, packages: FixablePackage[]) => void;
+
 export async function command(opts: OptionValues): Promise<void> {
   const packages = await readFixablePackages();
   const fixRepositoryField = createRepositoryFieldFixer();
 
-  for (const pkg of packages) {
-    fixPackageExports(pkg);
-    fixSideEffects(pkg);
-    fixRepositoryField(pkg);
+  const fixers: PackageFixer[] = [fixPackageExports, fixSideEffects];
+
+  // Fixers that only apply to repos that publish packages
+  if (opts.publish) {
+    fixers.push(
+      fixRepositoryField,
+      fixPluginId,
+      fixPluginPackages,
+      // Run the publish preflight check too, to make sure we don't uncover errors during publishing
+      publishPreflightCheck,
+    );
+  }
+
+  for (const fixer of fixers) {
+    for (const pkg of packages) {
+      fixer(pkg, packages);
+    }
   }
 
   if (opts.check) {

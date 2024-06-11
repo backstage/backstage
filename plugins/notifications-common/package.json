@@ -3,7 +3,14 @@
   "version": "0.0.3",
   "description": "Common functionalities for the notifications plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "pluginId": "notifications",
+    "pluginPackages": [
+      "@backstage/plugin-notifications",
+      "@backstage/plugin-notifications-backend",
+      "@backstage/plugin-notifications-common",
+      "@backstage/plugin-notifications-node"
+    ]
   },
   "publishConfig": {
     "access": "public",

@@ -2,7 +2,12 @@
   "name": "@backstage/plugin-org-react",
   "version": "0.1.25-next.1",
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "pluginId": "org",
+    "pluginPackages": [
+      "@backstage/plugin-org",
+      "@backstage/plugin-org-react"
+    ]
   },
   "publishConfig": {
     "access": "public",

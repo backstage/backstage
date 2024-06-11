@@ -3,7 +3,9 @@
   "version": "0.1.12-next.2",
   "description": "A module for the search backend that exports stack overflow modules",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "search",
+    "pluginPackage": "@backstage/plugin-search-backend"
   },
   "publishConfig": {
     "access": "public",

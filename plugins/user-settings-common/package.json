@@ -3,7 +3,13 @@
   "version": "0.0.0",
   "description": "Common functionalities for the user-settings plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "pluginId": "user-settings",
+    "pluginPackages": [
+      "@backstage/plugin-user-settings",
+      "@backstage/plugin-user-settings-backend",
+      "@backstage/plugin-user-settings-common"
+    ]
   },
   "publishConfig": {
     "access": "public",

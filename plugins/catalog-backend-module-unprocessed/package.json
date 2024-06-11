@@ -3,7 +3,9 @@
   "version": "0.4.6-next.2",
   "description": "Backstage Catalog module to view unprocessed entities",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public",

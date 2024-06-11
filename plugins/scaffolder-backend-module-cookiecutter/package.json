@@ -3,7 +3,9 @@
   "version": "0.2.43-next.2",
   "description": "A module for the scaffolder backend that lets you template projects using cookiecutter",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "scaffolder",
+    "pluginPackage": "@backstage/plugin-scaffolder-backend"
   },
   "publishConfig": {
     "access": "public"

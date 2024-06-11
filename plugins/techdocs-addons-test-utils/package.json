@@ -2,7 +2,11 @@
   "name": "@backstage/plugin-techdocs-addons-test-utils",
   "version": "1.0.33-next.1",
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "pluginId": "techdocs-addons",
+    "pluginPackages": [
+      "@backstage/plugin-techdocs-addons-test-utils"
+    ]
   },
   "publishConfig": {
     "access": "public",

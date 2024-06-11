@@ -26,7 +26,7 @@
     "dev": "yarn workspaces foreach -A --include example-backend --include example-app --parallel -v -i run start",
     "dev:next": "yarn workspaces foreach -A --include example-backend --include example-app-next --parallel -v -i run start",
     "docker-build": "yarn tsc && yarn workspace example-backend build && yarn workspace example-backend build-image",
-    "fix": "backstage-cli repo fix",
+    "fix": "backstage-cli repo fix --publish",
     "postinstall": "husky || true",
     "lint": "backstage-cli repo lint --since origin/master",
     "lint:all": "backstage-cli repo lint",

@@ -2,7 +2,12 @@
   "name": "@backstage/plugin-catalog-unprocessed-entities",
   "version": "0.2.5-next.1",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "catalog-unprocessed-entities",
+    "pluginPackages": [
+      "@backstage/plugin-catalog-unprocessed-entities",
+      "@backstage/plugin-catalog-unprocessed-entities-common"
+    ]
   },
   "publishConfig": {
     "access": "public",

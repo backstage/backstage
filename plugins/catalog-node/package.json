@@ -3,7 +3,15 @@
   "version": "1.12.1-next.1",
   "description": "The plugin-catalog-node module for @backstage/plugin-catalog-backend",
   "backstage": {
-    "role": "node-library"
+    "role": "node-library",
+    "pluginId": "catalog",
+    "pluginPackages": [
+      "@backstage/plugin-catalog",
+      "@backstage/plugin-catalog-backend",
+      "@backstage/plugin-catalog-common",
+      "@backstage/plugin-catalog-node",
+      "@backstage/plugin-catalog-react"
+    ]
   },
   "publishConfig": {
     "access": "public"

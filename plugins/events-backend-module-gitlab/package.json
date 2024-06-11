@@ -2,7 +2,9 @@
   "name": "@backstage/plugin-events-backend-module-gitlab",
   "version": "0.2.5-next.1",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "events",
+    "pluginPackage": "@backstage/plugin-events-backend"
   },
   "publishConfig": {
     "access": "public"

@@ -3,7 +3,9 @@
   "version": "0.0.2-next.2",
   "description": "The gitlab-org backend module for the catalog plugin.",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public",

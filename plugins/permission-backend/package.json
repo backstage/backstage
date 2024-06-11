@@ -2,7 +2,14 @@
   "name": "@backstage/plugin-permission-backend",
   "version": "0.5.43-next.2",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "permission",
+    "pluginPackages": [
+      "@backstage/plugin-permission-backend",
+      "@backstage/plugin-permission-common",
+      "@backstage/plugin-permission-node",
+      "@backstage/plugin-permission-react"
+    ]
   },
   "publishConfig": {
     "access": "public"
