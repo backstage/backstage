@@ -45,7 +45,7 @@ export class DefaultWorkspaceService implements WorkspaceService {
     const workspaceProvider =
       additionalWorkspaceProviders?.[workspaceProviderName] ??
       DatabaseWorkspaceProvider.create(storage);
-    return new DefaultWorkspaceService(task, workspaceProvider);
+    return new DefaultWorkspaceService(task, workspaceProvider, config);
   }
 
   private constructor(
