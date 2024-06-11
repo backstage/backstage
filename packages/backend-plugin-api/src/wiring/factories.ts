@@ -51,6 +51,10 @@ export function createExtensionPoint<T>(
   return {
     id: options.id,
     get T(): T {
+      if (process.env.NODE_ENV === 'test') {
+        // Avoid throwing errors so tests asserting extensions' properties cannot be easily broken
+        return null as T;
+      }
       throw new Error(`tried to read ExtensionPoint.T of ${this}`);
     },
     toString() {
