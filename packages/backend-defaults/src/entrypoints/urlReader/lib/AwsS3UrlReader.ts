@@ -15,15 +15,14 @@
  */
 
 import {
-  ReaderFactory,
-  ReadTreeOptions,
-  ReadTreeResponse,
-  ReadTreeResponseFactory,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
-  UrlReader,
-} from './types';
+  UrlReaderService,
+  UrlReaderReadTreeOptions,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
+} from '@backstage/backend-plugin-api';
+import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import {
   AwsCredentialsManager,
   DefaultAwsCredentialsManager,
@@ -132,7 +131,7 @@ export function parseUrl(
  *
  * @public
  */
-export class AwsS3UrlReader implements UrlReader {
+export class AwsS3UrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, treeResponseFactory }) => {
     const integrations = ScmIntegrations.fromConfig(config);
     const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
@@ -253,8 +252,8 @@ export class AwsS3UrlReader implements UrlReader {
 
   async readUrl(
     url: string,
-    options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     const { etag, lastModifiedAfter } = options ?? {};
 
     try {
@@ -300,8 +299,8 @@ export class AwsS3UrlReader implements UrlReader {
 
   async readTree(
     url: string,
-    options?: ReadTreeOptions,
-  ): Promise<ReadTreeResponse> {
+    options?: UrlReaderReadTreeOptions,
+  ): Promise<UrlReaderReadTreeResponse> {
     try {
       const { path, bucket, region } = parseUrl(url, this.integration.config);
       const s3Client = await this.buildS3Client(
@@ -357,7 +356,7 @@ export class AwsS3UrlReader implements UrlReader {
     }
   }
 
-  async search(): Promise<SearchResponse> {
+  async search(): Promise<UrlReaderSearchResponse> {
     throw new Error('AwsS3Reader does not implement search');
   }
 

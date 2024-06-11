@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import { Storage } from '@google-cloud/storage';
+import * as GoogleCloud from '@google-cloud/storage';
 import {
-  ReaderFactory,
-  ReadTreeResponse,
-  ReadUrlOptions,
-  ReadUrlResponse,
-  SearchResponse,
-  UrlReader,
-} from './types';
+  UrlReaderService,
+  UrlReaderReadTreeResponse,
+  UrlReaderReadUrlOptions,
+  UrlReaderReadUrlResponse,
+  UrlReaderSearchResponse,
+} from '@backstage/backend-plugin-api';
+import { ReaderFactory } from './types';
 import getRawBody from 'raw-body';
 import {
   GoogleGcsIntegrationConfig,
@@ -30,7 +30,7 @@ import {
 } from '@backstage/integration';
 import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import packageinfo from '../../package.json';
+import packageinfo from '../../../../package.json';
 
 const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 
@@ -56,7 +56,7 @@ const parseURL = (
  *
  * @public
  */
-export class GoogleGcsUrlReader implements UrlReader {
+export class GoogleGcsUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, logger }) => {
     if (!config.has('integrations.googleGcs')) {
       return [];
@@ -64,21 +64,21 @@ export class GoogleGcsUrlReader implements UrlReader {
     const gcsConfig = readGoogleGcsIntegrationConfig(
       config.getConfig('integrations.googleGcs'),
     );
-    let storage: Storage;
+    let storage: GoogleCloud.Storage;
     if (!gcsConfig.clientEmail || !gcsConfig.privateKey) {
       logger.info(
         'googleGcs credentials not found in config. Using default credentials provider.',
       );
-      storage = new Storage({
-        userAgent: `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
+      storage = new GoogleCloud.Storage({
+        userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
       });
     } else {
-      storage = new Storage({
+      storage = new GoogleCloud.Storage({
         credentials: {
           client_email: gcsConfig.clientEmail || undefined,
           private_key: gcsConfig.privateKey || undefined,
         },
-        userAgent: `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
+        userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
       });
     }
     const reader = new GoogleGcsUrlReader(gcsConfig, storage);
@@ -88,7 +88,7 @@ export class GoogleGcsUrlReader implements UrlReader {
 
   constructor(
     private readonly integration: GoogleGcsIntegrationConfig,
-    private readonly storage: Storage,
+    private readonly storage: GoogleCloud.Storage,
   ) {}
 
   private readStreamFromUrl(url: string): Readable {
@@ -106,18 +106,18 @@ export class GoogleGcsUrlReader implements UrlReader {
 
   async readUrl(
     url: string,
-    _options?: ReadUrlOptions,
-  ): Promise<ReadUrlResponse> {
+    _options?: UrlReaderReadUrlOptions,
+  ): Promise<UrlReaderReadUrlResponse> {
     // TODO etag is not implemented yet.
     const stream = this.readStreamFromUrl(url);
     return ReadUrlResponseFactory.fromReadable(stream);
   }
 
-  async readTree(): Promise<ReadTreeResponse> {
+  async readTree(): Promise<UrlReaderReadTreeResponse> {
     throw new Error('GcsUrlReader does not implement readTree');
   }
 
-  async search(url: string): Promise<SearchResponse> {
+  async search(url: string): Promise<UrlReaderSearchResponse> {
     const { bucket, key: pattern } = parseURL(url);
 
     if (!pattern.endsWith('*') || pattern.indexOf('*') !== pattern.length - 1) {

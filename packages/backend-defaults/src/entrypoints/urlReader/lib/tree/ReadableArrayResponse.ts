@@ -14,27 +14,26 @@
  * limitations under the License.
  */
 
+import {
+  UrlReaderReadTreeResponse,
+  UrlReaderReadTreeResponseDirOptions,
+  UrlReaderReadTreeResponseFile,
+} from '@backstage/backend-plugin-api';
 import concatStream from 'concat-stream';
 import platformPath, { dirname } from 'path';
-
 import getRawBody from 'raw-body';
 import fs from 'fs-extra';
 import { promisify } from 'util';
 import tar from 'tar';
 import { pipeline as pipelineCb, Readable } from 'stream';
-import {
-  ReadTreeResponse,
-  ReadTreeResponseFile,
-  ReadTreeResponseDirOptions,
-  FromReadableArrayOptions,
-} from '../types';
+import { FromReadableArrayOptions } from '../types';
 
 const pipeline = promisify(pipelineCb);
 
 /**
  * Wraps a array of Readable objects into a tree response reader.
  */
-export class ReadableArrayResponse implements ReadTreeResponse {
+export class ReadableArrayResponse implements UrlReaderReadTreeResponse {
   private read = false;
 
   constructor(
@@ -53,10 +52,10 @@ export class ReadableArrayResponse implements ReadTreeResponse {
     this.read = true;
   }
 
-  async files(): Promise<ReadTreeResponseFile[]> {
+  async files(): Promise<UrlReaderReadTreeResponseFile[]> {
     this.onlyOnce();
 
-    const files = Array<ReadTreeResponseFile>();
+    const files = Array<UrlReaderReadTreeResponseFile>();
 
     for (let i = 0; i < this.stream.length; i++) {
       if (!this.stream[i].path.endsWith('/')) {
@@ -87,7 +86,7 @@ export class ReadableArrayResponse implements ReadTreeResponse {
     }
   }
 
-  async dir(options?: ReadTreeResponseDirOptions): Promise<string> {
+  async dir(options?: UrlReaderReadTreeResponseDirOptions): Promise<string> {
     this.onlyOnce();
 
     const dir =
