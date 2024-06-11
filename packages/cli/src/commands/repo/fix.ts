@@ -302,11 +302,13 @@ export function fixPluginId(pkg: FixablePackage) {
     );
   }
 
-  pkg.packageJson.backstage = {
-    ...pkg.packageJson.backstage,
-    pluginId: guessedPluginId,
-  };
-  pkg.changed = true;
+  if (guessedPluginId) {
+    pkg.packageJson.backstage = {
+      ...pkg.packageJson.backstage,
+      pluginId: guessedPluginId,
+    };
+    pkg.changed = true;
+  }
 }
 
 const backendPluginPackageNameByPluginId = new Map(
