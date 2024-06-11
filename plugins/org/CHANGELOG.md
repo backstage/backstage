@@ -1,5 +1,19 @@
 # @backstage/plugin-org
 
+## 0.6.26-next.2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.2
+  - @backstage/plugin-catalog-common@1.0.24-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.2
+  - @backstage/frontend-plugin-api@0.6.6-next.2
+  - @backstage/core-compat-api@0.2.6-next.2
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3-next.0
+
 ## 0.6.26-next.1
 
 ### Patch Changes

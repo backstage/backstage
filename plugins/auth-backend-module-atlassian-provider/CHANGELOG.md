@@ -1,5 +1,18 @@
 # @backstage/plugin-auth-backend-module-atlassian-provider
 
+## 0.2.0-next.2
+
+### Minor Changes
+
+- 8efc6cf: **BREAKING**: The `scope` and `scopes` config options have been removed and replaced by the standard `additionalScopes` config. In addition, the `offline_access`, `read:jira-work`, and `read:jira-user` scopes have been set to required and will always be present.
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+
 ## 0.1.11-next.1
 
 ### Patch Changes

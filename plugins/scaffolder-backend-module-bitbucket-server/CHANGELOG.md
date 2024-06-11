@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-server
 
+## 0.1.9-next.2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/plugin-scaffolder-node@0.4.5-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.9-next.1
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-notifications
 
+## 0.2.2-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.2
+  - @backstage/plugin-notifications-common@0.0.4-next.0
+  - @backstage/plugin-signals-react@0.0.4-next.1
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6-next.0
+  - @backstage/types@1.1.1
+
 ## 0.2.2-next.2
 
 ### Patch Changes

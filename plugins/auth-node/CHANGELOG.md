@@ -1,5 +1,29 @@
 # @backstage/plugin-auth-node
 
+## 0.4.14-next.3
+
+### Patch Changes
+
+- 798ec37: Updated scope management for OAuth providers, where the `createOAuthAuthenticator` now accepts a new collection of `scopes` options:
+
+  - `scopes.persist` - Whether scopes should be persisted, replaces the `shouldPersistScopes` option.
+  - `scopes.required` - A list of required scopes that will always be requested.
+  - `scopes.transform` - A function that can be used to transform the scopes before they are requested.
+
+  The `createOAuthProviderFactory` has also received a new `additionalScopes` option, and will also read `additionalScopes` from the auth provider configuration. Both of these can be used to add additional scopes that should always be requested.
+
+  A significant change under the hood that this new scope management brings is that providers that persist scopes will now always merge the already granted scopes with the requested ones. The previous behavior was that the full authorization flow would not include existing scopes, while the refresh flow would only include the existing scopes.
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.14-next.2
 
 ### Patch Changes

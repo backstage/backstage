@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-gitlab-org
 
+## 0.0.2-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-catalog-backend-module-gitlab@0.3.18-next.3
+  - @backstage/plugin-catalog-node@1.12.1-next.2
+  - @backstage/plugin-events-node@0.3.5-next.2
+  - @backstage/backend-common@0.23.0-next.3
+
 ## 0.0.2-next.2
 
 ### Patch Changes
