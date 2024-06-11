@@ -159,6 +159,7 @@ describe('publish:azure', () => {
   it('should throw if there is no remoteUrl returned', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: null,
+      webUrl: 'http://google.com',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     }));
     await expect(
@@ -174,6 +175,7 @@ describe('publish:azure', () => {
   it('should throw if there is no repositoryId returned', async () => {
     mockGitClient.createRepository.mockImplementation(() => ({
       remoteUrl: 'http://google.com',
+      webUrl: 'http://google.com',
       id: null,
     }));
     await expect(
@@ -184,6 +186,22 @@ describe('publish:azure', () => {
         },
       }),
     ).rejects.toThrow(/No Id returned/);
+  });
+
+  it('should throw if there is no repoContentsUrl returned', async () => {
+    mockGitClient.createRepository.mockImplementation(() => ({
+      remoteUrl: 'http://google.com',
+      webUrl: null,
+      id: '709e891c-dee7-4f91-b963-534713c0737f',
+    }));
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          repoUrl: 'dev.azure.com?repo=bob&owner=owner&organization=org',
+        },
+      }),
+    ).rejects.toThrow(/No web URL returned/);
   });
 
   it('should call the azureApis with the correct values', async () => {
