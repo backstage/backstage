@@ -32,10 +32,7 @@ import fs from 'fs-extra';
 import path from 'path';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
-import {
-  GITILES_BASE_URL_DEPRECATION_MESSSAGE,
-  GerritUrlReader,
-} from './GerritUrlReader';
+import { GerritUrlReader } from './GerritUrlReader';
 import getRawBody from 'raw-body';
 
 const mockDir = createMockDirectory({ mockOsTmpDir: true });
@@ -61,11 +58,11 @@ const gerritProcessor = new GerritUrlReader(
     readGerritIntegrationConfig(
       new ConfigReader({
         host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gitiles',
       }),
     ),
   ),
   { treeResponseFactory },
-  '/tmp',
 );
 
 // Gerrit processor with a gitilesBaseUrl configured.
@@ -80,7 +77,6 @@ const gerritProcessorWithGitiles = new GerritUrlReader(
     ),
   ),
   { treeResponseFactory },
-  '/tmp',
 );
 
 const createReader = (config: JsonObject): UrlReaderPredicateTuple[] => {
@@ -112,7 +108,12 @@ describe.skip('GerritUrlReader', () => {
     it('creates a reader.', () => {
       const readers = createReader({
         integrations: {
-          gerrit: [{ host: 'gerrit.com' }],
+          gerrit: [
+            {
+              host: 'gerrit.com',
+              gitilesBaseUrl: 'https://gerrit.com/gitiles',
+            },
+          ],
         },
       });
       expect(readers).toHaveLength(1);
@@ -126,33 +127,12 @@ describe.skip('GerritUrlReader', () => {
     });
   });
 
-  describe('handle optional gitilesBaseUrl deprecation', () => {
-    it('should throw if gitilesBaseUrl is not set.', () => {
-      process.env = env;
-      expect(() =>
-        createReader({
-          integrations: {
-            gerrit: [{ host: 'gerrit.com' }],
-          },
-        }),
-      ).toThrow(GITILES_BASE_URL_DEPRECATION_MESSSAGE);
-    });
-    it('should not throw if gitilesBaseUrl requirement is overridden.', () => {
-      process.env = { ...env, DISABLE_GERRIT_GITILES_REQUIREMENT: '1' };
-      expect(() =>
-        createReader({
-          integrations: {
-            gerrit: [{ host: 'gerrit.com' }],
-          },
-        }),
-      ).not.toThrow();
-    });
-  });
-
   describe('predicates without Gitiles', () => {
     const readers = createReader({
       integrations: {
-        gerrit: [{ host: 'gerrit.com' }],
+        gerrit: [
+          { host: 'gerrit.com', gitilesBaseUrl: 'https://gerrit.com/gitiles' },
+        ],
       },
     });
     const predicate = readers[0].predicate;
@@ -354,29 +334,6 @@ describe.skip('GerritUrlReader', () => {
       expect(cloneMock).not.toHaveBeenCalled();
     });
 
-    it('reads the wanted files correctly using git clone.', async () => {
-      worker.use(
-        rest.get(branchAPIUrl, (_, res, ctx) => {
-          return res(ctx.status(200), ctx.body(branchAPIresponse));
-        }),
-      );
-
-      const response = await gerritProcessor.readTree(treeUrl);
-
-      expect(response.etag).toBe(etag);
-
-      const files = await response.files();
-      expect(files.length).toBe(2);
-
-      const docsYaml = await files[0].content();
-      expect(docsYaml.toString()).toBe(mkdocsContent);
-
-      const mdFile = await files[1].content();
-      expect(mdFile.toString()).toBe(mdContent);
-
-      expect(cloneMock).toHaveBeenCalled();
-    });
-
     it('throws NotModifiedError for matching etags.', async () => {
       worker.use(
         rest.get(branchAPIUrl, (_, res, ctx) => {
@@ -431,26 +388,6 @@ describe.skip('GerritUrlReader', () => {
       expect(mdFile.toString()).toBe('# Test\n');
 
       expect(cloneMock).not.toHaveBeenCalled();
-    });
-
-    it('should returns wanted files with a subpath using git clone', async () => {
-      worker.use(
-        rest.get(branchAPIUrl, (_, res, ctx) => {
-          return res(ctx.status(200), ctx.body(branchAPIresponse));
-        }),
-      );
-
-      const response = await gerritProcessor.readTree(`${treeUrl}/docs`);
-
-      expect(response.etag).toBe(etag);
-
-      const files = await response.files();
-      expect(files.length).toBe(1);
-
-      const mdFile = await files[0].content();
-      expect(mdFile.toString()).toBe(mdContent);
-
-      expect(cloneMock).toHaveBeenCalled();
     });
   });
 });

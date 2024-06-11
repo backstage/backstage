@@ -23,20 +23,13 @@ import {
   UrlReaderSearchResponse,
 } from '@backstage/backend-plugin-api';
 import { Base64Decode } from 'base64-stream';
-import concatStream from 'concat-stream';
-import fs from 'fs-extra';
 import fetch, { Response } from 'node-fetch';
-import os from 'os';
-import { join as joinPath } from 'path';
-import { Readable, pipeline as pipelineCb } from 'stream';
-import tar from 'tar';
-import { promisify } from 'util';
+import { Readable } from 'stream';
 import {
   GerritIntegration,
   ScmIntegrations,
   buildGerritGitilesArchiveUrl,
   getGerritBranchApiUrl,
-  getGerritCloneRepoUrl,
   getGerritFileContentsApiUrl,
   getGerritRequestOptions,
   parseGerritGitilesUrl,
@@ -44,18 +37,6 @@ import {
 } from '@backstage/integration';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import { ReadTreeResponseFactory, ReaderFactory } from './types';
-import { Git } from './git';
-
-const pipeline = promisify(pipelineCb);
-
-export const GITILES_BASE_URL_DEPRECATION_MESSSAGE = `A gitilesBaseUrl must be provided \
-for the gerrit integration to work. You can disable this check by setting \
-DISABLE_GERRIT_GITILES_REQUIREMENT=1 but this will be removed in a future release. If you \
-are not able to use the gitiles gerrit plugin, please open an issue towards \
-https://github.com/backstage/backstage`;
-
-const createTemporaryDirectory = async (workDir: string): Promise<string> =>
-  await fs.mkdtemp(joinPath(workDir, '/gerrit-clone-'));
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files in Gerrit.
@@ -83,20 +64,8 @@ export class GerritUrlReader implements UrlReaderService {
     if (!integrations.gerrit) {
       return [];
     }
-    const workDir =
-      config.getOptionalString('backend.workingDirectory') ?? os.tmpdir();
     return integrations.gerrit.list().map(integration => {
-      if (
-        integration.config.gitilesBaseUrl === integration.config.baseUrl &&
-        process.env.DISABLE_GERRIT_GITILES_REQUIREMENT === undefined
-      ) {
-        throw new Error(GITILES_BASE_URL_DEPRECATION_MESSSAGE);
-      }
-      const reader = new GerritUrlReader(
-        integration,
-        { treeResponseFactory },
-        workDir,
-      );
+      const reader = new GerritUrlReader(integration, { treeResponseFactory });
       const predicate = (url: URL) => {
         const gitilesUrl = new URL(integration.config.gitilesBaseUrl!);
         // If gitilesUrl is not specified it will default to
@@ -110,7 +79,6 @@ export class GerritUrlReader implements UrlReaderService {
   constructor(
     private readonly integration: GerritIntegration,
     private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-    private readonly workDir: string,
   ) {}
 
   async read(url: string): Promise<Buffer> {
@@ -194,12 +162,7 @@ export class GerritUrlReader implements UrlReaderService {
       throw new NotModifiedError();
     }
 
-    if (
-      this.integration.config.gitilesBaseUrl !== this.integration.config.baseUrl
-    ) {
-      return this.readTreeFromGitiles(url, branchInfo.revision, options);
-    }
-    return this.readTreeFromGitClone(url, branchInfo.revision, options);
+    return this.readTreeFromGitiles(url, branchInfo.revision, options);
   }
 
   async search(): Promise<UrlReaderSearchResponse> {
@@ -209,49 +172,6 @@ export class GerritUrlReader implements UrlReaderService {
   toString() {
     const { host, password } = this.integration.config;
     return `gerrit{host=${host},authed=${Boolean(password)}}`;
-  }
-
-  private async readTreeFromGitClone(
-    url: string,
-    revision: string,
-    options?: UrlReaderReadTreeOptions,
-  ) {
-    const { filePath } = parseGerritGitilesUrl(this.integration.config, url);
-
-    const git = Git.fromAuth({
-      username: this.integration.config.username,
-      password: this.integration.config.password,
-    });
-    const tempDir = await createTemporaryDirectory(this.workDir);
-    const cloneUrl = getGerritCloneRepoUrl(this.integration.config, url);
-    try {
-      // The "fromTarArchive" function will strip the top level directory so
-      // an additional directory level is created when we clone.
-      await git.clone({
-        url: cloneUrl,
-        dir: joinPath(tempDir, 'repo'),
-        ref: revision,
-        depth: 1,
-      });
-
-      const data = await new Promise<Buffer>(async resolve => {
-        await pipeline(
-          tar.create({ cwd: tempDir }, ['']),
-          concatStream(resolve),
-        );
-      });
-      const tarArchive = Readable.from(data);
-      return await this.deps.treeResponseFactory.fromTarArchive({
-        stream: tarArchive,
-        subpath: filePath === '/' ? undefined : filePath,
-        etag: revision,
-        filter: options?.filter,
-      });
-    } catch (error) {
-      throw new Error(`Could not clone ${cloneUrl}: ${error}`);
-    } finally {
-      await fs.rm(tempDir, { recursive: true, force: true });
-    }
   }
 
   private async readTreeFromGitiles(

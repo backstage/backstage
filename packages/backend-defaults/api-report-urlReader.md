@@ -217,7 +217,6 @@ export class GerritUrlReader implements UrlReaderService {
     deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
-    workDir: string,
   );
   // (undocumented)
   static factory: ReaderFactory;

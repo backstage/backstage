@@ -42,6 +42,7 @@ describe('publish:gerrit', () => {
       gerrit: [
         {
           host: 'gerrithost.org',
+          gitilesBaseUrl: 'https://gerrithost.org/gitiles',
           username: 'gerrituser',
           password: 'usertoken',
         },
@@ -133,7 +134,7 @@ describe('publish:gerrit', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gerrithost.org/repo/+/refs/heads/master',
+      'https://gerrithost.org/gitiles/repo/+/refs/heads/master',
     );
   });
 
@@ -184,7 +185,7 @@ describe('publish:gerrit', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gerrithost.org/repo/+/refs/heads/master',
+      'https://gerrithost.org/gitiles/repo/+/refs/heads/master',
     );
   });
 
@@ -235,7 +236,7 @@ describe('publish:gerrit', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gerrithost.org/repo/+/refs/heads/master',
+      'https://gerrithost.org/gitiles/repo/+/refs/heads/master',
     );
   });
 
@@ -286,7 +287,7 @@ describe('publish:gerrit', () => {
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gerrithost.org/repo/+/refs/heads/main',
+      'https://gerrithost.org/gitiles/repo/+/refs/heads/main',
     );
   });
 
