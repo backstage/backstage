@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-export { oidcProxyAuthenticator } from './authenticator';
 export { authModuleOidcProxyProvider as default } from './module';
 export { oidcProxySignInResolvers } from './resolvers';
 export { type OidcProxyResult, type IDTokenInfo } from './types';
