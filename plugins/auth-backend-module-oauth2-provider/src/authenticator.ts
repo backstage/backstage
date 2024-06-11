@@ -31,8 +31,13 @@ export const oauth2Authenticator = createOAuthAuthenticator({
     const clientSecret = config.getString('clientSecret');
     const authorizationUrl = config.getString('authorizationUrl');
     const tokenUrl = config.getString('tokenUrl');
-    const scope = config.getOptionalString('scope');
     const includeBasicAuth = config.getOptionalBoolean('includeBasicAuth');
+
+    if (config.has('scope')) {
+      throw new Error(
+        'The oauth2 provider no longer supports the "scope" configuration option. Please use the "additionalScopes" option instead.',
+      );
+    }
 
     return PassportOAuthAuthenticatorHelper.from(
       new Oauth2Strategy(
@@ -43,7 +48,6 @@ export const oauth2Authenticator = createOAuthAuthenticator({
           authorizationURL: authorizationUrl,
           tokenURL: tokenUrl,
           passReqToCallback: false,
-          scope: scope,
           customHeaders: includeBasicAuth
             ? {
                 Authorization: `Basic ${encodeClientCredentials(

@@ -29,7 +29,7 @@ export interface Config {
           callbackUrl?: string;
           tokenEndpointAuthMethod?: string;
           tokenSignedResponseAlg?: string;
-          scope?: string;
+          additionalScopes?: string | string[];
           prompt?: string;
         };
       };

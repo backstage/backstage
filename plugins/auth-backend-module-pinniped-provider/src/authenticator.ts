@@ -127,7 +127,6 @@ export class PinnipedStrategyCache {
       client_secret: this.config.getString('clientSecret'),
       redirect_uris: [this.callbackUrl],
       response_types: ['code'],
-      scope: this.config.getOptionalString('scope') || '',
       id_token_signed_response_alg: 'ES256',
     });
     const providerStrategy = new OidcStrategy(
@@ -154,7 +153,20 @@ export class PinnipedStrategyCache {
 /** @public */
 export const pinnipedAuthenticator = createOAuthAuthenticator({
   defaultProfileTransform: async (_r, _c) => ({ profile: {} }),
+  scopes: {
+    required: [
+      'openid',
+      'pinniped:request-audience',
+      'username',
+      'offline_access',
+    ],
+  },
   initialize({ callbackUrl, config }) {
+    if (config.has('scope')) {
+      throw new Error(
+        'The pinniped provider no longer supports the "scope" configuration option. Please use the "additionalScopes" option instead.',
+      );
+    }
     return new PinnipedStrategyCache(callbackUrl, config);
   },
   async start(input, ctx): Promise<{ url: string; status?: number }> {
@@ -163,9 +175,7 @@ export const pinnipedAuthenticator = createOAuthAuthenticator({
     const decodedState = decodeOAuthState(input.state);
     const state = { ...decodedState, audience: stringifiedAudience };
     const options: Record<string, string> = {
-      scope:
-        input.scope ||
-        'openid pinniped:request-audience username offline_access',
+      scope: input.scope,
       state: encodeOAuthState(state),
     };
 
