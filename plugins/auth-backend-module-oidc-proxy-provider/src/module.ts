@@ -14,35 +14,49 @@
  * limitations under the License.
  */
 
-import { createBackendModule } from '@backstage/backend-plugin-api';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+
 import {
   authProvidersExtensionPoint,
   commonSignInResolvers,
   createProxyAuthProviderFactory,
 } from '@backstage/plugin-auth-node';
-import { oidcProxyAuthenticator } from './authenticator';
+import { createHolosProxyAuthenticator } from './authenticator';
 import { oidcProxySignInResolvers } from './resolvers';
 
-/** @public */
+/**
+ * authModuleOidcProxyProvider implements oidc id token authentication against a
+ * header set by an identity aware proxy.  The issuer and audience config values
+ * are required.  The optional oidcIdTokenHeader config setting represents the
+ * http request header with the id token value.  The x-oidc-id-token header is
+ * used by default if oidcIdTokenHeader is undefined.
+ *
+ * @public
+ */
 export const authModuleOidcProxyProvider = createBackendModule({
   pluginId: 'auth',
   moduleId: 'oidc-proxy-provider',
   register(reg) {
     reg.registerInit({
       deps: {
+        logger: coreServices.logger,
         providers: authProvidersExtensionPoint,
       },
-      async init({ providers }) {
+      async init({ logger, providers }) {
         providers.registerProvider({
           providerId: 'oidcProxy',
           factory: createProxyAuthProviderFactory({
-            authenticator: oidcProxyAuthenticator,
+            authenticator: createHolosProxyAuthenticator(logger),
             signInResolverFactories: {
               ...oidcProxySignInResolvers,
               ...commonSignInResolvers,
             },
           }),
         });
+        logger.info('auth backend-module holos-proxy-provider initialized');
       },
     });
   },

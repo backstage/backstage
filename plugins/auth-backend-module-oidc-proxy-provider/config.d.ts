@@ -23,17 +23,17 @@ export interface Config {
       oidcProxy?: {
         [authEnv: string]: {
           /**
-           * The issuer (iss claim) to use when validating incoming ID tokens.
+           * issuer represents the iss claim value to assert validating an id token.
            */
           issuer: string;
 
           /**
-           * The audience (aud claim) to use when validating incoming ID tokens.
+           * audience represents the aud claim value to assert when validating an id token.
            */
           audience: string;
 
           /**
-           * The name of the header to read the ID token from, defaults to `'x-oidc-id-token'`.
+           * idTokenHeader represents the header to read the id token from.  Defaults to `'x-oidc-id-token'`.
            */
           idTokenHeader?: string;
         };

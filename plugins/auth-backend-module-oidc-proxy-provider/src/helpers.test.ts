@@ -15,6 +15,7 @@
  */
 
 import {
+  JWK,
   JWTPayload,
   KeyLike,
   SignJWT,
@@ -23,6 +24,7 @@ import {
   importJWK,
 } from 'jose';
 import { createTokenValidator } from './helpers';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const issuerURL = 'https://login.example.com';
 const projectAudience = '111111111111111111';
@@ -36,6 +38,8 @@ async function createJwks() {
   const jwk = await exportJWK(publicKey);
   return { keys: [jwk], privateKey };
 }
+
+const mockLogger = mockServices.logger.mock();
 
 // issueIdToken issues a valid oidc id token signed by privateKey.
 async function issueIdToken(
@@ -83,18 +87,31 @@ beforeEach(() => {
 });
 
 describe('helpers', () => {
-  let jwks: KeyLike | Uint8Array;
+  let jwks: (KeyLike | Uint8Array)[];
   let privateKey: KeyLike;
 
   beforeAll(async () => {
     const jwksData = await createJwks();
     privateKey = jwksData.privateKey;
-    jwks = await importJWK(jwksData.keys[0]);
+    jwks = await Promise.all(
+      jwksData.keys.map(async (jwk: JWK) => {
+        try {
+          return await importJWK(jwk);
+        } catch (error) {
+          throw new Error(`could not import jwk: ${error}`);
+        }
+      }),
+    );
   });
 
   describe('createTokenValidator', () => {
     it('runs the happy path', async () => {
-      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const validator = createTokenValidator(
+        mockLogger,
+        issuerURL,
+        projectAudience,
+        jwks,
+      );
       const idToken = await issueIdToken(privateKey);
       await expect(validator(idToken)).resolves.toMatchObject({
         iss: issuerURL,
@@ -104,7 +121,12 @@ describe('helpers', () => {
     });
 
     it('rejects invalid signature', async () => {
-      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const validator = createTokenValidator(
+        mockLogger,
+        issuerURL,
+        projectAudience,
+        jwks,
+      );
       // Issue a token signed by another jwks.
       const jwksData = await createJwks();
       const otherIdToken = await issueIdToken(jwksData.privateKey);
@@ -114,94 +136,134 @@ describe('helpers', () => {
     });
 
     it('rejects invalid token', async () => {
-      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const validator = createTokenValidator(
+        mockLogger,
+        issuerURL,
+        projectAudience,
+        jwks,
+      );
 
       await expect(validator('{}')).rejects.toThrow(
-        'could not validate id token: Invalid Compact JWS',
+        'could not validate id token: JWSInvalid: Invalid Compact JWS',
       );
     });
 
     it('rejects missing iss', async () => {
-      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const validator = createTokenValidator(
+        mockLogger,
+        issuerURL,
+        projectAudience,
+        jwks,
+      );
       const idToken = await issueIdToken(privateKey, payload => {
         delete payload.iss;
         return payload;
       });
 
       await expect(validator(idToken)).rejects.toThrow(
-        'could not validate id token: missing required "iss" claim',
+        'could not validate id token: JWTClaimValidationFailed: missing required "iss" claim',
       );
     });
 
     it('rejects missing sub', async () => {
-      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const validator = createTokenValidator(
+        mockLogger,
+        issuerURL,
+        projectAudience,
+        jwks,
+      );
       const idToken = await issueIdToken(privateKey, payload => {
         delete payload.sub;
         return payload;
       });
 
       await expect(validator(idToken)).rejects.toThrow(
-        'could not validate id token: missing sub claim',
+        'could not validate id token: JWTClaimValidationFailed: missing required "sub" claim',
       );
     });
 
     it('rejects missing email', async () => {
-      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const validator = createTokenValidator(
+        mockLogger,
+        issuerURL,
+        projectAudience,
+        jwks,
+      );
       const idToken = await issueIdToken(privateKey, payload => {
         delete payload.email;
         return payload;
       });
 
       await expect(validator(idToken)).rejects.toThrow(
-        'could not validate id token: missing email claim',
+        'could not validate id token: JWTClaimValidationFailed: missing required "email" claim',
       );
     });
 
     it('rejects missing aud', async () => {
-      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const validator = createTokenValidator(
+        mockLogger,
+        issuerURL,
+        projectAudience,
+        jwks,
+      );
       const idToken = await issueIdToken(privateKey, payload => {
         delete payload.aud;
         return payload;
       });
 
       await expect(validator(idToken)).rejects.toThrow(
-        'could not validate id token: missing required "aud" claim',
+        'could not validate id token: JWTClaimValidationFailed: missing required "aud" claim',
       );
     });
 
     it('rejects invalid iss', async () => {
-      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const validator = createTokenValidator(
+        mockLogger,
+        issuerURL,
+        projectAudience,
+        jwks,
+      );
       const idToken = await issueIdToken(privateKey, payload => {
         payload.iss = 'https://other.example.com';
         return payload;
       });
 
       await expect(validator(idToken)).rejects.toThrow(
-        'could not validate id token: unexpected "iss" claim value',
+        'could not validate id token: JWTClaimValidationFailed: unexpected "iss" claim value',
       );
     });
 
     it('rejects invalid aud', async () => {
-      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const validator = createTokenValidator(
+        mockLogger,
+        issuerURL,
+        projectAudience,
+        jwks,
+      );
       const idToken = await issueIdToken(privateKey, payload => {
         payload.aud = ['some-other-service'];
         return payload;
       });
 
       await expect(validator(idToken)).rejects.toThrow(
-        'could not validate id token: unexpected "aud" claim value',
+        'could not validate id token: JWTClaimValidationFailed: unexpected "aud" claim value',
       );
     });
 
     it('rejects expired token', async () => {
-      const validator = createTokenValidator(issuerURL, projectAudience, jwks);
+      const validator = createTokenValidator(
+        mockLogger,
+        issuerURL,
+        projectAudience,
+        jwks,
+      );
       const idToken = await issueIdToken(privateKey, payload => {
         payload.exp = 1581033600;
         return payload;
       });
 
       await expect(validator(idToken)).rejects.toThrow(
-        'could not validate id token: "exp" claim timestamp check failed',
+        'could not validate id token: JWTExpired: "exp" claim timestamp check failed',
       );
     });
   });

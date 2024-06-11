@@ -16,11 +16,14 @@
 
 import { mockServices } from '@backstage/backend-test-utils';
 import { Request } from 'express';
-import { oidcProxyAuthenticator } from './authenticator';
+import { createHolosProxyAuthenticator } from './authenticator';
+
+const mockLogger = mockServices.logger.mock();
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
+
 jest.mock('./helpers', () => ({
   createTokenValidator() {
     return async () => ({ sub: 's', email: 'e' });
@@ -29,7 +32,8 @@ jest.mock('./helpers', () => ({
 
 describe('OidcProxyProvider', () => {
   it('should find default id token header', async () => {
-    const ctx = oidcProxyAuthenticator.initialize({
+    const authenticator = createHolosProxyAuthenticator(mockLogger);
+    const ctx = authenticator.initialize({
       config: mockServices.rootConfig({
         data: {
           issuer: 'https://login.example.com',
@@ -38,7 +42,7 @@ describe('OidcProxyProvider', () => {
       }),
     });
     await expect(
-      oidcProxyAuthenticator.authenticate(
+      authenticator.authenticate(
         {
           req: {
             header(name: string) {
@@ -55,8 +59,9 @@ describe('OidcProxyProvider', () => {
   });
 
   it('should find custom id token header', async () => {
+    const authenticator = createHolosProxyAuthenticator(mockLogger);
     const oidcIdTokenHeader = 'x-custom-header';
-    const ctx = oidcProxyAuthenticator.initialize({
+    const ctx = authenticator.initialize({
       config: mockServices.rootConfig({
         data: {
           issuer: 'https://login.example.com',
@@ -66,7 +71,7 @@ describe('OidcProxyProvider', () => {
       }),
     });
     await expect(
-      oidcProxyAuthenticator.authenticate(
+      authenticator.authenticate(
         {
           req: {
             header(name: string) {
@@ -83,7 +88,8 @@ describe('OidcProxyProvider', () => {
   });
 
   it('should throw if header is missing', async () => {
-    const ctx = oidcProxyAuthenticator.initialize({
+    const authenticator = createHolosProxyAuthenticator(mockLogger);
+    const ctx = authenticator.initialize({
       config: mockServices.rootConfig({
         data: {
           issuer: 'https://login.example.com',
@@ -92,7 +98,7 @@ describe('OidcProxyProvider', () => {
       }),
     });
     await expect(
-      oidcProxyAuthenticator.authenticate(
+      authenticator.authenticate(
         {
           req: {
             header(_name: string) {

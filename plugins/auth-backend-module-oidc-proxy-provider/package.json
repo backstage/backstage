@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-auth-backend-module-oidc-proxy-provider",
-  "version": "0.2.14-next.1",
+  "version": "0.1.0",
   "description": "A Holos Platform auth provider module for the Backstage auth backend, generally useful with OIDC ID tokens set in HTTP request headers by external auth proxies.",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "auth",
+    "pluginPackage": "@backstage/plugin-auth-backend"
   },
   "publishConfig": {
     "access": "public",
@@ -38,6 +40,7 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-model": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/types": "workspace:^",

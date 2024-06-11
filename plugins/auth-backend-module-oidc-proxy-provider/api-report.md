@@ -5,10 +5,9 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { JsonValue } from '@backstage/types';
-import { ProxyAuthenticator } from '@backstage/plugin-auth-node';
 import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
-// @public (undocumented)
+// @public
 const authModuleOidcProxyProvider: () => BackendFeature;
 export default authModuleOidcProxyProvider;
 
@@ -21,20 +20,6 @@ export type IDTokenInfo = {
   [key: string]: JsonValue;
 };
 
-// @public (undocumented)
-export const oidcProxyAuthenticator: ProxyAuthenticator<
-  {
-    oidcIdTokenHeader: string;
-    tokenValidator: (token: string) => Promise<IDTokenInfo>;
-  },
-  {
-    idToken: IDTokenInfo;
-  },
-  {
-    idToken: IDTokenInfo;
-  }
->;
-
 // @public
 export type OidcProxyResult = {
   idToken: IDTokenInfo;
@@ -42,11 +27,8 @@ export type OidcProxyResult = {
 
 // @public
 export namespace oidcProxySignInResolvers {
-  const emailMatchingUserEntityAnnotation: SignInResolverFactory<
-    OidcProxyResult,
-    unknown
-  >;
-  const idMatchingUserEntityAnnotation: SignInResolverFactory<
+  const signInWithoutCatalogUser: SignInResolverFactory<unknown, unknown>;
+  const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     OidcProxyResult,
     unknown
   >;
