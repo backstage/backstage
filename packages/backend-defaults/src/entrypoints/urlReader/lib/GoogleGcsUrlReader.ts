@@ -70,7 +70,7 @@ export class GoogleGcsUrlReader implements UrlReaderService {
         'googleGcs credentials not found in config. Using default credentials provider.',
       );
       storage = new GoogleCloud.Storage({
-        userAgent: `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
+        userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
       });
     } else {
       storage = new GoogleCloud.Storage({
@@ -78,7 +78,7 @@ export class GoogleGcsUrlReader implements UrlReaderService {
           client_email: gcsConfig.clientEmail || undefined,
           private_key: gcsConfig.privateKey || undefined,
         },
-        userAgent: `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
+        userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
       });
     }
     const reader = new GoogleGcsUrlReader(gcsConfig, storage);

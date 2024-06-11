@@ -76,7 +76,7 @@ describe('GcsUrlReader', () => {
   });
   it('check if userAgent has been called with this key value', async () => {
     const getStorage: any = {
-      userAgent: `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
+      userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
     };
     jest.mock('@google-cloud/storage', () => {
       return {
@@ -85,7 +85,7 @@ describe('GcsUrlReader', () => {
     });
     const getUserAgent = getStorage.userAgent.toString();
     expect(getUserAgent).toBe(
-      `backstage/backend-common.GoogleGcsUrlReader/${packageinfo.version}`,
+      `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
     );
   });
 
