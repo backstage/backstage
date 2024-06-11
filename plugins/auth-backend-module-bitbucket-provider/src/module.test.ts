@@ -67,6 +67,7 @@ describe('authModuleBitbucketProvider', () => {
       client_id: 'my-client-id',
       redirect_uri: `http://localhost:${server.port()}/api/auth/bitbucket/handler/frame`,
       state: expect.any(String),
+      scope: 'account',
     });
 
     expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({

@@ -19,7 +19,6 @@ export default authModuleOidcProvider;
 // @public (undocumented)
 export const oidcAuthenticator: OAuthAuthenticator<
   {
-    initializedScope: string | undefined;
     initializedPrompt: string | undefined;
     promise: Promise<{
       helper: PassportOAuthAuthenticatorHelper;

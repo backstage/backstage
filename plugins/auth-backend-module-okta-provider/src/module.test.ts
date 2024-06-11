@@ -21,9 +21,6 @@ import { decodeOAuthState } from '@backstage/plugin-auth-node';
 
 describe('authModuleOktaProvider', () => {
   it('should start', async () => {
-    const defaultScopes = 'openid profile email';
-    const additionalScopes = 'groups phone';
-    const combinedScopes = `${defaultScopes} ${additionalScopes}`;
     const { server } = await startTestBackend({
       features: [
         import('@backstage/plugin-auth-backend'),
@@ -39,7 +36,7 @@ describe('authModuleOktaProvider', () => {
                   development: {
                     clientId: 'my-client-id',
                     clientSecret: 'my-client-secret',
-                    additionalScopes,
+                    additionalScopes: 'groups phone',
                   },
                 },
               },
@@ -68,7 +65,7 @@ describe('authModuleOktaProvider', () => {
     expect(startUrl.pathname).toBe('/oauth2/v1/authorize');
     expect(Object.fromEntries(startUrl.searchParams)).toEqual({
       response_type: 'code',
-      scope: combinedScopes,
+      scope: 'openid email profile offline_access groups phone',
       client_id: 'my-client-id',
       redirect_uri: `http://localhost:${server.port()}/api/auth/okta/handler/frame`,
       state: expect.any(String),
