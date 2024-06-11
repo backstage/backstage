@@ -57,7 +57,7 @@ describe('Harness code core', () => {
           'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/edit/refMain/~/all-apis.yaml',
         ),
       ).toEqual(
-        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repoName/files/refMain/~/all-apis.yaml',
+        'https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml',
       );
     });
   });
