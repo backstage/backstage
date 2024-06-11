@@ -129,8 +129,8 @@ FireHydrant
 Firekube
 Firestore
 Fiverr
-Flightcontrol
 flightcontrol
+Flightcontrol
 Francesco
 Frontside
 Gaurav
@@ -152,12 +152,13 @@ graphviz
 Hackathons
 haproxy
 hardcoded
-Harness
 harness
+Harness
 Helidon
 Henneke
 Heroku
 hoc
+Holos
 horizontalpodautoscalers
 Hostname
 hotspots
@@ -176,6 +177,7 @@ inlined
 inlinehilite
 integrator's
 interop
+Istio
 iterable
 JaCoCo
 JavaScript
@@ -334,10 +336,10 @@ retryable
 reusability
 Reusability
 roadmaps
-rollbar
-rollout
 Roboto
+rollbar
 Rollbar
+rollout
 Rollup
 routable
 Routable
@@ -353,6 +355,7 @@ sanitization
 scaffolded
 scaffolder
 Scaffolder
+scrollable
 scrollbar
 sdks
 seb
@@ -360,13 +363,14 @@ semlas
 semver
 serializable
 Serverless
+severities
 shoutout
 SIG
 SIGs
 siloed
 Sinon
-snackbars
 snackbar
+snackbars
 Snyk
 Sonarqube
 sourcemaps
@@ -480,5 +484,3 @@ zod
 Zolotusky
 zoomable
 zsh
-scrollable
-severities

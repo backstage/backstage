@@ -33,7 +33,6 @@ import { OAuth2ProxyResult as OAuth2ProxyResult_2 } from '@backstage/plugin-auth
 import { OAuthEnvironmentHandler as OAuthEnvironmentHandler_2 } from '@backstage/plugin-auth-node';
 import { OAuthState as OAuthState_2 } from '@backstage/plugin-auth-node';
 import { OidcAuthResult as OidcAuthResult_2 } from '@backstage/plugin-auth-backend-module-oidc-provider';
-import { OidcProxyResult } from '@backstage/plugin-auth-backend-module-oidc-proxy-provider';
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { prepareBackstageIdentityResponse as prepareBackstageIdentityResponse_2 } from '@backstage/plugin-auth-node';
@@ -457,19 +456,6 @@ export const providers: Readonly<{
     }) => AuthProviderFactory_2;
     resolvers: Readonly<cloudflareAccessSignInResolvers>;
   }>;
-  easyAuth: Readonly<{
-    create: (
-      options?:
-        | {
-            authHandler?: AuthHandler<AzureEasyAuthResult> | undefined;
-            signIn: {
-              resolver: SignInResolver_2<AzureEasyAuthResult>;
-            };
-          }
-        | undefined,
-    ) => AuthProviderFactory_2;
-    resolvers: never;
-  }>;
   gcpIap: Readonly<{
     create: (options: {
       authHandler?: AuthHandler<GcpIapResult_2> | undefined;
@@ -592,15 +578,6 @@ export const providers: Readonly<{
       emailMatchingUserEntityProfileEmail: () => SignInResolver_2<unknown>;
     }>;
   }>;
-  oidcProxy: Readonly<{
-    create: (options: {
-      authHandler?: AuthHandler<OidcProxyResult> | undefined;
-      signIn: {
-        resolver: SignInResolver_2<OidcProxyResult>;
-      };
-    }) => AuthProviderFactory_2;
-    resolvers: never;
-  }>;
   okta: Readonly<{
     create: (
       options?:
@@ -651,6 +628,19 @@ export const providers: Readonly<{
     resolvers: Readonly<{
       nameIdMatchingUserEntityName(): SignInResolver_2<SamlAuthResult>;
     }>;
+  }>;
+  easyAuth: Readonly<{
+    create: (
+      options?:
+        | {
+            authHandler?: AuthHandler<AzureEasyAuthResult> | undefined;
+            signIn: {
+              resolver: SignInResolver_2<AzureEasyAuthResult>;
+            };
+          }
+        | undefined,
+    ) => AuthProviderFactory_2;
+    resolvers: never;
   }>;
 }>;
 
