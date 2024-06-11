@@ -45,8 +45,14 @@ import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public
 export function createMockDirectory(
-  options?: MockDirectoryOptions,
+  options?: CreateMockDirectoryOptions,
 ): MockDirectory;
+
+// @public
+export interface CreateMockDirectoryOptions {
+  content?: MockDirectoryContent;
+  mockOsTmpDir?: boolean;
+}
 
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
@@ -136,11 +142,8 @@ export interface MockDirectoryContentOptions {
   shouldReadAsText?: boolean | ((path: string, buffer: Buffer) => boolean);
 }
 
-// @public
-export interface MockDirectoryOptions {
-  content?: MockDirectoryContent;
-  mockOsTmpDir?: boolean;
-}
+// @public @deprecated (undocumented)
+export type MockDirectoryOptions = CreateMockDirectoryOptions;
 
 // @public (undocumented)
 export namespace mockServices {
