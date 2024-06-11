@@ -1,5 +1,24 @@
 # @backstage/backend-common
 
+## 0.23.0-next.3
+
+### Patch Changes
+
+- b2ee7f3: Moved over all URL reader functionality from `@backstage/backend-common` to `@backstage/backend-defaults/urlReader`. Please update your imports.
+- 23ee9ab: Fix AWS CodeCommit integration by allowing to change the host
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/cli-common@0.1.14-next.0
+  - @backstage/backend-app-api@0.7.6-next.3
+  - @backstage/config-loader@1.8.1-next.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.23.0-next.2
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-home-react
 
+## 0.1.14-next.2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.2
+  - @backstage/core-plugin-api@1.9.3-next.0
+
 ## 0.1.14-next.1
 
 ### Patch Changes

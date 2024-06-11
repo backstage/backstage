@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.18.0-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/plugin-kubernetes-common@0.8.0-next.1
+  - @backstage/plugin-permission-common@0.7.14-next.0
+  - @backstage/plugin-kubernetes-node@0.1.13-next.3
+  - @backstage/plugin-permission-node@0.7.30-next.3
+  - @backstage/plugin-catalog-node@1.12.1-next.2
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.18.0-next.2
 
 ### Patch Changes

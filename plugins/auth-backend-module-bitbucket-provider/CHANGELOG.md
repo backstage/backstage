@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-bitbucket-provider
 
+## 0.1.2-next.2
+
+### Patch Changes
+
+- 8efc6cf: Added support for the new shared `additionalScopes` configuration. In addition, the `account` scope has been set to required and will always be present.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+
 ## 0.1.2-next.1
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @backstage/plugin-events-node
 
+## 0.3.5-next.2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+
 ## 0.3.5-next.1
 
 ### Patch Changes

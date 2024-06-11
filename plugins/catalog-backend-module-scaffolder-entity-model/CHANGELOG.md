@@ -1,5 +1,17 @@
 # @backstage/plugin-catalog-backend-module-scaffolder-entity-model
 
+## 0.1.17-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-scaffolder-common@1.5.3-next.1
+  - @backstage/plugin-catalog-common@1.0.24-next.0
+  - @backstage/plugin-catalog-node@1.12.1-next.2
+  - @backstage/catalog-model@1.5.0
+
 ## 0.1.17-next.2
 
 ### Patch Changes

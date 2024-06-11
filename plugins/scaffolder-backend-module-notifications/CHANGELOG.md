@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-notifications
 
+## 0.0.2-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-notifications-common@0.0.4-next.0
+  - @backstage/plugin-notifications-node@0.2.0-next.3
+  - @backstage/plugin-scaffolder-node@0.4.5-next.3
+  - @backstage/backend-common@0.23.0-next.3
+
 ## 0.0.2-next.2
 
 ### Patch Changes

@@ -1,5 +1,24 @@
 # @backstage/plugin-catalog-import
 
+## 0.12.0-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.2
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/plugin-catalog-common@1.0.24-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.2
+  - @backstage/integration-react@1.1.28-next.1
+  - @backstage/frontend-plugin-api@0.6.6-next.2
+  - @backstage/core-compat-api@0.2.6-next.2
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/errors@1.2.4
+
 ## 0.12.0-next.2
 
 ### Patch Changes

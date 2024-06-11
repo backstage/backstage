@@ -1,5 +1,17 @@
 # @backstage/repo-tools
 
+## 0.9.1-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-node@0.2.6-next.2
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/cli-common@0.1.14-next.0
+  - @backstage/config-loader@1.8.1-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+
 ## 0.9.1-next.2
 
 ### Patch Changes
