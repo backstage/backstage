@@ -38,10 +38,14 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
   ) {}
 
   public async cleanWorkspace(options: { taskId: string }): Promise<void> {
-    await this.storage
+    const file = this.storage
       .bucket(this.getGcpBucketName())
-      .file(options.taskId)
-      .delete();
+      .file(options.taskId);
+
+    const result = await file.exists();
+    if (result[0]) {
+      await file.delete();
+    }
   }
 
   public async serializeWorkspace(options: {
@@ -52,20 +56,19 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
       .bucket(this.getGcpBucketName())
       .file(options.taskId);
     const workspace = await serializeWorkspace(options.path);
-    fileCloud.save(
-      workspace,
-      {
+    try {
+      await fileCloud.save(workspace, {
         contentType: 'application/x-tar',
-      },
-      err => {
-        if (err) {
-          this.logger.error(
-            `An error occurred during uploading the workspace of task ${
-              options.taskId
-            } into GCP bucket ${this.getGcpBucketName()}`,
-          );
-        }
-      },
+      });
+    } catch (err) {
+      this.logger.error(
+        `An error occurred during uploading the workspace of task ${
+          options.taskId
+        } into GCP bucket ${this.getGcpBucketName()}`,
+      );
+    }
+    this.logger.info(
+      `Workspace for task ${options.taskId} has been serialized.`,
     );
   }
 
@@ -75,8 +78,11 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
   }): Promise<void> {
     const bucket = this.storage.bucket(this.getGcpBucketName());
     const file = bucket.file(options.taskId);
-    const workspace = getRawBody(file.createReadStream());
-    await restoreWorkspace(options.targetPath, await workspace);
+    const result = await file.exists();
+    if (result[0]) {
+      const workspace = getRawBody(file.createReadStream());
+      await restoreWorkspace(options.targetPath, await workspace);
+    }
   }
 
   private getGcpBucketName(): string {
