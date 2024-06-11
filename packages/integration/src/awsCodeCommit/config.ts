@@ -48,6 +48,11 @@ export type AwsCodeCommitIntegrationConfig = {
    * (Optional) External ID to use when assuming role
    */
   externalId?: string;
+
+  /**
+   * region to use for AWS (default: us-east-1)
+   */
+  region: string;
 };
 
 /**
@@ -64,7 +69,10 @@ export function readAwsCodeCommitIntegrationConfig(
   const secretAccessKey = config.getOptionalString('secretAccessKey')?.trim();
   const roleArn = config.getOptionalString('roleArn');
   const externalId = config.getOptionalString('externalId');
-  const host = AMAZON_AWS_CODECOMMIT_HOST;
+  const region = config.getString('region');
+  const host =
+    config.getOptionalString('host') ||
+    `${region}.${AMAZON_AWS_CODECOMMIT_HOST}`;
 
   return {
     host,
@@ -72,6 +80,7 @@ export function readAwsCodeCommitIntegrationConfig(
     secretAccessKey,
     roleArn,
     externalId,
+    region,
   };
 }
 
@@ -85,16 +94,5 @@ export function readAwsCodeCommitIntegrationConfig(
 export function readAwsCodeCommitIntegrationConfigs(
   configs: Config[],
 ): AwsCodeCommitIntegrationConfig[] {
-  // First read all the explicit integrations
-  const result = configs.map(readAwsCodeCommitIntegrationConfig);
-
-  // If no explicit console.aws.amazon.com integration was added, put one in the list as
-  // a convenience
-  if (!result.some(c => c.host === AMAZON_AWS_CODECOMMIT_HOST)) {
-    result.push({
-      host: AMAZON_AWS_CODECOMMIT_HOST,
-    });
-  }
-
-  return result;
+  return configs.map(readAwsCodeCommitIntegrationConfig);
 }

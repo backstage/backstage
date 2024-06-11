@@ -212,7 +212,7 @@ describe('AwsCodeCommitUrlReader', () => {
       integrations: {},
     });
 
-    expect(entries).toHaveLength(1);
+    expect(entries).toHaveLength(0);
   });
 
   it('creates a reader with credentials correctly configured', () => {
@@ -221,6 +221,7 @@ describe('AwsCodeCommitUrlReader', () => {
       host: AMAZON_AWS_CODECOMMIT_HOST,
       accessKeyId: 'fakekey',
       secretAccessKey: 'fakekey',
+      region: 'fakeregion',
     });
 
     const entries = createReader({
@@ -236,6 +237,7 @@ describe('AwsCodeCommitUrlReader', () => {
     const awsCodeCommitIntegrations = [];
     awsCodeCommitIntegrations.push({
       host: AMAZON_AWS_CODECOMMIT_HOST,
+      region: 'fakeregion',
     });
 
     const entries = createReader({
@@ -247,10 +249,32 @@ describe('AwsCodeCommitUrlReader', () => {
     expect(entries).toHaveLength(1);
   });
 
+  it('creates a reader without a region', () => {
+    const awsCodeCommitIntegrations: any[] = [];
+    awsCodeCommitIntegrations.push({
+      accessKeyId: 'fakekey',
+      secretAccessKey: 'fakekey',
+    });
+
+    expect(() => {
+      createReader({
+        integrations: {
+          awsCodeCommit: awsCodeCommitIntegrations,
+        },
+      });
+    }).toThrow(
+      "Missing required config value at 'integrations.awsCodeCommit[0].region' in 'mock-config'",
+    );
+  });
+
   describe('predicates', () => {
     const readers = createReader({
       integrations: {
-        awsCodeCommit: [{}],
+        awsCodeCommit: [
+          {
+            region: 'fakeregion',
+          },
+        ],
       },
     });
     const predicate = readers[0].predicate;
@@ -259,7 +283,7 @@ describe('AwsCodeCommitUrlReader', () => {
       expect(
         predicate(
           new URL(
-            'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo',
+            'https://fakeregion.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo',
           ),
         ),
       ).toBe(true);
@@ -269,10 +293,52 @@ describe('AwsCodeCommitUrlReader', () => {
       expect(
         predicate(
           new URL(
-            'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml?region=eu-west-1',
+            'https://fakeregion.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml?region=eu-west-1',
           ),
         ),
       ).toBe(true);
+    });
+
+    it('returns true for a url with the full path and the correct host when the host overrules the region', () => {
+      const predicateWithHost = createReader({
+        integrations: {
+          awsCodeCommit: [
+            {
+              host: 'fakehost',
+              region: 'fakeregion',
+            },
+          ],
+        },
+      })[0].predicate;
+
+      expect(
+        predicateWithHost(
+          new URL(
+            'https://fakehost/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml?region=eu-west-1',
+          ),
+        ),
+      ).toBe(true);
+    });
+
+    it('returns false for a url with the full path and the wrong host when the host overrules the region', () => {
+      const predicateWithHost = createReader({
+        integrations: {
+          awsCodeCommit: [
+            {
+              host: 'fakehost',
+              region: 'fakeregion',
+            },
+          ],
+        },
+      })[0].predicate;
+
+      expect(
+        predicateWithHost(
+          new URL(
+            'https://fakeregion.console.aws.amazon.com/codesuite/codecommit/repositories/my-repo/browse/--/catalog-info.yaml?region=eu-west-1',
+          ),
+        ),
+      ).toBe(false);
     });
 
     it('returns false for an incorrect host', () => {
@@ -304,6 +370,7 @@ describe('AwsCodeCommitUrlReader', () => {
             host: 'amazonaws.com',
             accessKeyId: 'fake-access-key',
             secretAccessKey: 'fake-secret-key',
+            region: 'fakeregion',
           },
         ],
       },
@@ -348,6 +415,7 @@ describe('AwsCodeCommitUrlReader', () => {
             host: AMAZON_AWS_CODECOMMIT_HOST,
             accessKeyId: 'fake-access-key',
             secretAccessKey: 'fake-secret-key',
+            region: 'fakeregion',
           },
         ],
       },
@@ -403,6 +471,7 @@ describe('AwsCodeCommitUrlReader', () => {
             host: AMAZON_AWS_CODECOMMIT_HOST,
             accessKeyId: 'fake-access-key',
             secretAccessKey: 'fake-secret-key',
+            region: 'fakeregion',
           },
         ],
       },
@@ -509,9 +578,9 @@ describe('AwsCodeCommitUrlReader', () => {
         });
 
       const config = new ConfigReader({
-        host: AMAZON_AWS_CODECOMMIT_HOST,
         accessKeyId: 'fake-access-key',
         secretAccessKey: 'fake-secret-key',
+        region: 'fakeregion',
       });
 
       const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
@@ -527,7 +596,7 @@ describe('AwsCodeCommitUrlReader', () => {
 
     it('returns contents of a file in a repository', async () => {
       const response = await awsCodeCommitUrlReader.readTree(
-        'https://eu-west-1.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs',
+        'https://fakeregion.console.aws.amazon.com/codesuite/codecommit/repositories/my-test-techdocs',
       );
 
       const files = await response.files();
