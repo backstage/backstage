@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder': patch
+'@backstage/plugin-scaffolder': minor
 ---
 
 Added autocompletion for Bitbucket Cloud
