@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,12 +14,10 @@
  * limitations under the License.
  */
 
-export {
-  createMockDirectory,
-  type CreateMockDirectoryOptions,
-  type MockDirectory,
-  type MockDirectoryContent,
-  type MockDirectoryContentOptions,
-  type MockDirectoryContentCallback,
-  type MockDirectoryContentCallbackContext,
-} from './MockDirectory';
+import { CreateMockDirectoryOptions } from './filesystem';
+
+/**
+ * @public
+ * @deprecated Use `CreateMockDirectoryOptions` from `@backstage/backend-test-utils` instead.
+ */
+export type MockDirectoryOptions = CreateMockDirectoryOptions;
