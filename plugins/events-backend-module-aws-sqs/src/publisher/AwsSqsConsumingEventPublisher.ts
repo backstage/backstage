@@ -76,6 +76,7 @@ export class AwsSqsConsumingEventPublisher {
     };
 
     this.sqs = new SQSClient({
+      customUserAgent: 'backstage-aws-events-sqs-publisher',
       region: config.region,
       endpoint: config.endpoint,
     });

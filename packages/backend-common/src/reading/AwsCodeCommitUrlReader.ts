@@ -214,6 +214,7 @@ export class AwsCodeCommitUrlReader implements UrlReader {
     );
 
     const codeCommit = new CodeCommitClient({
+      customUserAgent: 'backstage-aws-codecommit-url-reader',
       region: region,
       credentials: credentials,
     });

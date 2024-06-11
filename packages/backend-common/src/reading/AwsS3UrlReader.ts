@@ -223,6 +223,7 @@ export class AwsS3UrlReader implements UrlReader {
     );
 
     const s3 = new S3Client({
+      customUserAgent: 'backstage-aws-s3-url-reader',
       region: region,
       credentials: credentials,
       endpoint: integration.config.endpoint,
