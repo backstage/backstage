@@ -1,6 +1,6 @@
 ---
 title: Plugin Metadata
-status: provisional
+status: implementable
 authors:
   - '@Rugvip'
 owners:
@@ -154,6 +154,8 @@ The following resources have been used to inform this proposal:
 ## Release Plan
 
 The new metadata fields and any generation and validation of fields will initially be rolled out as part of the `repo fix` command in the Backstage CLI. In addition we will also add validation to the `yarn prepack` command in such a way that it does not interfere with backend package bundling, but does apply when packing packages for publishing. These changes will all be rolled out in a single release of the Backstage CLI, meaning that anyone publishing Backstage packages using the Backstage CLI will be required to provide the new metadata.
+
+We will roll out these changes early on but be prepared to change the metadata structure if needed. Initially there will be very few consumers of this information, and it will be up to these consumers to handle the potentially varying versions of this metadata. We will aim to reach a stable state for the metadata as soon as possible, but we believe we need real world usage and feedback to get there.
 
 ## Dependencies
 
