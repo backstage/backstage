@@ -297,9 +297,17 @@ export function fixPluginId(pkg: FixablePackage) {
       paths.targetRoot,
       resolvePath(pkg.dir, 'package.json'),
     );
-    throw new Error(
-      `Failed to guess plugin ID for "${pkg.packageJson.name}", please set the 'backstage.pluginId' field manually in "${path}"`,
-    );
+    const msg = `Failed to guess plugin ID for "${pkg.packageJson.name}", please set the 'backstage.pluginId' field manually in "${path}"`;
+    if (role.endsWith('module')) {
+      const suggestedRole = role.startsWith('frontend')
+        ? 'web-library'
+        : 'node-library';
+      throw new Error(
+        `${msg}. It is also possible that this package is not a module, and should use the '${suggestedRole}' role instead.`,
+      );
+    } else {
+      throw new Error(msg);
+    }
   }
 
   if (guessedPluginId) {
