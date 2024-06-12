@@ -14,8 +14,13 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
+
 /** @public */
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
+
+/** @public */
+export type NotificationMetadata = Array<{ type: string; value: JsonValue }>;
 
 /** @public */
 export type NotificationPayload = {
@@ -50,6 +55,10 @@ export type NotificationPayload = {
    * Optional notification icon
    */
   icon?: string;
+  /**
+   * Optional notification metadata
+   */
+  metadata?: NotificationMetadata;
 };
 
 /** @public */

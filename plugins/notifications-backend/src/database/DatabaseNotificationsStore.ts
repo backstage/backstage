@@ -22,6 +22,7 @@ import {
 } from './NotificationsStore';
 import {
   Notification,
+  NotificationMetadata,
   NotificationSeverity,
   notificationSeverities,
 } from '@backstage/plugin-notifications-common';
@@ -46,6 +47,7 @@ const NOTIFICATION_COLUMNS = [
   'user',
   'read',
   'saved',
+  'metadata',
 ];
 
 export const normalizeSeverity = (input?: string): NotificationSeverity => {
@@ -54,6 +56,13 @@ export const normalizeSeverity = (input?: string): NotificationSeverity => {
     lower = 'normal';
   }
   return lower;
+};
+
+export const normalizeMetadata = (metadata?: NotificationMetadata) => {
+  if (!metadata || metadata.length === 0) {
+    return undefined;
+  }
+  return JSON.stringify(metadata);
 };
 
 /** @internal */
@@ -103,6 +112,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
         severity: row.severity,
         scope: row.scope,
         icon: row.icon,
+        metadata: row.metadata ? JSON.parse(row.metadata) : undefined,
       },
     }));
   };
@@ -118,6 +128,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       title: notification.payload?.title,
       description: notification.payload?.description,
       severity: normalizeSeverity(notification.payload?.severity),
+      metadata: normalizeMetadata(notification.payload?.metadata),
       scope: notification.payload?.scope,
       saved: notification.saved,
       read: notification.read,
@@ -134,6 +145,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       title: notification.payload?.title,
       description: notification.payload?.description,
       severity: normalizeSeverity(notification.payload?.severity),
+      metadata: normalizeMetadata(notification.payload?.metadata),
       scope: notification.payload?.scope,
     };
   };
@@ -222,6 +234,11 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   async getNotifications(options: NotificationGetOptions) {
     const notificationQuery = this.getNotificationsBaseQuery(options);
     const notifications = await notificationQuery.select(NOTIFICATION_COLUMNS);
+    return this.mapToNotifications(notifications);
+  }
+
+  async getNotifications2() {
+    const notifications = await this.db('broadcast');
     return this.mapToNotifications(notifications);
   }
 
@@ -328,6 +345,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       topic: notification.payload.topic,
       updated: new Date(),
       severity: normalizeSeverity(notification.payload?.severity),
+      metadata: normalizeMetadata(notification.payload?.metadata),
       read: null,
     };
 

@@ -22,6 +22,7 @@ exports.up = async function up(knex) {
     table.text('description').nullable();
     table.string('severity', 8).notNullable();
     table.text('link').notNullable();
+    table.text('metadata').nullable();
     table.string('origin', 255).notNullable();
     table.string('scope', 255).nullable();
     table.string('topic', 255).nullable();

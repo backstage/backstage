@@ -22,6 +22,7 @@ import {
 import { notificationService } from '@backstage/plugin-notifications-node';
 import { errorHandler } from '@backstage/backend-common';
 import {
+  NotificationMetadata,
   notificationSeverities,
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
@@ -32,6 +33,20 @@ const randomSeverity = (): NotificationSeverity => {
   return notificationSeverities[
     Math.floor(Math.random() * notificationSeverities.length)
   ];
+};
+
+const notificationMetadatas = [
+  [{ type: 'object', value: { name: 'test' } }],
+  [{ type: 'number', value: 10 }],
+  undefined,
+];
+const randomMetadata = (): NotificationMetadata | undefined => {
+  const metadata =
+    notificationMetadatas[
+      Math.floor(Math.random() * notificationMetadatas.length)
+    ];
+
+  return metadata;
 };
 
 const notificationTitles = [
@@ -92,6 +107,7 @@ const notificationsDebug = createBackendPlugin({
               topic: randomTopic(),
               link: randomLink(),
               severity: randomSeverity(),
+              metadata: randomMetadata(),
             },
           });
           res.status(200).send({ status: 'ok' });
