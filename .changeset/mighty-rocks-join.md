@@ -2,4 +2,4 @@
 '@backstage/plugin-catalog-backend-module-msgraph': patch
 ---
 
-Added missing userSelect property in readMicrosoftGraphOrg method
+Added missing `userSelect` property in `readMicrosoftGraphOrg` method
