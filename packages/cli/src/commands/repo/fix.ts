@@ -277,7 +277,7 @@ export function fixPluginId(pkg: FixablePackage) {
 
   const currentId = pkg.packageJson.backstage?.pluginId;
   if (currentId !== undefined) {
-    if (typeof currentId !== 'string') {
+    if (typeof currentId !== 'string' && currentId !== null) {
       throw new Error(
         `Invalid 'backstage.pluginId' field in "${pkg.packageJson.name}", must be a string`,
       );

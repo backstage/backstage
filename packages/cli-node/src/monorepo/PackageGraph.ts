@@ -50,7 +50,7 @@ export interface BackstagePackageJson {
     /**
      * The ID of the plugin if this is a plugin package. Must always be set for plugin and module packages, and may be set for library packages.
      */
-    pluginId?: string;
+    pluginId?: string | null;
 
     /**
      * The parent plugin package of a module. Must always and only be set for module packages.
