@@ -48,7 +48,7 @@ export interface BackstagePackageJson {
     moved?: string;
 
     /**
-     * The ID of the plugin if this is a plugin package. Must always be set for plugin and module packages, and may be set for library packages.
+     * The ID of the plugin if this is a plugin package. Must always be set for plugin and module packages, and may be set for library packages. A `null` value means that the package is explicitly not a plugin package.
      */
     pluginId?: string | null;
 
