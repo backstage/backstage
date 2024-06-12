@@ -170,51 +170,51 @@ export type UrlReaderPredicateTuple = _UrlReaderPredicateTuple;
 
 /**
  * @public
- * @deprecated Use `ÙrlReaderReadTreeOptions` from `@backstage/backend-plugin-api` instead
+ * @deprecated Use `UrlReaderReadTreeOptions` from `@backstage/backend-plugin-api` instead
  */
 export type ReadTreeOptions = _ReadTreeOptions;
 /**
  * @public
- * @deprecated Use `ÙrlReaderReadTreeResponse` from `@backstage/backend-plugin-api` instead
+ * @deprecated Use `UrlReaderReadTreeResponse` from `@backstage/backend-plugin-api` instead
  */
 export type ReadTreeResponse = _ReadTreeResponse;
 /**
  * @public
- * @deprecated Use `ÙrlReaderReadTreeResponseFile` from `@backstage/backend-plugin-api` instead
+ * @deprecated Use `UrlReaderReadTreeResponseFile` from `@backstage/backend-plugin-api` instead
  */
 export type ReadTreeResponseFile = _ReadTreeResponseFile;
 /**
  * @public
- * @deprecated Use `ÙrlReaderReadTreeResponseDirOptions` from `@backstage/backend-plugin-api` instead
+ * @deprecated Use `UrlReaderReadTreeResponseDirOptions` from `@backstage/backend-plugin-api` instead
  */
 export type ReadTreeResponseDirOptions = _ReadTreeResponseDirOptions;
 /**
  * @public
- * @deprecated Use `ÙrlReaderReadUrlOptions` from `@backstage/backend-plugin-api` instead
+ * @deprecated Use `UrlReaderReadUrlOptions` from `@backstage/backend-plugin-api` instead
  */
 export type ReadUrlOptions = _ReadUrlOptions;
 /**
  * @public
- * @deprecated Use `ÙrlReaderReadUrlResponse` from `@backstage/backend-plugin-api` instead
+ * @deprecated Use `UrlReaderReadUrlResponse` from `@backstage/backend-plugin-api` instead
  */
 export type ReadUrlResponse = _ReadUrlResponse;
 /**
  * @public
- * @deprecated Use `ÙrlReaderSearchOptions` from `@backstage/backend-plugin-api` instead
+ * @deprecated Use `UrlReaderSearchOptions` from `@backstage/backend-plugin-api` instead
  */
 export type SearchOptions = _SearchOptions;
 /**
  * @public
- * @deprecated Use `ÙrlReaderSearchResponse` from `@backstage/backend-plugin-api` instead
+ * @deprecated Use `UrlReaderSearchResponse` from `@backstage/backend-plugin-api` instead
  */
 export type SearchResponse = _SearchResponse;
 /**
  * @public
- * @deprecated Use `ÙrlReaderSearchResponseFile` from `@backstage/backend-plugin-api` instead
+ * @deprecated Use `UrlReaderSearchResponseFile` from `@backstage/backend-plugin-api` instead
  */
 export type SearchResponseFile = _SearchResponseFile;
 /**
  * @public
- * @deprecated Use `ÙrlReaderService` from `@backstage/backend-plugin-api` instead
+ * @deprecated Use `UrlReaderService` from `@backstage/backend-plugin-api` instead
  */
 export type UrlReader = _UrlReaderService;
