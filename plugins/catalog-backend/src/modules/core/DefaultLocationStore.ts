@@ -124,41 +124,40 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
   async getLocationByEntity(entityRef: CompoundEntityRef): Promise<Location> {
     const entityRefString = stringifyEntityRef(entityRef);
 
-    const [entity] = await this.db<DbRefreshStateRow>('refresh_state')
+    const [entityRow] = await this.db<DbRefreshStateRow>('refresh_state')
       .where({ entity_ref: entityRefString })
       .select('entity_id')
       .limit(1);
-    if (!entity) {
+    if (!entityRow) {
       throw new NotFoundError(`found no entity for ref ${entityRefString}`);
     }
 
-    const [locationKeyValue] = await this.db<DbSearchRow>('search')
+    const [searchRow] = await this.db<DbSearchRow>('search')
       .where({
-        entity_id: entity.entity_id,
+        entity_id: entityRow.entity_id,
         key: `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
       })
       .select('value')
       .limit(1);
-    if (!locationKeyValue) {
+    if (!searchRow?.value) {
       throw new NotFoundError(
         `found no origin annotation for ref ${entityRefString}`,
       );
     }
 
-    const { type, target } = parseLocationRef(entityRefString);
-    // const kind, target = split[0], split[1];
-    const [location] = await this.db<DbLocationsRow>('locations')
+    const { type, target } = parseLocationRef(searchRow.value);
+    const [locationRow] = await this.db<DbLocationsRow>('locations')
       .where({ type, target })
       .select()
       .limit(1);
 
-    // select * from locations where type = 'split(prev)[0]'
-    if (!location) {
+    if (!locationRow) {
       throw new NotFoundError(
         `Found no location with type ${type} and target ${target}`,
       );
     }
-    return location;
+
+    return locationRow;
   }
 
   private get connection(): EntityProviderConnection {
