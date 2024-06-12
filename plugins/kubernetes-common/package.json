@@ -1,9 +1,17 @@
 {
   "name": "@backstage/plugin-kubernetes-common",
-  "version": "0.8.0-next.0",
+  "version": "0.8.0-next.1",
   "description": "Common functionalities for kubernetes, to be shared between kubernetes and kubernetes-backend plugin",
   "backstage": {
-    "role": "common-library"
+    "role": "common-library",
+    "pluginId": "kubernetes",
+    "pluginPackages": [
+      "@backstage/plugin-kubernetes",
+      "@backstage/plugin-kubernetes-backend",
+      "@backstage/plugin-kubernetes-common",
+      "@backstage/plugin-kubernetes-node",
+      "@backstage/plugin-kubernetes-react"
+    ]
   },
   "publishConfig": {
     "access": "public",

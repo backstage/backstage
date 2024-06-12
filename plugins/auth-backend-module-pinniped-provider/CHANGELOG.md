@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend-module-pinniped-provider
 
+## 0.1.13-next.2
+
+### Patch Changes
+
+- 8efc6cf: **BREAKING**: The `scope` config option have been removed and replaced by the standard `additionalScopes` config. In addition, the `openid`, `pinniped:request-audience`, `username`, and `offline_access` scopes have been set to required and will always be present.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/config@1.2.0
+
 ## 0.1.13-next.1
 
 ### Patch Changes

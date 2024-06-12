@@ -1,8 +1,15 @@
 {
   "name": "@backstage/plugin-signals",
-  "version": "0.0.7-next.1",
+  "version": "0.0.7-next.2",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "signals",
+    "pluginPackages": [
+      "@backstage/plugin-signals",
+      "@backstage/plugin-signals-backend",
+      "@backstage/plugin-signals-node",
+      "@backstage/plugin-signals-react"
+    ]
   },
   "publishConfig": {
     "access": "public",

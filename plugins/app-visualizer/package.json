@@ -1,9 +1,13 @@
 {
   "name": "@backstage/plugin-app-visualizer",
-  "version": "0.1.7-next.1",
+  "version": "0.1.7-next.2",
   "description": "Visualizes the Backstage app structure",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "app-visualizer",
+    "pluginPackages": [
+      "@backstage/plugin-app-visualizer"
+    ]
   },
   "publishConfig": {
     "access": "public"

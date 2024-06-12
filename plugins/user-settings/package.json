@@ -1,9 +1,15 @@
 {
   "name": "@backstage/plugin-user-settings",
-  "version": "0.8.7-next.1",
+  "version": "0.8.7-next.2",
   "description": "A Backstage plugin that provides a settings page",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "user-settings",
+    "pluginPackages": [
+      "@backstage/plugin-user-settings",
+      "@backstage/plugin-user-settings-backend",
+      "@backstage/plugin-user-settings-common"
+    ]
   },
   "publishConfig": {
     "access": "public"

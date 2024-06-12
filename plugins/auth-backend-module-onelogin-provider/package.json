@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-auth-backend-module-onelogin-provider",
-  "version": "0.0.0",
+  "version": "0.1.0-next.0",
   "description": "The onelogin-provider backend module for the auth plugin.",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "auth",
+    "pluginPackage": "@backstage/plugin-auth-backend"
   },
   "publishConfig": {
     "access": "public",

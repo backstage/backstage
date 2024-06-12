@@ -1,8 +1,12 @@
 {
   "name": "@backstage/plugin-catalog-graph",
-  "version": "0.4.6-next.1",
+  "version": "0.4.6-next.2",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "catalog-graph",
+    "pluginPackages": [
+      "@backstage/plugin-catalog-graph"
+    ]
   },
   "publishConfig": {
     "access": "public"

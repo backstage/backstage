@@ -30,6 +30,22 @@ export interface OAuthSession {
 }
 
 /** @public */
+export interface OAuthAuthenticatorScopeOptions {
+  persist?: boolean;
+  required?: string[];
+  transform?: (options: {
+    /** Scopes requested by the client */
+    requested: Iterable<string>;
+    /** Scopes which have already been granted */
+    granted: Iterable<string>;
+    /** Scopes that are required for the authenticator to function */
+    required: Iterable<string>;
+    /** Additional scopes added through configuration */
+    additional: Iterable<string>;
+  }) => Iterable<string>;
+}
+
+/** @public */
 export interface OAuthAuthenticatorStartInput {
   scope: string;
   state: string;
@@ -64,7 +80,9 @@ export interface OAuthAuthenticatorResult<TProfile> {
 /** @public */
 export interface OAuthAuthenticator<TContext, TProfile> {
   defaultProfileTransform: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
+  /** @deprecated use `scopes.persist` instead */
   shouldPersistScopes?: boolean;
+  scopes?: OAuthAuthenticatorScopeOptions;
   initialize(ctx: { callbackUrl: string; config: Config }): TContext;
   start(
     input: OAuthAuthenticatorStartInput,

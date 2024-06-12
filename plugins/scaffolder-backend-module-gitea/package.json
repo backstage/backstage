@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-gitea",
-  "version": "0.1.9-next.2",
+  "version": "0.1.9-next.3",
   "description": "The gitea module for @backstage/plugin-scaffolder-backend",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "scaffolder",
+    "pluginPackage": "@backstage/plugin-scaffolder-backend"
   },
   "publishConfig": {
     "access": "public"

@@ -26,6 +26,9 @@ import {
 export const bitbucketAuthenticator = createOAuthAuthenticator({
   defaultProfileTransform:
     PassportOAuthAuthenticatorHelper.defaultProfileTransform,
+  scopes: {
+    required: ['account'],
+  },
   initialize({ callbackUrl, config }) {
     const clientID = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');

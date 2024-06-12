@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-azure",
-  "version": "0.1.39-next.2",
+  "version": "0.1.39-next.3",
   "description": "A Backstage catalog backend module that helps integrate towards Azure",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public"

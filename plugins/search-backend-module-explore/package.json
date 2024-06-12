@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-search-backend-module-explore",
-  "version": "0.1.25-next.2",
+  "version": "0.1.25-next.3",
   "description": "A module for the search backend that exports explore modules",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "search",
+    "pluginPackage": "@backstage/plugin-search-backend"
   },
   "publishConfig": {
     "access": "public"

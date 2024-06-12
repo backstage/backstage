@@ -1,5 +1,16 @@
 # @backstage/plugin-proxy-backend
 
+## 0.5.0-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.5.0-next.2
 
 ### Patch Changes

@@ -1,8 +1,10 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-gerrit",
-  "version": "0.1.36-next.2",
+  "version": "0.1.36-next.3",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public"

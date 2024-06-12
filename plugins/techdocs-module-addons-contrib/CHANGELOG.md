@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.11-next.2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.2
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/plugin-techdocs-react@1.2.5-next.2
+  - @backstage/integration-react@1.1.28-next.1
+  - @backstage/core-plugin-api@1.9.3-next.0
+
 ## 1.1.11-next.1
 
 ### Patch Changes

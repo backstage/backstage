@@ -1,9 +1,17 @@
 {
   "name": "@backstage/plugin-kubernetes-node",
-  "version": "0.1.13-next.2",
+  "version": "0.1.13-next.3",
   "description": "Node.js library for the kubernetes plugin",
   "backstage": {
-    "role": "node-library"
+    "role": "node-library",
+    "pluginId": "kubernetes",
+    "pluginPackages": [
+      "@backstage/plugin-kubernetes",
+      "@backstage/plugin-kubernetes-backend",
+      "@backstage/plugin-kubernetes-common",
+      "@backstage/plugin-kubernetes-node",
+      "@backstage/plugin-kubernetes-react"
+    ]
   },
   "publishConfig": {
     "access": "public",

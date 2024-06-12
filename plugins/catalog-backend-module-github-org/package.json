@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-github-org",
-  "version": "0.1.14-next.2",
+  "version": "0.1.14-next.3",
   "description": "The github-org backend module for the catalog plugin.",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public",

@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-search-backend-module-elasticsearch",
-  "version": "1.4.2-next.2",
+  "version": "1.4.2-next.3",
   "description": "A module for the search backend that implements search using ElasticSearch",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "search",
+    "pluginPackage": "@backstage/plugin-search-backend"
   },
   "publishConfig": {
     "access": "public"

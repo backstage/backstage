@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-incremental-ingestion",
-  "version": "0.4.24-next.2",
+  "version": "0.4.24-next.3",
   "description": "An entity provider for streaming large asset sources into the catalog",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public"

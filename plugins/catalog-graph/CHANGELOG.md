@@ -1,5 +1,21 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.6-next.2
+
+### Patch Changes
+
+- 8d474d3: Add function to `EntityRelationsGraph` filter that excludes entities from graph
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.2
+  - @backstage/plugin-catalog-react@1.12.1-next.2
+  - @backstage/frontend-plugin-api@0.6.6-next.2
+  - @backstage/core-compat-api@0.2.6-next.2
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/types@1.1.1
+
 ## 0.4.6-next.1
 
 ### Patch Changes

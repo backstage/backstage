@@ -1,5 +1,19 @@
 # @backstage/backend-test-utils
 
+## 0.4.0-next.3
+
+### Patch Changes
+
+- 006b3e8: The type `MockDirectoryOptions` was renamed to `CreateMockDirectoryOptions` so that it's clear these options are exclusive to the mock directory factory.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/plugin-events-node@0.3.5-next.2
+  - @backstage/backend-app-api@0.7.6-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.0-next.2
 
 ### Patch Changes

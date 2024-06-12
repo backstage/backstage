@@ -46,6 +46,21 @@ export interface BackstagePackageJson {
   backstage?: {
     role?: PackageRole;
     moved?: string;
+
+    /**
+     * The ID of the plugin if this is a plugin package. Must always be set for plugin and module packages, and may be set for library packages.
+     */
+    pluginId?: string;
+
+    /**
+     * The parent plugin package of a module. Must always and only be set for module packages.
+     */
+    pluginPackage?: string;
+
+    /**
+     * All packages that are part of the plugin. Must always and only be set for plugin packages and plugin library packages.
+     */
+    pluginPackages?: string[];
   };
 
   exports?: JsonValue;

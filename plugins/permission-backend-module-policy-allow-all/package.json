@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-permission-backend-module-allow-all-policy",
-  "version": "0.1.16-next.1",
+  "version": "0.1.16-next.2",
   "description": "Allow all policy backend module for the permission plugin.",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "permission",
+    "pluginPackage": "@backstage/plugin-permission-backend"
   },
   "publishConfig": {
     "access": "public",

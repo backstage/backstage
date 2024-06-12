@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-aws",
-  "version": "0.3.14-next.2",
+  "version": "0.3.14-next.3",
   "description": "A Backstage catalog backend module that helps integrate towards AWS",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public"

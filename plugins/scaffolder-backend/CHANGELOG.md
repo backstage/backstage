@@ -1,5 +1,37 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.8-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- f4c8486: Increase max wait time in debug:wait action to 10 minutes
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.17-next.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.9-next.2
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.3.0-next.3
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.1-next.3
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.11-next.2
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.9-next.3
+  - @backstage/plugin-permission-common@0.7.14-next.0
+  - @backstage/plugin-scaffolder-common@1.5.3-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.3
+  - @backstage/plugin-scaffolder-node@0.4.5-next.3
+  - @backstage/plugin-catalog-node@1.12.1-next.2
+  - @backstage/backend-tasks@0.5.24-next.3
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.22.8-next.2
 
 ### Patch Changes

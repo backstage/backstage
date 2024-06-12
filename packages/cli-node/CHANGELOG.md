@@ -1,5 +1,15 @@
 # @backstage/cli-node
 
+## 0.2.6-next.2
+
+### Patch Changes
+
+- c328131: Added new plugin metadata fields to `BackstagePackageJson` type.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14-next.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.6-next.1
 
 ### Patch Changes

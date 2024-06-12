@@ -1,5 +1,30 @@
 # @backstage/backend-plugin-api
 
+## 0.6.19-next.3
+
+### Patch Changes
+
+- 9bdc3e8: In tests, return `null` rather than throwing an error when trying to get the `ExtensionPoint.T` property, so that tests asserting the property are not easily broken.
+- b2ee7f3: Deprecated all of the `UrlReader` related type names and replaced them with prefixed versions. Please update your imports.
+
+  - `ReadTreeOptions` was renamed to `UrlReaderReadTreeOptions`
+  - `ReadTreeResponse` was renamed to `UrlReaderReadTreeResponse`
+  - `ReadTreeResponseDirOptions` was renamed to `UrlReaderReadTreeResponseDirOptions`
+  - `ReadTreeResponseFile` was renamed to `UrlReaderReadTreeResponseFile`
+  - `ReadUrlResponse` was renamed to `UrlReaderReadUrlResponse`
+  - `ReadUrlOptions` was renamed to `UrlReaderReadUrlOptions`
+  - `SearchOptions` was renamed to `UrlReaderSearchOptions`
+  - `SearchResponse` was renamed to `UrlReaderSearchResponse`
+  - `SearchResponseFile` was renamed to `UrlReaderSearchResponseFile`
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/plugin-permission-common@0.7.14-next.0
+  - @backstage/cli-common@0.1.14-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.6.19-next.2
 
 ### Patch Changes

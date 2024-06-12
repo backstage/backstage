@@ -1,8 +1,15 @@
 {
   "name": "@backstage/plugin-permission-react",
-  "version": "0.4.23-next.0",
+  "version": "0.4.23-next.1",
   "backstage": {
-    "role": "web-library"
+    "role": "web-library",
+    "pluginId": "permission",
+    "pluginPackages": [
+      "@backstage/plugin-permission-backend",
+      "@backstage/plugin-permission-common",
+      "@backstage/plugin-permission-node",
+      "@backstage/plugin-permission-react"
+    ]
   },
   "publishConfig": {
     "access": "public",

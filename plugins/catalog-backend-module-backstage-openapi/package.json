@@ -1,8 +1,10 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-backstage-openapi",
-  "version": "0.2.2-next.1",
+  "version": "0.2.2-next.2",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public",
