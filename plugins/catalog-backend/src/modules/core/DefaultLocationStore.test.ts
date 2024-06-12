@@ -15,8 +15,15 @@
  */
 
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
+import { ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { v4 as uuid } from 'uuid';
 import { applyDatabaseMigrations } from '../../database/migrations';
+import {
+  DbFinalEntitiesRow,
+  DbLocationsRow,
+  DbRefreshStateRow,
+  DbSearchRow,
+} from '../../database/tables';
 import { DefaultLocationStore } from './DefaultLocationStore';
 
 jest.setTimeout(60_000);
@@ -30,7 +37,7 @@ describe('DefaultLocationStore', () => {
     const connection = { applyMutation: jest.fn(), refresh: jest.fn() };
     const store = new DefaultLocationStore(knex);
     await store.connect(connection);
-    return { store, connection };
+    return { store, connection, knex };
   }
 
   it.each(databases.eachSupportedId())(
@@ -169,6 +176,61 @@ describe('DefaultLocationStore', () => {
             },
           ],
         });
+      },
+    );
+  });
+
+  describe('getLocationByEntity', () => {
+    it.each(databases.eachSupportedId())(
+      'loads correctly, %p',
+      async databaseId => {
+        const { store, knex } = await createLocationStore(databaseId);
+
+        const entityId = uuid();
+        const locationId = uuid();
+
+        await knex<DbRefreshStateRow>('refresh_state').insert({
+          entity_id: entityId,
+          entity_ref: 'k:ns/n',
+          unprocessed_entity: '{}',
+          errors: '[]',
+          next_update_at: new Date(),
+          last_discovery_at: new Date(),
+        });
+
+        await knex<DbFinalEntitiesRow>('final_entities').insert({
+          entity_id: entityId,
+          final_entity: '{}',
+          hash: 'hash',
+          last_updated_at: new Date(),
+          stitch_ticket: '',
+        });
+
+        await knex<DbSearchRow>('search').insert({
+          entity_id: entityId,
+          key: `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
+          value: `url:https://example.com`,
+        });
+
+        await knex<DbLocationsRow>('locations').insert({
+          id: locationId,
+          type: 'url',
+          target: 'https://example.com',
+        });
+
+        await expect(
+          store.getLocationByEntity({ kind: 'k', namespace: 'ns', name: 'n' }),
+        ).resolves.toEqual({
+          id: locationId,
+          type: 'url',
+          target: 'https://example.com',
+        });
+
+        await expect(
+          store.getLocationByEntity({ kind: 'k', namespace: 'ns', name: 'n2' }),
+        ).rejects.toMatchInlineSnapshot(
+          `[NotFoundError: found no entity for ref k:ns/n2]`,
+        );
       },
     );
   });
