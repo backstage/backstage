@@ -106,27 +106,23 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
 
     this.logger?.info('Discovering AWS Organization Account objects');
 
-    try {
-      (await this.getAwsAccounts())
-        .map(account => this.mapAccountToComponent(account))
-        .filter(entity => {
-          if (location.target !== '') {
-            if (entity.metadata.annotations) {
-              return (
-                entity.metadata.annotations[ORGANIZATION_ANNOTATION] ===
-                location.target
-              );
-            }
-            return false;
+    (await this.getAwsAccounts())
+      .map(account => this.mapAccountToComponent(account))
+      .filter(entity => {
+        if (location.target !== '') {
+          if (entity.metadata.annotations) {
+            return (
+              entity.metadata.annotations[ORGANIZATION_ANNOTATION] ===
+              location.target
+            );
           }
-          return true;
-        })
-        .forEach(entity => {
-          emit(processingResult.entity(location, entity));
-        });
-    } catch (e) {
-      this.logger?.error(e);
-    }
+          return false;
+        }
+        return true;
+      })
+      .forEach(entity => {
+        emit(processingResult.entity(location, entity));
+      });
 
     return true;
   }
