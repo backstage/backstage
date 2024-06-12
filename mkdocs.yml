@@ -180,6 +180,7 @@ nav:
       - Local Development:
           - Linking in Local Packages: 'tooling/local-dev/linking-local-packages.md'
           - Debugging Backstage: 'tooling/local-dev/debugging.md'
+      - Package Metadata: 'tooling/package-metadata.md'
   - Deployment:
       - Deploying Backstage: 'deployment/index.md'
       - Scaling: 'deployment/scaling.md'

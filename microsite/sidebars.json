@@ -362,7 +362,8 @@
           "tooling/local-dev/linking-local-packages",
           "tooling/local-dev/debugging"
         ]
-      }
+      },
+      "tooling/package-metadata"
     ],
     "Deployment": [
       "deployment/index",
