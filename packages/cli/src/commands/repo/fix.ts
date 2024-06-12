@@ -363,7 +363,8 @@ export function fixPluginPackages(
     if (
       role === 'common-library' ||
       role === 'web-library' ||
-      role === 'node-library'
+      role === 'node-library' ||
+      role === 'frontend-plugin-module' // TODO(Rugvip): Remove this once frontend modules are required to have a plugin ID
     ) {
       return;
     }
