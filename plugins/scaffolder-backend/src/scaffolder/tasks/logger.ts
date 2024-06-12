@@ -128,12 +128,6 @@ export class WinstonLogger implements RootLoggerService {
 
         obj[MESSAGE] = obj[MESSAGE]?.replace?.(redactionPattern, '***');
 
-        if (obj[SPLAT]) {
-          obj[SPLAT] = JSON.parse(
-            JSON.stringify(obj[SPLAT]).replace(redactionPattern, '***'),
-          );
-        }
-
         return obj;
       })(),
       add(newRedactions) {
