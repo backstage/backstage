@@ -45,12 +45,11 @@ export type GerritIntegrationConfig = {
   cloneUrl?: string;
 
   /**
-   * Optional base url for Gitiles. This is needed for creating a valid
+   * Base url for Gitiles. This is needed for creating a valid
    * user-friendly url that can be used for browsing the content of the
-   * provider. If not set a default value will be created in the same way
-   * as the "baseUrl" option.
+   * provider.
    */
-  gitilesBaseUrl?: string;
+  gitilesBaseUrl: string;
 
   /**
    * The username to use for requests to gerrit.
@@ -76,7 +75,7 @@ export function readGerritIntegrationConfig(
   const host = config.getString('host');
   let baseUrl = config.getOptionalString('baseUrl');
   let cloneUrl = config.getOptionalString('cloneUrl');
-  let gitilesBaseUrl = config.getOptionalString('gitilesBaseUrl');
+  let gitilesBaseUrl = config.getString('gitilesBaseUrl');
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password')?.trim();
 
@@ -92,7 +91,7 @@ export function readGerritIntegrationConfig(
     throw new Error(
       `Invalid Gerrit integration config, '${cloneUrl}' is not a valid cloneUrl`,
     );
-  } else if (gitilesBaseUrl && !isValidUrl(gitilesBaseUrl)) {
+  } else if (!isValidUrl(gitilesBaseUrl)) {
     throw new Error(
       `Invalid Gerrit integration config, '${gitilesBaseUrl}' is not a valid gitilesBaseUrl`,
     );
