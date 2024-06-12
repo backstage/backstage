@@ -641,6 +641,100 @@ describe('NunjucksWorkflowRunner', () => {
     });
   });
 
+  describe('redactions', () => {
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact secrets that are passed with the task', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          parameters: {},
+          output: {},
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: '${{ secrets.secret }}',
+              },
+            },
+          ],
+        },
+        { secret: 'my-secret-value' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: [REDACTED]');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact meta fields properly', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.child({ thing: ctx.input.secret }).info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          parameters: {},
+          output: {},
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: '${{ secrets.secret }}',
+              },
+            },
+          ],
+        },
+        { secret: 'my-secret-value' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: [REDACTED] {"thing":"[REDACTED]"}');
+    });
+  });
+
   describe('each', () => {
     it('should run a step repeatedly - flat values', async () => {
       const colors = ['blue', 'green', 'red'];
