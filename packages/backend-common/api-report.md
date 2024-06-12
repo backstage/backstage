@@ -467,7 +467,7 @@ export function makeLegacyPlugin<
   }>,
 ) => BackendFeature;
 
-// @public
+// @public @deprecated
 export function notFoundHandler(): RequestHandler;
 
 // @public (undocumented)
@@ -540,7 +540,7 @@ export const ReadUrlResponseFactory: typeof ReadUrlResponseFactory_2;
 export type ReadUrlResponseFactoryFromStreamOptions =
   ReadUrlResponseFactoryFromStreamOptions_2;
 
-// @public
+// @public @deprecated
 export function redactWinstonLogLine(
   info: winston.Logform.TransformableInfo,
 ): winston.Logform.TransformableInfo;
@@ -604,7 +604,7 @@ export interface ServerTokenManagerOptions {
   logger: LoggerService;
 }
 
-// @public
+// @public @deprecated
 export type ServiceBuilder = {
   loadConfig(config: Config): ServiceBuilder;
   setPort(port: number): ServiceBuilder;

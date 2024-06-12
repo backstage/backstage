@@ -27,6 +27,7 @@ import { getRootLogger } from '../logging';
  *
  * @public
  * @returns An Express request handler
+ * @deprecated Use {@link @backstage/backend-app-api#MiddlewareFactory.create.notFound} instead
  */
 export function notFoundHandler(): RequestHandler {
   return MiddlewareFactory.create({
