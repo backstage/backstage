@@ -645,6 +645,7 @@ describe('NunjucksWorkflowRunner', () => {
   });
 
   describe('redactions', () => {
+    // eslint-disable-next-line jest/expect-expect
     it('should redact secrets that are passed with the task', async () => {
       actionRegistry.register({
         id: 'log-secret',
@@ -690,6 +691,7 @@ describe('NunjucksWorkflowRunner', () => {
       expectTaskLog('info: ***');
     });
 
+    // eslint-disable-next-line jest/expect-expect
     it('should redact meta fields properly', async () => {
       actionRegistry.register({
         id: 'log-secret',

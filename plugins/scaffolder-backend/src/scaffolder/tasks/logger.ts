@@ -24,7 +24,6 @@ import { Logger, format, createLogger, transports } from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { TaskContext } from '@backstage/plugin-scaffolder-node';
 import _ from 'lodash';
-import { TaskStep } from '@backstage/plugin-scaffolder-common';
 
 /**
  * Escapes a given string to be used inside a RegExp.
