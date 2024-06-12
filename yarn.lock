@@ -35771,13 +35771,13 @@ __metadata:
   linkType: hard
 
 "openapi-merge@npm:^1.3.2":
-  version: 1.3.2
-  resolution: "openapi-merge@npm:1.3.2"
+  version: 1.3.3
+  resolution: "openapi-merge@npm:1.3.3"
   dependencies:
     atlassian-openapi: ^1.0.8
     lodash: ^4.17.15
     ts-is-present: ^1.1.1
-  checksum: 53284a563270177422db8c7536544913c133dfc5cc7058a1043f3092b5aa997b8224a83c59569d18620f94ccf0a014fcb735e22941a9259b2c60861002f01638
+  checksum: d23ed060facb72f52088cf59bf10abbd36e169bf727c634582904ab0cddfa697b2af0d0e720d908154c2966b80344a8d59811827582949e1e9ffd2acdbc70537
   languageName: node
   linkType: hard
 
