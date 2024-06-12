@@ -110,7 +110,8 @@ accordingly:
 ```yaml
 backend:
   auth:
-    keyStore:
+    # This is the new section for configuring plugin-to-plugin key storage
+    pluginKeyStore:
       type: static
       static:
         keys:
@@ -128,7 +129,7 @@ The first entry will always be used for signing, but any of the subsequent
 entries will also be used for token validation. This lets you have a period of
 time where tokens signed by the previous top entry are still accepted by
 receivers, by just inserting your new key pair as the top entry and leaving the
-old ones intact.
+old ones intact. You can remove old private keys however; those won't be used.
 
 ## Static Tokens
 

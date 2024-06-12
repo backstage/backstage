@@ -73,7 +73,7 @@ describe('createPluginKeySource', () => {
 
       const source = await createPluginKeySource({
         config: new ConfigReader({
-          backend: { auth: { keyStore: { type: 'database' } } },
+          backend: { auth: { pluginKeyStore: { type: 'database' } } },
         }),
         database: mockServices.database.mock({ getClient }),
         logger: mockServices.logger.mock(),
@@ -131,7 +131,7 @@ describe('createPluginKeySource', () => {
       config: new ConfigReader({
         backend: {
           auth: {
-            keyStore: {
+            pluginKeyStore: {
               type: 'static',
               static: {
                 keys: [

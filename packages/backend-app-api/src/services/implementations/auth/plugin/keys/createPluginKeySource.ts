@@ -24,7 +24,7 @@ import { DatabasePluginKeySource } from './DatabasePluginKeySource';
 import { StaticConfigPluginKeySource } from './StaticConfigPluginKeySource';
 import { PluginKeySource } from './types';
 
-const CONFIG_ROOT_KEY = 'backend.auth.keyStore';
+const CONFIG_ROOT_KEY = 'backend.auth.pluginKeyStore';
 
 export async function createPluginKeySource(options: {
   config: RootConfigService;

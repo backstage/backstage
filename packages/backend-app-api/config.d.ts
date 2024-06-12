@@ -34,7 +34,7 @@ export interface Config {
       dangerouslyDisableDefaultAuthPolicy?: boolean;
 
       /** Controls how to store keys for plugin-to-plugin auth */
-      keyStore?:
+      pluginKeyStore?:
         | { type: 'database' }
         | {
             type: 'static';
@@ -49,8 +49,10 @@ export interface Config {
                 publicKeyFile: string;
                 /**
                  * Path to the matching private key file in the PKCS#8 format. Should be an absolute path.
+                 *
+                 * The first array entry must specify a private key file, the rest must not.
                  */
-                privateKeyFile: string;
+                privateKeyFile?: string;
                 /**
                  * ID to uniquely identify this key within the JWK set.
                  */

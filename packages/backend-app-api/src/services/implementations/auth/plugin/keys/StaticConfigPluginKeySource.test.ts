@@ -15,7 +15,7 @@
  */
 
 import { StaticConfigPluginKeySource } from './StaticConfigPluginKeySource';
-import { Config, ConfigReader } from '@backstage/config';
+import { ConfigReader } from '@backstage/config';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const privateKey = `
@@ -34,43 +34,39 @@ ZoUEY72HTvjIP9xSbLOhWhMREk84T0q91/m3v3sWq5EzHIWw1zRHQisKZw==
 `.trim();
 
 describe('StaticConfigPluginKeySource', () => {
-  let sourceConfig: Config;
-  const sourceDir = createMockDirectory();
-
-  beforeAll(() => {
-    sourceDir.setContent({
+  const mockDir = createMockDirectory({
+    content: {
       'public.pem': publicKey,
       'private.pem': privateKey,
-    });
-
-    const publicKeyPath = sourceDir.resolve('public.pem');
-    const privateKeyPath = sourceDir.resolve('private.pem');
-    sourceConfig = new ConfigReader({
-      type: 'static',
-      static: {
-        keys: [
-          {
-            publicKeyFile: publicKeyPath,
-            privateKeyFile: privateKeyPath,
-            keyId: '1',
-            algorithm: 'ES256',
-          },
-          {
-            publicKeyFile: publicKeyPath,
-            privateKeyFile: privateKeyPath,
-            keyId: '2',
-            // skipping explicit alg
-          },
-        ],
-      },
-    });
+    },
   });
+  const publicKeyPath = mockDir.resolve('public.pem');
+  const privateKeyPath = mockDir.resolve('private.pem');
 
   it('should provide keys from disk', async () => {
     const staticKeyStore = await StaticConfigPluginKeySource.create({
-      sourceConfig,
+      sourceConfig: new ConfigReader({
+        type: 'static',
+        static: {
+          keys: [
+            {
+              publicKeyFile: publicKeyPath,
+              privateKeyFile: privateKeyPath,
+              keyId: '1',
+              algorithm: 'ES256',
+            },
+            {
+              // intentionally only private key
+              // skipping explicit alg
+              publicKeyFile: publicKeyPath,
+              keyId: '2',
+            },
+          ],
+        },
+      }),
       keyDuration: { hours: 1 },
     });
+
     const keys = await staticKeyStore.listKeys();
     expect(keys.keys.length).toEqual(2);
     expect(keys.keys[0].key).toMatchObject({
@@ -88,5 +84,41 @@ describe('StaticConfigPluginKeySource', () => {
       alg: 'ES256',
     });
     expect(pk.d).toBeDefined();
+  });
+
+  it('throws an error for misconfigurations', async () => {
+    await expect(
+      StaticConfigPluginKeySource.create({
+        sourceConfig: new ConfigReader({
+          type: 'static',
+          static: {
+            keys: [],
+          },
+        }),
+        keyDuration: { hours: 1 },
+      }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"At least one key pair must be provided in static.keys, when the static key store type is used"`,
+    );
+
+    await expect(
+      StaticConfigPluginKeySource.create({
+        sourceConfig: new ConfigReader({
+          type: 'static',
+          static: {
+            keys: [
+              {
+                publicKeyFile: publicKeyPath,
+                keyId: '1',
+                algorithm: 'ES256',
+              },
+            ],
+          },
+        }),
+        keyDuration: { hours: 1 },
+      }),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"Private key for signing must be provided in the first key pair in static.keys, when the static key store type is used"`,
+    );
   });
 });

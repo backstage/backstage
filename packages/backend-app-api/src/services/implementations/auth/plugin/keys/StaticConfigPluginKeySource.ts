@@ -24,13 +24,13 @@ import { PluginKeySource } from './types';
 
 export type KeyPair = {
   publicKey: JWK;
-  privateKey: JWK;
+  privateKey?: JWK;
   keyId: string;
 };
 
 export type StaticKeyConfig = {
   publicKeyFile: string;
-  privateKeyFile: string;
+  privateKeyFile?: string;
   keyId: string;
   algorithm: string;
 };
@@ -81,7 +81,7 @@ export class StaticConfigPluginKeySource implements PluginKeySource {
       .map(c => {
         const staticKeyConfig: StaticKeyConfig = {
           publicKeyFile: c.getString('publicKeyFile'),
-          privateKeyFile: c.getString('privateKeyFile'),
+          privateKeyFile: c.getOptionalString('privateKeyFile'),
           keyId: c.getString('keyId'),
           algorithm: c.getOptionalString('algorithm') ?? DEFAULT_ALGORITHM,
         };
@@ -97,6 +97,10 @@ export class StaticConfigPluginKeySource implements PluginKeySource {
       throw new Error(
         'At least one key pair must be provided in static.keys, when the static key store type is used',
       );
+    } else if (!keyPairs[0].privateKey) {
+      throw new Error(
+        'Private key for signing must be provided in the first key pair in static.keys, when the static key store type is used',
+      );
     }
 
     return new StaticConfigPluginKeySource(
@@ -106,7 +110,7 @@ export class StaticConfigPluginKeySource implements PluginKeySource {
   }
 
   async getPrivateSigningKey(): Promise<JWK> {
-    return this.keyPairs[0].privateKey;
+    return this.keyPairs[0].privateKey!;
   }
 
   async listKeys(): Promise<{ keys: KeyPayload[] }> {
@@ -122,11 +126,13 @@ export class StaticConfigPluginKeySource implements PluginKeySource {
       keyId,
       algorithm,
     );
-    const privateKey = await this.loadPrivateKeyFromFile(
-      options.privateKeyFile,
-      keyId,
-      algorithm,
-    );
+    const privateKey = options.privateKeyFile
+      ? await this.loadPrivateKeyFromFile(
+          options.privateKeyFile,
+          keyId,
+          algorithm,
+        )
+      : undefined;
 
     return { publicKey, privateKey, keyId };
   }
