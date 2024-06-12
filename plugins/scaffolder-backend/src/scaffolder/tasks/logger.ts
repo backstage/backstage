@@ -21,7 +21,9 @@ import { JsonObject } from '@backstage/types';
 import { Format, TransformableInfo } from 'logform';
 import Transport, { TransportStreamOptions } from 'winston-transport';
 import { Logger, format, createLogger, transports } from 'winston';
-import { MESSAGE } from 'triple-beam';
+import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
+import { TaskContext } from '@backstage/plugin-scaffolder-node';
+import _ from 'lodash';
 
 /**
  * Escapes a given string to be used inside a RegExp.
@@ -44,33 +46,41 @@ interface WinstonLoggerOptions {
 export class BackstageLoggerTransport extends Transport {
   constructor(
     private readonly backstageLogger: LoggerService,
+    private readonly taskContext: TaskContext,
     opts?: TransportStreamOptions,
   ) {
     super(opts);
   }
 
-  log(info: unknown, callback: VoidFunction) {
+  log(info: TransformableInfo, callback: VoidFunction) {
     if (typeof info !== 'object' || info === null) {
       callback();
       return;
     }
-    const { level, message, ...meta } = info as JsonObject;
+
+    const message = info[MESSAGE];
+    const level = info[LEVEL];
+    const splat = info[SPLAT];
+
     switch (level) {
       case 'error':
-        this.backstageLogger.error(String(message), meta);
+        this.backstageLogger.error(String(message), ...splat);
         break;
       case 'warn':
-        this.backstageLogger.warn(String(message), meta);
+        this.backstageLogger.warn(String(message), ...splat);
         break;
       case 'info':
-        this.backstageLogger.info(String(message), meta);
+        this.backstageLogger.info(String(message), ...splat);
         break;
       case 'debug':
-        this.backstageLogger.debug(String(message), meta);
+        this.backstageLogger.debug(String(message), ...splat);
         break;
       default:
-        this.backstageLogger.info(String(message), meta);
+        this.backstageLogger.info(String(message), ...splat);
     }
+
+    this.taskContext.emitLog(message, ...splat);
+
     callback();
   }
 }
@@ -87,9 +97,10 @@ export class WinstonLogger implements RootLoggerService {
 
     let logger = createLogger({
       level: options.level,
-      format: format.combine(redacter.format, options.format),
+      format: format.combine(options.format, redacter.format),
       transports: options.transports ?? new transports.Console(),
     });
+
     if (options.meta) {
       logger = logger.child(options.meta);
     }
@@ -115,6 +126,12 @@ export class WinstonLogger implements RootLoggerService {
         }
 
         obj[MESSAGE] = obj[MESSAGE]?.replace?.(redactionPattern, '***');
+
+        if (obj[SPLAT]) {
+          obj[SPLAT] = JSON.parse(
+            JSON.stringify(obj[SPLAT]).replace(redactionPattern, '***'),
+          );
+        }
 
         return obj;
       })(),
@@ -163,7 +180,10 @@ export class WinstonLogger implements RootLoggerService {
         },
       }),
       format.printf((info: TransformableInfo) => {
-        const { timestamp, level, message, plugin, service, ...fields } = info;
+        const { timestamp, plugin, service } = info;
+        const message = info[MESSAGE];
+        const level = info[LEVEL];
+        const fields = info[SPLAT];
         const prefix = plugin || service;
         const timestampColor = colorizer.colorize('timestamp', timestamp);
         const prefixColor = colorizer.colorize('prefix', prefix);
