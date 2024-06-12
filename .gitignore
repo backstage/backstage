@@ -170,3 +170,6 @@ knip.json
 # Schemathesis temporary files
 .hypothesis/
 .cassettes/
+
+# Locally generated keys
+*.key
