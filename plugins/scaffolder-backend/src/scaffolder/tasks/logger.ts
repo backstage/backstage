@@ -24,6 +24,7 @@ import { Logger, format, createLogger, transports } from 'winston';
 import { LEVEL, MESSAGE, SPLAT } from 'triple-beam';
 import { TaskContext } from '@backstage/plugin-scaffolder-node';
 import _ from 'lodash';
+import { TaskStep } from '@backstage/plugin-scaffolder-common';
 
 /**
  * Escapes a given string to be used inside a RegExp.
@@ -47,6 +48,7 @@ export class BackstageLoggerTransport extends Transport {
   constructor(
     private readonly backstageLogger: LoggerService,
     private readonly taskContext: TaskContext,
+    private readonly stepId: string,
     opts?: TransportStreamOptions,
   ) {
     super(opts);
@@ -79,8 +81,7 @@ export class BackstageLoggerTransport extends Transport {
         this.backstageLogger.info(String(message), ...splat);
     }
 
-    this.taskContext.emitLog(message, ...splat);
-
+    this.taskContext.emitLog(message, { stepId: this.stepId });
     callback();
   }
 }

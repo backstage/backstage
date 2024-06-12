@@ -97,6 +97,7 @@ const isValidTaskSpec = (taskSpec: TaskSpec): taskSpec is TaskSpecV1beta3 => {
 
 const createStepLogger = ({
   task,
+  step,
   rootLogger,
 }: {
   task: TaskContext;
@@ -109,7 +110,7 @@ const createStepLogger = ({
       winston.format.colorize(),
       winston.format.simple(),
     ),
-    transports: [new BackstageLoggerTransport(rootLogger, task)],
+    transports: [new BackstageLoggerTransport(rootLogger, task, step.id)],
   });
 
   taskLogger.addRedactions(Object.values(task.secrets ?? {}));
