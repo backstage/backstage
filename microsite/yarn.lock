@@ -5111,11 +5111,11 @@ __metadata:
   linkType: hard
 
 "docusaurus-pushfeedback@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "docusaurus-pushfeedback@npm:1.0.0"
+  version: 1.0.1
+  resolution: "docusaurus-pushfeedback@npm:1.0.1"
   peerDependencies:
     "@docusaurus/core": 3.x
-  checksum: 5f119fac4b18198ecab7ca3892b8d19ea21c1f4147b7500de0f2a341651630ff090e38ac4984e33d87729f1b00d621ae8945efe2a2ea37b9a74b76c7f468f21e
+  checksum: 45319080911438f828d9b550481511065de225b03511347324f9ecba133ce2693fa19fd394cd0a0e43b1723e15c2c988a11838a5cab1e3702295123be4b875a8
   languageName: node
   linkType: hard
 
