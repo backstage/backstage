@@ -685,7 +685,7 @@ describe('NunjucksWorkflowRunner', () => {
 
       await runner.execute(task);
 
-      expectTaskLog('info: ***');
+      expectTaskLog('info: [REDACTED]');
     });
 
     // eslint-disable-next-line jest/expect-expect
@@ -731,7 +731,7 @@ describe('NunjucksWorkflowRunner', () => {
 
       await runner.execute(task);
 
-      expectTaskLog('info: *** {"thing":"***"}');
+      expectTaskLog('info: [REDACTED] {"thing":"[REDACTED]"}');
     });
   });
 
