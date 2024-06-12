@@ -11193,15 +11193,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@nestjs/axios@npm:3.0.1":
-  version: 3.0.1
-  resolution: "@nestjs/axios@npm:3.0.1"
+"@nestjs/axios@npm:3.0.2":
+  version: 3.0.2
+  resolution: "@nestjs/axios@npm:3.0.2"
   peerDependencies:
     "@nestjs/common": ^7.0.0 || ^8.0.0 || ^9.0.0 || ^10.0.0
     axios: ^1.3.1
-    reflect-metadata: ^0.1.12
     rxjs: ^6.0.0 || ^7.0.0
-  checksum: 01cebc64efa7a1d9df7a9053fbc5124986a95078789a0f280a2a61c31601a70a35745e07fc385497b4f85c7bdb6216a3575728646f1e6e684c038ac31900129c
+  checksum: 285a735fb5db602b63aa4a37e161f609b2cec05b69f4bffe983617c2136ac29c0a33bb96e6276d22a656907bed5d53460e740310bc05c043dcd39c37db7cda29
   languageName: node
   linkType: hard
 
@@ -12333,14 +12332,14 @@ __metadata:
   linkType: hard
 
 "@openapitools/openapi-generator-cli@npm:^2.4.26, @openapitools/openapi-generator-cli@npm:^2.7.0":
-  version: 2.13.2
-  resolution: "@openapitools/openapi-generator-cli@npm:2.13.2"
+  version: 2.13.4
+  resolution: "@openapitools/openapi-generator-cli@npm:2.13.4"
   dependencies:
-    "@nestjs/axios": 3.0.1
+    "@nestjs/axios": 3.0.2
     "@nestjs/common": 10.3.0
     "@nestjs/core": 10.3.0
     "@nuxtjs/opencollective": 0.3.2
-    axios: 1.6.5
+    axios: 1.6.8
     chalk: 4.1.2
     commander: 8.3.0
     compare-versions: 4.1.4
@@ -12356,7 +12355,7 @@ __metadata:
     tslib: 2.6.2
   bin:
     openapi-generator-cli: main.js
-  checksum: 553458ffface4090f117ec488352f664bb4656b645ef51faf5be35f27e739ac5c8931adf401309dfa0aad7ceefa39fb267d452b72d7a22f0fdb26d988d73b642
+  checksum: 825a49ff86632767d318fa860d9d251984b9b3e8f386cf8298430005f20611d7b535c6e87e370edd19ff824a5c68cf65efc93cbb64d7a2f1649e46a8887cf5d2
   languageName: node
   linkType: hard
 
@@ -21304,14 +21303,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"axios@npm:1.6.5":
-  version: 1.6.5
-  resolution: "axios@npm:1.6.5"
+"axios@npm:1.6.8, axios@npm:^1.0.0, axios@npm:^1.4.0, axios@npm:^1.6.0":
+  version: 1.6.8
+  resolution: "axios@npm:1.6.8"
   dependencies:
-    follow-redirects: ^1.15.4
+    follow-redirects: ^1.15.6
     form-data: ^4.0.0
     proxy-from-env: ^1.1.0
-  checksum: e28d67b2d9134cb4608c44d8068b0678cfdccc652742e619006f27264a30c7aba13b2cd19c6f1f52ae195b5232734925928fb192d5c85feea7edd2f273df206d
+  checksum: bf007fa4b207d102459300698620b3b0873503c6d47bf5a8f6e43c0c64c90035a4f698b55027ca1958f61ab43723df2781c38a99711848d232cad7accbcdfcdd
   languageName: node
   linkType: hard
 
@@ -21322,17 +21321,6 @@ __metadata:
     follow-redirects: ^1.14.9
     form-data: ^4.0.0
   checksum: 38cb7540465fe8c4102850c4368053c21683af85c5fdf0ea619f9628abbcb59415d1e22ebc8a6390d2bbc9b58a9806c874f139767389c862ec9b772235f06854
-  languageName: node
-  linkType: hard
-
-"axios@npm:^1.0.0, axios@npm:^1.4.0, axios@npm:^1.6.0":
-  version: 1.6.8
-  resolution: "axios@npm:1.6.8"
-  dependencies:
-    follow-redirects: ^1.15.6
-    form-data: ^4.0.0
-    proxy-from-env: ^1.1.0
-  checksum: bf007fa4b207d102459300698620b3b0873503c6d47bf5a8f6e43c0c64c90035a4f698b55027ca1958f61ab43723df2781c38a99711848d232cad7accbcdfcdd
   languageName: node
   linkType: hard
 
@@ -27579,7 +27567,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.4, follow-redirects@npm:^1.15.6":
+"follow-redirects@npm:^1.0.0, follow-redirects@npm:^1.14.9, follow-redirects@npm:^1.15.6":
   version: 1.15.6
   resolution: "follow-redirects@npm:1.15.6"
   peerDependenciesMeta:
