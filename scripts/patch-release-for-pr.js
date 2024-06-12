@@ -149,6 +149,9 @@ async function main(args) {
     );
   }
 
+  console.log('Running "yarn install" ...');
+  await run('yarn', 'install');
+
   console.log('Running "yarn release" ...');
   await run('yarn', 'release');
 
