@@ -10434,36 +10434,36 @@ __metadata:
   linkType: hard
 
 "@kubernetes-models/apimachinery@npm:^1.1.0, @kubernetes-models/apimachinery@npm:^1.2.1":
-  version: 1.2.1
-  resolution: "@kubernetes-models/apimachinery@npm:1.2.1"
+  version: 1.2.2
+  resolution: "@kubernetes-models/apimachinery@npm:1.2.2"
   dependencies:
-    "@kubernetes-models/base": ^4.0.3
-    "@kubernetes-models/validate": ^3.1.1
+    "@kubernetes-models/base": ^4.0.4
+    "@kubernetes-models/validate": ^3.1.2
     tslib: ^2.4.0
-  checksum: 69145452a2f1b9314aa33326d236e1829905bbdc48727927d065570e2fe95c3895e7117e54f394823c06f5811c7de689f7df1f8010f49d6b89d59241c8704a02
+  checksum: 57387bb8a1f43b740506877d2557a188122512dd2f05c54e3076e0d6cf9a2112f7c5cbbba762c8f4fee22845fcf1302b97537a9e24cfd18b6a99d51a1360136a
   languageName: node
   linkType: hard
 
-"@kubernetes-models/base@npm:^4.0.1, @kubernetes-models/base@npm:^4.0.3":
-  version: 4.0.3
-  resolution: "@kubernetes-models/base@npm:4.0.3"
+"@kubernetes-models/base@npm:^4.0.1, @kubernetes-models/base@npm:^4.0.3, @kubernetes-models/base@npm:^4.0.4":
+  version: 4.0.4
+  resolution: "@kubernetes-models/base@npm:4.0.4"
   dependencies:
-    "@kubernetes-models/validate": ^3.1.1
+    "@kubernetes-models/validate": ^3.1.2
     is-plain-object: ^5.0.0
     tslib: ^2.4.0
-  checksum: 0f1f333d7e70ba87c322c0bfc9497c4d51e7c7063f0530106daac2e7eac328477df1bf48e255ddf595fb1b49ae0d5214e4f9b5df91d7f67892a0db047d05995f
+  checksum: 15d531118e8a85eda8fd9602de4ba0e61e794d52218df7acb9842fe3c2fad5e788f3468768e8287405c6228625cce5cb1d91d923499e401a1a0f55287b2e6b5a
   languageName: node
   linkType: hard
 
-"@kubernetes-models/validate@npm:^3.1.1":
-  version: 3.1.1
-  resolution: "@kubernetes-models/validate@npm:3.1.1"
+"@kubernetes-models/validate@npm:^3.1.1, @kubernetes-models/validate@npm:^3.1.2":
+  version: 3.1.2
+  resolution: "@kubernetes-models/validate@npm:3.1.2"
   dependencies:
     ajv: ^8.12.0
     ajv-formats: ^2.1.1
     ajv-formats-draft2019: ^1.6.1
     tslib: ^2.4.0
-  checksum: cb5be259a0b5cead73b98648a69785a5e04c2fa3ce199033604c4551b6c4786435c9e5f926cff2d63f50a6fbd2c0ad1199550cb0cbea781e64673b29c4d85345
+  checksum: 44bd7e45aa9716448532f5afc6510398a7eed77c23df67acd94acde4e940c3284a879cc62372fb3dcb67c12d2d10e43900bdd98bc39d1177492c9f2d48b63d4e
   languageName: node
   linkType: hard
 
