@@ -22,7 +22,7 @@ import { Strategy as MicrosoftStrategy } from 'passport-microsoft';
 export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
   userProfile(
     accessToken: string,
-    done: (err?: Error | null, profile?: PassportProfile) => void,
+    done: (err?: unknown, profile?: PassportProfile) => void,
   ): void {
     if (this.skipUserProfile(accessToken)) {
       done(null, undefined);
@@ -31,7 +31,7 @@ export class ExtendedMicrosoftStrategy extends MicrosoftStrategy {
 
     super.userProfile(
       accessToken,
-      (err?: Error | null, profile?: PassportProfile) => {
+      (err?: unknown, profile?: PassportProfile) => {
         if (!profile || profile.photos) {
           done(err, profile);
           return;

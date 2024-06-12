@@ -18242,13 +18242,13 @@ __metadata:
   linkType: hard
 
 "@types/passport-oauth2@npm:*, @types/passport-oauth2@npm:^1.4.11, @types/passport-oauth2@npm:^1.4.15":
-  version: 1.4.16
-  resolution: "@types/passport-oauth2@npm:1.4.16"
+  version: 1.4.17
+  resolution: "@types/passport-oauth2@npm:1.4.17"
   dependencies:
     "@types/express": "*"
     "@types/oauth": "*"
     "@types/passport": "*"
-  checksum: a590d3fcdf93dbe4498c636de139dc22a723bbf12a7f248f432085a47ec1b76b2e1201336ee26cd65c400d7ce6fb30ae0b151f40067267942c8a5b3c708cc23d
+  checksum: 4c5d2d6f717bb0b3d049669e47ca27cb166cbbef2073dccd302b10e62936c9e392074acabe6cb593f7eeb37a6a3cf81b9d3a4f35a46018a6645ac37d0f1706cb
   languageName: node
   linkType: hard
 
