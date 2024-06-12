@@ -17,16 +17,30 @@ array when registering your custom actions, as seen below.
 
 :::
 
+## Streamlining Custom Action Creation with Backstage CLI
+
+The creation of custom actions in Backstage has never been easier thanks to the Backstage CLI. This tool streamlines the setup process, allowing you to focus on your actions' unique functionality.
+
+Start by using the `yarn backstage-cli new` command to generate a scaffolder module. This command sets up the necessary boilerplate code, providing a smooth start:
+
+```
+$ yarn backstage-cli new
+? What do you want to create?
+  plugin-common - A new isomorphic common plugin package
+  plugin-node - A new Node.js library plugin package
+  plugin-react - A new web library plugin package
+> scaffolder-module - An module exporting custom actions for @backstage/plugin-scaffolder-backend
+```
+
+You can find a [list](../../tooling/cli/03-commands.md) of all commands provided by the Backstage CLI.
+
+When prompted, select the option to generate a scaffolder module. This creates a solid foundation for your custom action. Enter the name of the module you wish to create, and the CLI will generate the required files and directory structure.
+
 ## Writing your Custom Action
 
-Your custom action can live where you choose, but simplest is to include it
-alongside your `backend` package in `packages/backend`.
+After running the command, the CLI will create a new directory with your new scaffolder module. This directory will be the working directory for creating the custom action. It will contain all the necessary files and boilerplate code to get started.
 
-Let's create a simple action that adds a new file and some contents that are
-passed as `input` to the function.
-
-In `packages/backend/src/plugins/scaffolder/actions/custom.ts` we can create a
-new action.
+Let's create a simple action that adds a new file and some contents that are passed as `input` to the function. Within the generated directory, locate the file at `src/actions/example/example.ts`. Feel free to rename this file along with its generated unit test. We will replace the existing placeholder code with our custom action code as follows:
 
 ```ts title="With Zod"
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
