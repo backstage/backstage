@@ -27,15 +27,15 @@ import { AuthenticationError, ForwardedError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { decodeJwt } from 'jose';
 import { ExternalTokenHandler } from './external/ExternalTokenHandler';
-import { PluginTokenHandler } from './plugin/PluginTokenHandler';
-import { UserTokenHandler } from './user/UserTokenHandler';
 import {
   createCredentialsWithNonePrincipal,
   createCredentialsWithServicePrincipal,
   createCredentialsWithUserPrincipal,
   toInternalBackstageCredentials,
 } from './helpers';
-import { KeyStore } from './types';
+import { PluginTokenHandler } from './plugin/PluginTokenHandler';
+import { PluginKeySource } from './plugin/keys/types';
+import { UserTokenHandler } from './user/UserTokenHandler';
 
 /** @internal */
 export class DefaultAuthService implements AuthService {
@@ -46,7 +46,7 @@ export class DefaultAuthService implements AuthService {
     private readonly tokenManager: TokenManager,
     private readonly pluginId: string,
     private readonly disableDefaultAuthPolicy: boolean,
-    private readonly publicKeyStore: KeyStore,
+    private readonly pluginKeySource: PluginKeySource,
   ) {}
 
   // allowLimitedAccess is currently ignored, since we currently always use the full user tokens
@@ -209,7 +209,7 @@ export class DefaultAuthService implements AuthService {
   }
 
   async listPublicServiceKeys(): Promise<{ keys: JsonObject[] }> {
-    const { keys } = await this.publicKeyStore.listKeys();
+    const { keys } = await this.pluginKeySource.listKeys();
     return { keys: keys.map(({ key }) => key) };
   }
 

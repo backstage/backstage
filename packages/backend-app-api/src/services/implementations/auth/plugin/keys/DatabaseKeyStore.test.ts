@@ -34,6 +34,8 @@ const testKey2 = {
   n: 'test',
 };
 
+jest.setTimeout(60_000);
+
 describe('DatabaseKeyStore', () => {
   const databases = TestDatabases.create();
 

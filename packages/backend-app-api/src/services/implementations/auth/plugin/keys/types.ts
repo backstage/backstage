@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { JWK } from 'jose';
+import { JsonObject } from '@backstage/types';
 
-/** @internal */
-export type InternalBackstageCredentials<TPrincipal = unknown> =
-  BackstageCredentials<TPrincipal> & {
-    version: string;
-    token?: string;
-  };
+export type KeyStore = {
+  addKey(key: KeyPayload): Promise<any>;
+  listKeys(): Promise<{ keys: KeyPayload[] }>;
+};
+
+export type KeyPayload = {
+  id: string;
+  key: InternalKey;
+  expiresAt: Date;
+};
+
+export type InternalKey = JsonObject & { kid: string };
+
+export interface PluginKeySource {
+  getPrivateSigningKey(): Promise<JWK>;
+  listKeys(): Promise<{ keys: KeyPayload[] }>;
+}
