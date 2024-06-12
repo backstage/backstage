@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { WinstonLogger } from '@backstage/backend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { WinstonLogger } from '../../../backend-app-api/src/logging/WinstonLogger';
 import { merge } from 'lodash';
 import * as winston from 'winston';
 import { format, LoggerOptions } from 'winston';

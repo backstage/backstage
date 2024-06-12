@@ -23,10 +23,10 @@ import { EventEmitter } from 'events';
 import { Router } from 'express';
 import { createLegacyAuthAdapters } from './auth';
 import { legacyPlugin } from './legacy';
-import {
-  authServiceFactory,
-  tokenManagerServiceFactory,
-} from '@backstage/backend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { authServiceFactory } from '../../backend-app-api/src/services/implementations/auth';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { tokenManagerServiceFactory } from '../../backend-app-api/src/services/implementations/tokenManager';
 
 describe('legacyPlugin', () => {
   it('can auth across the new and old systems', async () => {

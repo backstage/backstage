@@ -32,7 +32,6 @@ import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
 import { HarnessIntegration } from '@backstage/integration';
-import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { isChildPath as isChildPath_2 } from '@backstage/backend-plugin-api';
@@ -365,6 +364,8 @@ export const GitlabUrlReader: typeof GitlabUrlReader_2;
 // @public @deprecated (undocumented)
 export const HarnessUrlReader: typeof HarnessUrlReader_2;
 
+// Warning: (ae-forgotten-export) The symbol "HostDiscovery_2" needs to be exported by the entry point index.d.ts
+//
 // @public @deprecated
 export const HostDiscovery: typeof HostDiscovery_2;
 
