@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.8
+
+### Patch Changes
+
+- a92a922: Fixing issues with log redaction in the scaffolder logs
+
 ## 1.22.7
 
 ### Patch Changes
