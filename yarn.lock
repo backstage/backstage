@@ -31671,8 +31671,8 @@ __metadata:
   linkType: hard
 
 "json-schema-library@npm:^9.0.0":
-  version: 9.3.4
-  resolution: "json-schema-library@npm:9.3.4"
+  version: 9.3.5
+  resolution: "json-schema-library@npm:9.3.5"
   dependencies:
     "@sagold/json-pointer": ^5.1.2
     "@sagold/json-query": ^6.1.3
@@ -31681,7 +31681,7 @@ __metadata:
     fast-deep-equal: ^3.1.3
     smtp-address-parser: 1.0.10
     valid-url: ^1.0.9
-  checksum: 6e3accc45bdf0fe4831c8b2a560d8feaa9402bd6c5833a0c7e11ee78c316b17a389a3368a7ee2c989d4aac36018742d7dcc83c66b11170c54800b0e56418638f
+  checksum: 8c8a8c993f998a3485d5675781a0330f4e5abc43781f1fa03b709dd5a5157fb2a524c704966f8c4fc31873c5816d4a07058214873b78b1d54f8b4a0cf6737bcf
   languageName: node
   linkType: hard
 
