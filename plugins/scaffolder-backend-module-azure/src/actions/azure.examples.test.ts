@@ -72,6 +72,7 @@ describe('publish:azure examples', () => {
   it('should call initRepoAndPush with the correct values', async () => {
     mockGitClient.createRepository.mockResolvedValue({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     });
 
@@ -94,6 +95,7 @@ describe('publish:azure examples', () => {
   it('should call initRepoAndPush with a changed default branch', async () => {
     mockGitClient.createRepository.mockResolvedValue({
       remoteUrl: 'https://dev.azure.com/organization/project/_git/repo',
+      webUrl: 'https://dev.azure.com/organization/project/_git/repo',
       id: '709e891c-dee7-4f91-b963-534713c0737f',
     });
 
