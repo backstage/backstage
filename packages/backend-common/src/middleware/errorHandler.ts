@@ -18,7 +18,8 @@ import { ErrorRequestHandler } from 'express';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { getRootLogger } from '../logging';
 import { ConfigReader } from '@backstage/config';
-import { MiddlewareFactory } from '@backstage/backend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { MiddlewareFactory } from '../../../backend-app-api/src/http/MiddlewareFactory';
 
 /**
  * Options passed to the {@link errorHandler} middleware.

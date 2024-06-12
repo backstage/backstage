@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { HostDiscovery as _HostDiscovery } from '@backstage/backend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { HostDiscovery as _HostDiscovery } from '../../../backend-defaults/src/entrypoints/discovery/HostDiscovery';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 /**

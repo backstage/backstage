@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { MiddlewareFactory } from '@backstage/backend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { MiddlewareFactory } from '../../../backend-app-api/src/http/MiddlewareFactory';
 import { RequestHandler } from 'express';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { getRootLogger } from '../logging';

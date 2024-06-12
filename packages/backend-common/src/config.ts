@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   createConfigSecretEnumerator,
   loadBackendConfig as newLoadBackendConfig,
-} from '@backstage/backend-app-api';
+} from '../../backend-app-api/src/config';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { AppConfig, Config } from '@backstage/config';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
