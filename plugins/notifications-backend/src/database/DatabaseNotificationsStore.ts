@@ -237,11 +237,6 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     return this.mapToNotifications(notifications);
   }
 
-  async getNotifications2() {
-    const notifications = await this.db('broadcast');
-    return this.mapToNotifications(notifications);
-  }
-
   async getNotificationsCount(options: NotificationGetOptions) {
     const countOptions: NotificationGetOptions = { ...options };
     countOptions.limit = undefined;
