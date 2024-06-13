@@ -1,4 +1,4 @@
-import { HealthService } from '@backstage/backend-plugin-api';
+import { RootHealthService } from '@backstage/backend-plugin-api';
 
 /*
  * Copyright 2024 The Backstage Authors
@@ -19,7 +19,7 @@ import { HealthService } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
 import { Request, Response } from 'express';
 
-export function createHealthRouter(options: { health: HealthService }) {
+export function createHealthRouter(options: { health: RootHealthService }) {
   const router = Router();
 
   router.get(

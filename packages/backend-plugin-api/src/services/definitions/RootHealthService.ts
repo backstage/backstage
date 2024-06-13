@@ -17,7 +17,13 @@
 /**
  * @public
  */
-export interface HealthService {
+export interface RootHealthService {
+  /**
+   * Get the liveness status of the backend.
+   */
   getLiveness(): Promise<{ status: number; payload?: any }>;
+  /**
+   * Get the readiness status of the backend.
+   */
   getReadiness(): Promise<{ status: number; payload?: any }>;
 }

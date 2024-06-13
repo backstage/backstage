@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { healthServiceFactory } from './healthServiceFactory';
+export { rootHealthServiceFactory } from './rootHealthServiceFactory';

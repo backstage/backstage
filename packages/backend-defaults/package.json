@@ -24,13 +24,13 @@
     "./cache": "./src/entrypoints/cache/index.ts",
     "./database": "./src/entrypoints/database/index.ts",
     "./discovery": "./src/entrypoints/discovery/index.ts",
-    "./health": "./src/entrypoints/health/index.ts",
     "./httpAuth": "./src/entrypoints/httpAuth/index.ts",
     "./httpRouter": "./src/entrypoints/httpRouter/index.ts",
     "./lifecycle": "./src/entrypoints/lifecycle/index.ts",
     "./logger": "./src/entrypoints/logger/index.ts",
     "./permissions": "./src/entrypoints/permissions/index.ts",
     "./rootConfig": "./src/entrypoints/rootConfig/index.ts",
+    "./rootHealth": "./src/entrypoints/rootHealth/index.ts",
     "./rootHttpRouter": "./src/entrypoints/rootHttpRouter/index.ts",
     "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
     "./rootLogger": "./src/entrypoints/rootLogger/index.ts",
@@ -55,9 +55,6 @@
       "discovery": [
         "src/entrypoints/discovery/index.ts"
       ],
-      "health": [
-        "src/entrypoints/health/index.ts"
-      ],
       "httpAuth": [
         "src/entrypoints/httpAuth/index.ts"
       ],
@@ -75,6 +72,9 @@
       ],
       "rootConfig": [
         "src/entrypoints/rootConfig/index.ts"
+      ],
+      "rootHealth": [
+        "src/entrypoints/rootHealth/index.ts"
       ],
       "rootHttpRouter": [
         "src/entrypoints/rootHttpRouter/index.ts"

@@ -1,5 +1,5 @@
 import { mockServices } from '@backstage/backend-test-utils';
-import { DefaultHealthService } from './healthServiceFactory';
+import { DefaultRootHealthService } from './rootHealthServiceFactory';
 
 /*
  * Copyright 2024 The Backstage Authors
@@ -16,10 +16,10 @@ import { DefaultHealthService } from './healthServiceFactory';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-describe('DefaultHealthService', () => {
+describe('DefaultRootHealthService', () => {
   describe('readiness', () => {
     it(`should return a 500 response if the server hasn't started yet`, async () => {
-      const service = new DefaultHealthService({
+      const service = new DefaultRootHealthService({
         lifecycle: mockServices.rootLifecycle.mock(),
       });
       await expect(service.getReadiness()).resolves.toEqual({
@@ -38,7 +38,7 @@ describe('DefaultHealthService', () => {
         fn => (mockServerStartedFn = fn),
       );
 
-      const service = new DefaultHealthService({
+      const service = new DefaultRootHealthService({
         lifecycle,
       });
 
@@ -61,7 +61,7 @@ describe('DefaultHealthService', () => {
         fn => (mockServerStoppedFn = fn),
       );
 
-      const service = new DefaultHealthService({
+      const service = new DefaultRootHealthService({
         lifecycle: mockServices.rootLifecycle.mock(),
       });
 
@@ -79,7 +79,7 @@ describe('DefaultHealthService', () => {
 
   describe('liveness', () => {
     it('should return 200 if the server has started', async () => {
-      const service = new DefaultHealthService({
+      const service = new DefaultRootHealthService({
         lifecycle: mockServices.rootLifecycle.mock(),
       });
 

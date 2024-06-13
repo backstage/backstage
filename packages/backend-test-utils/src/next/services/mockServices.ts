@@ -20,11 +20,11 @@ import {
   HostDiscovery,
   discoveryServiceFactory,
 } from '@backstage/backend-defaults/discovery';
-import { healthServiceFactory } from '@backstage/backend-defaults/health';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
+import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
@@ -345,8 +345,8 @@ export namespace mockServices {
     }));
   }
 
-  export namespace health {
-    export const factory = healthServiceFactory;
+  export namespace rootHealth {
+    export const factory = rootHealthServiceFactory;
     export const mock = simpleMock(coreServices.health, () => ({
       getLiveness: jest.fn(),
       getReadiness: jest.fn(),

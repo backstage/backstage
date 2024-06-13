@@ -24,13 +24,13 @@ import { authServiceFactory } from '@backstage/backend-defaults/auth';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import { discoveryServiceFactory } from '@backstage/backend-defaults/discovery';
-import { rootHealthServiceFactory } from './entrypoints/rootHealth';
 import { httpAuthServiceFactory } from '@backstage/backend-defaults/httpAuth';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
 import { rootConfigServiceFactory } from '@backstage/backend-defaults/rootConfig';
+import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
 import { rootLoggerServiceFactory } from '@backstage/backend-defaults/rootLogger';
@@ -51,6 +51,7 @@ export const defaultServiceFactories = [
   lifecycleServiceFactory(),
   loggerServiceFactory(),
   permissionsServiceFactory(),
+  rootHealthServiceFactory(),
   rootHttpRouterServiceFactory(),
   rootLifecycleServiceFactory(),
   rootLoggerServiceFactory(),
@@ -59,7 +60,6 @@ export const defaultServiceFactories = [
   userInfoServiceFactory(),
   urlReaderServiceFactory(),
   eventsServiceFactory(),
-  rootHealthServiceFactory(),
 ];
 
 /**

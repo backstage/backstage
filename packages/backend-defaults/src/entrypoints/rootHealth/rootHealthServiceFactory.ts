@@ -15,14 +15,14 @@
  */
 
 import {
-  HealthService,
+  RootHealthService,
   RootLifecycleService,
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 
 /** @internal */
-export class DefaultHealthService implements HealthService {
+export class DefaultRootHealthService implements RootHealthService {
   #isRunning = false;
 
   constructor(readonly options: { lifecycle: RootLifecycleService }) {
@@ -53,12 +53,12 @@ export class DefaultHealthService implements HealthService {
 /**
  * @public
  */
-export const healthServiceFactory = createServiceFactory({
+export const rootHealthServiceFactory = createServiceFactory({
   service: coreServices.health,
   deps: {
     lifecycle: coreServices.rootLifecycle,
   },
   async factory({ lifecycle }) {
-    return new DefaultHealthService({ lifecycle });
+    return new DefaultRootHealthService({ lifecycle });
   },
 });
