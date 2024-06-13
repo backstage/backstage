@@ -24,18 +24,17 @@ function customTitle(entity: Entity): string {
   return entity.metadata.title || entity.metadata.name;
 }
 
-type ColumnOptions = Partial<TableColumn<DocsTableRow>>;
-
 /**
  * Not directly exported, but through DocsTable.columns and EntityListDocsTable.columns
  *
  * @public
  */
 export const columnFactories = {
-  createTitleColumn(overrides: ColumnOptions = {}): TableColumn<DocsTableRow> {
+  createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow> {
     return {
       title: 'Document',
       field: 'entity.metadata.title',
+      hidden: options?.hidden,
       highlight: true,
       searchable: true,
       render: (row: DocsTableRow) => (
@@ -46,10 +45,9 @@ export const columnFactories = {
           subvalue={row.entity.metadata.description}
         />
       ),
-      ...overrides,
     };
   },
-  createNameColumn(overrides: ColumnOptions = {}): TableColumn<DocsTableRow> {
+  createNameColumn(): TableColumn<DocsTableRow> {
     return {
       title: 'Document',
       field: 'entity.metadata.name',
@@ -63,10 +61,9 @@ export const columnFactories = {
           subvalue={row.entity.metadata.description}
         />
       ),
-      ...overrides,
     };
   },
-  createOwnerColumn(overrides: ColumnOptions = {}): TableColumn<DocsTableRow> {
+  createOwnerColumn(): TableColumn<DocsTableRow> {
     return {
       title: 'Owner',
       field: 'resolved.ownedByRelationsTitle',
@@ -76,21 +73,18 @@ export const columnFactories = {
           defaultKind="group"
         />
       ),
-      ...overrides,
     };
   },
-  createKindColumn(overrides: ColumnOptions = {}): TableColumn<DocsTableRow> {
+  createKindColumn(): TableColumn<DocsTableRow> {
     return {
       title: 'Kind',
       field: 'entity.kind',
-      ...overrides,
     };
   },
-  createTypeColumn(overrides: ColumnOptions = {}): TableColumn<DocsTableRow> {
+  createTypeColumn(): TableColumn<DocsTableRow> {
     return {
       title: 'Type',
       field: 'entity.spec.type',
-      ...overrides,
     };
   },
 };
