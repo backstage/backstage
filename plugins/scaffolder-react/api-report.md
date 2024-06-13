@@ -179,6 +179,13 @@ export type ReviewStepProps = {
 
 // @public
 export interface ScaffolderApi {
+  // (undocumented)
+  autocomplete(
+    token: string,
+    provider: string,
+    resource: string,
+    params?: Record<string, string>,
+  ): Promise<string[]>;
   cancelTask(taskId: string): Promise<void>;
   // (undocumented)
   dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
