@@ -17,8 +17,6 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
-import { CacheManager as CacheManager_2 } from '@backstage/backend-defaults/cache';
-import { CacheManagerOptions as CacheManagerOptions_2 } from '@backstage/backend-defaults/cache';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions } from '@backstage/backend-plugin-api';
 import { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
@@ -45,7 +43,6 @@ import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PluginCacheManager as PluginCacheManager_2 } from '@backstage/backend-defaults/cache';
 import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
@@ -122,9 +119,13 @@ export type CacheClientOptions = CacheServiceOptions;
 // @public @deprecated (undocumented)
 export type CacheClientSetOptions = CacheServiceSetOptions;
 
+// Warning: (ae-forgotten-export) The symbol "CacheManager_2" needs to be exported by the entry point index.d.ts
+//
 // @public @deprecated (undocumented)
 export const CacheManager: typeof CacheManager_2;
 
+// Warning: (ae-forgotten-export) The symbol "CacheManagerOptions_2" needs to be exported by the entry point index.d.ts
+//
 // @public @deprecated (undocumented)
 export type CacheManagerOptions = CacheManagerOptions_2;
 
@@ -460,6 +461,8 @@ export function makeLegacyPlugin<
 // @public @deprecated
 export function notFoundHandler(): RequestHandler;
 
+// Warning: (ae-forgotten-export) The symbol "PluginCacheManager_2" needs to be exported by the entry point index.d.ts
+//
 // @public @deprecated (undocumented)
 export type PluginCacheManager = PluginCacheManager_2;
 
