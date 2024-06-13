@@ -62,13 +62,11 @@ export type PuppetFactSet = {
 
 // @public
 export type PuppetNode = {
-  timestamp: string;
+  facts_timestamp: string;
   certname: string;
   latest_report_status: string;
-  hash: string;
-  producer_timestamp: string;
-  producer: string;
-  environment: string;
+  latest_report_hash: string;
+  facts_environment: string;
   facts: PuppetFactSet;
 };
 
