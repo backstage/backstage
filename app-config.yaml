@@ -297,6 +297,9 @@ catalog:
     # Example component for TechDocs
     - type: file
       target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
+    # Example component for TechDocs with a title
+    - type: file
+      target: ../../plugins/techdocs-backend/examples/documented-component-with-title/catalog-info.yaml
     # Example component for ADRs
     - type: file
       target: ../../plugins/adr/examples/component/catalog-info.yaml

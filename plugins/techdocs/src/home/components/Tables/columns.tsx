@@ -24,17 +24,20 @@ function customTitle(entity: Entity): string {
   return entity.metadata.title || entity.metadata.name;
 }
 
+type ColumnOptions = Partial<TableColumn<DocsTableRow>>;
+
 /**
  * Not directly exported, but through DocsTable.columns and EntityListDocsTable.columns
  *
  * @public
  */
 export const columnFactories = {
-  createNameColumn(): TableColumn<DocsTableRow> {
+  createTitleColumn(overrides: ColumnOptions = {}): TableColumn<DocsTableRow> {
     return {
       title: 'Document',
-      field: 'entity.metadata.name',
+      field: 'entity.metadata.title',
       highlight: true,
+      searchable: true,
       render: (row: DocsTableRow) => (
         <SubvalueCell
           value={
@@ -43,9 +46,27 @@ export const columnFactories = {
           subvalue={row.entity.metadata.description}
         />
       ),
+      ...overrides,
     };
   },
-  createOwnerColumn(): TableColumn<DocsTableRow> {
+  createNameColumn(overrides: ColumnOptions = {}): TableColumn<DocsTableRow> {
+    return {
+      title: 'Document',
+      field: 'entity.metadata.name',
+      highlight: true,
+      searchable: true,
+      render: (row: DocsTableRow) => (
+        <SubvalueCell
+          value={
+            <Link to={row.resolved.docsUrl}>{customTitle(row.entity)}</Link>
+          }
+          subvalue={row.entity.metadata.description}
+        />
+      ),
+      ...overrides,
+    };
+  },
+  createOwnerColumn(overrides: ColumnOptions = {}): TableColumn<DocsTableRow> {
     return {
       title: 'Owner',
       field: 'resolved.ownedByRelationsTitle',
@@ -55,18 +76,21 @@ export const columnFactories = {
           defaultKind="group"
         />
       ),
+      ...overrides,
     };
   },
-  createKindColumn(): TableColumn<DocsTableRow> {
+  createKindColumn(overrides: ColumnOptions = {}): TableColumn<DocsTableRow> {
     return {
       title: 'Kind',
       field: 'entity.kind',
+      ...overrides,
     };
   },
-  createTypeColumn(): TableColumn<DocsTableRow> {
+  createTypeColumn(overrides: ColumnOptions = {}): TableColumn<DocsTableRow> {
     return {
       title: 'Type',
       field: 'entity.spec.type',
+      ...overrides,
     };
   },
 };
