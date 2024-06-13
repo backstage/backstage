@@ -1,5 +1,4 @@
 ---
-'@backstage/plugin-techdocs-backend': patch
 '@backstage/plugin-techdocs': patch
 ---
 
