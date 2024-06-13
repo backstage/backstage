@@ -15,9 +15,9 @@
  */
 
 import {
-  UrlReaderReadTreeResponse,
-  UrlReaderReadTreeResponseDirOptions,
-  UrlReaderReadTreeResponseFile,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadTreeResponseDirOptions,
+  UrlReaderServiceReadTreeResponseFile,
 } from '@backstage/backend-plugin-api';
 import concatStream from 'concat-stream';
 import platformPath, { dirname } from 'path';
@@ -33,7 +33,7 @@ const pipeline = promisify(pipelineCb);
 /**
  * Wraps a array of Readable objects into a tree response reader.
  */
-export class ReadableArrayResponse implements UrlReaderReadTreeResponse {
+export class ReadableArrayResponse implements UrlReaderServiceReadTreeResponse {
   private read = false;
 
   constructor(
@@ -52,10 +52,10 @@ export class ReadableArrayResponse implements UrlReaderReadTreeResponse {
     this.read = true;
   }
 
-  async files(): Promise<UrlReaderReadTreeResponseFile[]> {
+  async files(): Promise<UrlReaderServiceReadTreeResponseFile[]> {
     this.onlyOnce();
 
-    const files = Array<UrlReaderReadTreeResponseFile>();
+    const files = Array<UrlReaderServiceReadTreeResponseFile>();
 
     for (let i = 0; i < this.stream.length; i++) {
       if (!this.stream[i].path.endsWith('/')) {
@@ -86,7 +86,9 @@ export class ReadableArrayResponse implements UrlReaderReadTreeResponse {
     }
   }
 
-  async dir(options?: UrlReaderReadTreeResponseDirOptions): Promise<string> {
+  async dir(
+    options?: UrlReaderServiceReadTreeResponseDirOptions,
+  ): Promise<string> {
     this.onlyOnce();
 
     const dir =

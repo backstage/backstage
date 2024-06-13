@@ -16,13 +16,13 @@
 
 import {
   UrlReaderService,
-  UrlReaderReadTreeOptions,
-  UrlReaderReadTreeResponse,
-  UrlReaderReadUrlOptions,
-  UrlReaderReadUrlResponse,
-  UrlReaderSearchOptions,
-  UrlReaderSearchResponse,
-  UrlReaderSearchResponseFile,
+  UrlReaderServiceReadTreeOptions,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
+  UrlReaderServiceSearchResponse,
+  UrlReaderServiceSearchResponseFile,
 } from '@backstage/backend-plugin-api';
 import {
   getGithubFileFetchUrl,
@@ -112,8 +112,8 @@ export class GithubUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: UrlReaderReadUrlOptions,
-  ): Promise<UrlReaderReadUrlResponse> {
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse> {
     const credentials = await this.getCredentials(url, options);
 
     const ghUrl = getGithubFileFetchUrl(
@@ -148,8 +148,8 @@ export class GithubUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: UrlReaderReadTreeOptions,
-  ): Promise<UrlReaderReadTreeResponse> {
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse> {
     const repoDetails = await this.getRepoDetails(url);
     const commitSha = repoDetails.commitSha;
 
@@ -177,8 +177,8 @@ export class GithubUrlReader implements UrlReaderService {
 
   async search(
     url: string,
-    options?: UrlReaderSearchOptions,
-  ): Promise<UrlReaderSearchResponse> {
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
     const repoDetails = await this.getRepoDetails(url);
     const commitSha = repoDetails.commitSha;
 
@@ -211,8 +211,8 @@ export class GithubUrlReader implements UrlReaderService {
     sha: string,
     subpath: string,
     init: RequestInit,
-    options?: UrlReaderReadTreeOptions,
-  ): Promise<UrlReaderReadTreeResponse> {
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse> {
     // archive_url looks like "https://api.github.com/repos/owner/repo/{archive_format}{/ref}"
     const archive = await this.fetchResponse(
       archiveUrl
@@ -238,7 +238,7 @@ export class GithubUrlReader implements UrlReaderService {
     sha: string,
     query: string,
     init: RequestInit,
-  ): Promise<UrlReaderSearchResponseFile[]> {
+  ): Promise<UrlReaderServiceSearchResponseFile[]> {
     function pathToUrl(path: string): string {
       // TODO(freben): Use the integration package facility for this instead
       // pathname starts as /backstage/backstage/blob/master/<path>

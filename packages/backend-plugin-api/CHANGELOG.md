@@ -7,15 +7,15 @@
 - 9bdc3e8: In tests, return `null` rather than throwing an error when trying to get the `ExtensionPoint.T` property, so that tests asserting the property are not easily broken.
 - b2ee7f3: Deprecated all of the `UrlReader` related type names and replaced them with prefixed versions. Please update your imports.
 
-  - `ReadTreeOptions` was renamed to `UrlReaderReadTreeOptions`
-  - `ReadTreeResponse` was renamed to `UrlReaderReadTreeResponse`
-  - `ReadTreeResponseDirOptions` was renamed to `UrlReaderReadTreeResponseDirOptions`
-  - `ReadTreeResponseFile` was renamed to `UrlReaderReadTreeResponseFile`
-  - `ReadUrlResponse` was renamed to `UrlReaderReadUrlResponse`
-  - `ReadUrlOptions` was renamed to `UrlReaderReadUrlOptions`
-  - `SearchOptions` was renamed to `UrlReaderSearchOptions`
-  - `SearchResponse` was renamed to `UrlReaderSearchResponse`
-  - `SearchResponseFile` was renamed to `UrlReaderSearchResponseFile`
+  - `ReadTreeOptions` was renamed to `UrlReaderServiceReadTreeOptions`
+  - `ReadTreeResponse` was renamed to `UrlReaderServiceReadTreeResponse`
+  - `ReadTreeResponseDirOptions` was renamed to `UrlReaderServiceReadTreeResponseDirOptions`
+  - `ReadTreeResponseFile` was renamed to `UrlReaderServiceReadTreeResponseFile`
+  - `ReadUrlResponse` was renamed to `UrlReaderServiceReadUrlResponse`
+  - `ReadUrlOptions` was renamed to `UrlReaderServiceReadUrlOptions`
+  - `SearchOptions` was renamed to `UrlReaderServiceSearchOptions`
+  - `SearchResponse` was renamed to `UrlReaderServiceSearchResponse`
+  - `SearchResponseFile` was renamed to `UrlReaderServiceSearchResponseFile`
 
 - Updated dependencies
   - @backstage/plugin-auth-node@0.4.14-next.3
