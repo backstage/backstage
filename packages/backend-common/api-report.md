@@ -17,9 +17,11 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
+import { CacheManager as CacheManager_2 } from '@backstage/backend-defaults/cache';
+import { CacheManagerOptions as CacheManagerOptions_2 } from '@backstage/backend-defaults/cache';
 import { CacheService } from '@backstage/backend-plugin-api';
 import { CacheServiceOptions } from '@backstage/backend-plugin-api';
-import type { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
+import { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import cors from 'cors';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
@@ -43,6 +45,7 @@ import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
 import { PermissionsService } from '@backstage/backend-plugin-api';
+import { PluginCacheManager as PluginCacheManager_2 } from '@backstage/backend-defaults/cache';
 import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
@@ -119,25 +122,11 @@ export type CacheClientOptions = CacheServiceOptions;
 // @public @deprecated (undocumented)
 export type CacheClientSetOptions = CacheServiceSetOptions;
 
-// @public
-export class CacheManager {
-  forPlugin(pluginId: string): {
-    getClient(options?: CacheServiceOptions): CacheService;
-  };
-  static fromConfig(
-    config: Config,
-    options?: {
-      logger?: LoggerService;
-      onError?: (err: Error) => void;
-    },
-  ): CacheManager;
-}
+// @public @deprecated (undocumented)
+export const CacheManager: typeof CacheManager_2;
 
-// @public
-export type CacheManagerOptions = {
-  logger?: LoggerService;
-  onError?: (err: Error) => void;
-};
+// @public @deprecated (undocumented)
+export type CacheManagerOptions = CacheManagerOptions_2;
 
 // @public
 export function cacheToPluginCacheManager(cache: CacheService): {
@@ -471,11 +460,8 @@ export function makeLegacyPlugin<
 // @public @deprecated
 export function notFoundHandler(): RequestHandler;
 
-// @public (undocumented)
-export interface PluginCacheManager {
-  // (undocumented)
-  getClient(options?: CacheServiceOptions): CacheService;
-}
+// @public @deprecated (undocumented)
+export type PluginCacheManager = PluginCacheManager_2;
 
 export { PluginDatabaseManager };
 
