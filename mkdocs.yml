@@ -153,6 +153,7 @@ nav:
       - Included providers:
           - Atlassian: 'auth/atlassian/provider.md'
           - Auth0: 'auth/auth0/provider.md'
+          - AWS ALB: 'auth/aws-alb/provider.md'
           - Azure: 'auth/microsoft/provider.md'
           - Azure EasyAuth: 'auth/microsoft/azure-easyauth.md'
           - Bitbucket: 'auth/bitbucket/provider.md'
