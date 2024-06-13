@@ -20,7 +20,7 @@ import { ForwardedError } from '@backstage/errors';
 import { PassThrough } from 'stream';
 import { pipeline as pipelineStream } from 'stream';
 import { promisify } from 'util';
-import { ContainerRunner, RunContainerOptions } from './types';
+import { Writable } from 'stream';
 
 const pipeline = promisify(pipelineStream);
 
@@ -29,18 +29,26 @@ export type UserOptions = {
 };
 
 /**
- * A {@link ContainerRunner} for Docker containers.
- *
- * @public
+ * @internal
  */
-export class DockerContainerRunner implements ContainerRunner {
+export class DockerContainerRunner {
   private readonly dockerClient: Docker;
 
   constructor() {
     this.dockerClient = new Docker();
   }
 
-  async runContainer(options: RunContainerOptions) {
+  async runContainer(options: {
+    imageName: string;
+    command?: string | string[];
+    args: string[];
+    logStream?: Writable;
+    mountDirs?: Record<string, string>;
+    workingDir?: string;
+    envVars?: Record<string, string>;
+    pullImage?: boolean;
+    defaultUser?: boolean;
+  }) {
     const {
       imageName,
       command,

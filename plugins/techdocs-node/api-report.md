@@ -19,11 +19,6 @@ import * as winston from 'winston';
 import { Writable } from 'stream';
 
 // @public
-export interface ContainerRunner {
-  runContainer(opts: RunContainerOptions): Promise<void>;
-}
-
-// @public
 export class DirectoryPreparer implements PreparerBase {
   static fromConfig(config: Config, options: PreparerConfig): DirectoryPreparer;
   prepare(entity: Entity, options?: PreparerOptions): Promise<PreparerResponse>;
@@ -52,7 +47,6 @@ export type GeneratorBuilder = {
 
 // @public
 export type GeneratorOptions = {
-  containerRunner?: ContainerRunner;
   logger: Logger;
 };
 
@@ -240,19 +234,6 @@ export type ReadinessResponse = {
 export type RemoteProtocol = 'url' | 'dir';
 
 // @public
-export type RunContainerOptions = {
-  imageName: string;
-  command?: string | string[];
-  args: string[];
-  logStream?: Writable;
-  mountDirs?: Record<string, string>;
-  workingDir?: string;
-  envVars?: Record<string, string>;
-  pullImage?: boolean;
-  defaultUser?: boolean;
-};
-
-// @public
 export type SupportedGeneratorKey = 'techdocs' | string;
 
 // @public
@@ -280,7 +261,6 @@ export interface TechDocsDocument extends IndexableDocument {
 export class TechdocsGenerator implements GeneratorBase {
   constructor(options: {
     logger: Logger;
-    containerRunner?: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });

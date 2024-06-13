@@ -35,7 +35,6 @@ import {
   patchMkdocsYmlWithPlugins,
 } from './mkdocsPatchers';
 import {
-  ContainerRunner,
   GeneratorBase,
   GeneratorConfig,
   GeneratorOptions,
@@ -58,18 +57,17 @@ export class TechdocsGenerator implements GeneratorBase {
   private readonly logger: Logger;
   private readonly options: GeneratorConfig;
   private readonly scmIntegrations: ScmIntegrationRegistry;
-  private containerRunner?: ContainerRunner;
+
   /**
    * Returns a instance of TechDocs generator
    * @param config - A Backstage configuration
    * @param options - Options to configure the generator
    */
   static fromConfig(config: Config, options: GeneratorOptions) {
-    const { containerRunner, logger } = options;
+    const { logger } = options;
     const scmIntegrations = ScmIntegrations.fromConfig(config);
     return new TechdocsGenerator({
       logger,
-      containerRunner,
       config,
       scmIntegrations,
     });
@@ -77,13 +75,11 @@ export class TechdocsGenerator implements GeneratorBase {
 
   constructor(options: {
     logger: Logger;
-    containerRunner?: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   }) {
     this.logger = options.logger;
     this.options = readGeneratorConfig(options.config, options.logger);
-    this.containerRunner = options.containerRunner;
     this.scmIntegrations = options.scmIntegrations;
   }
 
@@ -155,11 +151,9 @@ export class TechdocsGenerator implements GeneratorBase {
             `Successfully generated docs from ${inputDir} into ${outputDir} using local mkdocs`,
           );
           break;
-        case 'docker':
-          if (this.containerRunner === undefined) {
-            this.containerRunner = new DockerContainerRunner();
-          }
-          await this.containerRunner.runContainer({
+        case 'docker': {
+          const containerRunner = new DockerContainerRunner();
+          await containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
             args: ['build', '-d', '/output'],
@@ -176,6 +170,7 @@ export class TechdocsGenerator implements GeneratorBase {
             `Successfully generated docs from ${inputDir} into ${outputDir} using techdocs-container`,
           );
           break;
+        }
         default:
           throw new Error(
             `Invalid config value "${this.options.runIn}" provided in 'techdocs.generators.techdocs'.`,

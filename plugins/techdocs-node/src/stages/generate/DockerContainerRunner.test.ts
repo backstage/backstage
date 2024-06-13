@@ -18,7 +18,6 @@ import fs from 'fs-extra';
 import Stream, { PassThrough } from 'stream';
 import { DockerContainerRunner, UserOptions } from './DockerContainerRunner';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { ContainerRunner } from './types';
 
 const mockPull = jest.fn();
 const mockRun = jest.fn();
@@ -37,7 +36,7 @@ jest.mock(
 );
 
 describe('DockerContainerRunner', () => {
-  let containerTaskApi: ContainerRunner;
+  let containerTaskApi: DockerContainerRunner;
 
   const inputDir = createMockDirectory();
   const outputDir = createMockDirectory();
