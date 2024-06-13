@@ -163,8 +163,8 @@ export const BitbucketRepoPicker = (props: {
           ) : (
             <Autocomplete
               value={workspace}
-              onInputChange={(_, newValue) => {
-                onChange({ workspace: String(newValue) });
+              onChange={(_, newValue) => {
+                onChange({ workspace: newValue || '' });
               }}
               options={availableWorkspaces}
               renderInput={params => (
@@ -198,8 +198,8 @@ export const BitbucketRepoPicker = (props: {
         ) : (
           <Autocomplete
             value={project}
-            onInputChange={(_, newValue) => {
-              onChange({ project: String(newValue) });
+            onChange={(_, newValue) => {
+              onChange({ project: newValue || '' });
             }}
             options={availableProjects}
             renderInput={params => (

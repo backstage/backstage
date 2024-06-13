@@ -64,14 +64,15 @@ export const RepoUrlPickerRepoName = (props: {
         ) : (
           <Autocomplete
             value={repoName}
-            onInputChange={(_, newValue) => {
-              onChange(String(newValue));
+            onChange={(_, newValue) => {
+              onChange(newValue || '');
             }}
             options={availableRepos || []}
             renderInput={params => (
               <TextField {...params} label="Repository" required />
             )}
             freeSolo
+            autoSelect
           />
         )}
         <FormHelperText>The name of the repository</FormHelperText>

@@ -17,6 +17,7 @@ import React from 'react';
 import { RepoUrlPickerRepoName } from './RepoUrlPickerRepoName';
 import { render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { act } from 'react-dom/test-utils';
 
 describe('RepoUrlPickerRepoName', () => {
   it('should call onChange with the first allowed repo if there is none set already', async () => {
@@ -70,7 +71,9 @@ describe('RepoUrlPickerRepoName', () => {
 
     expect(textArea).toBeVisible();
 
+    act(() => textArea.focus());
     fireEvent.change(textArea, { target: { value: 'foo' } });
+    act(() => textArea.blur());
 
     expect(onChange).toHaveBeenCalledWith('foo');
   });

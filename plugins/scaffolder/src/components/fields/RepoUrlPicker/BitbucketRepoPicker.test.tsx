@@ -23,6 +23,7 @@ import {
   ScaffolderApi,
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
+import { act } from 'react-dom/test-utils';
 
 describe('BitbucketRepoPicker', () => {
   const scaffolderApiMock: Partial<ScaffolderApi> = {
@@ -100,7 +101,9 @@ describe('BitbucketRepoPicker', () => {
 
       const workspaceInput = getAllByRole('textbox')[0];
 
+      act(() => workspaceInput.focus());
       fireEvent.change(workspaceInput, { target: { value: 'test-workspace' } });
+      act(() => workspaceInput.blur());
 
       expect(onChange).toHaveBeenCalledWith({ workspace: 'test-workspace' });
     });
@@ -121,7 +124,9 @@ describe('BitbucketRepoPicker', () => {
 
       const projectInput = getAllByRole('textbox')[1];
 
+      act(() => projectInput.focus());
       fireEvent.change(projectInput, { target: { value: 'test-project' } });
+      act(() => projectInput.blur());
 
       expect(onChange).toHaveBeenCalledWith({ project: 'test-project' });
     });
