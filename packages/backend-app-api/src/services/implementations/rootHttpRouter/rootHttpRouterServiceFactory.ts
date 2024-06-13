@@ -20,7 +20,7 @@ import {
   createServiceFactory,
   LifecycleService,
   LoggerService,
-  HealthService,
+  RootHealthService,
 } from '@backstage/backend-plugin-api';
 import express, { RequestHandler, Express } from 'express';
 import type { Server } from 'node:http';
@@ -43,7 +43,7 @@ export interface RootHttpRouterConfigureContext {
   config: RootConfigService;
   logger: LoggerService;
   lifecycle: LifecycleService;
-  health: HealthService;
+  health: RootHealthService;
   applyDefaults: () => void;
 }
 

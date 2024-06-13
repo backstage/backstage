@@ -56,7 +56,7 @@ import {
   eventsServiceFactory,
   eventsServiceRef,
 } from '@backstage/plugin-events-node';
-import { healthServiceFactory } from '@backstage/backend-defaults/health';
+import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 
 /** @internal */
 function createLoggerMock() {
@@ -384,6 +384,14 @@ export namespace mockServices {
     }));
   }
 
+  export namespace rootHealth {
+    export const factory = rootHealthServiceFactory;
+    export const mock = simpleMock(coreServices.health, () => ({
+      getLiveness: jest.fn(),
+      getReadiness: jest.fn(),
+    }));
+  }
+
   export namespace rootLifecycle {
     export const factory = rootLifecycleServiceFactory;
     export const mock = simpleMock(coreServices.rootLifecycle, () => ({
@@ -416,14 +424,6 @@ export namespace mockServices {
     export const mock = simpleMock(eventsServiceRef, () => ({
       publish: jest.fn(),
       subscribe: jest.fn(),
-    }));
-  }
-
-  export namespace health {
-    export const factory = healthServiceFactory;
-    export const mock = simpleMock(coreServices.health, () => ({
-      getLiveness: jest.fn(),
-      getReadiness: jest.fn(),
     }));
   }
 }

@@ -82,7 +82,7 @@ export namespace coreServices {
    * The service reference for the plugin scoped {@link HealthService}.
    */
   export const health = createServiceRef<
-    import('./HealthService').HealthService
+    import('./RootHealthService').RootHealthService
   >({ id: 'core.health', scope: 'root' });
 
   /**

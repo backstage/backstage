@@ -32,7 +32,7 @@ export type {
 export type { RootConfigService } from './RootConfigService';
 export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
-export type { HealthService } from './HealthService';
+export type { RootHealthService } from './RootHealthService';
 export type {
   HttpRouterService,
   HttpRouterServiceAuthPolicy,

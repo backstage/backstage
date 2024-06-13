@@ -23,10 +23,10 @@
     "./cache": "./src/entrypoints/cache/index.ts",
     "./database": "./src/entrypoints/database/index.ts",
     "./discovery": "./src/entrypoints/discovery/index.ts",
-    "./health": "./src/entrypoints/health/index.ts",
     "./lifecycle": "./src/entrypoints/lifecycle/index.ts",
     "./permissions": "./src/entrypoints/permissions/index.ts",
     "./rootConfig": "./src/entrypoints/rootConfig/index.ts",
+    "./rootHealth": "./src/entrypoints/rootHealth/index.ts",
     "./rootLifecycle": "./src/entrypoints/rootLifecycle/index.ts",
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
@@ -45,8 +45,8 @@
       "discovery": [
         "src/entrypoints/discovery/index.ts"
       ],
-      "health": [
-        "src/entrypoints/health/index.ts"
+      "rootHealth": [
+        "src/entrypoints/rootHealth/index.ts"
       ],
       "lifecycle": [
         "src/entrypoints/lifecycle/index.ts"
