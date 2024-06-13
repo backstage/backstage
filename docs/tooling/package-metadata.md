@@ -73,3 +73,7 @@ The package scripts as defined by [NPM](https://docs.npmjs.com/cli/v10/configuri
   "postpack": "backstage-cli package postpack"
 }
 ```
+
+### `configSchema`
+
+The Backstage configuration schema for the package, as described by the [defining configuration](../conf/defining.md) section.
