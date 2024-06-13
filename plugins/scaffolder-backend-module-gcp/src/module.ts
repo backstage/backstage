@@ -25,7 +25,7 @@ import { GcpBucketWorkspaceProvider } from './providers/GcpBucketWorkspaceProvid
  * The Azure Module for the Scaffolder Backend
  */
 export const gcpBucketModule = createBackendModule({
-  moduleId: 'gcp-bucket',
+  moduleId: 'gcp',
   pluginId: 'scaffolder',
   register({ registerInit }) {
     registerInit({

@@ -6779,9 +6779,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-scaffolder-backend-module-gcp-bucket@workspace:plugins/scaffolder-backend-module-gcp-bucket":
+"@backstage/plugin-scaffolder-backend-module-gcp@workspace:plugins/scaffolder-backend-module-gcp":
   version: 0.0.0-use.local
-  resolution: "@backstage/plugin-scaffolder-backend-module-gcp-bucket@workspace:plugins/scaffolder-backend-module-gcp-bucket"
+  resolution: "@backstage/plugin-scaffolder-backend-module-gcp@workspace:plugins/scaffolder-backend-module-gcp"
   dependencies:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
@@ -6790,7 +6790,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    "@google-cloud/storage": ^7.11.2
+    "@google-cloud/storage": ^7.0.0
     raw-body: ^2.4.1
   languageName: unknown
   linkType: soft
@@ -9372,7 +9372,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@google-cloud/storage@npm:^7.0.0, @google-cloud/storage@npm:^7.11.2":
+"@google-cloud/storage@npm:^7.0.0":
   version: 7.11.2
   resolution: "@google-cloud/storage@npm:7.11.2"
   dependencies:

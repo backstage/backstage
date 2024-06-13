@@ -1,9 +1,11 @@
 {
-  "name": "@backstage/plugin-scaffolder-backend-module-gcp-bucket",
-  "version": "0.0.1",
+  "name": "@backstage/plugin-scaffolder-backend-module-gcp",
+  "version": "0.0.1-next.1",
   "description": "The GCP Bucket module for @backstage/plugin-scaffolder-backend",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "scaffolder",
+    "pluginPackage": "@backstage/plugin-scaffolder-backend"
   },
   "publishConfig": {
     "access": "public"
@@ -11,7 +13,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/scaffolder-backend-module-gcp-bucket"
+    "directory": "plugins/scaffolder-backend-module-gcp"
   },
   "license": "Apache-2.0",
   "exports": {
@@ -45,7 +47,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-scaffolder-node": "workspace:^",
-    "@google-cloud/storage": "^7.11.2",
+    "@google-cloud/storage": "^7.0.0",
     "raw-body": "^2.4.1"
   },
   "devDependencies": {

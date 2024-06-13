@@ -57,9 +57,7 @@ export interface Config {
      *
      * By default, it is your database.
      */
-    EXPERIMENTAL_workspaceSerializationProvider?:
-      | 'database'
-      | 'googleCloudBucket';
+    EXPERIMENTAL_workspaceSerializationProvider?: string;
 
     /**
      * Every task which is in progress state and having a last heartbeat longer than a specified timeout is going to
