@@ -18,7 +18,7 @@ export interface BackstagePackageJson {
   backstage?: {
     role?: PackageRole;
     moved?: string;
-    pluginId?: string;
+    pluginId?: string | null;
     pluginPackage?: string;
     pluginPackages?: string[];
   };
