@@ -71,9 +71,11 @@ describe('RepoUrlPickerRepoName', () => {
 
     expect(textArea).toBeVisible();
 
-    act(() => textArea.focus());
-    fireEvent.change(textArea, { target: { value: 'foo' } });
-    act(() => textArea.blur());
+    act(() => {
+      textArea.focus();
+      fireEvent.change(textArea, { target: { value: 'foo' } });
+      textArea.blur();
+    });
 
     expect(onChange).toHaveBeenCalledWith('foo');
   });

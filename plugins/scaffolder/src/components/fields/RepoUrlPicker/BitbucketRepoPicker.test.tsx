@@ -101,9 +101,13 @@ describe('BitbucketRepoPicker', () => {
 
       const workspaceInput = getAllByRole('textbox')[0];
 
-      act(() => workspaceInput.focus());
-      fireEvent.change(workspaceInput, { target: { value: 'test-workspace' } });
-      act(() => workspaceInput.blur());
+      act(() => {
+        workspaceInput.focus();
+        fireEvent.change(workspaceInput, {
+          target: { value: 'test-workspace' },
+        });
+        workspaceInput.blur();
+      });
 
       expect(onChange).toHaveBeenCalledWith({ workspace: 'test-workspace' });
     });
@@ -124,9 +128,11 @@ describe('BitbucketRepoPicker', () => {
 
       const projectInput = getAllByRole('textbox')[1];
 
-      act(() => projectInput.focus());
-      fireEvent.change(projectInput, { target: { value: 'test-project' } });
-      act(() => projectInput.blur());
+      act(() => {
+        projectInput.focus();
+        fireEvent.change(projectInput, { target: { value: 'test-project' } });
+        projectInput.blur();
+      });
 
       expect(onChange).toHaveBeenCalledWith({ project: 'test-project' });
     });
