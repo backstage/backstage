@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
+import { DatabaseManager } from './DatabaseManager';
 
 /**
  * @public
