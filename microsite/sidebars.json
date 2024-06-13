@@ -302,6 +302,7 @@
         "items": [
           "auth/auth0/provider",
           "auth/atlassian/provider",
+          "auth/aws-alb/provider",
           "auth/microsoft/provider",
           "auth/microsoft/easy-auth",
           "auth/bitbucket/provider",
