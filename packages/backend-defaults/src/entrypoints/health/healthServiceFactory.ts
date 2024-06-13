@@ -1,10 +1,3 @@
-import {
-  HealthService,
-  RootLifecycleService,
-  coreServices,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
-
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -20,6 +13,13 @@ import {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {
+  HealthService,
+  RootLifecycleService,
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 
 /** @internal */
 export class DefaultHealthService implements HealthService {
