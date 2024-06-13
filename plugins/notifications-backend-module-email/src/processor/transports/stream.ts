@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export { createSmtpTransport } from './smtp';
-export { createSesTransport } from './ses';
-export { createSendmailTransport } from './sendmail';
-export { createStreamTransport } from './stream';
+import { createTransport } from 'nodemailer';
+
+export const createStreamTransport = () => {
+  return createTransport({ streamTransport: true });
+};

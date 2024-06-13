@@ -79,6 +79,10 @@ export interface Config {
                * Newline style, defaults to 'unix'
                */
               newline?: 'unix' | 'windows';
+            }
+          | {
+              /** Only for debugging, disables the actual sending of emails */
+              transport: 'stream';
             };
         /**
          * Sender email address
