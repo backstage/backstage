@@ -153,3 +153,38 @@ This field indicates that a package has been renamed and moved to a new location
   ...
 }
 ```
+
+## Metadata for Published Packages
+
+When publishing a package with the help of the Backstage CLI, there are a number of metadata checks that are performed to ensure that the package is correctly set up for the Backstage ecosystem. These checks are performed by the `backstage-cli package prepack` command, which is used to prepare a package for publishing. These checks can all also be verified separately using the `backstage-cli repo fix --publish` command, and in many cases the required metadata can be generated automatically. It is therefore important to make running the `fix` command part of your workflow in any project that is publishing Backstage packages.
+
+To set this up, we recommend that you add the following script to the root `package.json` of your workspace:
+
+```js
+{
+  "scripts": {
+    "fix": "backstage-cli repo fix --publish"
+  }
+}
+```
+
+This allows anyone working in the repo to run `yarn fix` to check and update all packages in the workspace.
+
+In addition, you should also add a check to your CI pipeline that ensures that there are no pending fixes. This is done by calling the command with the `--check` flag, which in GitHub actions would look something like this:
+
+```yaml
+- name: check for missing repo fixes
+  run: yarn fix --check
+```
+
+Finally, if you are using Husky or any other pre-commit hook, you can also set up a hook to run the fix command before committing:
+
+```js
+{
+  "lint-staged": {
+    "package.json": [
+      "yarn fix"
+    ]
+  }
+}
+```
