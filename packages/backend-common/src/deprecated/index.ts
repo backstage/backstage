@@ -16,11 +16,13 @@
 
 export * from './scm';
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { CacheManager as _CacheManager } from '../../../backend-defaults/src/entrypoints/cache/CacheManager';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  CacheManager as _CacheManager,
-  CacheManagerOptions as _CacheManagerOptions,
-  PluginCacheManager as _PluginCacheManager,
-} from '@backstage/backend-defaults/cache';
+  type PluginCacheManager as _PluginCacheManager,
+  type CacheManagerOptions as _CacheManagerOptions,
+} from '../../../backend-defaults/src/entrypoints/cache/types';
 
 import {
   CacheService,
