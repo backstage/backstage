@@ -46,6 +46,7 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { handleBitbucketCloudRequest } from './autocomplete';
 
 const mockAccess = jest.fn();
 
@@ -60,6 +61,10 @@ jest.mock('fs-extra', () => ({
   },
   mkdir: jest.fn(),
   remove: jest.fn(),
+}));
+
+jest.mock('./autocomplete', () => ({
+  handleBitbucketCloudRequest: jest.fn(),
 }));
 
 function createDatabase(): PluginDatabaseManager {
@@ -1459,6 +1464,23 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           after: 10,
         });
         expect(subscriber!.closed).toBe(true);
+      });
+    });
+
+    describe('GET /v2/autocomplete/:provider/:resource', () => {
+      it('should handle requests for provider bitbucketCloud', async () => {
+        const bbToken = 'foo';
+        const resource = 'bar';
+
+        await request(app)
+          .get(`/v2/autocomplete/bitbucketCloud/${resource}?token=${bbToken}`)
+          .send();
+
+        expect(jest.mocked(handleBitbucketCloudRequest)).toHaveBeenCalledWith(
+          bbToken,
+          resource,
+          {},
+        );
       });
     });
   });
