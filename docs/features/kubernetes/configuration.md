@@ -20,7 +20,7 @@ kubernetes:
   frontend:
     podDelete:
       enabled: true
-      buttonText: 'Restart pod'
+      restartButtonText: true
   serviceLocatorMethod:
     type: 'multiTenant'
   clusterLocatorMethods:
