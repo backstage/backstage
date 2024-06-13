@@ -16,12 +16,12 @@
 
 import {
   UrlReaderService,
-  UrlReaderReadTreeOptions,
-  UrlReaderReadTreeResponse,
-  UrlReaderReadUrlOptions,
-  UrlReaderReadUrlResponse,
-  UrlReaderSearchOptions,
-  UrlReaderSearchResponse,
+  UrlReaderServiceReadTreeOptions,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchOptions,
+  UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import {
   getAzureCommitsUrl,
@@ -74,8 +74,8 @@ export class AzureUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: UrlReaderReadUrlOptions,
-  ): Promise<UrlReaderReadUrlResponse> {
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse> {
     // TODO: etag is not implemented yet.
     const { signal } = options ?? {};
 
@@ -113,8 +113,8 @@ export class AzureUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: UrlReaderReadTreeOptions,
-  ): Promise<UrlReaderReadTreeResponse> {
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse> {
     const { etag, filter, signal } = options ?? {};
 
     // TODO: Support filepath based reading tree feature like other providers
@@ -181,8 +181,8 @@ export class AzureUrlReader implements UrlReaderService {
 
   async search(
     url: string,
-    options?: UrlReaderSearchOptions,
-  ): Promise<UrlReaderSearchResponse> {
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse> {
     const treeUrl = new URL(url);
 
     const path = treeUrl.searchParams.get('path');

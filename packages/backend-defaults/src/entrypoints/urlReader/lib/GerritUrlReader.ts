@@ -16,11 +16,11 @@
 
 import {
   UrlReaderService,
-  UrlReaderReadTreeOptions,
-  UrlReaderReadTreeResponse,
-  UrlReaderReadUrlOptions,
-  UrlReaderReadUrlResponse,
-  UrlReaderSearchResponse,
+  UrlReaderServiceReadTreeOptions,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import { Base64Decode } from 'base64-stream';
 import fetch, { Response } from 'node-fetch';
@@ -88,8 +88,8 @@ export class GerritUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: UrlReaderReadUrlOptions,
-  ): Promise<UrlReaderReadUrlResponse> {
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse> {
     const apiUrl = getGerritFileContentsApiUrl(this.integration.config, url);
     let response: Response;
     try {
@@ -133,8 +133,8 @@ export class GerritUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: UrlReaderReadTreeOptions,
-  ): Promise<UrlReaderReadTreeResponse> {
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse> {
     const apiUrl = getGerritBranchApiUrl(this.integration.config, url);
     let response: Response;
     try {
@@ -165,7 +165,7 @@ export class GerritUrlReader implements UrlReaderService {
     return this.readTreeFromGitiles(url, branchInfo.revision, options);
   }
 
-  async search(): Promise<UrlReaderSearchResponse> {
+  async search(): Promise<UrlReaderServiceSearchResponse> {
     throw new Error('GerritReader does not implement search');
   }
 
@@ -177,7 +177,7 @@ export class GerritUrlReader implements UrlReaderService {
   private async readTreeFromGitiles(
     url: string,
     revision: string,
-    options?: UrlReaderReadTreeOptions,
+    options?: UrlReaderServiceReadTreeOptions,
   ) {
     const { branch, filePath, project } = parseGerritGitilesUrl(
       this.integration.config,

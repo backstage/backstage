@@ -24,7 +24,7 @@ import {
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
 import { ReadableArrayResponse } from './ReadableArrayResponse';
-import { UrlReaderReadTreeResponse } from '@backstage/backend-plugin-api';
+import { UrlReaderServiceReadTreeResponse } from '@backstage/backend-plugin-api';
 
 export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
   static create(options: { config: Config }): DefaultReadTreeResponseFactory {
@@ -40,7 +40,7 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
     options: ReadTreeResponseFactoryOptions & {
       stripFirstDirectory?: boolean;
     },
-  ): Promise<UrlReaderReadTreeResponse> {
+  ): Promise<UrlReaderServiceReadTreeResponse> {
     return new TarArchiveResponse(
       options.stream,
       options.subpath ?? '',
@@ -53,7 +53,7 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
 
   async fromZipArchive(
     options: ReadTreeResponseFactoryOptions,
-  ): Promise<UrlReaderReadTreeResponse> {
+  ): Promise<UrlReaderServiceReadTreeResponse> {
     return new ZipArchiveResponse(
       options.stream,
       options.subpath ?? '',
@@ -65,7 +65,7 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
 
   async fromReadableArray(
     options: FromReadableArrayOptions,
-  ): Promise<UrlReaderReadTreeResponse> {
+  ): Promise<UrlReaderServiceReadTreeResponse> {
     return new ReadableArrayResponse(options, this.workDir, '');
   }
 }

@@ -16,11 +16,11 @@
 
 import {
   UrlReaderService,
-  UrlReaderReadTreeResponse,
-  UrlReaderReadUrlOptions,
-  UrlReaderReadUrlResponse,
-  UrlReaderSearchResponse,
-  UrlReaderReadTreeOptions,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchResponse,
+  UrlReaderServiceReadTreeOptions,
 } from '@backstage/backend-plugin-api';
 import {
   getHarnessRequestOptions,
@@ -75,8 +75,8 @@ export class HarnessUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: UrlReaderReadUrlOptions,
-  ): Promise<UrlReaderReadUrlResponse> {
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse> {
     let response: Response;
     const blobUrl = getHarnessFileContentsUrl(this.integration.config, url);
 
@@ -123,8 +123,8 @@ export class HarnessUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: UrlReaderReadTreeOptions,
-  ): Promise<UrlReaderReadTreeResponse> {
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse> {
     const lastCommitHash = await this.getLastCommitHash(url);
 
     if (options?.etag && options.etag === lastCommitHash) {
@@ -154,7 +154,7 @@ export class HarnessUrlReader implements UrlReaderService {
     });
   }
 
-  search(): Promise<UrlReaderSearchResponse> {
+  search(): Promise<UrlReaderServiceSearchResponse> {
     throw new Error('HarnessUrlReader search not implemented.');
   }
 
