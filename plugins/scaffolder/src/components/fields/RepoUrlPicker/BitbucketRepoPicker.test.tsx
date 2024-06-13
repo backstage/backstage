@@ -17,23 +17,33 @@
 import React from 'react';
 import { BitbucketRepoPicker } from './BitbucketRepoPicker';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import { setupServer } from 'msw/node';
-import { rest } from 'msw';
-import { Models } from '@backstage/plugin-bitbucket-cloud-common';
 import userEvent from '@testing-library/user-event';
-
-const server = setupServer();
+import { TestApiProvider } from '@backstage/test-utils';
+import {
+  ScaffolderApi,
+  scaffolderApiRef,
+} from '@backstage/plugin-scaffolder-react';
 
 describe('BitbucketRepoPicker', () => {
+  const scaffolderApiMock: Partial<ScaffolderApi> = {
+    autocomplete: jest
+      .fn()
+      .mockImplementation((_token, _provider, resource) => [
+        `${resource}_example`,
+      ]),
+  };
+
   it('renders a select if there is a list of allowed owners', async () => {
     const allowedOwners = ['owner1', 'owner2'];
     const { findByText } = render(
-      <BitbucketRepoPicker
-        onChange={jest.fn()}
-        rawErrors={[]}
-        state={{ host: 'bitbucket.org', repoName: 'repo' }}
-        allowedOwners={allowedOwners}
-      />,
+      <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+        <BitbucketRepoPicker
+          onChange={jest.fn()}
+          rawErrors={[]}
+          state={{ host: 'bitbucket.org', repoName: 'repo' }}
+          allowedOwners={allowedOwners}
+        />
+      </TestApiProvider>,
     );
 
     expect(await findByText('owner1')).toBeInTheDocument();
@@ -44,7 +54,13 @@ describe('BitbucketRepoPicker', () => {
     const state = { host: 'bitbucket.org', workspace: 'lolsWorkspace' };
 
     const { getAllByRole } = render(
-      <BitbucketRepoPicker onChange={jest.fn()} rawErrors={[]} state={state} />,
+      <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+        <BitbucketRepoPicker
+          onChange={jest.fn()}
+          rawErrors={[]}
+          state={state}
+        />
+      </TestApiProvider>,
     );
 
     expect(getAllByRole('textbox')).toHaveLength(2);
@@ -57,7 +73,13 @@ describe('BitbucketRepoPicker', () => {
     };
 
     const { getAllByRole } = render(
-      <BitbucketRepoPicker onChange={jest.fn()} rawErrors={[]} state={state} />,
+      <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+        <BitbucketRepoPicker
+          onChange={jest.fn()}
+          rawErrors={[]}
+          state={state}
+        />
+      </TestApiProvider>,
     );
 
     expect(getAllByRole('textbox')).toHaveLength(1);
@@ -67,11 +89,13 @@ describe('BitbucketRepoPicker', () => {
     it('calls onChange when the workspace changes', () => {
       const onChange = jest.fn();
       const { getAllByRole } = render(
-        <BitbucketRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ host: 'bitbucket.org' }}
-        />,
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ host: 'bitbucket.org' }}
+          />
+        </TestApiProvider>,
       );
 
       const workspaceInput = getAllByRole('textbox')[0];
@@ -86,11 +110,13 @@ describe('BitbucketRepoPicker', () => {
     it('calls onChange when the project changes', () => {
       const onChange = jest.fn();
       const { getAllByRole } = render(
-        <BitbucketRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ host: 'bitbucket.org' }}
-        />,
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ host: 'bitbucket.org' }}
+          />
+        </TestApiProvider>,
       );
 
       const projectInput = getAllByRole('textbox')[1];
@@ -102,11 +128,13 @@ describe('BitbucketRepoPicker', () => {
 
     it('Does not render a select if the list of allowed projects does not exist', async () => {
       const { getAllByRole } = render(
-        <BitbucketRepoPicker
-          onChange={jest.fn()}
-          rawErrors={[]}
-          state={{ host: 'bitbucket.org', repoName: 'repo' }}
-        />,
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ host: 'bitbucket.org', repoName: 'repo' }}
+          />
+        </TestApiProvider>,
       );
 
       expect(getAllByRole('textbox')).toHaveLength(2);
@@ -115,12 +143,14 @@ describe('BitbucketRepoPicker', () => {
 
     it('Does not render a select if the list of allowed projects is empty', async () => {
       const { getAllByRole } = render(
-        <BitbucketRepoPicker
-          onChange={jest.fn()}
-          rawErrors={[]}
-          state={{ host: 'bitbucket.org', repoName: 'repo' }}
-          allowedProjects={[]}
-        />,
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ host: 'bitbucket.org', repoName: 'repo' }}
+            allowedProjects={[]}
+          />
+        </TestApiProvider>,
       );
 
       expect(getAllByRole('textbox')).toHaveLength(2);
@@ -130,12 +160,14 @@ describe('BitbucketRepoPicker', () => {
     it('Does render a select if there is a list of allowed projects', async () => {
       const allowedProjects = ['project1', 'project2'];
       const { findByText } = render(
-        <BitbucketRepoPicker
-          onChange={jest.fn()}
-          rawErrors={[]}
-          state={{ host: 'bitbucket.org', repoName: 'repo' }}
-          allowedProjects={allowedProjects}
-        />,
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoPicker
+            onChange={jest.fn()}
+            rawErrors={[]}
+            state={{ host: 'bitbucket.org', repoName: 'repo' }}
+            allowedProjects={allowedProjects}
+          />
+        </TestApiProvider>,
       );
 
       expect(await findByText('project1')).toBeInTheDocument();
@@ -144,71 +176,17 @@ describe('BitbucketRepoPicker', () => {
   });
 
   describe('autocompletion', () => {
-    beforeAll(() => server.listen({ onUnhandledRequest: 'error' }));
-    beforeEach(() => {
-      // BitbucketCloudClient.listWorkspaces()
-      server.use(
-        rest.get('https://api.bitbucket.org/2.0/workspaces', (_, res, ctx) => {
-          const response = {
-            values: [
-              {
-                type: 'workspace',
-                slug: 'workspace1',
-              } as Models.Workspace,
-            ],
-          };
-          return res(ctx.json(response));
-        }),
-      );
-
-      // BitbucketCloudClient.listProjectsByWorkspace()
-      server.use(
-        rest.get(
-          'https://api.bitbucket.org/2.0/workspaces/workspace1/projects',
-          (_, res, ctx) => {
-            const response = {
-              values: [
-                {
-                  type: 'project',
-                  key: 'project1',
-                } as Models.Project,
-              ],
-            };
-            return res(ctx.json(response));
-          },
-        ),
-      );
-
-      // BitbucketCloudClient.listRepositoriesByWorkspace()
-      server.use(
-        rest.get(
-          'https://api.bitbucket.org/2.0/repositories/workspace1',
-          (_, res, ctx) => {
-            const response = {
-              values: [
-                {
-                  type: 'repository',
-                  slug: 'repo1',
-                } as Models.Repository,
-              ],
-            };
-            return res(ctx.json(response));
-          },
-        ),
-      );
-    });
-    afterAll(() => server.close());
-    afterEach(() => server.resetHandlers());
-
     it('should populate workspaces if host is set and accessToken is provided', async () => {
       const onChange = jest.fn();
       const { getAllByRole, getByText } = render(
-        <BitbucketRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ host: 'bitbucket.org' }}
-          accessToken="foo"
-        />,
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ host: 'bitbucket.org' }}
+            accessToken="foo"
+          />
+        </TestApiProvider>,
       );
 
       // Open the Autcomplete dropdown
@@ -216,22 +194,28 @@ describe('BitbucketRepoPicker', () => {
       await userEvent.click(workspaceInput);
 
       // Verify that the available workspaces are shown
-      await waitFor(() => expect(getByText('workspace1')).toBeInTheDocument());
+      await waitFor(() =>
+        expect(getByText('workspaces_example')).toBeInTheDocument(),
+      );
 
       // Verify that selecting an option calls onChange
-      await userEvent.click(getByText('workspace1'));
-      expect(onChange).toHaveBeenCalledWith({ workspace: 'workspace1' });
+      await userEvent.click(getByText('workspaces_example'));
+      expect(onChange).toHaveBeenCalledWith({
+        workspace: 'workspaces_example',
+      });
     });
 
     it('should populate projects if host and workspace are set and accessToken is provided', async () => {
       const onChange = jest.fn();
       const { getAllByRole, getByText } = render(
-        <BitbucketRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{ host: 'bitbucket.org', workspace: 'workspace1' }}
-          accessToken="foo"
-        />,
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{ host: 'bitbucket.org', workspace: 'workspace1' }}
+            accessToken="foo"
+          />
+        </TestApiProvider>,
       );
 
       // Open the Autcomplete dropdown
@@ -239,31 +223,37 @@ describe('BitbucketRepoPicker', () => {
       await userEvent.click(projectInput);
 
       // Verify that the available projects are shown
-      await waitFor(() => expect(getByText('project1')).toBeInTheDocument());
+      await waitFor(() =>
+        expect(getByText('projects_example')).toBeInTheDocument(),
+      );
 
       // Verify that selecting an option calls onChange
-      await userEvent.click(getByText('project1'));
-      expect(onChange).toHaveBeenCalledWith({ project: 'project1' });
+      await userEvent.click(getByText('projects_example'));
+      expect(onChange).toHaveBeenCalledWith({ project: 'projects_example' });
     });
 
     it('should populate repositories if host, workspace and project are set and accessToken is provided', async () => {
       const onChange = jest.fn();
       render(
-        <BitbucketRepoPicker
-          onChange={onChange}
-          rawErrors={[]}
-          state={{
-            host: 'bitbucket.org',
-            workspace: 'workspace1',
-            project: 'project1',
-          }}
-          accessToken="foo"
-        />,
+        <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
+          <BitbucketRepoPicker
+            onChange={onChange}
+            rawErrors={[]}
+            state={{
+              host: 'bitbucket.org',
+              workspace: 'workspace1',
+              project: 'project1',
+            }}
+            accessToken="foo"
+          />
+        </TestApiProvider>,
       );
 
       // Verify that the available repos are updated
       await waitFor(() =>
-        expect(onChange).toHaveBeenCalledWith({ availableRepos: ['repo1'] }),
+        expect(onChange).toHaveBeenCalledWith({
+          availableRepos: ['repositories_example'],
+        }),
       );
     });
   });

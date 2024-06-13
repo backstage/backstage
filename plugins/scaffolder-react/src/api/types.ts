@@ -229,4 +229,11 @@ export interface ScaffolderApi {
   streamLogs(options: ScaffolderStreamLogsOptions): Observable<LogEvent>;
 
   dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
+
+  autocomplete(
+    token: string,
+    provider: string,
+    resource: string,
+    params?: Record<string, string>,
+  ): Promise<string[]>;
 }

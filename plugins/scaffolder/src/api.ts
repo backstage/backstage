@@ -337,4 +337,28 @@ export class ScaffolderClient implements ScaffolderApi {
 
     return await response.json();
   }
+
+  async autocomplete(
+    token: string,
+    provider: string,
+    resource: string,
+    params?: Record<string, string>,
+  ): Promise<string[]> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const query = new URLSearchParams({
+      ...params,
+      token,
+    });
+    const url = `${baseUrl}/v2/autocomplete/${provider}/${resource}?${query}`;
+
+    const response = await this.fetchApi.fetch(url, {
+      method: 'GET',
+    });
+
+    if (!response.ok) {
+      throw await ResponseError.fromResponse(response);
+    }
+
+    return await response.json();
+  }
 }

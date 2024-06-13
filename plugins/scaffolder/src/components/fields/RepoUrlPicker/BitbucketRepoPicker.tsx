@@ -18,10 +18,11 @@ import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import { Select, SelectItem } from '@backstage/core-components';
 import { RepoUrlPickerState } from './types';
-import { BitbucketCloudClient } from '@backstage/plugin-bitbucket-cloud-common';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import useDebounce from 'react-use/esm/useDebounce';
+import { useApi } from '@backstage/core-plugin-api';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 
 /**
  * The underlying component that is rendered in the form for the `BitbucketRepoPicker`
@@ -62,35 +63,21 @@ export const BitbucketRepoPicker = (props: {
     }
   }, [allowedOwners, host, onChange]);
 
-  const [client, setClient] = useState<BitbucketCloudClient>();
+  const scaffolderApi = useApi(scaffolderApiRef);
+
   const [availableWorkspaces, setAvailableWorkspaces] = useState<string[]>([]);
   const [availableProjects, setAvailableProjects] = useState<string[]>([]);
-
-  useEffect(() => {
-    if (host === 'bitbucket.org' && accessToken) {
-      setClient(
-        BitbucketCloudClient.fromConfig({
-          host,
-          apiBaseUrl: 'https://api.bitbucket.org/2.0',
-          accessToken,
-        }),
-      );
-    } else {
-      setClient(undefined);
-    }
-  }, [host, accessToken]);
 
   // Update available workspaces when client is available
   useDebounce(
     () => {
       const updateAvailableWorkspaces = async () => {
-        if (client) {
-          const result: string[] = [];
-
-          for await (const page of client.listWorkspaces().iteratePages()) {
-            const keys = [...page.values!].map(p => p.slug!);
-            result.push(...keys);
-          }
+        if (host === 'bitbucket.org' && accessToken) {
+          const result = await scaffolderApi.autocomplete(
+            accessToken,
+            'bitbucketCloud',
+            'workspaces',
+          );
 
           setAvailableWorkspaces(result);
         } else {
@@ -101,22 +88,20 @@ export const BitbucketRepoPicker = (props: {
       updateAvailableWorkspaces().catch(() => setAvailableWorkspaces([]));
     },
     500,
-    [client],
+    [host, accessToken],
   );
 
   // Update available projects when client is available and workspace changes
   useDebounce(
     () => {
       const updateAvailableProjects = async () => {
-        if (client && workspace) {
-          const result: string[] = [];
-
-          for await (const page of client
-            .listProjectsByWorkspace(workspace)
-            .iteratePages()) {
-            const keys = [...page.values!].map(p => p.key!);
-            result.push(...keys);
-          }
+        if (host === 'bitbucket.org' && accessToken && workspace) {
+          const result = await scaffolderApi.autocomplete(
+            accessToken,
+            'bitbucketCloud',
+            'projects',
+            { workspace },
+          );
 
           setAvailableProjects(result);
         } else {
@@ -127,24 +112,20 @@ export const BitbucketRepoPicker = (props: {
       updateAvailableProjects().catch(() => setAvailableProjects([]));
     },
     500,
-    [client, workspace],
+    [host, accessToken, workspace],
   );
 
   // Update available repositories when client is available and workspace or project changes
   useDebounce(
     () => {
       const updateAvailableRepositories = async () => {
-        if (client && workspace && project) {
-          const availableRepos: string[] = [];
-
-          for await (const page of client
-            .listRepositoriesByWorkspace(workspace, {
-              q: `project.key="${project}"`,
-            })
-            .iteratePages()) {
-            const keys = [...page.values!].map(p => p.slug!);
-            availableRepos.push(...keys);
-          }
+        if (host === 'bitbucket.org' && accessToken && workspace && project) {
+          const availableRepos = await scaffolderApi.autocomplete(
+            accessToken,
+            'bitbucketCloud',
+            'repositories',
+            { workspace, project },
+          );
 
           onChange({ availableRepos });
         } else {
@@ -157,7 +138,7 @@ export const BitbucketRepoPicker = (props: {
       );
     },
     500,
-    [client, workspace, project, onChange],
+    [host, accessToken, workspace, project],
   );
 
   return (
