@@ -98,6 +98,24 @@ export class Lockfile {
     return Lockfile.parse(lockfileContents);
   }
 
+  static #getRangesFromDataKey(key: string): string[] {
+    const [, name, ranges] = key.match(ENTRY_PATTERN) ?? [];
+    if (!name) {
+      throw new Error(`Failed to parse yarn.lock entry '${key}'`);
+    }
+
+    return ranges.split(/\s*,\s*/).map(rangePart => {
+      let range = rangePart;
+      if (range.startsWith(`${name}@`)) {
+        range = range.slice(`${name}@`.length);
+      }
+      if (range.startsWith('npm:')) {
+        range = range.slice('npm:'.length);
+      }
+      return range;
+    });
+  }
+
   static parse(content: string) {
     const legacy = LEGACY_REGEX.test(content);
 
@@ -113,7 +131,7 @@ export class Lockfile {
     for (const [key, value] of Object.entries(data)) {
       if (SPECIAL_OBJECT_KEYS.includes(key)) continue;
 
-      const [, name, ranges] = ENTRY_PATTERN.exec(key) ?? [];
+      const [, name] = ENTRY_PATTERN.exec(key) ?? [];
       if (!name) {
         throw new Error(`Failed to parse yarn.lock entry '${key}'`);
       }
@@ -123,13 +141,8 @@ export class Lockfile {
         queries = [];
         packages.set(name, queries);
       }
-      for (let range of ranges.split(/\s*,\s*/)) {
-        if (range.startsWith(`${name}@`)) {
-          range = range.slice(`${name}@`.length);
-        }
-        if (range.startsWith('npm:')) {
-          range = range.slice('npm:'.length);
-        }
+      const ranges = Lockfile.#getRangesFromDataKey(key);
+      for (const range of ranges) {
         queries.push({ range, version: value.version, dataKey: key });
       }
     }
@@ -276,9 +289,34 @@ export class Lockfile {
   }
 
   remove(name: string, range: string): boolean {
-    const query = `${name}@${range}`;
+    const simpleQuery = `${name}@${range}`;
+    const query = this.getEntryOf(name, range);
+
     const existed = Boolean(this.data[query]);
-    delete this.data[query];
+
+    if (simpleQuery === query) {
+      // Single-versioned entry, just delete
+      delete this.data[query];
+    } else {
+      // Remove this version from the entry key. This modifies the key, so the
+      // package queries' <dataKey> needs to be updated too.
+      const newRanges = Lockfile.#getRangesFromDataKey(query).filter(
+        q => q !== simpleQuery,
+      );
+      const newQuery = newRanges.join(', ');
+
+      // Replace the entry with a new one without this particular range
+      const entry = this.data[query];
+      delete this.data[query];
+      this.data[newQuery] = entry;
+
+      // Fix all package queries pointing to the old query
+      this.packages.get(name)?.forEach(q => {
+        if (q.dataKey === query) {
+          q.dataKey = newQuery;
+        }
+      });
+    }
 
     const newEntries = this.packages.get(name)?.filter(e => e.range !== range);
     if (newEntries) {
@@ -288,19 +326,35 @@ export class Lockfile {
     return existed;
   }
 
+  getEntryOf(name: string, range: string) {
+    const query = this.packages.get(name)?.find(q => q.range === range);
+    if (!query) {
+      throw new Error(`No entry data for ${name}@${range}`);
+    }
+
+    return query.dataKey;
+  }
+
   /** Modifies the lockfile by bumping packages to the suggested versions */
   replaceVersions(results: AnalyzeResultNewVersion[]) {
+    // When replacing versions, we might replace the same version multiple times,
+    // as a query may contain multiple versions. This keeps the original version,
+    // to ensure we don't make mistakes.
+    const oldVersions = Object.fromEntries(
+      Object.entries(this.data).map(([key, val]) => [key, val.version]),
+    );
+
     for (const { name, range, oldVersion, newVersion } of results) {
-      const query = `${name}@${range}`;
+      const query = this.getEntryOf(name, range);
 
       // Update the backing data
       const entryData = this.data[query];
       if (!entryData) {
         throw new Error(`No entry data for ${query}`);
       }
-      if (entryData.version !== oldVersion) {
+      if (oldVersions[query] !== oldVersion) {
         throw new Error(
-          `Expected existing version data for ${query} to be ${oldVersion}, was ${entryData.version}`,
+          `Expected existing version data for ${query} to be ${oldVersion}, was ${oldVersions[query]}`,
         );
       }
 

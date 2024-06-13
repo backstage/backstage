@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import {
   base64url,
@@ -25,8 +24,9 @@ import {
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
 import { tokenTypes } from '@backstage/plugin-auth-node';
+import { mockServices } from '@backstage/backend-test-utils';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 function jwtKid(jwt: string): string {
   const header = decodeProtectedHeader(jwt);

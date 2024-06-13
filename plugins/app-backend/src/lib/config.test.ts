@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
 import { injectConfig } from './config';
 
 describe('injectConfig', () => {
@@ -24,7 +26,7 @@ describe('injectConfig', () => {
   const baseOptions = {
     appConfigs: [],
     staticDir: mockDir.path,
-    logger: getVoidLogger(),
+    logger: mockServices.logger.mock(),
   };
 
   beforeEach(() => {

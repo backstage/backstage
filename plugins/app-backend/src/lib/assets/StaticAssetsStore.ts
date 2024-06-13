@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-import {
-  PluginDatabaseManager,
-  resolvePackagePath,
-} from '@backstage/backend-common';
+import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
 import partition from 'lodash/partition';
 import { StaticAsset, StaticAssetInput, StaticAssetProvider } from './types';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-app-backend',

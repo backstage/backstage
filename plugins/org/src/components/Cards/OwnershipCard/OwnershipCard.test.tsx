@@ -120,19 +120,6 @@ const getEntitiesMock = (
   } as GetEntitiesResponse);
 };
 
-// Mock needed because jsdom doesn't correctly implement box-sizing
-// https://github.com/ShinyChang/React-Text-Truncate/issues/70
-// https://stackoverflow.com/questions/71916701/how-to-mock-a-react-function-component-that-takes-a-ref-prop
-jest.mock('react-text-truncate', () => {
-  const { forwardRef } = jest.requireActual('react');
-  return {
-    __esModule: true,
-    default: forwardRef((props: any, ref: any) => (
-      <div ref={ref}>{props.text}</div>
-    )),
-  };
-});
-
 describe('OwnershipCard', () => {
   const groupEntity: GroupEntity = {
     apiVersion: 'backstage.io/v1alpha1',

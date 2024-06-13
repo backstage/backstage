@@ -72,7 +72,10 @@
           site: '<%= config.getOptionalString("app.datadogRum.site") || "datadoghq.com" %>',
           service: 'backstage',
           env: '<%= config.getString("app.datadogRum.env") %>',
-          sampleRate: 100,
+          sampleRate:
+            '<%= config.getOptionalNumber("app.datadogRum.sessionSampleRate") || 100 %>',
+          sessionReplaySampleRate:
+            '<%= config.getOptionalNumber("app.datadogRum.sessionReplaySampleRate") || 0 %>',
           trackInteractions: true,
         });
       });

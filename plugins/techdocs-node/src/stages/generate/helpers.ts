@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isChildPath } from '@backstage/backend-common';
+import { isChildPath } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { assertError, ForwardedError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';

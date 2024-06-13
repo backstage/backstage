@@ -20,7 +20,10 @@ import {
 } from '@backstage/backend-plugin-api';
 import { TaskScheduler } from '@backstage/backend-tasks';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/scheduler` instead.
+ */
 export const schedulerServiceFactory = createServiceFactory({
   service: coreServices.scheduler,
   deps: {

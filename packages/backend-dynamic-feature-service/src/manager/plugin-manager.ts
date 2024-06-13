@@ -188,7 +188,7 @@ export class DynamicPluginManager implements DynamicPluginProvider {
       };
     } catch (error) {
       this.logger.error(
-        `an error occured while loading dynamic backend plugin '${plugin.manifest.name}' from '${plugin.location}'`,
+        `an error occurred while loading dynamic backend plugin '${plugin.manifest.name}' from '${plugin.location}'`,
         error,
       );
       return undefined;

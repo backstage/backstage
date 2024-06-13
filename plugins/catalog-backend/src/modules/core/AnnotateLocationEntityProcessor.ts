@@ -31,6 +31,7 @@ import {
   CatalogProcessorEmit,
 } from '@backstage/plugin-catalog-node';
 
+const commitHashRegExp = /\b[0-9a-f]{40,}\b/;
 /** @public */
 export class AnnotateLocationEntityProcessor implements CatalogProcessor {
   constructor(
@@ -58,7 +59,10 @@ export class AnnotateLocationEntityProcessor implements CatalogProcessor {
       const scmIntegration = integrations.byUrl(location.target);
 
       viewUrl = location.target;
-      editUrl = scmIntegration?.resolveEditUrl(location.target);
+
+      if (!commitHashRegExp.test(location.target)) {
+        editUrl = scmIntegration?.resolveEditUrl(location.target);
+      }
 
       const sourceUrl = scmIntegration?.resolveUrl({
         url: './',

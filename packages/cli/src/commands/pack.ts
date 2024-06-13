@@ -19,8 +19,15 @@ import {
   revertProductionPack,
 } from '../lib/packager/productionPack';
 import { paths } from '../lib/paths';
+import fs from 'fs-extra';
+import { publishPreflightCheck } from '../lib/publishing';
 
 export const pre = async () => {
+  publishPreflightCheck({
+    dir: paths.targetDir,
+    packageJson: await fs.readJson(paths.resolveTarget('package.json')),
+  });
+
   await productionPack({ packageDir: paths.targetDir });
 };
 

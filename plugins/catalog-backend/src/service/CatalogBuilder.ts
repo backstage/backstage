@@ -45,6 +45,7 @@ import {
   EntitiesSearchFilter,
   EntityProvider,
   PlaceholderResolver,
+  LocationAnalyzer,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
@@ -64,7 +65,6 @@ import {
   yamlPlaceholderResolver,
 } from '../modules/core/PlaceholderProcessor';
 import { defaultEntityDataParser } from '../modules/util/parse';
-import { LocationAnalyzer } from '../ingestion';
 import {
   CatalogProcessingEngine,
   createRandomProcessingInterval,
@@ -104,7 +104,7 @@ import {
 import { AuthorizedLocationService } from './AuthorizedLocationService';
 import { DefaultProviderDatabase } from '../database/DefaultProviderDatabase';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
-import { EventBroker } from '@backstage/plugin-events-node';
+import { EventBroker, EventsService } from '@backstage/plugin-events-node';
 import { durationToMilliseconds } from '@backstage/types';
 import {
   AuthService,
@@ -182,7 +182,7 @@ export class CatalogBuilder {
   private readonly permissionRules: CatalogPermissionRuleInput[];
   private allowedLocationType: string[];
   private legacySingleProcessorValidation = false;
-  private eventBroker?: EventBroker;
+  private eventBroker?: EventBroker | EventsService;
 
   /**
    * Creates a catalog builder.
@@ -453,7 +453,7 @@ export class CatalogBuilder {
   /**
    * Enables the publishing of events for conflicts in the DefaultProcessingDatabase
    */
-  setEventBroker(broker: EventBroker): CatalogBuilder {
+  setEventBroker(broker: EventBroker | EventsService): CatalogBuilder {
     this.eventBroker = broker;
     return this;
   }

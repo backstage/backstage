@@ -24,16 +24,22 @@ import { DefaultIdentityClient } from '@backstage/plugin-auth-node';
  * An identity client options object which allows extra configurations
  *
  * @public
+ * @deprecated Please migrate to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead
  */
 export type IdentityFactoryOptions = {
   issuer?: string;
 
-  /** JWS "alg" (Algorithm) Header Parameter values. Defaults to an array containing just ES256.
-   * More info on supported algorithms: https://github.com/panva/jose */
+  /**
+   * JWS "alg" (Algorithm) Header Parameter values. Defaults to an array containing just ES256.
+   * More info on supported algorithms: https://github.com/panva/jose
+   */
   algorithms?: string[];
 };
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please migrate to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead
+ */
 export const identityServiceFactory = createServiceFactory(
   (options?: IdentityFactoryOptions) => ({
     service: coreServices.identity,

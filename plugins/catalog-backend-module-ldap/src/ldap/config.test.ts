@@ -15,26 +15,31 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readLdapConfig } from './config';
+import { readProviderConfigs } from './config';
 
 describe('readLdapConfig', () => {
   it('applies all of the defaults', () => {
     const config = {
-      providers: [
-        {
-          target: 'target',
-          users: {
-            dn: 'udn',
-          },
-          groups: {
-            dn: 'gdn',
+      catalog: {
+        providers: {
+          ldapOrg: {
+            default: {
+              target: 'target',
+              users: {
+                dn: 'udn',
+              },
+              groups: {
+                dn: 'gdn',
+              },
+            },
           },
         },
-      ],
+      },
     };
-    const actual = readLdapConfig(new ConfigReader(config));
+    const actual = readProviderConfigs(new ConfigReader(config));
     const expected = [
       {
+        id: 'default',
         target: 'target',
         bind: undefined,
         users: {
@@ -76,72 +81,77 @@ describe('readLdapConfig', () => {
 
   it('reads all the values', () => {
     const config = {
-      providers: [
-        {
-          target: 'target',
-          bind: { dn: 'bdn', secret: 's' },
-          tls: {
-            rejectUnauthorized: false,
-            keys: '/tmp/keys.pem',
-            certs: '/tmp/certs.pem',
-          },
-          users: {
-            dn: 'udn',
-            options: {
-              scope: 'base',
-              attributes: ['*'],
-              filter: 'f',
-              paged: true,
-              timeLimit: 42,
-              sizeLimit: 100,
-              derefAliases: 0,
-              typesOnly: false,
-            },
-            set: { p: 'v' },
-            map: {
-              rdn: 'u',
-              name: 'v',
-              description: 'd',
-              displayName: 'c',
-              email: 'm',
-              picture: 'p',
-              memberOf: 'm',
-            },
-          },
-          groups: {
-            dn: 'gdn',
-            options: {
-              scope: 'base',
-              attributes: ['*'],
-              filter: 'f',
-              paged: {
-                pageSize: 7,
-                pagePause: true,
+      catalog: {
+        providers: {
+          ldapOrg: {
+            default: {
+              target: 'target',
+              bind: { dn: 'bdn', secret: 's' },
+              tls: {
+                rejectUnauthorized: false,
+                keys: '/tmp/keys.pem',
+                certs: '/tmp/certs.pem',
               },
-              timeLimit: 42,
-              sizeLimit: 100,
-              derefAliases: 1,
-              typesOnly: true,
-            },
-            set: { p: 'v' },
-            map: {
-              rdn: 'u',
-              name: 'v',
-              description: 'd',
-              type: 't',
-              displayName: 'c',
-              email: 'm',
-              picture: 'p',
-              memberOf: 'm',
-              members: 'n',
+              users: {
+                dn: 'udn',
+                options: {
+                  scope: 'base',
+                  attributes: ['*'],
+                  filter: 'f',
+                  paged: true,
+                  timeLimit: 42,
+                  sizeLimit: 100,
+                  derefAliases: 0,
+                  typesOnly: false,
+                },
+                set: { p: 'v' },
+                map: {
+                  rdn: 'u',
+                  name: 'v',
+                  description: 'd',
+                  displayName: 'c',
+                  email: 'm',
+                  picture: 'p',
+                  memberOf: 'm',
+                },
+              },
+              groups: {
+                dn: 'gdn',
+                options: {
+                  scope: 'base',
+                  attributes: ['*'],
+                  filter: 'f',
+                  paged: {
+                    pageSize: 7,
+                    pagePause: true,
+                  },
+                  timeLimit: 42,
+                  sizeLimit: 100,
+                  derefAliases: 1,
+                  typesOnly: true,
+                },
+                set: { p: 'v' },
+                map: {
+                  rdn: 'u',
+                  name: 'v',
+                  description: 'd',
+                  type: 't',
+                  displayName: 'c',
+                  email: 'm',
+                  picture: 'p',
+                  memberOf: 'm',
+                  members: 'n',
+                },
+              },
             },
           },
         },
-      ],
+      },
     };
-    const actual = readLdapConfig(new ConfigReader(config));
+    const actual = readProviderConfigs(new ConfigReader(config));
     const expected = [
       {
+        id: 'default',
         target: 'target',
         bind: { dn: 'bdn', secret: 's' },
         tls: {
@@ -207,30 +217,34 @@ describe('readLdapConfig', () => {
 
   it('supports multiline ldap query filter', () => {
     const config = {
-      providers: [
-        {
-          target: 'target',
-          users: {
-            dn: 'udn',
-            options: {
-              filter: `
-              (|
-                (cn=foo bar)
-                (cn=bar)
-              )
-              `,
-            },
-          },
-          groups: {
-            dn: 'gdn',
-            options: {
-              filter: 'f',
+      catalog: {
+        providers: {
+          ldapOrg: {
+            default: {
+              target: 'target',
+              users: {
+                dn: 'udn',
+                options: {
+                  filter: `
+                  (|
+                    (cn=foo bar)
+                    (cn=bar)
+                  )
+                  `,
+                },
+              },
+              groups: {
+                dn: 'gdn',
+                options: {
+                  filter: 'f',
+                },
+              },
             },
           },
         },
-      ],
+      },
     };
-    const actual = readLdapConfig(new ConfigReader(config));
+    const actual = readProviderConfigs(new ConfigReader(config));
 
     const expected = '(|(cn=foo bar)(cn=bar))';
     expect(actual[0].users.options.filter).toEqual(expected);
@@ -238,64 +252,72 @@ describe('readLdapConfig', () => {
 
   it('supports a dot nested set structure', () => {
     const config = {
-      providers: [
-        {
-          target: 'target',
-          users: {
-            dn: 'udn',
-            options: {
-              filter: 'f',
-            },
-            set: {
-              'metadata.annotations': {
-                a: 'b',
+      catalog: {
+        providers: {
+          ldapOrg: {
+            default: {
+              target: 'target',
+              users: {
+                dn: 'udn',
+                options: {
+                  filter: 'f',
+                },
+                set: {
+                  'metadata.annotations': {
+                    a: 'b',
+                  },
+                },
+              },
+              groups: {
+                dn: 'gdn',
+                options: {
+                  filter: 'f',
+                },
+                set: {
+                  x: { a: 'b' },
+                },
               },
             },
           },
-          groups: {
-            dn: 'gdn',
-            options: {
-              filter: 'f',
-            },
-            set: {
-              x: { a: 'b' },
-            },
-          },
         },
-      ],
+      },
     };
-    const actual = readLdapConfig(new ConfigReader(config));
+    const actual = readProviderConfigs(new ConfigReader(config));
 
     expect(actual[0].users.set).toEqual({ 'metadata.annotations': { a: 'b' } });
   });
 
   it('throws on attempts to modify the set structure', () => {
     const config = {
-      providers: [
-        {
-          target: 'target',
-          users: {
-            dn: 'udn',
-            options: {
-              filter: 'f',
-            },
-            set: {
-              x: { a: 'b' },
-            },
-          },
-          groups: {
-            dn: 'gdn',
-            options: {
-              filter: 'f',
-            },
-            set: {
-              x: { a: 'b' },
+      catalog: {
+        providers: {
+          ldapOrg: {
+            default: {
+              target: 'target',
+              users: {
+                dn: 'udn',
+                options: {
+                  filter: 'f',
+                },
+                set: {
+                  x: { a: 'b' },
+                },
+              },
+              groups: {
+                dn: 'gdn',
+                options: {
+                  filter: 'f',
+                },
+                set: {
+                  x: { a: 'b' },
+                },
+              },
             },
           },
         },
-      ],
+      },
     };
-    const actual = readLdapConfig(new ConfigReader(config));
+    const actual = readProviderConfigs(new ConfigReader(config));
 
     expect(() => {
       (actual[0].users.set as any).y = 2;

@@ -95,7 +95,11 @@ const myColumnsFunc: CatalogTableColumnsFunc = entityListContext => {
 <Route path="/catalog" element={<CatalogIndexPage columns={myColumnsFunc} />} />
 ```
 
-> Note: the above example has been simplified and you will most likely have more code then just this in your `App.tsx` file.
+:::note Note
+
+The above example has been simplified and you will most likely have more code then just this in your `App.tsx` file.
+
+:::
 
 ## Customize Actions
 
@@ -162,7 +166,11 @@ const customActions: TableProps<CatalogTableRow>['actions'] = [
 <Route path="/catalog" element={<CatalogIndexPage actions={customActions} />} />
 ```
 
-> Note: the above example has been simplified and you will most likely have more code then just this in your `App.tsx` file.
+:::note Note
+
+The above example has been simplified and you will most likely have more code then just this in your `App.tsx` file.
+
+:::
 
 The above customization will override the existing actions. Currently the only way to keep them and add your own is to also include the existing actions in your array by copying them from the [`defaultActions`](https://github.com/backstage/backstage/blob/57397e7d6d2d725712c439f4ab93f2ac6aa27bf8/plugins/catalog/src/components/CatalogTable/CatalogTable.tsx#L113-L168).
 
@@ -400,7 +408,11 @@ export const CustomCatalogPage = () => {
 
 The above is a very basic version of a fully custom `CatalogIndexPage`, you'll want to explore the various props to see what you can all do with them. This was built off the building blocks seen in the [`DefaultCatalogPage`](https://github.com/backstage/backstage/blob/master/plugins/catalog/src/components/CatalogPage/DefaultCatalogPage.tsx)
 
-> Note: The catalog index page is designed to have a minimal code footprint to support easy customization, but creating a replica does introduce a possibility of drifting out of date over time. Be sure to check the catalog [CHANGELOG](https://github.com/backstage/backstage/blob/master/plugins/catalog/CHANGELOG.md) periodically.
+:::note Note
+
+The catalog index page is designed to have a minimal code footprint to support easy customization, but creating a replica does introduce a possibility of drifting out of date over time. Be sure to check the catalog [CHANGELOG](https://github.com/backstage/backstage/blob/master/plugins/catalog/CHANGELOG.md) periodically.
+
+:::
 
 To use this custom `CatalogIndexPage` which we called `CustomCatalogPage`, you'll need to make the following change:
 

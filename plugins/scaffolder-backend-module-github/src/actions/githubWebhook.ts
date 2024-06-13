@@ -55,6 +55,7 @@ export function createGithubWebhookAction(options: {
     id: 'github:webhook',
     description: 'Creates webhook for a repository on GitHub.',
     examples,
+    supportsDryRun: true,
     schema: {
       input: {
         type: 'object',
@@ -147,6 +148,12 @@ export function createGithubWebhookAction(options: {
           token: providedToken,
         }),
       );
+
+      // If this is a dry run, log and return
+      if (ctx.isDryRun) {
+        ctx.logger.info(`Dry run complete`);
+        return;
+      }
 
       try {
         const insecure_ssl = insecureSsl ? '1' : '0';

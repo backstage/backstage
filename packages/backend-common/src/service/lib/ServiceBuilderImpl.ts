@@ -30,13 +30,14 @@ import {
   requestLoggingHandler as defaultRequestLoggingHandler,
 } from '../../middleware';
 import { RequestLoggingHandlerFactory, ServiceBuilder } from '../types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   readCorsOptions,
   readHelmetOptions,
   readHttpServerOptions,
   HttpServerOptions,
   createHttpServer,
-} from '@backstage/backend-app-api';
+} from '../../../../backend-app-api/src/http';
 
 export type CspOptions = Record<string, string[]>;
 

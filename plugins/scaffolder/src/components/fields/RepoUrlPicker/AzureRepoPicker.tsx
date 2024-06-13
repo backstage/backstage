@@ -24,14 +24,14 @@ import { Select, SelectItem } from '@backstage/core-components';
 
 export const AzureRepoPicker = (props: {
   allowedOrganizations?: string[];
-  allowedOwners?: string[];
+  allowedProject?: string[];
   rawErrors: string[];
   state: RepoUrlPickerState;
   onChange: (state: RepoUrlPickerState) => void;
 }) => {
   const {
     allowedOrganizations = [],
-    allowedOwners = [],
+    allowedProject = [],
     rawErrors,
     state,
     onChange,
@@ -41,11 +41,11 @@ export const AzureRepoPicker = (props: {
     ? allowedOrganizations.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
 
-  const ownerItems: SelectItem[] = allowedOwners
-    ? allowedOwners.map(i => ({ label: i, value: i }))
+  const projectItems: SelectItem[] = allowedProject
+    ? allowedProject.map(i => ({ label: i, value: i }))
     : [{ label: 'Loading...', value: 'loading' }];
 
-  const { organization, owner } = state;
+  const { organization, project } = state;
 
   return (
     <>
@@ -82,26 +82,26 @@ export const AzureRepoPicker = (props: {
       <FormControl
         margin="normal"
         required
-        error={rawErrors?.length > 0 && !owner}
+        error={rawErrors?.length > 0 && !project}
       >
-        {allowedOwners?.length ? (
+        {allowedProject?.length ? (
           <Select
             native
-            label="Owner"
+            label="Project"
             onChange={s =>
-              onChange({ owner: String(Array.isArray(s) ? s[0] : s) })
+              onChange({ project: String(Array.isArray(s) ? s[0] : s) })
             }
-            disabled={allowedOwners.length === 1}
-            selected={owner}
-            items={ownerItems}
+            disabled={allowedProject.length === 1}
+            selected={project}
+            items={projectItems}
           />
         ) : (
           <>
-            <InputLabel htmlFor="ownerInput">Project</InputLabel>
+            <InputLabel htmlFor="projectInput">Project</InputLabel>
             <Input
-              id="ownerInput"
-              onChange={e => onChange({ owner: e.target.value })}
-              value={owner}
+              id="projectInput"
+              onChange={e => onChange({ project: e.target.value })}
+              value={project}
             />
           </>
         )}

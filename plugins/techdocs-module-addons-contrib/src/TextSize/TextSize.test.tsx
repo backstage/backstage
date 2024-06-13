@@ -15,11 +15,8 @@
  */
 
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
-
 import React from 'react';
-
-import { fireEvent, waitFor } from '@testing-library/react';
-
+import { fireEvent, waitFor, act } from '@testing-library/react';
 import { TextSize } from '../plugin';
 
 describe('TextSize', () => {
@@ -47,7 +44,9 @@ describe('TextSize', () => {
 
     const slider = getByRole('slider');
 
-    slider.focus();
+    act(() => {
+      slider.focus();
+    });
 
     fireEvent.keyDown(slider, {
       key: 'ArrowRight',

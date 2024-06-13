@@ -16,17 +16,51 @@
 
 import { Handler } from 'express';
 
-/** @public */
+/**
+ * Options for {@link HttpRouterService.addAuthPolicy}.
+ *
+ * @public
+ */
 export interface HttpRouterServiceAuthPolicy {
   path: string;
   allow: 'unauthenticated' | 'user-cookie';
 }
 
 /**
+ * Allows plugins to register HTTP routes.
+ *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/http-router | service documentation} for more details.
+ *
  * @public
  */
 export interface HttpRouterService {
+  /**
+   * Registers an Express request handler under the plugin's base router. This
+   * typically makes its base path `/api/<plugin-id>`.
+   */
   use(handler: Handler): void;
 
+  /**
+   * Adds an auth policy to the router. This is used to allow unauthenticated or
+   * cookie based access to parts of a plugin's API.
+   *
+   * @remarks
+   *
+   * The paths given follow the same pattern as the routers given to the `use`
+   * method, that is, they are relative to the plugin's base URL, and can
+   * contain placeholders.
+   *
+   * @example
+   *
+   * ```ts
+   * http.addAuthPolicy({
+   *   path: '/static/:id',
+   *   allow: 'user-cookie',
+   * });
+   * ```
+   *
+   * This allows limited access tokens via cookies on the
+   * `/api/<plugin-id>/static/*` paths, but not unauthenticated access.
+   */
   addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void;
 }

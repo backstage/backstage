@@ -15,11 +15,7 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
-import {
-  ConfigApi,
-  DiscoveryApi,
-  IdentityApi,
-} from '@backstage/core-plugin-api';
+import { ConfigApi, DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import {
   GithubIntegrationConfig,
   ScmIntegrationRegistry,
@@ -41,7 +37,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
  */
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
   private readonly scmAuthApi: ScmAuthApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
   private readonly catalogApi: CatalogApi;
@@ -50,14 +46,14 @@ export class CatalogImportClient implements CatalogImportApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     scmAuthApi: ScmAuthApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     catalogApi: CatalogApi;
     configApi: ConfigApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.scmAuthApi = options.scmAuthApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
     this.scmIntegrationsApi = options.scmIntegrationsApi;
     this.catalogApi = options.catalogApi;
     this.configApi = options.configApi;
@@ -206,29 +202,29 @@ the component will become available.\n\nFor more information, read an \
   private async analyzeLocation(options: {
     repo: string;
   }): Promise<AnalyzeLocationResponse> {
-    const { token } = await this.identityApi.getCredentials();
-    const response = await fetch(
-      `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          location: { type: 'url', target: options.repo },
-          ...(this.configApi.getOptionalString(
-            'catalog.import.entityFilename',
-          ) && {
-            catalogFilename: this.configApi.getOptionalString(
+    const response = await this.fetchApi
+      .fetch(
+        `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            location: { type: 'url', target: options.repo },
+            ...(this.configApi.getOptionalString(
               'catalog.import.entityFilename',
-            ),
+            ) && {
+              catalogFilename: this.configApi.getOptionalString(
+                'catalog.import.entityFilename',
+              ),
+            }),
           }),
-        }),
-      },
-    ).catch(e => {
-      throw new Error(`Failed to generate entity definitions, ${e.message}`);
-    });
+        },
+      )
+      .catch(e => {
+        throw new Error(`Failed to generate entity definitions, ${e.message}`);
+      });
     if (!response.ok) {
       throw new Error(
         `Failed to generate entity definitions. Received http response ${response.status}: ${response.statusText}`,

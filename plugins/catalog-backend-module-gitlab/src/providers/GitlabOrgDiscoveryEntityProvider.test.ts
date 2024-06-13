@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
   TaskRunner,
 } from '@backstage/backend-tasks';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
@@ -32,7 +34,7 @@ import { GitlabOrgDiscoveryEntityProvider } from './GitlabOrgDiscoveryEntityProv
 
 const server = setupServer(...handlers);
 setupRequestMockHandlers(server);
-afterEach(() => jest.resetAllMocks());
+afterEach(() => jest.clearAllMocks());
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];
@@ -47,7 +49,7 @@ class PersistingTaskRunner implements TaskRunner {
   }
 }
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
   it('should not instantiate providers when no config found', () => {
@@ -73,16 +75,16 @@ describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
     }).toThrow('No gitlab integration found that matches host example.com');
   });
 
-  it('should throw error when org configuration not found', () => {
+  it('should log a message and return when org configuration not found', () => {
     const schedule = new PersistingTaskRunner();
     const config = new ConfigReader(mock.config_no_org_integration);
 
-    expect(() => {
-      GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-        logger,
-        schedule,
-      });
-    }).toThrow('Org not enabled for test-id');
+    GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    });
+
+    expect(logger.info).toHaveBeenCalledWith('Org not enabled for test-id.');
   });
 
   it('should throw error when saas without group configuration', () => {

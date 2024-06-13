@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   PluginTaskScheduler,
   TaskInvocationDefinition,
@@ -36,6 +35,7 @@ import {
   MicrosoftGraphOrgEntityProvider,
   withLocations,
 } from './MicrosoftGraphOrgEntityProvider';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../microsoftGraph', () => {
   return {
@@ -98,7 +98,7 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
 
   afterEach(() => jest.resetAllMocks());
 
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
   const taskRunner = new PersistingTaskRunner();
   const scheduler = {
     createScheduledTaskRunner: (_: any) => taskRunner,

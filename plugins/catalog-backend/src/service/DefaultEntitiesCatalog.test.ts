@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   TestDatabaseId,
   TestDatabases,
   mockCredentials,
+  mockServices,
 } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { Knex } from 'knex';
@@ -163,7 +163,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
         const result = await catalog.entityAncestry('k:default/root');
@@ -196,7 +196,7 @@ describe('DefaultEntitiesCatalog', () => {
         await createDatabase(databaseId);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
         await expect(() =>
@@ -242,7 +242,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
         const result = await catalog.entityAncestry('k:default/root');
@@ -301,7 +301,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity2);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -340,7 +340,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity2);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -393,7 +393,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity4);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -452,7 +452,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity2);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -499,7 +499,7 @@ describe('DefaultEntitiesCatalog', () => {
         await addEntityToSearch(entity2);
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -547,7 +547,7 @@ describe('DefaultEntitiesCatalog', () => {
         );
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -610,7 +610,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -701,7 +701,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -756,7 +756,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -804,7 +804,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -958,7 +958,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -1113,7 +1113,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -1174,7 +1174,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -1273,7 +1273,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -1353,7 +1353,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -1382,7 +1382,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -1503,7 +1503,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -1567,7 +1567,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -1718,7 +1718,7 @@ describe('DefaultEntitiesCatalog', () => {
 
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
         await catalog.removeEntityByUid(uid);
@@ -1768,7 +1768,7 @@ describe('DefaultEntitiesCatalog', () => {
         });
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -1827,7 +1827,7 @@ describe('DefaultEntitiesCatalog', () => {
         });
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 
@@ -1876,7 +1876,7 @@ describe('DefaultEntitiesCatalog', () => {
         });
         const catalog = new DefaultEntitiesCatalog({
           database: knex,
-          logger: getVoidLogger(),
+          logger: mockServices.logger.mock(),
           stitcher,
         });
 

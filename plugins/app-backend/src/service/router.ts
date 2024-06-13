@@ -17,8 +17,8 @@
 import {
   notFoundHandler,
   PluginDatabaseManager,
-  resolvePackagePath,
 } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { AppConfig, Config } from '@backstage/config';
 import helmet from 'helmet';
 import express from 'express';
@@ -113,6 +113,7 @@ export async function createRouter(
     staticFallbackHandler,
     auth,
     httpAuth,
+    schema,
   } = options;
 
   const disableConfigInjection =
@@ -143,6 +144,7 @@ export async function createRouter(
         config,
         appDistDir,
         env: process.env,
+        schema,
       });
 
   const assetStore =

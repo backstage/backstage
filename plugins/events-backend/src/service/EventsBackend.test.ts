@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   TestEventBroker,
   TestEventPublisher,
   TestEventSubscriber,
 } from '@backstage/plugin-events-backend-test-utils';
 import { EventsBackend } from './EventsBackend';
+import { mockServices } from '@backstage/backend-test-utils';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('EventsBackend', () => {
   it('wires up all components', async () => {
@@ -30,7 +31,7 @@ describe('EventsBackend', () => {
     const publisher1 = new TestEventPublisher();
     const publisher2 = new TestEventPublisher();
 
-    await new EventsBackend(logger)
+    await new EventsBackend(loggerToWinstonLogger(logger))
       .setEventBroker(eventBroker)
       .addPublishers(publisher1, [publisher2])
       .addSubscribers(new TestEventSubscriber('one', ['topicA']), [

@@ -24,20 +24,26 @@ import {
 } from './useEntity';
 import { Entity } from '@backstage/catalog-model';
 import { analyticsApiRef, useAnalytics } from '@backstage/core-plugin-api';
-import { MockAnalyticsApi, TestApiRegistry } from '@backstage/test-utils';
+import {
+  MockAnalyticsApi,
+  TestApiRegistry,
+  withLogCollector,
+} from '@backstage/test-utils';
 import { ApiProvider } from '@backstage/core-app-api';
 
 const entity = { metadata: { name: 'my-entity' }, kind: 'MyKind' } as Entity;
 
 describe('useEntity', () => {
   it('should throw if no entity is provided', async () => {
-    expect(() =>
-      renderHook(() => useEntity(), {
-        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
-          <EntityProvider children={children} />
-        ),
-      }),
-    ).toThrow(/entity has not been loaded/);
+    withLogCollector(() => {
+      expect(() =>
+        renderHook(() => useEntity(), {
+          wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+            <EntityProvider children={children} />
+          ),
+        }),
+      ).toThrow(/entity has not been loaded/);
+    });
   });
 
   it('should provide an entity', async () => {

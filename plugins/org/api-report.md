@@ -70,7 +70,7 @@ export const MyGroupsSidebarItem: (props: {
 const orgPlugin: BackstagePlugin<
   {},
   {
-    catalogIndex: ExternalRouteRef<undefined, false>;
+    catalogIndex: ExternalRouteRef<undefined, true>;
   }
 >;
 export { orgPlugin };

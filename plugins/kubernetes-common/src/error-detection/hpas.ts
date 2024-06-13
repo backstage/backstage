@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HorizontalPodAutoscaler } from 'kubernetes-models/autoscaling/v1';
+import { HorizontalPodAutoscaler } from 'kubernetes-models/autoscaling/v2';
 import { DetectedError, ErrorMapper } from './types';
 import { detectErrorsInObjects } from './common';
 
@@ -35,7 +35,7 @@ const hpaErrorMappers: ErrorMapper<HorizontalPodAutoscaler>[] = [
               name: hpa.metadata?.name ?? 'unknown hpa',
               namespace: hpa.metadata?.namespace ?? 'unknown namespace',
               kind: 'HorizontalPodAutoscaler',
-              apiGroup: 'autoscaling/v1',
+              apiGroup: 'autoscaling/v2',
             },
             occurrenceCount: 1,
           },

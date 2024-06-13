@@ -101,7 +101,7 @@ CMD ["node", "packages/backend", "--config", "app-config.yaml"]
 
 For more details on how the `backend:bundle` command and the `skeleton.tar.gz`
 file works, see the
-[`backend:bundle` command docs](../local-dev/cli-commands.md#backendbundle).
+[`backend:bundle` command docs](../tooling/cli/03-commands.md#backendbundle).
 
 The `Dockerfile` is located at `packages/backend/Dockerfile`, but needs to be
 executed with the root of the repo as the build context, in order to get access
@@ -141,8 +141,12 @@ browser at `http://localhost:7007`
 
 ## Multi-stage Build
 
-> NOTE: The `.dockerignore` is different in this setup, read on for more
-> details.
+:::note Note
+
+The `.dockerignore` is different in this setup, read on for more
+details.
+
+:::
 
 This section describes how to set up a multi-stage Docker build that builds the
 entire project within Docker. This is typically slower than a host build, but is
@@ -293,10 +297,14 @@ browser at `http://localhost:7007`
 
 ## Separate Frontend
 
-> NOTE: This is an optional step, and you will lose out on the features of the
-> `@backstage/plugin-app-backend` plugin. Most notably the frontend configuration
-> will no longer be injected by the backend, you will instead need to use the
-> correct configuration when building the frontend bundle.
+:::note Note
+
+This is an optional step, and you will lose out on the features of the
+`@backstage/plugin-app-backend` plugin. Most notably the frontend configuration
+will no longer be injected by the backend, you will instead need to use the
+correct configuration when building the frontend bundle.
+
+:::
 
 It is sometimes desirable to serve the frontend separately from the backend,
 either from a separate image or for example a static file serving provider. The
@@ -345,8 +353,8 @@ The `Dockerfile` mentioned above located in `packages/backend` is maintained by 
 
 ### Minimal Hardened Image
 
-A contributed `Dockerfile` exists within the directory of `contrib/docker/minimal-harded-image` which uses the [`wolfi-base`](https://github.com/wolfi-dev) image to reduce vulnerabilities. When this was contributed, this alternative `Dockerfile` reduced 98.2% of vulnerabilities in the built Backstage docker image when compared with the image built from `packages/backend/Dockerfile`.
+A contributed `Dockerfile` exists within the directory of `contrib/docker/minimal-hardened-image` which uses the [`wolfi-base`](https://github.com/wolfi-dev) image to reduce vulnerabilities. When this was contributed, this alternative `Dockerfile` reduced 98.2% of vulnerabilities in the built Backstage docker image when compared with the image built from `packages/backend/Dockerfile`.
 
-To reduce maintenance, the digest of the image has been removed from the `contrib/docker/minimal-harded-image/Dockerfile` file. A complete example with the digest would be `cgr.dev/chainguard/wolfi-base:latest@sha256:3d6dece13cdb5546cd03b20e14f9af354bc1a56ab5a7b47dca3e6c1557211fcf` and it is suggested to update the `FROM` line in the `Dockerfile` to use a digest. Please do a docker pull on the image to get the latest digest. Using the digest allows tools such as Dependabot or Renovate to know exactly which image digest is being utilized and allows for Pull Requests to be triggered when a new digest is available.
+To reduce maintenance, the digest of the image has been removed from the `contrib/docker/minimal-hardened-image/Dockerfile` file. A complete example with the digest would be `cgr.dev/chainguard/wolfi-base:latest@sha256:3d6dece13cdb5546cd03b20e14f9af354bc1a56ab5a7b47dca3e6c1557211fcf` and it is suggested to update the `FROM` line in the `Dockerfile` to use a digest. Please do a docker pull on the image to get the latest digest. Using the digest allows tools such as Dependabot or Renovate to know exactly which image digest is being utilized and allows for Pull Requests to be triggered when a new digest is available.
 
 It is suggested to setup Dependabot/Renovate or a similar tool to ensure the image is kept up to date so that vulnerability fixes that have been addressed are pulled in frequently.

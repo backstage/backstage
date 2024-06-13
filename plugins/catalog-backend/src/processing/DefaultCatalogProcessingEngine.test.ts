@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { Hash } from 'crypto';
 import { DateTime } from 'luxon';
 import waitForExpect from 'wait-for-expect';
@@ -23,6 +22,7 @@ import { DefaultCatalogProcessingEngine } from './DefaultCatalogProcessingEngine
 import { CatalogProcessingOrchestrator } from './types';
 import { Stitcher } from '../stitching/types';
 import { ConfigReader } from '@backstage/config';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('DefaultCatalogProcessingEngine', () => {
   const db = {
@@ -64,7 +64,7 @@ describe('DefaultCatalogProcessingEngine', () => {
     });
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
@@ -132,7 +132,7 @@ describe('DefaultCatalogProcessingEngine', () => {
     });
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
@@ -216,7 +216,7 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
@@ -293,7 +293,7 @@ describe('DefaultCatalogProcessingEngine', () => {
 
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
@@ -352,7 +352,7 @@ describe('DefaultCatalogProcessingEngine', () => {
   it('should stitch both the previous and new sources when relations change', async () => {
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
@@ -467,7 +467,7 @@ describe('DefaultCatalogProcessingEngine', () => {
   it('should not stitch sources entities when relations are the same', async () => {
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
@@ -550,7 +550,7 @@ describe('DefaultCatalogProcessingEngine', () => {
   it('should stitch sources entities when new relation of different type added', async () => {
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,
@@ -638,7 +638,7 @@ describe('DefaultCatalogProcessingEngine', () => {
   it('should stitch sources entities when relation is removed', async () => {
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       processingDatabase: db,
       knex: {} as any,
       orchestrator: orchestrator,

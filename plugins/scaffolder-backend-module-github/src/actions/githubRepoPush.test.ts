@@ -27,12 +27,13 @@ const mockGit = {
 };
 
 jest.mock('@backstage/backend-common', () => ({
+  loggerToWinstonLogger: jest.requireActual('@backstage/backend-common')
+    .loggerToWinstonLogger,
   Git: {
     fromAuth() {
       return mockGit;
     },
   },
-  getVoidLogger: jest.requireActual('@backstage/backend-common').getVoidLogger,
 }));
 
 jest.mock('./gitHelpers', () => {

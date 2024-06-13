@@ -8,7 +8,11 @@ In the previous sections, we learned how to protect our plugin's backend API rou
 
 Take, for example, the "Add" button in our todo list application. When a user clicks this button, the frontend makes a `POST` request to the `/todos` route of our backend. If a user tries to add a todo but is not authorized, they will have no way of knowing this until they perform the action and are faced with an error. This is a poor user experience. We can do better by disabling the add button.
 
-> Note: Placing frontend components behind authorization cannot take the place of placing your backend routes behind authorization. Authorization checks on the frontend should be used in _addition_ to the corresponding backend authorization, as an improvement to the user experience. If you do not place your backend route behind authorization, a malicious actor can still send a request to the route even if you disabled the corresponding frontend component.
+:::note Note
+
+Placing frontend components behind authorization cannot take the place of placing your backend routes behind authorization. Authorization checks on the frontend should be used in _addition_ to the corresponding backend authorization, as an improvement to the user experience. If you do not place your backend route behind authorization, a malicious actor can still send a request to the route even if you disabled the corresponding frontend component.
+
+:::
 
 ## Using `usePermission`
 

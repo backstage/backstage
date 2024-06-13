@@ -13,38 +13,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import throttle from 'lodash/throttle';
+
+const getPrefix = (value: number) => (value === 0 ? '' : `(${value}) `);
+
+const cleanTitle = (currentTitle: string) =>
+  currentTitle.replace(/^\(\d+\)\s/, '');
+
+const throttledSetTitle = throttle((shownTitle: string) => {
+  document.title = shownTitle;
+}, 100);
 
 /** @public */
 export function useTitleCounter() {
   const [title, setTitle] = useState(document.title);
   const [count, setCount] = useState(0);
-  const titleTimer = useRef<undefined | number>(undefined);
-
-  const getPrefix = (value: number) => {
-    return value === 0 ? '' : `(${value}) `;
-  };
-
-  const cleanTitle = (currentTitle: string) => {
-    return currentTitle.replace(/^\(\d+\)\s/, '');
-  };
 
   useEffect(() => {
     const baseTitle = cleanTitle(title);
     const shownTitle = `${getPrefix(count)}${baseTitle}`;
     if (document.title !== shownTitle) {
-      window.clearTimeout(titleTimer.current);
-      document.title = shownTitle;
-      // Need to do this in timeout as the React Helmet overrides the title after this effect
-      titleTimer.current = window.setTimeout(() => {
-        document.title = shownTitle;
-      }, 50);
+      throttledSetTitle(shownTitle);
     }
     return () => {
-      window.clearTimeout(titleTimer.current);
       document.title = cleanTitle(title);
     };
-  }, [title, count]);
+  }, [count, title]);
 
   useEffect(() => {
     const titleElement = document.querySelector('title');

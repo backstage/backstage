@@ -23,7 +23,7 @@ import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import {
   V1Pod,
-  V1HorizontalPodAutoscaler,
+  V2HorizontalPodAutoscaler,
   V1StatefulSet,
 } from '@kubernetes/client-node';
 import { PodsTable } from '../Pods';
@@ -44,7 +44,7 @@ type StatefulSetsAccordionsProps = {
 type StatefulSetAccordionProps = {
   statefulset: V1StatefulSet;
   ownedPods: V1Pod[];
-  matchingHpa?: V1HorizontalPodAutoscaler;
+  matchingHpa?: V2HorizontalPodAutoscaler;
   children?: React.ReactNode;
 };
 
@@ -52,7 +52,7 @@ type StatefulSetSummaryProps = {
   statefulset: V1StatefulSet;
   numberOfCurrentPods: number;
   numberOfPodsWithErrors: number;
-  hpa?: V1HorizontalPodAutoscaler;
+  hpa?: V2HorizontalPodAutoscaler;
   children?: React.ReactNode;
 };
 
@@ -62,6 +62,14 @@ const StatefulSetSummary = ({
   numberOfPodsWithErrors,
   hpa,
 }: StatefulSetSummaryProps) => {
+  const specCpuUtil = hpa?.spec?.metrics?.find(
+    metric => metric.type === 'Resource' && metric.resource?.name === 'cpu',
+  )?.resource?.target.averageUtilization;
+
+  const cpuUtil = hpa?.status?.currentMetrics?.find(
+    metric => metric.type === 'Resource' && metric.resource?.name === 'cpu',
+  )?.resource?.current.averageUtilization;
+
   return (
     <Grid
       container
@@ -92,14 +100,12 @@ const StatefulSetSummary = ({
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  current CPU usage:{' '}
-                  {hpa.status?.currentCPUUtilizationPercentage ?? '?'}%
+                  current CPU usage: {cpuUtil ?? '?'}%
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  target CPU usage:{' '}
-                  {hpa.spec?.targetCPUUtilizationPercentage ?? '?'}%
+                  target CPU usage: {specCpuUtil ?? '?'}%
                 </Typography>
               </Grid>
             </Grid>

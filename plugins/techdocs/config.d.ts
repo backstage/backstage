@@ -24,7 +24,7 @@ export interface Config {
      * Documentation building process depends on the builder attr
      * @visibility frontend
      */
-    builder: 'local' | 'external';
+    builder?: 'local' | 'external';
 
     /**
      * Allows fallback to case-sensitive triplets in case of migration issues.

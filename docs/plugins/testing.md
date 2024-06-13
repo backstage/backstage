@@ -369,4 +369,4 @@ Note: wrapping in the test application **requires** you to do a `find()` or
 
 ## Debugging Jest Tests
 
-You can find it [here](https://backstage.io/docs/local-dev/cli-build-system#debugging-jest-tests)
+You can find it [here](https://backstage.io/docs/tooling/cli/build-system#debugging-jest-tests)

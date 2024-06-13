@@ -23,6 +23,7 @@ interface StartBackendOptions {
   checksEnabled: boolean;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
+  require?: string;
 }
 
 export async function startBackend(options: StartBackendOptions) {
@@ -32,6 +33,7 @@ export async function startBackend(options: StartBackendOptions) {
       checksEnabled: false, // not supported
       inspectEnabled: options.inspectEnabled,
       inspectBrkEnabled: options.inspectBrkEnabled,
+      require: options.require,
     });
 
     await waitForExit();
@@ -41,6 +43,7 @@ export async function startBackend(options: StartBackendOptions) {
       checksEnabled: options.checksEnabled,
       inspectEnabled: options.inspectEnabled,
       inspectBrkEnabled: options.inspectBrkEnabled,
+      require: options.require,
     });
 
     await waitForExit();
@@ -70,6 +73,7 @@ export async function startBackendPlugin(options: StartBackendOptions) {
       checksEnabled: false, // not supported
       inspectEnabled: options.inspectEnabled,
       inspectBrkEnabled: options.inspectBrkEnabled,
+      require: options.require,
     });
 
     await waitForExit();
@@ -87,6 +91,7 @@ export async function startBackendPlugin(options: StartBackendOptions) {
       checksEnabled: options.checksEnabled,
       inspectEnabled: options.inspectEnabled,
       inspectBrkEnabled: options.inspectBrkEnabled,
+      require: options.require,
     });
 
     await waitForExit();
@@ -98,6 +103,7 @@ async function cleanDistAndServeBackend(options: {
   checksEnabled: boolean;
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
+  require?: string;
 }) {
   // Cleaning dist/ before we start the dev process helps work around an issue
   // where we end up with the entrypoint executing multiple times, causing

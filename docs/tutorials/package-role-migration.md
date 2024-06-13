@@ -10,7 +10,7 @@ information about the change can be found in the [original RFC](https://github.c
 
 Package roles are implemented through a well-known `"backstage"."role"` field in the
 `package.json` of each package. There are a handful of roles defined so far, and it
-is not possible to use values outside the [set of predefined roles](../local-dev/cli-build-system.md#package-roles).
+is not possible to use values outside the [set of predefined roles](../tooling/cli/02-build-system.md#package-roles).
 
 With roles in place in all packages, the Backstage CLI is able to automatically
 determine how to handle each package. For example, the different build commands
@@ -55,7 +55,7 @@ yarn backstage-cli migrate package-roles
 
 The automatic detection is not perfect, so it is recommended to manually review the
 roles that were assigned to each package.
-You can use the [package role definitions](../local-dev/cli-build-system.md#package-roles) as a reference.
+You can use the [package role definitions](../tooling/cli/02-build-system.md#package-roles) as a reference.
 
 ### Step 2 - Migrate package scripts
 
@@ -85,7 +85,7 @@ If you in the end do not want to use this exact script setup, it is still recomm
 
 ### Step 3 - Migrate package ESLint configurations
 
-An area that has been simplified as part of the move to package roles is the ESLint configuration. Rather than having each package select which configuration they want (and getting it wrong), they now use a shared configuration factory that utilizes the package role. You can read more about the new configuration setup in the [build system documentation](../local-dev/cli-build-system.md#linting).
+An area that has been simplified as part of the move to package roles is the ESLint configuration. Rather than having each package select which configuration they want (and getting it wrong), they now use a shared configuration factory that utilizes the package role. You can read more about the new configuration setup in the [build system documentation](../tooling/cli/02-build-system.md#linting).
 
 To migrate the ESLint configuration of all packages in your project, run the following command:
 
@@ -97,7 +97,7 @@ This will migrate all existing `.eslintrc.js` that extend the old configuration 
 
 ### Step 4 - Use `backstage-cli repo`
 
-The Backstage CLI recently introduced a new `repo` command category, which houses commands that operate on an entire monorepo at once. These commands work particularly well once packages have been migrated to use roles, as that allows for some very effective optimizations. It is typically much faster to use these commands compared to using tools like `lerna`, as they're able to avoid the overhead of calling package scripts through `yarn` and can operate on multiple packages at once. You can read more about the `repo` command in the [CLI command documentation](../local-dev/cli-commands.md#repo-build).
+The Backstage CLI recently introduced a new `repo` command category, which houses commands that operate on an entire monorepo at once. These commands work particularly well once packages have been migrated to use roles, as that allows for some very effective optimizations. It is typically much faster to use these commands compared to using tools like `lerna`, as they're able to avoid the overhead of calling package scripts through `yarn` and can operate on multiple packages at once. You can read more about the `repo` command in the [CLI command documentation](../tooling/cli/03-commands.md#repo-build).
 
 The way to execute this step of the migration is not as well defined as the previous steps, as it depends on what your development and CI/CD setup looks like. Look for the following patterns to replace in your root `package.json` as well as CI/CD setup:
 

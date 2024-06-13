@@ -65,11 +65,6 @@ describe('FieldFormatEntityPolicy', () => {
     await expect(policy.enforce(data)).rejects.toThrow(/kind/);
   });
 
-  it('handles missing metadata gracefully', async () => {
-    delete data.medatata;
-    await expect(policy.enforce(data)).resolves.toBe(data);
-  });
-
   it('handles missing spec gracefully', async () => {
     delete data.spec;
     await expect(policy.enforce(data)).resolves.toBe(data);

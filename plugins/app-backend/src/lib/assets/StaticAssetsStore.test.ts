@@ -15,11 +15,10 @@
  */
 
 import { Knex as KnexType } from 'knex';
-import { getVoidLogger } from '@backstage/backend-common';
-import { TestDatabases } from '@backstage/backend-test-utils';
+import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { StaticAssetsStore } from './StaticAssetsStore';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 function createDatabaseManager(
   client: KnexType,

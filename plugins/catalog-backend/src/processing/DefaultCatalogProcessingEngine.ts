@@ -37,7 +37,7 @@ import {
   withActiveSpan,
 } from '../util/opentelemetry';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
-import { EventBroker } from '@backstage/plugin-events-node';
+import { EventBroker, EventsService } from '@backstage/plugin-events-node';
 import { CATALOG_ERRORS_TOPIC } from '../constants';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
@@ -69,7 +69,7 @@ export class DefaultCatalogProcessingEngine {
     errors: Error[];
   }) => Promise<void> | void;
   private readonly tracker: ProgressTracker;
-  private readonly eventBroker?: EventBroker;
+  private readonly eventBroker?: EventBroker | EventsService;
 
   private stopFunc?: () => void;
 
@@ -89,7 +89,7 @@ export class DefaultCatalogProcessingEngine {
       errors: Error[];
     }) => Promise<void> | void;
     tracker?: ProgressTracker;
-    eventBroker?: EventBroker;
+    eventBroker?: EventBroker | EventsService;
   }) {
     this.config = options.config;
     this.scheduler = options.scheduler;

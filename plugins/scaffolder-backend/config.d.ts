@@ -48,6 +48,11 @@ export interface Config {
     EXPERIMENTAL_recoverTasks?: boolean;
 
     /**
+     * Sets the serialization of the workspace to have an ability to rerun the failed task.
+     */
+    EXPERIMENTAL_workspaceSerialization?: boolean;
+
+    /**
      * Every task which is in progress state and having a last heartbeat longer than a specified timeout is going to
      * be attempted to recover.
      *

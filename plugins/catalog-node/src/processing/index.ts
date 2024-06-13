@@ -21,5 +21,6 @@ export type {
   PlaceholderResolverParams,
   PlaceholderResolverRead,
   PlaceholderResolverResolveUrl,
+  LocationAnalyzer,
   ScmLocationAnalyzer,
 } from './types';

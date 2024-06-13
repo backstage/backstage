@@ -28,7 +28,11 @@ export const myTheme = createUnifiedTheme({
 });
 ```
 
-> Note: we recommend creating a `theme` folder in `packages/app/src` to place your theme file to keep things nicely organized.
+:::note Note
+
+we recommend creating a `theme` folder in `packages/app/src` to place your theme file to keep things nicely organized.
+
+:::
 
 You can also create a theme from scratch that matches the `BackstageTheme` type exported by [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme). See the
 [Material UI docs on theming](https://material-ui.com/customization/theming/) for more information about how that can be done.
@@ -504,7 +508,11 @@ You can add more icons, if the [default icons](https://github.com/backstage/back
 
    You might want to use this method if you have an icon you want to use in several locations.
 
-Note: If the icon is not available as one of the default icons or one you've added then it will fall back to Material UI's `LanguageIcon`
+:::note Note
+
+If the icon is not available as one of the default icons or one you've added then it will fall back to Material UI's `LanguageIcon`
+
+:::
 
 ## Custom Sidebar
 

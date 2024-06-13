@@ -38,7 +38,6 @@ async function verify(directoryPath: string) {
     // Unable to find spec at path.
     return;
   }
-
   const yaml = YAML.load(await fs.readFile(openapiPath, 'utf8'));
   await Parser.validate(cloneDeep(yaml) as any);
 

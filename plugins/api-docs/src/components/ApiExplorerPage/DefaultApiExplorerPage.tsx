@@ -35,6 +35,7 @@ import {
   UserListFilterKind,
   UserListPicker,
   CatalogFilterLayout,
+  EntityOwnerPickerProps,
 } from '@backstage/plugin-catalog-react';
 import React from 'react';
 import { registerComponentRouteRef } from '../../routes';
@@ -60,6 +61,7 @@ export type DefaultApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
   columns?: TableColumn<CatalogTableRow>[];
   actions?: TableProps<CatalogTableRow>['actions'];
+  ownerPickerMode?: EntityOwnerPickerProps['mode'];
 };
 
 /**
@@ -67,7 +69,12 @@ export type DefaultApiExplorerPageProps = {
  * @public
  */
 export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
-  const { initiallySelectedFilter = 'all', columns, actions } = props;
+  const {
+    initiallySelectedFilter = 'all',
+    columns,
+    actions,
+    ownerPickerMode,
+  } = props;
 
   const configApi = useApi(configApiRef);
   const generatedSubtitle = `${
@@ -101,7 +108,7 @@ export const DefaultApiExplorerPage = (props: DefaultApiExplorerPageProps) => {
               <EntityKindPicker initialFilter="api" hidden />
               <EntityTypePicker />
               <UserListPicker initialFilter={initiallySelectedFilter} />
-              <EntityOwnerPicker />
+              <EntityOwnerPicker mode={ownerPickerMode} />
               <EntityLifecyclePicker />
               <EntityTagPicker />
             </CatalogFilterLayout.Filters>

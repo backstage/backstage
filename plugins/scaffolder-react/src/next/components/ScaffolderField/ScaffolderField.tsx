@@ -76,6 +76,7 @@ export const ScaffolderField = (
       {displayLabel && rawDescription ? (
         <MarkdownContent
           content={rawDescription}
+          linkTarget="_blank"
           className={classes.markdownDescription}
         />
       ) : null}

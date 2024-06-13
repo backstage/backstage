@@ -39,8 +39,10 @@ import { EntityProviderConnection as EntityProviderConnection_2 } from '@backsta
 import { EntityProviderMutation as EntityProviderMutation_2 } from '@backstage/plugin-catalog-node';
 import { EntityRelationSpec as EntityRelationSpec_2 } from '@backstage/plugin-catalog-node';
 import { EventBroker } from '@backstage/plugin-events-node';
+import { EventsService } from '@backstage/plugin-events-node';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
+import { LocationAnalyzer as LocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
 import { locationSpecToLocationEntity as locationSpecToLocationEntity_2 } from '@backstage/plugin-catalog-node';
 import { locationSpecToMetadataName as locationSpecToMetadataName_2 } from '@backstage/plugin-catalog-node';
@@ -165,9 +167,9 @@ export class CatalogBuilder {
   replaceProcessors(processors: CatalogProcessor_2[]): CatalogBuilder;
   setAllowedLocationTypes(allowedLocationTypes: string[]): CatalogBuilder;
   setEntityDataParser(parser: CatalogProcessorParser_2): CatalogBuilder;
-  setEventBroker(broker: EventBroker): CatalogBuilder;
+  setEventBroker(broker: EventBroker | EventsService): CatalogBuilder;
   setFieldFormatValidators(validators: Partial<Validators>): CatalogBuilder;
-  setLocationAnalyzer(locationAnalyzer: LocationAnalyzer): CatalogBuilder;
+  setLocationAnalyzer(locationAnalyzer: LocationAnalyzer_2): CatalogBuilder;
   setPlaceholderResolver(
     key: string,
     resolver: PlaceholderResolver_2,
@@ -359,12 +361,8 @@ export class FileReaderProcessor implements CatalogProcessor_2 {
   ): Promise<boolean>;
 }
 
-// @public (undocumented)
-export type LocationAnalyzer = {
-  analyzeLocation(
-    location: AnalyzeLocationRequest_2,
-  ): Promise<AnalyzeLocationResponse_2>;
-};
+// @public @deprecated (undocumented)
+export type LocationAnalyzer = LocationAnalyzer_2;
 
 // @public @deprecated
 export class LocationEntityProcessor implements CatalogProcessor_2 {

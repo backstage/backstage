@@ -1,11 +1,9 @@
 # Deploying Backstage on AWS using ECR and EKS
 
-Backstage documentation shows how to build a [Docker
-image](https://backstage.io/docs/deployment/docker); this
+Backstage documentation shows how to build a [Docker image](https://backstage.io/docs/deployment/docker); this
 tutorial shows how to deploy that Docker image to AWS using Elastic Container
 Registry (ECR) and Elastic Kubernetes Service (EKS). Amazon also supports
-deployments with Helm, covered in the [Helm
-Kubernetes](../../kubernetes/basic_kubernetes_example_with_helm) example.
+deployments with Helm, covered in the [Helm Kubernetes](../../kubernetes/basic_kubernetes_example_with_helm) example.
 
 The basic workflow for this method is to build a Backstage Docker image, upload
 the new version to a container registry, and update a Kubernetes deployment with
@@ -13,8 +11,7 @@ the new image.
 
 ## Create a container registry
 
-To create an Elastic Container Registry on AWS, go to the [AWS ECR
-console](https://console.aws.amazon.com/ecr/repositories).
+To create an Elastic Container Registry on AWS, go to the [AWS ECR console](https://console.aws.amazon.com/ecr/repositories).
 
 Click `Create repository` and give the repository a name, like `backstage`.
 
@@ -35,8 +32,7 @@ Go to [AWS IAM console](https://console.aws.amazon.com/iam/home) and select
 
 ## Publish a Backstage build
 
-Follow the [Docker
-image](https://backstage.io/docs/deployment/docker)
+Follow the [Docker image](https://backstage.io/docs/deployment/docker)
 documentation to build a new Backstage Docker image:
 
 ```shell
@@ -56,8 +52,7 @@ Default region name: <region for your ECR repository>
 
 Now you can use the AWS CLI to push the built image to the ECR repository. It's
 a good practice to use a specific version tag as well as `latest` when pushing;
-more about [Semver tagging
-here](https://medium.com/@mccode/using-semantic-versioning-for-docker-image-tags-dfde8be06699).
+more about [Semver tagging here](https://medium.com/@mccode/using-semantic-versioning-for-docker-image-tags-dfde8be06699).
 
 Go to the [AWS ECR console](https://console.aws.amazon.com/ecr/repositories) and
 click on your repository, then `View push commands`. This will show the
@@ -83,12 +78,10 @@ Kubernetes deployment based on this image.
 
 Creating an Elastic Kubernetes Service (EKS) cluster is beyond the scope of this
 document, but it can be as easy as `eksctl create cluster` documented in the
-[AWS EKS getting started
-guide](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html),
+[AWS EKS getting started guide](https://docs.aws.amazon.com/eks/latest/userguide/getting-started-eksctl.html),
 which uses a Cloudformation template to create the necessary resources.
 
-To deploy the Docker image to EKS, follow the [Kubernetes
-guide](https://backstage.io/docs/deployment/k8s#creating-the-backstage-instance)
+To deploy the Docker image to EKS, follow the [Kubernetes guide](https://backstage.io/docs/deployment/k8s#creating-the-backstage-instance)
 but set the Backstage deployment `image` to the ECR repository URL:
 
 ```yaml
@@ -110,8 +103,7 @@ spec:
           ...
 ```
 
-Create the [Service
-descriptor](https://backstage.io/docs/deployment/k8s#creating-a-backstage-service)
+Create the [Service descriptor](https://backstage.io/docs/deployment/k8s#creating-a-backstage-service)
 as well, and apply these Kubernetes definitions to the EKS cluster to complete
 the Backstage deployment:
 
@@ -120,16 +112,14 @@ $ kubectl apply -f kubernetes/backstage.yaml
 $ kubectl apply -f kubernetes/backstage-service.yaml
 ```
 
-Now you can see your Backstage workload running from the [EKS
-console](https://console.aws.amazon.com/eks/home).
+Now you can see your Backstage workload running from the [EKS console](https://console.aws.amazon.com/eks/home).
 
 ## Further steps
 
 ### Exposing Backstage with a load balancer
 
 To make the service useful, we need to expose the workload with a load balancer.
-Follow the [Application load balancing on
-EKS](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html) guide to
+Follow the [Application load balancing on EKS](https://docs.aws.amazon.com/eks/latest/userguide/alb-ingress.html) guide to
 set up a Load Balancer controller and Kubernetes ingress to your application.
 
 This is ultimately a `kubectl apply` with an ingress definition:

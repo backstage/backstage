@@ -25,7 +25,7 @@ import {
   readMicrosoftGraphUsersInGroups,
   resolveRelations,
 } from './read';
-import { getVoidLogger } from '@backstage/backend-common';
+import { mockServices } from '@backstage/backend-test-utils';
 
 function user(data: Partial<UserEntity>): UserEntity {
   return merge(
@@ -106,7 +106,7 @@ describe('read microsoft graph', () => {
 
       const { users } = await readMicrosoftGraphUsers(client, {
         userFilter: 'accountEnabled eq true',
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -153,7 +153,7 @@ describe('read microsoft graph', () => {
       const { users } = await readMicrosoftGraphUsers(client, {
         queryMode: 'advanced',
         userFilter: 'accountEnabled eq true',
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -206,7 +206,7 @@ describe('read microsoft graph', () => {
           metadata: { name: 'x' },
           spec: { memberOf: [] },
         }),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -246,7 +246,7 @@ describe('read microsoft graph', () => {
 
       const { users } = await readMicrosoftGraphUsersInGroups(client, {
         userGroupMemberFilter: 'securityEnabled eq true',
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -304,7 +304,7 @@ describe('read microsoft graph', () => {
       const { users } = await readMicrosoftGraphUsersInGroups(client, {
         queryMode: 'advanced',
         userGroupMemberFilter: 'securityEnabled eq true',
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -369,7 +369,7 @@ describe('read microsoft graph', () => {
           metadata: { name: 'x' },
           spec: { memberOf: [] },
         }),
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
 
       expect(users).toEqual([
@@ -893,7 +893,7 @@ describe('read microsoft graph', () => {
       );
 
       await readMicrosoftGraphOrg(client, 'tenantid', {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         groupFilter: 'securityEnabled eq false',
       });
 
@@ -930,7 +930,7 @@ describe('read microsoft graph', () => {
       );
 
       await readMicrosoftGraphOrg(client, 'tenantid', {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         userExpand: 'manager',
         userFilter: 'accountEnabled eq true',
         groupFilter: 'securityEnabled eq false',
@@ -970,7 +970,7 @@ describe('read microsoft graph', () => {
       );
 
       await readMicrosoftGraphOrg(client, 'tenantid', {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         loadUserPhotos: false,
       });
 
@@ -1007,7 +1007,7 @@ describe('read microsoft graph', () => {
       client.getGroupMembers.mockImplementation(getExampleGroupMembers);
 
       await readMicrosoftGraphOrg(client, 'tenantid', {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         userSelect: ['mail'],
       });
 
@@ -1040,7 +1040,7 @@ describe('read microsoft graph', () => {
       );
 
       await readMicrosoftGraphOrg(client, 'tenantid', {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         userGroupMemberFilter: 'name eq backstage-group',
         groupFilter: 'securityEnabled eq false',
       });
@@ -1089,7 +1089,7 @@ describe('read microsoft graph', () => {
       );
 
       const { users } = await readMicrosoftGraphOrg(client, 'tenantid', {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         loadUserPhotos: false,
       });
 

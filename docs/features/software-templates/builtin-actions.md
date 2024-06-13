@@ -57,7 +57,11 @@ backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 backend.start();
 ```
 
-> Note: This is a simplified example of what your backend may look like, you may have more code in here then this.
+:::note Note
+
+This is a simplified example of what your backend may look like, you may have more code in here then this.
+
+:::
 
 ## Listing Actions
 

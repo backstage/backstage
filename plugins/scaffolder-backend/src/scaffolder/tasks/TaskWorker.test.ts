@@ -15,7 +15,10 @@
  */
 
 import os from 'os';
-import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
+import {
+  DatabaseManager,
+  loggerToWinstonLogger,
+} from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
@@ -31,6 +34,7 @@ import {
 import { WorkflowRunner } from './types';
 import ObservableImpl from 'zen-observable';
 import waitForExpect from 'wait-for-expect';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('./NunjucksWorkflowRunner');
 const MockedNunjucksWorkflowRunner =
@@ -74,7 +78,7 @@ describe('TaskWorker', () => {
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
-  const logger = getVoidLogger();
+  const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
   it('should call the default workflow runner when the apiVersion is beta3', async () => {
     const broker = new StorageTaskBroker(storage, logger);
@@ -167,7 +171,7 @@ describe('Concurrent TaskWorker', () => {
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
-  const logger = getVoidLogger();
+  const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
   it('should be able to run multiple tasks at once', async () => {
     const broker = new StorageTaskBroker(storage, logger);
@@ -228,7 +232,7 @@ describe('Cancellable TaskWorker', () => {
     MockedNunjucksWorkflowRunner.mockImplementation(() => workflowRunner);
   });
 
-  const logger = getVoidLogger();
+  const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
   it('should be able to cancel the running task', async () => {
     const taskBroker = new StorageTaskBroker(storage, logger);

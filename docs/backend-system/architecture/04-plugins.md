@@ -78,4 +78,4 @@ Plugins must always be designed to be horizontally scalable. This means that you
 
 ### Isolated
 
-Plugins must never communicate with each other directly through code, they may only communicate over the network. Plugins that wish to expose an external interface for other plugins and modules to use are recommended to do so through a [node-library](../../local-dev/cli-build-system.md#package-roles) package. The library should export an API client service to make calls to your plugin, or similar construct.
+Plugins must never communicate with each other directly through code, they may only communicate over the network. Plugins that wish to expose an external interface for other plugins and modules to use are recommended to do so through a [node-library](../../tooling/cli/02-build-system.md#package-roles) package. The library should export an API client service to make calls to your plugin, or similar construct.

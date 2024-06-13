@@ -14,9 +14,15 @@
  * limitations under the License.
  */
 
-import { HostDiscovery as _HostDiscovery } from '@backstage/backend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { HostDiscovery as _HostDiscovery } from '../../../backend-defaults/src/entrypoints/discovery/HostDiscovery';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
-export type { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
+/**
+ * @public
+ * @deprecated Use `DiscoveryService` from `@backstage/backend-plugin-api` instead
+ */
+export type PluginEndpointDiscovery = DiscoveryService;
 
 /**
  * HostDiscovery is a basic PluginEndpointDiscovery implementation
@@ -27,6 +33,7 @@ export type { DiscoveryService as PluginEndpointDiscovery } from '@backstage/bac
  * resolved to the same host, so there won't be any balancing of internal traffic.
  *
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/discovery` instead.
  */
 export const HostDiscovery = _HostDiscovery;
 
@@ -39,6 +46,6 @@ export const HostDiscovery = _HostDiscovery;
  * resolved to the same host, so there won't be any balancing of internal traffic.
  *
  * @public
- * @deprecated Use {@link HostDiscovery} instead
+ * @deprecated Use `HostDiscovery` from `@backstage/backend-defaults/discovery` instead
  */
 export const SingleHostDiscovery = _HostDiscovery;

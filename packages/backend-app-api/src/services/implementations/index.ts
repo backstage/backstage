@@ -28,7 +28,8 @@ export * from './permissions';
 export * from './rootHttpRouter';
 export * from './rootLifecycle';
 export * from './rootLogger';
-export * from './scheduler';
 export * from './tokenManager';
 export * from './urlReader';
 export * from './userInfo';
+
+export * from './deprecated';

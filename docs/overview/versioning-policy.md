@@ -81,18 +81,20 @@ In order for Backstage to function properly the following versioning rules must
 be followed. The rules are referring to the
 [Package Architecture](https://backstage.io/docs/overview/architecture-overview#package-architecture).
 
-- The versions of all the packages in the `Frontend App Core` must be from the
-  same release, and it is recommended to keep `Common Tooling` on that release
-  too.
-- The Backstage dependencies of any given plugin should be from the same
-  release. This includes the packages from `Common Libraries`,
-  `Frontend Plugin Core`, and `Frontend Libraries`, or alternatively the
-  `Backend Libraries`.
-- There must be no package that is from a newer release than the
-  `Frontend App Core` packages in the app.
+- The versions of all packages for each of the "App Core" groups must be from the
+  same Backstage release.
+- For each frontend and backend setup, the "App Core" packages must be ahead of or on the same Backstage release as the "Plugin Core" packages, including transitive dependencies of all installed plugins and modules.
+- For any given plugin, the versions of all packages from the "Plugin Core" and
+  "Library" groups must be from the same Backstage release.
 - Frontend plugins with a corresponding backend plugin should be from the same
   release. The update to the backend plugin **MUST** be deployed before or
   together with the update to the frontend plugin.
+
+It is allowed and often expected that the "Plugin Core" and "Library" packages
+are from older releases than the "App Core" packages. It is also allowed to have
+duplicate installations of the "Plugin Core" and "Library" packages. This is all
+to make sure that upgrading Backstage is as smooth as possible and allows for
+more flexibility across the entire plugin ecosystem.
 
 ## Package Versioning Policy
 

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
-import { TestDatabases } from '@backstage/backend-test-utils';
+import { TestDatabases, mockServices } from '@backstage/backend-test-utils';
 import { Duration, DateTime } from 'luxon';
 import waitForExpect from 'wait-for-expect';
 import { migrateBackendTasks } from '../database/migrateBackendTasks';
@@ -27,7 +26,7 @@ import { createTestScopedSignal } from './__testUtils__/createTestScopedSignal';
 jest.setTimeout(60_000);
 
 describe('TaskWorker', () => {
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
   const databases = TestDatabases.create();
   const testScopedSignal = createTestScopedSignal();
 

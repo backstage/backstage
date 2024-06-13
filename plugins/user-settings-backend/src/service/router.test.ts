@@ -22,6 +22,7 @@ import express from 'express';
 import request from 'supertest';
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { createRouterInternal } from './router';
+import { SignalsService } from '@backstage/plugin-signals-node';
 
 describe('createRouter', () => {
   const userSettingsStore: jest.Mocked<UserSettingsStore> = {
@@ -36,6 +37,9 @@ describe('createRouter', () => {
   const identityApi: jest.Mocked<Partial<IdentityApi>> = {
     getIdentity: getIdentityMock,
   };
+  const signalService: jest.Mocked<SignalsService> = {
+    publish: jest.fn(),
+  };
 
   let app: express.Express;
 
@@ -43,6 +47,7 @@ describe('createRouter', () => {
     const router = await createRouterInternal({
       userSettingsStore,
       identity: identityApi as IdentityApi,
+      signals: signalService as SignalsService,
     });
 
     app = express().use(router);
@@ -118,6 +123,11 @@ describe('createRouter', () => {
         bucket: 'my-bucket',
         key: 'my-key',
       });
+      expect(signalService.publish).toHaveBeenCalledWith({
+        recipients: { type: 'user', entityRef: 'user-1' },
+        channel: `user-settings`,
+        message: { type: 'key-deleted', key: 'my-key' },
+      });
     });
 
     it('returns an error if the Authorization header is missing', async () => {
@@ -166,6 +176,11 @@ describe('createRouter', () => {
         userEntityRef: 'user-1',
         bucket: 'my-bucket',
         key: 'my-key',
+      });
+      expect(signalService.publish).toHaveBeenCalledWith({
+        recipients: { type: 'user', entityRef: 'user-1' },
+        channel: `user-settings`,
+        message: { type: 'key-changed', key: 'my-key' },
       });
     });
 

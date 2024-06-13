@@ -24,6 +24,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
  * A helper for building backend service instances.
  *
  * @public
+ * @deprecated This type is being deprecated along with the {@link @backstage/backend-common#createServiceBuilder} function.
  */
 export type ServiceBuilder = {
   /**

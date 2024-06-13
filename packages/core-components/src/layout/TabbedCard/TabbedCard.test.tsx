@@ -104,7 +104,7 @@ describe('<TabbedCard />', () => {
 
     const rendered = render(
       wrapInTestApp(
-        <TabbedCard onChange={mockOnChange}>
+        <TabbedCard onChange={mockOnChange} value="one">
           <CardTab value="one" label="Test 1">
             Test Content 1
           </CardTab>

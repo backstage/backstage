@@ -35,6 +35,7 @@ describe('publish:gerrit:review', () => {
       gerrit: [
         {
           host: 'gerrithost.org',
+          gitilesBaseUrl: 'https://gerrithost.org/gitiles',
           username: 'gerrituser',
           password: 'usertoken',
         },
@@ -77,7 +78,7 @@ describe('publish:gerrit:review', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gerrithost.org/repo/+/refs/heads/master',
+      'https://gerrithost.org/gitiles/repo/+/refs/heads/master',
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'reviewUrl',
@@ -109,7 +110,7 @@ describe('publish:gerrit:review', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gerrithost.org/repo/+/refs/heads/master',
+      'https://gerrithost.org/gitiles/repo/+/refs/heads/master',
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'reviewUrl',
@@ -141,7 +142,7 @@ describe('publish:gerrit:review', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gerrithost.org/repo/+/refs/heads/master',
+      'https://gerrithost.org/gitiles/repo/+/refs/heads/master',
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'reviewUrl',
@@ -170,7 +171,7 @@ describe('publish:gerrit:review', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gerrithost.org/repo/+/refs/heads/develop',
+      'https://gerrithost.org/gitiles/repo/+/refs/heads/develop',
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'reviewUrl',
@@ -199,7 +200,7 @@ describe('publish:gerrit:review', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gerrithost.org/repo/+/refs/heads/master',
+      'https://gerrithost.org/gitiles/repo/+/refs/heads/master',
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'reviewUrl',
@@ -231,7 +232,7 @@ describe('publish:gerrit:review', () => {
 
     expect(mockContext.output).toHaveBeenCalledWith(
       'repoContentsUrl',
-      'https://gerrithost.org/repo/+/refs/heads/develop',
+      'https://gerrithost.org/gitiles/repo/+/refs/heads/develop',
     );
     expect(mockContext.output).toHaveBeenCalledWith(
       'reviewUrl',

@@ -18,6 +18,10 @@
  * The DiscoveryService is used to provide a mechanism for backend
  * plugins to discover the endpoints for itself or other backend plugins.
  *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/discovery | service documentation} for more details.
+ *
+ * @remarks
+ *
  * The purpose of the discovery API is to allow for many different deployment
  * setups and routing methods through a central configuration, instead
  * of letting each individual plugin manage that configuration.
@@ -32,13 +36,15 @@ export interface DiscoveryService {
   /**
    * Returns the internal HTTP base URL for a given plugin, without a trailing slash.
    *
+   * @remarks
+   *
    * The returned URL should point to an internal endpoint for the plugin, with
    * the shortest route possible. The URL should be used for service-to-service
    * communication within a Backstage backend deployment.
    *
-   * This method must always be called just before making a request, as opposed to
-   * fetching the URL when constructing an API client. That is to ensure that more
-   * flexible routing patterns can be supported.
+   * This method must always be called just before making each request, as opposed to
+   * fetching the URL once when constructing an API client. That is to ensure that more
+   * flexible routing patterns can be supported where a different result might be returned each time.
    *
    * For example, asking for the URL for `catalog` may return something
    * like `http://10.1.2.3/api/catalog`
@@ -47,6 +53,8 @@ export interface DiscoveryService {
 
   /**
    * Returns the external HTTP base backend URL for a given plugin, without a trailing slash.
+   *
+   * @remarks
    *
    * The returned URL should point to an external endpoint for the plugin, such that
    * it is reachable from the Backstage frontend and other external services. The returned

@@ -3,7 +3,7 @@ author: Axis Communications AB
 authorUrl: https://www.axis.com
 category: Discovery
 description: A marketplace where engineers can propose projects suitable for inner sourcing
-documentation: https://github.com/backstage/backstage/blob/master/plugins/bazaar/README.md
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/bazaar/plugins/bazaar/README.md
 iconUrl: /img/bazaar.svg
 npmPackageName: '@backstage/plugin-bazaar'
 addedDate: '2022-01-11'

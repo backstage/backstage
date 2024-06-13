@@ -18,7 +18,13 @@ import { ApiProvider } from '@backstage/core-app-api';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
 import Button from '@material-ui/core/Button';
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import {
+  fireEvent,
+  screen,
+  waitFor,
+  within,
+  act,
+} from '@testing-library/react';
 import React, { useState } from 'react';
 import { TechDocsSearch } from './TechDocsSearch';
 
@@ -91,9 +97,11 @@ it('should trigger query when autocomplete input changed', async () => {
 
   const autocomplete = screen.getByTestId('techdocs-search-bar');
   const input = within(autocomplete).getByRole('textbox');
-  autocomplete.click();
-  autocomplete.focus();
-  fireEvent.change(input, { target: { value: 'asdf' } });
+  act(() => {
+    autocomplete.click();
+    autocomplete.focus();
+    fireEvent.change(input, { target: { value: 'asdf' } });
+  });
 
   await singleResult;
   await waitFor(() =>
@@ -148,7 +156,9 @@ it('should update filter values when a new entityName is provided', async () => 
   });
 
   const button = screen.getByText('Update Entity');
-  button.click();
+  act(() => {
+    button.click();
+  });
 
   await singleResult;
   await waitFor(() =>

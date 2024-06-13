@@ -19,6 +19,7 @@
  * to pass along scoped information and abort signals.
  *
  * @alpha
+ * @deprecated This type is not used in the new Backend system, so it is going to be removed in a near future.
  */
 export interface Context {
   /**

@@ -16,7 +16,6 @@
 
 import express from 'express';
 import request from 'supertest';
-import { getVoidLogger } from '@backstage/backend-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   ApplyConditionsRequestEntry,
@@ -67,7 +66,7 @@ describe('createRouter', () => {
   beforeAll(async () => {
     const router = await createRouter({
       config: new ConfigReader({ permission: { enabled: true } }),
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       discovery: mockServices.discovery(),
       auth: mockServices.auth(),
       httpAuth: mockServices.httpAuth({

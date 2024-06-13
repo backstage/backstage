@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { MiddlewareFactory } from '@backstage/backend-app-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { MiddlewareFactory } from '../../../backend-app-api/src/http/MiddlewareFactory';
 import { ConfigReader } from '@backstage/config';
 import { RequestHandler } from 'express';
 import { getRootLogger } from '../logging';
@@ -27,6 +28,7 @@ import { getRootLogger } from '../logging';
  *
  * @public
  * @returns An Express request handler
+ * @deprecated Use {@link @backstage/backend-app-api#MiddlewareFactory.create.notFound} instead
  */
 export function notFoundHandler(): RequestHandler {
   return MiddlewareFactory.create({

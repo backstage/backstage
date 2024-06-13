@@ -23,6 +23,7 @@ import {
 } from '@backstage/errors';
 import express from 'express';
 import { createRemoteJWKSet, jwtVerify } from 'jose';
+import fetch, { Headers } from 'node-fetch';
 import {
   CACHE_PREFIX,
   CF_JWT_HEADER,

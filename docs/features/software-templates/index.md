@@ -20,10 +20,14 @@ locations like GitHub or GitLab.
 > Be sure to have covered
 > [Getting Started with Backstage](../../getting-started) before proceeding.
 
-> Note: if you're running Backstage with Node 20 or later, you'll need to pass the flag `--no-node-snapshot` to Node in order to
-> use the templates feature.
-> One way to do this is to specify the `NODE_OPTIONS` environment variable before starting Backstage:
-> `export NODE_OPTIONS=--no-node-snapshot`
+:::note Note
+
+If you're running Backstage with Node 20 or later, you'll need to pass the flag `--no-node-snapshot` to Node in order to
+use the templates feature.
+One way to do this is to specify the `NODE_OPTIONS` environment variable before starting Backstage:
+`export NODE_OPTIONS=--no-node-snapshot`
+
+:::
 
 The Software Templates are available under `/create`. For local development you
 should be able to reach them at `http://localhost:3000/create`.
@@ -103,3 +107,17 @@ from `backstage/packages/app/src/App.tsx`:
 ```
 
 After the change, you should no longer see the button.
+
+## Previewing and Executing Previous Template Tasks
+
+Each execution of a template is treated as a unique task, identifiable by its own unique ID. To view a list of previously executed template tasks, navigate to the "Create" page and access the "Task List" from the context menu (represented by the vertical ellipsis, or 'kebab menu', icon in the upper right corner).
+
+![Template Task List](../../assets/software-templates/template-task-list.png)
+
+If you wish to re-run a previously executed template, navigate to the template tasks page. Locate the desired task and select the "Start Over" option from the context menu.
+
+![Template Start Over](../../assets/software-templates/template-start-over.png)
+
+This action will initiate a new execution of the selected template, pre-populated with the same parameters as the previous run, but these parameters can be edited before re-execution.
+
+In the event of a failed template execution, the "Start Over" option can be used to re-execute the template. The parameters from the original run will be pre-filled, but they can be adjusted as needed before retrying the template.

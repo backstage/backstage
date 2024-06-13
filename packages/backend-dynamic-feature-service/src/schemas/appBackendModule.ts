@@ -17,13 +17,13 @@
 import {
   coreServices,
   createBackendModule,
+  resolvePackagePath,
 } from '@backstage/backend-plugin-api';
 import { dynamicPluginsSchemasServiceRef } from './schemas';
 import {
   configSchemaExtensionPoint,
   loadCompiledConfigSchema,
 } from '@backstage/plugin-app-node';
-import { resolvePackagePath } from '@backstage/backend-common';
 
 /** @public */
 export const dynamicPluginsFrontendSchemas = createBackendModule({

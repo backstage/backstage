@@ -1,5 +1,11 @@
 # @backstage/eslint-plugin
 
+## 0.1.8
+
+### Patch Changes
+
+- 65ec043: add some `pickers` fixes
+
 ## 0.1.7
 
 ### Patch Changes

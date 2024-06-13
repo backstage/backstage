@@ -103,7 +103,7 @@ export const DEFAULT_OBJECTS: ObjectToFetch[] = [
   },
   {
     group: 'autoscaling',
-    apiVersion: 'v1',
+    apiVersion: 'v2',
     plural: 'horizontalpodautoscalers',
     objectType: 'horizontalpodautoscalers',
   },

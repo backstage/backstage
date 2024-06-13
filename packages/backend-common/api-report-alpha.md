@@ -5,14 +5,14 @@
 ```ts
 import { Duration } from 'luxon';
 
-// @alpha
+// @alpha @deprecated
 export interface Context {
   readonly abortSignal: AbortSignal;
   readonly deadline: Date | undefined;
   value<T = unknown>(key: string): T | undefined;
 }
 
-// @alpha
+// @alpha @deprecated
 export class Contexts {
   static root(): Context;
   static withAbort(

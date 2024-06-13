@@ -59,7 +59,7 @@ describe('backend-dynamic-feature-service', () => {
       name: string;
       packageManifest: ScannedPluginManifest;
       indexFile?: {
-        retativePath: string[];
+        relativePath: string[];
         content: string;
       };
       expectedLogs?(location: URL): {
@@ -83,7 +83,7 @@ describe('backend-dynamic-feature-service', () => {
           main: 'dist/index.cjs.js',
         },
         indexFile: {
-          retativePath: ['dist', 'index.cjs.js'],
+          relativePath: ['dist', 'index.cjs.js'],
           content:
             'exports.dynamicPluginInstaller={ kind: "new", install: () => [] }',
         },
@@ -127,7 +127,7 @@ describe('backend-dynamic-feature-service', () => {
           main: 'dist/index.cjs.js',
         },
         indexFile: {
-          retativePath: ['dist', 'index.cjs.js'],
+          relativePath: ['dist', 'index.cjs.js'],
           content: `const alpha = { $$type: '@backstage/BackendFeature' }; exports["default"] = alpha;`,
         },
         expectedLogs(location) {
@@ -170,7 +170,7 @@ describe('backend-dynamic-feature-service', () => {
           main: 'dist/index.cjs.js',
         },
         indexFile: {
-          retativePath: ['dist', 'index.cjs.js'],
+          relativePath: ['dist', 'index.cjs.js'],
           content: `const alpha = () => { return { $$type: '@backstage/BackendFeature' } };
              alpha.$$type = '@backstage/BackendFeatureFactory';
              exports["default"] = alpha;`,
@@ -215,7 +215,7 @@ describe('backend-dynamic-feature-service', () => {
           main: 'dist/index.cjs.js',
         },
         indexFile: {
-          retativePath: ['dist', 'index.cjs.js'],
+          relativePath: ['dist', 'index.cjs.js'],
           content:
             'exports.dynamicPluginInstaller={ kind: "new", install: () => [] }',
         },
@@ -262,7 +262,7 @@ describe('backend-dynamic-feature-service', () => {
           return {
             errors: [
               {
-                message: `an error occured while loading dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
+                message: `an error occurred while loading dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
                 meta: {
                   name: 'Error',
                   message: expect.stringContaining(
@@ -305,7 +305,7 @@ describe('backend-dynamic-feature-service', () => {
           main: 'dist/index.cjs.js',
         },
         indexFile: {
-          retativePath: ['dist', 'index.cjs.js'],
+          relativePath: ['dist', 'index.cjs.js'],
           content: '',
         },
         expectedLogs(location) {
@@ -332,7 +332,7 @@ describe('backend-dynamic-feature-service', () => {
           main: 'dist/index.cjs.js',
         },
         indexFile: {
-          retativePath: ['dist', 'index.cjs.js'],
+          relativePath: ['dist', 'index.cjs.js'],
           content:
             'exports.dynamicPluginInstaller={ something: "else", unexpectedMethod() {} }',
         },
@@ -360,14 +360,14 @@ describe('backend-dynamic-feature-service', () => {
           main: 'dist/index.cjs.js',
         },
         indexFile: {
-          retativePath: ['dist', 'index.cjs.js'],
+          relativePath: ['dist', 'index.cjs.js'],
           content: 'strange text with syntax error',
         },
         expectedLogs(location) {
           return {
             errors: [
               {
-                message: `an error occured while loading dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
+                message: `an error occurred while loading dynamic backend plugin 'backend-dynamic-plugin-test' from '${location}'`,
                 meta: {
                   message: expect.stringContaining('Unexpected identifier'),
                   name: 'SyntaxError',
@@ -391,7 +391,7 @@ describe('backend-dynamic-feature-service', () => {
           main: 'dist/index.cjs.js',
         },
         indexFile: {
-          retativePath: ['dist', 'index.cjs.js'],
+          relativePath: ['dist', 'index.cjs.js'],
           content:
             'exports.dynamicPluginInstaller={ kind: "legacy", scaffolder: (env)=>[] }',
         },
@@ -458,7 +458,7 @@ describe('backend-dynamic-feature-service', () => {
         mockedFiles[
           path.join(
             url.fileURLToPath(plugin.location),
-            ...tc.indexFile.retativePath,
+            ...tc.indexFile.relativePath,
           )
         ] = tc.indexFile.content;
       }

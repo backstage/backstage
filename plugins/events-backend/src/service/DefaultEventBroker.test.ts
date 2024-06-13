@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { TestEventSubscriber } from '@backstage/plugin-events-backend-test-utils';
 import { EventParams, EventSubscriber } from '@backstage/plugin-events-node';
 import { DefaultEventBroker } from './DefaultEventBroker';
+import { mockServices } from '@backstage/backend-test-utils';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 describe('DefaultEventBroker', () => {
   it('passes events to interested subscribers', () => {

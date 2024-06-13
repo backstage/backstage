@@ -14,7 +14,6 @@ import { V1ConfigMap } from '@kubernetes/client-node';
 import { V1CronJob } from '@kubernetes/client-node';
 import { V1DaemonSet } from '@kubernetes/client-node';
 import { V1Deployment } from '@kubernetes/client-node';
-import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { V1Ingress } from '@kubernetes/client-node';
 import { V1Job } from '@kubernetes/client-node';
 import { V1LimitRange } from '@kubernetes/client-node';
@@ -23,6 +22,7 @@ import { V1ReplicaSet } from '@kubernetes/client-node';
 import { V1ResourceQuota } from '@kubernetes/client-node';
 import { V1Service } from '@kubernetes/client-node';
 import { V1StatefulSet } from '@kubernetes/client-node';
+import { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 
 // @public
 export const ANNOTATION_KUBERNETES_API_SERVER = 'kubernetes.io/api-server';
@@ -192,7 +192,7 @@ export interface DeploymentResources {
   // (undocumented)
   deployments: V1Deployment[];
   // (undocumented)
-  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+  horizontalPodAutoscalers: V2HorizontalPodAutoscaler[];
   // (undocumented)
   pods: V1Pod[];
   // (undocumented)
@@ -294,7 +294,7 @@ export const groupResponses: (
 // @public (undocumented)
 export interface HorizontalPodAutoscalersFetchResponse {
   // (undocumented)
-  resources: Array<V1HorizontalPodAutoscaler>;
+  resources: Array<V2HorizontalPodAutoscaler>;
   // (undocumented)
   type: 'horizontalpodautoscalers';
 }

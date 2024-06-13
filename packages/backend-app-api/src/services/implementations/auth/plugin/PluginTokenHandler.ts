@@ -15,51 +15,36 @@
  */
 
 import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
-import {
-  decodeJwt,
-  exportJWK,
-  generateKeyPair,
-  JWK,
-  importJWK,
-  SignJWT,
-  decodeProtectedHeader,
-} from 'jose';
-import { v4 as uuid } from 'uuid';
-import { InternalKey, KeyStore } from '../types';
+import { decodeJwt, importJWK, SignJWT, decodeProtectedHeader } from 'jose';
 import { AuthenticationError } from '@backstage/errors';
 import { jwtVerify } from 'jose';
 import { tokenTypes } from '@backstage/plugin-auth-node';
 import { JwksClient } from '../JwksClient';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
+import { PluginKeySource } from './keys/types';
 
-/**
- * The margin for how many times longer we make the public key available
- * compared to how long we use the private key to sign new tokens.
- */
-const KEY_EXPIRATION_MARGIN_FACTOR = 3;
 const SECONDS_IN_MS = 1000;
 
 const ALLOWED_PLUGIN_ID_PATTERN = /^[a-z0-9_-]+$/i;
 
 type Options = {
   ownPluginId: string;
-  publicKeyStore: KeyStore;
+  keyDuration: HumanDuration;
+  keySource: PluginKeySource;
   discovery: DiscoveryService;
   logger: LoggerService;
-  /** Expiration time of signing keys */
-  keyDuration: HumanDuration;
-  /** JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
+  /**
+   * JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
    * Must match one of the algorithms defined for IdentityClient.
    * When setting a different algorithm, check if the `key` field
    * of the `signing_keys` table can fit the length of the generated keys.
    * If not, add a knex migration file in the migrations folder.
-   * More info on supported algorithms: https://github.com/panva/jose */
+   * More info on supported algorithms: https://github.com/panva/jose
+   */
   algorithm?: string;
 };
 
 export class PluginTokenHandler {
-  private privateKeyPromise?: Promise<JWK>;
-  private keyExpiry?: Date;
   private jwksMap = new Map<string, JwksClient>();
 
   // Tracking state for isTargetPluginSupported
@@ -70,9 +55,9 @@ export class PluginTokenHandler {
     return new PluginTokenHandler(
       options.logger,
       options.ownPluginId,
-      options.publicKeyStore,
-      Math.round(durationToMilliseconds(options.keyDuration) / 1000),
+      options.keySource,
       options.algorithm ?? 'ES256',
+      Math.round(durationToMilliseconds(options.keyDuration) / 1000),
       options.discovery,
     );
   }
@@ -80,9 +65,9 @@ export class PluginTokenHandler {
   private constructor(
     private readonly logger: LoggerService,
     private readonly ownPluginId: string,
-    private readonly publicKeyStore: KeyStore,
-    private readonly keyDurationSeconds: number,
+    private readonly keySource: PluginKeySource,
     private readonly algorithm: string,
+    private readonly keyDurationSeconds: number,
     private readonly discovery: DiscoveryService,
   ) {}
 
@@ -132,7 +117,7 @@ export class PluginTokenHandler {
     onBehalfOf?: { token: string; expiresAt: Date };
   }): Promise<{ token: string }> {
     const { pluginId, targetPluginId, onBehalfOf } = options;
-    const key = await this.getKey();
+    const key = await this.keySource.getPrivateSigningKey();
 
     const sub = pluginId;
     const aud = targetPluginId;
@@ -228,66 +213,5 @@ export class PluginTokenHandler {
 
     this.jwksMap.set(pluginId, newClient);
     return newClient;
-  }
-
-  private async getKey(): Promise<JWK> {
-    // Make sure that we only generate one key at a time
-    if (this.privateKeyPromise) {
-      if (this.keyExpiry && this.keyExpiry.getTime() > Date.now()) {
-        return this.privateKeyPromise;
-      }
-      this.logger.info(`Signing key has expired, generating new key`);
-      delete this.privateKeyPromise;
-    }
-
-    this.keyExpiry = new Date(
-      Date.now() + this.keyDurationSeconds * SECONDS_IN_MS,
-    );
-
-    const promise = (async () => {
-      // This generates a new signing key to be used to sign tokens until the next key rotation
-      const kid = uuid();
-      const key = await generateKeyPair(this.algorithm);
-      const publicKey = await exportJWK(key.publicKey);
-      const privateKey = await exportJWK(key.privateKey);
-      publicKey.kid = privateKey.kid = kid;
-      publicKey.alg = privateKey.alg = this.algorithm;
-
-      // We're not allowed to use the key until it has been successfully stored
-      // TODO: some token verification implementations aggressively cache the list of keys, and
-      //       don't attempt to fetch new ones even if they encounter an unknown kid. Therefore we
-      //       may want to keep using the existing key for some period of time until we switch to
-      //       the new one. This also needs to be implemented cross-service though, meaning new services
-      //       that boot up need to be able to grab an existing key to use for signing.
-      this.logger.info(`Created new signing key ${kid}`);
-
-      await this.publicKeyStore.addKey({
-        id: kid,
-        key: publicKey as InternalKey,
-        expiresAt: new Date(
-          Date.now() +
-            this.keyDurationSeconds *
-              SECONDS_IN_MS *
-              KEY_EXPIRATION_MARGIN_FACTOR,
-        ),
-      });
-
-      // At this point we are allowed to start using the new key
-      return privateKey;
-    })();
-
-    this.privateKeyPromise = promise;
-
-    try {
-      // If we fail to generate a new key, we need to clear the state so that
-      // the next caller will try to generate another key.
-      await promise;
-    } catch (error) {
-      this.logger.error(`Failed to generate new signing key, ${error}`);
-      delete this.keyExpiry;
-      delete this.privateKeyPromise;
-    }
-
-    return promise;
   }
 }

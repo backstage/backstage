@@ -26,7 +26,7 @@ describe('createExtensionPoint', () => {
     const extensionPoint = createExtensionPoint({ id: 'x' });
     expect(extensionPoint).toBeDefined();
     expect(extensionPoint.id).toBe('x');
-    expect(() => extensionPoint.T).toThrow();
+    expect(() => extensionPoint.T).not.toThrow();
     expect(String(extensionPoint)).toBe('extensionPoint{x}');
   });
 });

@@ -69,6 +69,8 @@ describe('authModuleGoogleProvider', () => {
       client_id: 'my-client-id',
       redirect_uri: `http://localhost:${server.port()}/api/auth/google/handler/frame`,
       state: expect.any(String),
+      scope:
+        'openid https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile',
     });
 
     expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({

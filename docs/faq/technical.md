@@ -154,7 +154,7 @@ maintains Backstage in your own environment.
 
 For more information, see our
 [Owners](https://github.com/backstage/backstage/blob/master/OWNERS.md) and
-[Governance](https://github.com/backstage/backstage/blob/master/GOVERNANCE.md).
+[Governance](https://github.com/backstage/community/blob/main/GOVERNANCE.md).
 
 ### Does Spotify provide a managed version of Backstage?
 

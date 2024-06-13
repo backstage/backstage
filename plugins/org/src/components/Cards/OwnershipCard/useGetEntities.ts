@@ -34,7 +34,7 @@ import qs from 'qs';
 import { EntityRelationAggregation } from '../types';
 import { uniq } from 'lodash';
 
-const limiter = limiterFactory(10);
+const limiter = limiterFactory(5);
 
 type EntityTypeProps = {
   kind: string;
@@ -92,10 +92,12 @@ const getChildOwnershipEntityRefs = async (
   const entityRef = stringifyEntityRef(entity);
   if (hasChildGroups) {
     const entityRefs = childGroups.map(r => stringifyEntityRef(r));
-    const childGroupResponse = await catalogApi.getEntitiesByRefs({
-      fields: ['kind', 'metadata.namespace', 'metadata.name', 'relations'],
-      entityRefs,
-    });
+    const childGroupResponse = await limiter(() =>
+      catalogApi.getEntitiesByRefs({
+        fields: ['kind', 'metadata.namespace', 'metadata.name', 'relations'],
+        entityRefs,
+      }),
+    );
     const childGroupEntities = childGroupResponse.items.filter(isEntity);
 
     const unknownChildren = childGroupEntities.filter(
@@ -107,12 +109,10 @@ const getChildOwnershipEntityRefs = async (
     const childrenRefs = (
       await Promise.all(
         unknownChildren.map(childGroupEntity =>
-          limiter(() =>
-            getChildOwnershipEntityRefs(childGroupEntity, catalogApi, [
-              ...alreadyRetrievedParentRefs,
-              entityRef,
-            ]),
-          ),
+          getChildOwnershipEntityRefs(childGroupEntity, catalogApi, [
+            ...alreadyRetrievedParentRefs,
+            entityRef,
+          ]),
         ),
       )
     ).flatMap(aggregated => aggregated);

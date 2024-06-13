@@ -21,7 +21,8 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 
 import { join as joinPath, sep as pathSep } from 'path';
 import fs from 'fs-extra';
-import { resolvePackagePath, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { createFetchTemplateAction } from './template';
 import {

@@ -24,7 +24,7 @@ export interface Config {
      * Documentation building process depends on the builder attr
      * @visibility frontend
      */
-    builder: 'local' | 'external';
+    builder?: 'local' | 'external';
 
     /**
      * Techdocs generator information

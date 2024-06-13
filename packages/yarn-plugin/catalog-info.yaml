@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: yarn-plugin-backstage
+  title: yarn-plugin-backstage
+  description: Yarn plugin for working with Backstage monorepos
+spec:
+  lifecycle: experimental
+  type: backstage-node-library
+  owner: maintainers

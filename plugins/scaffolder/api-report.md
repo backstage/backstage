@@ -79,10 +79,10 @@ export const EntityNamePickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    allowedKinds?: string[] | undefined;
     defaultKind?: string | undefined;
-    allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -108,10 +108,10 @@ export const EntityPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityPickerFieldSchema: FieldSchema<
   string,
   {
-    allowedKinds?: string[] | undefined;
     defaultKind?: string | undefined;
-    allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -141,9 +141,9 @@ export type EntityPickerUiOptions =
 export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
   string[],
   {
-    kinds?: string[] | undefined;
-    showCounts?: boolean | undefined;
     helperText?: string | undefined;
+    showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
   }
 >;
 
@@ -151,9 +151,9 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
 export const EntityTagsPickerFieldSchema: FieldSchema<
   string[],
   {
-    kinds?: string[] | undefined;
-    showCounts?: boolean | undefined;
     helperText?: string | undefined;
+    showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
   }
 >;
 
@@ -215,8 +215,8 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
   string[],
   {
     defaultKind?: string | undefined;
-    allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
+    allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -267,10 +267,10 @@ export type MyGroupsPickerUiOptions =
 export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    allowedKinds?: string[] | undefined;
     defaultKind?: string | undefined;
-    allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -296,10 +296,10 @@ export const OwnedEntityPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnedEntityPickerFieldSchema: FieldSchema<
   string,
   {
-    allowedKinds?: string[] | undefined;
     defaultKind?: string | undefined;
-    allowArbitraryValues?: boolean | undefined;
     defaultNamespace?: string | false | undefined;
+    allowedKinds?: string[] | undefined;
+    allowArbitraryValues?: boolean | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -329,9 +329,9 @@ export type OwnedEntityPickerUiOptions =
 export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
+    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
-    defaultNamespace?: string | false | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -357,9 +357,9 @@ export const OwnerPickerFieldExtension: FieldExtensionComponent_2<
 export const OwnerPickerFieldSchema: FieldSchema<
   string,
   {
+    defaultNamespace?: string | false | undefined;
     allowedKinds?: string[] | undefined;
     allowArbitraryValues?: boolean | undefined;
-    defaultNamespace?: string | false | undefined;
     catalogFilter?:
       | Record<
           string,
@@ -407,12 +407,12 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
           secretsKey: string;
           additionalScopes?:
             | {
-                gitea?: string[] | undefined;
-                gerrit?: string[] | undefined;
+                azure?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
-                azure?: string[] | undefined;
+                gerrit?: string[] | undefined;
+                gitea?: string[] | undefined;
               }
             | undefined;
         }
@@ -434,12 +434,12 @@ export const RepoUrlPickerFieldSchema: FieldSchema<
           secretsKey: string;
           additionalScopes?:
             | {
-                gitea?: string[] | undefined;
-                gerrit?: string[] | undefined;
+                azure?: string[] | undefined;
                 github?: string[] | undefined;
                 gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
-                azure?: string[] | undefined;
+                gerrit?: string[] | undefined;
+                gitea?: string[] | undefined;
               }
             | undefined;
         }

@@ -16,7 +16,8 @@
 
 import { Config } from '@backstage/config';
 import { base64url, decodeJwt, decodeProtectedHeader, jwtVerify } from 'jose';
-import { TokenHandler } from './types';
+import { readAccessRestrictionsFromConfig } from './helpers';
+import { AccessRestriptionsMap, TokenHandler } from './types';
 
 /**
  * Handles `type: legacy` access.
@@ -24,21 +25,38 @@ import { TokenHandler } from './types';
  * @internal
  */
 export class LegacyTokenHandler implements TokenHandler {
-  #entries: Array<{ key: Uint8Array; subject: string }> = [];
+  #entries = new Array<{
+    key: Uint8Array;
+    result: {
+      subject: string;
+      allAccessRestrictions?: AccessRestriptionsMap;
+    };
+  }>();
 
-  add(options: Config) {
-    this.#doAdd(options.getString('secret'), options.getString('subject'));
+  add(config: Config) {
+    const allAccessRestrictions = readAccessRestrictionsFromConfig(config);
+    this.#doAdd(
+      config.getString('options.secret'),
+      config.getString('options.subject'),
+      allAccessRestrictions,
+    );
   }
 
   // used only for the old backend.auth.keys array
-  addOld(options: Config) {
+  addOld(config: Config) {
     // This choice of subject is for compatibility reasons
-    this.#doAdd(options.getString('secret'), 'external:backstage-plugin');
+    this.#doAdd(config.getString('secret'), 'external:backstage-plugin');
   }
 
-  #doAdd(secret: string, subject: string) {
+  #doAdd(
+    secret: string,
+    subject: string,
+    allAccessRestrictions?: AccessRestriptionsMap,
+  ) {
     if (!secret.match(/^\S+$/)) {
       throw new Error('Illegal secret, must be a valid base64 string');
+    } else if (!subject.match(/^\S+$/)) {
+      throw new Error('Illegal subject, must be a set of non-space characters');
     }
 
     let key: Uint8Array;
@@ -48,11 +66,19 @@ export class LegacyTokenHandler implements TokenHandler {
       throw new Error('Illegal secret, must be a valid base64 string');
     }
 
-    if (!subject.match(/^\S+$/)) {
-      throw new Error('Illegal subject, must be a set of non-space characters');
+    if (this.#entries.some(e => e.key === key)) {
+      throw new Error(
+        'Legacy externalAccess token was declared more than once',
+      );
     }
 
-    this.#entries.push({ key, subject });
+    this.#entries.push({
+      key,
+      result: {
+        subject,
+        allAccessRestrictions,
+      },
+    });
   }
 
   async verifyToken(token: string) {
@@ -76,10 +102,10 @@ export class LegacyTokenHandler implements TokenHandler {
       return undefined;
     }
 
-    for (const entry of this.#entries) {
+    for (const { key, result } of this.#entries) {
       try {
-        await jwtVerify(token, entry.key);
-        return { subject: entry.subject };
+        await jwtVerify(token, key);
+        return result;
       } catch (e) {
         if (e.code !== 'ERR_JWS_SIGNATURE_VERIFICATION_FAILED') {
           throw e;

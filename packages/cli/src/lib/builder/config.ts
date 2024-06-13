@@ -151,7 +151,7 @@ export async function makeRollupConfigs(
           template: svgrTemplate,
         }),
         esbuild({
-          target: 'es2019',
+          target: 'ES2022',
           minify: options.minify,
         }),
       ],

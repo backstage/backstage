@@ -16,7 +16,6 @@
 
 import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
-import { getVoidLogger } from '@backstage/backend-common';
 import { PuppetDbEntityProvider } from './PuppetDbEntityProvider';
 import {
   DeferredEntity,
@@ -30,6 +29,7 @@ import {
   ResourceEntity,
 } from '@backstage/catalog-model';
 import { DEFAULT_ENTITY_OWNER, ENDPOINT_NODES } from '../puppet/constants';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../puppet/read', () => {
   return {
@@ -37,7 +37,7 @@ jest.mock('../puppet/read', () => {
   };
 });
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 class PersistingTaskRunner implements TaskRunner {
   private tasks: TaskInvocationDefinition[] = [];

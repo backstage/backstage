@@ -21,7 +21,7 @@ import {
   createRoutableExtension,
   createRouteRef,
   discoveryApiRef,
-  identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import {
   scmAuthApiRef,
@@ -48,7 +48,7 @@ export const catalogImportPlugin = createPlugin({
       deps: {
         discoveryApi: discoveryApiRef,
         scmAuthApi: scmAuthApiRef,
-        identityApi: identityApiRef,
+        fetchApi: fetchApiRef,
         scmIntegrationsApi: scmIntegrationsApiRef,
         catalogApi: catalogApiRef,
         configApi: configApiRef,
@@ -56,7 +56,7 @@ export const catalogImportPlugin = createPlugin({
       factory: ({
         discoveryApi,
         scmAuthApi,
-        identityApi,
+        fetchApi,
         scmIntegrationsApi,
         catalogApi,
         configApi,
@@ -65,7 +65,7 @@ export const catalogImportPlugin = createPlugin({
           discoveryApi,
           scmAuthApi,
           scmIntegrationsApi,
-          identityApi,
+          fetchApi,
           catalogApi,
           configApi,
         }),

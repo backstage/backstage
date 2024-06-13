@@ -30,13 +30,13 @@ import {
   createPlugin,
   createRouteRef,
   discoveryApiRef,
-  identityApiRef,
   gitlabAuthApiRef,
   googleAuthApiRef,
   microsoftAuthApiRef,
   oktaAuthApiRef,
   oneloginAuthApiRef,
   createRoutableExtension,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 export const rootCatalogKubernetesRouteRef = createRouteRef({
@@ -50,13 +50,13 @@ export const kubernetesPlugin = createPlugin({
       api: kubernetesApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
-        identityApi: identityApiRef,
+        fetchApi: fetchApiRef,
         kubernetesAuthProvidersApi: kubernetesAuthProvidersApiRef,
       },
-      factory: ({ discoveryApi, identityApi, kubernetesAuthProvidersApi }) =>
+      factory: ({ discoveryApi, fetchApi, kubernetesAuthProvidersApi }) =>
         new KubernetesBackendClient({
           discoveryApi,
-          identityApi,
+          fetchApi,
           kubernetesAuthProvidersApi,
         }),
     }),

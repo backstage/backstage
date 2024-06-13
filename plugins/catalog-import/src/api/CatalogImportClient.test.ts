@@ -50,7 +50,7 @@ import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { ScmAuthApi } from '@backstage/integration-react';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
-import { setupRequestMockHandlers } from '@backstage/test-utils';
+import { MockFetchApi, setupRequestMockHandlers } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -66,14 +66,7 @@ describe('CatalogImportClient', () => {
   const scmAuthApi: jest.Mocked<ScmAuthApi> = {
     getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
   };
-  const identityApi = {
-    signOut: () => {
-      return Promise.resolve();
-    },
-    getProfileInfo: jest.fn(),
-    getBackstageIdentity: jest.fn(),
-    getCredentials: jest.fn().mockResolvedValue({ token: 'token' }),
-  };
+  const fetchApi = new MockFetchApi();
 
   const scmIntegrationsApi = ScmIntegrations.fromConfig(
     new ConfigReader({
@@ -110,7 +103,7 @@ describe('CatalogImportClient', () => {
       discoveryApi,
       scmAuthApi,
       scmIntegrationsApi,
-      identityApi,
+      fetchApi,
       catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
       configApi: new ConfigReader({
         app: {
@@ -456,7 +449,7 @@ describe('CatalogImportClient', () => {
         discoveryApi,
         scmAuthApi,
         scmIntegrationsApi,
-        identityApi,
+        fetchApi,
         catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
         configApi: new ConfigReader({
           catalog: {
@@ -659,7 +652,7 @@ describe('CatalogImportClient', () => {
         discoveryApi,
         scmAuthApi,
         scmIntegrationsApi,
-        identityApi,
+        fetchApi,
         catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
         configApi: new ConfigReader({
           catalog: {
@@ -745,7 +738,7 @@ describe('CatalogImportClient', () => {
         discoveryApi,
         scmAuthApi,
         scmIntegrationsApi,
-        identityApi,
+        fetchApi,
         catalogApi: catalogApi as Partial<CatalogApi> as CatalogApi,
         configApi: new ConfigReader({
           catalog: {

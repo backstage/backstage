@@ -89,6 +89,7 @@ export const githubModule = createBackendModule({
           createPublishGithubPullRequestAction({
             integrations,
             githubCredentialsProvider,
+            config,
           }),
         );
       },

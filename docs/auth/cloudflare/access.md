@@ -170,6 +170,5 @@ backend.add(customAuth);
 The body of the sign-in resolver is up to you to write! The example code above
 is just a copy of what `emailMatchingUserEntityProfileEmail` does. The `info`
 parameter contains all of the results of the sign-in attempt so far. The `ctx`
-context [has several useful
-functions](https://backstage.io/docs/reference/plugin-auth-node.authresolvercontext/)
+context [has several useful functions](https://backstage.io/docs/reference/plugin-auth-node.authresolvercontext/)
 for issuing tokens in various ways.

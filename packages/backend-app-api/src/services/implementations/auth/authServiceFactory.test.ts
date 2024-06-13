@@ -42,7 +42,26 @@ const mockDeps = [
     data: {
       backend: {
         baseUrl: 'http://localhost',
-        auth: { keys: [{ secret: 'abc' }] },
+        auth: {
+          keys: [{ secret: 'abc' }],
+          externalAccess: [
+            {
+              type: 'static',
+              options: {
+                token: 'limited-static-token',
+                subject: 'limited-static-subject',
+              },
+              accessRestrictions: [{ plugin: 'catalog', permission: 'do.it' }],
+            },
+            {
+              type: 'static',
+              options: {
+                token: 'unlimited-static-token',
+                subject: 'unlimited-static-subject',
+              },
+            },
+          ],
+        },
       },
     },
   }),
@@ -384,5 +403,44 @@ describe('authServiceFactory', () => {
     ).rejects.toThrow(
       "Unable to call 'kubernetes' plugin on behalf of user, because the target plugin does not support on-behalf-of tokens or the plugin doesn't exist",
     );
+  });
+
+  it('should eagerly reject access to external access tokens based on plugin id', async () => {
+    const tester = ServiceFactoryTester.from(authServiceFactory, {
+      dependencies: mockDeps,
+    });
+
+    const catalogAuth = await tester.get('catalog');
+
+    await expect(
+      catalogAuth.authenticate('limited-static-token'),
+    ).resolves.toMatchObject({
+      principal: {
+        subject: 'limited-static-subject',
+        accessRestrictions: { permissionNames: ['do.it'] },
+      },
+    });
+
+    await expect(
+      catalogAuth.authenticate('unlimited-static-token'),
+    ).resolves.toMatchObject({
+      principal: {
+        subject: 'unlimited-static-subject',
+      },
+    });
+
+    const scaffolderAuth = await tester.get('scaffolder');
+
+    await expect(
+      scaffolderAuth.authenticate('limited-static-token'),
+    ).rejects.toThrowErrorMatchingInlineSnapshot(
+      `"This token's access is restricted to plugin(s) 'catalog'"`,
+    );
+
+    await expect(
+      scaffolderAuth.authenticate('unlimited-static-token'),
+    ).resolves.toMatchObject({
+      principal: { subject: 'unlimited-static-subject' },
+    });
   });
 });

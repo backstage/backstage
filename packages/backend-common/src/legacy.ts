@@ -15,6 +15,7 @@
  */
 
 import {
+  AuthService,
   coreServices,
   createBackendPlugin,
   ServiceRef,
@@ -22,6 +23,7 @@ import {
 import { RequestHandler } from 'express';
 import { cacheToPluginCacheManager } from './cache';
 import { loggerToWinstonLogger } from './logging';
+import { TokenManager } from './tokens';
 
 /**
  * @public
@@ -37,6 +39,31 @@ type TransformedEnv<
     ? R
     : TEnv[key];
 };
+
+// Since the plugin will be using the new system our callers will expect us to support the
+// new plugin tokens, which we'll also be signaling by supporting the JWKS endpoint through
+// the http router.
+// This makes sure that we accept the new plugin tokens as valid tokens, but otherwise fall
+// back to whatever the token manager is doing.
+function wrapTokenManager(tokenManager: TokenManager, auth: AuthService) {
+  return {
+    async getToken() {
+      return tokenManager.getToken();
+    },
+    async authenticate(token) {
+      if (token) {
+        // Unless it's a valid service token, we'll let the token manager do
+        // validation. We'll throw if we for example receive an invalid user
+        // token here, but that's what the token manager does too.
+        const credentials = await auth.authenticate(token);
+        if (auth.isPrincipal(credentials, 'service')) {
+          return;
+        }
+      }
+      await tokenManager.authenticate(token);
+    },
+  } satisfies TokenManager;
+}
 
 /**
  * Creates a new custom plugin compatibility wrapper.
@@ -64,14 +91,21 @@ export function makeLegacyPlugin<
       pluginId: name,
       register(env) {
         env.registerInit({
-          deps: { ...envMapping, _router: coreServices.httpRouter },
-          async init({ _router, ...envDeps }) {
+          deps: {
+            ...envMapping,
+            _router: coreServices.httpRouter,
+            _auth: coreServices.auth,
+          },
+          async init({ _router, _auth, ...envDeps }) {
             const { default: createRouter } = await createRouterImport;
             const pluginEnv = Object.fromEntries(
               Object.entries(envDeps).map(([key, dep]) => {
                 const transform = envTransforms[key];
                 if (transform) {
                   return [key, transform(dep)];
+                }
+                if (key === 'tokenManager') {
+                  return [key, wrapTokenManager(dep as TokenManager, _auth)];
                 }
                 return [key, dep];
               }),

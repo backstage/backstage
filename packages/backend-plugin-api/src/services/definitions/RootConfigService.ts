@@ -17,6 +17,12 @@
 import { Config } from '@backstage/config';
 
 /**
+ * Provides access to static configuration.
+ *
+ * See the {@link https://backstage.io/docs/conf/ | configuration documentation}
+ * and the {@link https://backstage.io/docs/backend-system/core-services/root-config | service documentation}
+ * for more details.
+ *
  * @public
  */
 export interface RootConfigService extends Config {}

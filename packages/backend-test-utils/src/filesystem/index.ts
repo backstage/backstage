@@ -16,8 +16,8 @@
 
 export {
   createMockDirectory,
+  type CreateMockDirectoryOptions,
   type MockDirectory,
-  type MockDirectoryOptions,
   type MockDirectoryContent,
   type MockDirectoryContentOptions,
   type MockDirectoryContentCallback,

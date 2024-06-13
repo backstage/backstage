@@ -22,6 +22,7 @@ import {
   EntitiesSearchFilter,
   EntityProvider,
   PlaceholderResolver,
+  LocationAnalyzer,
   ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
@@ -79,7 +80,27 @@ export const catalogProcessingExtensionPoint =
  * @alpha
  */
 export interface CatalogAnalysisExtensionPoint {
-  addLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
+  /**
+   * Replaces the entire location analyzer with a new one.
+   *
+   * @remarks
+   *
+   * By providing a factory function you can access all the SCM analyzers that
+   * have been added through `addScmLocationAnalyzer`. If you provide a
+   * `LocationAnalyzer` directly, the SCM analyzers will be ignored.
+   */
+  setLocationAnalyzer(
+    analyzerOrFactory:
+      | LocationAnalyzer
+      | ((options: {
+          scmLocationAnalyzers: ScmLocationAnalyzer[];
+        }) => Promise<{ locationAnalyzer: LocationAnalyzer }>),
+  ): void;
+
+  /**
+   * Adds an analyzer for a specific SCM type to the default location analyzer.
+   */
+  addScmLocationAnalyzer(analyzer: ScmLocationAnalyzer): void;
 }
 
 /**

@@ -88,6 +88,26 @@ export const examples: TemplateExample[] = [
     }),
   },
   {
+    description:
+      'Initializes a GitLab repository with fast forward merge and always squash settings.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'publish',
+          action: 'publish:gitlab',
+          name: 'Publish to GitLab',
+          input: {
+            repoUrl: 'gitlab.com?repo=project_name&owner=group_name',
+            settings: {
+              merge_method: 'ff',
+              squash_option: 'always',
+            },
+          },
+        },
+      ],
+    }),
+  },
+  {
     description: 'Initializes a GitLab repository with branch settings.',
     example: yaml.stringify({
       steps: [
@@ -101,12 +121,12 @@ export const examples: TemplateExample[] = [
               {
                 name: 'dev',
                 create: true,
-                protected: true,
+                protect: true,
                 ref: 'master',
               },
               {
                 name: 'master',
-                protected: true,
+                protect: true,
               },
             ],
           },

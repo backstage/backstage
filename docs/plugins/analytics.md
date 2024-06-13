@@ -46,9 +46,9 @@ To suggest an integration, please [open an issue][add-tool] for the analytics
 tool your organization uses. Or jump to [Writing Integrations][int-howto] to
 learn how to contribute the integration yourself!
 
-[ga]: https://github.com/backstage/backstage/blob/master/plugins/analytics-module-ga/README.md
-[ga4]: https://github.com/backstage/backstage/blob/master/plugins/analytics-module-ga4/README.md
-[newrelic-browser]: https://github.com/backstage/backstage/blob/master/plugins/analytics-module-newrelic-browser/README.md
+[ga]: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-ga/README.md
+[ga4]: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-ga4/README.md
+[newrelic-browser]: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-newrelic-browser/README.md
 [qm]: https://github.com/quantummetric/analytics-module-qm/blob/main/README.md
 [matomo]: https://github.com/janus-idp/backstage-plugins/blob/main/plugins/analytics-module-matomo/README.md
 [add-tool]: https://github.com/backstage/backstage/issues/new?assignees=&labels=plugin&template=plugin_template.md&title=%5BAnalytics+Module%5D+THE+ANALYTICS+TOOL+TO+INTEGRATE
@@ -69,8 +69,7 @@ installed, may be captured.
 | `discover`  | The title of the search result that was clicked on                                                                                                                 | The `value` is the result rank. A `to` attribute is also provided.                                                                                                                                                                                                                                  |
 | `not-found` | The path of the resource that resulted in a not found page                                                                                                         | Fired by at least TechDocs.                                                                                                                                                                                                                                                                         |
 
-If there is an event you'd like to see captured, please [open an
-issue](https://github.com/backstage/backstage/issues/new?assignees=&labels=enhancement&template=feature_template.md&title=[Analytics%20Event]:%20THE+EVENT+TO+CAPTURE) describing the event you want to see and the questions it
+If there is an event you'd like to see captured, please [open an issue](https://github.com/backstage/backstage/issues/new?assignees=&labels=enhancement&template=feature_template.md&title=[Analytics%20Event]:%20THE+EVENT+TO+CAPTURE) describing the event you want to see and the questions it
 would help you answer. Or jump to [Capturing Events](#capturing-events) to learn how
 to contribute the instrumentation yourself!
 

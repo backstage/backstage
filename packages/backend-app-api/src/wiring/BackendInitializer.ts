@@ -20,9 +20,9 @@ import {
   coreServices,
   ServiceRef,
   ServiceFactory,
+  LifecycleService,
+  RootLifecycleService,
 } from '@backstage/backend-plugin-api';
-import { BackendLifecycleImpl } from '../services/implementations/rootLifecycle/rootLifecycleServiceFactory';
-import { BackendPluginLifecycleImpl } from '../services/implementations/lifecycle/lifecycleServiceFactory';
 import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
 // eslint-disable-next-line @backstage/no-forbidden-package-imports
@@ -31,6 +31,7 @@ import { ForwardedError, ConflictError } from '@backstage/errors';
 import { featureDiscoveryServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { DependencyGraph } from '../lib/DependencyGraph';
 import { ServiceRegistry } from './ServiceRegistry';
+import { createInitializationLogger } from './createInitializationLogger';
 
 export interface BackendRegisterInit {
   consumes: Set<ServiceOrExtensionPoint>;
@@ -226,6 +227,11 @@ export class BackendInitializer {
 
     const allPluginIds = [...pluginInits.keys()];
 
+    const initLogger = createInitializationLogger(
+      allPluginIds,
+      await this.#serviceRegistry.get(coreServices.rootLogger, 'root'),
+    );
+
     // All plugins are initialized in parallel
     await Promise.all(
       allPluginIds.map(async pluginId => {
@@ -289,6 +295,8 @@ export class BackendInitializer {
           });
         }
 
+        initLogger.onPluginStarted(pluginId);
+
         // Once the plugin and all modules have been initialized, we can signal that the plugin has stared up successfully
         const lifecycleService = await this.#getPluginLifecycleImpl(pluginId);
         await lifecycleService.startup();
@@ -298,6 +306,8 @@ export class BackendInitializer {
     // Once all plugins and modules have been initialized, we can signal that the backend has started up successfully
     const lifecycleService = await this.#getRootLifecycleImpl();
     await lifecycleService.startup();
+
+    initLogger.onAllStarted();
 
     // Once the backend is started, any uncaught errors or unhandled rejections are caught
     // and logged, in order to avoid crashing the entire backend on local failures.
@@ -335,27 +345,42 @@ export class BackendInitializer {
   }
 
   // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this
-  async #getRootLifecycleImpl(): Promise<BackendLifecycleImpl> {
+  async #getRootLifecycleImpl(): Promise<
+    RootLifecycleService & {
+      startup(): Promise<void>;
+      shutdown(): Promise<void>;
+    }
+  > {
     const lifecycleService = await this.#serviceRegistry.get(
       coreServices.rootLifecycle,
       'root',
     );
-    if (lifecycleService instanceof BackendLifecycleImpl) {
-      return lifecycleService;
+
+    const service = lifecycleService as any;
+    if (
+      service &&
+      typeof service.startup === 'function' &&
+      typeof service.shutdown === 'function'
+    ) {
+      return service;
     }
+
     throw new Error('Unexpected root lifecycle service implementation');
   }
 
   async #getPluginLifecycleImpl(
     pluginId: string,
-  ): Promise<BackendPluginLifecycleImpl> {
+  ): Promise<LifecycleService & { startup(): Promise<void> }> {
     const lifecycleService = await this.#serviceRegistry.get(
       coreServices.lifecycle,
       pluginId,
     );
-    if (lifecycleService instanceof BackendPluginLifecycleImpl) {
-      return lifecycleService;
+
+    const service = lifecycleService as any;
+    if (service && typeof service.startup === 'function') {
+      return service;
     }
+
     throw new Error('Unexpected plugin lifecycle service implementation');
   }
 }

@@ -21,7 +21,7 @@ import {
   WorkloadsByEntityRequest,
   CustomObjectsByEntityRequest,
 } from '@backstage/plugin-kubernetes-common';
-import { DiscoveryApi, IdentityApi } from '@backstage/core-plugin-api';
+import { DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { KubernetesAuthProvidersApi } from '../kubernetes-auth-provider';
 import { NotFoundError } from '@backstage/errors';
@@ -29,16 +29,16 @@ import { NotFoundError } from '@backstage/errors';
 /** @public */
 export class KubernetesBackendClient implements KubernetesApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
   private readonly kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
 
   constructor(options: {
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
     kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
   }) {
     this.discoveryApi = options.discoveryApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
     this.kubernetesAuthProvidersApi = options.kubernetesAuthProvidersApi;
   }
 
@@ -62,12 +62,10 @@ export class KubernetesBackendClient implements KubernetesApi {
 
   private async postRequired(path: string, requestBody: any): Promise<any> {
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}${path}`;
-    const { token: idToken } = await this.identityApi.getCredentials();
-    const response = await fetch(url, {
+    const response = await this.fetchApi.fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        ...(idToken && { Authorization: `Bearer ${idToken}` }),
       },
       body: JSON.stringify(requestBody),
     });
@@ -130,14 +128,8 @@ export class KubernetesBackendClient implements KubernetesApi {
   }
 
   async getClusters(): Promise<{ name: string; authProvider: string }[]> {
-    const { token: idToken } = await this.identityApi.getCredentials();
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/clusters`;
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        ...(idToken && { Authorization: `Bearer ${idToken}` }),
-      },
-    });
+    const response = await this.fetchApi.fetch(url);
 
     return (await this.handleResponse(response)).items;
   }
@@ -157,15 +149,13 @@ export class KubernetesBackendClient implements KubernetesApi {
     const url = `${await this.discoveryApi.getBaseUrl('kubernetes')}/proxy${
       options.path
     }`;
-    const identityResponse = await this.identityApi.getCredentials();
     const headers = KubernetesBackendClient.getKubernetesHeaders(
       options,
       kubernetesCredentials?.token,
-      identityResponse,
       authProvider,
       oidcTokenProvider,
     );
-    return await fetch(url, { ...options.init, headers });
+    return await this.fetchApi.fetch(url, { ...options.init, headers });
   }
 
   private static getKubernetesHeaders(
@@ -175,7 +165,6 @@ export class KubernetesBackendClient implements KubernetesApi {
       init?: RequestInit;
     },
     k8sToken: string | undefined,
-    identityResponse: { token?: string },
     authProvider: string,
     oidcTokenProvider: string | undefined,
   ) {
@@ -189,9 +178,6 @@ export class KubernetesBackendClient implements KubernetesApi {
       [`Backstage-Kubernetes-Cluster`]: options.clusterName,
       ...(k8sToken && {
         [kubernetesAuthHeader]: k8sToken,
-      }),
-      ...(identityResponse.token && {
-        Authorization: `Bearer ${identityResponse.token}`,
       }),
     };
   }

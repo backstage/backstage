@@ -13,19 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   StackOverflowQuestionsCollatorFactory,
   StackOverflowQuestionsCollatorFactoryOptions,
 } from './StackOverflowQuestionsCollatorFactory';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 const mockQuestion = {
   items: [

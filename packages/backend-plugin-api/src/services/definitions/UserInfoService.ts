@@ -16,13 +16,27 @@
 
 import { BackstageCredentials } from './AuthService';
 
-/** @public */
+/**
+ * Represents user information that is available to the backend, based on some
+ * user credentials.
+ *
+ * @public
+ */
 export interface BackstageUserInfo {
   userEntityRef: string;
   ownershipEntityRefs: string[];
 }
 
-/** @public */
+/**
+ * Authenticated user information retrieval.
+ *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/user-info | service documentation} for more details.
+ *
+ * @public
+ */
 export interface UserInfoService {
+  /**
+   * Retrieve user information based on the provided credentials.
+   */
   getUserInfo(credentials: BackstageCredentials): Promise<BackstageUserInfo>;
 }

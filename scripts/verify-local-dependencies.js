@@ -36,11 +36,11 @@ const depTypes = [
 const roleRules = [
   {
     sourceRole: ['frontend-plugin', 'web-library'],
-    targetRole: ['backend-plugin', 'node-library'],
+    targetRole: ['backend-plugin', 'node-library', 'backend-plugin-module'],
     message: `Package SOURCE_NAME with frontend role SOURCE_ROLE has a dependency on package TARGET_NAME with backend role TARGET_ROLE, which is not permitted`,
   },
   {
-    sourceRole: ['backend-plugin', 'node-library'],
+    sourceRole: ['backend-plugin', 'node-library', 'backend-plugin-module'],
     targetRole: ['frontend-plugin', 'web-library'],
     message: `Package SOURCE_NAME with backend role SOURCE_ROLE has a dependency on package TARGET_NAME with frontend role TARGET_ROLE, which is not permitted`,
   },
@@ -51,8 +51,9 @@ const roleRules = [
       'web-library',
       'backend-plugin',
       'node-library',
+      'backend-plugin-module',
     ],
-    message: `Polymorphic package SOURCE_NAME has a dependency on package TARGET_NAME with role TARGET_ROLE, which is not permitted since it's not also polymorphic`,
+    message: `Polymorphic package SOURCE_NAME with role SOURCE_ROLE has a dependency on package TARGET_NAME with role TARGET_ROLE, which is not permitted since it's not also polymorphic`,
   },
   {
     sourceRole: ['frontend-plugin', 'web-library'],
@@ -62,7 +63,7 @@ const roleRules = [
       '@backstage/plugin-api-docs',
       '@backstage/plugin-techdocs-addons-test-utils',
     ],
-    message: `Package SOURCE_NAME with role SOURCE_ROLE has a dependency on another plugin package TARGET_NAME, which is not permitted`,
+    message: `Package SOURCE_NAME with role SOURCE_ROLE has a dependency on another plugin package TARGET_NAME with role TARGET_ROLE, which is not permitted`,
   },
   {
     sourceRole: ['frontend-plugin', 'web-library'],
@@ -80,7 +81,7 @@ const roleRules = [
       '@backstage/plugin-techdocs-addons-test-utils',
       '@backstage/plugin-user-settings',
     ],
-    message: `Plugin package SOURCE_NAME with role SOURCE_ROLE has a runtime dependency on package TARGET_NAME, which is not permitted. If you are using this dependency for dev server purposes, you can move it to devDependencies instead.`,
+    message: `Plugin package SOURCE_NAME with role SOURCE_ROLE has a runtime dependency on package TARGET_NAME with role TARGET_ROLE, which is not permitted. If you are using this dependency for dev server purposes, you can move it to devDependencies instead.`,
   },
   {
     sourceRole: ['backend-plugin', 'node-library'],
@@ -92,7 +93,7 @@ const roleRules = [
       '@backstage/backend-test-utils',
       '@backstage/backend-dynamic-feature-service',
     ],
-    message: `Plugin package SOURCE_NAME with role SOURCE_ROLE has a runtime dependency on package TARGET_NAME, which is not permitted. If you are using this dependency for dev server purposes, you can move it to devDependencies instead.`,
+    message: `Plugin package SOURCE_NAME with role SOURCE_ROLE has a runtime dependency on package TARGET_NAME with role TARGET_ROLE, which is not permitted. If you are using this dependency for dev server purposes, you can move it to devDependencies instead.`,
   },
 ];
 

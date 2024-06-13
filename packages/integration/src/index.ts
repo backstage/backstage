@@ -31,6 +31,7 @@ export * from './gitea';
 export * from './github';
 export * from './gitlab';
 export * from './googleGcs';
+export * from './harness';
 export { defaultScmResolveUrl } from './helpers';
 export { ScmIntegrations } from './ScmIntegrations';
 export type { IntegrationsByType } from './ScmIntegrations';

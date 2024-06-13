@@ -14,26 +14,17 @@
  * limitations under the License.
  */
 
-import { DatabaseManager, dropDatabase } from '@backstage/backend-common';
-import { ConfigReader } from '@backstage/config';
-import { randomBytes } from 'crypto';
 import { Knex } from 'knex';
 import { isDockerDisabledForTests } from '../util/isDockerDisabledForTests';
-import { startMysqlContainer } from './startMysqlContainer';
-import { startPostgresContainer } from './startPostgresContainer';
+import { MysqlEngine } from './mysql';
+import { PostgresEngine } from './postgres';
+import { SqliteEngine } from './sqlite';
 import {
-  allDatabases,
-  Instance,
+  Engine,
   TestDatabaseId,
   TestDatabaseProperties,
+  allDatabases,
 } from './types';
-
-const LARGER_POOL_CONFIG = {
-  pool: {
-    min: 0,
-    max: 50,
-  },
-};
 
 /**
  * Encapsulates the creation of ephemeral test database instances for use
@@ -42,7 +33,17 @@ const LARGER_POOL_CONFIG = {
  * @public
  */
 export class TestDatabases {
-  private readonly instanceById: Map<string, Instance>;
+  private readonly engineFactoryByDriver: Record<
+    string,
+    (properties: TestDatabaseProperties) => Promise<Engine>
+  > = {
+    pg: PostgresEngine.create,
+    mysql: MysqlEngine.create,
+    mysql2: MysqlEngine.create,
+    'better-sqlite3': SqliteEngine.create,
+    sqlite3: SqliteEngine.create,
+  };
+  private readonly engineByTestDatabaseId: Map<string, Engine>;
   private readonly supportedIds: TestDatabaseId[];
   private static defaultIds?: TestDatabaseId[];
 
@@ -114,7 +115,7 @@ export class TestDatabases {
   }
 
   private constructor(supportedIds: TestDatabaseId[]) {
-    this.instanceById = new Map();
+    this.engineByTestDatabaseId = new Map();
     this.supportedIds = supportedIds;
   }
 
@@ -148,185 +149,29 @@ export class TestDatabases {
       );
     }
 
-    let instance: Instance | undefined = this.instanceById.get(id);
-
-    // Ensure that a testcontainers instance is up for this ID
-    if (!instance) {
-      instance = await this.initAny(properties);
-      this.instanceById.set(id, instance);
-    }
-
-    // Ensure that a unique logical database is created in the instance
-    const databaseName = `db${randomBytes(16).toString('hex')}`;
-    const connection = await instance.databaseManager
-      .forPlugin(databaseName)
-      .getClient();
-
-    instance.connections.push(connection);
-    instance.databaseNames.push(databaseName);
-
-    return connection;
-  }
-
-  private async initAny(properties: TestDatabaseProperties): Promise<Instance> {
-    // Use the connection string if provided
-    if (properties.driver === 'pg' || properties.driver === 'mysql2') {
-      const envVarName = properties.connectionStringEnvironmentVariableName;
-      if (envVarName) {
-        const connectionString = process.env[envVarName];
-        if (connectionString) {
-          const config = new ConfigReader({
-            backend: {
-              database: {
-                knexConfig: properties.driver.includes('sqlite')
-                  ? {}
-                  : LARGER_POOL_CONFIG,
-                client: properties.driver,
-                connection: connectionString,
-              },
-            },
-          });
-          const databaseManager = DatabaseManager.fromConfig(config);
-          const databaseNames: Array<string> = [];
-          return {
-            dropDatabases: async () => {
-              await dropDatabase(
-                config.getConfig('backend.database'),
-                ...databaseNames.map(
-                  databaseName => `backstage_plugin_${databaseName}`,
-                ),
-              );
-            },
-            databaseManager,
-            databaseNames,
-            connections: [],
-          };
-        }
-      }
-    }
-
-    // Otherwise start a container for the purpose
-    switch (properties.driver) {
-      case 'pg':
-        return this.initPostgres(properties);
-      case 'mysql2':
-        return this.initMysql(properties);
-      case 'better-sqlite3':
-      case 'sqlite3':
-        return this.initSqlite(properties);
-      default:
+    let engine = this.engineByTestDatabaseId.get(id);
+    if (!engine) {
+      const factory = this.engineFactoryByDriver[properties.driver];
+      if (!factory) {
         throw new Error(`Unknown database driver ${properties.driver}`);
+      }
+      engine = await factory(properties);
+      this.engineByTestDatabaseId.set(id, engine);
     }
-  }
 
-  private async initPostgres(
-    properties: TestDatabaseProperties,
-  ): Promise<Instance> {
-    const { host, port, user, password, stop } = await startPostgresContainer(
-      properties.dockerImageName!,
-    );
-
-    const databaseManager = DatabaseManager.fromConfig(
-      new ConfigReader({
-        backend: {
-          database: {
-            knexConfig: LARGER_POOL_CONFIG,
-            client: 'pg',
-            connection: { host, port, user, password },
-          },
-        },
-      }),
-    );
-    return {
-      stopContainer: stop,
-      databaseManager,
-      databaseNames: [],
-      connections: [],
-    };
-  }
-
-  private async initMysql(
-    properties: TestDatabaseProperties,
-  ): Promise<Instance> {
-    const { host, port, user, password, stop } = await startMysqlContainer(
-      properties.dockerImageName!,
-    );
-
-    const databaseManager = DatabaseManager.fromConfig(
-      new ConfigReader({
-        backend: {
-          database: {
-            knexConfig: LARGER_POOL_CONFIG,
-            client: 'mysql2',
-            connection: { host, port, user, password },
-          },
-        },
-      }),
-    );
-
-    return {
-      stopContainer: stop,
-      databaseManager,
-      databaseNames: [],
-      connections: [],
-    };
-  }
-
-  private async initSqlite(
-    properties: TestDatabaseProperties,
-  ): Promise<Instance> {
-    const databaseManager = DatabaseManager.fromConfig(
-      new ConfigReader({
-        backend: {
-          database: {
-            client: properties.driver,
-            connection: ':memory:',
-          },
-        },
-      }),
-    );
-    return {
-      databaseManager,
-      databaseNames: [],
-      connections: [],
-    };
+    return await engine.createDatabaseInstance();
   }
 
   private async shutdown() {
-    const instances = [...this.instanceById.values()];
-    this.instanceById.clear();
+    const engines = [...this.engineByTestDatabaseId.values()];
+    this.engineByTestDatabaseId.clear();
 
-    for (const {
-      stopContainer,
-      dropDatabases,
-      connections,
-      databaseManager,
-    } of instances) {
-      for (const connection of connections) {
-        try {
-          await connection.destroy();
-        } catch (error) {
-          console.warn(`TestDatabases: Failed to destroy connection`, {
-            connection,
-            error,
-          });
-        }
-      }
-
-      // If the database is not running in docker then drop the databases
+    for (const engine of engines) {
       try {
-        await dropDatabases?.();
+        await engine.shutdown();
       } catch (error) {
-        console.warn(`TestDatabases: Failed to drop databases`, {
-          error,
-        });
-      }
-
-      try {
-        await stopContainer?.();
-      } catch (error) {
-        console.warn(`TestDatabases: Failed to stop container`, {
-          databaseManager,
+        console.warn(`TestDatabases: Failed to shutdown engine`, {
+          engine,
           error,
         });
       }

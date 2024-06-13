@@ -19,6 +19,8 @@ import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { ConflictError } from '@backstage/errors';
+import { createMockDirectory } from '@backstage/backend-test-utils';
+import fs from 'fs-extra';
 
 const createStore = async () => {
   const manager = DatabaseManager.fromConfig(
@@ -36,6 +38,18 @@ const createStore = async () => {
   });
   return { store, manager };
 };
+
+const workspaceDir = createMockDirectory({
+  content: {
+    'app-config.yaml': `
+            app:
+              title: Example App
+              sessionKey:
+                $file: secrets/session-key.txt
+              escaped: \$\${Escaped}
+          `,
+  },
+});
 
 describe('DatabaseTaskStore', () => {
   it('should create the database store and run migration', async () => {
@@ -258,5 +272,23 @@ describe('DatabaseTaskStore', () => {
         },
       },
     });
+  });
+
+  it('serialize and restore the workspace', async () => {
+    const { store } = await createStore();
+    const { taskId } = await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'me',
+    });
+
+    await store.serializeWorkspace({ path: workspaceDir.path, taskId });
+    expect(fs.existsSync(`${workspaceDir.path}/app-config.yaml`)).toBeTruthy();
+
+    fs.removeSync(workspaceDir.path);
+    expect(fs.existsSync(`${workspaceDir.path}/app-config.yaml`)).toBeFalsy();
+
+    fs.mkdirSync(workspaceDir.path);
+    await store.rehydrateWorkspace({ targetPath: workspaceDir.path, taskId });
+    expect(fs.existsSync(`${workspaceDir.path}/app-config.yaml`)).toBeTruthy();
   });
 });

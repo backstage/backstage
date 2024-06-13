@@ -83,6 +83,7 @@ export const NotificationsSidebarItem = (props?: {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
   snackbarEnabled?: boolean;
+  snackbarAutoHideDuration?: number | null;
   className?: string;
   icon?: IconComponent;
   text?: string;
@@ -93,6 +94,7 @@ export const NotificationsSidebarItem = (props?: {
     webNotificationsEnabled = false,
     titleCounterEnabled = true,
     snackbarEnabled = true,
+    snackbarAutoHideDuration = 10000,
     icon = NotificationsIcon,
     text = 'Notifications',
     ...restProps
@@ -100,6 +102,7 @@ export const NotificationsSidebarItem = (props?: {
     webNotificationsEnabled: false,
     titleCounterEnabled: true,
     snackbarEnabled: true,
+    snackbarAutoHideDuration: 10000,
   };
 
   const { loading, error, value, retry } = useNotificationsApi(api =>
@@ -196,6 +199,7 @@ export const NotificationsSidebarItem = (props?: {
               variant: notification.payload.severity,
               anchorOrigin: { vertical: 'bottom', horizontal: 'right' },
               action,
+              autoHideDuration: snackbarAutoHideDuration,
             } as OptionsWithExtraProps<VariantType>);
           }
         })
@@ -216,6 +220,7 @@ export const NotificationsSidebarItem = (props?: {
     sendWebNotification,
     webNotificationsEnabled,
     snackbarEnabled,
+    snackbarAutoHideDuration,
     notificationsApi,
     alertApi,
     getSnackbarProperties,

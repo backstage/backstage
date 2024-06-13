@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -22,6 +21,7 @@ import {
   parseUrl,
 } from './AzureDevOpsDiscoveryProcessor';
 import { codeSearch } from '../lib';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../lib');
 const mockCodeSearch = codeSearch as jest.MockedFunction<typeof codeSearch>;
@@ -106,7 +106,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
             azure: [{ host: 'dev.azure.com', token: 'blob' }],
           },
         }),
-        { logger: getVoidLogger() },
+        { logger: mockServices.logger.mock() },
       );
       const location: LocationSpec = {
         type: 'not-azure-discovery',
@@ -128,7 +128,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
           ],
         },
       }),
-      { logger: getVoidLogger() },
+      { logger: mockServices.logger.mock() },
     );
     const location: LocationSpec = {
       type: 'azure-discovery',
@@ -148,7 +148,7 @@ describe('AzureDevOpsDiscoveryProcessor', () => {
           github: [{ host: 'dev.azure.com', token: 'blob' }],
         },
       }),
-      { logger: getVoidLogger() },
+      { logger: mockServices.logger.mock() },
     );
 
     beforeEach(() => {

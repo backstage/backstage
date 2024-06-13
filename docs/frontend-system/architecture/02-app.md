@@ -10,7 +10,7 @@ description: App instances
 
 ## The App Instance
 
-The app instance is main entry point for creating a frontend app. It doesn't do much on its own, but is instead responsible for wiring things together that have been provided as features from other parts of the system.
+The app instance is the main entry point for creating a frontend app. It doesn't do much on its own, but is instead responsible for wiring things together that have been provided as features from other parts of the system.
 
 Below is a simple example of how to create and render an app instance:
 
@@ -35,7 +35,7 @@ ReactDOM.createRoot(rootEl).render(app);
 
 We call `createApp` to create a new app instance, which is responsible for wiring together all of the features that we provide to the app. It also provides a set of built-in [Extensions](./03-extensions.md) that help build out the foundations of the app, as well as defaults for many other systems such as [Utility API](./06-utility-apis.md) implementations, components, icons, themes, and how to load configuration. No real work is done at the point of creating the app though, it's all deferred to the rendering of the element returned from `app.createRoot()`.
 
-It is possible to explicitly install features when creating the app, although typically these will instead be discovered automatically which we'll explore later on. Nevertheless these features are what build out the actual functionality of the app by providing [Extensions](./03-extensions.md). These extensions are wired together by the app into a tree structure known as the app extension tree. Each node in this tree receives data from its child nodes, and pass along data to its parent. The following diagram illustrates the shape of a small app extension tree.
+It is possible to explicitly install features when creating the app, although typically these will instead be discovered automatically which we'll explore later on. Nevertheless these features are what build out the actual functionality of the app by providing [Extensions](./03-extensions.md). These extensions are wired together by the app into a tree structure known as the app extension tree. Each node in this tree receives data from its child nodes, and passes along data to its parent. The following diagram illustrates the shape of a small app extension tree.
 
 ![frontend system app structure diagram](../../assets/frontend-system/architecture-app.drawio.svg)
 

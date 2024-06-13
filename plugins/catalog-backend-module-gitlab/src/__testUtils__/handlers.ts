@@ -165,7 +165,11 @@ const httpProjectCatalogDynamic = all_projects_response.map(project => {
     `${apiBaseUrl}/projects/${path}/repository/files/catalog-info.yaml`,
     (req, res, ctx) => {
       const branch = req.url.searchParams.get('ref');
-      if (branch === project.default_branch) {
+      if (
+        branch === project.default_branch ||
+        branch === 'main' ||
+        branch === 'develop'
+      ) {
         return res(ctx.status(200));
       }
       return res(ctx.status(404, 'Not Found'));

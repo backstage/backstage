@@ -16,7 +16,7 @@
 
 import {
   DatabaseManager,
-  getVoidLogger,
+  loggerToWinstonLogger,
   PluginDatabaseManager,
   UrlReaders,
 } from '@backstage/backend-common';
@@ -76,7 +76,7 @@ function createDatabase(): PluginDatabaseManager {
 }
 
 const mockUrlReader = UrlReaders.default({
-  logger: getVoidLogger(),
+  logger: mockServices.logger.mock(),
   config: new ConfigReader({}),
 });
 
@@ -183,7 +183,7 @@ describe('createRouter', () => {
 
   describe('not providing an identity api', () => {
     beforeEach(async () => {
-      const logger = getVoidLogger();
+      const logger = loggerToWinstonLogger(mockServices.logger.mock());
       const databaseTaskStore = await DatabaseTaskStore.create({
         database: createDatabase(),
       });
@@ -235,10 +235,15 @@ describe('createRouter', () => {
             result: AuthorizeResult.ALLOW,
           },
         ]);
+      jest.spyOn(permissionApi, 'authorize').mockImplementation(async () => [
+        {
+          result: AuthorizeResult.ALLOW,
+        },
+      ]);
     });
 
     afterEach(() => {
-      jest.resetAllMocks();
+      jest.clearAllMocks();
     });
 
     describe('GET /v2/actions', () => {
@@ -690,7 +695,7 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
   describe('providing an identity api', () => {
     beforeEach(async () => {
-      const logger = getVoidLogger();
+      const logger = loggerToWinstonLogger(mockServices.logger.mock());
       const databaseTaskStore = await DatabaseTaskStore.create({
         database: createDatabase(),
       });
@@ -741,6 +746,11 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
             result: AuthorizeResult.ALLOW,
           },
         ]);
+      jest.spyOn(permissionApi, 'authorize').mockImplementation(async () => [
+        {
+          result: AuthorizeResult.ALLOW,
+        },
+      ]);
     });
 
     afterEach(() => {

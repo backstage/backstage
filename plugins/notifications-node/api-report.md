@@ -8,6 +8,7 @@ import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { Notification as Notification_2 } from '@backstage/plugin-notifications-common';
 import { NotificationPayload } from '@backstage/plugin-notifications-common';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
@@ -23,6 +24,7 @@ export class DefaultNotificationService implements NotificationService {
 // @public
 export interface NotificationProcessor {
   getName(): string;
+  getNotificationFilters?(): NotificationProcessorFilters;
   postProcess?(
     notification: Notification_2,
     options: NotificationSendOptions,
@@ -35,6 +37,13 @@ export interface NotificationProcessor {
     options: NotificationSendOptions,
   ): Promise<NotificationSendOptions>;
 }
+
+// @public (undocumented)
+export type NotificationProcessorFilters = {
+  minSeverity?: NotificationSeverity;
+  maxSeverity?: NotificationSeverity;
+  excludedTopics?: string[];
+};
 
 // @public (undocumented)
 export type NotificationRecipients =

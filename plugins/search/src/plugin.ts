@@ -23,7 +23,7 @@ import {
   createRoutableExtension,
   discoveryApiRef,
   createComponentExtension,
-  identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 
 export const rootRouteRef = createRouteRef({
@@ -38,9 +38,9 @@ export const searchPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: searchApiRef,
-      deps: { discoveryApi: discoveryApiRef, identityApi: identityApiRef },
-      factory: ({ discoveryApi, identityApi }) => {
-        return new SearchClient({ discoveryApi, identityApi });
+      deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
+      factory: ({ discoveryApi, fetchApi }) => {
+        return new SearchClient({ discoveryApi, fetchApi });
       },
     }),
   ],

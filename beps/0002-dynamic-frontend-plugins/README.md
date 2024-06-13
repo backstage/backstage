@@ -67,7 +67,7 @@ The overarching goal of this proposal is to outline the full path of how fronten
 - **Distribution**: How these artifacts are deployed or published and made available for apps to load.
 - **Loading**: How an app is able to load these artifacts from remote or local sources at runtime.
 
-Each of these may have multiple possible solutions, in particular the loading and distribution steps. This proposal should aim to provide the minimum solutions that avoids the need for each adopter to have to re-bundle open source plugins, while still making it simple to use dynamic installation for their own internal plugins.
+Each of these may have multiple possible solutions, in particular the loading and distribution steps. This proposal should aim to provide a solution that makes it possible to re-bundle 3rd party plugins to make it possible to install them dynamically, as well as a simple solution to deploy internal plugins for dynamic installation into an app.
 
 There are a couple of sub-goals that are important for this to work:
 
@@ -83,6 +83,8 @@ and make progress.
 -->
 
 The **integration** of installed plugins and features is not in scope for this proposal, that is the responsibility of the new frontend system.
+
+This proposal does not aim to provide a solution for re-building packages on the fly. Plugins must be pre-built for it to be possible to dynamically install them into an app. This means that a solution where you can directly install existing packages from NPM is not in scope.
 
 This proposal does not contain any form of visual interface for managing dynamically installed plugins. The scope of this proposal only includes configuration of dynamic plugins through static configuration and TypeScript interfaces.
 
@@ -216,6 +218,12 @@ This config ensures that only those modules (from @mui/material) that are used i
 This can be checked by debugging network traffic and shared scopes:
 
 ![notifications system architecture diagram](./scope-sharing.png)
+
+#### Limitations
+
+A limitation of module sharing is that each module name can only appear once in each context. This means that if you're trying to build a bundle of shared modules with a deeper dependency tree, you may end up needing to resolve conflicts by renaming some modules that appear multiple times with different versions. This will in turn limit sharing of those modules with other bundles.
+
+There is also a conflict with the chunk splitting currently used in the Backstage CLI that means that some singleton modules need to be configured to be eagerly loaded. More broadly we may also want to re-evaluate the chunk splitting strategy in the Backstage CLI when adding support for module federation.
 
 ### Plugin manifest
 
@@ -496,6 +504,8 @@ Theoretically plugins can be hosted on some "public CDN" which is detached from 
 
 Assets can be also be hosted in the same way as they have always been.
 
+It's important to consider old deployments as part of this storage, to make sure that dynamic chunks are still available to users who have not yet refreshed the page to load the latest version of the app.
+
 ### Plugin discovery
 
 How to notify/send data to browser
@@ -555,8 +565,16 @@ List any dependencies that this work has on other BEPs or features.
 
 ## Alternatives
 
-<!--
-What other approaches did you consider, and why did you rule them out? These do
-not need to be as detailed as the proposal, but should include enough
-information to express the idea and why it was not acceptable.
--->
+### Runtime packaging of NPM packages
+
+A solution that has been considered is to allow for the installation of NPM packages directly into the app, with them being repackaged for dynamic installation on the fly. This allows for a more direct way of installing plugins, without the need to change how plugins are published to NPM. The downside of this approach is that it leaves validation and dependency management to the runtime and operator of the Backstage instance.
+
+The NPM ecosystem is built around using version ranges along with lockfiles for dependency management. It is generally up to the maintainers of a repo to make sure that the specific dependency versions installed are all compatible with each other and do not introduce security vulnerabilities. This can be a fairly complex problem, and pushing it to the runtime installation of each plugin ends up being a significant risk.
+
+We consider it to be a better approach to push this responsibility down one step from Backstage operators, either to plugin maintainers, or to a service that is able to bundle and validate plugin bundles before they are installed into a Backstage instance. Building and running such as service as part of the Backstage open source project is out of scope for this proposal, but is something that could be considered in the future.
+
+### Publish dynamic bundle to NPM
+
+We could modify the plugin build process to also output a module federation bundle for dynamic installation. This would also allow for direct installation of plugins directly from NPM, but puts a responsibility on each plugin maintainer to keep publishing new versions of the plugin to NPM simply to update transitive dependencies. This significantly increases the effort of maintaining a Backstage plugin.
+
+The dynamic installation bundle can also be quite large, depending on the dependency tree of each plugin. There is a risk that the size of `node_modules` in a Backstage increases significantly, potentially hurting the development experience by increasing installation time both locally and in CI.

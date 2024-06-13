@@ -58,6 +58,10 @@ describe('RepoUrlPicker', () => {
     byHost: () => ({ type: 'github' }),
   };
 
+  const mockIntegrationsApiAzure: Partial<ScmIntegrationsApi> = {
+    byHost: () => ({ type: 'azure' }),
+  };
+
   let mockScmAuthApi: Partial<ScmAuthApi>;
 
   beforeEach(() => {
@@ -111,7 +115,7 @@ describe('RepoUrlPicker', () => {
       const { getByRole } = await renderInTestApp(
         <TestApiProvider
           apis={[
-            [scmIntegrationsApiRef, mockIntegrationsApi],
+            [scmIntegrationsApiRef, mockIntegrationsApiAzure],
             [scmAuthApiRef, {}],
             [scaffolderApiRef, mockScaffolderApi],
           ]}
@@ -135,6 +139,37 @@ describe('RepoUrlPicker', () => {
       expect(
         getByRole('option', { name: 'dev.azure.com' }),
       ).toBeInTheDocument();
+    });
+
+    it('should render properly with allowedProject', async () => {
+      const { getByRole } = await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [scmIntegrationsApiRef, mockIntegrationsApiAzure],
+            [scmAuthApiRef, {}],
+            [scaffolderApiRef, mockScaffolderApi],
+          ]}
+        >
+          <SecretsContextProvider>
+            <Form
+              validator={validator}
+              schema={{ type: 'string' }}
+              uiSchema={{
+                'ui:field': 'RepoUrlPicker',
+                'ui:options': {
+                  allowedHosts: ['dev.azure.com'],
+                  allowedProjects: ['Backstage'],
+                },
+              }}
+              fields={{
+                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
+              }}
+            />
+          </SecretsContextProvider>
+        </TestApiProvider>,
+      );
+
+      expect(getByRole('option', { name: 'Backstage' })).toBeInTheDocument();
     });
 
     it('should render properly with title and description', async () => {

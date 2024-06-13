@@ -109,6 +109,10 @@ export interface EntityRefPresentation {
    * elsewhere.
    */
   update$?: Observable<EntityRefPresentationSnapshot>;
+  /**
+   * A promise that resolves to a usable entity presentation.
+   */
+  promise: Promise<EntityRefPresentationSnapshot>;
 }
 
 /**

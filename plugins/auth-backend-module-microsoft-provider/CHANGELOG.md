@@ -1,5 +1,47 @@
 # @backstage/plugin-auth-backend-module-microsoft-provider
 
+## 0.1.14-next.2
+
+### Patch Changes
+
+- 8efc6cf: Added support for the new shared `additionalScopes` configuration.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+
+## 0.1.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+
+## 0.1.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-auth-node@0.4.13
+
+## 0.1.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.13-next.1
+  - @backstage/backend-plugin-api@0.6.18-next.1
+
 ## 0.1.13-next.0
 
 ### Patch Changes

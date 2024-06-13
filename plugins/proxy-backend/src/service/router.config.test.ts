@@ -14,70 +14,42 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, HostDiscovery } from '@backstage/backend-common';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import {
+  setupRequestMockHandlers,
+  startTestBackend,
+} from '@backstage/backend-test-utils';
 import {
   ConfigSources,
   MutableConfigSource,
   StaticConfigSource,
 } from '@backstage/config-loader';
-import express from 'express';
-import { rest } from 'msw';
+import { HttpResponse, http, passthrough } from 'msw';
 import { setupServer } from 'msw/node';
-import request from 'supertest';
-import { createRouter } from './router';
+import fetch from 'node-fetch';
 
 // this test is stored in its own file to work around the mocked
-// http-proxy-middleware module used in the rest of the tests
+// http-proxy-middleware module used in the main test file
 
 describe('createRouter reloadable configuration', () => {
-  const server = setupServer(
-    rest.get('https://non-existing-example.com/', (req, res, ctx) =>
-      res(
-        ctx.status(200),
-        ctx.json({
-          url: req.url.toString(),
-          headers: req.headers.all(),
-        }),
-      ),
-    ),
-  );
-
-  beforeAll(() =>
-    server.listen({
-      onUnhandledRequest: ({ headers }, print) => {
-        if (headers.get('User-Agent') === 'supertest') {
-          return;
-        }
-        print.error();
-      },
-    }),
-  );
-
-  afterAll(() => server.close());
-  afterEach(() => server.resetHandlers());
+  const server = setupServer();
+  setupRequestMockHandlers(server);
 
   it('should be able to observe the config', async () => {
-    const logger = getVoidLogger();
-
     // Grab the subscriber function and use mutable config data to mock a config file change
     const mutableConfigSource = MutableConfigSource.create({ data: {} });
     const config = await ConfigSources.toConfig(
       ConfigSources.merge([
         StaticConfigSource.create({
           data: {
-            backend: {
-              baseUrl: 'http://localhost:7007',
-              listen: {
-                port: 7007,
-              },
-            },
             proxy: {
               endpoints: {
                 '/test': {
                   target: 'https://non-existing-example.com',
-                  pathRewrite: {
-                    '.*': '/',
-                  },
+                  credentials: 'dangerously-allow-unauthenticated',
                 },
               },
             },
@@ -87,40 +59,53 @@ describe('createRouter reloadable configuration', () => {
       ]),
     );
 
-    const discovery = HostDiscovery.fromConfig(config);
-    const router = await createRouter({
-      config,
-      logger,
-      discovery,
+    const backend = await startTestBackend({
+      features: [
+        import('../alpha'),
+        createServiceFactory({
+          service: coreServices.rootConfig,
+          deps: {},
+          factory: () => config,
+        }),
+      ],
     });
-    expect(router).toBeDefined();
 
-    const app = express();
-    app.use(router);
+    try {
+      const baseUrl = `http://localhost:${backend.server.port()}`;
 
-    const agent = request.agent(app);
-    // this is set to let msw pass test requests through the mock server
-    agent.set('User-Agent', 'supertest');
+      server.use(
+        http.all(`${baseUrl}/*`, passthrough),
+        http.get('https://non-existing-example.com/*', req =>
+          HttpResponse.json({
+            url: req.request.url.toString(),
+            headers: req.request.headers,
+          }),
+        ),
+      );
 
-    const response1 = await agent.get('/test');
+      await expect(fetch(`${baseUrl}/api/proxy/test`)).resolves.toMatchObject({
+        status: 200,
+      });
+      await expect(
+        fetch(`${baseUrl}/api/proxy/test2`),
+      ).resolves.not.toMatchObject({ status: 200 });
 
-    expect(response1.status).toEqual(200);
-
-    mutableConfigSource.setData({
-      proxy: {
-        endpoints: {
-          '/test2': {
-            target: 'https://non-existing-example.com',
-            pathRewrite: {
-              '.*': '/',
+      mutableConfigSource.setData({
+        proxy: {
+          endpoints: {
+            '/test2': {
+              target: 'https://non-existing-example.com',
+              credentials: 'dangerously-allow-unauthenticated',
             },
           },
         },
-      },
-    });
+      });
 
-    const response2 = await agent.get('/test2');
-
-    expect(response2.status).toEqual(200);
+      await expect(fetch(`${baseUrl}/api/proxy/test2`)).resolves.toMatchObject({
+        status: 200,
+      });
+    } finally {
+      await backend.stop();
+    }
   });
 });

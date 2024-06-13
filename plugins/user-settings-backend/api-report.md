@@ -6,6 +6,7 @@
 import express from 'express';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PluginDatabaseManager } from '@backstage/backend-common';
+import { SignalsService } from '@backstage/plugin-signals-node';
 
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -16,6 +17,8 @@ export interface RouterOptions {
   database: PluginDatabaseManager;
   // (undocumented)
   identity: IdentityApi;
+  // (undocumented)
+  signals?: SignalsService;
 }
 
 // (No @packageDocumentation comment for this package)

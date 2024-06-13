@@ -314,6 +314,7 @@ export function createExternalRouteRef<
   id: string;
   params?: ParamKey[];
   optional?: Optional;
+  defaultTarget?: string;
 }): ExternalRouteRef<OptionalParams<Params>, Optional>;
 
 // @public

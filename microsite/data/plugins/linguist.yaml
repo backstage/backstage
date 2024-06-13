@@ -4,7 +4,7 @@ author: Keyloop
 authorUrl: https://keyloop.com/
 category: Metadata
 description: View the programming language break down for your entities within the Software Catalog
-documentation: https://github.com/backstage/backstage/blob/master/plugins/linguist/README.md
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/linguist/plugins/linguist/README.md
 iconUrl: /img/linguist.svg
 npmPackageName: '@backstage/plugin-linguist'
 addedDate: '2023-06-17'

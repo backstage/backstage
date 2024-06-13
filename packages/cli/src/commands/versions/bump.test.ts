@@ -894,30 +894,19 @@ describe('bump', () => {
       newVersions: [],
       newRanges: [
         {
-          name: 'first-duplicate',
-          oldRange: 'first-duplicate',
-          newRange: 'first-duplicate',
-          oldVersion: '1.0.0',
-          newVersion: '2.0.0',
-        },
-        {
-          name: 'second-duplicate',
-          oldRange: 'second-duplicate',
-          newRange: 'second-duplicate',
-          oldVersion: '1.0.0',
-          newVersion: '2.0.0',
-        },
-        {
-          name: 'third-duplicate',
-          oldRange: 'third-duplicate',
-          newRange: 'third-duplicate',
+          name: '@backstage/backend-app-api',
+          oldRange: '^1.0.0',
+          newRange: '^2.0.0',
           oldVersion: '1.0.0',
           newVersion: '2.0.0',
         },
       ],
     });
     mockDir.setContent({
-      'yarn.lock': lockfileMock,
+      'yarn.lock': `${HEADER}
+"@backstage/backend-app-api@^1.0.0":
+  version "1.0.0"
+`,
       'package.json': JSON.stringify({
         workspaces: {
           packages: ['packages/*'],
@@ -928,16 +917,7 @@ describe('bump', () => {
           'package.json': JSON.stringify({
             name: 'a',
             dependencies: {
-              '@backstage/core': '^1.0.5',
-            },
-          }),
-        },
-        b: {
-          'package.json': JSON.stringify({
-            name: 'b',
-            dependencies: {
-              '@backstage/core': '^1.0.3',
-              '@backstage/theme': '^1.0.0',
+              '@backstage/backend-app-api': '^1.0.0',
             },
           }),
         },
@@ -952,7 +932,12 @@ describe('bump', () => {
           res(
             ctx.status(200),
             ctx.json({
-              packages: [],
+              packages: [
+                {
+                  name: '@backstage/backend-app-api',
+                  version: '2.0.0',
+                },
+              ],
             }),
           ),
       ),
@@ -962,24 +947,20 @@ describe('bump', () => {
     });
     expectLogsToMatch(logs, [
       'Using default pattern glob @backstage/*',
-      'Checking for updates of @backstage/core',
-      'Checking for updates of @backstage/theme',
-      'Checking for updates of @backstage/core-api',
+      'Checking for updates of @backstage/backend-app-api',
+      'Checking for updates of @backstage/backend-app-api',
       'Some packages are outdated, updating',
-      'unlocking @backstage/core@^1.0.3 ~> 1.0.6',
-      'unlocking @backstage/core-api@^1.0.6 ~> 1.0.7',
-      'unlocking @backstage/core-api@^1.0.3 ~> 1.0.7',
-      'bumping @backstage/core in a to ^1.0.6',
-      'bumping @backstage/core in b to ^1.0.6',
-      'bumping @backstage/theme in b to ^2.0.0',
+      'bumping @backstage/backend-app-api in a to ^2.0.0',
       'Running yarn install to install new versions',
       'Checking for moved packages to the @backstage-community namespace...',
       '⚠️  The following packages may have breaking changes:',
-      '  @backstage/theme : 1.0.0 ~> 2.0.0',
-      '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
+      '  @backstage/backend-app-api : 1.0.0 ~> 2.0.0',
+      '    https://github.com/backstage/backstage/blob/master/packages/backend-app-api/CHANGELOG.md',
       'Version bump complete!',
-      'The following packages have duplicates but have been allowed:',
-      'first-duplicate, second-duplicate, third-duplicate',
+      '  ⚠️ Warning! ⚠️',
+      '  The below package(s) have incompatible duplicate installations, likely due to a bad dependency in a plugin.',
+      '  You can investigate this by running `yarn why <package-name>`, and report the issue to the plugin maintainers.',
+      '    @backstage/backend-app-api',
     ]);
   });
 });

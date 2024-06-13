@@ -79,7 +79,7 @@ export const ErrorBoundary: ComponentClass<
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo) {
     // eslint-disable-next-line no-console
-    console.error(`ErrorBoundary, error: ${error}, info: ${errorInfo}`);
+    console.error(`ErrorBoundary, error: ${error}`, { error, errorInfo });
     this.setState({ error, errorInfo });
   }
 

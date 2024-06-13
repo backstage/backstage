@@ -54,6 +54,10 @@ function registerPackageCommand(program: Command) {
     .description(
       'Command to generate a client and/or a server stub from an OpenAPI spec.',
     )
+    .option('--client-additional-properties [properties]')
+    .description(
+      'Additional properties that can be passed to @openapitools/openapi-generator-cli',
+    )
     .action(
       lazy(() =>
         import('./package/schema/openapi/generate').then(m => m.command),
@@ -78,6 +82,15 @@ function registerPackageCommand(program: Command) {
     .action(
       lazy(() => import('./package/schema/openapi/fuzz').then(m => m.command)),
     );
+
+  openApiCommand
+    .command('diff')
+    .option('--ignore', 'Ignore linting failures and only log the results.')
+    .option('--json', 'Output the results as JSON')
+    .option('--since <ref>', 'Diff the API against a specific ref')
+    .action(
+      lazy(() => import('./package/schema/openapi/diff').then(m => m.command)),
+    );
 }
 
 function registerRepoCommand(program: Command) {
@@ -96,7 +109,7 @@ function registerRepoCommand(program: Command) {
   openApiCommand
     .command('verify [paths...]')
     .description(
-      'Verify that all OpenAPI schemas are valid and have a matching `schemas/openapi.generated.ts` file.',
+      'Verify that all OpenAPI schemas are valid and set up correctly.',
     )
     .action(
       lazy(() =>
@@ -132,6 +145,20 @@ function registerRepoCommand(program: Command) {
     )
     .action(
       lazy(() => import('./repo/schema/openapi/fuzz').then(m => m.command)),
+    );
+
+  openApiCommand
+    .command('diff')
+    .description(
+      'Diff the repository against a specific ref, will run all package `diff` scripts.',
+    )
+    .option(
+      '--since <ref>',
+      'Diff the API against a specific ref',
+      'origin/master',
+    )
+    .action(
+      lazy(() => import('./repo/schema/openapi/diff').then(m => m.command)),
     );
 }
 

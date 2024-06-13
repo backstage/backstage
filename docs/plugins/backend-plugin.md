@@ -44,7 +44,11 @@ cd plugins/carmen-backend
 yarn start
 ```
 
-> Note: this documentation assumes you are using the latest version of Backstage and the new backend system. If you are not, please upgrade and migrate your backend using the [Migration Guide](../backend-system/building-backends/08-migrating.md)
+:::note Note
+
+This documentation assumes you are using the latest version of Backstage and the new backend system. If you are not, please upgrade and migrate your backend using the [Migration Guide](../backend-system/building-backends/08-migrating.md)
+
+:::
 
 This will think for a bit, and then say `Listening on :7007`. In a different
 terminal window, now run

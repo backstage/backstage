@@ -19,6 +19,10 @@ import { resolve as resolvePath } from 'path';
 import { findPaths, findRootPath, findOwnDir, findOwnRootDir } from './paths';
 
 describe('paths', () => {
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it('findOwnDir and findOwnRootDir should find owns paths', () => {
     const dir = findOwnDir(__dirname);
     const root = findOwnRootDir(dir);
@@ -91,5 +95,29 @@ describe('paths', () => {
     expect(paths.resolveTargetRoot('./derp.txt')).toBe(
       resolvePath(root, 'derp.txt'),
     );
+  });
+
+  it('findPaths should find workspace root with object', () => {
+    jest.spyOn(JSON, 'parse').mockReturnValue({ workspaces: { packages: [] } });
+    jest.spyOn(process, 'cwd').mockReturnValue(__dirname);
+
+    const paths = findPaths(__dirname);
+
+    expect(paths.targetDir).toBe(
+      resolvePath(__dirname, '../../cli-common/src'),
+    );
+    expect(paths.targetRoot).toBe(resolvePath(__dirname, '../../cli-common'));
+  });
+
+  it('findPaths should find workspace root with array', () => {
+    jest.spyOn(JSON, 'parse').mockReturnValue({ workspaces: [] });
+    jest.spyOn(process, 'cwd').mockReturnValue(__dirname);
+
+    const paths = findPaths(__dirname);
+
+    expect(paths.targetDir).toBe(
+      resolvePath(__dirname, '../../cli-common/src'),
+    );
+    expect(paths.targetRoot).toBe(resolvePath(__dirname, '../../cli-common'));
   });
 });

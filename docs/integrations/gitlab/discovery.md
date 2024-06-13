@@ -136,7 +136,11 @@ To use the discovery provider, you'll need a GitLab integration
 [set up](locations.md) with a `token`. Then you can add a provider config per group
 to the catalog configuration.
 
-> > NOTE: if you are using the New Backend System, the `schedule` has to be setup in the config, as shown below.
+:::note Note
+
+If you are using the New Backend System, the `schedule` has to be setup in the config, as shown below.
+
+:::
 
 ```yaml title="app-config.yaml"
 catalog:

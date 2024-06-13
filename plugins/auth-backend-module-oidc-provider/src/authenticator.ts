@@ -53,7 +53,6 @@ export type OidcAuthResult = {
 
 /** @public */
 export const oidcAuthenticator = createOAuthAuthenticator({
-  shouldPersistScopes: true,
   defaultProfileTransform: async (
     input: OAuthAuthenticatorResult<OidcAuthResult>,
   ) => ({
@@ -63,6 +62,10 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       displayName: input.fullProfile.userinfo.name,
     },
   }),
+  scopes: {
+    persist: true,
+    required: ['openid', 'profile', 'email'],
+  },
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
@@ -74,8 +77,13 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     const tokenSignedResponseAlg = config.getOptionalString(
       'tokenSignedResponseAlg',
     );
-    const initializedScope = config.getOptionalString('scope');
     const initializedPrompt = config.getOptionalString('prompt');
+
+    if (config.has('scope')) {
+      throw new Error(
+        'The oidc provider no longer supports the "scope" configuration option. Please use the "additionalScopes" option instead.',
+      );
+    }
 
     Issuer[custom.http_options] = httpOptionsProvider;
     const promise = Issuer.discover(metadataUrl).then(issuer => {
@@ -91,7 +99,6 @@ export const oidcAuthenticator = createOAuthAuthenticator({
         token_endpoint_auth_method:
           tokenEndpointAuthMethod || 'client_secret_basic',
         id_token_signed_response_alg: tokenSignedResponseAlg || 'RS256',
-        scope: initializedScope || '',
       });
       client[custom.http_options] = httpOptionsProvider;
 
@@ -123,14 +130,14 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       return { helper, client, strategy };
     });
 
-    return { initializedScope, initializedPrompt, promise };
+    return { initializedPrompt, promise };
   },
 
   async start(input, ctx) {
-    const { initializedScope, initializedPrompt, promise } = ctx;
+    const { initializedPrompt, promise } = ctx;
     const { helper, strategy } = await promise;
     const options: Record<string, string> = {
-      scope: input.scope || initializedScope || 'openid profile email',
+      scope: input.scope,
       state: input.state,
       nonce: crypto.randomBytes(16).toString('base64'),
     };
@@ -202,8 +209,15 @@ export const oidcAuthenticator = createOAuthAuthenticator({
 
   async logout(input, ctx) {
     const { client } = await ctx.promise;
+    const issuer = client.issuer;
+    /**
+     * https://github.com/panva/node-openid-client/blob/main/lib/client.js#L1398
+     * client.revoke will check revocation_endpoint and if undefined throw error。
+     *
+     * if oidc server do not provide revocation_endpoint，we should not call revoke function
+     */
 
-    if (input.refreshToken) {
+    if (input.refreshToken && issuer.revocation_endpoint) {
       await client.revoke(input.refreshToken);
     }
   },

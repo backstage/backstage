@@ -4,7 +4,7 @@ author: Spotify
 authorUrl: https://github.com/spotify
 category: Monitoring
 description: Track usage of your Backstage instance using Google Analytics.
-documentation: https://github.com/backstage/backstage/blob/master/plugins/analytics-module-ga/README.md
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/analytics/plugins/analytics-module-ga/README.md
 iconUrl: /img/ga-icon.png
 npmPackageName: '@backstage/plugin-analytics-module-ga'
 addedDate: '2021-10-07'

@@ -47,6 +47,8 @@ export type CacheServiceOptions = {
  * A pre-configured, storage agnostic cache service suitable for use by
  * Backstage plugins.
  *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/cache | service documentation} for more details.
+ *
  * @public
  */
 export interface CacheService {

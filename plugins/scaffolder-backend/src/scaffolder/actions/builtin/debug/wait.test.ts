@@ -57,7 +57,7 @@ describe('debug:wait', () => {
     await expect(async () => {
       await action.handler(context);
     }).rejects.toThrow(
-      'Waiting duration is longer than the maximum threshold of 0 hours, 0 minutes, 30 seconds',
+      'Waiting duration is longer than the maximum threshold of 0 hours, 10 minutes, 0 seconds',
     );
   });
 });

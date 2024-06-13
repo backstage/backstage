@@ -133,6 +133,34 @@ describe('UserTokenHandler', () => {
       ).rejects.toThrow('signature verification failed');
     });
 
+    it('should fail to verify tokens that have a bad alg', async () => {
+      const expectedIssuedAt = 1712071714;
+      const expectedExpiresAt = 1712075314;
+
+      jest.useFakeTimers({
+        now: expectedIssuedAt * 1000 + 600_000,
+      });
+
+      const header = encodeData({
+        typ: 'vnd.backstage.user',
+        alg: 'none',
+      });
+      const payload = encodeData({
+        iss: 'http://localhost:7007/api/auth',
+        sub: 'user:development/guest',
+        ent: ['user:development/guest', 'group:default/team-a'],
+        aud: 'backstage',
+        iat: expectedIssuedAt,
+        exp: expectedExpiresAt,
+        uip: 'proof',
+      });
+      const token = `${header}.${payload}.`;
+
+      await expect(userTokenHandler.verifyToken(token)).rejects.toThrow(
+        /Unsupported "alg" value/,
+      );
+    });
+
     it('should verify a valid legacy backstage token', async () => {
       const expectedIssuedAt = 1712071714;
       const expectedExpiresAt = 1712075314;
@@ -151,7 +179,7 @@ describe('UserTokenHandler', () => {
           sub: 'user:development/guest',
           ent: ['user:development/guest', 'group:default/team-a'],
           aud: 'backstage',
-          iat: 1712071714,
+          iat: expectedIssuedAt,
           exp: expectedExpiresAt,
         },
       };
@@ -179,7 +207,7 @@ describe('UserTokenHandler', () => {
           iss: 'http://localhost:7007/api/auth',
           ent: ['user:development/guest', 'group:default/team-a'],
           aud: 'backstage',
-          iat: 1712071714,
+          iat: expectedIssuedAt,
           exp: expectedExpiresAt,
         },
       };
@@ -209,7 +237,7 @@ describe('UserTokenHandler', () => {
           sub: 'user:development/guest',
           ent: ['user:development/guest', 'group:default/team-a'],
           aud: 'backstage',
-          iat: 1712071714,
+          iat: expectedIssuedAt,
           exp: expectedExpiresAt,
           uip: 'proof',
         },
@@ -239,7 +267,7 @@ describe('UserTokenHandler', () => {
         payload: {
           sub: 'user:development/guest',
           ent: ['user:development/guest', 'group:default/team-a'],
-          iat: 1712071714,
+          iat: expectedIssuedAt,
           exp: expectedExpiresAt,
         },
       };

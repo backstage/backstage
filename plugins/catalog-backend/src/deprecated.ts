@@ -48,6 +48,7 @@ import {
   type PlaceholderResolverParams as _PlaceholderResolverParams,
   type PlaceholderResolverRead as _PlaceholderResolverRead,
   type PlaceholderResolverResolveUrl as _PlaceholderResolverResolveUrl,
+  type LocationAnalyzer as _LocationAnalyzer,
   type ScmLocationAnalyzer as _ScmLocationAnalyzer,
 } from '@backstage/plugin-catalog-node';
 import {
@@ -177,6 +178,11 @@ export type LocationSpec = _LocationSpec;
  * @deprecated import from `@backstage/plugin-catalog-node` instead
  */
 export type AnalyzeOptions = _AnalyzeOptions;
+/**
+ * @public
+ * @deprecated import from `@backstage/plugin-catalog-node` instead
+ */
+export type LocationAnalyzer = _LocationAnalyzer;
 /**
  * @public
  * @deprecated import from `@backstage/plugin-catalog-node` instead
