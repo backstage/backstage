@@ -7,7 +7,6 @@ import { Config } from '@backstage/config';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
@@ -34,7 +33,7 @@ export type DatabaseManagerOptions = {
 
 // @public (undocumented)
 export const databaseServiceFactory: () => ServiceFactory<
-  PluginDatabaseManager,
+  DatabaseService,
   'plugin'
 >;
 

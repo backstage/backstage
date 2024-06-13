@@ -15,5 +15,3 @@
  */
 
 export { cacheToPluginCacheManager } from './cacheToPluginCacheManager';
-export * from './reexport';
-export * from './types';

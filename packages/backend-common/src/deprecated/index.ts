@@ -17,11 +17,56 @@
 export * from './scm';
 
 import {
+  CacheManager as _CacheManager,
+  CacheManagerOptions as _CacheManagerOptions,
+  PluginCacheManager as _PluginCacheManager,
+} from '@backstage/backend-defaults/cache';
+
+import {
+  CacheService,
+  CacheServiceOptions,
+  CacheServiceSetOptions,
   isDatabaseConflictError as _isDatabaseConflictError,
   resolvePackagePath as _resolvePackagePath,
   resolveSafeChildPath as _resolveSafeChildPath,
   isChildPath as _isChildPath,
 } from '@backstage/backend-plugin-api';
+
+/**
+ * @public
+ * @deprecated Use `CacheManager` from the `@backstage/backend-defaults` package instead
+ */
+export const CacheManager = _CacheManager;
+
+/**
+ * @public
+ * @deprecated Use `CacheManagerOptions` from the `@backstage/backend-defaults` package instead
+ */
+export type CacheManagerOptions = _CacheManagerOptions;
+
+/**
+ * @public
+ * @deprecated Use `PluginCacheManager` from the `@backstage/backend-defaults` package instead
+ */
+export type PluginCacheManager = _PluginCacheManager;
+
+/**
+ * @public
+ * @deprecated Use `CacheService` from the `@backstage/backend-plugin-api` package instead
+ */
+export type CacheClient = CacheService;
+
+/**
+ * @public
+ * @deprecated Use `CacheServiceSetOptions` from the `@backstage/backend-plugin-api` package instead
+ */
+export type CacheClientSetOptions = CacheServiceSetOptions;
+
+/**
+ * @public
+ * @deprecated Use `CacheServiceOptions` from the `@backstage/backend-plugin-api` package instead
+ */
+export type CacheClientOptions = CacheServiceOptions;
 
 /**
  * @public
