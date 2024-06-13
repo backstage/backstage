@@ -20,7 +20,6 @@ import {
   createServiceFactory,
   LifecycleService,
   LoggerService,
-  RootHealthService,
 } from '@backstage/backend-plugin-api';
 import express, { RequestHandler, Express } from 'express';
 import type { Server } from 'node:http';
@@ -43,7 +42,7 @@ export interface RootHttpRouterConfigureContext {
   config: RootConfigService;
   logger: LoggerService;
   lifecycle: LifecycleService;
-  health: RootHealthService;
+  healthRouter: RequestHandler;
   applyDefaults: () => void;
 }
 
@@ -98,7 +97,7 @@ export const rootHttpRouterServiceFactory = createServiceFactory(
         config,
         logger,
         lifecycle,
-        health,
+        healthRouter,
         applyDefaults() {
           app.use(middleware.helmet());
           app.use(middleware.cors());
