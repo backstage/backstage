@@ -1,14 +1,11 @@
 # Catalog Backend Module for Puppet
 
-This is an extension module to the `plugin-catalog-backend` plugin, providing an `PuppetDbEntityProvider` that can be used to ingest
-[Resource entities](https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource) from a
-[PuppetDB](https://www.puppet.com/docs/puppet/6/puppetdb_overview.html) instance(s). This provider is useful if you want to import nodes
-from your PuppetDB into Backstage.
+This is an extension module to the `plugin-catalog-backend` plugin, providing an `PuppetDbEntityProvider` that can be used to ingest [Resource entities](https://backstage.io/docs/features/software-catalog/descriptor-format#kind-resource) from a
+[PuppetDB](https://www.puppet.com/docs/puppetdb/7/api/query/v4/query) instance(s). This provider is useful if you want to import nodes from your PuppetDB into Backstage.
 
 ## Installation
 
-The provider is not installed by default, therefore you have to add a dependency to `@backstage/plugin-catalog-backend-module-puppetdb`
-to your backend package:
+The provider is not installed by default, therefore you have to add a dependency to `@backstage/plugin-catalog-backend-module-puppetdb` to your backend package:
 
 ```bash
 # From your Backstage root directory
@@ -57,9 +54,7 @@ catalog:
 
 ## Customize the Provider
 
-The default ingestion behaviour will likely not work for all use cases - you will want to set proper `Owner`, `System` and other fields for the
-ingested resources. In case you want to customize the ingested entities, the provider allows to pass a transformer for resources. Here we will show an example
-of overriding the default transformer.
+The default ingestion behaviour will likely not work for all use cases - you will want to set proper `Owner`, `System` and other fields for the ingested resources. In case you want to customize the ingested entities, the provider allows to pass a transformer for resources. Here we will show an example of overriding the default transformer.
 
 1. Create a transformer:
 

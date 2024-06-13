@@ -23,7 +23,7 @@ import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ANNOTATION_PUPPET_CERTNAME, ENDPOINT_FACTSETS } from './constants';
+import { ANNOTATION_PUPPET_CERTNAME, ENDPOINT_NODES } from './constants';
 
 describe('readPuppetNodes', () => {
   const worker = setupServer();
@@ -41,76 +41,46 @@ describe('readPuppetNodes', () => {
 
     beforeEach(async () => {
       worker.use(
-        rest.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
+        rest.get(`${config.baseUrl}/${ENDPOINT_NODES}`, (_req, res, ctx) => {
           return res(
             ctx.status(200),
             ctx.set('Content-Type', 'application/json'),
             ctx.json([
               {
+                deactivated: null,
+                latest_report_hash: '7d79424a1caba14ff1f1b72ac8d76e2abd9dd981',
+                facts_environment: 'production',
+                cached_catalog_status: 'not_used',
+                report_environment: 'production',
+                latest_report_corrective_change: null,
+                catalog_environment: 'production',
+                facts_timestamp: '2024-06-13T19:08:52.298Z',
+                latest_report_noop: false,
+                expired: null,
+                latest_report_noop_pending: false,
+                report_timestamp: '2024-06-13T19:09:09.690Z',
                 certname: 'node1',
-                timestamp: 'time1',
-                hash: 'hash1',
-                producer_timestamp: 'producer_time1',
-                producer: 'producer1',
-                environment: 'environment1',
-                latest_report_status: 'unchanged',
-                facts: {
-                  data: [
-                    {
-                      name: 'is_virtual',
-                      value: true,
-                    },
-                    {
-                      name: 'kernel',
-                      value: 'Linux',
-                    },
-                    {
-                      name: 'ipaddress',
-                      value: 'ipaddress1',
-                    },
-                    {
-                      name: 'clientnoop',
-                      value: true,
-                    },
-                    {
-                      name: 'clientversion',
-                      value: 'clientversion1',
-                    },
-                  ],
-                },
+                catalog_timestamp: '2024-06-13T19:08:58.291Z',
+                latest_report_job_id: null,
+                latest_report_status: 'changed',
               },
               {
+                deactivated: null,
+                latest_report_hash: '369615c7eb2969bf16f493577a7816e9264164e7',
+                facts_environment: 'production',
+                cached_catalog_status: 'not_used',
+                report_environment: 'production',
+                latest_report_corrective_change: null,
+                catalog_environment: 'production',
+                facts_timestamp: '2024-06-13T19:13:27.789Z',
+                latest_report_noop: false,
+                expired: null,
+                latest_report_noop_pending: false,
+                report_timestamp: '2024-06-13T19:13:52.969Z',
                 certname: 'node2',
-                timestamp: 'time2',
-                hash: 'hash2',
-                producer_timestamp: 'producer_time2',
-                producer: 'producer2',
-                latest_report_status: 'unchanged',
-                environment: 'environment2',
-                facts: {
-                  data: [
-                    {
-                      name: 'is_virtual',
-                      value: false,
-                    },
-                    {
-                      name: 'kernel',
-                      value: 'Windows',
-                    },
-                    {
-                      name: 'ipaddress',
-                      value: 'ipaddress2',
-                    },
-                    {
-                      name: 'clientnoop',
-                      value: false,
-                    },
-                    {
-                      name: 'clientversion',
-                      value: 'clientversion2',
-                    },
-                  ],
-                },
+                catalog_timestamp: '2024-06-13T19:13:34.411Z',
+                latest_report_job_id: null,
+                latest_report_status: 'changed',
               },
             ]),
           );
@@ -196,16 +166,13 @@ describe('readPuppetNodes', () => {
     describe('where no results are matched', () => {
       beforeEach(async () => {
         worker.use(
-          rest.get(
-            `${config.baseUrl}/${ENDPOINT_FACTSETS}`,
-            (_req, res, ctx) => {
-              return res(
-                ctx.status(200),
-                ctx.set('Content-Type', 'application/json'),
-                ctx.json([]),
-              );
-            },
-          ),
+          rest.get(`${config.baseUrl}/${ENDPOINT_NODES}`, (_req, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json([]),
+            );
+          }),
         );
       });
 
@@ -218,25 +185,33 @@ describe('readPuppetNodes', () => {
     describe('where results are matched', () => {
       beforeEach(async () => {
         worker.use(
-          rest.get(
-            `${config.baseUrl}/${ENDPOINT_FACTSETS}`,
-            (_req, res, ctx) => {
-              return res(
-                ctx.status(200),
-                ctx.set('Content-Type', 'application/json'),
-                ctx.json([
-                  {
-                    certname: 'node1',
-                    timestamp: 'time1',
-                    hash: 'hash1',
-                    producer_timestamp: 'producer_time1',
-                    producer: 'producer1',
-                    environment: 'environment1',
-                  },
-                ]),
-              );
-            },
-          ),
+          rest.get(`${config.baseUrl}/${ENDPOINT_NODES}`, (_req, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json([
+                {
+                  deactivated: null,
+                  latest_report_hash:
+                    '7d79424a1caba14ff1f1b72ac8d76e2abd9dd981',
+                  facts_environment: 'production',
+                  cached_catalog_status: 'not_used',
+                  report_environment: 'production',
+                  latest_report_corrective_change: null,
+                  catalog_environment: 'production',
+                  facts_timestamp: '2024-06-13T19:08:52.298Z',
+                  latest_report_noop: false,
+                  expired: null,
+                  latest_report_noop_pending: false,
+                  report_timestamp: '2024-06-13T19:09:09.690Z',
+                  certname: 'node1',
+                  catalog_timestamp: '2024-06-13T19:08:58.291Z',
+                  latest_report_job_id: null,
+                  latest_report_status: 'changed',
+                },
+              ]),
+            );
+          }),
         );
       });
 
