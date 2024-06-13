@@ -94,6 +94,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
+import { handleBitbucketCloudRequest } from './autocomplete';
 
 /**
  *
@@ -771,6 +772,29 @@ export async function createRouter(
           base64Content: file.content.toString('base64'),
         })),
       });
+    })
+    .get('/v2/autocomplete/:provider/:resource', async (req, res) => {
+      const { token, ...query } = req.query;
+      const { provider, resource } = req.params;
+
+      if (!token) throw new InputError('Missing token query parameter');
+
+      let result: string[];
+
+      switch (provider) {
+        case 'bitbucketCloud': {
+          result = await handleBitbucketCloudRequest(
+            token as string,
+            resource,
+            query as Record<string, string>,
+          );
+          break;
+        }
+        default:
+          throw new InputError(`Unsupported provider: ${provider}`);
+      }
+
+      res.status(200).json(result);
     });
 
   const app = express();
