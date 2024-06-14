@@ -1,5 +1,5 @@
 ---
-'@backstage/integration': minor
+'@backstage/integration': patch
 ---
 
 Updated function for getHarnessEditContentsUrl
