@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export * from './scm';
-
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { CacheManager as _CacheManager } from '../../../backend-defaults/src/entrypoints/cache/CacheManager';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -33,6 +31,9 @@ import {
   resolveSafeChildPath as _resolveSafeChildPath,
   isChildPath as _isChildPath,
 } from '@backstage/backend-plugin-api';
+
+export * from './scm';
+export * from './tokens';
 
 /**
  * @public

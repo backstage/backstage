@@ -23,7 +23,7 @@ import {
 import { RequestHandler } from 'express';
 import { cacheToPluginCacheManager } from './cache';
 import { loggerToWinstonLogger } from './logging';
-import { TokenManager } from './tokens';
+import { TokenManager } from './deprecated';
 
 /**
  * @public

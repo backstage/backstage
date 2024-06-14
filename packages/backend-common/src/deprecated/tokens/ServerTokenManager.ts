@@ -61,6 +61,7 @@ class DisabledTokenManager implements TokenManager {
  * Options for {@link ServerTokenManager}.
  *
  * @public
+ * @deprecated Please {@link https://backstage.io/docs/tutorials/auth-service-migration | migrate} to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
  */
 export interface ServerTokenManagerOptions {
   /**
@@ -79,6 +80,7 @@ export interface ServerTokenManagerOptions {
  * authentication.
  *
  * @public
+ * @deprecated Please {@link https://backstage.io/docs/tutorials/auth-service-migration | migrate} to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
  */
 export class ServerTokenManager implements TokenManager {
   private readonly options: ServerTokenManagerOptions;

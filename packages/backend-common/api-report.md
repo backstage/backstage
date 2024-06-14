@@ -65,7 +65,7 @@ import type { SearchResponse as SearchResponse_2 } from '@backstage/backend-plug
 import type { SearchResponseFile as SearchResponseFile_2 } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
+import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UrlReaderServiceReadTreeOptions } from '@backstage/backend-plugin-api';
@@ -405,7 +405,7 @@ export const legacyPlugin: (
           logger: LoggerService;
           permissions: PermissionsService;
           scheduler: SchedulerService;
-          tokenManager: TokenManager;
+          tokenManager: TokenManagerService;
           reader: UrlReaderService;
           identity: IdentityService;
         },
@@ -572,7 +572,7 @@ export type SearchResponse = SearchResponse_2;
 // @public @deprecated (undocumented)
 export type SearchResponseFile = SearchResponseFile_2;
 
-// @public
+// @public @deprecated
 export class ServerTokenManager implements TokenManager {
   // (undocumented)
   authenticate(token: string): Promise<void>;
@@ -588,7 +588,7 @@ export class ServerTokenManager implements TokenManager {
   static noop(): TokenManager;
 }
 
-// @public
+// @public @deprecated
 export interface ServerTokenManagerOptions {
   allowDisabledTokenManager?: boolean;
   logger: LoggerService;
@@ -647,7 +647,8 @@ export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }
 
-export { TokenManager };
+// @public @deprecated (undocumented)
+export type TokenManager = TokenManagerService;
 
 // @public @deprecated (undocumented)
 export type UrlReader = UrlReaderService;

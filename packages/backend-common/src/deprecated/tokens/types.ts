@@ -14,4 +14,10 @@
  * limitations under the License.
  */
 
-export type { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
+import { TokenManagerService } from '@backstage/backend-plugin-api';
+
+/**
+ * @public
+ * @deprecated Please {@link https://backstage.io/docs/tutorials/auth-service-migration | migrate} to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
+ */
+export type TokenManager = TokenManagerService;

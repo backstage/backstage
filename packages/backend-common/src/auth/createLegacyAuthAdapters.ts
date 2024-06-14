@@ -27,7 +27,6 @@ import {
   TokenManagerService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
-import { TokenManager } from '../tokens';
 import { AuthenticationError, NotAllowedError } from '@backstage/errors';
 import type { Request, Response } from 'express';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -43,6 +42,7 @@ import {
   DefaultIdentityClient,
 } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
+import { TokenManager } from '../deprecated';
 import { PluginEndpointDiscovery } from '../discovery';
 import { JsonObject } from '@backstage/types';
 
