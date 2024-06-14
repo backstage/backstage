@@ -34,6 +34,7 @@ import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 import { useTechDocsReaderDom } from './dom';
 import { withTechDocsReaderProvider } from '../TechDocsReaderProvider';
 import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
+import crypto from "crypto";
 
 const useStyles = makeStyles({
   search: {
@@ -79,7 +80,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const {
       entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
       entityRef,
-      setSerializedShadowRoot ,
+      setShadowRootVersionHash ,
     } = useTechDocsReaderPage();
     const dom = useTechDocsReaderDom(entityRef);
     const path = window.location.pathname;
@@ -100,13 +101,13 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     }, [path, hash, hashElement, isStyleLoading]);
 
     const handleAppend = useCallback(
-      (newShadowRoot: ShadowRoot) => {
-        setSerializedShadowRoot(newShadowRoot.innerHTML);
+      (newShadowRootVersionHash: crypto.Hash) => {
+        setShadowRootVersionHash(newShadowRootVersionHash);
         if (onReady instanceof Function) {
           onReady();
         }
       },
-      [setSerializedShadowRoot, onReady],
+      [setShadowRootVersionHash, onReady],
     );
 
     // No entity metadata = 404. Don't render content at all.

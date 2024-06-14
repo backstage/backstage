@@ -21,7 +21,7 @@ import React, {
   useState,
   memo,
   ReactNode,
-  useEffect, useCallback,
+  useEffect,
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/esm/useAsync';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
@@ -45,6 +45,7 @@ import { techdocsApiRef } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
 import { toLowercaseEntityRefMaybe } from './helpers';
+import crypto from "crypto";
 
 const areEntityRefsEqual = (
   prevEntityRef: CompoundEntityRef,
@@ -62,8 +63,8 @@ export type TechDocsReaderPageValue = {
   metadata: AsyncState<TechDocsMetadata>;
   entityRef: CompoundEntityRef;
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
-  shadowRoot?: ShadowRoot;
-  setSerializedShadowRoot: Dispatch<SetStateAction<string | undefined>>;
+  shadowRootVersionHash?: string;
+  setShadowRootVersionHash: (newShadowRootVersionHash: crypto.Hash) => void;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
   subtitle: string;
@@ -79,7 +80,7 @@ const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   subtitle: '',
   setTitle: () => {},
   setSubtitle: () => {},
-  setSerializedShadowRoot: () => {},
+  setShadowRootVersionHash: () => {},
   metadata: { loading: true },
   entityMetadata: { loading: true },
   entityRef: { kind: '', name: '', namespace: '' },
@@ -131,36 +132,32 @@ export const TechDocsReaderPageProvider = memo(
     const [subtitle, setSubtitle] = useState(
       defaultTechDocsReaderPageValue.subtitle,
     );
-    const [serializedShadowRoot, setSerializedShadowRoot] = useState<string | undefined>(
+    const [shadowRootVersionHash, setShadowRootVersionHash] = useState<string | undefined>(
       undefined,
     );
 
+    const handleSetShadowRootVersionHash = (newShadowRootVersionHash: crypto.Hash) => {
+      setShadowRootVersionHash(newShadowRootVersionHash.digest("hex"));
+    }
+
     useEffect(() => {
-      if (serializedShadowRoot && !metadata.value && !metadata.loading) {
+      if (shadowRootVersionHash && !metadata.value && !metadata.loading) {
         metadata.retry();
       }
     }, [
       metadata.value,
       metadata.loading,
-      serializedShadowRoot,
+      shadowRootVersionHash,
       metadata.retry,
       metadata,
     ]);
-
-    const getShadowRoot = useCallback(()=>{
-      const hostElement = document.querySelector('[data-testid="techdocs-native-shadowroot"]')
-      if(!hostElement) return undefined
-      return hostElement.shadowRoot ?? undefined
-    }, [serializedShadowRoot])
-
-    const shadowRoot = getShadowRoot()
 
     const value: TechDocsReaderPageValue = {
       metadata,
       entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,
-      shadowRoot: shadowRoot,
-      setSerializedShadowRoot,
+      shadowRootVersionHash,
+      setShadowRootVersionHash: handleSetShadowRootVersionHash,
       title,
       setTitle,
       subtitle,

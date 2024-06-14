@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useMemo } from 'react';
+import {useState, useEffect, useMemo, useCallback} from 'react';
 import debounce from 'lodash/debounce';
 import { useTechDocsReaderPage } from './context';
 
@@ -23,8 +23,16 @@ import { useTechDocsReaderPage } from './context';
  * @public
  */
 export const useShadowRoot = () => {
-  const { shadowRoot } = useTechDocsReaderPage();
-  return shadowRoot;
+  const { shadowRootVersionHash } = useTechDocsReaderPage();
+
+  const getShadowRoot = useCallback(()=>{
+    const hostElement = document.querySelector('[data-testid="techdocs-native-shadowroot"]')
+    if(!hostElement) return undefined
+    return hostElement.shadowRoot ?? undefined
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [shadowRootVersionHash])
+
+  return getShadowRoot();
 };
 
 /**
