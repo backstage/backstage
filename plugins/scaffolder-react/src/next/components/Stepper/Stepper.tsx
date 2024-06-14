@@ -49,7 +49,6 @@ import {
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { ErrorListTemplate } from './ErrorListTemplate';
 import { makeStyles } from '@material-ui/core/styles';
-import { SecretWidget } from '../SecretWidget';
 import { PasswordWidget } from '../PasswordWidget/PasswordWidget';
 
 const useStyles = makeStyles(theme => ({
