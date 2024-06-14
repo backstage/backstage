@@ -22,7 +22,7 @@ import {
   ScmIntegrations,
 } from '@backstage/integration';
 import { Octokit } from '@octokit/rest';
-import { trimEnd } from 'lodash';
+import { isEmpty, trimEnd } from 'lodash';
 import parseGitUrl from 'git-url-parse';
 import {
   AnalyzeOptions,
@@ -35,6 +35,7 @@ import {
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { extname } from 'path';
 
 /** @public */
 export type GithubLocationAnalyzerOptions = {
@@ -76,13 +77,10 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
     const { owner, name: repo } = parseGitUrl(url);
 
     const catalogFile = catalogFilename || 'catalog-info.yaml';
-    const fileParts = catalogFile.split('.');
-    const extension =
-      fileParts.length > 0
-        ? `extension:${fileParts[fileParts.length - 1]}`
-        : '';
+    const extension = extname(catalogFile);
+    const extensionQuery = !isEmpty(extension) ? `extension:${extension}` : '';
 
-    const query = `filename:${catalogFile} ${extension} repo:${owner}/${repo}`;
+    const query = `filename:${catalogFile} ${extensionQuery} repo:${owner}/${repo}`;
 
     const integration = this.integrations.github.byUrl(url);
     if (!integration) {
