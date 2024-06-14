@@ -21,7 +21,7 @@ import React, {
   useState,
   memo,
   ReactNode,
-  useEffect,
+  useEffect, useCallback,
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/esm/useAsync';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
@@ -63,7 +63,7 @@ export type TechDocsReaderPageValue = {
   entityRef: CompoundEntityRef;
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
   shadowRoot?: ShadowRoot;
-  setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
+  setSerializedShadowRoot: Dispatch<SetStateAction<string | undefined>>;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
   subtitle: string;
@@ -79,7 +79,7 @@ const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   subtitle: '',
   setTitle: () => {},
   setSubtitle: () => {},
-  setShadowRoot: () => {},
+  setSerializedShadowRoot: () => {},
   metadata: { loading: true },
   entityMetadata: { loading: true },
   entityRef: { kind: '', name: '', namespace: '' },
@@ -131,35 +131,36 @@ export const TechDocsReaderPageProvider = memo(
     const [subtitle, setSubtitle] = useState(
       defaultTechDocsReaderPageValue.subtitle,
     );
-    const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
-      defaultTechDocsReaderPageValue.shadowRoot,
-    );
-    const [_, setSerializedShadowRoot] = useState<string | undefined>(
+    const [serializedShadowRoot, setSerializedShadowRoot] = useState<string | undefined>(
       undefined,
     );
 
-    const handleSetShadowRoot = (newShadowRoot: ShadowRoot) => {
-      setSerializedShadowRoot(newShadowRoot.innerHTML);
-      setShadowRoot(newShadowRoot);
-    };
     useEffect(() => {
-      if (shadowRoot && !metadata.value && !metadata.loading) {
+      if (serializedShadowRoot && !metadata.value && !metadata.loading) {
         metadata.retry();
       }
     }, [
       metadata.value,
       metadata.loading,
-      shadowRoot,
+      serializedShadowRoot,
       metadata.retry,
       metadata,
     ]);
+
+    const getShadowRoot = useCallback(()=>{
+      const hostElement = document.querySelector('[data-testid="techdocs-native-shadowroot"]')
+      if(!hostElement) return undefined
+      return hostElement.shadowRoot ?? undefined
+    }, [serializedShadowRoot])
+
+    const shadowRoot = getShadowRoot()
 
     const value: TechDocsReaderPageValue = {
       metadata,
       entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,
-      shadowRoot,
-      setShadowRoot: handleSetShadowRoot,
+      shadowRoot: shadowRoot,
+      setSerializedShadowRoot,
       title,
       setTitle,
       subtitle,
