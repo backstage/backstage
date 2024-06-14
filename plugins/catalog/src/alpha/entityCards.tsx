@@ -44,7 +44,36 @@ export const catalogLabelsEntityCard = createEntityCardExtension({
     ),
 });
 
-export const catalogLabelsEntityCard2 = EntityCardExtension.create({
+// export const catalogLabelsEntityCard2 = entityCardExtension.create({...})
+// export const catalogLabelsEntityCard3 = EntityCardExtension.create({...})
+// export const catalogLabelsEntityCard1 = entityCardExtensionKind.create({...})
+// export const catalogLabelsEntityCard4 = EntityCardExtensionKind.create({...})
+// export const catalogLabelsEntityCard5 = EntityCardExtension.instantiate({...})
+// export const catalogLabelsEntityCard6 = EntityCardExtension.define({...})
+// export const catalogLabelsEntityCard7 = EntityCardExtension.new({...})
+// export const catalogLabelsEntityCard7 = EntityCardExt.new({...})
+// export const catalogLabelsEntityCard7 = EntityCard€.new({...})
+// export const catalogLabelsEntityCard7 = EntityCard.new({...})
+// export const catalogLabelsEntityCard7 = catalogExtensions.EntityCard.new({...})
+// export const catalogLabelsEntityCard7 = catalogExtensions.EntityCard.new({...})
+// export const catalogLabelsEntityCard8 = EntityCardExtension.create({...})
+
+export const _catalogLabelsEntityCard = EntityCardExtension.new({
+  name: 'labels',
+  factory({ config, originalFactory }) {
+    return originalFactory({
+      props: {
+        filter: 'has:labels',
+        loader: async () =>
+          import('../components/EntityLabelsCard').then(m =>
+            compatWrapper(<m.EntityLabelsCard variant="gridItem" />),
+          ),
+      },
+    });
+  },
+});
+
+export const _catalogLabelsEntityCard = EntityCardExtension.create({
   name: 'labels',
   props: {
     filter: 'has:labels',

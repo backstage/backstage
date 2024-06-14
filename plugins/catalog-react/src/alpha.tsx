@@ -109,6 +109,45 @@ export function createEntityCardExtension<
   });
 }
 
+export const EntityCardExtension = createExtensionType({
+  kind: 'entity-card',
+  attachTo: { id: 'entity-content:catalog/overview', input: 'cards' },
+  output: {
+    element: coreExtensionData.reactElement,
+    filterFunction: catalogExtensionData.entityFilterFunction.optional(),
+    filterExpression: catalogExtensionData.entityFilterExpression.optional(),
+  },
+  configSchema: createSchemaFromZod(z =>
+    z.object({
+      filter: z.string().optional(),
+    }),
+  ),
+  factory(
+    { config, inputs, node },
+    props: {
+      filter?:
+        | typeof catalogExtensionData.entityFilterFunction.T
+        | typeof catalogExtensionData.entityFilterExpression.T;
+      loader: () => Promise<JSX.Element>;
+    },
+  ) {
+    const ExtensionComponent = lazy(() =>
+      props
+        .loader({ inputs, config })
+        .then(element => ({ default: () => element })),
+    );
+
+    return {
+      element: (
+        <ExtensionBoundary node={node}>
+          <ExtensionComponent />
+        </ExtensionBoundary>
+      ),
+      ...mergeFilters({ config, options: props }),
+    };
+  },
+});
+
 /** @alpha */
 export function createEntityContentExtension<
   TInputs extends AnyExtensionInputMap,
