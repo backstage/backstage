@@ -134,7 +134,14 @@ export const TechDocsReaderPageProvider = memo(
     const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
       defaultTechDocsReaderPageValue.shadowRoot,
     );
+    const [_, setSerializedShadowRoot] = useState<string | undefined>(
+      undefined,
+    );
 
+    const handleSetShadowRoot = (newShadowRoot: ShadowRoot) => {
+      setSerializedShadowRoot(newShadowRoot.innerHTML);
+      setShadowRoot(newShadowRoot);
+    };
     useEffect(() => {
       if (shadowRoot && !metadata.value && !metadata.loading) {
         metadata.retry();
@@ -152,7 +159,7 @@ export const TechDocsReaderPageProvider = memo(
       entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,
       shadowRoot,
-      setShadowRoot,
+      setShadowRoot: handleSetShadowRoot,
       title,
       setTitle,
       subtitle,
@@ -190,6 +197,5 @@ export const useTechDocsReaderPage = () => {
   if (context === undefined) {
     throw new Error('No context found for version 1.');
   }
-
   return context;
 };
