@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs-node': patch
 ---
 
-Updated getRepoUrlFromLocationAnnotation to check for harness scm integration
+Updated `getRepoUrlFromLocationAnnotation` to check for Harness SCM integration
