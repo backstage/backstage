@@ -44,6 +44,17 @@ export const catalogLabelsEntityCard = createEntityCardExtension({
     ),
 });
 
+export const catalogLabelsEntityCard2 = EntityCardExtension.create({
+  name: 'labels',
+  props: {
+    filter: 'has:labels',
+    loader: async () =>
+      import('../components/EntityLabelsCard').then(m =>
+        compatWrapper(<m.EntityLabelsCard variant="gridItem" />),
+      ),
+  },
+});
+
 export const catalogDependsOnComponentsEntityCard = createEntityCardExtension({
   name: 'depends-on-components',
   loader: async () =>
