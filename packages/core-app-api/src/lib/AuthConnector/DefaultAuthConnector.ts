@@ -142,6 +142,7 @@ export class DefaultAuthConnector<AuthSession>
       {
         headers: {
           'x-requested-with': 'XMLHttpRequest',
+          'Access-Control-Allow-Credentials': 'true',
         },
         credentials: 'include',
       },
@@ -174,6 +175,7 @@ export class DefaultAuthConnector<AuthSession>
       method: 'POST',
       headers: {
         'x-requested-with': 'XMLHttpRequest',
+        'Access-Control-Allow-Credentials': 'true',
       },
       credentials: 'include',
     }).catch(error => {
