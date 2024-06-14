@@ -137,7 +137,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
       // so lets grab them using the scmAuthApi and pass through
       // any additional scopes from the ui:options
       const { token } = await scmAuthApi.getCredentials({
-        host: state.host,
+        url: `https://${state.host}`,
         additionalScope: {
           repoWrite: true,
           customScopes: requestUserCredentials.additionalScopes,

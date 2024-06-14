@@ -249,7 +249,7 @@ describe('RepoUrlPicker', () => {
       });
 
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
-        host: 'github.com',
+        url: 'https://github.com',
         additionalScope: {
           repoWrite: true,
           customScopes: {
@@ -309,7 +309,7 @@ describe('RepoUrlPicker', () => {
       });
 
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
-        host: 'gitlab.example.com',
+        url: 'https://gitlab.example.com',
         additionalScope: {
           repoWrite: true,
         },
@@ -359,7 +359,7 @@ describe('RepoUrlPicker', () => {
       });
 
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
-        host: 'server.bitbucket.org',
+        url: 'https://server.bitbucket.org',
         additionalScope: {
           repoWrite: true,
         },
