@@ -70,7 +70,7 @@ export class ScmAuth implements ScmAuthApi {
     },
   ): ScmAuth;
   getCredentials(options: ScmAuthTokenOptions): Promise<ScmAuthTokenResponse>;
-  isHostSupported(host: string): boolean;
+  isUrlSupported(url: URL): boolean;
   static merge(...providers: ScmAuth[]): ScmAuthApi;
 }
 
@@ -93,7 +93,7 @@ export interface ScmAuthTokenOptions extends AuthRequestOptions {
       gitlab?: string[];
     };
   };
-  host: string;
+  url: string;
 }
 
 // @public

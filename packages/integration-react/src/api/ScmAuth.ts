@@ -49,11 +49,11 @@ class ScmAuthMux implements ScmAuthApi {
   async getCredentials(
     options: ScmAuthTokenOptions,
   ): Promise<ScmAuthTokenResponse> {
-    const { host } = options;
-    const provider = this.#providers.find(p => p.isHostSupported(host));
+    const url = new URL(options.url);
+    const provider = this.#providers.find(p => p.isUrlSupported(url));
     if (!provider) {
       throw new Error(
-        `No auth provider available for '${host}', see https://backstage.io/link?scm-auth`,
+        `No auth provider available for '${options.url}', see https://backstage.io/link?scm-auth`,
       );
     }
 
@@ -261,10 +261,10 @@ export class ScmAuth implements ScmAuthApi {
   }
 
   /**
-   * Checks whether the implementation is able to provide authentication for the given host.
+   * Checks whether the implementation is able to provide authentication for the given URL.
    */
-  isHostSupported(host: string): boolean {
-    return host === this.#host;
+  isUrlSupported(url: URL): boolean {
+    return url.host === this.#host;
   }
 
   private getAdditionalScopesForProvider(
@@ -283,7 +283,7 @@ export class ScmAuth implements ScmAuthApi {
   async getCredentials(
     options: ScmAuthTokenOptions,
   ): Promise<ScmAuthTokenResponse> {
-    const { host, additionalScope, ...restOptions } = options;
+    const { url, additionalScope, ...restOptions } = options;
 
     const scopes = this.#scopeMapping.default.slice();
     if (additionalScope?.repoWrite) {
