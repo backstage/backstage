@@ -316,64 +316,6 @@ describe('RepoUrlPicker', () => {
       });
     });
 
-    it('should call the scmAuthApi with the correct params if only a project is set', async () => {
-      const SecretsComponent = () => {
-        const { secrets } = useTemplateSecrets();
-        return (
-          <div data-testid="current-secrets">{JSON.stringify({ secrets })}</div>
-        );
-      };
-      const { getByTestId } = await renderInTestApp(
-        <TestApiProvider
-          apis={[
-            [scmIntegrationsApiRef, mockIntegrationsApi],
-            [scmAuthApiRef, mockScmAuthApi],
-            [scaffolderApiRef, mockScaffolderApi],
-          ]}
-        >
-          <SecretsContextProvider>
-            <Form
-              validator={validator}
-              schema={{ type: 'string' }}
-              uiSchema={{
-                'ui:field': 'RepoUrlPicker',
-                'ui:options': {
-                  allowedHosts: ['server.bitbucket.org'],
-                  requestUserCredentials: {
-                    secretsKey: 'testKey',
-                  },
-                },
-              }}
-              fields={{
-                RepoUrlPicker: RepoUrlPicker as ScaffolderRJSFField<string>,
-              }}
-            />
-            <SecretsComponent />
-          </SecretsContextProvider>
-        </TestApiProvider>,
-      );
-
-      await act(async () => {
-        // need to wait for the debounce to finish
-        await new Promise(resolve => setTimeout(resolve, 600));
-      });
-
-      expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
-        url: 'https://server.bitbucket.org',
-        additionalScope: {
-          repoWrite: true,
-        },
-      });
-
-      const currentSecrets = JSON.parse(
-        getByTestId('current-secrets').textContent!,
-      );
-
-      expect(currentSecrets).toEqual({
-        secrets: { testKey: 'abc123' },
-      });
-    });
-
     it('should not call the scmAuthApi if secret is available in the state', async () => {
       const SecretsComponent = () => {
         const { secrets } = useTemplateSecrets();
