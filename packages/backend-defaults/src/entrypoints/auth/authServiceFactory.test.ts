@@ -19,6 +19,7 @@ import {
   mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
+import { tokenManagerServiceFactory } from '@backstage/backend-app-api';
 import { authServiceFactory } from './authServiceFactory';
 import { base64url, decodeJwt } from 'jose';
 import { discoveryServiceFactory } from '../discovery';
@@ -26,7 +27,6 @@ import {
   BackstageServicePrincipal,
   BackstageUserPrincipal,
 } from '@backstage/backend-plugin-api';
-import { tokenManagerServiceFactory } from '../tokenManager';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { InternalBackstageCredentials } from './types';

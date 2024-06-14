@@ -45,7 +45,7 @@ import { transport } from 'winston';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const authServiceFactory: () => ServiceFactory<AuthService, 'plugin'>;
 
 // @public (undocumented)
@@ -151,7 +151,7 @@ export class HostDiscovery implements DiscoveryService {
   getExternalBaseUrl(pluginId: string): Promise<string>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const httpAuthServiceFactory: () => ServiceFactory<
   HttpAuthService,
   'plugin'
@@ -344,7 +344,7 @@ export const urlReaderServiceFactory: () => ServiceFactory<
   'plugin'
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const userInfoServiceFactory: () => ServiceFactory<
   UserInfoService,
   'plugin'

@@ -14,11 +14,4 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { httpAuthServiceFactory as _httpAuthServiceFactory } from '../../../../../backend-defaults/src/entrypoints/httpAuth';
-
-/**
- * @public
- * @deprecated Please import from `@backstage/backend-defaults/httpAuth` instead.
- */
-export const httpAuthServiceFactory = _httpAuthServiceFactory;
+export { authServiceFactory } from './authServiceFactory';

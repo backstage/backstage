@@ -35,7 +35,7 @@ import {
   createCredentialsWithUserPrincipal,
   createCredentialsWithNonePrincipal,
   toInternalBackstageCredentials,
-} from '../../../backend-app-api/src/services/implementations/auth/helpers';
+} from '../../../backend-defaults/src/entrypoints/auth/helpers';
 // TODO is this circular thingy a problem? Test in e2e
 import {
   type IdentityApiGetIdentityRequest,
