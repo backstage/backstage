@@ -32,7 +32,7 @@ import {
   useTemplateSecrets,
   ScaffolderRJSFField,
 } from '@backstage/plugin-scaffolder-react';
-import { act, fireEvent, waitFor } from '@testing-library/react';
+import { act, fireEvent } from '@testing-library/react';
 
 describe('RepoUrlPicker', () => {
   const mockScaffolderApi: Partial<ScaffolderApi> = {
