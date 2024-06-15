@@ -22,6 +22,7 @@ import { CacheServiceOptions } from '@backstage/backend-plugin-api';
 import { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import cors from 'cors';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
@@ -43,7 +44,6 @@ import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
@@ -191,26 +191,29 @@ export function createStatusCheckRouter(options: {
   statusCheck?: StatusCheck;
 }): Promise<express.Router>;
 
-// @public
+// @public @deprecated (undocumented)
 export class DatabaseManager implements LegacyRootDatabaseService {
+  // (undocumented)
   forPlugin(
     pluginId: string,
-    deps?: {
-      lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
-    },
+    deps?:
+      | {
+          lifecycle: LifecycleService;
+          pluginMetadata: PluginMetadataService;
+        }
+      | undefined,
   ): PluginDatabaseManager;
+  // (undocumented)
   static fromConfig(
     config: Config,
     options?: DatabaseManagerOptions,
   ): DatabaseManager;
 }
 
-// @public
-export type DatabaseManagerOptions = {
-  migrations?: PluginDatabaseManager['migrations'];
-  logger?: LoggerService;
-};
+// Warning: (ae-forgotten-export) The symbol "DatabaseManagerOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type DatabaseManagerOptions = DatabaseManagerOptions_2;
 
 // @public
 export class DockerContainerRunner implements ContainerRunner {
@@ -219,11 +222,10 @@ export class DockerContainerRunner implements ContainerRunner {
   runContainer(options: RunContainerOptions): Promise<void>;
 }
 
-// @public @deprecated
-export function dropDatabase(
-  dbConfig: Config,
-  ...databaseNames: string[]
-): Promise<void>;
+// Warning: (ae-forgotten-export) The symbol "dropDatabase_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const dropDatabase: typeof dropDatabase_2;
 
 // @public @deprecated
 export function errorHandler(
@@ -400,7 +402,7 @@ export const legacyPlugin: (
         {
           cache: CacheService;
           config: RootConfigService;
-          database: PluginDatabaseManager;
+          database: DatabaseService;
           discovery: DiscoveryService;
           logger: LoggerService;
           permissions: PermissionsService;
@@ -420,10 +422,10 @@ export const legacyPlugin: (
   }>,
 ) => BackendFeatureCompat;
 
-// @public
-export type LegacyRootDatabaseService = {
-  forPlugin(pluginId: string): PluginDatabaseManager;
-};
+// Warning: (ae-forgotten-export) The symbol "LegacyRootDatabaseService_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type LegacyRootDatabaseService = LegacyRootDatabaseService_2;
 
 // @public @deprecated
 export function loadBackendConfig(options: {
@@ -466,7 +468,8 @@ export function notFoundHandler(): RequestHandler;
 // @public @deprecated (undocumented)
 export type PluginCacheManager = PluginCacheManager_2;
 
-export { PluginDatabaseManager };
+// @public @deprecated (undocumented)
+export type PluginDatabaseManager = DatabaseService;
 
 // @public @deprecated (undocumented)
 export type PluginEndpointDiscovery = DiscoveryService;
