@@ -24,7 +24,12 @@ import lodashSet from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
 import { buildOrgHierarchy } from './org';
 import { LdapClient } from './client';
-import { GroupConfig, UserConfig } from './config';
+import {
+  GroupConfig,
+  GroupConfigList,
+  UserConfig,
+  UserConfigList,
+} from './config';
 import {
   LDAP_DN_ANNOTATION,
   LDAP_RDN_ANNOTATION,
@@ -104,32 +109,37 @@ export async function defaultUserTransformer(
  */
 export async function readLdapUsers(
   client: LdapClient,
-  config: UserConfig,
+  config: UserConfigList,
   opts?: { transformer?: UserTransformer },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
   userMemberOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
 }> {
-  const { dn, options, map } = config;
-  const vendor = await client.getVendor();
-
+  if (!config) {
+    return { users: [], userMemberOf: new Map() };
+  }
+  const configs = Array.isArray(config) ? config : [config];
   const entities: UserEntity[] = [];
   const userMemberOf: Map<string, Set<string>> = new Map();
 
+  const vendor = await client.getVendor();
   const transformer = opts?.transformer ?? defaultUserTransformer;
 
-  await client.searchStreaming(dn, options, async user => {
-    const entity = await transformer(vendor, config, user);
+  for (const cfg of configs) {
+    const { dn, options, map } = cfg;
+    await client.searchStreaming(dn, options, async user => {
+      const entity = await transformer(vendor, cfg, user);
 
-    if (!entity) {
-      return;
-    }
+      if (!entity) {
+        return;
+      }
 
-    mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
-      ensureItems(userMemberOf, myDn, vs);
+      mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
+        ensureItems(userMemberOf, myDn, vs);
+      });
+      entities.push(entity);
     });
-    entities.push(entity);
-  });
+  }
 
   return { users: entities, userMemberOf };
 }
@@ -206,7 +216,7 @@ export async function defaultGroupTransformer(
  */
 export async function readLdapGroups(
   client: LdapClient,
-  config: GroupConfig,
+  config: GroupConfigList,
   opts?: {
     transformer?: GroupTransformer;
   },
@@ -215,35 +225,41 @@ export async function readLdapGroups(
   groupMemberOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
   groupMember: Map<string, Set<string>>; // DN -> DN or UUID of groups & users
 }> {
+  if (!config) {
+    return { groups: [], groupMemberOf: new Map(), groupMember: new Map() };
+  }
+  const configs = Array.isArray(config) ? config : [config];
   const groups: GroupEntity[] = [];
   const groupMemberOf: Map<string, Set<string>> = new Map();
   const groupMember: Map<string, Set<string>> = new Map();
 
-  const { dn, map, options } = config;
   const vendor = await client.getVendor();
-
   const transformer = opts?.transformer ?? defaultGroupTransformer;
 
-  await client.searchStreaming(dn, options, async entry => {
-    if (!entry) {
-      return;
-    }
+  for (const cfg of configs) {
+    const { dn, map, options } = cfg;
 
-    const entity = await transformer(vendor, config, entry);
+    await client.searchStreaming(dn, options, async entry => {
+      if (!entry) {
+        return;
+      }
 
-    if (!entity) {
-      return;
-    }
+      const entity = await transformer(vendor, cfg, entry);
 
-    mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
-      ensureItems(groupMemberOf, myDn, vs);
+      if (!entity) {
+        return;
+      }
+
+      mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
+        ensureItems(groupMemberOf, myDn, vs);
+      });
+      mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
+        ensureItems(groupMember, myDn, vs);
+      });
+
+      groups.push(entity);
     });
-    mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
-      ensureItems(groupMember, myDn, vs);
-    });
-
-    groups.push(entity);
-  });
+  }
 
   return {
     groups,
@@ -264,8 +280,8 @@ export async function readLdapGroups(
  */
 export async function readLdapOrg(
   client: LdapClient,
-  userConfig: UserConfig,
-  groupConfig: GroupConfig,
+  userConfig: UserConfigList,
+  groupConfig: GroupConfigList,
   options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
