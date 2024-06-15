@@ -42,9 +42,9 @@ export type LdapProviderConfig = {
   // command is not issued.
   bind?: BindConfig;
   // The settings that govern the reading and interpretation of users
-  users: UserConfig;
+  users: UserConfigList;
   // The settings that govern the reading and interpretation of groups
-  groups: GroupConfig;
+  groups: GroupConfigList;
   // Schedule configuration for refresh tasks.
   schedule?: TaskScheduleDefinition;
 };
@@ -81,6 +81,8 @@ export type BindConfig = {
  *
  * @public
  */
+export type UserConfigList = UserConfig | UserConfig[] | undefined;
+
 export type UserConfig = {
   // The DN under which users are stored.
   dn: string;
@@ -121,6 +123,8 @@ export type UserConfig = {
  *
  * @public
  */
+export type GroupConfigList = GroupConfig | GroupConfig[] | undefined;
+
 export type GroupConfig = {
   // The DN under which groups are stored.
   dn: string;
@@ -272,9 +276,7 @@ function readSetConfig(
   return c.get();
 }
 
-function readUserMapConfig(
-  c: Config | undefined,
-): Partial<LdapProviderConfig['users']['map']> {
+function readUserMapConfig(c: Config | undefined): Partial<UserConfig['map']> {
   if (!c) {
     return {};
   }
@@ -292,7 +294,7 @@ function readUserMapConfig(
 
 function readGroupMapConfig(
   c: Config | undefined,
-): Partial<LdapProviderConfig['groups']['map']> {
+): Partial<GroupConfig['map']> {
   if (!c) {
     return {};
   }
@@ -311,8 +313,21 @@ function readGroupMapConfig(
 }
 
 function readUserConfig(
-  c: Config,
+  c: Config | Config[] | undefined,
 ): RecursivePartial<LdapProviderConfig['users']> {
+  if (!c) {
+    return undefined;
+  }
+  if (Array.isArray(c)) {
+    return c.map(it => {
+      return {
+        dn: it.getString('dn'),
+        options: readOptionsConfig(it.getOptionalConfig('options')),
+        set: readSetConfig(it.getOptionalConfig('set')),
+        map: readUserMapConfig(it.getOptionalConfig('map')),
+      };
+    });
+  }
   return {
     dn: c.getString('dn'),
     options: readOptionsConfig(c.getOptionalConfig('options')),
@@ -322,8 +337,21 @@ function readUserConfig(
 }
 
 function readGroupConfig(
-  c: Config,
+  c: Config | Config[] | undefined,
 ): RecursivePartial<LdapProviderConfig['groups']> {
+  if (!c) {
+    return undefined;
+  }
+  if (Array.isArray(c)) {
+    return c.map(it => {
+      return {
+        dn: it.getString('dn'),
+        options: readOptionsConfig(it.getOptionalConfig('options')),
+        set: readSetConfig(it.getOptionalConfig('set')),
+        map: readGroupMapConfig(it.getOptionalConfig('map')),
+      };
+    });
+  }
   return {
     dn: c.getString('dn'),
     options: readOptionsConfig(c.getOptionalConfig('options')),
@@ -383,19 +411,41 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
       ? readTaskScheduleDefinitionFromConfig(c.getConfig('schedule'))
       : undefined;
 
+    const isUserList = Array.isArray(c.getOptional('users'));
+    const isGroupList = Array.isArray(c.getOptional('groups'));
+
     const newConfig = {
       id,
       target: trimEnd(c.getString('target'), '/'),
       tls: readTlsConfig(c.getOptionalConfig('tls')),
       bind: readBindConfig(c.getOptionalConfig('bind')),
-      users: readUserConfig(c.getConfig('users')),
-      groups: readGroupConfig(c.getConfig('groups')),
+      users: readUserConfig(
+        isUserList
+          ? c.getOptionalConfigArray('users')
+          : c.getOptionalConfig('users'),
+      ),
+      groups: readGroupConfig(
+        isGroupList
+          ? c.getOptionalConfigArray('groups')
+          : c.getOptionalConfig('groups'),
+      ),
       schedule,
     };
-    const merged = mergeWith({}, defaultConfig, newConfig, (_into, from) => {
-      // Replace arrays instead of merging, otherwise default behavior
-      return Array.isArray(from) ? from : undefined;
-    });
+
+    const merged = mergeWith(
+      {},
+      defaultConfig,
+      newConfig,
+      (_value, srcValue, key, object, _source) => {
+        // Remove users and groups from default if they are not set in the new config
+        if ((key === 'users' || key === 'groups') && !srcValue) {
+          return (object[key] = srcValue);
+        }
+        // Replace arrays instead of merging, otherwise default behavior
+        return Array.isArray(srcValue) ? srcValue : undefined;
+      },
+    );
+
     return freeze(merged) as LdapProviderConfig;
   });
 }

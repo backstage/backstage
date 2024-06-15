@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readProviderConfigs } from './config';
+import { readProviderConfigs, UserConfig } from './config';
 
 describe('readLdapConfig', () => {
   it('applies all of the defaults', () => {
@@ -247,7 +247,7 @@ describe('readLdapConfig', () => {
     const actual = readProviderConfigs(new ConfigReader(config));
 
     const expected = '(|(cn=foo bar)(cn=bar))';
-    expect(actual[0].users.options.filter).toEqual(expected);
+    expect((actual[0].users!! as UserConfig).options.filter).toEqual(expected);
   });
 
   it('supports a dot nested set structure', () => {
@@ -284,7 +284,9 @@ describe('readLdapConfig', () => {
     };
     const actual = readProviderConfigs(new ConfigReader(config));
 
-    expect(actual[0].users.set).toEqual({ 'metadata.annotations': { a: 'b' } });
+    expect((actual[0].users!! as UserConfig).set).toEqual({
+      'metadata.annotations': { a: 'b' },
+    });
   });
 
   it('throws on attempts to modify the set structure', () => {
@@ -320,25 +322,77 @@ describe('readLdapConfig', () => {
     const actual = readProviderConfigs(new ConfigReader(config));
 
     expect(() => {
-      (actual[0].users.set as any).y = 2;
+      ((actual[0].users!! as UserConfig).set as any).y = 2;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot add property y, object is not extensible"`,
     );
     expect(() => {
-      (actual[0].users.set as any).x.b = 2;
+      ((actual[0].users!! as UserConfig).set as any).x.b = 2;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot add property b, object is not extensible"`,
     );
 
     expect(() => {
-      (actual[0].groups.set as any).y = 2;
+      ((actual[0].users!! as UserConfig).set as any).y = 2;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot add property y, object is not extensible"`,
     );
     expect(() => {
-      (actual[0].groups.set as any).x.b = 2;
+      ((actual[0].users!! as UserConfig).set as any).x.b = 2;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot add property b, object is not extensible"`,
     );
+  });
+
+  it('supports users/groups config as list', () => {
+    const config = {
+      catalog: {
+        providers: {
+          ldapOrg: {
+            default: {
+              target: 'target',
+              users: [
+                {
+                  dn: 'udn1',
+                },
+                {
+                  dn: 'udn2',
+                },
+              ],
+              groups: [
+                {
+                  dn: 'gdn1',
+                },
+                {
+                  dn: 'gdn2',
+                },
+              ],
+            },
+          },
+        },
+      },
+    };
+    const actual = readProviderConfigs(new ConfigReader(config));
+
+    expect(actual[0].users).toHaveLength(2);
+    expect(actual[0].groups).toHaveLength(2);
+  });
+
+  it('supports users/groups config as undefined', () => {
+    const config = {
+      catalog: {
+        providers: {
+          ldapOrg: {
+            default: {
+              target: 'target',
+            },
+          },
+        },
+      },
+    };
+    const actual = readProviderConfigs(new ConfigReader(config));
+
+    expect(actual[0].users).toBeUndefined();
+    expect(actual[0].groups).toBeUndefined();
   });
 });
