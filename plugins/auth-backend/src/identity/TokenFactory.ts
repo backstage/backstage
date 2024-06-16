@@ -25,6 +25,7 @@ import {
   GeneralSign,
   KeyLike,
 } from 'jose';
+import { omit } from 'lodash';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -220,7 +221,9 @@ export class TokenFactory implements TokenIssuer {
 
     // Store the user info in the database upon successful token
     // issuance so that it can be retrieved later by limited user tokens
-    await this.userInfoDatabaseHandler.addUserInfo({ claims });
+    await this.userInfoDatabaseHandler.addUserInfo({
+      claims: omit(claims, ['aud', 'iat', 'iss', 'uip']),
+    });
 
     return token;
   }

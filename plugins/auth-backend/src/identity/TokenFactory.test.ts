@@ -22,6 +22,7 @@ import {
   decodeProtectedHeader,
   jwtVerify,
 } from 'jose';
+import { omit } from 'lodash';
 import { MemoryKeyStore } from './MemoryKeyStore';
 import { TokenFactory } from './TokenFactory';
 import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
@@ -88,7 +89,7 @@ describe('TokenFactory', () => {
     );
 
     expect(mockUserInfoDatabaseHandler.addUserInfo).toHaveBeenCalledWith({
-      claims: verifyResult.payload,
+      claims: omit(verifyResult.payload, ['aud', 'iat', 'iss', 'uip']),
     });
 
     // Emulate the reconstruction of a limited user token

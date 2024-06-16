@@ -24,6 +24,8 @@ const migrationsDir = resolvePackagePath(
   'migrations',
 );
 
+jest.setTimeout(60_000);
+
 describe('UserInfoDatabaseHandler', () => {
   const databases = TestDatabases.create();
 
@@ -41,14 +43,14 @@ describe('UserInfoDatabaseHandler', () => {
   }
 
   describe.each(databases.eachSupportedId())(
-    '%p',
+    'should support database %p',
     databaseId => {
       let knex: Knex;
       let dbHandler: UserInfoDatabaseHandler;
 
       beforeEach(async () => {
         ({ knex, dbHandler } = await createDatabaseHandler(databaseId));
-      }, 30000);
+      });
 
       it('addUserInfo', async () => {
         const userInfo = {
@@ -104,6 +106,5 @@ describe('UserInfoDatabaseHandler', () => {
         expect(savedUserInfo).toEqual(userInfo);
       });
     },
-    60000,
   );
 });
