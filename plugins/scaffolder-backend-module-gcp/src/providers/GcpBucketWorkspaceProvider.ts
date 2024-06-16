@@ -87,11 +87,11 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
 
   private getGcpBucketName(): string {
     const bucketName = this.config?.getOptionalString(
-      'scaffolder.EXPERIMENTAL_gcpBucketName',
+      'scaffolder.EXPERIMENTAL_workspaceSerializationGcpBucketName',
     );
     if (!bucketName) {
       throw new Error(
-        `You've missed to configure scaffolder.EXPERIMENTAL_gcpBucketName in app-config.yaml file`,
+        `You've missed to configure scaffolder.EXPERIMENTAL_workspaceSerializationGcpBucketName in app-config.yaml file`,
       );
     }
     return bucketName;
