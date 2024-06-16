@@ -11,15 +11,10 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public
 export class CacheManager {
-  forPlugin(pluginId: string): {
-    getClient(options?: CacheServiceOptions): CacheService;
-  };
+  forPlugin(pluginId: string): PluginCacheManager;
   static fromConfig(
     config: Config,
-    options?: {
-      logger?: LoggerService;
-      onError?: (err: Error) => void;
-    },
+    options?: CacheManagerOptions,
   ): CacheManager;
 }
 
