@@ -63,9 +63,7 @@ jest.mock('fs-extra', () => ({
   remove: jest.fn(),
 }));
 
-jest.mock('./autocomplete', () => ({
-  handleBitbucketCloudRequest: jest.fn(),
-}));
+jest.mock('./autocomplete');
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -1469,18 +1467,25 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
 
     describe('GET /v2/autocomplete/:provider/:resource', () => {
       it('should handle requests for provider bitbucketCloud', async () => {
+        jest
+          .mocked(handleBitbucketCloudRequest)
+          .mockResolvedValue(['resource1']);
+
         const bbToken = 'foo';
         const resource = 'bar';
 
-        await request(app)
-          .get(`/v2/autocomplete/bitbucketCloud/${resource}?token=${bbToken}`)
-          .send();
+        const response = await request(app)
+          .get(`/v2/autocomplete/bitbucketCloud/${resource}`)
+          .query({ token: bbToken, workspace: 'workspace1' });
 
-        expect(jest.mocked(handleBitbucketCloudRequest)).toHaveBeenCalledWith(
+        expect(handleBitbucketCloudRequest).toHaveBeenCalledWith(
           bbToken,
           resource,
-          {},
+          { workspace: 'workspace1' },
         );
+
+        expect(response.status).toEqual(200);
+        expect(response.body).toEqual(['resource1']);
       });
     });
   });
