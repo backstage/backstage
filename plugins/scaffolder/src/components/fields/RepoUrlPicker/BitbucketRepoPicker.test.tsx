@@ -189,6 +189,7 @@ describe('BitbucketRepoPicker', () => {
   describe('autocompletion', () => {
     it('should populate workspaces if host is set and accessToken is provided', async () => {
       const onChange = jest.fn();
+
       const { getAllByRole, getByText } = render(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
@@ -218,6 +219,7 @@ describe('BitbucketRepoPicker', () => {
 
     it('should populate projects if host and workspace are set and accessToken is provided', async () => {
       const onChange = jest.fn();
+
       const { getAllByRole, getByText } = render(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker
@@ -245,6 +247,7 @@ describe('BitbucketRepoPicker', () => {
 
     it('should populate repositories if host, workspace and project are set and accessToken is provided', async () => {
       const onChange = jest.fn();
+
       render(
         <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
           <BitbucketRepoPicker

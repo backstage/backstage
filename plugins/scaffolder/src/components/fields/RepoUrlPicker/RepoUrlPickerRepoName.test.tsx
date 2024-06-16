@@ -103,7 +103,7 @@ describe('RepoUrlPickerRepoName', () => {
     }
 
     // Verify that selecting an option calls onChange
-    await userEvent.click(getByText('foo'));
-    expect(onChange).toHaveBeenCalledWith('foo');
+    await userEvent.click(getByText(availableRepos[0]));
+    expect(onChange).toHaveBeenCalledWith(availableRepos[0]);
   });
 });
