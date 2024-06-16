@@ -83,6 +83,11 @@ export type BindConfig = {
  */
 export type UserConfigList = UserConfig | UserConfig[] | undefined;
 
+/**
+ * The settings that govern the reading and interpretation of users.
+ *
+ * @public
+ */
 export type UserConfig = {
   // The DN under which users are stored.
   dn: string;
@@ -125,6 +130,11 @@ export type UserConfig = {
  */
 export type GroupConfigList = GroupConfig | GroupConfig[] | undefined;
 
+/**
+ * The settings that govern the reading and interpretation of groups.
+ *
+ * @public
+ */
 export type GroupConfig = {
   // The DN under which groups are stored.
   dn: string;
