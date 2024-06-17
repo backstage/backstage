@@ -29,6 +29,10 @@ export type GeneratorRunInType = 'docker' | 'local';
  */
 export type GeneratorOptions = {
   logger: Logger;
+  /**
+   * @deprecated containerRunner is now instantiated in
+   * the generator and this option will be removed in the future
+   */
   containerRunner?: ContainerRunner;
 };
 
