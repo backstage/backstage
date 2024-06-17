@@ -19,7 +19,15 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 
-/** @public */
+/**
+ * Plugin-level logging.
+ *
+ * See {@link @backstage/code-plugin-api#LoggerService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/logger | the service docs}
+ * for more information.
+ *
+ * @public
+ */
 export const loggerServiceFactory = createServiceFactory({
   service: coreServices.logger,
   deps: {

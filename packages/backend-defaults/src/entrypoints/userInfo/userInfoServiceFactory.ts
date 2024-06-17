@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,23 +18,23 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { HostDiscovery } from './HostDiscovery';
+import { DefaultUserInfoService } from './DefaultUserInfoService';
 
 /**
- * Service discovery for inter-plugin communication.
+ * Authenticated user information retrieval.
  *
- * See {@link @backstage/code-plugin-api#DiscoveryService}
- * and {@link https://backstage.io/docs/backend-system/core-services/discovery | the service docs}
+ * See {@link @backstage/code-plugin-api#UserInfoService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/user-info | the service docs}
  * for more information.
  *
  * @public
  */
-export const discoveryServiceFactory = createServiceFactory({
-  service: coreServices.discovery,
+export const userInfoServiceFactory = createServiceFactory({
+  service: coreServices.userInfo,
   deps: {
-    config: coreServices.rootConfig,
+    discovery: coreServices.discovery,
   },
-  async factory({ config }) {
-    return HostDiscovery.fromConfig(config);
+  async factory({ discovery }) {
+    return new DefaultUserInfoService({ discovery });
   },
 });

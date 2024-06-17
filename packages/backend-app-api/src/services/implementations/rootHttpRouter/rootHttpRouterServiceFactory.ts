@@ -45,6 +45,12 @@ export interface RootHttpRouterConfigureContext {
 }
 
 /**
+ * HTTP route registration for root services.
+ *
+ * See {@link @backstage/code-plugin-api#RootHttpRouterService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/root-http-router | the service docs}
+ * for more information.
+ *
  * @public
  */
 export type RootHttpRouterFactoryOptions = {

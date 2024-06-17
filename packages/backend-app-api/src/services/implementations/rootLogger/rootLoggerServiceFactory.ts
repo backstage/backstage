@@ -22,7 +22,15 @@ import { WinstonLogger } from '../../../logging';
 import { transports, format } from 'winston';
 import { createConfigSecretEnumerator } from '../../../config';
 
-/** @public */
+/**
+ * Root-level logging.
+ *
+ * See {@link @backstage/code-plugin-api#RootLoggerService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/root-logger | the service docs}
+ * for more information.
+ *
+ * @public
+ */
 export const rootLoggerServiceFactory = createServiceFactory({
   service: coreServices.rootLogger,
   deps: {

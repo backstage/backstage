@@ -14,4 +14,7 @@
  * limitations under the License.
  */
 
+export * from './auth';
+export * from './httpAuth';
 export * from './scheduler';
+export * from './userInfo';

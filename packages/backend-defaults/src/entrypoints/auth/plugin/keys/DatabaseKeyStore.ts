@@ -37,8 +37,8 @@ type Row = {
 
 export function applyDatabaseMigrations(knex: Knex): Promise<void> {
   const migrationsDir = resolvePackagePath(
-    '@backstage/backend-app-api',
-    'migrations',
+    '@backstage/backend-defaults',
+    'migrations/auth',
   );
 
   return knex.migrate.latest({
