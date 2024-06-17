@@ -12,6 +12,7 @@ import { CacheService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
 import { CorsOptions } from 'cors';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ErrorRequestHandler } from 'express';
 import { Express as Express_2 } from 'express';
@@ -28,7 +29,6 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
@@ -102,7 +102,7 @@ export interface CreateSpecializedBackendOptions {
 
 // @public @deprecated (undocumented)
 export const databaseServiceFactory: () => ServiceFactory<
-  PluginDatabaseManager,
+  DatabaseService,
   'plugin'
 >;
 
