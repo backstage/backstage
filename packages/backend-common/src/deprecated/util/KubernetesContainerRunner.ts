@@ -37,6 +37,7 @@ import { v4 as uuid } from 'uuid';
  * Every mount must start with the 'basePath'.
  *
  * @public
+ * @deprecated This type is deprecated and will be removed in a future release.
  */
 export type KubernetesContainerRunnerMountBase = {
   volumeName: string;
@@ -53,6 +54,7 @@ export type KubernetesContainerRunnerMountBase = {
  * a volume definition named as the {@link KubernetesContainerRunnerMountBase} 'volumeName'.
  *
  * @public
+ * @deprecated This type is deprecated and will be removed in a future release.
  */
 export type KubernetesContainerRunnerOptions = {
   kubeConfig: KubeConfig;
@@ -69,6 +71,7 @@ export type KubernetesContainerRunnerOptions = {
  * Runs containers leveraging Jobs on a Kubernetes cluster
  *
  * @public
+ * @deprecated This class is deprecated and will be removed in a future release.
  */
 export class KubernetesContainerRunner implements ContainerRunner {
   private readonly kubeConfig: KubeConfig;

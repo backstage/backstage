@@ -22,6 +22,7 @@ import { Writable } from 'stream';
  *   {@link https://github.com/apocas/dockerode?tab=readme-ov-file#pull-from-private-repos}
  *
  *   @public
+ *   @deprecated This interface is deprecated and will be removed in a future release.
  */
 export interface PullOptions {
   authconfig?: {
@@ -39,6 +40,7 @@ export interface PullOptions {
  * Options passed to the {@link ContainerRunner.runContainer} method.
  *
  * @public
+ * @deprecated This type is deprecated and will be removed in a future release.
  */
 export type RunContainerOptions = {
   imageName: string;
@@ -57,6 +59,7 @@ export type RunContainerOptions = {
  * Handles the running of containers, on behalf of others.
  *
  * @public
+ * @deprecated This interface is deprecated and will be removed in a future release.
  */
 export interface ContainerRunner {
   /**
