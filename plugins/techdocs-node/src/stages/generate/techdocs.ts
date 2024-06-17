@@ -56,7 +56,7 @@ export class TechdocsGenerator implements GeneratorBase {
    */
   public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.3';
   private readonly logger: Logger;
-  private readonly containerRunner: ContainerRunner;
+  private readonly containerRunner?: ContainerRunner;
   private readonly options: GeneratorConfig;
   private readonly scmIntegrations: ScmIntegrationRegistry;
 
@@ -84,8 +84,7 @@ export class TechdocsGenerator implements GeneratorBase {
   }) {
     this.logger = options.logger;
     this.options = readGeneratorConfig(options.config, options.logger);
-    this.containerRunner =
-      options.containerRunner || new DockerContainerRunner();
+    this.containerRunner = options.containerRunner;
     this.scmIntegrations = options.scmIntegrations;
   }
 
@@ -158,7 +157,9 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           break;
         case 'docker': {
-          await this.containerRunner.runContainer({
+          const containerRunner =
+            this.containerRunner || new DockerContainerRunner();
+          await containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
             args: ['build', '-d', '/output'],
