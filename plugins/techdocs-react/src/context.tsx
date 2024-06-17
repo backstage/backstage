@@ -147,6 +147,10 @@ export const TechDocsReaderPageProvider = memo(
       metadata,
     ]);
 
+    const hashShadowRoot = (shadowRoot: ShadowRoot): string => {
+      return createHash('sha256').update(shadowRoot.innerHTML).digest('hex');
+    };
+
     useEffect(() => {
       let observer: MutationObserver | null = null;
       const intervalId = setInterval(() => {
@@ -155,15 +159,14 @@ export const TechDocsReaderPageProvider = memo(
             ?.shadowRoot ?? undefined;
         if (shadowRoot) {
           clearInterval(intervalId);
+          setShadowRootVersionHash(hashShadowRoot(shadowRoot));
+
           const callback = () => {
             const mutatedShadowRoot = document.querySelector(
               '[data-testid="techdocs-native-shadowroot"]',
             )?.shadowRoot;
             if (!mutatedShadowRoot) return;
-            const newShadowRootVersionHash = createHash('sha256')
-              .update(mutatedShadowRoot.innerHTML)
-              .digest('hex');
-            setShadowRootVersionHash(newShadowRootVersionHash);
+            setShadowRootVersionHash(hashShadowRoot(shadowRoot));
           };
 
           const observerConfig = { childList: true };
