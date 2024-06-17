@@ -26,7 +26,6 @@ import StylesProvider from '@material-ui/styles/StylesProvider';
 import jssPreset from '@material-ui/styles/jssPreset';
 
 import { Progress } from '@backstage/core-components';
-import crypto from "crypto";
 
 /**
  * Name for the event dispatched when ShadowRoot styles are loaded.
@@ -160,7 +159,7 @@ export type TechDocsShadowDomProps = PropsWithChildren<{
   /**
    * Callback called when the element tree is appended in ShadowRoot.
    */
-  onAppend?: (newShadowRootVersionHash: crypto.Hash) => void;
+  onAppend?: (shadowRoot: ShadowRoot) => void;
 }>;
 
 /**
@@ -239,8 +238,7 @@ export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
       shadowRoot.replaceChildren(element);
 
       if (typeof onAppend === 'function') {
-        const shadowRootVersionHash = crypto.createHash('sha256').update(shadowRoot.innerHTML);
-        onAppend(shadowRootVersionHash);
+        onAppend(shadowRoot);
       }
     },
     [element, onAppend],

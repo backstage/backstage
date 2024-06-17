@@ -45,7 +45,6 @@ import { techdocsApiRef } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
 import { toLowercaseEntityRefMaybe } from './helpers';
-import crypto from "crypto";
 
 const areEntityRefsEqual = (
   prevEntityRef: CompoundEntityRef,
@@ -64,7 +63,7 @@ export type TechDocsReaderPageValue = {
   entityRef: CompoundEntityRef;
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
   shadowRootVersionHash?: string;
-  setShadowRootVersionHash: (newShadowRootVersionHash: crypto.Hash) => void;
+  setShadowRootVersionHash: Dispatch<SetStateAction<string | undefined>>;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
   subtitle: string;
@@ -132,13 +131,9 @@ export const TechDocsReaderPageProvider = memo(
     const [subtitle, setSubtitle] = useState(
       defaultTechDocsReaderPageValue.subtitle,
     );
-    const [shadowRootVersionHash, setShadowRootVersionHash] = useState<string | undefined>(
-      undefined,
-    );
-
-    const handleSetShadowRootVersionHash = (newShadowRootVersionHash: crypto.Hash) => {
-      setShadowRootVersionHash(newShadowRootVersionHash.digest("hex"));
-    }
+    const [shadowRootVersionHash, setShadowRootVersionHash] = useState<
+      string | undefined
+    >(undefined);
 
     useEffect(() => {
       if (shadowRootVersionHash && !metadata.value && !metadata.loading) {
@@ -157,7 +152,7 @@ export const TechDocsReaderPageProvider = memo(
       entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,
       shadowRootVersionHash,
-      setShadowRootVersionHash: handleSetShadowRootVersionHash,
+      setShadowRootVersionHash,
       title,
       setTitle,
       subtitle,

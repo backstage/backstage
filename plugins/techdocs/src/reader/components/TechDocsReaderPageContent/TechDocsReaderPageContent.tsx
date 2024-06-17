@@ -34,7 +34,8 @@ import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 import { useTechDocsReaderDom } from './dom';
 import { withTechDocsReaderProvider } from '../TechDocsReaderProvider';
 import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
-import crypto from "crypto";
+// eslint-disable-next-line no-restricted-imports
+import { createHash } from 'crypto';
 
 const useStyles = makeStyles({
   search: {
@@ -80,7 +81,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const {
       entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
       entityRef,
-      setShadowRootVersionHash ,
+      setShadowRootVersionHash,
     } = useTechDocsReaderPage();
     const dom = useTechDocsReaderDom(entityRef);
     const path = window.location.pathname;
@@ -101,7 +102,10 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     }, [path, hash, hashElement, isStyleLoading]);
 
     const handleAppend = useCallback(
-      (newShadowRootVersionHash: crypto.Hash) => {
+      (newShadowRoot: ShadowRoot) => {
+        const newShadowRootVersionHash = createHash('sha256')
+          .update(newShadowRoot.innerHTML)
+          .digest('hex');
         setShadowRootVersionHash(newShadowRootVersionHash);
         if (onReady instanceof Function) {
           onReady();
