@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-techdocs-node': minor
+'@backstage/plugin-techdocs-node': patch
 ---
 
-**BREAKING**: `TechdocsGenerator` won't require a `containerRunner` option anymore for generating TechDocs in docker.
+`TechdocsGenerator` won't require a `containerRunner` option anymore for generating TechDocs in docker.

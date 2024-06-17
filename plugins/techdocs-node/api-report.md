@@ -7,6 +7,7 @@
 
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
+import { ContainerRunner } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -48,6 +49,7 @@ export type GeneratorBuilder = {
 // @public
 export type GeneratorOptions = {
   logger: Logger;
+  containerRunner?: ContainerRunner;
 };
 
 // @public
@@ -261,6 +263,7 @@ export interface TechDocsDocument extends IndexableDocument {
 export class TechdocsGenerator implements GeneratorBase {
   constructor(options: {
     logger: Logger;
+    containerRunner?: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   });

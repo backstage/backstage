@@ -43,6 +43,7 @@ import {
 } from './types';
 import { ForwardedError } from '@backstage/errors';
 import { DockerContainerRunner } from './DockerContainerRunner';
+import { ContainerRunner } from '@backstage/backend-common';
 
 /**
  * Generates documentation files
@@ -55,6 +56,7 @@ export class TechdocsGenerator implements GeneratorBase {
    */
   public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.3';
   private readonly logger: Logger;
+  private readonly containerRunner: ContainerRunner;
   private readonly options: GeneratorConfig;
   private readonly scmIntegrations: ScmIntegrationRegistry;
 
@@ -64,10 +66,11 @@ export class TechdocsGenerator implements GeneratorBase {
    * @param options - Options to configure the generator
    */
   static fromConfig(config: Config, options: GeneratorOptions) {
-    const { logger } = options;
+    const { containerRunner, logger } = options;
     const scmIntegrations = ScmIntegrations.fromConfig(config);
     return new TechdocsGenerator({
       logger,
+      containerRunner,
       config,
       scmIntegrations,
     });
@@ -75,11 +78,14 @@ export class TechdocsGenerator implements GeneratorBase {
 
   constructor(options: {
     logger: Logger;
+    containerRunner?: ContainerRunner;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;
   }) {
     this.logger = options.logger;
     this.options = readGeneratorConfig(options.config, options.logger);
+    this.containerRunner =
+      options.containerRunner || new DockerContainerRunner();
     this.scmIntegrations = options.scmIntegrations;
   }
 
@@ -152,8 +158,7 @@ export class TechdocsGenerator implements GeneratorBase {
           );
           break;
         case 'docker': {
-          const containerRunner = new DockerContainerRunner();
-          await containerRunner.runContainer({
+          await this.containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
             args: ['build', '-d', '/output'],

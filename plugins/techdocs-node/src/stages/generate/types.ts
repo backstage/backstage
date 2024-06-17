@@ -18,6 +18,7 @@ import { Entity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 import { Logger } from 'winston';
 import { ParsedLocationAnnotation } from '../../helpers';
+import { ContainerRunner } from '@backstage/backend-common';
 
 // Determines where the generator will be run
 export type GeneratorRunInType = 'docker' | 'local';
@@ -28,6 +29,7 @@ export type GeneratorRunInType = 'docker' | 'local';
  */
 export type GeneratorOptions = {
   logger: Logger;
+  containerRunner?: ContainerRunner;
 };
 
 /**
