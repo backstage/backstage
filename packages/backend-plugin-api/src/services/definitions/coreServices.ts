@@ -133,6 +133,15 @@ export namespace coreServices {
   >({ id: 'core.pluginMetadata' });
 
   /**
+   * The service reference for the root scoped {@link RedactionsService}.
+   *
+   * @public
+   */
+  export const redactions = createServiceRef<
+    import('./RedactionsService').RedactionsService
+  >({ id: 'core.redactions', scope: 'root' });
+
+  /**
    * The service reference for the root scoped {@link RootHttpRouterService}.
    *
    * @public

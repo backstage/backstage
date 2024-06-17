@@ -31,6 +31,7 @@ import { Knex } from 'knex';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
+import { RedactionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterFactoryOptions } from '@backstage/backend-app-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
@@ -265,6 +266,15 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<PermissionsService> | undefined,
       ) => ServiceMock<PermissionsService>;
+  }
+  // (undocumented)
+  export namespace redactions {
+    const // (undocumented)
+      factory: () => ServiceFactory<RedactionsService, 'root'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RedactionsService> | undefined,
+      ) => ServiceMock<RedactionsService>;
   }
   // (undocumented)
   export function rootConfig(options?: rootConfig.Options): RootConfigService;

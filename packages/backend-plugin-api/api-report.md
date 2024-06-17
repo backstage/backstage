@@ -200,6 +200,7 @@ export namespace coreServices {
   const logger: ServiceRef<LoggerService, 'plugin'>;
   const permissions: ServiceRef<PermissionsService, 'plugin'>;
   const pluginMetadata: ServiceRef<PluginMetadataService, 'plugin'>;
+  const redactions: ServiceRef<RedactionsService, 'root'>;
   const rootHttpRouter: ServiceRef<RootHttpRouterService, 'root'>;
   const rootLifecycle: ServiceRef<RootLifecycleService, 'root'>;
   const rootLogger: ServiceRef<RootLoggerService, 'root'>;
@@ -490,6 +491,12 @@ export type ReadUrlOptions = UrlReaderServiceReadUrlOptions;
 
 // @public @deprecated (undocumented)
 export type ReadUrlResponse = UrlReaderServiceReadUrlResponse;
+
+// @public
+export interface RedactionsService {
+  addRedactions(redactions: Iterable<string>): void;
+  redact(input: string): string;
+}
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;

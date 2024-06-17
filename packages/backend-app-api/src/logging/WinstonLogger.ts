@@ -16,6 +16,7 @@
 
 import {
   LoggerService,
+  RedactionsService,
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -38,6 +39,7 @@ export interface WinstonLoggerOptions {
   level?: string;
   format?: Format;
   transports?: Transport[];
+  redactions?: RedactionsService;
 }
 
 /**
@@ -47,24 +49,29 @@ export interface WinstonLoggerOptions {
  */
 export class WinstonLogger implements RootLoggerService {
   #winston: Logger;
-  #addRedactions?: (redactions: Iterable<string>) => void;
+  #redactions?: RedactionsService;
 
   /**
    * Creates a {@link WinstonLogger} instance.
    */
   static create(options: WinstonLoggerOptions): WinstonLogger {
-    const redacter = WinstonLogger.redacter();
     const defaultFormatter =
       process.env.NODE_ENV === 'production'
         ? format.json()
         : WinstonLogger.colorFormat();
 
+    const formats = [];
+
+    formats.push(options.format ?? defaultFormatter);
+
+    const { redactions } = options;
+    if (redactions) {
+      formats.push(WinstonLogger.redactionFormat(redactions));
+    }
+
     let logger = createLogger({
       level: process.env.LOG_LEVEL || options.level || 'info',
-      format: format.combine(
-        options.format ?? defaultFormatter,
-        redacter.format,
-      ),
+      format: format.combine(...formats),
       transports: options.transports ?? new transports.Console(),
     });
 
@@ -72,11 +79,13 @@ export class WinstonLogger implements RootLoggerService {
       logger = logger.child(options.meta);
     }
 
-    return new WinstonLogger(logger, redacter.add);
+    return new WinstonLogger(logger, options?.redactions);
   }
 
   /**
    * Creates a winston log formatter for redacting secrets.
+   *
+   * @deprecated Use {@link WinstonLogger.redactionFormat} instead.
    */
   static redacter(): {
     format: Format;
@@ -125,6 +134,19 @@ export class WinstonLogger implements RootLoggerService {
   }
 
   /**
+   * Creates a winston log formatter that redacts secrets from log messages.
+   */
+  static redactionFormat(redactions: RedactionsService): Format {
+    return format((obj: TransformableInfo) => {
+      if (obj?.[MESSAGE]) {
+        obj[MESSAGE] = redactions.redact(obj[MESSAGE]);
+      }
+
+      return obj;
+    })();
+  }
+
+  /**
    * Creates a pretty printed winston log formatter.
    */
   static colorFormat(): Format {
@@ -158,12 +180,9 @@ export class WinstonLogger implements RootLoggerService {
     );
   }
 
-  private constructor(
-    winston: Logger,
-    addRedactions?: (redactions: Iterable<string>) => void,
-  ) {
+  private constructor(winston: Logger, redaction?: RedactionsService) {
     this.#winston = winston;
-    this.#addRedactions = addRedactions;
+    this.#redactions = redaction;
   }
 
   error(message: string, meta?: JsonObject): void {
@@ -186,7 +205,10 @@ export class WinstonLogger implements RootLoggerService {
     return new WinstonLogger(this.#winston.child(meta));
   }
 
+  /**
+   * @deprecated Use {@link @backstage/backend-plugin-api#RedactionsService.addRedactions} instead.
+   */
   addRedactions(redactions: Iterable<string>) {
-    this.#addRedactions?.(redactions);
+    this.#redactions?.addRedactions(redactions);
   }
 }

@@ -29,6 +29,7 @@ import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { PluginDatabaseManager } from '@backstage/backend-common';
+import { RedactionsService } from '@backstage/backend-plugin-api';
 import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
@@ -69,8 +70,8 @@ export interface Backend {
 export const cacheServiceFactory: () => ServiceFactory<CacheService, 'plugin'>;
 
 // @public (undocumented)
-export function createConfigSecretEnumerator(options: {
-  logger: LoggerService;
+export function createConfigSecretEnumerator(options?: {
+  logger?: LoggerService;
   dir?: string;
   schema?: ConfigSchema;
 }): Promise<(config: Config) => Iterable<string>>;
@@ -270,6 +271,12 @@ export function readHelmetOptions(config?: Config): HelmetOptions;
 // @public
 export function readHttpServerOptions(config?: Config): HttpServerOptions;
 
+// @public (undocumented)
+export const redactionsServiceFactory: () => ServiceFactory<
+  RedactionsService,
+  'root'
+>;
+
 // @public @deprecated (undocumented)
 export interface RootConfigFactoryOptions {
   argv?: string[];
@@ -352,7 +359,7 @@ export const userInfoServiceFactory: () => ServiceFactory<
 
 // @public
 export class WinstonLogger implements RootLoggerService {
-  // (undocumented)
+  // @deprecated (undocumented)
   addRedactions(redactions: Iterable<string>): void;
   // (undocumented)
   child(meta: JsonObject): LoggerService;
@@ -364,10 +371,12 @@ export class WinstonLogger implements RootLoggerService {
   error(message: string, meta?: JsonObject): void;
   // (undocumented)
   info(message: string, meta?: JsonObject): void;
+  // @deprecated
   static redacter(): {
     format: Format;
     add: (redactions: Iterable<string>) => void;
   };
+  static redactionFormat(redactions: RedactionsService): Format;
   // (undocumented)
   warn(message: string, meta?: JsonObject): void;
 }
@@ -380,6 +389,8 @@ export interface WinstonLoggerOptions {
   level?: string;
   // (undocumented)
   meta?: JsonObject;
+  // (undocumented)
+  redactions?: RedactionsService;
   // (undocumented)
   transports?: transport[];
 }

@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-export * from './auth';
-export * from './cache';
-export * from './config';
-export * from './database';
-export * from './discovery';
-export * from './httpAuth';
-export * from './httpRouter';
-export * from './identity';
-export * from './lifecycle';
-export * from './logger';
-export * from './permissions';
-export * from './redactions';
-export * from './rootHttpRouter';
-export * from './rootLifecycle';
-export * from './rootLogger';
-export * from './tokenManager';
-export * from './urlReader';
-export * from './userInfo';
+/**
+ * A service that redacts sensitive information from strings.
+ *
+ * @public
+ */
+export interface RedactionsService {
+  /**
+   * Redacts sensitive information from the given input string.
+   */
+  redact(input: string): string;
 
-export * from './deprecated';
+  /**
+   * Adds a new set of sensitive information to redact.
+   */
+  addRedactions(redactions: Iterable<string>): void;
+}

@@ -43,6 +43,7 @@ import {
   urlReaderServiceFactory,
   discoveryServiceFactory,
   HostDiscovery,
+  redactionsServiceFactory,
 } from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -380,6 +381,14 @@ export namespace mockServices {
     export const mock = simpleMock(coreServices.permissions, () => ({
       authorize: jest.fn(),
       authorizeConditional: jest.fn(),
+    }));
+  }
+
+  export namespace redactions {
+    export const factory = redactionsServiceFactory;
+    export const mock = simpleMock(coreServices.redactions, () => ({
+      redact: jest.fn(),
+      addRedactions: jest.fn(),
     }));
   }
 

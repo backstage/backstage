@@ -26,6 +26,7 @@ import {
   rootLoggerServiceFactory,
   tokenManagerServiceFactory,
   userInfoServiceFactory,
+  redactionsServiceFactory,
 } from '@backstage/backend-app-api';
 import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
 import { databaseServiceFactory } from '@backstage/backend-defaults/database';
@@ -50,6 +51,7 @@ export const defaultServiceFactories = [
   lifecycleServiceFactory(),
   loggerServiceFactory(),
   permissionsServiceFactory(),
+  redactionsServiceFactory(),
   rootHttpRouterServiceFactory(),
   rootLifecycleServiceFactory(),
   rootLoggerServiceFactory(),

@@ -18,8 +18,21 @@ import { format } from 'logform';
 import { WinstonLogger } from './WinstonLogger';
 import Transport from 'winston-transport';
 import { MESSAGE } from 'triple-beam';
+import { RedactionsService } from '@backstage/backend-plugin-api';
+
+class MockRedactor implements RedactionsService {
+  redact(input: string): string {
+    return input.replace(/hello/g, '***');
+  }
+
+  addRedactions(): void {
+    return;
+  }
+}
 
 describe('WinstonLogger', () => {
+  const redactions = new MockRedactor();
+
   it('creates a winston logger instance with default options', () => {
     const logger = WinstonLogger.create({});
     expect(logger).toBeInstanceOf(WinstonLogger);
@@ -31,7 +44,7 @@ describe('WinstonLogger', () => {
     expect(childLogger).toBeInstanceOf(WinstonLogger);
   });
 
-  it('should redact and escape regex', () => {
+  it('should use the redactor when provided', () => {
     const mockTransport = new Transport({
       log: jest.fn(),
       logv: jest.fn(),
@@ -40,17 +53,16 @@ describe('WinstonLogger', () => {
     const logger = WinstonLogger.create({
       format: format.json(),
       transports: [mockTransport],
+      redactions,
     });
 
-    logger.addRedactions(['hello (world']);
-
-    logger.error('hello (world) from this file');
+    logger.error('hello from this file');
 
     expect(mockTransport.log).toHaveBeenCalledWith(
       expect.objectContaining({
         [MESSAGE]: JSON.stringify({
           level: 'error',
-          message: '***) from this file',
+          message: '*** from this file',
         }),
       }),
       expect.any(Function),
@@ -66,9 +78,8 @@ describe('WinstonLogger', () => {
     const logger = WinstonLogger.create({
       format: format.json(),
       transports: [mockTransport],
+      redactions,
     });
-
-    logger.addRedactions(['hello']);
 
     logger.error('something went wrong', {
       null: null,
