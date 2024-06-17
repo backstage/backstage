@@ -341,12 +341,12 @@ describe('readLdapConfig', () => {
     );
 
     expect(() => {
-      (actual[0].users[0].set as any).y = 2;
+      (actual[0].groups[0].set as any).y = 2;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot add property y, object is not extensible"`,
     );
     expect(() => {
-      (actual[0].users[0].set as any).x.b = 2;
+      (actual[0].groups[0].set as any).x.b = 2;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot add property b, object is not extensible"`,
     );
