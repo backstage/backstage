@@ -24,12 +24,7 @@ import lodashSet from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
 import { buildOrgHierarchy } from './org';
 import { LdapClient } from './client';
-import {
-  GroupConfig,
-  GroupConfigList,
-  UserConfig,
-  UserConfigList,
-} from './config';
+import { GroupConfig, UserConfig } from './config';
 import {
   LDAP_DN_ANNOTATION,
   LDAP_RDN_ANNOTATION,
@@ -109,23 +104,22 @@ export async function defaultUserTransformer(
  */
 export async function readLdapUsers(
   client: LdapClient,
-  config: UserConfigList,
+  config: UserConfig[],
   opts?: { transformer?: UserTransformer },
 ): Promise<{
   users: UserEntity[]; // With all relations empty
   userMemberOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
 }> {
-  if (!config) {
+  if (config.length === 0) {
     return { users: [], userMemberOf: new Map() };
   }
-  const configs = Array.isArray(config) ? config : [config];
   const entities: UserEntity[] = [];
   const userMemberOf: Map<string, Set<string>> = new Map();
 
   const vendor = await client.getVendor();
   const transformer = opts?.transformer ?? defaultUserTransformer;
 
-  for (const cfg of configs) {
+  for (const cfg of config) {
     const { dn, options, map } = cfg;
     await client.searchStreaming(dn, options, async user => {
       const entity = await transformer(vendor, cfg, user);
@@ -216,7 +210,7 @@ export async function defaultGroupTransformer(
  */
 export async function readLdapGroups(
   client: LdapClient,
-  config: GroupConfigList,
+  config: GroupConfig[],
   opts?: {
     transformer?: GroupTransformer;
   },
@@ -225,10 +219,9 @@ export async function readLdapGroups(
   groupMemberOf: Map<string, Set<string>>; // DN -> DN or UUID of groups
   groupMember: Map<string, Set<string>>; // DN -> DN or UUID of groups & users
 }> {
-  if (!config) {
+  if (config.length === 0) {
     return { groups: [], groupMemberOf: new Map(), groupMember: new Map() };
   }
-  const configs = Array.isArray(config) ? config : [config];
   const groups: GroupEntity[] = [];
   const groupMemberOf: Map<string, Set<string>> = new Map();
   const groupMember: Map<string, Set<string>> = new Map();
@@ -236,7 +229,7 @@ export async function readLdapGroups(
   const vendor = await client.getVendor();
   const transformer = opts?.transformer ?? defaultGroupTransformer;
 
-  for (const cfg of configs) {
+  for (const cfg of config) {
     const { dn, map, options } = cfg;
 
     await client.searchStreaming(dn, options, async entry => {
@@ -280,8 +273,8 @@ export async function readLdapGroups(
  */
 export async function readLdapOrg(
   client: LdapClient,
-  userConfig: UserConfigList,
-  groupConfig: GroupConfigList,
+  userConfig: UserConfig[],
+  groupConfig: GroupConfig[],
   options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;

@@ -20,9 +20,7 @@ export { readProviderConfigs, readLdapLegacyConfig } from './config';
 export type {
   LdapProviderConfig,
   GroupConfig,
-  GroupConfigList,
   UserConfig,
-  UserConfigList,
   BindConfig,
   TLSConfig,
 } from './config';

@@ -18,12 +18,7 @@ import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import { SearchEntry } from 'ldapjs';
 import merge from 'lodash/merge';
 import { LdapClient } from './client';
-import {
-  GroupConfig,
-  GroupConfigList,
-  UserConfig,
-  UserConfigList,
-} from './config';
+import { GroupConfig, UserConfig } from './config';
 import {
   LDAP_DN_ANNOTATION,
   LDAP_RDN_ANNOTATION,
@@ -104,19 +99,21 @@ describe('readLdapUsers', () => {
         }),
       );
     });
-    const config: UserConfig = {
-      dn: 'ddd',
-      options: {},
-      map: {
-        rdn: 'uid',
-        name: 'uid',
-        description: 'description',
-        displayName: 'cn',
-        email: 'mail',
-        picture: 'avatarUrl',
-        memberOf: 'memberOf',
+    const config: UserConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+        map: {
+          rdn: 'uid',
+          name: 'uid',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          picture: 'avatarUrl',
+          memberOf: 'memberOf',
+        },
       },
-    };
+    ];
     const { users, userMemberOf } = await readLdapUsers(client, config);
     expect(users).toEqual([
       expect.objectContaining({
@@ -165,19 +162,21 @@ describe('readLdapUsers', () => {
         }),
       );
     });
-    const config: UserConfig = {
-      dn: 'ddd',
-      options: {},
-      map: {
-        rdn: 'uid',
-        name: 'uid',
-        description: 'description',
-        displayName: 'cn',
-        email: 'mail',
-        picture: 'avatarUrl',
-        memberOf: 'memberOf',
+    const config: UserConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+        map: {
+          rdn: 'uid',
+          name: 'uid',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          picture: 'avatarUrl',
+          memberOf: 'memberOf',
+        },
       },
-    };
+    ];
     const { users, userMemberOf } = await readLdapUsers(client, config);
     expect(users).toEqual([
       expect.objectContaining({
@@ -221,19 +220,21 @@ describe('readLdapUsers', () => {
         }),
       );
     });
-    const config: UserConfig = {
-      dn: 'ddd',
-      options: {},
-      map: {
-        rdn: 'uid',
-        name: 'uid',
-        description: 'description',
-        displayName: 'cn',
-        email: 'mail',
-        picture: 'avatarUrl',
-        memberOf: 'memberOf',
+    const config: UserConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+        map: {
+          rdn: 'uid',
+          name: 'uid',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          picture: 'avatarUrl',
+          memberOf: 'memberOf',
+        },
       },
-    };
+    ];
     const { users, userMemberOf } = await readLdapUsers(client, config);
     expect(users).toEqual([
       expect.objectContaining({
@@ -276,7 +277,7 @@ describe('readLdapUsers', () => {
         }),
       );
     });
-    const config: UserConfigList = [
+    const config: UserConfig[] = [
       {
         dn: 'ddd',
         options: {},
@@ -308,7 +309,7 @@ describe('readLdapUsers', () => {
     expect(users).toHaveLength(2);
   });
   it('can process no UserConfigs', async () => {
-    const config: UserConfigList = undefined;
+    const config: UserConfig[] = [];
     const { users } = await readLdapUsers(client, config);
     expect(users).toHaveLength(0);
   });
@@ -339,21 +340,23 @@ describe('readLdapGroups', () => {
         }),
       );
     });
-    const config: GroupConfig = {
-      dn: 'ddd',
-      options: {},
-      map: {
-        rdn: 'cn',
-        name: 'cn',
-        description: 'description',
-        displayName: 'cn',
-        email: 'mail',
-        picture: 'avatarUrl',
-        type: 'tt',
-        memberOf: 'memberOf',
-        members: 'member',
+    const config: GroupConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+        map: {
+          rdn: 'cn',
+          name: 'cn',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          picture: 'avatarUrl',
+          type: 'tt',
+          memberOf: 'memberOf',
+          members: 'member',
+        },
       },
-    };
+    ];
     const { groups, groupMember, groupMemberOf } = await readLdapGroups(
       client,
       config,
@@ -410,21 +413,23 @@ describe('readLdapGroups', () => {
         }),
       );
     });
-    const config: GroupConfig = {
-      dn: 'ddd',
-      options: {},
-      map: {
-        rdn: 'cn',
-        name: 'cn',
-        description: 'description',
-        displayName: 'cn',
-        email: 'mail',
-        picture: 'avatarUrl',
-        type: 'tt',
-        memberOf: 'memberOf',
-        members: 'member',
+    const config: GroupConfig[] = [
+      {
+        dn: 'ddd',
+        options: {},
+        map: {
+          rdn: 'cn',
+          name: 'cn',
+          description: 'description',
+          displayName: 'cn',
+          email: 'mail',
+          picture: 'avatarUrl',
+          type: 'tt',
+          memberOf: 'memberOf',
+          members: 'member',
+        },
       },
-    };
+    ];
     const { groups, groupMember, groupMemberOf } = await readLdapGroups(
       client,
       config,
@@ -476,7 +481,7 @@ describe('readLdapGroups', () => {
         }),
       );
     });
-    const config: GroupConfigList = [
+    const config: GroupConfig[] = [
       {
         dn: 'ddd',
         options: {},
@@ -513,7 +518,7 @@ describe('readLdapGroups', () => {
   });
 
   it('can process no GroupConfigs', async () => {
-    const config: GroupConfigList = undefined;
+    const config: GroupConfig[] = [];
     const { groups } = await readLdapGroups(client, config);
     expect(groups).toHaveLength(0);
   });

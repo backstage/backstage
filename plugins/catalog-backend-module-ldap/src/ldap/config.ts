@@ -42,9 +42,9 @@ export type LdapProviderConfig = {
   // command is not issued.
   bind?: BindConfig;
   // The settings that govern the reading and interpretation of users
-  users: UserConfigList;
+  users: UserConfig[];
   // The settings that govern the reading and interpretation of groups
-  groups: GroupConfigList;
+  groups: GroupConfig[];
   // Schedule configuration for refresh tasks.
   schedule?: TaskScheduleDefinition;
 };
@@ -75,13 +75,6 @@ export type BindConfig = {
   // The secret of the user to auth as (its password)
   secret: string;
 };
-
-/**
- * The settings that govern the reading and interpretation of users.
- *
- * @public
- */
-export type UserConfigList = UserConfig | UserConfig[] | undefined;
 
 /**
  * The settings that govern the reading and interpretation of users.
@@ -128,13 +121,6 @@ export type UserConfig = {
  *
  * @public
  */
-export type GroupConfigList = GroupConfig | GroupConfig[] | undefined;
-
-/**
- * The settings that govern the reading and interpretation of groups.
- *
- * @public
- */
 export type GroupConfig = {
   // The DN under which groups are stored.
   dn: string;
@@ -175,34 +161,33 @@ export type GroupConfig = {
   };
 };
 
-const defaultConfig = {
-  users: {
-    options: {
-      scope: 'one',
-      attributes: ['*', '+'],
-    },
-    map: {
-      rdn: 'uid',
-      name: 'uid',
-      displayName: 'cn',
-      email: 'mail',
-      memberOf: 'memberOf',
-    },
+const defaultUserConfig = {
+  options: {
+    scope: 'one',
+    attributes: ['*', '+'],
   },
-  groups: {
-    options: {
-      scope: 'one',
-      attributes: ['*', '+'],
-    },
-    map: {
-      rdn: 'cn',
-      name: 'cn',
-      description: 'description',
-      displayName: 'cn',
-      type: 'groupType',
-      memberOf: 'memberOf',
-      members: 'member',
-    },
+  map: {
+    rdn: 'uid',
+    name: 'uid',
+    displayName: 'cn',
+    email: 'mail',
+    memberOf: 'memberOf',
+  },
+};
+
+const defaultGroupConfig = {
+  options: {
+    scope: 'one',
+    attributes: ['*', '+'],
+  },
+  map: {
+    rdn: 'cn',
+    name: 'cn',
+    description: 'description',
+    displayName: 'cn',
+    type: 'groupType',
+    memberOf: 'memberOf',
+    members: 'member',
   },
 };
 
@@ -326,18 +311,15 @@ function readUserConfig(
   c: Config | Config[] | undefined,
 ): RecursivePartial<LdapProviderConfig['users']> {
   if (!c) {
-    return undefined;
+    return [];
   }
   if (Array.isArray(c)) {
-    return c.map(it => {
-      return {
-        dn: it.getString('dn'),
-        options: readOptionsConfig(it.getOptionalConfig('options')),
-        set: readSetConfig(it.getOptionalConfig('set')),
-        map: readUserMapConfig(it.getOptionalConfig('map')),
-      };
-    });
+    return c.map(it => readSingleUserConfig(it));
   }
+  return [readSingleUserConfig(c)];
+}
+
+function readSingleUserConfig(c: Config): RecursivePartial<UserConfig> {
   return {
     dn: c.getString('dn'),
     options: readOptionsConfig(c.getOptionalConfig('options')),
@@ -350,18 +332,15 @@ function readGroupConfig(
   c: Config | Config[] | undefined,
 ): RecursivePartial<LdapProviderConfig['groups']> {
   if (!c) {
-    return undefined;
+    return [];
   }
   if (Array.isArray(c)) {
-    return c.map(it => {
-      return {
-        dn: it.getString('dn'),
-        options: readOptionsConfig(it.getOptionalConfig('options')),
-        set: readSetConfig(it.getOptionalConfig('set')),
-        map: readGroupMapConfig(it.getOptionalConfig('map')),
-      };
-    });
+    return c.map(it => readSingleGroupConfig(it));
   }
+  return [readSingleGroupConfig(c)];
+}
+
+function readSingleGroupConfig(c: Config): RecursivePartial<GroupConfig> {
   return {
     dn: c.getString('dn'),
     options: readOptionsConfig(c.getOptionalConfig('options')),
@@ -390,14 +369,15 @@ export function readLdapLegacyConfig(config: Config): LdapProviderConfig[] {
       target: trimEnd(c.getString('target'), '/'),
       tls: readTlsConfig(c.getOptionalConfig('tls')),
       bind: readBindConfig(c.getOptionalConfig('bind')),
-      users: readUserConfig(c.getConfig('users')),
-      groups: readGroupConfig(c.getConfig('groups')),
+      users: readUserConfig(c.getConfig('users')).map(it => {
+        return mergeWith({}, defaultUserConfig, it, replaceArraysIfPresent);
+      }),
+      groups: readGroupConfig(c.getConfig('groups')).map(it => {
+        return mergeWith({}, defaultGroupConfig, it, replaceArraysIfPresent);
+      }),
     };
-    const merged = mergeWith({}, defaultConfig, newConfig, (_into, from) => {
-      // Replace arrays instead of merging, otherwise default behavior
-      return Array.isArray(from) ? from : undefined;
-    });
-    return freeze(merged) as LdapProviderConfig;
+
+    return freeze(newConfig) as LdapProviderConfig;
   });
 }
 
@@ -433,29 +413,24 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
         isUserList
           ? c.getOptionalConfigArray('users')
           : c.getOptionalConfig('users'),
-      ),
+      ).map(it => {
+        return mergeWith({}, defaultUserConfig, it, replaceArraysIfPresent);
+      }),
       groups: readGroupConfig(
         isGroupList
           ? c.getOptionalConfigArray('groups')
           : c.getOptionalConfig('groups'),
-      ),
+      ).map(it => {
+        return mergeWith({}, defaultGroupConfig, it, replaceArraysIfPresent);
+      }),
       schedule,
     };
 
-    const merged = mergeWith(
-      {},
-      defaultConfig,
-      newConfig,
-      (_value, srcValue, key, object, _source) => {
-        // Remove users and groups from default if they are not set in the new config
-        if ((key === 'users' || key === 'groups') && !srcValue) {
-          return (object[key] = srcValue);
-        }
-        // Replace arrays instead of merging, otherwise default behavior
-        return Array.isArray(srcValue) ? srcValue : undefined;
-      },
-    );
-
-    return freeze(merged) as LdapProviderConfig;
+    return freeze(newConfig) as LdapProviderConfig;
   });
+}
+
+function replaceArraysIfPresent(_into: any, from: any) {
+  // Replace arrays instead of merging, otherwise default behavior
+  return Array.isArray(from) ? from : undefined;
 }

@@ -15,7 +15,7 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { readProviderConfigs, UserConfig } from './config';
+import { readProviderConfigs } from './config';
 
 describe('readLdapConfig', () => {
   it('applies all of the defaults', () => {
@@ -42,38 +42,42 @@ describe('readLdapConfig', () => {
         id: 'default',
         target: 'target',
         bind: undefined,
-        users: {
-          dn: 'udn',
-          options: {
-            scope: 'one',
-            attributes: ['*', '+'],
+        users: [
+          {
+            dn: 'udn',
+            options: {
+              scope: 'one',
+              attributes: ['*', '+'],
+            },
+            set: undefined,
+            map: {
+              rdn: 'uid',
+              name: 'uid',
+              displayName: 'cn',
+              email: 'mail',
+              memberOf: 'memberOf',
+            },
           },
-          set: undefined,
-          map: {
-            rdn: 'uid',
-            name: 'uid',
-            displayName: 'cn',
-            email: 'mail',
-            memberOf: 'memberOf',
+        ],
+        groups: [
+          {
+            dn: 'gdn',
+            options: {
+              scope: 'one',
+              attributes: ['*', '+'],
+            },
+            set: undefined,
+            map: {
+              rdn: 'cn',
+              name: 'cn',
+              description: 'description',
+              type: 'groupType',
+              displayName: 'cn',
+              memberOf: 'memberOf',
+              members: 'member',
+            },
           },
-        },
-        groups: {
-          dn: 'gdn',
-          options: {
-            scope: 'one',
-            attributes: ['*', '+'],
-          },
-          set: undefined,
-          map: {
-            rdn: 'cn',
-            name: 'cn',
-            description: 'description',
-            type: 'groupType',
-            displayName: 'cn',
-            memberOf: 'memberOf',
-            members: 'member',
-          },
-        },
+        ],
       },
     ];
     expect(actual).toEqual(expected);
@@ -159,57 +163,61 @@ describe('readLdapConfig', () => {
           keys: '/tmp/keys.pem',
           certs: '/tmp/certs.pem',
         },
-        users: {
-          dn: 'udn',
-          options: {
-            scope: 'base',
-            attributes: ['*'],
-            filter: 'f',
-            paged: true,
-            timeLimit: 42,
-            sizeLimit: 100,
-            derefAliases: 0,
-            typesOnly: false,
-          },
-          set: { p: 'v' },
-          map: {
-            rdn: 'u',
-            name: 'v',
-            description: 'd',
-            displayName: 'c',
-            email: 'm',
-            picture: 'p',
-            memberOf: 'm',
-          },
-        },
-        groups: {
-          dn: 'gdn',
-          options: {
-            scope: 'base',
-            attributes: ['*'],
-            filter: 'f',
-            paged: {
-              pageSize: 7,
-              pagePause: true,
+        users: [
+          {
+            dn: 'udn',
+            options: {
+              scope: 'base',
+              attributes: ['*'],
+              filter: 'f',
+              paged: true,
+              timeLimit: 42,
+              sizeLimit: 100,
+              derefAliases: 0,
+              typesOnly: false,
             },
-            timeLimit: 42,
-            sizeLimit: 100,
-            derefAliases: 1,
-            typesOnly: true,
+            set: { p: 'v' },
+            map: {
+              rdn: 'u',
+              name: 'v',
+              description: 'd',
+              displayName: 'c',
+              email: 'm',
+              picture: 'p',
+              memberOf: 'm',
+            },
           },
-          set: { p: 'v' },
-          map: {
-            rdn: 'u',
-            name: 'v',
-            description: 'd',
-            type: 't',
-            displayName: 'c',
-            email: 'm',
-            picture: 'p',
-            memberOf: 'm',
-            members: 'n',
+        ],
+        groups: [
+          {
+            dn: 'gdn',
+            options: {
+              scope: 'base',
+              attributes: ['*'],
+              filter: 'f',
+              paged: {
+                pageSize: 7,
+                pagePause: true,
+              },
+              timeLimit: 42,
+              sizeLimit: 100,
+              derefAliases: 1,
+              typesOnly: true,
+            },
+            set: { p: 'v' },
+            map: {
+              rdn: 'u',
+              name: 'v',
+              description: 'd',
+              type: 't',
+              displayName: 'c',
+              email: 'm',
+              picture: 'p',
+              memberOf: 'm',
+              members: 'n',
+            },
           },
-        },
+        ],
       },
     ];
     expect(actual).toEqual(expected);
@@ -247,7 +255,7 @@ describe('readLdapConfig', () => {
     const actual = readProviderConfigs(new ConfigReader(config));
 
     const expected = '(|(cn=foo bar)(cn=bar))';
-    expect((actual[0].users!! as UserConfig).options.filter).toEqual(expected);
+    expect(actual[0].users[0].options.filter).toEqual(expected);
   });
 
   it('supports a dot nested set structure', () => {
@@ -284,7 +292,7 @@ describe('readLdapConfig', () => {
     };
     const actual = readProviderConfigs(new ConfigReader(config));
 
-    expect((actual[0].users!! as UserConfig).set).toEqual({
+    expect(actual[0].users[0].set).toEqual({
       'metadata.annotations': { a: 'b' },
     });
   });
@@ -322,23 +330,23 @@ describe('readLdapConfig', () => {
     const actual = readProviderConfigs(new ConfigReader(config));
 
     expect(() => {
-      ((actual[0].users!! as UserConfig).set as any).y = 2;
+      (actual[0].users[0].set as any).y = 2;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot add property y, object is not extensible"`,
     );
     expect(() => {
-      ((actual[0].users!! as UserConfig).set as any).x.b = 2;
+      (actual[0].users[0].set as any).x.b = 2;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot add property b, object is not extensible"`,
     );
 
     expect(() => {
-      ((actual[0].users!! as UserConfig).set as any).y = 2;
+      (actual[0].users[0].set as any).y = 2;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot add property y, object is not extensible"`,
     );
     expect(() => {
-      ((actual[0].users!! as UserConfig).set as any).x.b = 2;
+      (actual[0].users[0].set as any).x.b = 2;
     }).toThrowErrorMatchingInlineSnapshot(
       `"Cannot add property b, object is not extensible"`,
     );
@@ -392,7 +400,7 @@ describe('readLdapConfig', () => {
     };
     const actual = readProviderConfigs(new ConfigReader(config));
 
-    expect(actual[0].users).toBeUndefined();
-    expect(actual[0].groups).toBeUndefined();
+    expect(actual[0].users).toHaveLength(0);
+    expect(actual[0].groups).toHaveLength(0);
   });
 });
