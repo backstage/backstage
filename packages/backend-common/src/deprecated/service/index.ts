@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 
-export { loggerToWinstonLogger } from './loggerToWinstonLogger';
+export { createServiceBuilder } from './createServiceBuilder';
+export type { ServiceBuilder, RequestLoggingHandlerFactory } from './types';

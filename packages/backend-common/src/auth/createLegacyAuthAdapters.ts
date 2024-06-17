@@ -43,7 +43,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { decodeJwt } from 'jose';
 import { TokenManager } from '../deprecated';
-import { PluginEndpointDiscovery } from '../discovery';
+import { PluginEndpointDiscovery } from '../deprecated';
 import { JsonObject } from '@backstage/types';
 
 class AuthCompat implements AuthService {

@@ -22,7 +22,7 @@ import helmet, { HelmetOptions } from 'helmet';
 import { ContentSecurityPolicyOptions } from 'helmet/dist/types/middlewares/content-security-policy';
 import * as http from 'http';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { useHotCleanup } from '../../hot';
+import { useHotCleanup } from '../../../hot';
 import { getRootLogger } from '../../logging';
 import {
   errorHandler as defaultErrorHandler,
@@ -37,7 +37,7 @@ import {
   readHttpServerOptions,
   HttpServerOptions,
   createHttpServer,
-} from '../../../../backend-app-api/src/http';
+} from '../../../../../backend-app-api/src/http';
 
 export type CspOptions = Record<string, string[]>;
 

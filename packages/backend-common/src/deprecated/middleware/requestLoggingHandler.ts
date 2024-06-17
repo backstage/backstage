@@ -15,24 +15,23 @@
  */
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { MiddlewareFactory } from '../../../backend-app-api/src/http/MiddlewareFactory';
-import { ConfigReader } from '@backstage/config';
+import { MiddlewareFactory } from '../../../../backend-app-api/src/http/MiddlewareFactory';
 import { RequestHandler } from 'express';
+import { ConfigReader } from '@backstage/config';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { getRootLogger } from '../logging';
 
 /**
- * Express middleware to handle requests for missing routes.
- *
- * Should be used as the very last handler in the chain, as it unconditionally
- * returns a 404 status.
+ * Logs incoming requests.
  *
  * @public
+ * @param logger - An optional logger to use. If not specified, the root logger will be used.
  * @returns An Express request handler
- * @deprecated Use {@link @backstage/backend-app-api#MiddlewareFactory.create.notFound} instead
+ * @deprecated Use {@link @backstage/backend-app-api#MiddlewareFactory.create.logging} instead
  */
-export function notFoundHandler(): RequestHandler {
+export function requestLoggingHandler(logger?: LoggerService): RequestHandler {
   return MiddlewareFactory.create({
     config: new ConfigReader({}),
-    logger: getRootLogger(),
-  }).notFound();
+    logger: logger ?? getRootLogger(),
+  }).logging();
 }

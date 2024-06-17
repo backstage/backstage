@@ -23,14 +23,12 @@
 export { legacyPlugin, makeLegacyPlugin } from './legacy';
 export type { LegacyCreateRouter } from './legacy';
 export { loadBackendConfig } from './config';
+export * from './deprecated';
 export * from './auth';
 export * from './cache';
-export * from './deprecated';
 export * from './database';
-export * from './discovery';
 export * from './hot';
 export * from './logging';
 export * from './middleware';
-export * from './reading';
 export * from './service';
 export * from './util';
