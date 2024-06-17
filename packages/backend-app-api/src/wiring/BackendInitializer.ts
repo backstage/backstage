@@ -170,60 +170,26 @@ export class BackendInitializer {
       this.#serviceRegistry.checkForCircularDeps();
     }
 
+    const { pluginInits, moduleInits, serviceStuff } =
+      this.#getFeatureRegistrations();
+
+    // This function will wire together all advanced services factories,
+    // connecting them to the appropriate modules by identifying the extension
+    // points that are provided and consumed.
+    //
+    // The servce module init functions will be inlined into the service factory init, and called before the factory itself.
+    // Any dependencies that the servce module has is lifted up to the service factory.
+    //
+    // Once these are wired together, we can add all of these service factories to the service registry
+    const advancedServiceFactores = this.#wireTogetherAdvancedServiceFactories(
+      serviceStuff.factories,
+      serviceStuff.modules,
+    );
+
+    // TODO: we probably need to check for circular deps here too
+
     // Initialize all root scoped services
     await this.#serviceRegistry.initializeEagerServicesWithScope('root');
-
-    const pluginInits = new Map<string, BackendRegisterInit>();
-    const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
-
-    // Enumerate all features
-    for (const feature of this.#features) {
-      for (const r of feature.getRegistrations()) {
-        const provides = new Set<ExtensionPoint<unknown>>();
-
-        if (r.type === 'plugin' || r.type === 'module') {
-          for (const [extRef, extImpl] of r.extensionPoints) {
-            if (this.#extensionPoints.has(extRef.id)) {
-              throw new Error(
-                `ExtensionPoint with ID '${extRef.id}' is already registered`,
-              );
-            }
-            this.#extensionPoints.set(extRef.id, {
-              impl: extImpl,
-              pluginId: r.pluginId,
-            });
-            provides.add(extRef);
-          }
-        }
-
-        if (r.type === 'plugin') {
-          if (pluginInits.has(r.pluginId)) {
-            throw new Error(`Plugin '${r.pluginId}' is already registered`);
-          }
-          pluginInits.set(r.pluginId, {
-            provides,
-            consumes: new Set(Object.values(r.init.deps)),
-            init: r.init,
-          });
-        } else {
-          let modules = moduleInits.get(r.pluginId);
-          if (!modules) {
-            modules = new Map();
-            moduleInits.set(r.pluginId, modules);
-          }
-          if (modules.has(r.moduleId)) {
-            throw new Error(
-              `Module '${r.moduleId}' for plugin '${r.pluginId}' is already registered`,
-            );
-          }
-          modules.set(r.moduleId, {
-            provides,
-            consumes: new Set(Object.values(r.init.deps)),
-            init: r.init,
-          });
-        }
-      }
-    }
 
     const allPluginIds = [...pluginInits.keys()];
 
@@ -367,6 +333,71 @@ export class BackendInitializer {
       return lifecycleService;
     }
     throw new Error('Unexpected plugin lifecycle service implementation');
+  }
+
+  #getFeatureRegistrations() {
+    const pluginInits = new Map<string, BackendRegisterInit>();
+    const moduleInits = new Map<string, Map<string, BackendRegisterInit>>();
+
+    // Enumerate all features
+    for (const feature of this.#features) {
+      for (const r of feature.getRegistrations()) {
+        const provides = new Set<ExtensionPoint<unknown>>();
+
+        if (r.type === 'plugin' || r.type === 'module') {
+          for (const [extRef, extImpl] of r.extensionPoints) {
+            if (this.#extensionPoints.has(extRef.id)) {
+              throw new Error(
+                `ExtensionPoint with ID '${extRef.id}' is already registered`,
+              );
+            }
+            this.#extensionPoints.set(extRef.id, {
+              impl: extImpl,
+              pluginId: r.pluginId,
+            });
+            provides.add(extRef);
+          }
+        }
+
+        if (r.type === 'plugin') {
+          if (pluginInits.has(r.pluginId)) {
+            throw new Error(`Plugin '${r.pluginId}' is already registered`);
+          }
+          pluginInits.set(r.pluginId, {
+            provides,
+            consumes: new Set(Object.values(r.init.deps)),
+            init: r.init,
+          });
+        } else if (r.type === 'module') {
+          let modules = moduleInits.get(r.pluginId);
+          if (!modules) {
+            modules = new Map();
+            moduleInits.set(r.pluginId, modules);
+          }
+          if (modules.has(r.moduleId)) {
+            throw new Error(
+              `Module '${r.moduleId}' for plugin '${r.pluginId}' is already registered`,
+            );
+          }
+          modules.set(r.moduleId, {
+            provides,
+            consumes: new Set(Object.values(r.init.deps)),
+            init: r.init,
+          });
+        } else if (r.type === 'service') {
+          // Collect all advanced services factories here
+        } else if (r.type === 'service-module') {
+          // Collect all services modules here
+        } else {
+          throw new Error(`Invalid registration type: ${(r as any).type}`);
+        }
+      }
+    }
+
+    return {
+      pluginInits,
+      moduleInits /* return advanced services factories and modules */,
+    };
   }
 }
 

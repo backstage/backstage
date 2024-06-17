@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ServiceRef } from '../services/system/types';
+import { ServiceFactory, ServiceRef } from '../services/system/types';
 import { BackendFeature } from '../types';
 
 /**
@@ -76,7 +76,9 @@ export interface BackendModuleRegistrationPoints {
 export interface InternalBackendFeature extends BackendFeature {
   version: 'v1';
   getRegistrations(): Array<
-    InternalBackendPluginRegistration | InternalBackendModuleRegistration
+    | InternalBackendPluginRegistration
+    | InternalBackendModuleRegistration
+    | InternalServiceFactoryRegistration
   >;
 }
 
@@ -101,6 +103,13 @@ export interface InternalBackendModuleRegistration {
     deps: Record<string, ServiceRef<unknown> | ExtensionPoint<unknown>>;
     func(deps: Record<string, unknown>): Promise<void>;
   };
+}
+
+/** @internal */
+export interface InternalServiceFactoryRegistration {
+  type: 'service';
+  extensionPoints: Array<readonly [ExtensionPoint<unknown>, unknown]>;
+  factory: ServiceFactory<unknown>;
 }
 
 export interface InternalServiceModule extends InternalBackendFeature {}

@@ -15,7 +15,17 @@
  */
 
 import { BackendFeature } from '../../types';
-import { ExtensionPoint } from '../../wiring';
+import {
+  BackendModuleConfig,
+  BackendModuleRegistrationPoints,
+  ExtensionPoint,
+} from '../../wiring';
+import {
+  InternalBackendFeature,
+  InternalBackendModuleRegistration,
+  InternalBackendPluginRegistration,
+  InternalServiceFactoryRegistration,
+} from '../../wiring/types';
 
 /**
  * TODO
@@ -387,4 +397,56 @@ export function createServiceFactory<
   factory.$$type = '@backstage/BackendFeatureFactory';
 
   return factory;
+}
+
+export function createServiceFactory2(config: {
+  register(reg: ServiceFactoryRegistrationPoints): void;
+}): BackendFeature {
+  return {
+    $$type: '@backstage/BackendFeature',
+    version: 'v1',
+    getRegistrations() {
+      const extensionPoints: InternalServiceFactoryRegistration['extensionPoints'] =
+        [];
+      let factory: InternalServiceFactoryRegistration['factory'] | undefined =
+        undefined;
+
+      config.register({
+        registerExtensionPoint(ext, impl) {
+          if (factory) {
+            throw new Error(
+              'registerExtensionPoint called after registerFactory',
+            );
+          }
+          extensionPoints.push([ext, impl]);
+        },
+        registerFactory(factoryFactory) {
+          if (factory) {
+            throw new Error('registerFactory called multiple times');
+          }
+          factory = factoryFactory();
+        },
+      });
+
+      if (!factory) {
+        throw new Error(`registerFactory was not called by register`);
+      }
+
+      return [
+        {
+          type: 'service',
+          extensionPoints,
+          factory,
+        },
+      ] satisfies InternalServiceFactoryRegistration[];
+    },
+  } as InternalBackendFeature;
+}
+
+interface ServiceFactoryRegistrationPoints {
+  registerExtensionPoint<TExtensionPoint>(
+    ref: ExtensionPoint<TExtensionPoint>,
+    impl: TExtensionPoint,
+  ): void;
+  registerFactory(config: ReturnType<typeof createServiceFactory>): void;
 }
