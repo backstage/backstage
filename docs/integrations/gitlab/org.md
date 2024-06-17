@@ -130,9 +130,9 @@ export default async function createPlugin(
       }),
       // optional: alternatively, use schedule
       scheduler: env.scheduler,
+      events: env.events,
     },
   );
-  env.eventBroker.subscribe(gitlabOrgProvider);
   builder.addEntityProvider(gitlabOrgProvider);
   /* highlight-add-end */
   const { processingEngine, router } = await builder.build();
