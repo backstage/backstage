@@ -137,7 +137,7 @@ export function cacheToPluginCacheManager(cache: CacheService): {
 // @public @deprecated
 export const coloredFormat: winston.Logform.Format;
 
-// @public
+// @public @deprecated
 export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
@@ -212,7 +212,7 @@ export type DatabaseManagerOptions = {
   logger?: LoggerService;
 };
 
-// @public
+// @public @deprecated
 export class DockerContainerRunner implements ContainerRunner {
   constructor(options: { dockerClient: Docker });
   // (undocumented)
@@ -365,20 +365,20 @@ export const isChildPath: typeof isChildPath_2;
 // @public @deprecated (undocumented)
 export const isDatabaseConflictError: typeof isDatabaseConflictError_2;
 
-// @public
+// @public @deprecated
 export class KubernetesContainerRunner implements ContainerRunner {
   constructor(options: KubernetesContainerRunnerOptions);
   // (undocumented)
   runContainer(options: RunContainerOptions): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type KubernetesContainerRunnerMountBase = {
   volumeName: string;
   basePath: string;
 };
 
-// @public
+// @public @deprecated
 export type KubernetesContainerRunnerOptions = {
   kubeConfig: KubeConfig;
   name: string;
@@ -471,7 +471,7 @@ export { PluginDatabaseManager };
 // @public @deprecated (undocumented)
 export type PluginEndpointDiscovery = DiscoveryService;
 
-// @public
+// @public @deprecated
 export interface PullOptions {
   // (undocumented)
   [key: string]: unknown;
@@ -549,7 +549,7 @@ export const resolvePackagePath: typeof resolvePackagePath_2;
 // @public @deprecated (undocumented)
 export const resolveSafeChildPath: typeof resolveSafeChildPath_2;
 
-// @public
+// @public @deprecated
 export type RunContainerOptions = {
   imageName: string;
   command?: string | string[];

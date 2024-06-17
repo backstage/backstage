@@ -91,6 +91,7 @@ export * from './tokens';
 export * from './logging';
 export * from './service';
 export * from './middleware';
+export * from './util';
 
 /**
  * @public
