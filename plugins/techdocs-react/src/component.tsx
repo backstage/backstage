@@ -159,7 +159,7 @@ export type TechDocsShadowDomProps = PropsWithChildren<{
   /**
    * Callback called when the element tree is appended in ShadowRoot.
    */
-  onAppend?: (shadowRoot: ShadowRoot) => void;
+  onAppend?: () => void;
 }>;
 
 /**
@@ -238,7 +238,7 @@ export const TechDocsShadowDom = (props: TechDocsShadowDomProps) => {
       shadowRoot.replaceChildren(element);
 
       if (typeof onAppend === 'function') {
-        onAppend(shadowRoot);
+        onAppend();
       }
     },
     [element, onAppend],

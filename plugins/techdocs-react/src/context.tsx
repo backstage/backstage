@@ -45,6 +45,8 @@ import { techdocsApiRef } from './api';
 import { TechDocsEntityMetadata, TechDocsMetadata } from './types';
 
 import { toLowercaseEntityRefMaybe } from './helpers';
+// eslint-disable-next-line no-restricted-imports
+import { createHash } from 'crypto';
 
 const areEntityRefsEqual = (
   prevEntityRef: CompoundEntityRef,
@@ -62,8 +64,7 @@ export type TechDocsReaderPageValue = {
   metadata: AsyncState<TechDocsMetadata>;
   entityRef: CompoundEntityRef;
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
-  shadowRoot?: ShadowRoot;
-  setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
+  shadowRootVersionHash?: string;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
   subtitle: string;
@@ -79,7 +80,6 @@ const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   subtitle: '',
   setTitle: () => {},
   setSubtitle: () => {},
-  setShadowRoot: () => {},
   metadata: { loading: true },
   entityMetadata: { loading: true },
   entityRef: { kind: '', name: '', namespace: '' },
@@ -131,28 +131,60 @@ export const TechDocsReaderPageProvider = memo(
     const [subtitle, setSubtitle] = useState(
       defaultTechDocsReaderPageValue.subtitle,
     );
-    const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
-      defaultTechDocsReaderPageValue.shadowRoot,
-    );
+    const [shadowRootVersionHash, setShadowRootVersionHash] = useState<
+      string | undefined
+    >(undefined);
 
     useEffect(() => {
-      if (shadowRoot && !metadata.value && !metadata.loading) {
+      if (shadowRootVersionHash && !metadata.value && !metadata.loading) {
         metadata.retry();
       }
     }, [
       metadata.value,
       metadata.loading,
-      shadowRoot,
+      shadowRootVersionHash,
       metadata.retry,
       metadata,
     ]);
+
+    useEffect(() => {
+      let observer: MutationObserver | null = null;
+      const intervalId = setInterval(() => {
+        const shadowRoot =
+          document.querySelector('[data-testid="techdocs-native-shadowroot"]')
+            ?.shadowRoot ?? undefined;
+        if (shadowRoot) {
+          clearInterval(intervalId);
+          const callback = () => {
+            const mutatedShadowRoot = document.querySelector(
+              '[data-testid="techdocs-native-shadowroot"]',
+            )?.shadowRoot;
+            if (!mutatedShadowRoot) return;
+            const newShadowRootVersionHash = createHash('sha256')
+              .update(mutatedShadowRoot.innerHTML)
+              .digest('hex');
+            setShadowRootVersionHash(newShadowRootVersionHash);
+          };
+
+          const observerConfig = { childList: true };
+          observer = new MutationObserver(callback);
+          observer.observe(shadowRoot, observerConfig);
+        }
+      }, 100); // Check every 100ms
+
+      return () => {
+        if (observer) {
+          observer.disconnect();
+        }
+        clearInterval(intervalId);
+      };
+    }, []);
 
     const value: TechDocsReaderPageValue = {
       metadata,
       entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,
-      shadowRoot,
-      setShadowRoot,
+      shadowRootVersionHash,
       title,
       setTitle,
       subtitle,

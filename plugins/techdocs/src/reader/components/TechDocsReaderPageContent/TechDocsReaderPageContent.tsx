@@ -79,7 +79,6 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const {
       entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
       entityRef,
-      setShadowRoot,
     } = useTechDocsReaderPage();
     const dom = useTechDocsReaderDom(entityRef);
     const path = window.location.pathname;
@@ -99,15 +98,11 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       }
     }, [path, hash, hashElement, isStyleLoading]);
 
-    const handleAppend = useCallback(
-      (newShadowRoot: ShadowRoot) => {
-        setShadowRoot(newShadowRoot);
-        if (onReady instanceof Function) {
-          onReady();
-        }
-      },
-      [setShadowRoot, onReady],
-    );
+    const handleAppend = useCallback(() => {
+      if (onReady instanceof Function) {
+        onReady();
+      }
+    }, [onReady]);
 
     // No entity metadata = 404. Don't render content at all.
     if (entityMetadataLoading === false && !entityMetadata)
