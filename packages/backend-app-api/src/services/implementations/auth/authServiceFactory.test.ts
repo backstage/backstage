@@ -218,6 +218,17 @@ describe('authServiceFactory', () => {
   });
 
   it('should issue limited user tokens', async () => {
+    /* Corresponding private key in case this test needs to be updated in the future:
+     {
+       kty: 'EC',
+       x: 'c9cPvv_S7zETBKDlAa3oOjr7RvyUueIYIak0TRph7mg',
+       y: 'bKaxDRAWgmEJ9Ix8e85blH_IsnbQxX31x0oQTVwLZ2c',
+       crv: 'P-256',
+       d: '2eJlhCDdGx9fxKDL1D9BnY3CCTEKxL60Bkms0hmubmY',
+       kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
+       alg: 'ES256'
+     }
+    */
     server.use(
       rest.get(
         'http://localhost:7007/api/auth/.well-known/jwks.json',
@@ -227,8 +238,8 @@ describe('authServiceFactory', () => {
               keys: [
                 {
                   kty: 'EC',
-                  x: '78-Ei1H3nKM23ZpGMMzte2mVoYCcnfnSiLTm1P7vZM0',
-                  y: 'Z9-PjG_EU598tLLUc2f8sCqxT7bjs8WpoV-lHm9GJHY',
+                  x: 'c9cPvv_S7zETBKDlAa3oOjr7RvyUueIYIak0TRph7mg',
+                  y: 'bKaxDRAWgmEJ9Ix8e85blH_IsnbQxX31x0oQTVwLZ2c',
                   crv: 'P-256',
                   kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
                   alg: 'ES256',
@@ -253,7 +264,7 @@ describe('authServiceFactory', () => {
     const catalogAuth = await tester.get('catalog');
 
     const fullToken =
-      'eyJ0eXAiOiJ2bmQuYmFja3N0YWdlLnVzZXIiLCJhbGciOiJFUzI1NiIsImtpZCI6IjhkMDFjM2RiLTU2ZjktNDVmMC04NmRkLTA1YjNjODM1YjNkMyJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwMDcvYXBpL2F1dGgiLCJzdWIiOiJ1c2VyOmRldmVsb3BtZW50L2d1ZXN0IiwiZW50IjpbInVzZXI6ZGV2ZWxvcG1lbnQvZ3Vlc3QiLCJncm91cDpkZWZhdWx0L3RlYW0tYSJdLCJhdWQiOiJiYWNrc3RhZ2UiLCJpYXQiOjE3MTIwNzE3MTQsImV4cCI6MTcxMjA3NTMxNCwidWlwIjoiMDFBUUJfSWpHTXRWc2gyWmgzZEg1NXhOX29pSVlhQ1F3ODJjeDZ5M1BQMXlpTjM4eGMzMVpMS2U0YVNDQlJTTy10cjFzZFUzT29ELUxJYV8tNV9RVUEifQ.mjIrZGqbZ2t68fS4U3crlGw-bYJZnMlhMHf-YL7q_u1HfaLr4NMTcHkxdnNS2wfJxCmUBxRfUS8b3nSAKsxcHA';
+      'eyJ0eXAiOiJ2bmQuYmFja3N0YWdlLnVzZXIiLCJhbGciOiJFUzI1NiIsImtpZCI6IjhkMDFjM2RiLTU2ZjktNDVmMC04NmRkLTA1YjNjODM1YjNkMyJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwMDcvYXBpL2F1dGgiLCJzdWIiOiJ1c2VyOmRldmVsb3BtZW50L2d1ZXN0IiwiZW50IjpbInVzZXI6ZGV2ZWxvcG1lbnQvZ3Vlc3QiLCJncm91cDpkZWZhdWx0L3RlYW0tYSJdLCJhdWQiOiJiYWNrc3RhZ2UiLCJpYXQiOjE3MTIwNzE3MTQsImV4cCI6MTcxMjA3NTMxNCwidWlwIjoiSmwxVEpycG9VUjR1NENjUE9nalJMeHpEMi1FMGZPR3ptSm81UWI2eS1aN19meG5oVVBEdWVWRE1CS0l6WF9pc0lvSDhlZm9EUFA5bG9aQnpPblB5Z2cifQ.1gVMq1ofO8PzRctu72D6c4IMqXuIabT79WdGEhW6vIrBRs_qhuWAa94Wvz_KYKpBTb2nxgzXJ5OeddeoYApMyQ';
 
     const credentials = await catalogAuth.authenticate(fullToken);
     if (!catalogAuth.isPrincipal(credentials, 'user')) {
@@ -275,7 +286,6 @@ describe('authServiceFactory', () => {
     const expectedTokenPayload = base64url.encode(
       JSON.stringify({
         sub: 'user:development/guest',
-        ent: ['user:development/guest', 'group:default/team-a'],
         iat: expectedIssuedAt,
         exp: expectedExpiresAt,
       }),
@@ -312,6 +322,17 @@ describe('authServiceFactory', () => {
     const catalogAuth = await tester.get('catalog');
     const permissionAuth = await tester.get('permission');
 
+    /* Corresponding private key in case this test needs to be updated in the future:
+     {
+       kty: 'EC',
+       x: 'c9cPvv_S7zETBKDlAa3oOjr7RvyUueIYIak0TRph7mg',
+       y: 'bKaxDRAWgmEJ9Ix8e85blH_IsnbQxX31x0oQTVwLZ2c',
+       crv: 'P-256',
+       d: '2eJlhCDdGx9fxKDL1D9BnY3CCTEKxL60Bkms0hmubmY',
+       kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
+       alg: 'ES256'
+     }
+    */
     server.use(
       rest.get(
         'http://localhost:7007/api/auth/.well-known/jwks.json',
@@ -321,8 +342,8 @@ describe('authServiceFactory', () => {
               keys: [
                 {
                   kty: 'EC',
-                  x: '78-Ei1H3nKM23ZpGMMzte2mVoYCcnfnSiLTm1P7vZM0',
-                  y: 'Z9-PjG_EU598tLLUc2f8sCqxT7bjs8WpoV-lHm9GJHY',
+                  x: 'c9cPvv_S7zETBKDlAa3oOjr7RvyUueIYIak0TRph7mg',
+                  y: 'bKaxDRAWgmEJ9Ix8e85blH_IsnbQxX31x0oQTVwLZ2c',
                   crv: 'P-256',
                   kid: '8d01c3db-56f9-45f0-86dd-05b3c835b3d3',
                   alg: 'ES256',
@@ -360,7 +381,7 @@ describe('authServiceFactory', () => {
     });
 
     const fullToken =
-      'eyJ0eXAiOiJ2bmQuYmFja3N0YWdlLnVzZXIiLCJhbGciOiJFUzI1NiIsImtpZCI6IjhkMDFjM2RiLTU2ZjktNDVmMC04NmRkLTA1YjNjODM1YjNkMyJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwMDcvYXBpL2F1dGgiLCJzdWIiOiJ1c2VyOmRldmVsb3BtZW50L2d1ZXN0IiwiZW50IjpbInVzZXI6ZGV2ZWxvcG1lbnQvZ3Vlc3QiLCJncm91cDpkZWZhdWx0L3RlYW0tYSJdLCJhdWQiOiJiYWNrc3RhZ2UiLCJpYXQiOjE3MTIwNzE3MTQsImV4cCI6MTcxMjA3NTMxNCwidWlwIjoiMDFBUUJfSWpHTXRWc2gyWmgzZEg1NXhOX29pSVlhQ1F3ODJjeDZ5M1BQMXlpTjM4eGMzMVpMS2U0YVNDQlJTTy10cjFzZFUzT29ELUxJYV8tNV9RVUEifQ.mjIrZGqbZ2t68fS4U3crlGw-bYJZnMlhMHf-YL7q_u1HfaLr4NMTcHkxdnNS2wfJxCmUBxRfUS8b3nSAKsxcHA';
+      'eyJ0eXAiOiJ2bmQuYmFja3N0YWdlLnVzZXIiLCJhbGciOiJFUzI1NiIsImtpZCI6IjhkMDFjM2RiLTU2ZjktNDVmMC04NmRkLTA1YjNjODM1YjNkMyJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwMDcvYXBpL2F1dGgiLCJzdWIiOiJ1c2VyOmRldmVsb3BtZW50L2d1ZXN0IiwiZW50IjpbInVzZXI6ZGV2ZWxvcG1lbnQvZ3Vlc3QiLCJncm91cDpkZWZhdWx0L3RlYW0tYSJdLCJhdWQiOiJiYWNrc3RhZ2UiLCJpYXQiOjE3MTIwNzE3MTQsImV4cCI6MTcxMjA3NTMxNCwidWlwIjoiSmwxVEpycG9VUjR1NENjUE9nalJMeHpEMi1FMGZPR3ptSm81UWI2eS1aN19meG5oVVBEdWVWRE1CS0l6WF9pc0lvSDhlZm9EUFA5bG9aQnpPblB5Z2cifQ.1gVMq1ofO8PzRctu72D6c4IMqXuIabT79WdGEhW6vIrBRs_qhuWAa94Wvz_KYKpBTb2nxgzXJ5OeddeoYApMyQ';
 
     const credentials = await searchAuth.authenticate(fullToken);
     if (!searchAuth.isPrincipal(credentials, 'user')) {
