@@ -22,7 +22,7 @@ import {
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { AppConfig, Config } from '@backstage/config';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
-import { setRootLoggerRedactionList } from './logging/createRootLogger';
+import { setRootLoggerRedactionList } from './deprecated/logging/createRootLogger';
 
 /**
  * Load configuration for a Backend.

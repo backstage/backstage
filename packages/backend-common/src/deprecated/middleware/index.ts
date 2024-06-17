@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-export {
-  HostDiscovery,
-  SingleHostDiscovery,
-  type PluginEndpointDiscovery,
-} from './HostDiscovery';
+export * from './errorHandler';
+export * from './notFoundHandler';
+export * from './requestLoggingHandler';

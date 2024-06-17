@@ -128,6 +128,7 @@ export type ServiceBuilder = {
  * A factory for request loggers.
  *
  * @public
+ * @deprecated This type is being deprecated along with the {@link @backstage/backend-common#createServiceBuilder} function.
  */
 export type RequestLoggingHandlerFactory = (
   logger?: LoggerService,

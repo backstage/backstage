@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import express from 'express';
+import { STATUS_CODES } from 'http';
+import createError from 'http-errors';
+import request from 'supertest';
 import {
   AuthenticationError,
   ConflictError,
@@ -23,11 +27,7 @@ import {
   NotModifiedError,
   ResponseError,
 } from '@backstage/errors';
-import express from 'express';
-import createError from 'http-errors';
-import request from 'supertest';
 import { errorHandler } from './errorHandler';
-import { STATUS_CODES } from 'http';
 
 describe('errorHandler', () => {
   it('gives default code and message', async () => {

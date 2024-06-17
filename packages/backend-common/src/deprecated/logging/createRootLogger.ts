@@ -15,12 +15,12 @@
  */
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { WinstonLogger } from '../../../backend-app-api/src/logging/WinstonLogger';
+import { WinstonLogger } from '../../../../backend-app-api/src/logging/WinstonLogger';
 import { merge } from 'lodash';
 import * as winston from 'winston';
 import { format, LoggerOptions } from 'winston';
-import { setRootLogger } from './globalLoggers';
 import { TransformableInfo } from 'logform';
+import { setRootLogger } from './globalLoggers';
 
 const getRedacter = (() => {
   let redacter: ReturnType<typeof WinstonLogger.redacter> | undefined =

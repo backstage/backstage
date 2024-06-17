@@ -48,21 +48,21 @@ import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
-import type { ReadTreeOptions as ReadTreeOptions_2 } from '@backstage/backend-plugin-api';
-import type { ReadTreeResponse as ReadTreeResponse_2 } from '@backstage/backend-plugin-api';
-import type { ReadTreeResponseDirOptions as ReadTreeResponseDirOptions_2 } from '@backstage/backend-plugin-api';
-import type { ReadTreeResponseFile as ReadTreeResponseFile_2 } from '@backstage/backend-plugin-api';
-import type { ReadUrlOptions as ReadUrlOptions_2 } from '@backstage/backend-plugin-api';
-import type { ReadUrlResponse as ReadUrlResponse_2 } from '@backstage/backend-plugin-api';
+import { ReadTreeOptions as ReadTreeOptions_2 } from '@backstage/backend-plugin-api';
+import { ReadTreeResponse as ReadTreeResponse_2 } from '@backstage/backend-plugin-api';
+import { ReadTreeResponseDirOptions as ReadTreeResponseDirOptions_2 } from '@backstage/backend-plugin-api';
+import { ReadTreeResponseFile as ReadTreeResponseFile_2 } from '@backstage/backend-plugin-api';
+import { ReadUrlOptions as ReadUrlOptions_2 } from '@backstage/backend-plugin-api';
+import { ReadUrlResponse as ReadUrlResponse_2 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
 import { resolvePackagePath as resolvePackagePath_2 } from '@backstage/backend-plugin-api';
 import { resolveSafeChildPath as resolveSafeChildPath_2 } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
-import type { SearchOptions as SearchOptions_2 } from '@backstage/backend-plugin-api';
-import type { SearchResponse as SearchResponse_2 } from '@backstage/backend-plugin-api';
-import type { SearchResponseFile as SearchResponseFile_2 } from '@backstage/backend-plugin-api';
+import { SearchOptions as SearchOptions_2 } from '@backstage/backend-plugin-api';
+import { SearchResponse as SearchResponse_2 } from '@backstage/backend-plugin-api';
+import { SearchResponseFile as SearchResponseFile_2 } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
@@ -230,7 +230,7 @@ export function errorHandler(
   options?: ErrorHandlerOptions,
 ): ErrorRequestHandler;
 
-// @public
+// @public @deprecated
 export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
   logger?: LoggerService;
@@ -538,7 +538,7 @@ export function redactWinstonLogLine(
 // @public @deprecated
 export function requestLoggingHandler(logger?: LoggerService): RequestHandler;
 
-// @public
+// @public @deprecated
 export type RequestLoggingHandlerFactory = (
   logger?: LoggerService,
 ) => RequestHandler;

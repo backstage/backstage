@@ -16,15 +16,16 @@
 
 import { ErrorRequestHandler } from 'express';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { getRootLogger } from '../logging';
 import { ConfigReader } from '@backstage/config';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { MiddlewareFactory } from '../../../backend-app-api/src/http/MiddlewareFactory';
+import { MiddlewareFactory } from '../../../../backend-app-api/src/http/MiddlewareFactory';
+import { getRootLogger } from '../logging';
 
 /**
  * Options passed to the {@link errorHandler} middleware.
  *
  * @public
+ * @deprecated This type is being deprecated along with the {@link @backstage/backend-common#errorHandler} function.
  */
 export type ErrorHandlerOptions = {
   /**
