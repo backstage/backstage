@@ -7,7 +7,7 @@ import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
-// @public (undocumented)
+// @public
 export interface RootConfigFactoryOptions {
   argv?: string[];
   remote?: Pick<RemoteConfigSourceOptions, 'reloadInterval'>;

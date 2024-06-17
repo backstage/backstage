@@ -25,7 +25,11 @@ import { createPluginKeySource } from './plugin/keys/createPluginKeySource';
 import { UserTokenHandler } from './user/UserTokenHandler';
 
 /**
- * Token authentication and credentials management.
+ * Handles token authentication and credentials management.
+ *
+ * See {@link @backstage/code-plugin-api#AuthService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/auth | the service docs}
+ * for more information.
  *
  * @public
  */

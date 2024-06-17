@@ -162,7 +162,7 @@ export interface HttpRouterFactoryOptions {
   getPath?(pluginId: string): string;
 }
 
-// @public (undocumented)
+// @public
 export const httpRouterServiceFactory: (
   options?: HttpRouterFactoryOptions | undefined,
 ) => ServiceFactory<HttpRouterService, 'plugin'>;
@@ -224,7 +224,7 @@ export function loadBackendConfig(options: {
   config: Config;
 }>;
 
-// @public (undocumented)
+// @public
 export const loggerServiceFactory: () => ServiceFactory<
   LoggerService,
   'plugin'
@@ -303,7 +303,7 @@ export interface RootHttpRouterConfigureContext {
   server: Server;
 }
 
-// @public (undocumented)
+// @public
 export type RootHttpRouterFactoryOptions = {
   indexPath?: string | false;
   configure?(context: RootHttpRouterConfigureContext): void;
@@ -320,7 +320,7 @@ export const rootLifecycleServiceFactory: () => ServiceFactory<
   'root'
 >;
 
-// @public (undocumented)
+// @public
 export const rootLoggerServiceFactory: () => ServiceFactory<
   RootLoggerService,
   'root'

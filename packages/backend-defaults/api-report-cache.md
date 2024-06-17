@@ -24,7 +24,7 @@ export type CacheManagerOptions = {
   onError?: (err: Error) => void;
 };
 
-// @public (undocumented)
+// @public
 export const cacheServiceFactory: () => ServiceFactory<CacheService, 'plugin'>;
 
 // @public (undocumented)

@@ -275,6 +275,10 @@ class DefaultHttpAuthService implements HttpAuthService {
 /**
  * Authentication of HTTP requests.
  *
+ * See {@link @backstage/code-plugin-api#HttpAuthService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/http-auth | the service docs}
+ * for more information.
+ *
  * @public
  */
 export const httpAuthServiceFactory = createServiceFactory({

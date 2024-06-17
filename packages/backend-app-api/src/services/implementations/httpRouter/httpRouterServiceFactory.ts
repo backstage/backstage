@@ -36,7 +36,15 @@ export interface HttpRouterFactoryOptions {
   getPath?(pluginId: string): string;
 }
 
-/** @public */
+/**
+ * HTTP route registration for plugins.
+ *
+ * See {@link @backstage/code-plugin-api#HttpRouterService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/http-router | the service docs}
+ * for more information.
+ *
+ * @public
+ */
 export const httpRouterServiceFactory = createServiceFactory(
   (options?: HttpRouterFactoryOptions) => ({
     service: coreServices.httpRouter,
