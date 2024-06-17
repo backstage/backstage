@@ -28,6 +28,7 @@ export type UserOptions = {
  * A {@link ContainerRunner} for Docker containers.
  *
  * @public
+ * @deprecated This class is deprecated and will be removed in a future release.
  */
 export class DockerContainerRunner implements ContainerRunner {
   private readonly dockerClient: Docker;
