@@ -73,6 +73,8 @@ import {
   MyGroupsPicker,
   MyGroupsPickerSchema,
 } from './components/fields/MyGroupsPicker/MyGroupsPicker';
+import { BitbucketRepoBranchPicker } from './components/fields/BitbucketRepoBranchPicker/BitbucketRepoBranchPicker';
+import { BitbucketRepoBranchPickerSchema } from './components/fields/BitbucketRepoBranchPicker/schema';
 
 /**
  * The main plugin export for the scaffolder.
@@ -229,5 +231,18 @@ export const EntityTagsPickerFieldExtension = scaffolderPlugin.provide(
     component: EntityTagsPicker,
     name: 'EntityTagsPicker',
     schema: EntityTagsPickerSchema,
+  }),
+);
+
+/**
+ * A field extension to select a branch from a repository.
+ *
+ * @public
+ */
+export const BitbucketRepoBranchPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: BitbucketRepoBranchPicker,
+    name: 'BitbucketRepoBranchPicker',
+    schema: BitbucketRepoBranchPickerSchema,
   }),
 );
