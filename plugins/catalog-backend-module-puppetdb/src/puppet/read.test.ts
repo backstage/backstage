@@ -23,7 +23,11 @@ import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ANNOTATION_PUPPET_CERTNAME, ENDPOINT_NODES } from './constants';
+import {
+  ANNOTATION_PUPPET_CERTNAME,
+  ENDPOINT_FACTSETS,
+  ENDPOINT_NODES,
+} from './constants';
 
 describe('readPuppetNodes', () => {
   const worker = setupServer();
@@ -85,6 +89,92 @@ describe('readPuppetNodes', () => {
             ]),
           );
         }),
+        rest.get(
+          `${config.baseUrl}/${ENDPOINT_FACTSETS}/node1/facts`,
+          (_req, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json([
+                {
+                  certname: 'node1',
+                  timestamp: 'time1',
+                  hash: 'hash1',
+                  producer_timestamp: 'producer_time1',
+                  producer: 'producer1',
+                  environment: 'environment1',
+                  facts: {
+                    data: [
+                      {
+                        name: 'is_virtual',
+                        value: true,
+                      },
+                      {
+                        name: 'kernel',
+                        value: 'Linux',
+                      },
+                      {
+                        name: 'ipaddress',
+                        value: 'ipaddress1',
+                      },
+                      {
+                        name: 'clientnoop',
+                        value: true,
+                      },
+                      {
+                        name: 'clientversion',
+                        value: 'clientversion1',
+                      },
+                    ],
+                  },
+                },
+              ]),
+            );
+          },
+        ),
+        rest.get(
+          `${config.baseUrl}/${ENDPOINT_FACTSETS}/node2/facts`,
+          (_req, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json([
+                {
+                  certname: 'node2',
+                  timestamp: 'time2',
+                  hash: 'hash2',
+                  producer_timestamp: 'producer_time2',
+                  producer: 'producer2',
+                  environment: 'environment2',
+                  facts: {
+                    data: [
+                      {
+                        name: 'is_virtual',
+                        value: false,
+                      },
+                      {
+                        name: 'kernel',
+                        value: 'Windows',
+                      },
+                      {
+                        name: 'ipaddress',
+                        value: 'ipaddress2',
+                      },
+                      {
+                        name: 'clientnoop',
+                        value: false,
+                      },
+                      {
+                        name: 'clientversion',
+                        value: 'clientversion2',
+                      },
+                    ],
+                  },
+                },
+              ]),
+            );
+          },
+        ),
       );
     });
 
@@ -212,6 +302,49 @@ describe('readPuppetNodes', () => {
               ]),
             );
           }),
+          rest.get(
+            `${config.baseUrl}/${ENDPOINT_FACTSETS}/node1/facts`,
+            (_req, res, ctx) => {
+              return res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.json([
+                  {
+                    certname: 'node1',
+                    timestamp: 'time1',
+                    hash: 'hash1',
+                    producer_timestamp: 'producer_time1',
+                    producer: 'producer1',
+                    environment: 'environment1',
+                    facts: {
+                      data: [
+                        {
+                          name: 'is_virtual',
+                          value: true,
+                        },
+                        {
+                          name: 'kernel',
+                          value: 'Linux',
+                        },
+                        {
+                          name: 'ipaddress',
+                          value: 'ipaddress1',
+                        },
+                        {
+                          name: 'clientnoop',
+                          value: true,
+                        },
+                        {
+                          name: 'clientversion',
+                          value: 'clientversion1',
+                        },
+                      ],
+                    },
+                  },
+                ]),
+              );
+            },
+          ),
         );
       });
 
