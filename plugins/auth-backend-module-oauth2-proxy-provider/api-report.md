@@ -5,12 +5,12 @@
 ```ts
 /// <reference types="node" />
 
-import { BackendFeature } from '@backstage/backend-plugin-api';
+import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
 import { IncomingHttpHeaders } from 'http';
 import { ProxyAuthenticator } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
-const authModuleOauth2ProxyProvider: () => BackendFeature;
+const authModuleOauth2ProxyProvider: BackendFeatureCompat;
 export default authModuleOauth2ProxyProvider;
 
 // @public
