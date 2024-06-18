@@ -18,7 +18,6 @@ import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { Duration } from 'luxon';
 import { catalogModuleGithubOrgEntityProvider } from './module';
 
 describe('catalogModuleGithubOrgEntityProvider', () => {
@@ -66,8 +65,8 @@ describe('catalogModuleGithubOrgEntityProvider', () => {
       ],
     });
 
-    expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));
-    expect(usedSchedule?.timeout).toEqual(Duration.fromISO('PT3M'));
+    expect(usedSchedule?.frequency).toEqual({ months: 1 });
+    expect(usedSchedule?.timeout).toEqual({ minutes: 3 });
     expect(addedProviders?.length).toEqual(1);
     expect(addedProviders![0].getProviderName()).toEqual(
       'GithubMultiOrgEntityProvider:default',

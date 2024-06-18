@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Duration } from 'luxon';
 import { readGitlabConfigs } from './config';
 
 describe('config', () => {
@@ -179,7 +178,7 @@ describe('config', () => {
         allowInherited: false,
         skipForkedRepos: false,
         schedule: {
-          frequency: Duration.fromISO('PT30M'),
+          frequency: { minutes: 30 },
           timeout: {
             minutes: 3,
           },
