@@ -1,5 +1,43 @@
 # @backstage/plugin-auth-backend
 
+## 0.22.6
+
+### Patch Changes
+
+- 3e823d3: Limited user tokens will no longer include the `ent` field in its payload. Ownership claims will now be fetched from the user info service.
+
+  NOTE: Limited tokens issued prior to this change will no longer be valid. Users may have to clear their browser cookies in order to refresh their auth tokens.
+
+- 8869b8e: Updated local development setup.
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 3e1bb15: Updated to use the new `@backstage/plugin-auth-backend-module-onelogin-provider` implementation
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/plugin-auth-backend-module-onelogin-provider@0.1.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-auth-backend-module-cloudflare-access-provider@0.1.2
+  - @backstage/plugin-auth-backend-module-azure-easyauth-provider@0.1.2
+  - @backstage/plugin-auth-backend-module-oauth2-proxy-provider@0.1.12
+  - @backstage/plugin-auth-backend-module-atlassian-provider@0.2.0
+  - @backstage/plugin-auth-backend-module-bitbucket-provider@0.1.2
+  - @backstage/plugin-auth-backend-module-microsoft-provider@0.1.14
+  - @backstage/plugin-auth-backend-module-aws-alb-provider@0.1.11
+  - @backstage/plugin-auth-backend-module-gcp-iap-provider@0.2.14
+  - @backstage/plugin-auth-backend-module-github-provider@0.1.16
+  - @backstage/plugin-auth-backend-module-gitlab-provider@0.1.16
+  - @backstage/plugin-auth-backend-module-google-provider@0.1.16
+  - @backstage/plugin-auth-backend-module-oauth2-provider@0.2.0
+  - @backstage/plugin-auth-backend-module-oidc-provider@0.2.0
+  - @backstage/plugin-auth-backend-module-okta-provider@0.0.12
+  - @backstage/plugin-catalog-node@1.12.1
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.22.6-next.3
 
 ### Patch Changes

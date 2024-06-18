@@ -1,5 +1,29 @@
 # @backstage/cli
 
+## 0.26.7
+
+### Patch Changes
+
+- 788eca7: Fix readme for new plugins created using cli
+- 90c5268: Add `peerDependencies` to `devDependencies` in `package.json.hbs` templates.
+- c00f7ee: Fix issue with `esm` loaded dependencies being different from the `cjs` import for Vite dependencies
+- b0f66e9: Updated dependency `vite-plugin-node-polyfills` to `^0.22.0`.
+- c328131: Added a new `--publish` flag to the `repo fix` command. This command will validate and if possible generate the metadata required for publishing packages with the Backstage CLI. In addition, a check has been added that the `backstage.pluginId` and `backstage.pluginPackage(s)` fields are present when packing a package for publishing.
+- 5afbe1d: Export default module for `scaffolder-action` cli template
+- 009da47: Fix `versions:check --fix` when `yarn.lock` has multiple joint versions in the same section
+- 9ee948a: Bump `esbuild` target for package builds to `ES2022`.
+- Updated dependencies
+  - @backstage/cli-node@0.2.6
+  - @backstage/integration@1.12.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config-loader@1.8.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.26.7-next.3
 
 ### Patch Changes

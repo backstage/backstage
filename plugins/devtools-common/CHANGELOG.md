@@ -1,5 +1,14 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.10
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/types@1.1.1
+
 ## 0.1.10-next.0
 
 ### Patch Changes

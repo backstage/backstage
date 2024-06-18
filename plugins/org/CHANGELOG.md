@@ -1,5 +1,20 @@
 # @backstage/plugin-org
 
+## 0.6.26
+
+### Patch Changes
+
+- d8e2f53: The `catalogIndex` external route is now optional and will by default bind to the catalog index page if it is available.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-compat-api@0.2.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/plugin-catalog-react@1.12.1
+  - @backstage/frontend-plugin-api@0.6.6
+  - @backstage/catalog-model@1.5.0
+
 ## 0.6.26-next.2
 
 ### Patch Changes

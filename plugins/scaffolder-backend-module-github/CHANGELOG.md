@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.3.0
+
+### Minor Changes
+
+- 403394a: Allow empty author info in createPullRequest action for Github
+
+### Patch Changes
+
+- f145a04: Added handling for dry run to githubPullRequest and githubWebhook and added tests for this functionality
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/integration@1.12.0
+  - @backstage/plugin-scaffolder-node@0.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.3.0-next.3
 
 ### Patch Changes

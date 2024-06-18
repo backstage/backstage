@@ -1,5 +1,28 @@
 # @backstage/plugin-notifications-backend
 
+## 0.3.0
+
+### Minor Changes
+
+- 07a789b: adding filtering of notifications by processors
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-notifications-node@0.2.0
+  - @backstage/plugin-events-node@0.3.5
+  - @backstage/plugin-notifications-common@0.0.4
+  - @backstage/plugin-signals-node@0.1.5
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.3.0-next.3
 
 ### Patch Changes

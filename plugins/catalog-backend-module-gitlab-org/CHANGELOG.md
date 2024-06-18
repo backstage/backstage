@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-gitlab-org
 
+## 0.0.2
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-catalog-backend-module-gitlab@0.3.18
+  - @backstage/plugin-catalog-node@1.12.1
+  - @backstage/plugin-events-node@0.3.5
+
 ## 0.0.2-next.3
 
 ### Patch Changes

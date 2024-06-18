@@ -1,5 +1,19 @@
 # @backstage/plugin-search-react
 
+## 1.7.12
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/plugin-search-common@1.2.12
+  - @backstage/frontend-plugin-api@0.6.6
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 1.7.12-next.2
 
 ### Patch Changes

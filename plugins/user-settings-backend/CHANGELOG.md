@@ -1,5 +1,23 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.2.18
+
+### Patch Changes
+
+- 8869b8e: Updated local development setup.
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- e6ec179: Use signals to update user settings across sessions
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-user-settings-common@0.0.1
+  - @backstage/plugin-signals-node@0.1.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.18-next.3
 
 ### Patch Changes

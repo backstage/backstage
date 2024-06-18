@@ -1,5 +1,15 @@
 # @backstage/plugin-catalog-common
 
+## 1.0.24
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-search-common@1.2.12
+  - @backstage/catalog-model@1.5.0
+
 ## 1.0.24-next.0
 
 ### Patch Changes

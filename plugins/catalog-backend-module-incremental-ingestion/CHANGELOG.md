@@ -1,5 +1,23 @@
 # @backstage/plugin-catalog-backend-module-incremental-ingestion
 
+## 0.4.24
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-tasks@0.5.24
+  - @backstage/plugin-catalog-backend@1.23.0
+  - @backstage/plugin-catalog-node@1.12.1
+  - @backstage/plugin-events-node@0.3.5
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.4.24-next.3
 
 ### Patch Changes
