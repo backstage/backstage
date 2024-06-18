@@ -40,7 +40,31 @@ describe('createExtensionKind', () => {
       },
     });
 
-    expect(extension).toBeDefined();
+    expect(extension).toEqual({
+      $$type: '@backstage/ExtensionDefinition',
+      attachTo: {
+        id: 'test',
+        input: 'default',
+      },
+      configSchema: undefined,
+      disabled: false,
+      inputs: {},
+      kind: 'test-extension',
+      name: 'my-extension',
+      namespace: undefined,
+      output: {
+        element: {
+          $$type: '@backstage/ExtensionDataRef',
+          config: {},
+          id: 'core.reactElement',
+          optional: expect.any(Function),
+          toString: expect.any(Function),
+        },
+      },
+      factory: expect.any(Function),
+      toString: expect.any(Function),
+      version: 'v1',
+    });
 
     const { container } = createExtensionTester(extension).render();
     expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
