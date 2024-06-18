@@ -215,7 +215,7 @@ describe('<EntityNamespacePicker/>', () => {
       }),
     );
   });
-  it('namespace picker is invisible if there are only 1 available option', async () => {
+  it('namespace picker is visible if there are only 1 available option', async () => {
     const defaultNamespaces = ['default', 'default', 'default'];
     const mockCatalogApiRefDefaultNamespace = {
       getEntityFacets: async () => ({
@@ -224,6 +224,27 @@ describe('<EntityNamespacePicker/>', () => {
             value,
             count: idx,
           })),
+        },
+      }),
+    } as unknown as CatalogApi;
+    await renderInTestApp(
+      <TestApiProvider
+        apis={[[catalogApiRef, mockCatalogApiRefDefaultNamespace]]}
+      >
+        <MockEntityListContextProvider value={{}}>
+          <EntityNamespacePicker />
+        </MockEntityListContextProvider>
+      </TestApiProvider>,
+    );
+    await waitFor(() =>
+      expect(screen.queryByText('Namespace')).toBeInTheDocument(),
+    );
+  });
+  it('namespace picker is invisible if there is zero available option', async () => {
+    const mockCatalogApiRefDefaultNamespace = {
+      getEntityFacets: async () => ({
+        facets: {
+          'metadata.namespace': [],
         },
       }),
     } as unknown as CatalogApi;
