@@ -13,16 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import {
   createLegacyAuthAdapters,
   errorHandler,
-  PluginEndpointDiscovery,
 } from '@backstage/backend-common';
 import express, { NextFunction, Request, Response } from 'express';
 import Router from 'express-promise-router';
 import {
   AuthService,
   BackstageUserInfo,
+  DiscoveryService,
   LifecycleService,
   LoggerService,
   UserInfoService,
@@ -41,7 +42,7 @@ export interface RouterOptions {
   logger: LoggerService;
   events: EventsService;
   identity: IdentityApi;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   config: Config;
   lifecycle?: LifecycleService;
   auth?: AuthService;

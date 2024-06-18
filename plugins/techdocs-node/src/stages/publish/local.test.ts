@@ -13,10 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  loggerToWinstonLogger,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+
+import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
@@ -42,7 +41,7 @@ const createMockEntity = (annotations = {}, lowerCase = false) => {
   };
 };
 
-const testDiscovery: jest.Mocked<PluginEndpointDiscovery> = {
+const testDiscovery: jest.Mocked<DiscoveryService> = {
   getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007/api/techdocs'),
   getExternalBaseUrl: jest.fn(),
 };

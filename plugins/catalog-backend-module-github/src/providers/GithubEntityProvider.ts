@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import {
   GithubCredentialsProvider,
@@ -52,7 +51,11 @@ import {
 } from '@backstage/plugin-events-node';
 import { Commit, PushEvent } from '@octokit/webhooks-types';
 import { Minimatch } from 'minimatch';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 const TOPIC_REPO_PUSH = 'github.push';
 
@@ -89,8 +92,8 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     options: {
       events?: EventsService;
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): GithubEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
@@ -133,7 +136,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     config: GithubEntityProviderConfig,
     integration: GithubIntegration,
     logger: LoggerService,
-    taskRunner: TaskRunner,
+    taskRunner: SchedulerServiceTaskRunner,
     events?: EventsService,
   ) {
     this.config = config;
@@ -163,7 +166,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     return await this.scheduleFn();
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({

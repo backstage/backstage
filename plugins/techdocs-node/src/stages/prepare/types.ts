@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import type { Entity } from '@backstage/catalog-model';
-import { UrlReader } from '@backstage/backend-common';
 import { Logger } from 'winston';
 
 /**
@@ -30,7 +30,7 @@ export type ETag = string;
  */
 export type PreparerConfig = {
   logger: Logger;
-  reader: UrlReader;
+  reader: UrlReaderService;
 };
 
 /**

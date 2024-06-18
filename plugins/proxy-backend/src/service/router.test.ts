@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  HostDiscovery,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { mockServices } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { Request, Response } from 'express';

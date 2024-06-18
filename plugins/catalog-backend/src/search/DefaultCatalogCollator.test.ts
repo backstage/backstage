@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-} from '@backstage/backend-common';
+import { TokenManager } from '@backstage/backend-common';
 import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultCatalogCollator } from './DefaultCatalogCollator';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const server = setupServer();
 
@@ -58,7 +56,7 @@ const expectedEntities: Entity[] = [
 ];
 
 describe('DefaultCatalogCollator', () => {
-  let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+  let mockDiscoveryApi: jest.Mocked<DiscoveryService>;
   let mockTokenManager: jest.Mocked<TokenManager>;
   let collator: DefaultCatalogCollator;
 

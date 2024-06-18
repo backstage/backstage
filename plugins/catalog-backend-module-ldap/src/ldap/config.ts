@@ -14,16 +14,14 @@
  * limitations under the License.
  */
 
-import {
-  readTaskScheduleDefinitionFromConfig,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
 import { SearchOptions } from 'ldapjs';
 import mergeWith from 'lodash/mergeWith';
 import { trimEnd } from 'lodash';
 import { RecursivePartial } from './util';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 
 /**
  * The configuration parameters for a single LDAP provider.
@@ -46,7 +44,7 @@ export type LdapProviderConfig = {
   // The settings that govern the reading and interpretation of groups
   groups: GroupConfig;
   // Schedule configuration for refresh tasks.
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
 /**
@@ -380,7 +378,9 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
     const c = providersConfig.getConfig(id);
 
     const schedule = c.has('schedule')
-      ? readTaskScheduleDefinitionFromConfig(c.getConfig('schedule'))
+      ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+          c.getConfig('schedule'),
+        )
       : undefined;
 
     const newConfig = {

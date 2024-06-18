@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  DatabaseManager,
-  PluginDatabaseManager,
-} from '@backstage/backend-common';
+
 import express from 'express';
 import request from 'supertest';
 
@@ -24,8 +21,10 @@ import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import { mockServices } from '@backstage/backend-test-utils';
+import { DatabaseService } from '@backstage/backend-plugin-api';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 
-function createDatabase(): PluginDatabaseManager {
+function createDatabase(): DatabaseService {
   return DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {

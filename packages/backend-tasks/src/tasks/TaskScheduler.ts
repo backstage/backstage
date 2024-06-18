@@ -18,7 +18,6 @@ import {
   DatabaseManager,
   getRootLogger,
   LegacyRootDatabaseService,
-  PluginDatabaseManager,
 } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import { once } from 'lodash';
@@ -27,7 +26,7 @@ import { migrateBackendTasks } from '../database/migrateBackendTasks';
 import { PluginTaskSchedulerImpl } from './PluginTaskSchedulerImpl';
 import { PluginTaskSchedulerJanitor } from './PluginTaskSchedulerJanitor';
 import { PluginTaskScheduler } from './types';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import { DatabaseService, LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Deals with the scheduling of distributed tasks.
@@ -80,7 +79,7 @@ export class TaskScheduler {
    */
   static forPlugin(opts: {
     pluginId: string;
-    databaseManager: PluginDatabaseManager;
+    databaseManager: DatabaseService;
     logger: LoggerService;
   }): PluginTaskScheduler {
     const databaseFactory = once(async () => {

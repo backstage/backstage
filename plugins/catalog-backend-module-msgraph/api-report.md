@@ -12,10 +12,10 @@ import { GroupEntity } from '@backstage/catalog-model';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import * as MicrosoftGraph from '@microsoft/microsoft-graph-types';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Response as Response_2 } from 'node-fetch';
-import { TaskRunner } from '@backstage/backend-tasks';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { TokenCredential } from '@azure/identity';
 import { UserEntity } from '@backstage/catalog-model';
 
@@ -145,7 +145,7 @@ export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
   id: string;
   logger: LoggerService;
   organizationTransformer?: OrganizationTransformer;
-  schedule: 'manual' | TaskRunner;
+  schedule: 'manual' | SchedulerServiceTaskRunner;
   target: string;
   userTransformer?: UserTransformer;
 }
@@ -155,8 +155,8 @@ export type MicrosoftGraphOrgEntityProviderOptions =
   | MicrosoftGraphOrgEntityProviderLegacyOptions
   | {
       logger: LoggerService;
-      schedule?: 'manual' | TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: 'manual' | SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
       userTransformer?: UserTransformer | Record<string, UserTransformer>;
       groupTransformer?: GroupTransformer | Record<string, GroupTransformer>;
       organizationTransformer?:
@@ -212,7 +212,7 @@ export type MicrosoftGraphProviderConfig = {
   groupSelect?: string[];
   queryMode?: 'basic' | 'advanced';
   loadUserPhotos?: boolean;
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
 // @public

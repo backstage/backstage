@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { ConflictError } from '@backstage/errors';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 
 const createStore = async () => {
   const manager = DatabaseManager.fromConfig(

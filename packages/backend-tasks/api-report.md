@@ -4,12 +4,12 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
 import { HumanDuration as HumanDuration_2 } from '@backstage/types';
 import { JsonObject } from '@backstage/types';
 import { LegacyRootDatabaseService } from '@backstage/backend-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @public @deprecated
 export type HumanDuration = HumanDuration_2;
@@ -92,7 +92,7 @@ export class TaskScheduler {
   // @deprecated (undocumented)
   static forPlugin(opts: {
     pluginId: string;
-    databaseManager: PluginDatabaseManager;
+    databaseManager: DatabaseService;
     logger: LoggerService;
   }): PluginTaskScheduler;
   // @deprecated (undocumented)

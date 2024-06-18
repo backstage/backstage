@@ -6,10 +6,10 @@
 import { AuthService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 
 // @public (undocumented)
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -21,7 +21,7 @@ export interface RouterOptions {
   auth?: AuthService;
   // (undocumented)
   config: Config;
-  database?: PluginDatabaseManager;
+  database?: DatabaseService;
   disableConfigInjection?: boolean;
   // (undocumented)
   httpAuth?: HttpAuthService;

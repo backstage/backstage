@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { createRootLogger } from '@backstage/backend-common';
 import { Config, ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
@@ -28,9 +27,6 @@ import fs from 'fs-extra';
 import { createPublishGithubPullRequestAction } from './githubPullRequest';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
-
-// Make sure root logger is initialized ahead of FS mock
-createRootLogger();
 
 type GithubPullRequestActionInput = ReturnType<
   typeof createPublishGithubPullRequestAction

@@ -24,7 +24,6 @@ import {
   UrlReader,
 } from '@backstage/backend-common';
 import { Router } from 'express';
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -33,7 +32,11 @@ import {
   HttpPostIngressOptions,
 } from '@backstage/plugin-events-node';
 
-import { BackendFeature } from '@backstage/backend-plugin-api';
+import {
+  BackendFeature,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 import { PackagePlatform, PackageRole } from '@backstage/cli-node';
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -62,7 +65,7 @@ export type LegacyPluginEnvironment = {
   discovery: PluginEndpointDiscovery;
   tokenManager: TokenManager;
   permissions: PermissionEvaluator;
-  scheduler: PluginTaskScheduler;
+  scheduler: SchedulerService;
   identity: IdentityApi;
   eventBroker: EventBroker;
   events: EventsService;
@@ -161,7 +164,7 @@ export interface LegacyBackendPluginInstaller {
   scaffolder?(env: LegacyPluginEnvironment): TemplateAction<any>[];
   search?(
     indexBuilder: IndexBuilder,
-    schedule: TaskRunner,
+    schedule: SchedulerServiceTaskRunner,
     env: LegacyPluginEnvironment,
   ): void;
   events?(

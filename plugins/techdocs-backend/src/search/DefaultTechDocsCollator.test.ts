@@ -14,11 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  PluginEndpointDiscovery,
-  TokenManager,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
+import { TokenManager, loggerToWinstonLogger } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { DefaultTechDocsCollator } from './DefaultTechDocsCollator';
 import {
@@ -28,6 +24,7 @@ import {
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
@@ -82,7 +79,7 @@ describe('TechDocs Collator', () => {
   setupRequestMockHandlers(worker);
 
   describe('DefaultTechDocsCollator with legacyPathCasing configuration', () => {
-    let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+    let mockDiscoveryApi: jest.Mocked<DiscoveryService>;
     let mockTokenManager: jest.Mocked<TokenManager>;
     let collator: DefaultTechDocsCollator;
 
@@ -146,7 +143,7 @@ describe('TechDocs Collator', () => {
   });
 
   describe('DefaultTechDocsCollator', () => {
-    let mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery>;
+    let mockDiscoveryApi: jest.Mocked<DiscoveryService>;
     let mockTokenManager: jest.Mocked<TokenManager>;
     let collator: DefaultTechDocsCollator;
 

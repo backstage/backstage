@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
+import { errorHandler } from '@backstage/backend-common';
 import { AuthenticationError, InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import express, { Request } from 'express';
@@ -23,12 +23,13 @@ import { DatabaseUserSettingsStore } from '../database/DatabaseUserSettingsStore
 import { UserSettingsStore } from '../database/UserSettingsStore';
 import { SignalsService } from '@backstage/plugin-signals-node';
 import { UserSettingsSignal } from '@backstage/plugin-user-settings-common';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 
 /**
  * @public
  */
 export interface RouterOptions {
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   identity: IdentityApi;
   signals?: SignalsService;
 }

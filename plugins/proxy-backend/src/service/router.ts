@@ -25,9 +25,11 @@ import {
 } from 'http-proxy-middleware';
 import { Logger } from 'winston';
 import http from 'http';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { JsonObject } from '@backstage/types';
-import { HttpRouterService } from '@backstage/backend-plugin-api';
+import {
+  DiscoveryService,
+  HttpRouterService,
+} from '@backstage/backend-plugin-api';
 
 // A list of headers that are always forwarded to the proxy targets.
 const safeForwardHeaders = [
@@ -54,7 +56,7 @@ const safeForwardHeaders = [
 export interface RouterOptions {
   logger: Logger;
   config: Config;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   skipInvalidProxies?: boolean;
   reviveConsumedRequestBodies?: boolean;
 }

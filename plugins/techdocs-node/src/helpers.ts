@@ -14,8 +14,10 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
+import {
+  UrlReaderService,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
 import {
   Entity,
   getEntitySourceLocation,
@@ -145,7 +147,7 @@ export const getLocationForEntity = (
  * @param opts - Options for configuring the reader, e.g. logger, etag, etc.
  */
 export const getDocFilesFromRepository = async (
-  reader: UrlReader,
+  reader: UrlReaderService,
   entity: Entity,
   opts?: { etag?: string; logger?: Logger },
 ): Promise<PreparerResponse> => {

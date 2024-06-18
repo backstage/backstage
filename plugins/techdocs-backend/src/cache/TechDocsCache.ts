@@ -13,15 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { CacheClient } from '@backstage/backend-common';
+
 import { assertError, CustomErrorBase } from '@backstage/errors';
 import { Config } from '@backstage/config';
 import { Logger } from 'winston';
+import { CacheService } from '@backstage/backend-plugin-api';
 
 export class CacheInvalidationError extends CustomErrorBase {}
 
 export class TechDocsCache {
-  protected readonly cache: CacheClient;
+  protected readonly cache: CacheService;
   protected readonly logger: Logger;
   protected readonly readTimeout: number;
 
@@ -30,7 +31,7 @@ export class TechDocsCache {
     logger,
     readTimeout,
   }: {
-    cache: CacheClient;
+    cache: CacheService;
     logger: Logger;
     readTimeout: number;
   }) {
@@ -41,7 +42,7 @@ export class TechDocsCache {
 
   static fromConfig(
     config: Config,
-    { cache, logger }: { cache: CacheClient; logger: Logger },
+    { cache, logger }: { cache: CacheService; logger: Logger },
   ) {
     const timeout = config.getOptionalNumber('techdocs.cache.readTimeout');
     const readTimeout = timeout === undefined ? 1000 : timeout;

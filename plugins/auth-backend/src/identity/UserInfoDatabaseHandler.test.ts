@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
 import { TestDatabaseId, TestDatabases } from '@backstage/backend-test-utils';
 import { Knex } from 'knex';
 import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-auth-backend',

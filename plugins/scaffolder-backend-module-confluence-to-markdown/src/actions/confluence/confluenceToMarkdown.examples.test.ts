@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createConfluenceToMarkdownAction } from './confluenceToMarkdown';
-import { UrlReader, loggerToWinstonLogger } from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import {
@@ -28,6 +29,7 @@ import { examples } from './confluenceToMarkdown.examples';
 import yaml from 'yaml';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 describe('confluence:transform:markdown examples', () => {
   const baseUrl = `https://confluence.example.com`;
@@ -51,7 +53,7 @@ describe('confluence:transform:markdown examples', () => {
     }),
   );
 
-  let reader: UrlReader;
+  let reader: UrlReaderService;
   let mockContext: ActionContext<{
     confluenceUrls: string[];
     repoUrl: string;

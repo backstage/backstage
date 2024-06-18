@@ -4,9 +4,9 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import express from 'express';
 import { Logger } from 'winston';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 
 // @public
 export function createRouter(options: RouterOptions): Promise<express.Router>;
@@ -16,7 +16,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   // (undocumented)
   logger: Logger;
   // (undocumented)

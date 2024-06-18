@@ -16,7 +16,6 @@
 
 import {
   createLegacyAuthAdapters,
-  PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
 import {
@@ -43,6 +42,7 @@ import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTrans
 import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
 import {
   AuthService,
+  DiscoveryService,
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -59,7 +59,7 @@ interface MkSearchIndexDoc {
  * @public
  */
 export type TechDocsCollatorFactoryOptions = {
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   logger: LoggerService;
   tokenManager?: TokenManager;
   auth?: AuthService;
@@ -88,7 +88,7 @@ export class DefaultTechDocsCollatorFactory implements DocumentCollatorFactory {
   public readonly visibilityPermission: Permission =
     catalogEntityReadPermission;
 
-  private discovery: PluginEndpointDiscovery;
+  private discovery: DiscoveryService;
   private locationTemplate: string;
   private readonly logger: LoggerService;
   private readonly auth: AuthService;

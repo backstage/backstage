@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  readTaskScheduleDefinitionFromConfig,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
@@ -31,7 +29,7 @@ export type BitbucketCloudEntityProviderConfig = {
     projectKey?: RegExp;
     repoSlug?: RegExp;
   };
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
 export function readProviderConfigs(
@@ -67,7 +65,9 @@ function readProviderConfig(
   const repoSlugPattern = config.getOptionalString('filters.repoSlug');
 
   const schedule = config.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
     : undefined;
 
   return {

@@ -19,7 +19,6 @@ import { z } from 'zod';
 import {
   createLegacyAuthAdapters,
   errorHandler,
-  HostDiscovery,
 } from '@backstage/backend-common';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
@@ -43,6 +42,7 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 
 const jsonObjectSchema: z.ZodSchema<JsonObject> = z.lazy(() => {
   const jsonValueSchema: z.ZodSchema<JsonValue> = z.lazy(() =>

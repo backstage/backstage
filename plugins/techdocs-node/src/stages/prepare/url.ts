@@ -15,7 +15,6 @@
  */
 
 import { assertError } from '@backstage/errors';
-import { UrlReader } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { Logger } from 'winston';
 import { getDocFilesFromRepository } from '../../helpers';
@@ -25,6 +24,7 @@ import {
   PreparerOptions,
   PreparerResponse,
 } from './types';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 /**
  * Preparer used to retrieve documentation files from a remote repository
@@ -32,7 +32,7 @@ import {
  */
 export class UrlPreparer implements PreparerBase {
   private readonly logger: Logger;
-  private readonly reader: UrlReader;
+  private readonly reader: UrlReaderService;
 
   /**
    * Returns a directory preparer instance
@@ -42,7 +42,7 @@ export class UrlPreparer implements PreparerBase {
     return new UrlPreparer(options.reader, options.logger);
   }
 
-  private constructor(reader: UrlReader, logger: Logger) {
+  private constructor(reader: UrlReaderService, logger: Logger) {
     this.logger = logger;
     this.reader = reader;
   }

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import {
   SearchQuery,
@@ -30,6 +29,7 @@ import {
 import { v4 as uuid } from 'uuid';
 import { Logger } from 'winston';
 import { Config } from '@backstage/config';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 
 /**
  * Search query that the Postgres search engine understands.
@@ -62,7 +62,7 @@ export type PgSearchQueryTranslator = (
  * @public
  */
 export type PgSearchOptions = {
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   logger?: Logger;
 };
 
@@ -124,7 +124,7 @@ export class PgSearchEngine implements SearchEngine {
    * @deprecated This will be removed in a future release, please us fromConfig instead
    */
   static async from(options: {
-    database: PluginDatabaseManager;
+    database: DatabaseService;
     config: Config;
     logger?: Logger;
   }): Promise<PgSearchEngine> {
@@ -143,7 +143,7 @@ export class PgSearchEngine implements SearchEngine {
     );
   }
 
-  static async supported(database: PluginDatabaseManager): Promise<boolean> {
+  static async supported(database: DatabaseService): Promise<boolean> {
     return await DatabaseDocumentStore.supported(await database.getClient());
   }
 

@@ -16,10 +16,13 @@
 
 import {
   createLegacyAuthAdapters,
-  PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
-import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ExploreTool } from '@backstage-community/plugin-explore-common';
 import {
@@ -42,7 +45,7 @@ export interface ToolDocument extends IndexableDocument, ExploreTool {}
  * @public
  */
 export type ToolDocumentCollatorFactoryOptions = {
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   logger: LoggerService;
   tokenManager?: TokenManager;
   auth?: AuthService;
@@ -56,7 +59,7 @@ export type ToolDocumentCollatorFactoryOptions = {
 export class ToolDocumentCollatorFactory implements DocumentCollatorFactory {
   public readonly type: string = 'tools';
 
-  private readonly discovery: PluginEndpointDiscovery;
+  private readonly discovery: DiscoveryService;
   private readonly logger: LoggerService;
   private readonly auth: AuthService;
 

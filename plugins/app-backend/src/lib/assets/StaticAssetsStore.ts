@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { Knex } from 'knex';
 import { DateTime } from 'luxon';
 import partition from 'lodash/partition';
 import { StaticAsset, StaticAssetInput, StaticAssetProvider } from './types';
 import {
+  DatabaseService,
   LoggerService,
   resolvePackagePath,
 } from '@backstage/backend-plugin-api';
@@ -38,7 +38,7 @@ interface StaticAssetRow {
 
 /** @internal */
 export interface StaticAssetsStoreOptions {
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   logger: LoggerService;
 }
 

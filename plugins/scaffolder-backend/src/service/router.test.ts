@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  DatabaseManager,
-  loggerToWinstonLogger,
-  PluginDatabaseManager,
-  UrlReaders,
-} from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { ConfigReader } from '@backstage/config';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
@@ -46,6 +41,9 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { DatabaseService } from '@backstage/backend-plugin-api';
+import { UrlReaders } from '@backstage/backend-defaults/urlReader';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 
 const mockAccess = jest.fn();
 
@@ -62,7 +60,7 @@ jest.mock('fs-extra', () => ({
   remove: jest.fn(),
 }));
 
-function createDatabase(): PluginDatabaseManager {
+function createDatabase(): DatabaseService {
   return DatabaseManager.fromConfig(
     new ConfigReader({
       backend: {

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
 import { isError } from '@backstage/errors';
 import {
   CatalogProcessor,
@@ -24,6 +23,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import limiterFactory from 'p-limit';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 /**
  * A processor for automatic discovery of entities from S3 buckets. Handles the
@@ -34,7 +34,7 @@ import limiterFactory from 'p-limit';
  * @deprecated Use the `AwsS3EntityProvider` instead (see https://github.com/backstage/backstage/blob/master/plugins/catalog-backend-module-aws/CHANGELOG.md#014).
  */
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
-  constructor(private readonly reader: UrlReader) {}
+  constructor(private readonly reader: UrlReaderService) {}
 
   getProcessorName(): string {
     return 'AwsS3DiscoveryProcessor';
