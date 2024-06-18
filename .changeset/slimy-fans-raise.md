@@ -2,4 +2,4 @@
 '@backstage/plugin-techdocs': patch
 ---
 
-Fix weird opening behaviour of the <TechDocsSearch /> component.
+Fixed an issue preventing the `TechDocsSearchBar` component from opening when clicking on the arrow icon.
