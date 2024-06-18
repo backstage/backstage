@@ -50,8 +50,8 @@ import {
   MultiEntityPickerSchema,
   validateMultiEntityPickerValidation,
 } from '../components/fields/MultiEntityPicker/MultiEntityPicker';
-import { BitbucketRepoBranchPicker } from '../components/fields/BitbucketRepoBranchPicker/BitbucketRepoBranchPicker';
-import { BitbucketRepoBranchPickerSchema } from '../components/fields/BitbucketRepoBranchPicker/schema';
+import { RepoBranchPicker } from '../components/fields/BitbucketRepoBranchPicker/RepoBranchPicker';
+import { RepoBranchPickerSchema } from '../components/fields/BitbucketRepoBranchPicker/schema';
 
 export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
   {
@@ -102,8 +102,8 @@ export const DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS = [
     validation: validateMultiEntityPickerValidation,
   },
   {
-    component: BitbucketRepoBranchPicker,
-    name: 'BitbucketRepoBranchPicker',
-    schema: BitbucketRepoBranchPickerSchema,
+    component: RepoBranchPicker,
+    name: 'RepoBranchPicker',
+    schema: RepoBranchPickerSchema,
   },
 ];

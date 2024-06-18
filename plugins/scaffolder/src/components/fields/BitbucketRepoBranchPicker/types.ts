@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-export {
-  RepoBranchPickerFieldSchema,
-  type RepoBranchPickerUiOptions,
-} from './schema';
+export interface RepoBranchPickerState {
+  host?: string;
+  workspace?: string;
+  repository?: string;
+  branch?: string;
+  availableBranches?: string[];
+}

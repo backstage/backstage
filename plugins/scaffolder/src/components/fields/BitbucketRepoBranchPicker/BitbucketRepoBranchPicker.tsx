@@ -14,128 +14,71 @@
  * limitations under the License.
  */
 
-import {
-  scaffolderApiRef,
-  useTemplateSecrets,
-} from '@backstage/plugin-scaffolder-react';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import FormControl from '@material-ui/core/FormControl';
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useApi } from '@backstage/core-plugin-api';
-import { scmAuthApiRef } from '@backstage/integration-react';
-import { BitbucketRepoBranchPickerProps } from './schema';
+import { RepoBranchPickerState } from './types';
 
 export const BitbucketRepoBranchPicker = ({
   onChange,
+  state,
   rawErrors,
-  required,
-  formData,
-  formContext: {
-    formData: { repoUrl },
-  },
-  uiSchema,
-}: BitbucketRepoBranchPickerProps) => {
-  const { secrets, setSecrets } = useTemplateSecrets();
-
-  const accessToken = useMemo(
-    () =>
-      uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
-      secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey],
-    [secrets, uiSchema],
-  );
-
-  const [host, setHost] = useState<string>();
-  const [workspace, setWorkspace] = useState<string | null>(null);
-  const [repository, setRepository] = useState<string | null>(null);
-  const [availableBranches, setAvailableBranches] = useState<string[]>([]);
-
-  const scmAuthApi = useApi(scmAuthApiRef);
+  accessToken,
+}: {
+  onChange: (state: RepoBranchPickerState) => void;
+  state: RepoBranchPickerState;
+  rawErrors: string[];
+  accessToken?: string;
+}) => {
   const scaffolderApi = useApi(scaffolderApiRef);
-
-  useEffect(() => {
-    if (repoUrl) {
-      const url = new URL(`https://${repoUrl}`);
-      setHost(url.host);
-      setWorkspace(url.searchParams.get('workspace'));
-      setRepository(url.searchParams.get('repo'));
-    }
-  }, [repoUrl]);
-
-  useDebounce(
-    async () => {
-      const { requestUserCredentials } = uiSchema?.['ui:options'] ?? {};
-
-      if (!requestUserCredentials || !host) {
-        return;
-      }
-
-      // don't show login prompt if secret value is already in state
-      if (secrets[requestUserCredentials.secretsKey]) {
-        return;
-      }
-
-      // user has requested that we use the users credentials
-      // so lets grab them using the scmAuthApi and pass through
-      // any additional scopes from the ui:options
-      const { token } = await scmAuthApi.getCredentials({
-        url: `https://${host}`,
-        additionalScope: {
-          repoWrite: true,
-          customScopes: requestUserCredentials.additionalScopes,
-        },
-      });
-
-      // set the secret using the key provided in the ui:options for use
-      // in the templating the manifest with ${{ secrets[secretsKey] }}
-      setSecrets({ [requestUserCredentials.secretsKey]: token });
-    },
-    500,
-    [host, uiSchema],
-  );
 
   useDebounce(
     () => {
       const updateAvailableBranches = async () => {
         if (
-          host === 'bitbucket.org' &&
+          state.host === 'bitbucket.org' &&
           accessToken &&
-          workspace &&
-          repository
+          state.workspace &&
+          state.repository
         ) {
           const result = await scaffolderApi.autocomplete(
             accessToken,
             'bitbucketCloud',
             'branches',
-            { workspace, repository },
+            { workspace: state.workspace, repository: state.repository },
           );
 
-          setAvailableBranches(result);
+          onChange({ availableBranches: result });
         } else {
-          setAvailableBranches([]);
+          onChange({ availableBranches: [] });
         }
       };
 
-      updateAvailableBranches().catch(() => setAvailableBranches([]));
+      updateAvailableBranches().catch(() =>
+        onChange({ availableBranches: [] }),
+      );
     },
     500,
-    [host, accessToken, workspace, repository],
+    [state, accessToken],
   );
 
   return (
     <FormControl
       margin="normal"
-      required={required}
-      error={rawErrors?.length > 0 && !formData}
+      required
+      error={rawErrors?.length > 0 && !state.branch}
     >
       <Autocomplete
         onChange={(_, newValue) => {
-          onChange(newValue || '');
+          onChange({ branch: newValue || undefined });
         }}
-        options={availableBranches}
+        options={state.availableBranches || []}
         renderInput={params => (
-          <TextField {...params} label="Branch" required={required} />
+          <TextField {...params} label="Branch" required />
         )}
         freeSolo
         autoSelect

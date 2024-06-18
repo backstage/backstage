@@ -19,7 +19,7 @@ import { makeFieldSchemaFromZod } from '../utils';
 /**
  * @public
  */
-export const BitbucketRepoBranchPickerFieldSchema = makeFieldSchemaFromZod(
+export const RepoBranchPickerFieldSchema = makeFieldSchemaFromZod(
   z.string(),
   z.object({
     requestUserCredentials: z
@@ -68,15 +68,13 @@ export const BitbucketRepoBranchPickerFieldSchema = makeFieldSchemaFromZod(
 
 /**
  * The input props that can be specified under `ui:options` for the
- * `BitbucketRepoBranchPicker` field extension.
+ * `RepoBranchPicker` field extension.
  *
  * @public
  */
-export type BitbucketRepoBranchPickerUiOptions =
-  typeof BitbucketRepoBranchPickerFieldSchema.uiOptionsType;
+export type RepoBranchPickerUiOptions =
+  typeof RepoBranchPickerFieldSchema.uiOptionsType;
 
-export type BitbucketRepoBranchPickerProps =
-  typeof BitbucketRepoBranchPickerFieldSchema.type;
+export type RepoBranchPickerProps = typeof RepoBranchPickerFieldSchema.type;
 
-export const BitbucketRepoBranchPickerSchema =
-  BitbucketRepoBranchPickerFieldSchema.schema;
+export const RepoBranchPickerSchema = RepoBranchPickerFieldSchema.schema;

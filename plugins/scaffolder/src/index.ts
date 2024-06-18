@@ -30,7 +30,7 @@ export {
   MyGroupsPickerFieldExtension,
   RepoUrlPickerFieldExtension,
   MultiEntityPickerFieldExtension,
-  BitbucketRepoBranchPickerFieldExtension,
+  RepoBranchPickerFieldExtension,
   ScaffolderPage,
   scaffolderPlugin,
 } from './plugin';

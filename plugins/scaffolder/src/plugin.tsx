@@ -73,8 +73,8 @@ import {
   MyGroupsPicker,
   MyGroupsPickerSchema,
 } from './components/fields/MyGroupsPicker/MyGroupsPicker';
-import { BitbucketRepoBranchPicker } from './components/fields/BitbucketRepoBranchPicker/BitbucketRepoBranchPicker';
-import { BitbucketRepoBranchPickerSchema } from './components/fields/BitbucketRepoBranchPicker/schema';
+import { RepoBranchPicker } from './components/fields/BitbucketRepoBranchPicker/RepoBranchPicker';
+import { RepoBranchPickerSchema } from './components/fields/BitbucketRepoBranchPicker/schema';
 
 /**
  * The main plugin export for the scaffolder.
@@ -239,10 +239,10 @@ export const EntityTagsPickerFieldExtension = scaffolderPlugin.provide(
  *
  * @public
  */
-export const BitbucketRepoBranchPickerFieldExtension = scaffolderPlugin.provide(
+export const RepoBranchPickerFieldExtension = scaffolderPlugin.provide(
   createScaffolderFieldExtension({
-    component: BitbucketRepoBranchPicker,
-    name: 'BitbucketRepoBranchPicker',
-    schema: BitbucketRepoBranchPickerSchema,
+    component: RepoBranchPicker,
+    name: 'RepoBranchPicker',
+    schema: RepoBranchPickerSchema,
   }),
 );
