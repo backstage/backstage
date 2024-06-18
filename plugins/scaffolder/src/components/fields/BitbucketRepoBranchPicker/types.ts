@@ -19,5 +19,4 @@ export interface RepoBranchPickerState {
   workspace?: string;
   repository?: string;
   branch?: string;
-  availableBranches?: string[];
 }

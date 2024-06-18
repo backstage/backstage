@@ -16,7 +16,7 @@
 
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import FormControl from '@material-ui/core/FormControl';
-import React from 'react';
+import React, { useState } from 'react';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import useDebounce from 'react-use/esm/useDebounce';
@@ -35,7 +35,9 @@ export const BitbucketRepoBranchPicker = ({
   rawErrors: string[];
   accessToken?: string;
 }) => {
-  const { host, workspace, repository, branch, availableBranches } = state;
+  const { host, workspace, repository, branch } = state;
+
+  const [availableBranches, setAvailableBranches] = useState<string[]>([]);
 
   const scaffolderApi = useApi(scaffolderApiRef);
 
@@ -55,15 +57,13 @@ export const BitbucketRepoBranchPicker = ({
             { workspace, repository },
           );
 
-          onChange({ availableBranches: result });
+          setAvailableBranches(result);
         } else {
-          onChange({ availableBranches: [] });
+          setAvailableBranches([]);
         }
       };
 
-      updateAvailableBranches().catch(() =>
-        onChange({ availableBranches: [] }),
-      );
+      updateAvailableBranches().catch(() => setAvailableBranches([]));
     },
     500,
     [host, workspace, repository, accessToken],
@@ -80,7 +80,7 @@ export const BitbucketRepoBranchPicker = ({
         onChange={(_, newValue) => {
           onChange({ branch: newValue || '' });
         }}
-        options={availableBranches || []}
+        options={availableBranches}
         renderInput={params => (
           <TextField {...params} label="Branch" required />
         )}
