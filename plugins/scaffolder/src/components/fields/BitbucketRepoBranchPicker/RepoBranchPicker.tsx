@@ -36,33 +36,14 @@ import { BitbucketRepoBranchPicker } from './BitbucketRepoBranchPicker';
  */
 export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
   const { uiSchema, onChange, rawErrors, schema, formContext } = props;
+
   const [state, setState] = useState<RepoBranchPickerState>({});
+  const { host, branch } = state;
+
   const integrationApi = useApi(scmIntegrationsApiRef);
   const scmAuthApi = useApi(scmAuthApiRef);
+
   const { secrets, setSecrets } = useTemplateSecrets();
-
-  useEffect(() => {
-    if (formContext.formData.repoUrl) {
-      const url = new URL(`https://${formContext.formData.repoUrl}`);
-
-      setState({
-        host: url.host,
-        workspace: url.searchParams.get('workspace') || undefined,
-        repository: url.searchParams.get('repo') || undefined,
-      });
-    }
-  }, [formContext]);
-
-  useEffect(() => {
-    onChange(state.branch);
-  }, [state, onChange]);
-
-  const updateLocalState = useCallback(
-    (newState: RepoBranchPickerState) => {
-      setState(prevState => ({ ...prevState, ...newState }));
-    },
-    [setState],
-  );
 
   useDebounce(
     async () => {
@@ -96,8 +77,31 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
     [state, uiSchema],
   );
 
-  const hostType =
-    (state.host && integrationApi.byHost(state.host)?.type) ?? null;
+  useEffect(() => {
+    if (formContext.formData.repoUrl) {
+      const url = new URL(`https://${formContext.formData.repoUrl}`);
+
+      setState({
+        host: url.host,
+        workspace: url.searchParams.get('workspace') || undefined,
+        repository: url.searchParams.get('repo') || undefined,
+      });
+    }
+  }, [formContext]);
+
+  useEffect(() => {
+    onChange(branch);
+  }, [branch, onChange]);
+
+  const updateLocalState = useCallback(
+    (newState: RepoBranchPickerState) => {
+      setState(prevState => ({ ...prevState, ...newState }));
+    },
+    [setState],
+  );
+
+  const hostType = (host && integrationApi.byHost(host)?.type) ?? null;
+
   return (
     <>
       {schema.title && (

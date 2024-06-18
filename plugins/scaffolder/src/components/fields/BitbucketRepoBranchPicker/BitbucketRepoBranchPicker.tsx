@@ -34,22 +34,24 @@ export const BitbucketRepoBranchPicker = ({
   rawErrors: string[];
   accessToken?: string;
 }) => {
+  const { host, workspace, repository, branch, availableBranches } = state;
+
   const scaffolderApi = useApi(scaffolderApiRef);
 
   useDebounce(
     () => {
       const updateAvailableBranches = async () => {
         if (
-          state.host === 'bitbucket.org' &&
+          host === 'bitbucket.org' &&
           accessToken &&
-          state.workspace &&
-          state.repository
+          workspace &&
+          repository
         ) {
           const result = await scaffolderApi.autocomplete(
             accessToken,
             'bitbucketCloud',
             'branches',
-            { workspace: state.workspace, repository: state.repository },
+            { workspace, repository },
           );
 
           onChange({ availableBranches: result });
@@ -70,13 +72,13 @@ export const BitbucketRepoBranchPicker = ({
     <FormControl
       margin="normal"
       required
-      error={rawErrors?.length > 0 && !state.branch}
+      error={rawErrors?.length > 0 && !branch}
     >
       <Autocomplete
         onChange={(_, newValue) => {
           onChange({ branch: newValue || undefined });
         }}
-        options={state.availableBranches || []}
+        options={availableBranches || []}
         renderInput={params => (
           <TextField {...params} label="Branch" required />
         )}
