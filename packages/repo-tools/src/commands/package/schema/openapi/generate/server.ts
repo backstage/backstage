@@ -26,7 +26,7 @@ import {
 import { paths as cliPaths } from '../../../../../lib/paths';
 import fs from 'fs-extra';
 import { exec } from '../../../../../lib/exec';
-import { resolvePackagePath } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import {
   getPathToCurrentOpenApiSpec,
   getRelativePathToFile,
