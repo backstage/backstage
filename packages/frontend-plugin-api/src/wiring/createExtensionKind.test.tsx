@@ -16,6 +16,7 @@
 import React from 'react';
 import { coreExtensionData } from './coreExtensionData';
 import { createExtensionKind } from './createExtensionKind';
+import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 describe('createExtensionKind', () => {
   it('should allow creation of extension kinds', () => {
@@ -40,5 +41,40 @@ describe('createExtensionKind', () => {
     });
 
     expect(extension).toBeDefined();
+
+    const { container } = createExtensionTester(extension).render();
+    expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
+  });
+
+  it('should allow overriding of the default factory', () => {
+    const TestExtension = createExtensionKind({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: {
+        element: coreExtensionData.reactElement,
+      },
+      factory(_, props: { text: string }) {
+        return {
+          element: <h1>{props.text}</h1>,
+        };
+      },
+    });
+
+    const extension = TestExtension.new({
+      name: 'my-extension',
+      props: {
+        text: 'Hello, world!',
+      },
+      factory(_, props: { text: string }) {
+        return {
+          element: <h2>{props.text}</h2>,
+        };
+      },
+    });
+
+    expect(extension).toBeDefined();
+
+    const { container } = createExtensionTester(extension).render();
+    expect(container.querySelector('h2')).toHaveTextContent('Hello, world!');
   });
 });
