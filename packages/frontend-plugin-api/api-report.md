@@ -522,6 +522,16 @@ export function createExtensionInput<
   }
 >;
 
+// @public
+export function createExtensionKind<
+  TProps,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+>(
+  options: ExtensionKindOptions<TProps, TInputs, TOutput, TConfig>,
+): ExtensionKind<TProps, TInputs, TOutput, TConfig>;
+
 // @public (undocumented)
 export interface CreateExtensionOptions<
   TOutput extends AnyExtensionDataMap,
@@ -911,6 +921,91 @@ export interface ExtensionInput<
   config: TConfig;
   // (undocumented)
   extensionData: TExtensionData;
+}
+
+// @public (undocumented)
+export class ExtensionKind<
+  TProps,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+> {
+  // (undocumented)
+  static create<
+    TProps,
+    TInputs extends AnyExtensionInputMap,
+    TOutput extends AnyExtensionDataMap,
+    TConfig,
+  >(
+    options: ExtensionKindOptions<TProps, TInputs, TOutput, TConfig>,
+  ): ExtensionKind<TProps, TInputs, TOutput, TConfig>;
+  // (undocumented)
+  new(options: {
+    namespace?: string;
+    name?: string;
+    attachTo?: {
+      id: string;
+      input: string;
+    };
+    disabled?: boolean;
+    inputs?: TInputs;
+    output?: TOutput;
+    configSchema?: PortableSchema<TConfig>;
+    props: TProps;
+    factory?(
+      options: {
+        node: AppNode;
+        config: TConfig;
+        inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+        orignalFactory(
+          options?: {
+            node?: AppNode;
+            config?: TConfig;
+            inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+          },
+          props?: TProps,
+        ): Expand<ExtensionDataValues<TOutput>>;
+      },
+      props: TProps,
+    ): Expand<ExtensionDataValues<TOutput>>;
+  }): ExtensionDefinition<TConfig>;
+}
+
+// @public (undocumented)
+export interface ExtensionKindOptions<
+  TProps,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+> {
+  // (undocumented)
+  attachTo: {
+    id: string;
+    input: string;
+  };
+  // (undocumented)
+  configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  factory(
+    options: {
+      node: AppNode;
+      config: TConfig;
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+    },
+    props: TProps,
+  ): Expand<ExtensionDataValues<TOutput>>;
+  // (undocumented)
+  inputs?: TInputs;
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  namespace?: string;
+  // (undocumented)
+  output: TOutput;
 }
 
 // @public (undocumented)

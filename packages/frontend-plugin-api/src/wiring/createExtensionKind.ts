@@ -24,7 +24,11 @@ import {
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-interface ExtensionKindOptions<
+
+/**
+ * @public
+ */
+export interface ExtensionKindOptions<
   TProps,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
@@ -48,7 +52,10 @@ interface ExtensionKindOptions<
   ): Expand<ExtensionDataValues<TOutput>>;
 }
 
-class ExtensionKind<
+/**
+ * @public
+ */
+export class ExtensionKind<
   TProps,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
@@ -153,6 +160,8 @@ class ExtensionKind<
 /**
  * A simpler replacement for wrapping up `createExtension` inside a kind or type. This allows for a cleaner API for creating
  * types and instances of those types.
+ *
+ * @public
  */
 export function createExtensionKind<
   TProps,
