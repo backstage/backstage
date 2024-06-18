@@ -73,8 +73,8 @@ import {
   MyGroupsPicker,
   MyGroupsPickerSchema,
 } from './components/fields/MyGroupsPicker/MyGroupsPicker';
-import { RepoBranchPicker } from './components/fields/BitbucketRepoBranchPicker/RepoBranchPicker';
-import { RepoBranchPickerSchema } from './components/fields/BitbucketRepoBranchPicker/schema';
+import { RepoBranchPicker } from './components/fields/RepoBranchPicker/RepoBranchPicker';
+import { RepoBranchPickerSchema } from './components/fields/RepoBranchPicker/schema';
 
 /**
  * The main plugin export for the scaffolder.
