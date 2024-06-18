@@ -21,9 +21,9 @@ import {
   ServiceRef,
 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
-import { cacheToPluginCacheManager } from './cache';
-import { loggerToWinstonLogger } from './logging';
-import { TokenManager } from './deprecated';
+import { cacheToPluginCacheManager } from '../cache';
+import { loggerToWinstonLogger } from '../logging';
+import { TokenManager } from '../../deprecated';
 
 /**
  * @public

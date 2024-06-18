@@ -99,6 +99,8 @@ import {
   UrlReaderService as _UrlReaderService,
 } from '@backstage/backend-plugin-api';
 
+export * from './hot';
+export * from './config';
 export * from './scm';
 export * from './tokens';
 export * from './logging';
