@@ -68,7 +68,6 @@ export async function loadConfigSchema(
   options: LoadConfigSchemaOptions,
 ): Promise<ConfigSchema> {
   let schemas: ConfigSchemaPackageEntry[];
-
   if ('dependencies' in options) {
     schemas = await collectConfigSchemas(
       options.dependencies,

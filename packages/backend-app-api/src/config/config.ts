@@ -30,6 +30,32 @@ import type { Config, AppConfig } from '@backstage/config';
 import { getPackages } from '@manypkg/get-packages';
 import { ObservableConfigProxy } from './ObservableConfigProxy';
 import { isValidUrl } from '../lib/urls';
+import path from 'path';
+import fs from 'fs';
+
+// Looks for a package.json with a workspace config to identify the root of the monorepo
+export function findRootPath(searchDir: string): string | undefined {
+  let currentPath = searchDir;
+
+  // Some confidence check to avoid infinite loop
+  for (let i = 0; i < 1000; i++) {
+    const packagePath = resolvePath(currentPath, 'package.json');
+    const exists = fs.existsSync(packagePath);
+    if (exists) {
+      return currentPath;
+    }
+
+    const newPath = path.dirname(currentPath);
+    if (newPath === currentPath) {
+      return undefined;
+    }
+    currentPath = newPath;
+  }
+
+  throw new Error(
+    `Iteration limit reached when searching for root package.json at ${searchDir}`,
+  );
+}
 
 /** @public */
 export async function createConfigSecretEnumerator(options: {
@@ -37,12 +63,36 @@ export async function createConfigSecretEnumerator(options: {
   dir?: string;
   schema?: ConfigSchema;
 }): Promise<(config: Config) => Iterable<string>> {
-  const { logger, dir = process.cwd() } = options;
-  const { packages } = await getPackages(dir);
+  const { logger, dir } = options;
+  let closestPackagePath = process.cwd();
+  if (dir) {
+    closestPackagePath = dir;
+  } else {
+    const rootPath = findRootPath(
+      path.resolve(process.argv[1]) ?? process.cwd(),
+    );
+    if (rootPath) {
+      closestPackagePath = rootPath;
+    }
+  }
+  const { packages } = await getPackages(closestPackagePath!);
+
+  const closestPackage = packages.find(p => p.dir === closestPackagePath);
+
+  // loadConfigSchema expects a list of dependencies that it can discover through node_modules,
+  //  the closest package is not guaranteed to show up in node_modules and may not be resolved
+  //  so we pass guaranteed node_modules items.
+  const dependencies = Object.keys({
+    ...closestPackage?.packageJson.dependencies,
+    ...closestPackage?.packageJson.devDependencies,
+    ...closestPackage?.packageJson.peerDependencies,
+    ...closestPackage?.packageJson.optionalDependencies,
+  });
+
   const schema =
     options.schema ??
     (await loadConfigSchema({
-      dependencies: packages.map(p => p.packageJson.name),
+      dependencies,
     }));
 
   return (config: Config) => {
@@ -53,6 +103,7 @@ export async function createConfigSecretEnumerator(options: {
         ignoreSchemaErrors: true,
       },
     );
+
     const secrets = new Set<string>();
     JSON.parse(
       JSON.stringify(secretsData.data),
