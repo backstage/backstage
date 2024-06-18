@@ -14,15 +14,27 @@
  * limitations under the License.
  */
 
-export * from './cache';
-export * from './config';
-export * from './database';
-export * from './discovery';
-export * from './identity';
-export * from './lifecycle';
-export * from './permissions';
-export * from './rootLifecycle';
-export * from './tokenManager';
-export * from './urlReader';
+import {
+  createServiceFactory,
+  coreServices,
+} from '@backstage/backend-plugin-api';
 
-export * from './deprecated';
+/**
+ * Plugin-level logging.
+ *
+ * See {@link @backstage/code-plugin-api#LoggerService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/logger | the service docs}
+ * for more information.
+ *
+ * @public
+ */
+export const loggerServiceFactory = createServiceFactory({
+  service: coreServices.logger,
+  deps: {
+    rootLogger: coreServices.rootLogger,
+    plugin: coreServices.pluginMetadata,
+  },
+  factory({ rootLogger, plugin }) {
+    return rootLogger.child({ plugin: plugin.getId() });
+  },
+});

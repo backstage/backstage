@@ -20,7 +20,7 @@ import express from 'express';
 import request from 'supertest';
 import { createCredentialsBarrier } from './createCredentialsBarrier';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-import { MiddlewareFactory } from '../../../http';
+import { MiddlewareFactory } from '../rootHttpRouter/http';
 
 const errorMiddleware = MiddlewareFactory.create({
   config: mockServices.rootConfig(),

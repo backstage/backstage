@@ -3457,6 +3457,7 @@ __metadata:
   resolution: "@backstage/backend-app-api@workspace:packages/backend-app-api"
   dependencies:
     "@backstage/backend-common": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-tasks": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
@@ -3611,6 +3612,7 @@ __metadata:
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/cli-common": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/config-loader": "workspace:^"
     "@backstage/errors": "workspace:^"
@@ -3623,35 +3625,58 @@ __metadata:
     "@google-cloud/storage": ^7.0.0
     "@keyv/memcache": ^1.3.5
     "@keyv/redis": ^2.5.3
+    "@manypkg/get-packages": ^1.1.3
     "@octokit/rest": ^19.0.3
     "@opentelemetry/api": ^1.3.0
+    "@types/cors": ^2.8.6
+    "@types/express": ^4.17.6
+    "@types/http-errors": ^2.0.0
+    "@types/morgan": ^1.9.0
+    "@types/node-forge": ^1.3.0
+    "@types/stoppable": ^1.1.0
     archiver: ^6.0.0
     aws-sdk-client-mock: ^4.0.0
     base64-stream: ^1.0.0
     better-sqlite3: ^9.0.0
+    compression: ^1.7.4
     concat-stream: ^2.0.0
     cookie: ^0.6.0
+    cors: ^2.8.5
     cron: ^3.0.0
     express: ^4.17.1
+    express-promise-router: ^4.1.0
     fs-extra: ^11.2.0
     git-url-parse: ^14.0.0
+    helmet: ^6.0.0
+    http-errors: ^2.0.0
     isomorphic-git: ^1.23.0
     jose: ^5.0.0
     keyv: ^4.5.2
     knex: ^3.0.0
     lodash: ^4.17.21
+    logform: ^2.3.2
     luxon: ^3.0.0
     minimatch: ^9.0.0
+    minimist: ^1.2.5
+    morgan: ^1.10.0
     msw: ^1.0.0
     mysql2: ^3.0.0
     node-fetch: ^2.6.7
+    node-forge: ^1.3.1
     p-limit: ^3.1.0
+    path-to-regexp: ^6.2.1
     pg: ^8.11.3
     pg-connection-string: ^2.3.0
     raw-body: ^2.4.1
+    selfsigned: ^2.0.0
+    stoppable: ^1.1.0
+    supertest: ^6.1.3
     tar: ^6.1.12
+    triple-beam: ^1.4.1
     uuid: ^9.0.0
     wait-for-expect: ^3.0.2
+    winston: ^3.2.1
+    winston-transport: ^4.5.0
     yauzl: ^3.0.0
     yn: ^4.0.0
     zod: ^3.22.4
@@ -3771,6 +3796,7 @@ __metadata:
   resolution: "@backstage/backend-test-utils@workspace:packages/backend-test-utils"
   dependencies:
     "@backstage/backend-app-api": "workspace:^"
+    "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"

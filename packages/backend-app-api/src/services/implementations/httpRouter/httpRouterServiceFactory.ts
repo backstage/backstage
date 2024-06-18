@@ -14,27 +14,17 @@
  * limitations under the License.
  */
 
-import { Handler } from 'express';
-import PromiseRouter from 'express-promise-router';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  coreServices,
-  createServiceFactory,
-  HttpRouterServiceAuthPolicy,
-} from '@backstage/backend-plugin-api';
-import { createLifecycleMiddleware } from './createLifecycleMiddleware';
-import { createCredentialsBarrier } from './createCredentialsBarrier';
-import { createAuthIntegrationRouter } from './createAuthIntegrationRouter';
-import { createCookieAuthRefreshMiddleware } from './createCookieAuthRefreshMiddleware';
+  httpRouterServiceFactory as _httpRouterServiceFactory,
+  type HttpRouterFactoryOptions as _HttpRouterFactoryOptions,
+} from '../../../../../backend-defaults/src/entrypoints/httpRouter/httpRouterServiceFactory';
 
 /**
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/httpRouter` instead.
  */
-export interface HttpRouterFactoryOptions {
-  /**
-   * A callback used to generate the path for each plugin, defaults to `/api/{pluginId}`.
-   */
-  getPath?(pluginId: string): string;
-}
+export type HttpRouterFactoryOptions = _HttpRouterFactoryOptions;
 
 /**
  * HTTP route registration for plugins.
@@ -44,58 +34,6 @@ export interface HttpRouterFactoryOptions {
  * for more information.
  *
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/httpRouter` instead.
  */
-export const httpRouterServiceFactory = createServiceFactory(
-  (options?: HttpRouterFactoryOptions) => ({
-    service: coreServices.httpRouter,
-    initialization: 'always',
-    deps: {
-      plugin: coreServices.pluginMetadata,
-      config: coreServices.rootConfig,
-      logger: coreServices.logger,
-      lifecycle: coreServices.lifecycle,
-      rootHttpRouter: coreServices.rootHttpRouter,
-      auth: coreServices.auth,
-      httpAuth: coreServices.httpAuth,
-    },
-    async factory({
-      auth,
-      httpAuth,
-      config,
-      logger,
-      plugin,
-      rootHttpRouter,
-      lifecycle,
-    }) {
-      if (options?.getPath) {
-        logger.warn(
-          `DEPRECATION WARNING: The 'getPath' option for HttpRouterService is deprecated. The ability to reconfigure the '/api/' path prefix for plugins will be removed in the future.`,
-        );
-      }
-      const getPath = options?.getPath ?? (id => `/api/${id}`);
-      const path = getPath(plugin.getId());
-
-      const router = PromiseRouter();
-      rootHttpRouter.use(path, router);
-
-      const credentialsBarrier = createCredentialsBarrier({
-        httpAuth,
-        config,
-      });
-
-      router.use(createAuthIntegrationRouter({ auth }));
-      router.use(createLifecycleMiddleware({ lifecycle }));
-      router.use(credentialsBarrier.middleware);
-      router.use(createCookieAuthRefreshMiddleware({ auth, httpAuth }));
-
-      return {
-        use(handler: Handler): void {
-          router.use(handler);
-        },
-        addAuthPolicy(policy: HttpRouterServiceAuthPolicy): void {
-          credentialsBarrier.addAuthPolicy(policy);
-        },
-      };
-    },
-  }),
-);
+export const httpRouterServiceFactory = _httpRouterServiceFactory;

@@ -15,7 +15,7 @@
  */
 
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { MiddlewareFactory } from '../../../../backend-app-api/src/http/MiddlewareFactory';
+import { MiddlewareFactory } from '../../../../backend-defaults/src/entrypoints/rootHttpRouter/http/MiddlewareFactory';
 import { ConfigReader } from '@backstage/config';
 import { RequestHandler } from 'express';
 import { getRootLogger } from '../logging';

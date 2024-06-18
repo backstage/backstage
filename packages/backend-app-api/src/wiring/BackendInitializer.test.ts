@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
+import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
+import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
 import {
   createServiceRef,
   createServiceFactory,
@@ -23,12 +26,6 @@ import {
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-
-import {
-  lifecycleServiceFactory,
-  loggerServiceFactory,
-  rootLifecycleServiceFactory,
-} from '../services/implementations';
 
 class MockLogger {
   debug() {}
