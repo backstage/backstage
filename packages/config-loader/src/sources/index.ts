@@ -38,4 +38,5 @@ export type {
   ConfigSourceData,
   ReadConfigDataOptions,
   AsyncConfigSourceGenerator,
+  ParsingFunc,
 } from './types';

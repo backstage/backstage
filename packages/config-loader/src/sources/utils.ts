@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import yaml from 'yaml';
+
 /** @internal */
 export interface SimpleDeferred<T> {
   promise: Promise<T>;
@@ -55,3 +57,9 @@ export async function waitOrAbort<T>(
     signals.forEach(s => s.addEventListener('abort', onAbort));
   });
 }
+
+/** @internal */
+export const parseYamlContent = (content: string) => {
+  const parsed = yaml.parse(content);
+  return parsed === null ? undefined : parsed;
+};
