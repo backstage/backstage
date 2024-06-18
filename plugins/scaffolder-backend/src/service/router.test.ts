@@ -691,6 +691,34 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect(subscriber!.closed).toBe(true);
       });
     });
+
+    describe('POST /v2/dry-run', () => {
+      it('should get user entity', async () => {
+        const mockToken = mockCredentials.user.token();
+        const mockTemplate = getMockTemplate();
+
+        const catalogSpy = jest.spyOn(catalogClient, 'getEntityByRef');
+
+        await request(app)
+          .post('/v2/dry-run')
+          .set('Authorization', `Bearer ${mockToken}`)
+          .send({
+            template: mockTemplate,
+            values: {
+              requiredParameter1: 'required-value-1',
+              requiredParameter2: 'required-value-2',
+            },
+            directoryContents: [],
+          });
+
+        expect(catalogSpy).toHaveBeenCalledTimes(1);
+
+        expect(catalogSpy).toHaveBeenCalledWith(
+          'user:default/mock',
+          expect.anything(),
+        );
+      });
+    });
   });
 
   describe('providing an identity api', () => {
