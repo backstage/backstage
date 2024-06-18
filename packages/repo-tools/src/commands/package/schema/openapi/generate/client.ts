@@ -105,10 +105,10 @@ async function runOpenApiGeneratorCommand({
 }
 
 async function generateReactQueryClient({
-  client: { outputPackage, additionalProperties },
+  client: { outputPackage },
   reactQuery,
 }: {
-  client: { outputPackage: string; additionalProperties: string };
+  client: { outputPackage: string };
   reactQuery: {
     outputPackage: string;
     apiRefNamespace: string | undefined;
@@ -128,20 +128,25 @@ async function generateReactQueryClient({
       apiRefNamespace: reactQuery.apiRefNamespace || 'core',
       apiRefName: reactQuery.apiRefName,
       apiRefImport: reactQuery.apiRefImport,
-      ...additionalProperties,
     },
   });
 }
 
-async function generate(outputDirectory: string) {
+async function generate(outputDirectory: string, additionalProperties: string) {
   await runOpenApiGeneratorCommand({
     outputPath: outputDirectory,
     templateName: 'typescript-backstage',
+    additionalProperties: additionalProperties
+      .split(',')
+      .reduce((acc: object, prop) => {
+        const [key, value] = prop.split('=');
+        return { ...acc, [key]: value };
+      }, {}),
   });
 }
 
 export async function command({
-  outputPackage,
+  client: { outputPackage, additionalProperties },
   reactQuery: {
     enabled: enableReactQuery,
     outputPackage: queryOutputPackage,
@@ -151,7 +156,7 @@ export async function command({
     clientImport,
   },
 }: {
-  outputPackage: string;
+  client: { outputPackage: string; additionalProperties: string };
   reactQuery: {
     outputPackage?: string;
     enabled: boolean;
@@ -166,7 +171,7 @@ export async function command({
   }
 
   try {
-    await generate(outputPackage);
+    await generate(outputPackage, additionalProperties);
 
     console.log(
       chalk.green(`Generated client in ${outputPackage}/${OUTPUT_PATH}`),
