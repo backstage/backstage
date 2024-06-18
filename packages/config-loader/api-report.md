@@ -141,6 +141,7 @@ export class FileConfigSource implements ConfigSource {
 
 // @public
 export interface FileConfigSourceOptions {
+  parser?: Parser;
   path: string;
   substitutionFunc?: EnvFunc;
   watch?: boolean;
@@ -219,6 +220,11 @@ export interface MutableConfigSourceOptions {
 }
 
 // @public
+export type Parser = ({ contents }: { contents: string }) => Promise<{
+  result?: JsonObject;
+}>;
+
+// @public
 export interface ReadConfigDataOptions {
   // (undocumented)
   signal?: AbortSignal;
@@ -242,6 +248,7 @@ export class RemoteConfigSource implements ConfigSource {
 
 // @public
 export interface RemoteConfigSourceOptions {
+  parser?: Parser;
   reloadInterval?: HumanDuration;
   substitutionFunc?: EnvFunc;
   url: string;
