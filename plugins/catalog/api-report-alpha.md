@@ -17,8 +17,6 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 export const catalogTranslationRef: TranslationRef<
   'catalog',
   {
-    readonly 'indexPage.title': '{{orgName}} Catalog';
-    readonly 'indexPage.createButtonTitle': 'Create';
     readonly 'deleteEntity.description': 'This entity is not referenced by any location and is therefore not receiving updates. Click here to delete.';
     readonly 'deleteEntity.cancelButtonTitle': 'Cancel';
     readonly 'deleteEntity.deleteButtonTitle': 'Delete';
