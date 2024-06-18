@@ -14,5 +14,8 @@
  * limitations under the License.
  */
 
-export { rootConfigServiceFactory } from './rootConfigServiceFactory';
-export type { RootConfigFactoryOptions } from './rootConfigServiceFactory';
+export { createConfigSecretEnumerator } from './createConfigSecretEnumerator';
+export {
+  rootConfigServiceFactory,
+  type RootConfigFactoryOptions,
+} from './rootConfigServiceFactory';

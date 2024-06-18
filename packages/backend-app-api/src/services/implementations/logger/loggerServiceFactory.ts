@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  createServiceFactory,
-  coreServices,
-} from '@backstage/backend-plugin-api';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { loggerServiceFactory as _loggerServiceFactory } from '../../../../../backend-defaults/src/entrypoints/logger/loggerServiceFactory';
 
 /**
  * Plugin-level logging.
@@ -27,14 +25,6 @@ import {
  * for more information.
  *
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/logger` instead.
  */
-export const loggerServiceFactory = createServiceFactory({
-  service: coreServices.logger,
-  deps: {
-    rootLogger: coreServices.rootLogger,
-    plugin: coreServices.pluginMetadata,
-  },
-  factory({ rootLogger, plugin }) {
-    return rootLogger.child({ plugin: plugin.getId() });
-  },
-});
+export const loggerServiceFactory = _loggerServiceFactory;

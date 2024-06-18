@@ -14,13 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  createServiceFactory,
-  coreServices,
-} from '@backstage/backend-plugin-api';
-import { WinstonLogger } from '../../../logging';
-import { transports, format } from 'winston';
-import { createConfigSecretEnumerator } from '../../../config';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { rootLoggerServiceFactory as _rootLoggerServiceFactory } from '../../../../../backend-defaults/src/entrypoints/rootLogger/rootLoggerServiceFactory';
 
 /**
  * Root-level logging.
@@ -30,29 +25,6 @@ import { createConfigSecretEnumerator } from '../../../config';
  * for more information.
  *
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootLogger` instead.
  */
-export const rootLoggerServiceFactory = createServiceFactory({
-  service: coreServices.rootLogger,
-  deps: {
-    config: coreServices.rootConfig,
-  },
-  async factory({ config }) {
-    const logger = WinstonLogger.create({
-      meta: {
-        service: 'backstage',
-      },
-      level: process.env.LOG_LEVEL || 'info',
-      format:
-        process.env.NODE_ENV === 'production'
-          ? format.json()
-          : WinstonLogger.colorFormat(),
-      transports: [new transports.Console()],
-    });
-
-    const secretEnumerator = await createConfigSecretEnumerator({ logger });
-    logger.addRedactions(secretEnumerator(config));
-    config.subscribe?.(() => logger.addRedactions(secretEnumerator(config)));
-
-    return logger;
-  },
-});
+export const rootLoggerServiceFactory = _rootLoggerServiceFactory;

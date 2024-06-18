@@ -14,11 +14,20 @@
  * limitations under the License.
  */
 
-export * from './auth';
-export * from './httpAuth';
-export * from './httpRouter';
-export * from './logger';
-export * from './rootHttpRouter';
-export * from './rootLogger';
-export * from './scheduler';
-export * from './userInfo';
+import { AuthService } from '@backstage/backend-plugin-api';
+import express from 'express';
+import Router from 'express-promise-router';
+
+export function createAuthIntegrationRouter(options: {
+  auth: AuthService;
+}): express.Router {
+  const router = Router();
+
+  router.get('/.backstage/auth/v1/jwks.json', async (_req, res) => {
+    const { keys } = await options.auth.listPublicServiceKeys();
+
+    res.json({ keys });
+  });
+
+  return router;
+}

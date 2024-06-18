@@ -14,17 +14,67 @@
  * limitations under the License.
  */
 
-export { readHttpServerOptions } from './config';
-export { createHttpServer } from './createHttpServer';
-export { MiddlewareFactory } from './MiddlewareFactory';
-export type {
-  MiddlewareFactoryErrorOptions,
-  MiddlewareFactoryOptions,
-} from './MiddlewareFactory';
-export { readCorsOptions } from './readCorsOptions';
-export { readHelmetOptions } from './readHelmetOptions';
-export type {
-  ExtendedHttpServer,
-  HttpServerCertificateOptions,
-  HttpServerOptions,
-} from './types';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  readHttpServerOptions as _readHttpServerOptions,
+  createHttpServer as _createHttpServer,
+  MiddlewareFactory as _MiddlewareFactory,
+  readCorsOptions as _readCorsOptions,
+  readHelmetOptions as _readHelmetOptions,
+  type MiddlewareFactoryErrorOptions as _MiddlewareFactoryErrorOptions,
+  type MiddlewareFactoryOptions as _MiddlewareFactoryOptions,
+  type ExtendedHttpServer as _ExtendedHttpServer,
+  type HttpServerCertificateOptions as _HttpServerCertificateOptions,
+  type HttpServerOptions as _HttpServerOptions,
+} from '../../../backend-defaults/src/entrypoints/rootHttpRouter/http';
+
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
+ */
+export const readHttpServerOptions = _readHttpServerOptions;
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
+ */
+export const createHttpServer = _createHttpServer;
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
+ */
+export const readCorsOptions = _readCorsOptions;
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
+ */
+export const readHelmetOptions = _readHelmetOptions;
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
+ */
+export const MiddlewareFactory = _MiddlewareFactory;
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
+ */
+export type MiddlewareFactoryErrorOptions = _MiddlewareFactoryErrorOptions;
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
+ */
+export type MiddlewareFactoryOptions = _MiddlewareFactoryOptions;
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
+ */
+export type ExtendedHttpServer = _ExtendedHttpServer;
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
+ */
+export type HttpServerCertificateOptions = _HttpServerCertificateOptions;
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootHttpRouter` instead.
+ */
+export type HttpServerOptions = _HttpServerOptions;

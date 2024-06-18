@@ -37,7 +37,7 @@ import {
   readHttpServerOptions,
   HttpServerOptions,
   createHttpServer,
-} from '../../../../../backend-app-api/src/http';
+} from '../../../../../backend-defaults/src/entrypoints/rootHttpRouter/http';
 
 export type CspOptions = Record<string, string[]>;
 
