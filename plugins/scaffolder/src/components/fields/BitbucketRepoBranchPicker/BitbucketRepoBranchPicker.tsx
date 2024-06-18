@@ -22,6 +22,7 @@ import Autocomplete from '@material-ui/lab/Autocomplete';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useApi } from '@backstage/core-plugin-api';
 import { RepoBranchPickerState } from './types';
+import FormHelperText from '@material-ui/core/FormHelperText';
 
 export const BitbucketRepoBranchPicker = ({
   onChange,
@@ -65,7 +66,7 @@ export const BitbucketRepoBranchPicker = ({
       );
     },
     500,
-    [state, accessToken],
+    [host, workspace, repository, accessToken],
   );
 
   return (
@@ -75,8 +76,9 @@ export const BitbucketRepoBranchPicker = ({
       error={rawErrors?.length > 0 && !branch}
     >
       <Autocomplete
+        value={branch}
         onChange={(_, newValue) => {
-          onChange({ branch: newValue || undefined });
+          onChange({ branch: newValue || '' });
         }}
         options={availableBranches || []}
         renderInput={params => (
@@ -85,6 +87,7 @@ export const BitbucketRepoBranchPicker = ({
         freeSolo
         autoSelect
       />
+      <FormHelperText>The branch of the repository</FormHelperText>
     </FormControl>
   );
 };

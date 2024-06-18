@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { useApi } from '@backstage/core-plugin-api';
 import {
   scmIntegrationsApiRef,
@@ -35,9 +36,15 @@ import { BitbucketRepoBranchPicker } from './BitbucketRepoBranchPicker';
  * @public
  */
 export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
-  const { uiSchema, onChange, rawErrors, schema, formContext } = props;
+  const { uiSchema, onChange, rawErrors, formData, schema, formContext } =
+    props;
+  const {
+    formData: { repoUrl },
+  } = formContext;
 
-  const [state, setState] = useState<RepoBranchPickerState>({});
+  const [state, setState] = useState<RepoBranchPickerState>({
+    branch: formData || '',
+  });
   const { host, branch } = state;
 
   const integrationApi = useApi(scmIntegrationsApiRef);
@@ -49,7 +56,7 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
     async () => {
       const { requestUserCredentials } = uiSchema?.['ui:options'] ?? {};
 
-      if (!requestUserCredentials || !state.host) {
+      if (!requestUserCredentials || !host) {
         return;
       }
 
@@ -62,7 +69,7 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
       // so lets grab them using the scmAuthApi and pass through
       // any additional scopes from the ui:options
       const { token } = await scmAuthApi.getCredentials({
-        url: `https://${state.host}`,
+        url: `https://${host}`,
         additionalScope: {
           repoWrite: true,
           customScopes: requestUserCredentials.additionalScopes,
@@ -74,20 +81,21 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
       setSecrets({ [requestUserCredentials.secretsKey]: token });
     },
     500,
-    [state, uiSchema],
+    [host, uiSchema],
   );
 
   useEffect(() => {
-    if (formContext.formData.repoUrl) {
-      const url = new URL(`https://${formContext.formData.repoUrl}`);
+    if (repoUrl) {
+      const url = new URL(`https://${repoUrl}`);
 
-      setState({
+      setState(prevState => ({
+        ...prevState,
         host: url.host,
-        workspace: url.searchParams.get('workspace') || undefined,
-        repository: url.searchParams.get('repo') || undefined,
-      });
+        workspace: url.searchParams.get('workspace') || '',
+        repository: url.searchParams.get('repo') || '',
+      }));
     }
-  }, [formContext]);
+  }, [repoUrl]);
 
   useEffect(() => {
     onChange(branch);
