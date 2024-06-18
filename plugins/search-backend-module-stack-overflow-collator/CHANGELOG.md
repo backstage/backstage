@@ -1,5 +1,19 @@
 # @backstage/plugin-search-backend-module-stack-overflow-collator
 
+## 0.1.12
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-tasks@0.5.24
+  - @backstage/plugin-search-backend-node@1.2.24
+  - @backstage/plugin-search-common@1.2.12
+  - @backstage/config@1.2.0
+
 ## 0.1.12-next.3
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-cluster
 
+## 0.0.12
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/plugin-kubernetes-react@0.4.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-kubernetes-common@0.8.0
+  - @backstage/plugin-catalog-react@1.12.1
+  - @backstage/catalog-model@1.5.0
+
 ## 0.0.12-next.3
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-events-backend-module-azure
 
+## 0.2.5
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-events-node@0.3.5
+
 ## 0.2.5-next.2
 
 ### Patch Changes

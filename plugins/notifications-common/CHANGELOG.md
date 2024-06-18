@@ -1,5 +1,11 @@
 # @backstage/plugin-notifications-common
 
+## 0.0.4
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+
 ## 0.0.4-next.0
 
 ### Patch Changes

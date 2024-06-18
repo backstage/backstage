@@ -1,5 +1,16 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.1.13
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-kubernetes-common@0.8.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+
 ## 0.1.13-next.3
 
 ### Patch Changes

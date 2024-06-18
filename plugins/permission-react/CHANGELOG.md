@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-react
 
+## 0.4.23
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/config@1.2.0
+
 ## 0.4.23-next.1
 
 ### Patch Changes

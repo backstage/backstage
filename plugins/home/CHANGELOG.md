@@ -1,5 +1,27 @@
 # @backstage/plugin-home
 
+## 0.7.5
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 6cb4886: Updated dependency `@rjsf/utils` to `5.18.4`.
+  Updated dependency `@rjsf/core` to `5.18.4`.
+  Updated dependency `@rjsf/material-ui` to `5.18.4`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.18.4`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-compat-api@0.2.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/plugin-catalog-react@1.12.1
+  - @backstage/plugin-home-react@0.1.14
+  - @backstage/core-app-api@1.12.6
+  - @backstage/frontend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+
 ## 0.7.5-next.2
 
 ### Patch Changes

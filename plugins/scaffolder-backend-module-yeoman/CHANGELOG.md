@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-backend-module-yeoman
 
+## 0.3.2
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-scaffolder-node-test-utils@0.1.5
+  - @backstage/plugin-scaffolder-node@0.4.5
+  - @backstage/types@1.1.1
+
 ## 0.3.2-next.2
 
 ### Patch Changes
