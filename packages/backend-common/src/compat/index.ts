@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,21 +14,7 @@
  * limitations under the License.
  */
 
-import { isValidUrl } from './urls';
-
-describe('isValidUrl', () => {
-  it('should return true for url', () => {
-    const validUrl = isValidUrl('http://some.valid.url');
-    expect(validUrl).toBe(true);
-  });
-
-  it('should return false for absolute path', () => {
-    const validUrl = isValidUrl('/some/absolute/path');
-    expect(validUrl).toBe(false);
-  });
-
-  it('should return false for relative path', () => {
-    const validUrl = isValidUrl('../some/relative/path');
-    expect(validUrl).toBe(false);
-  });
-});
+export * from './legacy';
+export * from './auth';
+export * from './cache';
+export * from './logging';

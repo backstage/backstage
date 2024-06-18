@@ -18,11 +18,11 @@
 import {
   createConfigSecretEnumerator,
   loadBackendConfig as newLoadBackendConfig,
-} from '../../backend-app-api/src/config';
+} from '../../../backend-app-api/src/config';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { AppConfig, Config } from '@backstage/config';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
-import { setRootLoggerRedactionList } from './deprecated/logging/createRootLogger';
+import { setRootLoggerRedactionList } from './logging/createRootLogger';
 
 /**
  * Load configuration for a Backend.
