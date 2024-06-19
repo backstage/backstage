@@ -26,8 +26,17 @@ const LazyAsyncApiDefinition = React.lazy(() =>
 );
 
 /** @public */
+export type AsyncApiResolver = {
+  schema: string;
+  order: number;
+  canRead: boolean;
+  read(uri: any): Promise<string>;
+};
+
+/** @public */
 export type AsyncApiDefinitionWidgetProps = {
   definition: string;
+  resolvers?: AsyncApiResolver[];
 };
 
 /** @public */

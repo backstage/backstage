@@ -83,6 +83,15 @@ export const AsyncApiDefinitionWidget: (
 // @public (undocumented)
 export type AsyncApiDefinitionWidgetProps = {
   definition: string;
+  resolvers?: AsyncApiResolver[];
+};
+
+// @public (undocumented)
+export type AsyncApiResolver = {
+  schema: string;
+  order: number;
+  canRead: boolean;
+  read(uri: any): Promise<string>;
 };
 
 // @public (undocumented)
