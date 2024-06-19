@@ -70,9 +70,7 @@ describe('RepoBranchPicker', () => {
               }}
               onSubmit={onSubmit}
               formContext={{
-                formData: {
-                  repoUrl: 'bitbucket.org',
-                },
+                formData: {},
               }}
             />
           </SecretsContextProvider>
@@ -82,11 +80,7 @@ describe('RepoBranchPicker', () => {
       const input = getByRole('textbox');
       const submitButton = getByRole('button');
 
-      act(() => {
-        input.focus();
-        fireEvent.change(input, { target: { value: 'branch1' } });
-        input.blur();
-      });
+      fireEvent.change(input, { target: { value: 'branch1' } });
 
       fireEvent.click(submitButton);
 

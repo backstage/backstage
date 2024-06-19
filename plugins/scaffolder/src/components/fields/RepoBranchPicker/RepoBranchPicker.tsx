@@ -25,10 +25,11 @@ import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
-import { BitbucketRepoBranchPicker } from './BitbucketRepoBranchPicker';
 
 import { RepoBranchPickerProps } from './schema';
 import { RepoBranchPickerState } from './types';
+import { BitbucketRepoBranchPicker } from './BitbucketRepoBranchPicker';
+import { DefaultRepoBranchPicker } from './DefaultRepoBranchPicker';
 
 /**
  * The underlying component that is rendered in the form for the `RepoBranchPicker`
@@ -37,8 +38,15 @@ import { RepoBranchPickerState } from './types';
  * @public
  */
 export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
-  const { uiSchema, onChange, rawErrors, formData, schema, formContext } =
-    props;
+  const {
+    uiSchema,
+    onChange,
+    rawErrors,
+    formData,
+    schema,
+    formContext,
+    required,
+  } = props;
   const {
     formData: { repoUrl },
   } = formContext;
@@ -111,6 +119,33 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
 
   const hostType = (host && integrationApi.byHost(host)?.type) ?? null;
 
+  const renderRepoBranchPicker = () => {
+    switch (hostType) {
+      case 'bitbucket':
+        return (
+          <BitbucketRepoBranchPicker
+            onChange={updateLocalState}
+            state={state}
+            rawErrors={rawErrors}
+            accessToken={
+              uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+              secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
+            }
+            required={required}
+          />
+        );
+      default:
+        return (
+          <DefaultRepoBranchPicker
+            onChange={updateLocalState}
+            state={state}
+            rawErrors={rawErrors}
+            required={required}
+          />
+        );
+    }
+  };
+
   return (
     <>
       {schema.title && (
@@ -122,17 +157,7 @@ export const RepoBranchPicker = (props: RepoBranchPickerProps) => {
       {schema.description && (
         <Typography variant="body1">{schema.description}</Typography>
       )}
-      {hostType === 'bitbucket' && (
-        <BitbucketRepoBranchPicker
-          onChange={updateLocalState}
-          state={state}
-          rawErrors={rawErrors}
-          accessToken={
-            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
-            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
-          }
-        />
-      )}
+      {renderRepoBranchPicker()}
     </>
   );
 };

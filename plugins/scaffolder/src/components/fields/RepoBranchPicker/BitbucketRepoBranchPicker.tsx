@@ -36,11 +36,13 @@ export const BitbucketRepoBranchPicker = ({
   state,
   rawErrors,
   accessToken,
+  required,
 }: {
   onChange: (state: RepoBranchPickerState) => void;
   state: RepoBranchPickerState;
   rawErrors: string[];
   accessToken?: string;
+  required?: boolean;
 }) => {
   const { host, workspace, repository, branch } = state;
 
@@ -79,7 +81,7 @@ export const BitbucketRepoBranchPicker = ({
   return (
     <FormControl
       margin="normal"
-      required
+      required={required}
       error={rawErrors?.length > 0 && !branch}
     >
       <Autocomplete
@@ -89,7 +91,7 @@ export const BitbucketRepoBranchPicker = ({
         }}
         options={availableBranches}
         renderInput={params => (
-          <TextField {...params} label="Branch" required />
+          <TextField {...params} label="Branch" required={required} />
         )}
         freeSolo
         autoSelect
