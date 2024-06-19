@@ -77,7 +77,10 @@ describe('<ErrorBoundary/>', () => {
         /^The above error occurred in the <Bomb> component:/,
       ),
       expect.stringMatching(/^ErrorBoundary/),
-      expect.stringMatching(/Warning: findDOMNode/), // React warning, unfortunate but currently true
+      // React 18.3.0 added error messages for findDOMNode deprecation, https://github.com/facebook/react/commit/c3b283964108b0e8dbcf1f9eb2e7e67815e39dfb.
+      expect.stringContaining(
+        'Warning: findDOMNode is deprecated and will be removed in the next major release. Instead, add a ref directly to the element you want to reference. Learn more about using refs safely here: https://reactjs.org/link/strict-mode-find-node%s',
+      ),
     ]);
     expect(error.length).toEqual(5);
   });
