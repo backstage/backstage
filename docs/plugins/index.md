@@ -12,7 +12,7 @@ Our vision for the plugin ecosystem champions flexibility, empowering you to inc
 
 ## Creating a Plugin
 
-Embark on your plugin development journey by following the detailed steps provided in the [Create a Plugin guide](create-a-plugin.md).
+Embark on your plugin development journey by following the detailed steps provided in the [Create a Plugin](create-a-plugin.md) documentation.
 
 ## Suggesting a Plugin
 
