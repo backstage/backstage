@@ -5986,7 +5986,6 @@ __metadata:
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    supertest: ^6.1.3
   languageName: unknown
   linkType: soft
 
