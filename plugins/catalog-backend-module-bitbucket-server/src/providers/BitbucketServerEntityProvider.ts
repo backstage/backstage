@@ -77,8 +77,8 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       logger: LoggerService;
       events?: EventsService;
       parser?: BitbucketServerLocationParser;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
       catalogApi?: CatalogApi;
       tokenManager?: TokenManager;
     },
