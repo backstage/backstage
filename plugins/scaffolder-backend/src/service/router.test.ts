@@ -46,7 +46,6 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
-import { handleBitbucketCloudRequest } from '@backstage/plugin-scaffolder-backend-module-bitbucket-cloud/src/autocomplete/autocomplete';
 
 const mockAccess = jest.fn();
 
