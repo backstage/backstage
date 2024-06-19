@@ -1,5 +1,17 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.1
+  - @backstage/plugin-signals-node@0.1.6
+  - @backstage/backend-plugin-api@0.6.20
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-notifications-common@0.0.4
+
 ## 0.2.0
 
 ### Minor Changes

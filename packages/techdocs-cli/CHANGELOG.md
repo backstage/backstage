@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.8.13
+
+### Patch Changes
+
+- aeae3be: Import discovery from backend-defaults instead of backend-common
+- Updated dependencies
+  - @backstage/backend-defaults@0.3.1
+  - @backstage/plugin-techdocs-node@1.12.6
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+
 ## 1.8.12
 
 ### Patch Changes

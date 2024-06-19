@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend-module-azure-easyauth-provider
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.15
+  - @backstage/backend-plugin-api@0.6.20
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.2
 
 ### Patch Changes

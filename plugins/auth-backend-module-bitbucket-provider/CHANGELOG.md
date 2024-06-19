@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-backend-module-bitbucket-provider
 
+## 0.1.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.15
+  - @backstage/backend-plugin-api@0.6.20
+
 ## 0.1.2
 
 ### Patch Changes
