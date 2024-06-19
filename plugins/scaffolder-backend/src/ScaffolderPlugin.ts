@@ -29,6 +29,7 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import {
   scaffolderActionsExtensionPoint,
+  scaffolderAutocompleteExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
   scaffolderTemplatingExtensionPoint,
 } from '@backstage/plugin-scaffolder-node/alpha';
@@ -79,6 +80,13 @@ export const scaffolderPlugin = createBackendPlugin({
       },
       addTemplateGlobals(newGlobals) {
         Object.assign(additionalTemplateGlobals, newGlobals);
+      },
+    });
+
+    const autocompleteResolers = [];
+    env.registerExtensionPoint(scaffolderAutocompleteExtensionPoint, {
+      addAutocompleteProvider(provider) {
+        autocompleteResolers.push(provider);
       },
     });
 

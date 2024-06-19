@@ -17,7 +17,7 @@
 import { InputError } from '@backstage/errors';
 import { BitbucketCloudClient } from '@backstage/plugin-bitbucket-cloud-common';
 
-export async function handleBitbucketCloudRequest(
+export async function handleAutocompleteRequest(
   token: string,
   resource: string,
   parameters: Record<string, string>,
