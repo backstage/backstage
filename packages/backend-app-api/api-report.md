@@ -204,10 +204,17 @@ export const loggerServiceFactory: () => ServiceFactory<
   'plugin'
 >;
 
-// Warning: (ae-forgotten-export) The symbol "MiddlewareFactory_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated (undocumented)
-export const MiddlewareFactory: typeof MiddlewareFactory_2;
+export class MiddlewareFactory {
+  compression(): RequestHandler;
+  cors(): RequestHandler;
+  // Warning: (ae-forgotten-export) The symbol "MiddlewareFactory_2" needs to be exported by the entry point index.d.ts
+  static create(options: MiddlewareFactoryOptions): MiddlewareFactory_2;
+  error(options?: MiddlewareFactoryErrorOptions): ErrorRequestHandler;
+  helmet(): RequestHandler;
+  logging(): RequestHandler;
+  notFound(): RequestHandler;
+}
 
 // Warning: (ae-forgotten-export) The symbol "MiddlewareFactoryErrorOptions_2" needs to be exported by the entry point index.d.ts
 //
