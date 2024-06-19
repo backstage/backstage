@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.1
+  - @backstage/backend-test-utils@0.4.2
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-node@0.4.6
+
 ## 0.1.6
 
 ### Patch Changes
