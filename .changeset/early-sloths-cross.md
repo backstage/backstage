@@ -1,4 +1,6 @@
 ---
+'@backstage/plugin-signals-react': patch
+'@backstage/plugin-signals': patch
 '@backstage/plugin-api-docs-module-protoc-gen-doc': patch
 '@backstage/plugin-techdocs-module-addons-contrib': patch
 '@backstage/plugin-catalog-unprocessed-entities': patch
