@@ -34,6 +34,8 @@ import { TechDocsStateIndicator } from '../TechDocsStateIndicator';
 import { useTechDocsReaderDom } from './dom';
 import { withTechDocsReaderProvider } from '../TechDocsReaderProvider';
 import { TechDocsReaderPageContentAddons } from './TechDocsReaderPageContentAddons';
+// eslint-disable-next-line no-restricted-imports
+import { createHash } from 'crypto';
 
 const useStyles = makeStyles({
   search: {
@@ -80,6 +82,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
       entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
       entityRef,
       setShadowRoot,
+      setShadowRootVersionHash,
     } = useTechDocsReaderPage();
     const dom = useTechDocsReaderDom(entityRef);
     const path = window.location.pathname;
@@ -101,12 +104,16 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
 
     const handleAppend = useCallback(
       (newShadowRoot: ShadowRoot) => {
+        const newShadowRootVersionHash = createHash('sha256')
+          .update(newShadowRoot.innerHTML)
+          .digest('hex');
         setShadowRoot(newShadowRoot);
+        setShadowRootVersionHash(newShadowRootVersionHash);
         if (onReady instanceof Function) {
           onReady();
         }
       },
-      [setShadowRoot, onReady],
+      [setShadowRoot, setShadowRootVersionHash, onReady],
     );
 
     // No entity metadata = 404. Don't render content at all.

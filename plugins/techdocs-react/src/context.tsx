@@ -64,6 +64,7 @@ export type TechDocsReaderPageValue = {
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
   shadowRoot?: ShadowRoot;
   setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
+  setShadowRootVersionHash: Dispatch<SetStateAction<string | undefined>>;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
   subtitle: string;
@@ -80,6 +81,7 @@ const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   setTitle: () => {},
   setSubtitle: () => {},
   setShadowRoot: () => {},
+  setShadowRootVersionHash: () => {},
   metadata: { loading: true },
   entityMetadata: { loading: true },
   entityRef: { kind: '', name: '', namespace: '' },
@@ -134,6 +136,9 @@ export const TechDocsReaderPageProvider = memo(
     const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
       defaultTechDocsReaderPageValue.shadowRoot,
     );
+    const [, setShadowRootVersionHash] = useState<string | undefined>(
+      undefined,
+    );
 
     useEffect(() => {
       if (shadowRoot && !metadata.value && !metadata.loading) {
@@ -153,6 +158,7 @@ export const TechDocsReaderPageProvider = memo(
       entityMetadata,
       shadowRoot,
       setShadowRoot,
+      setShadowRootVersionHash,
       title,
       setTitle,
       subtitle,
@@ -190,6 +196,5 @@ export const useTechDocsReaderPage = () => {
   if (context === undefined) {
     throw new Error('No context found for version 1.');
   }
-
   return context;
 };
