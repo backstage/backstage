@@ -5,11 +5,27 @@
   "publishConfig": {
     "access": "public"
   },
+  "backstage": {
+    "role": "web-library"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/core-plugin-api"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
     "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
+  "main": "src/index.ts",
+  "types": "src/index.ts",
   "typesVersions": {
     "*": {
       "alpha": [
@@ -20,30 +36,17 @@
       ]
     }
   },
-  "backstage": {
-    "role": "web-library"
-  },
-  "homepage": "https://backstage.io",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/backstage/backstage",
-    "directory": "packages/core-plugin-api"
-  },
-  "keywords": [
-    "backstage"
+  "files": [
+    "dist"
   ],
-  "license": "Apache-2.0",
-  "main": "src/index.ts",
-  "types": "src/index.ts",
-  "sideEffects": false,
   "scripts": {
     "build": "backstage-cli package build",
+    "clean": "backstage-cli package clean",
     "lint": "backstage-cli package lint",
-    "test": "backstage-cli package test",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
-    "clean": "backstage-cli package clean",
-    "start": "backstage-cli package start"
+    "start": "backstage-cli package start",
+    "test": "backstage-cli package test"
   },
   "dependencies": {
     "@backstage/config": "workspace:^",
@@ -51,6 +54,18 @@
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "history": "^5.0.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/core-app-api": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/dom": "^10.0.0",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^15.0.0",
+    "@testing-library/user-event": "^14.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
@@ -62,18 +77,5 @@
     "@types/react": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@backstage/core-app-api": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^10.0.0",
-    "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^15.0.0",
-    "@testing-library/user-event": "^14.0.0",
-    "@types/react": "^18.0.0"
-  },
-  "files": [
-    "dist"
-  ]
+  }
 }
