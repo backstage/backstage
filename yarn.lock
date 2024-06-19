@@ -10782,7 +10782,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/interceptors@npm:0.17.10":
+"@mswjs/interceptors@npm:^0.17.10":
   version: 0.17.10
   resolution: "@mswjs/interceptors@npm:0.17.10"
   dependencies:
@@ -10798,7 +10798,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/interceptors@npm:0.29.1":
+"@mswjs/interceptors@npm:^0.29.0":
   version: 0.29.1
   resolution: "@mswjs/interceptors@npm:0.29.1"
   dependencies:
@@ -10809,36 +10809,6 @@ __metadata:
     outvariant: ^1.2.1
     strict-event-emitter: ^0.5.1
   checksum: c217f922c68024f6a8b526fb7df00bbfccb71e432bfb270322976dd40a9d312698e40bfd105b74df7aeb5a46276531a56ca5b8e3e9b0112f1577eb0d8d289e1f
-  languageName: node
-  linkType: hard
-
-"@mswjs/interceptors@patch:@mswjs/interceptors@npm%3A0.17.10#.yarn/patches/@mswjs-interceptors-npm-0.17.10-c1199a9424.patch::locator=root%40workspace%3A.":
-  version: 0.17.10
-  resolution: "@mswjs/interceptors@patch:@mswjs/interceptors@npm%3A0.17.10#.yarn/patches/@mswjs-interceptors-npm-0.17.10-c1199a9424.patch::version=0.17.10&hash=652df3&locator=root%40workspace%3A."
-  dependencies:
-    "@open-draft/until": ^1.0.3
-    "@types/debug": ^4.1.7
-    "@xmldom/xmldom": ^0.8.3
-    debug: ^4.3.3
-    headers-polyfill: 3.2.5
-    outvariant: ^1.2.1
-    strict-event-emitter: ^0.2.4
-    web-encoding: ^1.1.5
-  checksum: 32ca2f2d4e8bc46e1f773ca440a0ec5ba9c69ea4d89c07fbd25a0fde73627a232eb7d0cf3ce426fbe1fd58863ab9c84386352ecdc55eeb2a5240ba126c0ba6f0
-  languageName: node
-  linkType: hard
-
-"@mswjs/interceptors@patch:@mswjs/interceptors@npm%3A0.29.1#./.yarn/patches/@mswjs-interceptors-npm-0.29.1-b5be72ad54.patch::locator=root%40workspace%3A.":
-  version: 0.29.1
-  resolution: "@mswjs/interceptors@patch:@mswjs/interceptors@npm%3A0.29.1#./.yarn/patches/@mswjs-interceptors-npm-0.29.1-b5be72ad54.patch::version=0.29.1&hash=d6ea98&locator=root%40workspace%3A."
-  dependencies:
-    "@open-draft/deferred-promise": ^2.2.0
-    "@open-draft/logger": ^0.3.0
-    "@open-draft/until": ^2.0.0
-    is-node-process: ^1.2.0
-    outvariant: ^1.2.1
-    strict-event-emitter: ^0.5.1
-  checksum: d7ce191736c8b5df2dcdb36d11dbf25ca37cd3c0d1319cf8594713c443c5bdf733c2aeb4863aba646a67b50813e64dc1b13fbd31cee238cc4c9f8a8fd2908486
   languageName: node
   linkType: hard
 
