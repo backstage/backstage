@@ -8,7 +8,6 @@
 '@backstage/integration-react': patch
 '@backstage/plugin-kubernetes-cluster': patch
 '@backstage/frontend-app-api': patch
-'@internal/plugin-todo-list': patch
 '@backstage/core-compat-api': patch
 '@backstage/core-components': patch
 '@backstage/core-plugin-api': patch
