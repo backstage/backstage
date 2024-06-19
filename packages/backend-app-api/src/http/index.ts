@@ -58,7 +58,7 @@ export class MiddlewareFactory {
    * Creates a new {@link MiddlewareFactory}.
    */
   static create(options: MiddlewareFactoryOptions) {
-    return _MiddlewareFactory.create(options);
+    return new MiddlewareFactory(_MiddlewareFactory.create(options));
   }
 
   private constructor(private readonly impl: _MiddlewareFactory) {}

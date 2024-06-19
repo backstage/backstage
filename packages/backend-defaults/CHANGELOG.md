@@ -1,5 +1,25 @@
 # @backstage/backend-defaults
 
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.8
+  - @backstage/backend-common@0.23.1
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/backend-plugin-api@0.6.20
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.12.0
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+  - @backstage/plugin-auth-node@0.4.15
+  - @backstage/plugin-events-node@0.3.6
+  - @backstage/plugin-permission-node@0.7.31
+
 ## 0.3.1
 
 ### Patch Changes
