@@ -20,14 +20,15 @@ import {
   scmAuthApiRef,
 } from '@backstage/integration-react';
 import React, { useEffect, useState, useCallback } from 'react';
-import { RepoBranchPickerProps } from './schema';
-import { RepoBranchPickerState } from './types';
 import useDebounce from 'react-use/esm/useDebounce';
 import { useTemplateSecrets } from '@backstage/plugin-scaffolder-react';
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import { BitbucketRepoBranchPicker } from './BitbucketRepoBranchPicker';
+
+import { RepoBranchPickerProps } from './schema';
+import { RepoBranchPickerState } from './types';
 
 /**
  * The underlying component that is rendered in the form for the `RepoBranchPicker`
