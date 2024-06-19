@@ -204,7 +204,7 @@ tool for Backstage operators who want to debug problems either with statically
 registered entities that are under their control, or to help end users find
 problems.
 
-> Prior to Backstage version v1.26.0 and `@backstage/plugin-catalog-backend` v1.21.9 catalog errors were logged by default. See the docs below on how to enable these logs and an example on how you can further customize how you ingest these errors.
+> Prior to Backstage version v1.26.0 and `@backstage/plugin-catalog-backend` v1.21.9 catalog errors were logged by default.
 
 Second, for most classes of errors, the entity itself will contain a status
 field that describes the problem. The contents of this field is shown at the top
