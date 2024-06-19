@@ -22,7 +22,6 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { Duration } from 'luxon';
 import { catalogModuleBitbucketServerEntityProvider } from './catalogModuleBitbucketServerEntityProvider';
 import { BitbucketServerEntityProvider } from '../providers/BitbucketServerEntityProvider';
 
@@ -53,35 +52,35 @@ describe('catalogModuleBitbucketServerEntityProvider', () => {
       },
     });
 
-    const config = {
-      catalog: {
-        providers: {
-          bitbucketServer: {
-            host: 'bitbucket.mycompany.com',
-            schedule: {
-              frequency: 'P1M',
-              timeout: 'PT3M',
-            },
-          },
-        },
-      },
-      integrations: {
-        bitbucketServer: [
-          {
-            host: 'bitbucket.mycompany.com',
-          },
-        ],
-      },
-    };
-
     await startTestBackend({
       extensionPoints: [
         [catalogProcessingExtensionPoint, catalogExtensionPointImpl],
       ],
       features: [
+        eventsServiceFactory(),
         catalogModuleBitbucketServerEntityProvider,
-        mockServices.rootConfig.factory({ data: config }),
-        mockServices.logger.factory(),
+        mockServices.rootConfig.factory({
+          data: {
+            catalog: {
+              providers: {
+                bitbucketServer: {
+                  host: 'bitbucket.mycompany.com',
+                  schedule: {
+                    frequency: 'P1M',
+                    timeout: 'PT3M',
+                  },
+                },
+              },
+            },
+            integrations: {
+              bitbucketServer: [
+                {
+                  host: 'bitbucket.mycompany.com',
+                },
+              ],
+            },
+          },
+        }),
         scheduler.factory,
       ],
     });
