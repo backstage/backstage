@@ -46,4 +46,4 @@
 '@backstage/plugin-org': patch
 ---
 
-Move `@types/react` to a peer dependency.
+Move `@types/react` to a peer dependency and add missing dev dependencies on `react`, `react-dom` and `react-router-dom`.
