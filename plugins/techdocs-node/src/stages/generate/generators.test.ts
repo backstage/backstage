@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import { ContainerRunner, getVoidLogger } from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Generators } from './generators';
 import { TechdocsGenerator } from './techdocs';
+import { mockServices } from '@backstage/backend-test-utils';
 
-const logger = getVoidLogger();
+const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
 const mockEntity = {
   apiVersion: 'version',
@@ -30,10 +31,6 @@ const mockEntity = {
 };
 
 describe('generators', () => {
-  const containerRunner: jest.Mocked<ContainerRunner> = {
-    runContainer: jest.fn(),
-  };
-
   it('should return error if no generator is registered', async () => {
     const generators = new Generators();
 
@@ -46,7 +43,6 @@ describe('generators', () => {
     const generators = new Generators();
     const techdocs = TechdocsGenerator.fromConfig(new ConfigReader({}), {
       logger,
-      containerRunner,
     });
 
     generators.register('techdocs', techdocs);

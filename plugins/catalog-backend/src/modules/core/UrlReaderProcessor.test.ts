@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
+import { UrlReader, UrlReaders } from '@backstage/backend-common';
 import {
-  getVoidLogger,
-  UrlReader,
-  UrlReaders,
-} from '@backstage/backend-common';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
@@ -47,7 +46,7 @@ describe('UrlReaderProcessor', () => {
   });
 
   it('should load from url', async () => {
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     const reader = UrlReaders.default({
       logger,
       config: new ConfigReader({
@@ -105,7 +104,7 @@ describe('UrlReaderProcessor', () => {
   });
 
   it('should use cached data when available', async () => {
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     const reader = UrlReaders.default({
       logger,
       config: new ConfigReader({
@@ -153,7 +152,7 @@ describe('UrlReaderProcessor', () => {
   });
 
   it('should fail load from url with error', async () => {
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     const reader = UrlReaders.default({
       logger,
       config: new ConfigReader({
@@ -191,7 +190,7 @@ describe('UrlReaderProcessor', () => {
   });
 
   it('uses search when there are globs', async () => {
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
 
     const reader: jest.Mocked<UrlReader> = {
       readUrl: jest.fn(),

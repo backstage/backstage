@@ -28,6 +28,7 @@ import { defaultScmResolveUrl } from './helpers';
 import { ScmIntegration, ScmIntegrationsGroup } from './types';
 import { ScmIntegrationRegistry } from './registry';
 import { GiteaIntegration } from './gitea';
+import { HarnessIntegration } from './harness/HarnessIntegration';
 
 /**
  * The set of supported integrations.
@@ -48,6 +49,7 @@ export interface IntegrationsByType {
   github: ScmIntegrationsGroup<GithubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
   gitea: ScmIntegrationsGroup<GiteaIntegration>;
+  harness: ScmIntegrationsGroup<HarnessIntegration>;
 }
 
 /**
@@ -70,6 +72,7 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
       github: GithubIntegration.factory({ config }),
       gitlab: GitLabIntegration.factory({ config }),
       gitea: GiteaIntegration.factory({ config }),
+      harness: HarnessIntegration.factory({ config }),
     });
   }
 
@@ -118,6 +121,10 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
 
   get gitea(): ScmIntegrationsGroup<GiteaIntegration> {
     return this.byType.gitea;
+  }
+
+  get harness(): ScmIntegrationsGroup<HarnessIntegration> {
+    return this.byType.harness;
   }
 
   list(): ScmIntegration[] {

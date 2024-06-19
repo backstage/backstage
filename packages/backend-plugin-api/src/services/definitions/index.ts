@@ -20,6 +20,7 @@ export type {
   BackstageCredentials,
   BackstageUserPrincipal,
   BackstageServicePrincipal,
+  BackstagePrincipalAccessRestrictions,
   BackstagePrincipalTypes,
   BackstageNonePrincipal,
 } from './AuthService';
@@ -52,7 +53,16 @@ export type { PluginMetadataService } from './PluginMetadataService';
 export type { RootHttpRouterService } from './RootHttpRouterService';
 export type { RootLifecycleService } from './RootLifecycleService';
 export type { RootLoggerService } from './RootLoggerService';
-export type { SchedulerService } from './SchedulerService';
+export { readSchedulerServiceTaskScheduleDefinitionFromConfig } from './SchedulerService';
+export type {
+  SchedulerService,
+  SchedulerServiceTaskDescriptor,
+  SchedulerServiceTaskFunction,
+  SchedulerServiceTaskInvocationDefinition,
+  SchedulerServiceTaskRunner,
+  SchedulerServiceTaskScheduleDefinition,
+  SchedulerServiceTaskScheduleDefinitionConfig,
+} from './SchedulerService';
 export type { TokenManagerService } from './TokenManagerService';
 export type {
   ReadTreeOptions,
@@ -64,6 +74,15 @@ export type {
   SearchOptions,
   SearchResponse,
   SearchResponseFile,
+  UrlReaderServiceReadTreeOptions,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadTreeResponseDirOptions,
+  UrlReaderServiceReadTreeResponseFile,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceSearchOptions,
+  UrlReaderServiceSearchResponse,
+  UrlReaderServiceSearchResponseFile,
   UrlReaderService,
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';

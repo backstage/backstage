@@ -22,3 +22,8 @@
 
 export * from './processors';
 export * from './ldap';
+export {
+  catalogModuleLdapOrgEntityProvider as default,
+  ldapOrgEntityProviderTransformsExtensionPoint,
+  type LdapOrgEntityProviderTransformsExtensionPoint,
+} from './module';

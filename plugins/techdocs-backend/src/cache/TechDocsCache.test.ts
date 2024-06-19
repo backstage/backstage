@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { CacheClient, getVoidLogger } from '@backstage/backend-common';
+import { CacheClient, loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { CacheInvalidationError, TechDocsCache } from './TechDocsCache';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const cached = (str: string): string => {
   return Buffer.from(str).toString('base64');
@@ -35,7 +36,7 @@ describe('TechDocsCache', () => {
     };
     CacheUnderTest = TechDocsCache.fromConfig(new ConfigReader({}), {
       cache: MockClient,
-      logger: getVoidLogger(),
+      logger: loggerToWinstonLogger(mockServices.logger.mock()),
     });
   });
 
@@ -82,7 +83,7 @@ describe('TechDocsCache', () => {
         }),
         {
           cache: MockClient,
-          logger: getVoidLogger(),
+          logger: loggerToWinstonLogger(mockServices.logger.mock()),
         },
       );
 

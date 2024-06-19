@@ -21,7 +21,7 @@ import {
   V1CronJob,
   V1DaemonSet,
   V1Deployment,
-  V1HorizontalPodAutoscaler,
+  V2HorizontalPodAutoscaler,
   V1Ingress,
   V1Job,
   V1LimitRange,
@@ -186,7 +186,7 @@ export interface ResourceQuotaFetchResponse {
 /** @public */
 export interface HorizontalPodAutoscalersFetchResponse {
   type: 'horizontalpodautoscalers';
-  resources: Array<V1HorizontalPodAutoscaler>;
+  resources: Array<V2HorizontalPodAutoscaler>;
 }
 
 /** @public */
@@ -282,7 +282,7 @@ export interface DeploymentResources {
   pods: V1Pod[];
   replicaSets: V1ReplicaSet[];
   deployments: V1Deployment[];
-  horizontalPodAutoscalers: V1HorizontalPodAutoscaler[];
+  horizontalPodAutoscalers: V2HorizontalPodAutoscaler[];
 }
 
 /** @public */

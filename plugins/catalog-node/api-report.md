@@ -6,6 +6,8 @@
 /// <reference types="node" />
 
 import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
+import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { JsonValue } from '@backstage/types';
@@ -164,6 +166,13 @@ export type EntityRelationSpec = {
   source: CompoundEntityRef;
   type: string;
   target: CompoundEntityRef;
+};
+
+// @public (undocumented)
+export type LocationAnalyzer = {
+  analyzeLocation(
+    location: AnalyzeLocationRequest,
+  ): Promise<AnalyzeLocationResponse>;
 };
 
 // @public @deprecated

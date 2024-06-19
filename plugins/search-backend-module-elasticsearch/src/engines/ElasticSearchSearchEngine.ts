@@ -345,6 +345,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
 
           attempts++;
         }
+        done();
       });
 
       if (cleanupError) {

@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import express from 'express';
 import Router from 'express-promise-router';
 import request from 'supertest';
 import { HttpPostIngressEventPublisher } from './HttpPostIngressEventPublisher';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('HttpPostIngressEventPublisher', () => {
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
 
   it('should set up routes correctly', async () => {
     const config = new ConfigReader({

@@ -1,9 +1,16 @@
 {
   "name": "@backstage/plugin-notifications-node",
-  "version": "0.1.4-next.1",
+  "version": "0.2.0",
   "description": "Node.js library for the notifications plugin",
   "backstage": {
-    "role": "node-library"
+    "role": "node-library",
+    "pluginId": "notifications",
+    "pluginPackages": [
+      "@backstage/plugin-notifications",
+      "@backstage/plugin-notifications-backend",
+      "@backstage/plugin-notifications-common",
+      "@backstage/plugin-notifications-node"
+    ]
   },
   "publishConfig": {
     "access": "public",
@@ -37,6 +44,7 @@
     "@backstage/plugin-notifications-common": "workspace:^",
     "@backstage/plugin-signals-node": "workspace:^",
     "knex": "^3.0.0",
+    "node-fetch": "^2.6.7",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

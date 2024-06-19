@@ -16,6 +16,7 @@ import { Logger } from 'winston';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { UrlReader } from '@backstage/backend-common';
+import * as winston from 'winston';
 import { Writable } from 'stream';
 
 // @public
@@ -47,8 +48,8 @@ export type GeneratorBuilder = {
 
 // @public
 export type GeneratorOptions = {
-  containerRunner?: ContainerRunner;
   logger: Logger;
+  containerRunner?: ContainerRunner;
 };
 
 // @public
@@ -71,7 +72,7 @@ export class Generators implements GeneratorBuilder {
     config: Config,
     options: {
       logger: Logger;
-      containerRunner: ContainerRunner;
+      containerRunner?: ContainerRunner;
       customGenerator?: TechdocsGenerator;
     },
   ): Promise<GeneratorBuilder>;
@@ -240,6 +241,8 @@ export type SupportedGeneratorKey = 'techdocs' | string;
 
 // @public
 export interface TechdocsBuildsExtensionPoint {
+  // (undocumented)
+  setBuildLogTransport(transport: winston.transport): void;
   // (undocumented)
   setBuildStrategy(buildStrategy: DocsBuildStrategy): void;
 }

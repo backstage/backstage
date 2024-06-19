@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-backend';
 import { OpenApiRefProcessor } from './OpenApiRefProcessor';
 import { bundleFileWithRefs } from './lib';
+import { mockServices } from '@backstage/backend-test-utils';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 
 jest.mock('./lib', () => ({
   bundleFileWithRefs: jest.fn(),
@@ -53,7 +54,7 @@ describe('OpenApiRefProcessor', () => {
         search: jest.fn(),
       };
       const processor = OpenApiRefProcessor.fromConfig(config, {
-        logger: getVoidLogger(),
+        logger: loggerToWinstonLogger(mockServices.logger.mock()),
         reader,
       });
 

@@ -61,7 +61,7 @@ interface MkSearchIndexDoc {
 export type TechDocsCollatorFactoryOptions = {
   discovery: PluginEndpointDiscovery;
   logger: LoggerService;
-  tokenManager: TokenManager;
+  tokenManager?: TokenManager;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
   locationTemplate?: string;

@@ -27,7 +27,7 @@ yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-bitbuck
 ### Installation with New Backend System
 
 ```ts
-// optional if you want HTTP endpojnts to receive external events
+// optional if you want HTTP endpoints to receive external events
 // backend.add(import('@backstage/plugin-events-backend/alpha'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
 // backend.add(import('@backstage/plugin-events-backend-module-aws-sqs/alpha'));

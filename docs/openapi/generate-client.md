@@ -20,7 +20,7 @@ info:
 
 ### Generating your client
 
-1. Run `yarn backstage-repo-tools schema openapi generate client --output-package <directory>`. This will create a new folder in `<directory>/src/generated` to house the generated content.
+1. Run `yarn backstage-repo-tools package schema openapi generate client --client-package <directory>`. This will create a new folder in `<directory>/src/generated` to house the generated content.
 2. You should use the generated files as follows,
 
 - `apis/DefaultApi.client.ts` - this is the client that you should use. It has types for all of the various operations on your API.

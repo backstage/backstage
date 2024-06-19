@@ -1,9 +1,15 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.22.5-next.1",
+  "version": "0.22.6",
   "description": "A Backstage backend plugin that handles authentication",
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "auth",
+    "pluginPackages": [
+      "@backstage/plugin-auth-backend",
+      "@backstage/plugin-auth-node",
+      "@backstage/plugin-auth-react"
+    ]
   },
   "publishConfig": {
     "access": "public",
@@ -57,6 +63,7 @@
     "@backstage/plugin-auth-backend-module-oauth2-proxy-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-oidc-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-okta-provider": "workspace:^",
+    "@backstage/plugin-auth-backend-module-onelogin-provider": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",

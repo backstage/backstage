@@ -8,21 +8,39 @@ If you want to extend the functionality of the Scaffolder, you can do so
 by writing custom actions which can be used alongside our
 [built-in actions](./builtin-actions.md).
 
-> Note: When adding custom actions, the actions array will **replace the
-> built-in actions too**. Meaning, you will no longer be able to use them.
-> If you want to continue using the builtin actions, include them in the actions
-> array when registering your custom actions, as seen below.
+:::note Note
+
+When adding custom actions, the actions array will **replace the
+built-in actions too**. Meaning, you will no longer be able to use them.
+If you want to continue using the builtin actions, include them in the actions
+array when registering your custom actions, as seen below.
+
+:::
+
+## Streamlining Custom Action Creation with Backstage CLI
+
+The creation of custom actions in Backstage has never been easier thanks to the Backstage CLI. This tool streamlines the setup process, allowing you to focus on your actions' unique functionality.
+
+Start by using the `yarn backstage-cli new` command to generate a scaffolder module. This command sets up the necessary boilerplate code, providing a smooth start:
+
+```
+$ yarn backstage-cli new
+? What do you want to create?
+  plugin-common - A new isomorphic common plugin package
+  plugin-node - A new Node.js library plugin package
+  plugin-react - A new web library plugin package
+> scaffolder-module - An module exporting custom actions for @backstage/plugin-scaffolder-backend
+```
+
+You can find a [list](../../tooling/cli/03-commands.md) of all commands provided by the Backstage CLI.
+
+When prompted, select the option to generate a scaffolder module. This creates a solid foundation for your custom action. Enter the name of the module you wish to create, and the CLI will generate the required files and directory structure.
 
 ## Writing your Custom Action
 
-Your custom action can live where you choose, but simplest is to include it
-alongside your `backend` package in `packages/backend`.
+After running the command, the CLI will create a new directory with your new scaffolder module. This directory will be the working directory for creating the custom action. It will contain all the necessary files and boilerplate code to get started.
 
-Let's create a simple action that adds a new file and some contents that are
-passed as `input` to the function.
-
-In `packages/backend/src/plugins/scaffolder/actions/custom.ts` we can create a
-new action.
+Let's create a simple action that adds a new file and some contents that are passed as `input` to the function. Within the generated directory, locate the file at `src/actions/example/example.ts`. Feel free to rename this file along with its generated unit test. We will replace the existing placeholder code with our custom action code as follows:
 
 ```ts title="With Zod"
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -32,6 +50,7 @@ import { z } from 'zod';
 export const createNewFileAction = () => {
   return createTemplateAction({
     id: 'acme:file:create',
+    description: 'Create an Acme file.',
     schema: {
       input: z.object({
         contents: z.string().describe('The contents of the file'),
@@ -59,9 +78,10 @@ for reference.
 
 The `createTemplateAction` takes an object which specifies the following:
 
-- `id` - a unique ID for your custom action. We encourage you to namespace these
+- `id` - A unique ID for your custom action. We encourage you to namespace these
   in some way so that they won't collide with future built-in actions that we
   may ship with the `scaffolder-backend` plugin.
+- `description` - An optional field to describe the purpose of the action. This will populate in the `/create/actions` endpoint.
 - `schema.input` - A `zod` or JSON schema object for input values to your function
 - `schema.output` - A `zod` or JSON schema object for values which are output from the
   function using `ctx.output`
@@ -76,6 +96,7 @@ import { writeFile } from 'fs';
 export const createNewFileAction = () => {
   return createTemplateAction<{ contents: string; filename: string }>({
     id: 'acme:file:create',
+    description: 'Create an Acme file.',
     schema: {
       input: {
         required: ['contents', 'filename'],
@@ -114,7 +135,7 @@ We follow `provider:entity:verb` or as close to this as possible for our built i
 
 Also feel free to use your company name to namespace them if you prefer too, for example `acme:file:create` like above.
 
-Prefer to use `camelCase` over `snake-case` for these actions if possible, which leads to better reading and writing of template entity definitions.
+Prefer to use `camelCase` over `snake_case` or `kebab-case` for these actions if possible, which leads to better reading and writing of template entity definitions.
 
 > We're aware that there are some exceptions to this, but try to follow as close as possible. We'll be working on migrating these in the repository over time too.
 
@@ -138,6 +159,65 @@ argument. It looks like the following:
   name. More metadata fields may be added later.
 
 ## Registering Custom Actions
+
+To register your new custom action in the Backend System you will need to create a backend module. Here is a very simplified example of how to do that:
+
+```ts title="packages/backend/src/index.ts"
+/* highlight-add-start */
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import { createBackendModule } from '@backstage/backend-plugin-api';
+/* highlight-add-end */
+
+/* highlight-add-start */
+const scaffolderModuleCustomExtensions = createBackendModule({
+  pluginId: 'scaffolder', // name of the plugin that the module is targeting
+  moduleId: 'custom-extensions',
+  register(env) {
+    env.registerInit({
+      deps: {
+        scaffolder: scaffolderActionsExtensionPoint,
+        // ... and other dependencies as needed
+      },
+      async init({ scaffolder /* ..., other dependencies */ }) {
+        // Here you have the opportunity to interact with the extension
+        // point before the plugin itself gets instantiated
+        scaffolder.addActions(new createNewFileAction()); // just an example
+      },
+    });
+  },
+});
+/* highlight-add-end */
+
+const backend = createBackend();
+backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
+/* highlight-add-next-line */
+backend.add(scaffolderModuleCustomExtensions());
+```
+
+If your custom action requires core services such as `config` or `cache` they can be imported in the dependencies and passed to the custom action function.
+
+```ts title="packages/backend/src/index.ts"
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+
+...
+
+    env.registerInit({
+      deps: {
+        scaffolder: scaffolderActionsExtensionPoint,
+        cache: coreServices.cache,
+        config: coreServices.rootConfig,
+      },
+      async init({ scaffolder, cache, config }) {
+        scaffolder.addActions(
+          customActionNeedingCacheAndConfig({ cache: cache, config: config }),
+        );
+    })
+```
+
+### Register Custom Actions with the Legacy Backend System
 
 Once you have your Custom Action ready for usage with the scaffolder, you'll
 need to pass this into the `scaffolder-backend` `createRouter` function. You
@@ -187,42 +267,6 @@ export default async function createPlugin(
     reader: env.reader,
   });
 }
-```
-
-### Register Action With New Backend System
-
-To register your new custom action in the New Backend System you will need to create a backend module. Here is a very simplified example of how to do that:
-
-```ts title="packages/backend/src/index.ts"
-/* highlight-add-start */
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
-import { createBackendModule } from '@backstage/backend-plugin-api';
-/* highlight-add-end */
-
-/* highlight-add-start */
-const scaffolderModuleCustomExtensions = createBackendModule({
-  pluginId: 'scaffolder', // name of the plugin that the module is targeting
-  moduleId: 'custom-extensions',
-  register(env) {
-    env.registerInit({
-      deps: {
-        scaffolder: scaffolderActionsExtensionPoint,
-        // ... and other dependencies as needed
-      },
-      async init({ scaffolder /* ..., other dependencies */ }) {
-        // Here you have the opportunity to interact with the extension
-        // point before the plugin itself gets instantiated
-        scaffolder.addActions(new createNewFileAction()); // just an example
-      },
-    });
-  },
-});
-/* highlight-add-end */
-
-const backend = createBackend();
-backend.add(import('@backstage/plugin-scaffolder-backend/alpha'));
-/* highlight-add-next-line */
-backend.add(scaffolderModuleCustomExtensions());
 ```
 
 ## List of custom action packages

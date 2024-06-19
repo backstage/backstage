@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { getVoidLogger, UrlReaders } from '@backstage/backend-common';
+import { UrlReaders } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { AwsS3DiscoveryProcessor } from './AwsS3DiscoveryProcessor';
 import {
@@ -33,6 +33,7 @@ import { sdkStreamMixin } from '@aws-sdk/util-stream-node';
 import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const s3Client = mockClient(S3Client);
 const object: Object = {
@@ -43,7 +44,7 @@ const output: ListObjectsV2Output = {
   Contents: objectList,
 };
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 const reader = UrlReaders.default({
   logger,
   config: new ConfigReader({

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import {
   ClusterDetails,
   CustomResource,
@@ -27,7 +26,10 @@ import { KubernetesFanOutHandler } from './KubernetesFanOutHandler';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import {
   FetchResponse,
   KubernetesRequestAuth,
@@ -189,7 +191,7 @@ describe('KubernetesFanOutHandler', () => {
 
   const getKubernetesFanOutHandler = (customResources: CustomResource[]) => {
     return new KubernetesFanOutHandler({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       fetcher: {
         fetchObjectsForService,
         fetchPodMetricsByNamespaces,
@@ -1169,7 +1171,7 @@ describe('KubernetesFanOutHandler', () => {
               ],
             }),
         };
-        const logger = getVoidLogger();
+        const logger = mockServices.logger.mock();
         const kubernetesFanOutHandler = new KubernetesFanOutHandler({
           logger,
           fetcher: new KubernetesClientBasedFetcher({ logger }),

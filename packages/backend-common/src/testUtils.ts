@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,66 +14,30 @@
  * limitations under the License.
  */
 
-import { packagePathMocks } from './paths';
-import { posix as posixPath, resolve as resolvePath } from 'path';
-
-/** @public */
-export interface PackagePathResolutionOverride {
-  /** Restores the normal behavior of resolvePackagePath */
-  restore(): void;
-}
-
-/** @public */
-export interface OverridePackagePathResolutionOptions {
-  /** The name of the package to mock the resolved path of */
-  packageName: string;
-
-  /** A replacement for the root package path */
-  path?: string;
-
-  /**
-   * Replacements for package sub-paths, each key must be an exact match of the posix-style path
-   * that is being resolved within the package.
-   *
-   * For example, code calling `resolvePackagePath('x', 'foo', 'bar')` would match only the following
-   * configuration: `overridePackagePathResolution({ packageName: 'x', paths: { 'foo/bar': baz } })`
-   */
-  paths?: { [path in string]: string | (() => string) };
-}
+import {
+  overridePackagePathResolution as _overridePackagePathResolution,
+  OverridePackagePathResolutionOptions as _OverridePackagePathResolutionOptions,
+  PackagePathResolutionOverride as _PackagePathResolutionOverride,
+} from '@backstage/backend-plugin-api/testUtils';
 
 /**
- * This utility helps you override the paths returned by `resolvePackagePath` for a given package.
- *
  * @public
+ * @deprecated This function is deprecated and will be removed in future release, see https://github.com/backstage/backstage/issues/24493.
+ * Please use the `overridePackagePathResolution` function from the `@backstage/backend-plugin-api/testUtils` package instead.
  */
-export function overridePackagePathResolution(
-  options: OverridePackagePathResolutionOptions,
-): PackagePathResolutionOverride {
-  const name = options.packageName;
+export const overridePackagePathResolution = _overridePackagePathResolution;
 
-  if (packagePathMocks.has(name)) {
-    throw new Error(
-      `Tried to override resolution for '${name}' more than once for package '${name}'`,
-    );
-  }
+/**
+ * @public
+ * @deprecated This type is deprecated and will be removed in a future release, see https://github.com/backstage/backstage/issues/24493.
+ * Please use the `OverridePackagePathResolutionOptions` type from the `@backstage/backend-plugin-api/testUtils` package instead.
+ */
+export type OverridePackagePathResolutionOptions =
+  _OverridePackagePathResolutionOptions;
 
-  packagePathMocks.set(name, paths => {
-    const joinedPath = posixPath.join(...paths);
-    const localResolver = options.paths?.[joinedPath];
-    if (localResolver) {
-      return typeof localResolver === 'function'
-        ? localResolver()
-        : localResolver;
-    }
-    if (options.path) {
-      return resolvePath(options.path, ...paths);
-    }
-    return undefined;
-  });
-
-  return {
-    restore() {
-      packagePathMocks.delete(name);
-    },
-  };
-}
+/**
+ * @public
+ * @deprecated This type is deprecated and will be removed in a future release, see https://github.com/backstage/backstage/issues/24493.
+ * Please use the `PackagePathResolutionOverride` type from the `@backstage/backend-plugin-api/testUtils` package instead.
+ */
+export type PackagePathResolutionOverride = _PackagePathResolutionOverride;

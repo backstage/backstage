@@ -172,7 +172,18 @@ Commands:
   lint [options] [paths...]
   test [options] [paths...]
   fuzz [options]
+  diff [options]
   help [command]
+```
+
+### `backstage-repo-tools repo schema openapi diff`
+
+```
+Usage: backstage-repo-tools repo schema openapi diff [options]
+
+Options:
+  --since <ref>
+  -h, --help
 ```
 
 ### `backstage-repo-tools repo schema openapi fuzz`

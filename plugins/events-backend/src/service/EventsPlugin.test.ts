@@ -57,8 +57,8 @@ describe('eventsPlugin', () => {
       extensionPoints: [],
       features: [
         eventsServiceFactory(),
-        eventsPlugin(),
-        testModule(),
+        eventsPlugin,
+        testModule,
         mockServices.logger.factory(),
         mockServices.rootConfig.factory({
           data: {

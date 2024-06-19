@@ -14,44 +14,59 @@
  * limitations under the License.
  */
 
+import { cacheServiceFactory } from '@backstage/backend-defaults/cache';
+import { databaseServiceFactory } from '@backstage/backend-defaults/database';
 import {
-  RootConfigService,
-  coreServices,
-  createServiceFactory,
+  HostDiscovery,
+  discoveryServiceFactory,
+} from '@backstage/backend-defaults/discovery';
+import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
+import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
+import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
+import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
+import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
+import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
+import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
+import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
+import {
+  AuthService,
+  BackstageCredentials,
+  BackstageUserInfo,
+  DiscoveryService,
+  HttpAuthService,
   IdentityService,
   LoggerService,
+  RootConfigService,
   ServiceFactory,
   ServiceRef,
   TokenManagerService,
-  AuthService,
-  DiscoveryService,
-  HttpAuthService,
-  BackstageCredentials,
-  BackstageUserInfo,
   UserInfoService,
+  coreServices,
+  createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import {
-  cacheServiceFactory,
-  databaseServiceFactory,
-  httpRouterServiceFactory,
-  lifecycleServiceFactory,
-  loggerServiceFactory,
-  permissionsServiceFactory,
-  rootHttpRouterServiceFactory,
-  rootLifecycleServiceFactory,
-  schedulerServiceFactory,
-  urlReaderServiceFactory,
-  discoveryServiceFactory,
-  HostDiscovery,
-} from '@backstage/backend-app-api';
 import { ConfigReader } from '@backstage/config';
+import {
+  eventsServiceFactory,
+  eventsServiceRef,
+} from '@backstage/plugin-events-node';
 import { JsonObject } from '@backstage/types';
-import { MockIdentityService } from './MockIdentityService';
-import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
-import { mockCredentials } from './mockCredentials';
+import { MockIdentityService } from './MockIdentityService';
+import { MockRootLoggerService } from './MockRootLoggerService';
 import { MockUserInfoService } from './MockUserInfoService';
+import { mockCredentials } from './mockCredentials';
+
+/** @internal */
+function createLoggerMock() {
+  return {
+    child: jest.fn().mockImplementation(createLoggerMock),
+    debug: jest.fn(),
+    error: jest.fn(),
+    info: jest.fn(),
+    warn: jest.fn(),
+  };
+}
 
 /** @internal */
 function simpleFactory<
@@ -354,13 +369,10 @@ export namespace mockServices {
 
   export namespace logger {
     export const factory = loggerServiceFactory;
-    export const mock = simpleMock(coreServices.logger, () => ({
-      child: jest.fn(),
-      debug: jest.fn(),
-      error: jest.fn(),
-      info: jest.fn(),
-      warn: jest.fn(),
-    }));
+
+    export const mock = simpleMock(coreServices.logger, () =>
+      createLoggerMock(),
+    );
   }
 
   export namespace permissions {
@@ -395,6 +407,14 @@ export namespace mockServices {
       readTree: jest.fn(),
       readUrl: jest.fn(),
       search: jest.fn(),
+    }));
+  }
+
+  export namespace events {
+    export const factory = eventsServiceFactory;
+    export const mock = simpleMock(eventsServiceRef, () => ({
+      publish: jest.fn(),
+      subscribe: jest.fn(),
     }));
   }
 }

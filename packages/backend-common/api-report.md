@@ -13,15 +13,17 @@ import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 import { AwsS3Integration } from '@backstage/integration';
 import { AzureDevOpsCredentialsProvider } from '@backstage/integration';
 import { AzureIntegration } from '@backstage/integration';
-import { BackendFeature } from '@backstage/backend-plugin-api';
+import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
-import { CacheService as CacheClient } from '@backstage/backend-plugin-api';
-import { CacheServiceOptions as CacheClientOptions } from '@backstage/backend-plugin-api';
-import { CacheServiceSetOptions as CacheClientSetOptions } from '@backstage/backend-plugin-api';
+import { CacheService } from '@backstage/backend-plugin-api';
+import { CacheServiceOptions } from '@backstage/backend-plugin-api';
+import { CacheServiceSetOptions } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import cors from 'cors';
+import { DatabaseService } from '@backstage/backend-plugin-api';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import Docker from 'dockerode';
 import { ErrorRequestHandler } from 'express';
 import express from 'express';
@@ -30,10 +32,11 @@ import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
 import { GithubIntegration } from '@backstage/integration';
 import { GitLabIntegration } from '@backstage/integration';
-import { HostDiscovery as HostDiscovery_2 } from '@backstage/backend-app-api';
+import { HarnessIntegration } from '@backstage/integration';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
-import { isChildPath } from '@backstage/cli-common';
+import { isChildPath as isChildPath_2 } from '@backstage/backend-plugin-api';
+import { isDatabaseConflictError as isDatabaseConflictError_2 } from '@backstage/backend-plugin-api';
 import { KubeConfig } from '@kubernetes/client-node';
 import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
@@ -41,184 +44,100 @@ import { Logger } from 'winston';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { MergeResult } from 'isomorphic-git';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { DatabaseService as PluginDatabaseManager } from '@backstage/backend-plugin-api';
-import { DiscoveryService as PluginEndpointDiscovery } from '@backstage/backend-plugin-api';
 import { PluginMetadataService } from '@backstage/backend-plugin-api';
 import { PushResult } from 'isomorphic-git';
 import { Readable } from 'stream';
 import { ReadCommitResult } from 'isomorphic-git';
-import { ReadTreeOptions } from '@backstage/backend-plugin-api';
-import { ReadTreeResponse } from '@backstage/backend-plugin-api';
-import { ReadTreeResponseDirOptions } from '@backstage/backend-plugin-api';
-import { ReadTreeResponseFile } from '@backstage/backend-plugin-api';
-import { ReadUrlOptions } from '@backstage/backend-plugin-api';
-import { ReadUrlResponse } from '@backstage/backend-plugin-api';
+import { ReadTreeOptions as ReadTreeOptions_2 } from '@backstage/backend-plugin-api';
+import { ReadTreeResponse as ReadTreeResponse_2 } from '@backstage/backend-plugin-api';
+import { ReadTreeResponseDirOptions as ReadTreeResponseDirOptions_2 } from '@backstage/backend-plugin-api';
+import { ReadTreeResponseFile as ReadTreeResponseFile_2 } from '@backstage/backend-plugin-api';
+import { ReadUrlOptions as ReadUrlOptions_2 } from '@backstage/backend-plugin-api';
+import { ReadUrlResponse as ReadUrlResponse_2 } from '@backstage/backend-plugin-api';
 import { RequestHandler } from 'express';
+import { resolvePackagePath as resolvePackagePath_2 } from '@backstage/backend-plugin-api';
+import { resolveSafeChildPath as resolveSafeChildPath_2 } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { Router } from 'express';
 import { SchedulerService } from '@backstage/backend-plugin-api';
-import { SearchOptions } from '@backstage/backend-plugin-api';
-import { SearchResponse } from '@backstage/backend-plugin-api';
-import { SearchResponseFile } from '@backstage/backend-plugin-api';
+import { SearchOptions as SearchOptions_2 } from '@backstage/backend-plugin-api';
+import { SearchResponse as SearchResponse_2 } from '@backstage/backend-plugin-api';
+import { SearchResponseFile as SearchResponseFile_2 } from '@backstage/backend-plugin-api';
 import { Server } from 'http';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TokenManagerService as TokenManager } from '@backstage/backend-plugin-api';
+import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { TransportStreamOptions } from 'winston-transport';
-import { UrlReaderService as UrlReader } from '@backstage/backend-plugin-api';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
+import { UrlReaderServiceReadTreeOptions } from '@backstage/backend-plugin-api';
+import { UrlReaderServiceReadTreeResponse } from '@backstage/backend-plugin-api';
+import { UrlReaderServiceReadUrlOptions } from '@backstage/backend-plugin-api';
+import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
+import { UrlReaderServiceSearchOptions } from '@backstage/backend-plugin-api';
+import { UrlReaderServiceSearchResponse } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 import { V1PodTemplateSpec } from '@kubernetes/client-node';
 import * as winston from 'winston';
 import { Writable } from 'stream';
 
-// @public
+// @public @deprecated
 export type AuthCallbackOptions = {
   onAuth: AuthCallback;
   logger?: LoggerService;
 };
 
-// @public
-export class AwsS3UrlReader implements UrlReader {
-  constructor(
-    credsManager: AwsCredentialsManager,
-    integration: AwsS3Integration,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-    },
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
+// Warning: (ae-forgotten-export) The symbol "AwsS3UrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const AwsS3UrlReader: typeof AwsS3UrlReader_2;
+
+// Warning: (ae-forgotten-export) The symbol "AzureUrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const AzureUrlReader: typeof AzureUrlReader_2;
+
+// Warning: (ae-forgotten-export) The symbol "BitbucketCloudUrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const BitbucketCloudUrlReader: typeof BitbucketCloudUrlReader_2;
+
+// Warning: (ae-forgotten-export) The symbol "BitbucketServerUrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const BitbucketServerUrlReader: typeof BitbucketServerUrlReader_2;
+
+// Warning: (ae-forgotten-export) The symbol "BitbucketUrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const BitbucketUrlReader: typeof BitbucketUrlReader_2;
+
+// @public @deprecated (undocumented)
+export type CacheClient = CacheService;
+
+// @public @deprecated (undocumented)
+export type CacheClientOptions = CacheServiceOptions;
+
+// @public @deprecated (undocumented)
+export type CacheClientSetOptions = CacheServiceSetOptions;
+
+// Warning: (ae-forgotten-export) The symbol "CacheManager_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const CacheManager: typeof CacheManager_2;
+
+// Warning: (ae-forgotten-export) The symbol "CacheManagerOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type CacheManagerOptions = CacheManagerOptions_2;
 
 // @public
-export class AzureUrlReader implements UrlReader {
-  constructor(
-    integration: AzureIntegration,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-      credentialsProvider: AzureDevOpsCredentialsProvider;
-    },
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
-
-// @public
-export class BitbucketCloudUrlReader implements UrlReader {
-  constructor(
-    integration: BitbucketCloudIntegration,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-    },
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
-
-// @public
-export class BitbucketServerUrlReader implements UrlReader {
-  constructor(
-    integration: BitbucketServerIntegration,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-    },
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
-
-// @public @deprecated
-export class BitbucketUrlReader implements UrlReader {
-  constructor(
-    integration: BitbucketIntegration,
-    logger: LoggerService,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-    },
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
-
-export { CacheClient };
-
-export { CacheClientOptions };
-
-export { CacheClientSetOptions };
-
-// @public
-export class CacheManager {
-  forPlugin(pluginId: string): PluginCacheManager;
-  static fromConfig(
-    config: Config,
-    options?: CacheManagerOptions,
-  ): CacheManager;
-}
-
-// @public
-export type CacheManagerOptions = {
-  logger?: LoggerService;
-  onError?: (err: Error) => void;
+export function cacheToPluginCacheManager(cache: CacheService): {
+  getClient(options?: CacheServiceOptions): CacheService;
 };
 
-// @public (undocumented)
-export function cacheToPluginCacheManager(
-  cache: CacheClient,
-): PluginCacheManager;
-
-// @public
+// @public @deprecated
 export const coloredFormat: winston.Logform.Format;
 
-// @public
+// @public @deprecated
 export interface ContainerRunner {
   runContainer(opts: RunContainerOptions): Promise<void>;
 }
@@ -256,13 +175,13 @@ export function createLegacyAuthAdapters<
       : {}),
 >(options: TOptions): TAdapters;
 
-// @public
+// @public @deprecated
 export function createRootLogger(
   options?: winston.LoggerOptions,
   env?: NodeJS.ProcessEnv,
 ): winston.Logger;
 
-// @public
+// @public @deprecated
 export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
 // @public
@@ -272,104 +191,76 @@ export function createStatusCheckRouter(options: {
   statusCheck?: StatusCheck;
 }): Promise<express.Router>;
 
-// @public
+// @public @deprecated (undocumented)
 export class DatabaseManager implements LegacyRootDatabaseService {
+  // (undocumented)
   forPlugin(
     pluginId: string,
-    deps?: {
-      lifecycle: LifecycleService;
-      pluginMetadata: PluginMetadataService;
-    },
+    deps?:
+      | {
+          lifecycle: LifecycleService;
+          pluginMetadata: PluginMetadataService;
+        }
+      | undefined,
   ): PluginDatabaseManager;
+  // (undocumented)
   static fromConfig(
     config: Config,
     options?: DatabaseManagerOptions,
   ): DatabaseManager;
 }
 
-// @public
-export type DatabaseManagerOptions = {
-  migrations?: PluginDatabaseManager['migrations'];
-  logger?: LoggerService;
-};
+// Warning: (ae-forgotten-export) The symbol "DatabaseManagerOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type DatabaseManagerOptions = DatabaseManagerOptions_2;
 
-// @public
+// @public @deprecated
 export class DockerContainerRunner implements ContainerRunner {
   constructor(options: { dockerClient: Docker });
   // (undocumented)
   runContainer(options: RunContainerOptions): Promise<void>;
 }
 
-// @public
-export function dropDatabase(
-  dbConfig: Config,
-  ...databaseNames: string[]
-): Promise<void>;
+// Warning: (ae-forgotten-export) The symbol "dropDatabase_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const dropDatabase: typeof dropDatabase_2;
 
-// @public
+// @public @deprecated
 export function errorHandler(
   options?: ErrorHandlerOptions,
 ): ErrorRequestHandler;
 
-// @public
+// @public @deprecated
 export type ErrorHandlerOptions = {
   showStackTraces?: boolean;
   logger?: LoggerService;
   logClientErrors?: boolean;
 };
 
-// @public
-export class FetchUrlReader implements UrlReader {
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(): Promise<ReadTreeResponse>;
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
+// Warning: (ae-forgotten-export) The symbol "FetchUrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const FetchUrlReader: typeof FetchUrlReader_2;
 
-// @public
-export type FromReadableArrayOptions = Array<{
-  data: Readable;
-  path: string;
-  lastModifiedAt?: Date;
-}>;
+// Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type FromReadableArrayOptions = FromReadableArrayOptions_2;
 
-// @public
-export class GerritUrlReader implements UrlReader {
-  constructor(
-    integration: GerritIntegration,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-    },
-    workDir: string,
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
+// Warning: (ae-forgotten-export) The symbol "GerritUrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const GerritUrlReader: typeof GerritUrlReader_2;
 
-// @public
+// @public @deprecated
 export function getRootLogger(): winston.Logger;
 
-// @public
+// @public @deprecated
 export function getVoidLogger(): winston.Logger;
 
-// @public
+// @public @deprecated
 export class Git {
   // (undocumented)
   add(options: { dir: string; filepath: string }): Promise<void>;
@@ -445,95 +336,51 @@ export class Git {
   resolveRef(options: { dir: string; ref: string }): Promise<string>;
 }
 
-// @public
-export class GiteaUrlReader implements UrlReader {
-  constructor(
-    integration: GiteaIntegration,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-    },
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
+// Warning: (ae-forgotten-export) The symbol "GiteaUrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const GiteaUrlReader: typeof GiteaUrlReader_2;
 
-// @public
-export class GithubUrlReader implements UrlReader {
-  constructor(
-    integration: GithubIntegration,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-      credentialsProvider: GithubCredentialsProvider;
-    },
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
+// Warning: (ae-forgotten-export) The symbol "GithubUrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const GithubUrlReader: typeof GithubUrlReader_2;
 
-// @public
-export class GitlabUrlReader implements UrlReader {
-  constructor(
-    integration: GitLabIntegration,
-    deps: {
-      treeResponseFactory: ReadTreeResponseFactory;
-    },
-  );
-  // (undocumented)
-  static factory: ReaderFactory;
-  // (undocumented)
-  read(url: string): Promise<Buffer>;
-  // (undocumented)
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  // (undocumented)
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  // (undocumented)
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
-  // (undocumented)
-  toString(): string;
-}
+// Warning: (ae-forgotten-export) The symbol "GitlabUrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const GitlabUrlReader: typeof GitlabUrlReader_2;
 
-// @public
+// Warning: (ae-forgotten-export) The symbol "HarnessUrlReader_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const HarnessUrlReader: typeof HarnessUrlReader_2;
+
+// Warning: (ae-forgotten-export) The symbol "HostDiscovery_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated
 export const HostDiscovery: typeof HostDiscovery_2;
 
-export { isChildPath };
+// @public @deprecated (undocumented)
+export const isChildPath: typeof isChildPath_2;
 
-// @public
-export function isDatabaseConflictError(e: unknown): boolean;
+// @public @deprecated (undocumented)
+export const isDatabaseConflictError: typeof isDatabaseConflictError_2;
 
-// @public
+// @public @deprecated
 export class KubernetesContainerRunner implements ContainerRunner {
   constructor(options: KubernetesContainerRunnerOptions);
   // (undocumented)
   runContainer(options: RunContainerOptions): Promise<void>;
 }
 
-// @public
+// @public @deprecated
 export type KubernetesContainerRunnerMountBase = {
   volumeName: string;
   basePath: string;
 };
 
-// @public
+// @public @deprecated
 export type KubernetesContainerRunnerOptions = {
   kubeConfig: KubeConfig;
   name: string;
@@ -553,32 +400,34 @@ export const legacyPlugin: (
     default: LegacyCreateRouter<
       TransformedEnv<
         {
-          cache: CacheClient;
+          cache: CacheService;
           config: RootConfigService;
-          database: PluginDatabaseManager;
-          discovery: PluginEndpointDiscovery;
+          database: DatabaseService;
+          discovery: DiscoveryService;
           logger: LoggerService;
           permissions: PermissionsService;
           scheduler: SchedulerService;
-          tokenManager: TokenManager;
-          reader: UrlReader;
+          tokenManager: TokenManagerService;
+          reader: UrlReaderService;
           identity: IdentityService;
         },
         {
           logger: (log: LoggerService) => Logger;
-          cache: (cache: CacheClient) => PluginCacheManager;
+          cache: (cache: CacheService) => {
+            getClient(options?: CacheServiceOptions | undefined): CacheService;
+          };
         }
       >
     >;
   }>,
-) => BackendFeature;
+) => BackendFeatureCompat;
 
-// @public
-export type LegacyRootDatabaseService = {
-  forPlugin(pluginId: string): PluginDatabaseManager;
-};
+// Warning: (ae-forgotten-export) The symbol "LegacyRootDatabaseService_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type LegacyRootDatabaseService = LegacyRootDatabaseService_2;
 
-// @public
+// @public @deprecated
 export function loadBackendConfig(options: {
   logger: LoggerService;
   remote?: LoadConfigOptionsRemote;
@@ -609,22 +458,23 @@ export function makeLegacyPlugin<
   createRouterImport: Promise<{
     default: LegacyCreateRouter<TransformedEnv<TEnv, TEnvTransforms>>;
   }>,
-) => BackendFeature;
+) => BackendFeatureCompat;
 
-// @public
+// @public @deprecated
 export function notFoundHandler(): RequestHandler;
 
-// @public (undocumented)
-export interface PluginCacheManager {
-  // (undocumented)
-  getClient(options?: CacheClientOptions): CacheClient;
-}
+// Warning: (ae-forgotten-export) The symbol "PluginCacheManager_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type PluginCacheManager = PluginCacheManager_2;
 
-export { PluginDatabaseManager };
+// @public @deprecated (undocumented)
+export type PluginDatabaseManager = DatabaseService;
 
-export { PluginEndpointDiscovery };
+// @public @deprecated (undocumented)
+export type PluginEndpointDiscovery = DiscoveryService;
 
-// @public
+// @public @deprecated
 export interface PullOptions {
   // (undocumented)
   [key: string]: unknown;
@@ -639,94 +489,70 @@ export interface PullOptions {
   };
 }
 
-// @public
-export type ReaderFactory = (options: {
-  config: Config;
-  logger: LoggerService;
-  treeResponseFactory: ReadTreeResponseFactory;
-}) => UrlReaderPredicateTuple[];
+// Warning: (ae-forgotten-export) The symbol "ReaderFactory_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type ReaderFactory = ReaderFactory_2;
 
-export { ReadTreeOptions };
+// @public @deprecated (undocumented)
+export type ReadTreeOptions = ReadTreeOptions_2;
 
-export { ReadTreeResponse };
+// @public @deprecated (undocumented)
+export type ReadTreeResponse = ReadTreeResponse_2;
 
-export { ReadTreeResponseDirOptions };
+// @public @deprecated (undocumented)
+export type ReadTreeResponseDirOptions = ReadTreeResponseDirOptions_2;
 
-// @public
-export interface ReadTreeResponseFactory {
-  // (undocumented)
-  fromReadableArray(
-    options: FromReadableArrayOptions,
-  ): Promise<ReadTreeResponse>;
-  // (undocumented)
-  fromTarArchive(
-    options: ReadTreeResponseFactoryOptions & {
-      stripFirstDirectory?: boolean;
-    },
-  ): Promise<ReadTreeResponse>;
-  // (undocumented)
-  fromZipArchive(
-    options: ReadTreeResponseFactoryOptions,
-  ): Promise<ReadTreeResponse>;
-}
+// Warning: (ae-forgotten-export) The symbol "ReadTreeResponseFactory_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type ReadTreeResponseFactory = ReadTreeResponseFactory_2;
 
-// @public
-export type ReadTreeResponseFactoryOptions = {
-  stream: Readable;
-  subpath?: string;
-  etag: string;
-  filter?: (
-    path: string,
-    info?: {
-      size: number;
-    },
-  ) => boolean;
-};
+// Warning: (ae-forgotten-export) The symbol "ReadTreeResponseFactoryOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type ReadTreeResponseFactoryOptions = ReadTreeResponseFactoryOptions_2;
 
-export { ReadTreeResponseFile };
+// @public @deprecated (undocumented)
+export type ReadTreeResponseFile = ReadTreeResponseFile_2;
 
-export { ReadUrlOptions };
+// @public @deprecated (undocumented)
+export type ReadUrlOptions = ReadUrlOptions_2;
 
-export { ReadUrlResponse };
+// @public @deprecated (undocumented)
+export type ReadUrlResponse = ReadUrlResponse_2;
 
-// @public
-export class ReadUrlResponseFactory {
-  static fromNodeJSReadable(
-    oldStyleStream: NodeJS.ReadableStream,
-    options?: ReadUrlResponseFactoryFromStreamOptions,
-  ): Promise<ReadUrlResponse>;
-  static fromReadable(
-    stream: Readable,
-    options?: ReadUrlResponseFactoryFromStreamOptions,
-  ): Promise<ReadUrlResponse>;
-}
+// Warning: (ae-forgotten-export) The symbol "ReadUrlResponseFactory_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const ReadUrlResponseFactory: typeof ReadUrlResponseFactory_2;
 
-// @public
-export type ReadUrlResponseFactoryFromStreamOptions = {
-  etag?: string;
-  lastModifiedAt?: Date;
-};
+// Warning: (ae-forgotten-export) The symbol "ReadUrlResponseFactoryFromStreamOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type ReadUrlResponseFactoryFromStreamOptions =
+  ReadUrlResponseFactoryFromStreamOptions_2;
 
-// @public
+// @public @deprecated
 export function redactWinstonLogLine(
   info: winston.Logform.TransformableInfo,
 ): winston.Logform.TransformableInfo;
 
-// @public
+// @public @deprecated
 export function requestLoggingHandler(logger?: LoggerService): RequestHandler;
 
-// @public
+// @public @deprecated
 export type RequestLoggingHandlerFactory = (
   logger?: LoggerService,
 ) => RequestHandler;
 
-// @public
-export function resolvePackagePath(name: string, ...paths: string[]): string;
+// @public @deprecated (undocumented)
+export const resolvePackagePath: typeof resolvePackagePath_2;
 
-// @public
-export function resolveSafeChildPath(base: string, path: string): string;
+// @public @deprecated (undocumented)
+export const resolveSafeChildPath: typeof resolveSafeChildPath_2;
 
-// @public
+// @public @deprecated
 export type RunContainerOptions = {
   imageName: string;
   command?: string | string[];
@@ -740,13 +566,16 @@ export type RunContainerOptions = {
   pullOptions?: PullOptions;
 };
 
-export { SearchOptions };
+// @public @deprecated (undocumented)
+export type SearchOptions = SearchOptions_2;
 
-export { SearchResponse };
+// @public @deprecated (undocumented)
+export type SearchResponse = SearchResponse_2;
 
-export { SearchResponseFile };
+// @public @deprecated (undocumented)
+export type SearchResponseFile = SearchResponseFile_2;
 
-// @public
+// @public @deprecated
 export class ServerTokenManager implements TokenManager {
   // (undocumented)
   authenticate(token: string): Promise<void>;
@@ -762,13 +591,13 @@ export class ServerTokenManager implements TokenManager {
   static noop(): TokenManager;
 }
 
-// @public
+// @public @deprecated
 export interface ServerTokenManagerOptions {
   allowDisabledTokenManager?: boolean;
   logger: LoggerService;
 }
 
-// @public
+// @public @deprecated
 export type ServiceBuilder = {
   loadConfig(config: Config): ServiceBuilder;
   setPort(port: number): ServiceBuilder;
@@ -794,13 +623,13 @@ export type ServiceBuilder = {
   start(): Promise<Server>;
 };
 
-// @public
+// @public @deprecated
 export function setRootLogger(newLogger: winston.Logger): void;
 
 // @public @deprecated
 export const SingleHostDiscovery: typeof HostDiscovery_2;
 
-// @public
+// @public @deprecated
 export type StaticAuthOptions = {
   username?: string;
   password?: string;
@@ -821,28 +650,26 @@ export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }
 
-export { TokenManager };
+// @public @deprecated (undocumented)
+export type TokenManager = TokenManagerService;
 
-export { UrlReader };
+// @public @deprecated (undocumented)
+export type UrlReader = UrlReaderService;
 
-// @public
-export type UrlReaderPredicateTuple = {
-  predicate: (url: URL) => boolean;
-  reader: UrlReader;
-};
+// Warning: (ae-forgotten-export) The symbol "UrlReaderPredicateTuple_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type UrlReaderPredicateTuple = UrlReaderPredicateTuple_2;
 
-// @public
-export class UrlReaders {
-  static create(options: UrlReadersOptions): UrlReader;
-  static default(options: UrlReadersOptions): UrlReader;
-}
+// Warning: (ae-forgotten-export) The symbol "UrlReaders_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const UrlReaders: typeof UrlReaders_2;
 
-// @public
-export type UrlReadersOptions = {
-  config: Config;
-  logger: LoggerService;
-  factories?: ReaderFactory[];
-};
+// Warning: (ae-forgotten-export) The symbol "UrlReadersOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type UrlReadersOptions = UrlReadersOptions_2;
 
 // @public @deprecated
 export function useHotCleanup(

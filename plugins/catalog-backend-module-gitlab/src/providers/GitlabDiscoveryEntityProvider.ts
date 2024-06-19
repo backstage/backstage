@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { GitLabIntegration, ScmIntegrations } from '@backstage/integration';
@@ -34,7 +35,6 @@ import {
   paginated,
   readGitlabConfigs,
 } from '../lib';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 import * as path from 'path';
 
@@ -470,14 +470,8 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       return false;
     }
 
-    const customFallbackBranch =
-      this.config.fallbackBranch !== 'master'
-        ? this.config.fallbackBranch
-        : undefined;
-
     const project_branch =
       this.config.branch ??
-      customFallbackBranch ??
       project.default_branch ??
       this.config.fallbackBranch;
 

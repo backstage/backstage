@@ -21,7 +21,7 @@ import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1Pod, V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import { V1Pod, V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { PodsTable } from '../../Pods';
 import { HorizontalPodAutoscalerDrawer } from '../../HorizontalPodAutoscalers';
 import { RolloutDrawer } from './RolloutDrawer';
@@ -50,7 +50,7 @@ type RolloutAccordionProps = {
   rollout: any;
   ownedPods: V1Pod[];
   defaultExpanded?: boolean;
-  matchingHpa?: V1HorizontalPodAutoscaler;
+  matchingHpa?: V2HorizontalPodAutoscaler;
   children?: React.ReactNode;
 };
 
@@ -58,7 +58,7 @@ type RolloutSummaryProps = {
   rollout: any;
   numberOfCurrentPods: number;
   numberOfPodsWithErrors: number;
-  hpa?: V1HorizontalPodAutoscaler;
+  hpa?: V2HorizontalPodAutoscaler;
   children?: React.ReactNode;
 };
 
@@ -93,6 +93,13 @@ const RolloutSummary = ({
     (p: any) => p.reason === 'CanaryPauseStep',
   )?.startTime;
   const abortedMessage = findAbortedMessage(rollout);
+  const specCpuUtil = hpa?.spec?.metrics?.find(
+    metric => metric.type === 'Resource' && metric.resource?.name === 'cpu',
+  )?.resource?.target.averageUtilization;
+
+  const cpuUtil = hpa?.status?.currentMetrics?.find(
+    metric => metric.type === 'Resource' && metric.resource?.name === 'cpu',
+  )?.resource?.current.averageUtilization;
 
   return (
     <Grid
@@ -124,14 +131,12 @@ const RolloutSummary = ({
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  current CPU usage:{' '}
-                  {hpa.status?.currentCPUUtilizationPercentage ?? '?'}%
+                  current CPU usage: {cpuUtil ?? '?'}%
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  target CPU usage:{' '}
-                  {hpa.spec?.targetCPUUtilizationPercentage ?? '?'}%
+                  target CPU usage: {specCpuUtil ?? '?'}%
                 </Typography>
               </Grid>
             </Grid>

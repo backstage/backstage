@@ -280,6 +280,7 @@ Options:
   --check
   --inspect [host]
   --inspect-brk [host]
+  --require <path>
   -h, --help
 ```
 
@@ -441,6 +442,7 @@ Options:
 Usage: backstage-cli repo fix [options]
 
 Options:
+  --publish
   --check
   -h, --help
 ```

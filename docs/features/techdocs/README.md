@@ -70,6 +70,7 @@ See [TechDocs Architecture](architecture.md) to get an overview of where the bel
 | GitLab Enterprise            | Yes ✅         |
 | Gitea                        | Yes ✅         |
 | AWS CodeCommit               | Yes ✅         |
+| Harness Code                 | Yes ✅         |
 
 ### File storage providers
 

@@ -18,7 +18,7 @@ import {
   configApiRef,
   createApiFactory,
   discoveryApiRef,
-  identityApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import {
   compatWrapper,
@@ -55,7 +55,7 @@ const catalogImportApi = createApiExtension({
     deps: {
       discoveryApi: discoveryApiRef,
       scmAuthApi: scmAuthApiRef,
-      identityApi: identityApiRef,
+      fetchApi: fetchApiRef,
       scmIntegrationsApi: scmIntegrationsApiRef,
       catalogApi: catalogApiRef,
       configApi: configApiRef,
@@ -63,7 +63,7 @@ const catalogImportApi = createApiExtension({
     factory: ({
       discoveryApi,
       scmAuthApi,
-      identityApi,
+      fetchApi,
       scmIntegrationsApi,
       catalogApi,
       configApi,
@@ -72,7 +72,7 @@ const catalogImportApi = createApiExtension({
         discoveryApi,
         scmAuthApi,
         scmIntegrationsApi,
-        identityApi,
+        fetchApi,
         catalogApi,
         configApi,
       }),

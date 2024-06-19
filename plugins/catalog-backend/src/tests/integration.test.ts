@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { DatabaseManager, getVoidLogger } from '@backstage/backend-common';
 import {
   Entity,
   EntityPolicies,
@@ -55,6 +54,7 @@ import { RefreshOptions, RefreshService } from '../service/types';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { mockServices } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { DatabaseManager } from '@backstage/backend-common';
 
 const voidLogger = mockServices.logger.mock();
 
@@ -223,7 +223,7 @@ class TestHarness {
         },
       },
     );
-    const logger = options?.logger ?? getVoidLogger();
+    const logger = options?.logger ?? mockServices.logger.mock();
     const db =
       options?.db ??
       (await DatabaseManager.fromConfig(config, { logger })

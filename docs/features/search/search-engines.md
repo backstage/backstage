@@ -34,10 +34,14 @@ const searchEngine = new LunrSearchEngine({ logger: env.logger });
 const indexBuilder = new IndexBuilder({ logger: env.logger, searchEngine });
 ```
 
-> Note: Lunr is appropriate as a zero-config search engine when developing
-> other parts of Backstage locally, however its use is highly discouraged when
-> running Backstage in production. When deploying Backstage, use one of the
-> other search engines instead.
+:::note Note
+
+Lunr is appropriate as a zero-config search engine when developing
+other parts of Backstage locally, however its use is highly discouraged when
+running Backstage in production. When deploying Backstage, use one of the
+other search engines instead.
+
+:::
 
 ## Postgres
 

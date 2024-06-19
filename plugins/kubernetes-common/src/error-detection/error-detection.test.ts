@@ -17,7 +17,7 @@
 import {
   V1Pod,
   V1Deployment,
-  V1HorizontalPodAutoscaler,
+  V2HorizontalPodAutoscaler,
 } from '@kubernetes/client-node';
 import { detectErrors } from './error-detection';
 import * as healthyPod from './__fixtures__/pod.json';
@@ -61,7 +61,7 @@ const oneDeployment = (deployment: V1Deployment): ObjectsByEntityResponse => {
   });
 };
 
-const oneHpa = (hpa: V1HorizontalPodAutoscaler): ObjectsByEntityResponse => {
+const oneHpa = (hpa: V2HorizontalPodAutoscaler): ObjectsByEntityResponse => {
   return oneItem({
     type: 'horizontalpodautoscalers',
     resources: [hpa],
@@ -328,7 +328,7 @@ describe('detectErrors', () => {
 
     expect(err1).toStrictEqual({
       sourceRef: {
-        apiGroup: 'autoscaling/v1',
+        apiGroup: 'autoscaling/v2',
         kind: 'HorizontalPodAutoscaler',
         name: 'dice-roller',
         namespace: 'default',

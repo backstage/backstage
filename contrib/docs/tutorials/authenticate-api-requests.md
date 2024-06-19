@@ -3,8 +3,7 @@
 > [!CAUTION]
 > This entire guide MUST NOT BE USED by users of Backstage 1.26 and
 > newer. If you have applied the changes in this guide, you need to remove them
-> again as you upgrade to recent versions of Backstage. When [the new auth
-> changes](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution)
+> again as you upgrade to recent versions of Backstage. When [the new auth changes](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution)
 > landed backends became natively secured through the framework, and the
 > instructions outlined in here can interfere with the backend functioning
 > correctly.

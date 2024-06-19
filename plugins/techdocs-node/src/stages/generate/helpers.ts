@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { isChildPath } from '@backstage/backend-common';
+import { isChildPath } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { assertError, ForwardedError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
@@ -101,11 +101,13 @@ export const getRepoUrlFromLocationAnnotation = (
   if (locationType === 'url') {
     const integration = scmIntegrations.byUrl(target);
 
-    // We only support it for github, gitlab and bitbucketServer for now as the edit_uri
+    // We only support it for github, gitlab, bitbucketServer and harness for now as the edit_uri
     // is not properly supported for others yet.
     if (
       integration &&
-      ['github', 'gitlab', 'bitbucketServer'].includes(integration.type)
+      ['github', 'gitlab', 'bitbucketServer', 'harness'].includes(
+        integration.type,
+      )
     ) {
       // handle the case where a user manually writes url:https://github.com/backstage/backstage i.e. without /blob/...
       const { filepathtype } = gitUrlParse(target);

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { isDatabaseConflictError } from '@backstage/backend-common';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
@@ -34,7 +33,10 @@ import {
   Transaction,
 } from './types';
 import { generateStableHash } from './util';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  isDatabaseConflictError,
+} from '@backstage/backend-plugin-api';
 
 // The number of items that are sent per batch to the database layer, when
 // doing .batchInsert calls to knex. This needs to be low enough to not cause

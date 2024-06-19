@@ -16,7 +16,6 @@
 
 import {
   cacheToPluginCacheManager,
-  DockerContainerRunner,
   loggerToWinstonLogger,
 } from '@backstage/backend-common';
 import {
@@ -36,8 +35,8 @@ import {
   techdocsGeneratorExtensionPoint,
   techdocsPreparerExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
-import Docker from 'dockerode';
 import { createRouter } from '@backstage/plugin-techdocs-backend';
+import * as winston from 'winston';
 
 /**
  * The TechDocs plugin is responsible for serving and building documentation for any entity.
@@ -47,12 +46,19 @@ export const techdocsPlugin = createBackendPlugin({
   pluginId: 'techdocs',
   register(env) {
     let docsBuildStrategy: DocsBuildStrategy | undefined;
+    let buildLogTransport: winston.transport | undefined;
     env.registerExtensionPoint(techdocsBuildsExtensionPoint, {
       setBuildStrategy(buildStrategy: DocsBuildStrategy) {
         if (docsBuildStrategy) {
           throw new Error('DocsBuildStrategy may only be set once');
         }
         docsBuildStrategy = buildStrategy;
+      },
+      setBuildLogTransport(transport: winston.transport) {
+        if (buildLogTransport) {
+          throw new Error('BuildLogTransport may only be set once');
+        }
+        buildLogTransport = transport;
       },
     });
 
@@ -110,14 +116,9 @@ export const techdocsPlugin = createBackendPlugin({
           preparers.register(protocol, preparer);
         }
 
-        // Docker client (conditionally) used by the generators, based on techdocs.generators config.
-        const dockerClient = new Docker();
-        const containerRunner = new DockerContainerRunner({ dockerClient });
-
         // Generators are used for generating documentation sites.
         const generators = await Generators.fromConfig(config, {
           logger: winstonLogger,
-          containerRunner,
           customGenerator: customTechdocsGenerator,
         });
 
@@ -138,6 +139,7 @@ export const techdocsPlugin = createBackendPlugin({
             logger: winstonLogger,
             cache: cacheManager,
             docsBuildStrategy,
+            buildLogTransport,
             preparers,
             generators,
             publisher,

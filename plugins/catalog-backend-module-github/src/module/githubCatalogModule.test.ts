@@ -37,7 +37,8 @@ describe('githubCatalogModule', () => {
     };
 
     const analysisExtensionPoint = {
-      addLocationAnalyzer: jest.fn(),
+      setLocationAnalyzer: jest.fn(),
+      addScmLocationAnalyzer: jest.fn(),
     };
 
     const runner = jest.fn();
@@ -68,7 +69,7 @@ describe('githubCatalogModule', () => {
         [catalogAnalysisExtensionPoint, analysisExtensionPoint],
       ],
       features: [
-        githubCatalogModule(),
+        githubCatalogModule,
         mockServices.rootConfig.factory({ data: config }),
         scheduler.factory,
       ],
@@ -81,7 +82,7 @@ describe('githubCatalogModule', () => {
       'github-provider:default',
     );
     expect(runner).not.toHaveBeenCalled();
-    expect(analysisExtensionPoint.addLocationAnalyzer).toHaveBeenCalledWith(
+    expect(analysisExtensionPoint.addScmLocationAnalyzer).toHaveBeenCalledWith(
       expect.any(GithubLocationAnalyzer),
     );
   });

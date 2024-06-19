@@ -26,4 +26,5 @@ export const rootRoute = createRouteRef({
 export const registerComponentRouteRef = createExternalRouteRef({
   id: 'register-component',
   optional: true,
+  defaultTarget: 'catalog-import.importPage',
 });

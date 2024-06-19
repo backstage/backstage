@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-search-backend-module-elasticsearch",
-  "version": "1.4.1-next.1",
+  "version": "1.5.0",
   "description": "A module for the search backend that implements search using ElasticSearch",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "search",
+    "pluginPackage": "@backstage/plugin-search-backend"
   },
   "publishConfig": {
     "access": "public"
@@ -62,6 +64,7 @@
   },
   "devDependencies": {
     "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@elastic/elasticsearch-mock": "^1.0.0",
     "@short.io/opensearch-mock": "^0.3.1"

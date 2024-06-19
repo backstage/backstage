@@ -61,7 +61,8 @@ export function useEntityPresentation(
   const presentation = useMemo<EntityRefPresentation>(
     () => {
       if (!entityPresentationApi) {
-        return { snapshot: defaultEntityPresentation(entityOrRef, context) };
+        const fallback = defaultEntityPresentation(entityOrRef, context);
+        return { snapshot: fallback, promise: Promise.resolve(fallback) };
       }
 
       return entityPresentationApi.forEntity(

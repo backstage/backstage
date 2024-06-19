@@ -17,6 +17,7 @@
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
 import { Config } from '@backstage/config';
+import fetch from 'node-fetch';
 
 /**
  * Creates the `sentry:project:create` Scaffolder action.

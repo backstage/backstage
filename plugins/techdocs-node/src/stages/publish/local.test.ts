@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 import {
-  getVoidLogger,
+  loggerToWinstonLogger,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
-import { overridePackagePathResolution } from '@backstage/backend-common/testUtils';
+import { overridePackagePathResolution } from '@backstage/backend-plugin-api/testUtils';
 import { ConfigReader } from '@backstage/config';
 import express from 'express';
 import request from 'supertest';
 import * as os from 'os';
 import { LocalPublish } from './local';
 import path from 'path';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  createMockDirectory,
+  mockServices,
+} from '@backstage/backend-test-utils';
 
 const createMockEntity = (annotations = {}, lowerCase = false) => {
   return {
@@ -53,7 +56,7 @@ overridePackagePathResolution({
   },
 });
 
-const logger = getVoidLogger();
+const logger = loggerToWinstonLogger(mockServices.logger.mock());
 
 describe('local publisher', () => {
   const mockDir = createMockDirectory();

@@ -14,11 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  ContainerRunner,
-  UrlReader,
-  resolveSafeChildPath,
-} from '@backstage/backend-common';
+import { ContainerRunner, UrlReader } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';

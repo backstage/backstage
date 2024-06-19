@@ -45,8 +45,12 @@ import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   scaffolderActionPermissions,
   scaffolderTemplatePermissions,
+  taskCancelPermission,
+  taskCreatePermission,
+  taskReadPermission,
   templateParameterReadPermission,
   templateStepReadPermission,
+  scaffolderTaskPermissions,
 } from '@backstage/plugin-scaffolder-common/alpha';
 import express from 'express';
 import Router from 'express-promise-router';
@@ -54,6 +58,7 @@ import { validate } from 'jsonschema';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
+  TemplateAction,
   TaskBroker,
   TemplateFilter,
   TemplateGlobal,
@@ -67,7 +72,6 @@ import {
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
 import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import {
   createConditionAuthorizer,
@@ -89,6 +93,7 @@ import {
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
+import { checkPermission } from '../util/checkPermissions';
 
 /**
  *
@@ -407,6 +412,7 @@ export async function createRouter(
         rules: actionRules,
       },
     ],
+    permissions: scaffolderTaskPermissions,
   });
 
   router.use(permissionIntegrationRouter);
@@ -463,6 +469,12 @@ export async function createRouter(
       });
 
       const credentials = await httpAuth.credentials(req);
+      await checkPermission({
+        credentials,
+        permissions: [taskCreatePermission],
+        permissionService: permissions,
+      });
+
       const { token } = await auth.getPluginRequestToken({
         onBehalfOf: credentials,
         targetPluginId: 'catalog',
@@ -539,8 +551,14 @@ export async function createRouter(
       res.status(201).json({ id: result.taskId });
     })
     .get('/v2/tasks', async (req, res) => {
-      const [userEntityRef] = [req.query.createdBy].flat();
+      const credentials = await httpAuth.credentials(req);
+      await checkPermission({
+        credentials,
+        permissions: [taskReadPermission],
+        permissionService: permissions,
+      });
 
+      const [userEntityRef] = [req.query.createdBy].flat();
       if (
         typeof userEntityRef !== 'string' &&
         typeof userEntityRef !== 'undefined'
@@ -561,6 +579,13 @@ export async function createRouter(
       res.status(200).json(tasks);
     })
     .get('/v2/tasks/:taskId', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+      await checkPermission({
+        credentials,
+        permissions: [taskReadPermission],
+        permissionService: permissions,
+      });
+
       const { taskId } = req.params;
       const task = await taskBroker.get(taskId);
       if (!task) {
@@ -571,11 +596,26 @@ export async function createRouter(
       res.status(200).json(task);
     })
     .post('/v2/tasks/:taskId/cancel', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+      // Requires both read and cancel permissions
+      await checkPermission({
+        credentials,
+        permissions: [taskCancelPermission, taskReadPermission],
+        permissionService: permissions,
+      });
+
       const { taskId } = req.params;
       await taskBroker.cancel?.(taskId);
       res.status(200).json({ status: 'cancelled' });
     })
     .get('/v2/tasks/:taskId/eventstream', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+      await checkPermission({
+        credentials,
+        permissions: [taskReadPermission],
+        permissionService: permissions,
+      });
+
       const { taskId } = req.params;
       const after =
         req.query.after !== undefined ? Number(req.query.after) : undefined;
@@ -624,6 +664,13 @@ export async function createRouter(
       });
     })
     .get('/v2/tasks/:taskId/events', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+      await checkPermission({
+        credentials,
+        permissions: [taskReadPermission],
+        permissionService: permissions,
+      });
+
       const { taskId } = req.params;
       const after = Number(req.query.after) || undefined;
 
@@ -654,6 +701,13 @@ export async function createRouter(
       });
     })
     .post('/v2/dry-run', async (req, res) => {
+      const credentials = await httpAuth.credentials(req);
+      await checkPermission({
+        credentials,
+        permissions: [taskCreatePermission],
+        permissionService: permissions,
+      });
+
       const bodySchema = z.object({
         template: z.unknown(),
         values: z.record(z.unknown()),
@@ -670,8 +724,6 @@ export async function createRouter(
       if (!(await templateEntityV1beta3Validator.check(template))) {
         throw new InputError('Input template is not a template');
       }
-
-      const credentials = await httpAuth.credentials(req);
 
       const { token } = await auth.getPluginRequestToken({
         onBehalfOf: credentials,

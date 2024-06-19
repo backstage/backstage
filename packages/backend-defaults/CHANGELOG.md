@@ -1,5 +1,139 @@
 # @backstage/backend-defaults
 
+## 0.3.0
+
+### Minor Changes
+
+- 662dce8: **BREAKING**: The `workdir` argument have been removed from The `GerritUrlReader` constructor.
+
+  **BREAKING**: The Gerrit `readTree` implementation will now only use the Gitiles api. Support
+  for using git to clone the repo has been removed.
+
+- 02103be: Deprecated and moved over core services to `@backstage/backend-defaults`
+
+### Patch Changes
+
+- 1897169: Exposed `DefaultSchedulerService`
+- b5bc997: Refactor cache manager inline types.
+- e171620: Remove dependency with `@backstage/backend-commons` package.
+- 6551b3d: Added core service factories and implementations from
+  `@backstage/backend-app-api`. They are now available as subpath exports, e.g.
+  `@backstage/backend-defaults/scheduler` is where the service factory and default
+  implementation of `coreServices.scheduler` now lives. They have been marked as
+  deprecated in their old locations.
+- 8aab451: Internal minor refactors of the database connectors
+- 0634fdc: Deprecated `dropDatabase`
+- b2ee7f3: Moved over all URL reader functionality from `@backstage/backend-common` to `@backstage/backend-defaults/urlReader`. Please update your imports.
+- 9539a0b: Added `@backstage/backend-defaults/auth`, `@backstage/backend-defaults/httpAuth`, and `@backstage/backend-defaults/userInfo` to house their respective backend service factories. You should now import these services from those new locations, instead of `@backstage/backend-app-api`.
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/integration@1.12.0
+  - @backstage/plugin-events-node@0.3.5
+  - @backstage/plugin-permission-node@0.7.30
+  - @backstage/cli-common@0.1.14
+  - @backstage/config-loader@1.8.1
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.3.0-next.3
+
+### Patch Changes
+
+- 1897169: Exposed `DefaultSchedulerService`
+- 8aab451: Internal minor refactors of the database connectors
+- b2ee7f3: Moved over all URL reader functionality from `@backstage/backend-common` to `@backstage/backend-defaults/urlReader`. Please update your imports.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.3
+  - @backstage/plugin-events-node@0.3.5-next.2
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/backend-app-api@0.7.6-next.3
+  - @backstage/config-loader@1.8.1-next.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.3.0-next.2
+
+### Patch Changes
+
+- 0634fdc: Deprecated `dropDatabase`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/plugin-permission-node@0.7.30-next.2
+  - @backstage/backend-app-api@0.7.6-next.2
+  - @backstage/plugin-events-node@0.3.5-next.1
+  - @backstage/config-loader@1.8.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.0-next.1
+
+### Minor Changes
+
+- 02103be: Deprecated and moved over core services to `@backstage/backend-defaults`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.1
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/plugin-permission-node@0.7.30-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/config-loader@1.8.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+
+## 0.2.19-next.0
+
+### Patch Changes
+
+- 6551b3d: Added core service factories and implementations from
+  `@backstage/backend-app-api`. They are now available as subpath exports, e.g.
+  `@backstage/backend-defaults/scheduler` is where the service factory and default
+  implementation of `coreServices.scheduler` now lives. They have been marked as
+  deprecated in their old locations.
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6-next.0
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-events-node@0.3.5-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-permission-node@0.7.30-next.0
+  - @backstage/config-loader@1.8.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.2.18
+
+### Patch Changes
+
+- 7e5a50d: added `eventsServiceFactory` to `defaultServiceFactories` to resolve issue where different instances of the EventsServices could be used
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.3
+  - @backstage/backend-common@0.22.0
+  - @backstage/plugin-events-node@0.3.4
+
+## 0.2.18-next.2
+
+### Patch Changes
+
+- 7e5a50d: added `eventsServiceFactory` to `defaultServiceFactories` to resolve issue where different instances of the EventsServices could be used
+- Updated dependencies
+  - @backstage/backend-common@0.22.0-next.2
+  - @backstage/plugin-events-node@0.3.4-next.2
+
 ## 0.2.18-next.1
 
 ### Patch Changes

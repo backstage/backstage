@@ -56,6 +56,8 @@ export function createPublishGitlabAction(options: {
       auto_devops_enabled?: boolean;
       ci_config_path?: string;
       description?: string;
+      merge_method?: 'merge' | 'rebase_merge' | 'ff';
+      squash_option?: 'default_off' | 'default_on' | 'never' | 'always';
       topics?: string[];
       visibility?: 'private' | 'internal' | 'public';
     };
@@ -168,6 +170,19 @@ export function createPublishGitlabAction(options: {
                 title: 'Project description',
                 description: 'Short project description',
                 type: 'string',
+              },
+              merge_method: {
+                title: 'Merge Method to use',
+                description: 'Merge Methods (merge, rebase_merge, ff)',
+                type: 'string',
+                enum: ['merge', 'rebase_merge', 'ff'],
+              },
+              squash_option: {
+                title: 'Squash option',
+                description:
+                  'Set squash option for the project (never, always, default_on, default_off)',
+                type: 'string',
+                enum: ['default_off', 'default_on', 'never', 'always'],
               },
               topics: {
                 title: 'Topic labels',

@@ -15,6 +15,32 @@ See how to install Datadog Events in your app
 
 ## Logging
 
+### New Backend
+
+The backend supplies a central logging service, [`rootLogger`](../backend-system/core-services/root-logger.md), as well as a plugin based logger, [`logger`](../backend-system/core-services/logger.md) from `coreServices`. To add additional granularity to your logs, you can create children from the plugin based logger, using the `.child()` method and provide is with JSON data. For example, if you wanted to log items for a specific span in your plugin, you could do
+
+```ts
+export function createRouter({ logger }) {
+  const router = Router();
+
+  router.post('/task/:taskId/queue', (req, res) => {
+    const { taskId } = req.params;
+    const taskLogger = logger.child({ task: taskId });
+    taskLogger.log('Queueing this task.');
+  });
+
+  router.get('/task/:taskId/results', (req, res) => {
+    const { taskId } = req.params;
+    const taskLogger = logger.child({ task: taskId });
+    taskLogger.log('Getting the results of this task.');
+  });
+}
+```
+
+You can also add additional metadata to all logs for your Backstage instance by overriding the `rootLogger` implementation, you can see an example in [the `logger` docs](../backend-system/core-services/logger.md#configuring-the-service).
+
+### Old Backend
+
 The backend supplies a central [winston](https://github.com/winstonjs/winston)
 root logger that plugins are expected to use for their logging needs. In the
 default production setup, it emits structured JSON logs on stdout, with a field
@@ -37,7 +63,39 @@ An example log line could look as follows:
 
 ## Health Checks
 
-The example backend in the Backstage repository
+### New Backend
+
+The new backend is moving towards health checks being plugin-based, as such there is no current plugin for providing a health check route. You can add this yourself easily though,
+
+```ts
+import {
+  coreServices,
+  createBackendModule,
+  createBackendPlugin,
+} from '@backstage/backend-plugin-api';
+
+const healthCheck = createBackendPlugin({
+  pluginId: 'healthcheck',
+
+  register(env) {
+    env.registerInit({
+      deps: {
+        rootHttpRouter: coreServices.rootHttpRouter,
+      },
+      init: async ({ rootHttpRouter }) => {
+        // You can adjust the route name and response as you need.
+        rootHttpRouter.use('/healthcheck', (req, res) => {
+          res.json({ status: 'ok' });
+        });
+      },
+    });
+  },
+});
+```
+
+### Old Backend
+
+The example old backend in the Backstage repository
 [supplies](https://github.com/backstage/backstage/blob/bc18571b7a742863a770b2a54e785d6bbef7e184/packages/backend/src/index.ts#L99)
 a very basic health check endpoint on the `/healthcheck` route. You may add such
 a handler to your backend as well, and supply your own logic to it that fits

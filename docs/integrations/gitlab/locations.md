@@ -19,9 +19,11 @@ integrations:
       token: ${GITLAB_TOKEN}
 ```
 
-> Note: A public GitLab provider is added automatically at startup for
-> convenience, so you only need to list it if you want to supply a
-> [token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html).
+:::note Note
+
+A public GitLab provider is added automatically at startup for convenience, so you only need to list it if you want to supply a [token](https://docs.gitlab.com/ee/user/profile/personal_access_tokens.html).
+
+:::
 
 Directly under the `gitlab` key is a list of provider configurations, where you
 can list the GitLab providers you want to fetch data from. Each entry is a

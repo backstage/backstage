@@ -21,7 +21,7 @@ import { detectErrorsInPods } from './pods';
 import { detectErrorsInDeployments } from './deployments';
 import { detectErrorsInHpa } from './hpas';
 import { Deployment } from 'kubernetes-models/apps/v1';
-import { HorizontalPodAutoscaler } from 'kubernetes-models/autoscaling/v1';
+import { HorizontalPodAutoscaler } from 'kubernetes-models/autoscaling/v2';
 import { Pod } from 'kubernetes-models/v1';
 
 /**

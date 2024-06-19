@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { Scheduler } from './index';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('Scheduler', () => {
   let testScheduler: Scheduler;
 
   beforeEach(() => {
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     testScheduler = new Scheduler({
       logger,
     });

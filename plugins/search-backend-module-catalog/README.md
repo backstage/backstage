@@ -14,7 +14,7 @@ yarn --cwd packages/backend add @backstage/plugin-search-backend-module-catalog
 Add the collator to your backend instance, along with the search plugin itself:
 
 ```tsx
-// packages/backend-next/src/index.ts
+// packages/backend/src/index.ts
 import { createBackend } from '@backstage/backend-defaults';
 import { searchPlugin } from '@backstage/plugin-search-backend/alpha';
 import { searchModuleCatalogCollator } from '@backstage/plugin-search-backend-module-catalog/alpha';
@@ -32,7 +32,7 @@ You may also want to add configuration parameters to your app-config, for exampl
 This module also has an extension point, which lets you inject advanced customizations. Here's an example of how to leverage that extension point to tweak the transformer used for building the search indexer documents:
 
 ```tsx
-// packages/backend-next/src/index.ts
+// packages/backend/src/index.ts
 import { createBackend } from '@backstage/backend-defaults';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { searchPlugin } from '@backstage/plugin-search-backend/alpha';

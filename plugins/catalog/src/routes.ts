@@ -22,18 +22,21 @@ import {
 export const createComponentRouteRef = createExternalRouteRef({
   id: 'create-component',
   optional: true,
+  defaultTarget: 'scaffolder.createComponent',
 });
 
 export const viewTechDocRouteRef = createExternalRouteRef({
   id: 'view-techdoc',
   optional: true,
   params: ['namespace', 'kind', 'name'],
+  defaultTarget: 'techdocs.docRoot',
 });
 
 export const createFromTemplateRouteRef = createExternalRouteRef({
   id: 'create-from-template',
   optional: true,
   params: ['namespace', 'templateName'],
+  defaultTarget: 'scaffolder.selectedTemplate',
 });
 
 export const unregisterRedirectRouteRef = createExternalRouteRef({

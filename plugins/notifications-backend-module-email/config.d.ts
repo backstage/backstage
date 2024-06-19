@@ -15,6 +15,7 @@
  */
 
 import { HumanDuration } from '@backstage/types';
+import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 
 export interface Config {
   /**
@@ -116,6 +117,20 @@ export interface Config {
            * Email cache TTL, defaults to 1 hour
            */
           ttl?: HumanDuration;
+        };
+        filter?: {
+          /**
+           * Minimum severity. A notification with lower severity will not be emailed
+           */
+          minSeverity?: NotificationSeverity;
+          /**
+           * Maximum severity. A notification with higher severity will not be emailed
+           */
+          maxSeverity?: NotificationSeverity;
+          /**
+           * A notification who's topic is in this array will not be emailed
+           */
+          excludedTopics?: string[];
         };
       };
     };

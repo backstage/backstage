@@ -15,7 +15,6 @@
  */
 import {
   DatabaseManager,
-  getVoidLogger,
   PluginDatabaseManager,
 } from '@backstage/backend-common';
 import express from 'express';
@@ -53,7 +52,7 @@ describe('createRouter', () => {
 
   beforeAll(async () => {
     const router = await createRouter({
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       database: createDatabase(),
       discovery,
       signals: signalService,

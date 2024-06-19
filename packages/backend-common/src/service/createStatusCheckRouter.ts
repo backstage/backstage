@@ -17,7 +17,8 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import Router from 'express-promise-router';
 import express from 'express';
-import { errorHandler, statusCheckHandler, StatusCheck } from '../middleware';
+import { errorHandler } from '../deprecated';
+import { statusCheckHandler, StatusCheck } from '../middleware';
 
 /**
  * Creates a default status checking router, that you can add to your express

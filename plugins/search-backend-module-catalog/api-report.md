@@ -44,7 +44,7 @@ export class DefaultCatalogCollatorFactory implements DocumentCollatorFactory {
 export type DefaultCatalogCollatorFactoryOptions = {
   auth?: AuthService;
   discovery: PluginEndpointDiscovery;
-  tokenManager: TokenManager;
+  tokenManager?: TokenManager;
   locationTemplate?: string;
   filter?: GetEntitiesRequest['filter'];
   batchSize?: number;

@@ -42,7 +42,11 @@ import { checkLocationKeyConflict } from './operations/refreshState/checkLocatio
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
 import { generateStableHash } from './util';
-import { EventBroker, EventParams } from '@backstage/plugin-events-node';
+import {
+  EventBroker,
+  EventParams,
+  EventsService,
+} from '@backstage/plugin-events-node';
 import { DateTime } from 'luxon';
 import { CATALOG_CONFLICTS_TOPIC } from '../constants';
 import { CatalogConflictEventPayload } from '../catalog/types';
@@ -60,7 +64,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
       database: Knex;
       logger: LoggerService;
       refreshInterval: ProcessingIntervalFunction;
-      eventBroker?: EventBroker;
+      eventBroker?: EventBroker | EventsService;
     },
   ) {
     initDatabaseMetrics(options.database);

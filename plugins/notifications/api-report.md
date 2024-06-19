@@ -102,6 +102,7 @@ export const NotificationsSidebarItem: (props?: {
   webNotificationsEnabled?: boolean;
   titleCounterEnabled?: boolean;
   snackbarEnabled?: boolean;
+  snackbarAutoHideDuration?: number | null;
   className?: string;
   icon?: IconComponent;
   text?: string;

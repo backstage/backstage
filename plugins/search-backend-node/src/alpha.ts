@@ -32,9 +32,9 @@ import {
 
 /**
  * @alpha
- * Options for build method on {@link SearchIndexService}.
+ * Options for the init method on {@link SearchIndexService}.
  */
-export type SearchIndexServiceStartOptions = {
+export type SearchIndexServiceInitOptions = {
   searchEngine: SearchEngine;
   collators: RegisterCollatorParameters[];
   decorators: RegisterDecoratorParameters[];
@@ -46,14 +46,20 @@ export type SearchIndexServiceStartOptions = {
  */
 export interface SearchIndexService {
   /**
+   * Initializes state in preparation for starting the search index service
+   */
+  init(options: SearchIndexServiceInitOptions): void;
+
+  /**
    * Starts indexing process
    */
-  start(options: SearchIndexServiceStartOptions): Promise<void>;
+  start(): Promise<void>;
 
   /**
    * Stops indexing process
    */
   stop(): Promise<void>;
+
   /**
    * Returns an index types list.
    */
@@ -83,7 +89,7 @@ type DefaultSearchIndexServiceOptions = {
 
 /**
  * @alpha
- * Reponsible for register the indexing task and start the schedule.
+ * Responsible for register the indexing task and start the schedule.
  */
 class DefaultSearchIndexService implements SearchIndexService {
   private readonly logger: LoggerService;
@@ -98,7 +104,7 @@ class DefaultSearchIndexService implements SearchIndexService {
     return new DefaultSearchIndexService(options);
   }
 
-  async start(options: SearchIndexServiceStartOptions): Promise<void> {
+  init(options: SearchIndexServiceInitOptions): void {
     this.indexBuilder = new IndexBuilder({
       logger: this.logger,
       searchEngine: options.searchEngine,
@@ -111,8 +117,13 @@ class DefaultSearchIndexService implements SearchIndexService {
     options.decorators.forEach(decorator =>
       this.indexBuilder?.addDecorator(decorator),
     );
+  }
 
-    const { scheduler } = await this.indexBuilder?.build();
+  async start(): Promise<void> {
+    if (!this.indexBuilder) {
+      throw new Error('IndexBuilder is not initialized, call init first');
+    }
+    const { scheduler } = await this.indexBuilder.build();
     this.scheduler = scheduler;
     this.scheduler!.start();
   }

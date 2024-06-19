@@ -15,7 +15,7 @@
  */
 
 /**
- * Backstage package role, see {@link https://backstage.io/docs/local-dev/cli-build-system#package-roles | docs}.
+ * Backstage package role, see {@link https://backstage.io/docs/tooling/cli/build-system#package-roles | docs}.
  *
  * @public
  */

@@ -15,10 +15,10 @@
  */
 
 import { AccessToken, TokenCredential } from '@azure/identity';
-import { getVoidLogger } from '@backstage/backend-common';
 import { AzureIdentityStrategy } from './AzureIdentityStrategy';
+import { mockServices } from '@backstage/backend-test-utils';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 class StaticTokenCredential implements TokenCredential {
   private count: number = 0;

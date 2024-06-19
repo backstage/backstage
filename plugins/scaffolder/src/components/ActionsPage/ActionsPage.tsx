@@ -43,7 +43,8 @@ import { useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
   CodeSnippet,
   Content,
-  ErrorPage,
+  EmptyState,
+  ErrorPanel,
   Header,
   MarkdownContent,
   Page,
@@ -112,19 +113,9 @@ const ExamplesTable = (props: { examples: ActionExample[] }) => {
   );
 };
 
-export const ActionsPage = () => {
+const ActionPageContent = () => {
   const api = useApi(scaffolderApiRef);
-  const navigate = useNavigate();
-  const editorLink = useRouteRef(editRouteRef);
-  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
-  const createLink = useRouteRef(rootRouteRef);
 
-  const scaffolderPageContextMenuProps = {
-    onEditorClicked: () => navigate(editorLink()),
-    onActionsClicked: undefined,
-    onTasksClicked: () => navigate(tasksLink()),
-    onCreateClicked: () => navigate(createLink()),
-  };
   const classes = useStyles();
   const { loading, value, error } = useAsync(async () => {
     return api.listActions();
@@ -137,11 +128,14 @@ export const ActionsPage = () => {
 
   if (error) {
     return (
-      <ErrorPage
-        statusMessage="Failed to load installed actions"
-        status="500"
-        stack={error.stack}
-      />
+      <>
+        <ErrorPanel error={error} />
+        <EmptyState
+          missing="info"
+          title="No information to display"
+          description="There are no actions installed or there was an issue communicating with backend."
+        />
+      </>
     );
   }
 
@@ -282,7 +276,7 @@ export const ActionsPage = () => {
     );
   };
 
-  const items = value?.map(action => {
+  return value?.map(action => {
     if (action.id.startsWith('legacy:')) {
       return undefined;
     }
@@ -336,6 +330,19 @@ export const ActionsPage = () => {
       </Box>
     );
   });
+};
+export const ActionsPage = () => {
+  const navigate = useNavigate();
+  const editorLink = useRouteRef(editRouteRef);
+  const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
+  const createLink = useRouteRef(rootRouteRef);
+
+  const scaffolderPageContextMenuProps = {
+    onEditorClicked: () => navigate(editorLink()),
+    onActionsClicked: undefined,
+    onTasksClicked: () => navigate(tasksLink()),
+    onCreateClicked: () => navigate(createLink()),
+  };
 
   return (
     <Page themeId="home">
@@ -346,7 +353,9 @@ export const ActionsPage = () => {
       >
         <ScaffolderPageContextMenu {...scaffolderPageContextMenuProps} />
       </Header>
-      <Content>{items}</Content>
+      <Content>
+        <ActionPageContent />
+      </Content>
     </Page>
   );
 };

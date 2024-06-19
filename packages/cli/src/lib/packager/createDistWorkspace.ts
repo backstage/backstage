@@ -309,10 +309,6 @@ async function moveToDistWorkspace(
     await run('yarn', ['pack', '--filename', archivePath], {
       cwd: target.dir,
     });
-    // TODO(Rugvip): yarn pack doesn't call postpack, once the bug is fixed this can be removed
-    if (target.packageJson?.scripts?.postpack) {
-      await run('yarn', ['postpack'], { cwd: target.dir });
-    }
 
     const outputDir = relativePath(paths.targetRoot, target.dir);
     const absoluteOutputPath = resolvePath(workspaceDir, outputDir);

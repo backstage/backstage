@@ -1,5 +1,77 @@
 # @backstage/plugin-permission-node
 
+## 0.7.30
+
+### Patch Changes
+
+- 9e63318: Ensure that service token access restrictions, when present, are taken into account
+- d44a20a: Added additional plugin metadata to `package.json`.
+- c7b0dd1: Import `tokenManager` definition from `@backstage/backend-plugin-api`
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.7.30-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/plugin-permission-common@0.7.14-next.0
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.7.30-next.2
+
+### Patch Changes
+
+- c7b0dd1: Import `tokenManager` definition from `@backstage/backend-plugin-api`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.7.30-next.1
+
+### Patch Changes
+
+- 9e63318: Ensure that service token access restrictions, when present, are taken into account
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-auth-node@0.4.14-next.1
+
+## 0.7.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-permission-common@0.7.13
+
+## 0.7.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-auth-node@0.4.13
+
 ## 0.7.29-next.1
 
 ### Patch Changes

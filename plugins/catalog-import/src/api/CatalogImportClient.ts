@@ -15,24 +15,20 @@
  */
 
 import { CatalogApi } from '@backstage/catalog-client';
+import { ConfigApi, DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
 import {
-  ConfigApi,
-  DiscoveryApi,
-  IdentityApi,
-} from '@backstage/core-plugin-api';
-import {
-  GithubIntegrationConfig,
+  GithubIntegration,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
 import { ScmAuthApi } from '@backstage/integration-react';
-import { Octokit } from '@octokit/rest';
-import { Base64 } from 'js-base64';
 import { AnalyzeResult, CatalogImportApi } from './CatalogImportApi';
 import YAML from 'yaml';
-import { getGithubIntegrationConfig } from './GitHub';
-import { getBranchName, getCatalogFilename } from '../components/helpers';
+import { GitHubOptions, submitGitHubPrToRepo } from './GitHub';
+import { getCatalogFilename } from '../components/helpers';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { CompoundEntityRef } from '@backstage/catalog-model';
+import parseGitUrl from 'git-url-parse';
+import { submitAzurePrToRepo } from './AzureDevops';
 
 /**
  * The default implementation of the {@link CatalogImportApi}.
@@ -41,7 +37,7 @@ import { CompoundEntityRef } from '@backstage/catalog-model';
  */
 export class CatalogImportClient implements CatalogImportApi {
   private readonly discoveryApi: DiscoveryApi;
-  private readonly identityApi: IdentityApi;
+  private readonly fetchApi: FetchApi;
   private readonly scmAuthApi: ScmAuthApi;
   private readonly scmIntegrationsApi: ScmIntegrationRegistry;
   private readonly catalogApi: CatalogApi;
@@ -50,14 +46,14 @@ export class CatalogImportClient implements CatalogImportApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
     scmAuthApi: ScmAuthApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
     scmIntegrationsApi: ScmIntegrationRegistry;
     catalogApi: CatalogApi;
     configApi: ConfigApi;
   }) {
     this.discoveryApi = options.discoveryApi;
     this.scmAuthApi = options.scmAuthApi;
-    this.identityApi = options.identityApi;
+    this.fetchApi = options.fetchApi;
     this.scmIntegrationsApi = options.scmIntegrationsApi;
     this.catalogApi = options.catalogApi;
     this.configApi = options.configApi;
@@ -89,19 +85,21 @@ export class CatalogImportClient implements CatalogImportApi {
         ],
       };
     }
-
-    const ghConfig = getGithubIntegrationConfig(this.scmIntegrationsApi, url);
-    if (!ghConfig) {
-      const other = this.scmIntegrationsApi.byUrl(url);
+    const supportedIntegrations = ['github', 'azure'];
+    const foundIntegration = this.scmIntegrationsApi.byUrl(url);
+    const iSupported =
+      !!foundIntegration &&
+      supportedIntegrations.find(it => it === foundIntegration.type);
+    if (!iSupported) {
       const catalogFilename = getCatalogFilename(this.configApi);
 
-      if (other) {
+      if (foundIntegration) {
         throw new Error(
-          `The ${other.title} integration only supports full URLs to ${catalogFilename} files. Did you try to pass in the URL of a directory instead?`,
+          `The ${foundIntegration.title} integration only supports full URLs to ${catalogFilename} files. Did you try to pass in the URL of a directory instead?`,
         );
       }
       throw new Error(
-        `This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a ${catalogFilename} file instead.`,
+        `This URL was not recognized as a valid git URL because there was no configured integration that matched the given host name. Currently GitHub and Azure DevOps are supported. You could try to paste the full URL to a ${catalogFilename} file instead.`,
       );
     }
 
@@ -144,7 +142,7 @@ export class CatalogImportClient implements CatalogImportApi {
 
     return {
       type: 'repository',
-      integrationType: 'github',
+      integrationType: foundIntegration.type,
       url: url,
       generatedEntities: analyzation.generateEntities.map(x => x.entity),
     };
@@ -185,50 +183,69 @@ the component will become available.\n\nFor more information, read an \
     if (!validationResponse.valid) {
       throw new Error(validationResponse.errors[0].message);
     }
-    const ghConfig = getGithubIntegrationConfig(
-      this.scmIntegrationsApi,
-      repositoryUrl,
-    );
 
-    if (ghConfig) {
-      return await this.submitGitHubPrToRepo({
-        ...ghConfig,
-        repositoryUrl,
-        fileContent,
-        title,
-        body,
-      });
+    const provider = this.scmIntegrationsApi.byUrl(repositoryUrl);
+
+    switch (provider?.type) {
+      case 'github': {
+        const { config } = provider as GithubIntegration;
+        const { name, owner } = parseGitUrl(repositoryUrl);
+        const options2: GitHubOptions = {
+          githubIntegrationConfig: config,
+          repo: name,
+          owner: owner,
+          repositoryUrl,
+          fileContent,
+          title,
+          body,
+        };
+        return submitGitHubPrToRepo(options2, this.scmAuthApi, this.configApi);
+      }
+      case 'azure': {
+        return submitAzurePrToRepo(
+          {
+            repositoryUrl,
+            fileContent,
+            title,
+            body,
+          },
+          this.scmAuthApi,
+          this.configApi,
+        );
+      }
+      default: {
+        throw new Error('unimplemented!');
+      }
     }
-    throw new Error('unimplemented!');
   }
 
   // TODO: this could be part of the catalog api
   private async analyzeLocation(options: {
     repo: string;
   }): Promise<AnalyzeLocationResponse> {
-    const { token } = await this.identityApi.getCredentials();
-    const response = await fetch(
-      `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          ...(token && { Authorization: `Bearer ${token}` }),
-        },
-        method: 'POST',
-        body: JSON.stringify({
-          location: { type: 'url', target: options.repo },
-          ...(this.configApi.getOptionalString(
-            'catalog.import.entityFilename',
-          ) && {
-            catalogFilename: this.configApi.getOptionalString(
+    const response = await this.fetchApi
+      .fetch(
+        `${await this.discoveryApi.getBaseUrl('catalog')}/analyze-location`,
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          method: 'POST',
+          body: JSON.stringify({
+            location: { type: 'url', target: options.repo },
+            ...(this.configApi.getOptionalString(
               'catalog.import.entityFilename',
-            ),
+            ) && {
+              catalogFilename: this.configApi.getOptionalString(
+                'catalog.import.entityFilename',
+              ),
+            }),
           }),
-        }),
-      },
-    ).catch(e => {
-      throw new Error(`Failed to generate entity definitions, ${e.message}`);
-    });
+        },
+      )
+      .catch(e => {
+        throw new Error(`Failed to generate entity definitions, ${e.message}`);
+      });
     if (!response.ok) {
       throw new Error(
         `Failed to generate entity definitions. Received http response ${response.status}: ${response.statusText}`,
@@ -238,125 +255,4 @@ the component will become available.\n\nFor more information, read an \
     const payload = await response.json();
     return payload;
   }
-
-  // TODO: extract this function and implement for non-github
-  private async submitGitHubPrToRepo(options: {
-    owner: string;
-    repo: string;
-    title: string;
-    body: string;
-    fileContent: string;
-    repositoryUrl: string;
-    githubIntegrationConfig: GithubIntegrationConfig;
-  }): Promise<{ link: string; location: string }> {
-    const {
-      owner,
-      repo,
-      title,
-      body,
-      fileContent,
-      repositoryUrl,
-      githubIntegrationConfig,
-    } = options;
-
-    const { token } = await this.scmAuthApi.getCredentials({
-      url: repositoryUrl,
-      additionalScope: {
-        repoWrite: true,
-      },
-    });
-
-    const octo = new Octokit({
-      auth: token,
-      baseUrl: githubIntegrationConfig.apiBaseUrl,
-    });
-
-    const branchName = getBranchName(this.configApi);
-    const fileName = getCatalogFilename(this.configApi);
-
-    const repoData = await octo.repos
-      .get({
-        owner,
-        repo,
-      })
-      .catch(e => {
-        throw new Error(formatHttpErrorMessage("Couldn't fetch repo data", e));
-      });
-
-    const parentRef = await octo.git
-      .getRef({
-        owner,
-        repo,
-        ref: `heads/${repoData.data.default_branch}`,
-      })
-      .catch(e => {
-        throw new Error(
-          formatHttpErrorMessage("Couldn't fetch default branch data", e),
-        );
-      });
-
-    await octo.git
-      .createRef({
-        owner,
-        repo,
-        ref: `refs/heads/${branchName}`,
-        sha: parentRef.data.object.sha,
-      })
-      .catch(e => {
-        throw new Error(
-          formatHttpErrorMessage(
-            `Couldn't create a new branch with name '${branchName}'`,
-            e,
-          ),
-        );
-      });
-
-    await octo.repos
-      .createOrUpdateFileContents({
-        owner,
-        repo,
-        path: fileName,
-        message: title,
-        content: Base64.encode(fileContent),
-        branch: branchName,
-      })
-      .catch(e => {
-        throw new Error(
-          formatHttpErrorMessage(
-            `Couldn't create a commit with ${fileName} file added`,
-            e,
-          ),
-        );
-      });
-
-    const pullRequestResponse = await octo.pulls
-      .create({
-        owner,
-        repo,
-        title,
-        head: branchName,
-        body,
-        base: repoData.data.default_branch,
-      })
-      .catch(e => {
-        throw new Error(
-          formatHttpErrorMessage(
-            `Couldn't create a pull request for ${branchName} branch`,
-            e,
-          ),
-        );
-      });
-
-    return {
-      link: pullRequestResponse.data.html_url,
-      location: `https://${githubIntegrationConfig.host}/${owner}/${repo}/blob/${repoData.data.default_branch}/${fileName}`,
-    };
-  }
-}
-
-function formatHttpErrorMessage(
-  message: string,
-  error: { status: number; message: string },
-) {
-  return `${message}, received http response status code ${error.status}: ${error.message}`;
 }

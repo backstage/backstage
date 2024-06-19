@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 import {
-  getVoidLogger,
   PluginEndpointDiscovery,
   TokenManager,
 } from '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { TestPipeline } from '@backstage/plugin-search-backend-node';
-import { setupRequestMockHandlers } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  setupRequestMockHandlers,
+} from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { Readable } from 'stream';
@@ -29,7 +31,7 @@ import { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory
 import { defaultTechDocsCollatorEntityTransformer } from './defaultTechDocsCollatorEntityTransformer';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 
 const mockSearchDocIndex = {
   config: {
@@ -89,8 +91,8 @@ describe('DefaultTechDocsCollatorFactory', () => {
     authenticate: jest.fn(),
   };
   const options = {
+    logger,
     discovery: mockDiscoveryApi,
-    logger: getVoidLogger(),
     tokenManager: mockTokenManager,
   };
 

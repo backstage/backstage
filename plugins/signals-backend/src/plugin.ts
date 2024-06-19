@@ -32,6 +32,8 @@ export const signalsPlugin = createBackendPlugin({
       deps: {
         httpRouter: coreServices.httpRouter,
         logger: coreServices.logger,
+        config: coreServices.rootConfig,
+        lifecycle: coreServices.rootLifecycle,
         identity: coreServices.identity,
         discovery: coreServices.discovery,
         userInfo: coreServices.userInfo,
@@ -41,6 +43,8 @@ export const signalsPlugin = createBackendPlugin({
       async init({
         httpRouter,
         logger,
+        config,
+        lifecycle,
         identity,
         discovery,
         userInfo,
@@ -50,7 +54,9 @@ export const signalsPlugin = createBackendPlugin({
         httpRouter.use(
           await createRouter({
             logger,
+            config,
             identity,
+            lifecycle,
             discovery,
             userInfo,
             auth,

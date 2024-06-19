@@ -16,6 +16,7 @@
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { DocsBuildStrategy } from './techdocsTypes';
 import { PreparerBase, RemoteProtocol, TechdocsGenerator } from './stages';
+import * as winston from 'winston';
 
 /**
  * Extension point type for configuring Techdocs builds.
@@ -24,6 +25,7 @@ import { PreparerBase, RemoteProtocol, TechdocsGenerator } from './stages';
  */
 export interface TechdocsBuildsExtensionPoint {
   setBuildStrategy(buildStrategy: DocsBuildStrategy): void;
+  setBuildLogTransport(transport: winston.transport): void;
 }
 
 /**

@@ -16,7 +16,7 @@
 
 import { CatalogClient } from '@backstage/catalog-client';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
-import { configApiRef } from '@backstage/core-plugin-api';
+import { FetchApi, configApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
@@ -31,22 +31,8 @@ jest.mock('react-router-dom', () => ({
 }));
 
 describe('<ImportPage />', () => {
-  const identityApi = {
-    getUserId: () => {
-      return 'user';
-    },
-    getProfile: () => {
-      return {};
-    },
-    getIdToken: () => {
-      return Promise.resolve('token');
-    },
-    signOut: () => {
-      return Promise.resolve();
-    },
-    getProfileInfo: jest.fn(),
-    getBackstageIdentity: jest.fn(),
-    getCredentials: jest.fn(),
+  const fetchApi: FetchApi = {
+    fetch: jest.fn(),
   };
 
   let apis: TestApiRegistry;
@@ -59,7 +45,7 @@ describe('<ImportPage />', () => {
         catalogImportApiRef,
         new CatalogImportClient({
           discoveryApi: {} as any,
-          identityApi,
+          fetchApi,
           scmAuthApi: {} as any,
           scmIntegrationsApi: {} as any,
           catalogApi: {} as any,

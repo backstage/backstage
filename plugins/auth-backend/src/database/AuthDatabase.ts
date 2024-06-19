@@ -17,8 +17,8 @@
 import {
   DatabaseManager,
   PluginDatabaseManager,
-  resolvePackagePath,
 } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { Knex } from 'knex';
 

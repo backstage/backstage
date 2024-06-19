@@ -15,7 +15,6 @@
  */
 
 import {
-  getVoidLogger,
   ReadUrlResponse,
   UrlReader,
   UrlReaders,
@@ -24,10 +23,11 @@ import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
 import { NewlineDelimitedJsonCollatorFactory } from './NewlineDelimitedJsonCollatorFactory';
 import { TestPipeline } from '../test-utils';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('DefaultCatalogCollatorFactory', () => {
   const config = new ConfigReader({});
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
 
   it('has expected type', () => {
     const factory = NewlineDelimitedJsonCollatorFactory.fromConfig(config, {

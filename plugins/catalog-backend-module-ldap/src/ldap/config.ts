@@ -14,6 +14,10 @@
  * limitations under the License.
  */
 
+import {
+  readTaskScheduleDefinitionFromConfig,
+  TaskScheduleDefinition,
+} from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
 import { SearchOptions } from 'ldapjs';
@@ -27,6 +31,8 @@ import { RecursivePartial } from './util';
  * @public
  */
 export type LdapProviderConfig = {
+  // The id of the
+  id: string;
   // The prefix of the target that this matches on, e.g.
   // "ldaps://ds.example.net", with no trailing slash.
   target: string;
@@ -39,6 +45,8 @@ export type LdapProviderConfig = {
   users: UserConfig;
   // The settings that govern the reading and interpretation of groups
   groups: GroupConfig;
+  // Schedule configuration for refresh tasks.
+  schedule?: TaskScheduleDefinition;
 };
 
 /**
@@ -184,159 +192,160 @@ const defaultConfig = {
   },
 };
 
+function freeze<T>(data: T): T {
+  return JSON.parse(JSON.stringify(data), (_key, value) => {
+    if (typeof value === 'object' && value !== null) {
+      Object.freeze(value);
+    }
+    return value;
+  });
+}
+
+function readTlsConfig(
+  c: Config | undefined,
+): LdapProviderConfig['tls'] | undefined {
+  if (!c) {
+    return undefined;
+  }
+  return {
+    rejectUnauthorized: c.getOptionalBoolean('rejectUnauthorized'),
+    keys: c.getOptionalString('keys'),
+    certs: c.getOptionalString('certs'),
+  };
+}
+
+function readBindConfig(
+  c: Config | undefined,
+): LdapProviderConfig['bind'] | undefined {
+  if (!c) {
+    return undefined;
+  }
+  return {
+    dn: c.getString('dn'),
+    secret: c.getString('secret'),
+  };
+}
+
+function readOptionsConfig(c: Config | undefined): SearchOptions {
+  if (!c) {
+    return {};
+  }
+
+  const paged = readOptionsPagedConfig(c);
+
+  return {
+    scope: c.getOptionalString('scope') as SearchOptions['scope'],
+    filter: formatFilter(c.getOptionalString('filter')),
+    attributes: c.getOptionalStringArray('attributes'),
+    sizeLimit: c.getOptionalNumber('sizeLimit'),
+    timeLimit: c.getOptionalNumber('timeLimit'),
+    derefAliases: c.getOptionalNumber('derefAliases'),
+    typesOnly: c.getOptionalBoolean('typesOnly'),
+    ...(paged !== undefined ? { paged } : undefined),
+  };
+}
+
+function readOptionsPagedConfig(c: Config): SearchOptions['paged'] {
+  const pagedConfig = c.getOptional('paged');
+  if (pagedConfig === undefined) {
+    return undefined;
+  }
+
+  if (pagedConfig === true || pagedConfig === false) {
+    return pagedConfig;
+  }
+
+  const pageSize = c.getOptionalNumber('paged.pageSize');
+  const pagePause = c.getOptionalBoolean('paged.pagePause');
+  return {
+    ...(pageSize !== undefined ? { pageSize } : undefined),
+    ...(pagePause !== undefined ? { pagePause } : undefined),
+  };
+}
+
+function readSetConfig(
+  c: Config | undefined,
+): { [path: string]: JsonValue } | undefined {
+  if (!c) {
+    return undefined;
+  }
+  return c.get();
+}
+
+function readUserMapConfig(
+  c: Config | undefined,
+): Partial<LdapProviderConfig['users']['map']> {
+  if (!c) {
+    return {};
+  }
+
+  return {
+    rdn: c.getOptionalString('rdn'),
+    name: c.getOptionalString('name'),
+    description: c.getOptionalString('description'),
+    displayName: c.getOptionalString('displayName'),
+    email: c.getOptionalString('email'),
+    picture: c.getOptionalString('picture'),
+    memberOf: c.getOptionalString('memberOf'),
+  };
+}
+
+function readGroupMapConfig(
+  c: Config | undefined,
+): Partial<LdapProviderConfig['groups']['map']> {
+  if (!c) {
+    return {};
+  }
+
+  return {
+    rdn: c.getOptionalString('rdn'),
+    name: c.getOptionalString('name'),
+    description: c.getOptionalString('description'),
+    type: c.getOptionalString('type'),
+    displayName: c.getOptionalString('displayName'),
+    email: c.getOptionalString('email'),
+    picture: c.getOptionalString('picture'),
+    memberOf: c.getOptionalString('memberOf'),
+    members: c.getOptionalString('members'),
+  };
+}
+
+function readUserConfig(
+  c: Config,
+): RecursivePartial<LdapProviderConfig['users']> {
+  return {
+    dn: c.getString('dn'),
+    options: readOptionsConfig(c.getOptionalConfig('options')),
+    set: readSetConfig(c.getOptionalConfig('set')),
+    map: readUserMapConfig(c.getOptionalConfig('map')),
+  };
+}
+
+function readGroupConfig(
+  c: Config,
+): RecursivePartial<LdapProviderConfig['groups']> {
+  return {
+    dn: c.getString('dn'),
+    options: readOptionsConfig(c.getOptionalConfig('options')),
+    set: readSetConfig(c.getOptionalConfig('set')),
+    map: readGroupMapConfig(c.getOptionalConfig('map')),
+  };
+}
+
+function formatFilter(filter?: string): string | undefined {
+  // Remove extra whitespace between blocks to support multiline filters from the configuration
+  return filter?.replace(/\s*(\(|\))/g, '$1')?.trim();
+}
+
 /**
  * Parses configuration.
  *
  * @param config - The root of the LDAP config hierarchy
  *
  * @public
+ * @deprecated This exists for backwards compatibility only and will be removed in the future.
  */
-export function readLdapConfig(config: Config): LdapProviderConfig[] {
-  function freeze<T>(data: T): T {
-    return JSON.parse(JSON.stringify(data), (_key, value) => {
-      if (typeof value === 'object' && value !== null) {
-        Object.freeze(value);
-      }
-      return value;
-    });
-  }
-
-  function readTlsConfig(
-    c: Config | undefined,
-  ): LdapProviderConfig['tls'] | undefined {
-    if (!c) {
-      return undefined;
-    }
-    return {
-      rejectUnauthorized: c.getOptionalBoolean('rejectUnauthorized'),
-      keys: c.getOptionalString('keys'),
-      certs: c.getOptionalString('certs'),
-    };
-  }
-
-  function readBindConfig(
-    c: Config | undefined,
-  ): LdapProviderConfig['bind'] | undefined {
-    if (!c) {
-      return undefined;
-    }
-    return {
-      dn: c.getString('dn'),
-      secret: c.getString('secret'),
-    };
-  }
-
-  function readOptionsConfig(c: Config | undefined): SearchOptions {
-    if (!c) {
-      return {};
-    }
-
-    const paged = readOptionsPagedConfig(c);
-
-    return {
-      scope: c.getOptionalString('scope') as SearchOptions['scope'],
-      filter: formatFilter(c.getOptionalString('filter')),
-      attributes: c.getOptionalStringArray('attributes'),
-      sizeLimit: c.getOptionalNumber('sizeLimit'),
-      timeLimit: c.getOptionalNumber('timeLimit'),
-      derefAliases: c.getOptionalNumber('derefAliases'),
-      typesOnly: c.getOptionalBoolean('typesOnly'),
-      ...(paged !== undefined ? { paged } : undefined),
-    };
-  }
-
-  function readOptionsPagedConfig(c: Config): SearchOptions['paged'] {
-    const pagedConfig = c.getOptional('paged');
-    if (pagedConfig === undefined) {
-      return undefined;
-    }
-
-    if (pagedConfig === true || pagedConfig === false) {
-      return pagedConfig;
-    }
-
-    const pageSize = c.getOptionalNumber('paged.pageSize');
-    const pagePause = c.getOptionalBoolean('paged.pagePause');
-    return {
-      ...(pageSize !== undefined ? { pageSize } : undefined),
-      ...(pagePause !== undefined ? { pagePause } : undefined),
-    };
-  }
-
-  function readSetConfig(
-    c: Config | undefined,
-  ): { [path: string]: JsonValue } | undefined {
-    if (!c) {
-      return undefined;
-    }
-    return c.get();
-  }
-
-  function readUserMapConfig(
-    c: Config | undefined,
-  ): Partial<LdapProviderConfig['users']['map']> {
-    if (!c) {
-      return {};
-    }
-
-    return {
-      rdn: c.getOptionalString('rdn'),
-      name: c.getOptionalString('name'),
-      description: c.getOptionalString('description'),
-      displayName: c.getOptionalString('displayName'),
-      email: c.getOptionalString('email'),
-      picture: c.getOptionalString('picture'),
-      memberOf: c.getOptionalString('memberOf'),
-    };
-  }
-
-  function readGroupMapConfig(
-    c: Config | undefined,
-  ): Partial<LdapProviderConfig['groups']['map']> {
-    if (!c) {
-      return {};
-    }
-
-    return {
-      rdn: c.getOptionalString('rdn'),
-      name: c.getOptionalString('name'),
-      description: c.getOptionalString('description'),
-      type: c.getOptionalString('type'),
-      displayName: c.getOptionalString('displayName'),
-      email: c.getOptionalString('email'),
-      picture: c.getOptionalString('picture'),
-      memberOf: c.getOptionalString('memberOf'),
-      members: c.getOptionalString('members'),
-    };
-  }
-
-  function readUserConfig(
-    c: Config,
-  ): RecursivePartial<LdapProviderConfig['users']> {
-    return {
-      dn: c.getString('dn'),
-      options: readOptionsConfig(c.getOptionalConfig('options')),
-      set: readSetConfig(c.getOptionalConfig('set')),
-      map: readUserMapConfig(c.getOptionalConfig('map')),
-    };
-  }
-
-  function readGroupConfig(
-    c: Config,
-  ): RecursivePartial<LdapProviderConfig['groups']> {
-    return {
-      dn: c.getString('dn'),
-      options: readOptionsConfig(c.getOptionalConfig('options')),
-      set: readSetConfig(c.getOptionalConfig('set')),
-      map: readGroupMapConfig(c.getOptionalConfig('map')),
-    };
-  }
-
-  function formatFilter(filter?: string): string | undefined {
-    // Remove extra whitespace between blocks to support multiline filters from the configuration
-    return filter?.replace(/\s*(\(|\))/g, '$1')?.trim();
-  }
-
+export function readLdapLegacyConfig(config: Config): LdapProviderConfig[] {
   const providerConfigs = config.getOptionalConfigArray('providers') ?? [];
   return providerConfigs.map(c => {
     const newConfig = {
@@ -345,6 +354,43 @@ export function readLdapConfig(config: Config): LdapProviderConfig[] {
       bind: readBindConfig(c.getOptionalConfig('bind')),
       users: readUserConfig(c.getConfig('users')),
       groups: readGroupConfig(c.getConfig('groups')),
+    };
+    const merged = mergeWith({}, defaultConfig, newConfig, (_into, from) => {
+      // Replace arrays instead of merging, otherwise default behavior
+      return Array.isArray(from) ? from : undefined;
+    });
+    return freeze(merged) as LdapProviderConfig;
+  });
+}
+
+/**
+ * Parses all configured providers.
+ *
+ * @param config - The root of the LDAP config hierarchy
+ *
+ * @public
+ */
+export function readProviderConfigs(config: Config): LdapProviderConfig[] {
+  const providersConfig = config.getOptionalConfig('catalog.providers.ldapOrg');
+  if (!providersConfig) {
+    return [];
+  }
+
+  return providersConfig.keys().map(id => {
+    const c = providersConfig.getConfig(id);
+
+    const schedule = c.has('schedule')
+      ? readTaskScheduleDefinitionFromConfig(c.getConfig('schedule'))
+      : undefined;
+
+    const newConfig = {
+      id,
+      target: trimEnd(c.getString('target'), '/'),
+      tls: readTlsConfig(c.getOptionalConfig('tls')),
+      bind: readBindConfig(c.getOptionalConfig('bind')),
+      users: readUserConfig(c.getConfig('users')),
+      groups: readGroupConfig(c.getConfig('groups')),
+      schedule,
     };
     const merged = mergeWith({}, defaultConfig, newConfig, (_into, from) => {
       // Replace arrays instead of merging, otherwise default behavior

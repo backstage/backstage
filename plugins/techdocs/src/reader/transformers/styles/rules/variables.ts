@@ -58,6 +58,9 @@ export default ({ theme }: RuleOptions) => `
 
   /* ACCENT */
   --md-accent-fg-color: var(--md-primary-fg-color);
+  --md-accent-fg-color--transparent: ${alpha(theme.palette.primary.main, 0.1)};
+  --md-accent-bg-color: var(--md-primary-bg-color);
+  --md-accent-bg-color--light: var(--md-primary-bg-color--light);
 
   /* SHADOW */
   --md-shadow-z1: ${theme.shadows[1]};
@@ -101,6 +104,7 @@ export default ({ theme }: RuleOptions) => `
   --md-code-fg-color: ${theme.palette.text.primary};
   --md-code-bg-color: ${theme.palette.background.paper};
   --md-code-hl-color: ${alpha(theme.palette.warning.main, 0.5)};
+  --md-code-hl-color--light: var(--md-code-hl-color);
   --md-code-hl-keyword-color: ${
     theme.palette.type === 'dark'
       ? theme.palette.primary.light
@@ -135,6 +139,7 @@ export default ({ theme }: RuleOptions) => `
   --md-typeset-color: var(--md-default-fg-color);
   --md-typeset-a-color: ${theme.palette.link};
   --md-typeset-table-color: ${theme.palette.text.primary};
+  --md-typeset-table-color--light: ${alpha(theme.palette.text.primary, 0.5)};
   --md-typeset-del-color: ${
     theme.palette.type === 'dark'
       ? alpha(theme.palette.error.dark, 0.5)
@@ -150,6 +155,9 @@ export default ({ theme }: RuleOptions) => `
       ? alpha(theme.palette.warning.dark, 0.5)
       : alpha(theme.palette.warning.light, 0.5)
   };
+  --md-typeset-kbd-color: var(--md-code-bg-color);
+  --md-typeset-kbd-accent-color var(--md-code-bg-color);
+  --md-typeset-kbd-border-color: var(--md-default-fg-color--light);
 }
 
 @media screen and (max-width: 76.1875em) {
@@ -165,4 +173,7 @@ export default ({ theme }: RuleOptions) => `
     --md-typeset-font-size: .7rem;
   }
 }
+
+  --md-footer-bg-color: var(--md-default-bg-color);
+  --md-footer-bg-color--dark: var(--md-default-bg-color);
 `;

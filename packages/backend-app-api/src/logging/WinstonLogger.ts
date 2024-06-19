@@ -14,64 +14,37 @@
  * limitations under the License.
  */
 
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  WinstonLogger as _WinstonLogger,
+  type WinstonLoggerOptions as _WinstonLoggerOptions,
+} from '../../../backend-defaults/src/entrypoints/rootLogger';
+
 import {
   LoggerService,
   RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { Format, TransformableInfo } from 'logform';
-import {
-  Logger,
-  format,
-  createLogger,
-  transports,
-  transport as Transport,
-} from 'winston';
-import { escapeRegExp } from '../lib/escapeRegExp';
+import { Format } from 'logform';
 
 /**
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootLogger` instead.
  */
-export interface WinstonLoggerOptions {
-  meta?: JsonObject;
-  level?: string;
-  format?: Format;
-  transports?: Transport[];
-}
+export type WinstonLoggerOptions = _WinstonLoggerOptions;
 
 /**
  * A {@link @backstage/backend-plugin-api#LoggerService} implementation based on winston.
  *
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootLogger` instead.
  */
 export class WinstonLogger implements RootLoggerService {
-  #winston: Logger;
-  #addRedactions?: (redactions: Iterable<string>) => void;
-
   /**
    * Creates a {@link WinstonLogger} instance.
    */
   static create(options: WinstonLoggerOptions): WinstonLogger {
-    const redacter = WinstonLogger.redacter();
-    const defaultFormatter =
-      process.env.NODE_ENV === 'production'
-        ? format.json()
-        : WinstonLogger.colorFormat();
-
-    let logger = createLogger({
-      level: process.env.LOG_LEVEL || options.level || 'info',
-      format: format.combine(
-        redacter.format,
-        options.format ?? defaultFormatter,
-      ),
-      transports: options.transports ?? new transports.Console(),
-    });
-
-    if (options.meta) {
-      logger = logger.child(options.meta);
-    }
-
-    return new WinstonLogger(logger, redacter.add);
+    return new WinstonLogger(_WinstonLogger.create(options));
   }
 
   /**
@@ -81,115 +54,39 @@ export class WinstonLogger implements RootLoggerService {
     format: Format;
     add: (redactions: Iterable<string>) => void;
   } {
-    const redactionSet = new Set<string>();
-
-    let redactionPattern: RegExp | undefined = undefined;
-
-    const replace = (obj: TransformableInfo) => {
-      for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          if (typeof obj[key] === 'object') {
-            obj[key] = replace(obj[key] as TransformableInfo);
-          } else if (typeof obj[key] === 'string') {
-            obj[key] = obj[key]?.replace(redactionPattern, '[REDACTED]');
-          }
-        }
-      }
-      return obj;
-    };
-    return {
-      format: format(replace)(),
-      add(newRedactions) {
-        let added = 0;
-        for (const redactionToTrim of newRedactions) {
-          // Trimming the string ensures that we don't accdentally get extra
-          // newlines or other whitespace interfering with the redaction; this
-          // can happen for example when using string literals in yaml
-          const redaction = redactionToTrim.trim();
-          // Exclude secrets that are empty or just one character in length. These
-          // typically mean that you are running local dev or tests, or using the
-          // --lax flag which sets things to just 'x'.
-          if (redaction.length <= 1) {
-            continue;
-          }
-          if (!redactionSet.has(redaction)) {
-            redactionSet.add(redaction);
-            added += 1;
-          }
-        }
-        if (added > 0) {
-          const redactions = Array.from(redactionSet)
-            .map(r => escapeRegExp(r))
-            .join('|');
-          redactionPattern = new RegExp(`(${redactions})`, 'g');
-        }
-      },
-    };
+    return _WinstonLogger.redacter();
   }
 
   /**
    * Creates a pretty printed winston log formatter.
    */
   static colorFormat(): Format {
-    const colorizer = format.colorize();
-
-    return format.combine(
-      format.timestamp(),
-      format.colorize({
-        colors: {
-          timestamp: 'dim',
-          prefix: 'blue',
-          field: 'cyan',
-          debug: 'grey',
-        },
-      }),
-      format.printf((info: TransformableInfo) => {
-        const { timestamp, level, message, plugin, service, ...fields } = info;
-        const prefix = plugin || service;
-        const timestampColor = colorizer.colorize('timestamp', timestamp);
-        const prefixColor = colorizer.colorize('prefix', prefix);
-
-        const extraFields = Object.entries(fields)
-          .map(
-            ([key, value]) =>
-              `${colorizer.colorize('field', `${key}`)}=${value}`,
-          )
-          .join(' ');
-
-        return `${timestampColor} ${prefixColor} ${level} ${message} ${extraFields}`;
-      }),
-    );
+    return _WinstonLogger.colorFormat();
   }
 
-  private constructor(
-    winston: Logger,
-    addRedactions?: (redactions: Iterable<string>) => void,
-  ) {
-    this.#winston = winston;
-    this.#addRedactions = addRedactions;
-  }
+  private constructor(private readonly impl: _WinstonLogger) {}
 
   error(message: string, meta?: JsonObject): void {
-    this.#winston.error(message, meta);
+    this.impl.error(message, meta);
   }
 
   warn(message: string, meta?: JsonObject): void {
-    this.#winston.warn(message, meta);
+    this.impl.warn(message, meta);
   }
 
   info(message: string, meta?: JsonObject): void {
-    this.#winston.info(message, meta);
+    this.impl.info(message, meta);
   }
 
   debug(message: string, meta?: JsonObject): void {
-    this.#winston.debug(message, meta);
+    this.impl.debug(message, meta);
   }
 
   child(meta: JsonObject): LoggerService {
-    return new WinstonLogger(this.#winston.child(meta));
+    return this.impl.child(meta);
   }
 
   addRedactions(redactions: Iterable<string>) {
-    this.#addRedactions?.(redactions);
+    this.impl.addRedactions(redactions);
   }
 }

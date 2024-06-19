@@ -4,10 +4,14 @@ title: Contributing New Providers
 description: Documentation on adding new authentication providers
 ---
 
-> NOTE: The primary audience for this documentation are contributors to the main
-> Backstage project that want to add support for new authentication providers.
-> While you can follow it to implement your own custom providers it is much
-> more advanced than using our built-in providers.
+:::note Note
+
+The primary audience for this documentation are contributors to the main
+Backstage project that want to add support for new authentication providers.
+While you can follow it to implement your own custom providers it is much
+more advanced than using our built-in providers.
+
+:::
 
 ## How Does Authentication Work?
 

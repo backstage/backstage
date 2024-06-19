@@ -236,7 +236,11 @@ backend.add(kubernetesModuleCustomClusterDiscovery);
 backend.start();
 ```
 
-> Note: this example assumes the `CustomClustersSupplier` class is the same from the [previous example](#custom-cluster-discovery)
+:::note Note
+
+This example assumes the `CustomClustersSupplier` class is the same from the [previous example](#custom-cluster-discovery)
+
+:::
 
 ## Configuration
 

@@ -17,6 +17,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
+import { ScmIntegrations } from '@backstage/integration';
 import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGitlabGroupEnsureExistsAction,
@@ -27,8 +28,9 @@ import {
   createGitlabRepoPushAction,
   createPublishGitlabAction,
   createPublishGitlabMergeRequestAction,
+  createTriggerGitlabPipelineAction,
+  editGitlabIssueAction,
 } from './actions';
-import { ScmIntegrations } from '@backstage/integration';
 
 /**
  * @public
@@ -53,8 +55,10 @@ export const gitlabModule = createBackendModule({
           createGitlabProjectDeployTokenAction({ integrations }),
           createGitlabProjectVariableAction({ integrations }),
           createGitlabRepoPushAction({ integrations }),
+          editGitlabIssueAction({ integrations }),
           createPublishGitlabAction({ config, integrations }),
           createPublishGitlabMergeRequestAction({ integrations }),
+          createTriggerGitlabPipelineAction({ integrations }),
         );
       },
     });

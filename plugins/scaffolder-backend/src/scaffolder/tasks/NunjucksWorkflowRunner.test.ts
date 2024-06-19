@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { TemplateActionRegistry } from '../actions';
 import { ScmIntegrations } from '@backstage/integration';
@@ -37,11 +36,14 @@ import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-co
 import {
   createMockDirectory,
   mockCredentials,
+  mockServices,
 } from '@backstage/backend-test-utils';
 import stripAnsi from 'strip-ansi';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 describe('NunjucksWorkflowRunner', () => {
-  const logger = getVoidLogger();
+  let logger: LoggerService;
   let actionRegistry = new TemplateActionRegistry();
   let runner: NunjucksWorkflowRunner;
   let fakeActionHandler: jest.Mock;
@@ -94,6 +96,7 @@ describe('NunjucksWorkflowRunner', () => {
     mockDir.clear();
 
     jest.resetAllMocks();
+    logger = mockServices.logger.mock();
     actionRegistry = new TemplateActionRegistry();
     fakeActionHandler = jest.fn();
     fakeTaskLog = jest.fn();
@@ -173,7 +176,7 @@ describe('NunjucksWorkflowRunner', () => {
       actionRegistry,
       integrations,
       workingDirectory: mockDir.path,
-      logger,
+      logger: loggerToWinstonLogger(logger),
       permissions: mockedPermissionApi,
     });
   });
@@ -638,6 +641,100 @@ describe('NunjucksWorkflowRunner', () => {
       const { output } = await runner.execute(task);
 
       expect(output.foo).toEqual('BACKSTAGE');
+    });
+  });
+
+  describe('redactions', () => {
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact secrets that are passed with the task', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          parameters: {},
+          output: {},
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: '${{ secrets.secret }}',
+              },
+            },
+          ],
+        },
+        { secret: 'my-secret-value' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: ***');
+    });
+
+    // eslint-disable-next-line jest/expect-expect
+    it('should redact meta fields properly', async () => {
+      actionRegistry.register({
+        id: 'log-secret',
+        description: 'Mock action for testing',
+        supportsDryRun: true,
+        handler: async ctx => {
+          ctx.logger.child({ thing: ctx.input.secret }).info(ctx.input.secret);
+        },
+        schema: {
+          input: {
+            type: 'object',
+            required: ['secret'],
+            properties: {
+              secret: {
+                type: 'string',
+              },
+            },
+          },
+        },
+      });
+
+      const task = createMockTaskWithSpec(
+        {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          parameters: {},
+          output: {},
+          steps: [
+            {
+              id: 'test',
+              name: 'name',
+              action: 'log-secret',
+              input: {
+                secret: '${{ secrets.secret }}',
+              },
+            },
+          ],
+        },
+        { secret: 'my-secret-value' },
+      );
+
+      await runner.execute(task);
+
+      expectTaskLog('info: *** {"thing":"***"}');
     });
   });
 

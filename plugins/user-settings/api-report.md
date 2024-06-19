@@ -22,6 +22,7 @@ import { PropsWithChildren } from 'react';
 import { default as React_2 } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
+import { SignalApi } from '@backstage/plugin-signals-react';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core/Tab';
@@ -133,6 +134,7 @@ export class UserSettingsStorage implements StorageApi {
     discoveryApi: DiscoveryApi;
     errorApi: ErrorApi;
     identityApi: IdentityApi;
+    signalApi?: SignalApi;
     namespace?: string;
   }): UserSettingsStorage;
   // (undocumented)

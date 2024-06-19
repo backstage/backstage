@@ -18,7 +18,7 @@ import useDebounce from 'react-use/esm/useDebounce';
 import { RelationPairs, ALL_RELATION_PAIRS } from './relations';
 import { EntityEdge, EntityNode } from './types';
 import { useEntityRelationGraph } from './useEntityRelationGraph';
-import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
+import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 
 /**
  * Generate nodes and edges to render the entity graph.
@@ -30,6 +30,7 @@ export function useEntityRelationNodesAndEdges({
   mergeRelations = true,
   kinds,
   relations,
+  entityFilter,
   onNodeClick,
   relationPairs = ALL_RELATION_PAIRS,
 }: {
@@ -39,6 +40,7 @@ export function useEntityRelationNodesAndEdges({
   mergeRelations?: boolean;
   kinds?: string[];
   relations?: string[];
+  entityFilter?: (entity: Entity) => boolean;
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
 }): {
@@ -57,6 +59,7 @@ export function useEntityRelationNodesAndEdges({
       maxDepth,
       kinds,
       relations,
+      entityFilter,
     },
   });
 
@@ -146,11 +149,60 @@ export function useEntityRelationNodesAndEdges({
               nodeQueue.push(rel.targetRef);
               visitedNodes.add(rel.targetRef);
             }
+
+            // if unidirectional add missing relations as entities are only visited once
+            if (unidirectional) {
+              const findIndex = edges.findIndex(
+                edge =>
+                  entityRef === edge.from &&
+                  rel.targetRef === edge.to &&
+                  !edge.relations.includes(rel.type),
+              );
+              if (findIndex >= 0) {
+                if (mergeRelations) {
+                  const pair = relationPairs.find(
+                    ([l, r]) => l === rel.type || r === rel.type,
+                  ) ?? [rel.type];
+                  edges[findIndex].relations = [
+                    ...edges[findIndex].relations,
+                    ...pair,
+                  ];
+                } else {
+                  edges[findIndex].relations = [
+                    ...edges[findIndex].relations,
+                    rel.type,
+                  ];
+                }
+              }
+            }
           });
         }
       }
 
-      setNodesAndEdges({ nodes, edges });
+      // Reduce edges as the dependency graph anyway ignores duplicated edges regarding from / to
+      // Additionally, this will improve rendering speed for the dependency graph
+      const finalEdges = edges.reduce((previousEdges, currentEdge) => {
+        const indexFound = previousEdges.findIndex(
+          previousEdge =>
+            previousEdge.from === currentEdge.from &&
+            previousEdge.to === currentEdge.to,
+        );
+        if (indexFound >= 0) {
+          previousEdges[indexFound] = {
+            ...previousEdges[indexFound],
+            relations: Array.from(
+              new Set([
+                ...previousEdges[indexFound].relations,
+                ...currentEdge.relations,
+              ]),
+            ),
+          };
+          return previousEdges;
+        }
+        return [...previousEdges, currentEdge];
+      }, [] as EntityEdge[]);
+
+      setNodesAndEdges({ nodes, edges: finalEdges });
     },
     100,
     [

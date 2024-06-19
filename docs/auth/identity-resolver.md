@@ -5,8 +5,7 @@ description: An introduction to Backstage user identities and sign-in resolvers
 ---
 
 :::info
-This documentation is written for [the new backend
-system](../backend-system/index.md) which is the default since Backstage
+This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage
 [version 1.24](../releases/v1.24.0.md). If you are still on the old backend
 system, you may want to read [its own article](./identity-resolver--old.md)
 instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
@@ -31,15 +30,13 @@ testing purposes and quickly getting started locally, but is not safe for use in
 production and that particular provider will refuse to work there.
 
 Because of this, one of the early things you want to do when standing up your
-Backstage instance is to choose a production ready auth provider. See [the auth
-overview page](./index.md) for a full list of providers and how to install and
+Backstage instance is to choose a production ready auth provider. See [the auth overview page](./index.md) for a full list of providers and how to install and
 configure them.
 
 ## Backstage User Identity
 
 A user identity within Backstage is built up from two main pieces of
-information: a user [entity
-reference](../features/software-catalog/references.md), and a set of ownership
+information: a user [entity reference](../features/software-catalog/references.md), and a set of ownership
 references. When a user signs in, a Backstage token is generated which is then
 used to identify the user within the Backstage ecosystem.
 
@@ -194,8 +191,7 @@ backend.add(import('@backstage/plugin-auth-backend-module-github-provider'));
 backend.add(customAuth);
 ```
 
-Check out [the naming patterns
-article](../backend-system/architecture/07-naming-patterns.md) for what rules
+Check out [the naming patterns article](../backend-system/architecture/07-naming-patterns.md) for what rules
 apply regarding how to form valid IDs. In this example we also put the module
 declaration directly in `packages/backend/src/index.ts` but that's just for
 simplicity. You can place it anywhere you like, including in other packages, and
@@ -244,8 +240,7 @@ async signInResolver(info, ctx) {
 If you throw an error in the sign in resolver function, the sign in attempt is
 immediately rejected, and the error details are presented in the user interface.
 
-The `ctx` context [has several useful
-functions](https://backstage.io/docs/reference/plugin-auth-node.authresolvercontext/)
+The `ctx` context [has several useful functions](https://backstage.io/docs/reference/plugin-auth-node.authresolvercontext/)
 for issuing tokens in various ways.
 
 ### Custom Ownership Resolution

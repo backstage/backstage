@@ -30,18 +30,19 @@ import { EventsService, DefaultEventsService } from './api';
 export const eventsServiceRef = createServiceRef<EventsService>({
   id: 'events.service',
   scope: 'plugin',
-  defaultFactory: async service =>
-    createServiceFactory({
-      service,
-      deps: {
-        pluginMetadata: coreServices.pluginMetadata,
-        rootLogger: coreServices.rootLogger,
-      },
-      async createRootContext({ rootLogger }) {
-        return DefaultEventsService.create({ logger: rootLogger });
-      },
-      async factory({ pluginMetadata }, eventsService) {
-        return eventsService.forPlugin(pluginMetadata.getId());
-      },
-    }),
+});
+
+/** @public */
+export const eventsServiceFactory = createServiceFactory({
+  service: eventsServiceRef,
+  deps: {
+    pluginMetadata: coreServices.pluginMetadata,
+    rootLogger: coreServices.rootLogger,
+  },
+  async createRootContext({ rootLogger }) {
+    return DefaultEventsService.create({ logger: rootLogger });
+  },
+  async factory({ pluginMetadata }, eventsService) {
+    return eventsService.forPlugin(pluginMetadata.getId());
+  },
 });

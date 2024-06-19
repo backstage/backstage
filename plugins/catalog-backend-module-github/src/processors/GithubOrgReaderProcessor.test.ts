@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   GithubCredentialsProvider,
@@ -23,12 +22,13 @@ import {
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { graphql } from '@octokit/graphql';
 import { GithubOrgReaderProcessor } from './GithubOrgReaderProcessor';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('@octokit/graphql');
 
 describe('GithubOrgReaderProcessor', () => {
   describe('implementation', () => {
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     const integrations = ScmIntegrations.fromConfig(
       new ConfigReader({
         integrations: {

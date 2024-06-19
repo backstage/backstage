@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import {
-  getVoidLogger,
   PluginEndpointDiscovery,
+  loggerToWinstonLogger,
 } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { Publisher } from './publish';
@@ -24,8 +24,9 @@ import { GoogleGCSPublish } from './googleStorage';
 import { AwsS3Publish } from './awsS3';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
 import { OpenStackSwiftPublish } from './openStackSwift';
+import { mockServices } from '@backstage/backend-test-utils';
 
-const logger = getVoidLogger();
+const logger = loggerToWinstonLogger(mockServices.logger.mock());
 const discovery: jest.Mocked<PluginEndpointDiscovery> = {
   getBaseUrl: jest.fn().mockResolvedValueOnce('http://localhost:7007'),
   getExternalBaseUrl: jest.fn(),

@@ -61,6 +61,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /plugins/linguist-common                          @backstage/maintainers @backstage/reviewers @awanlin
 /plugins/notifications                            @backstage/maintainers @backstage/notifications-maintainers
 /plugins/notifications-*                          @backstage/maintainers @backstage/notifications-maintainers
+/plugins/scaffolder-backend-module-notifications  @backstage/maintainers @backstage/notifications-maintainers
 /plugins/octopus-deploy                           @backstage/maintainers @backstage/reviewers @jmezach
 /plugins/permission-*                             @backstage/permission-maintainers
 /plugins/playlist                                 @backstage/maintainers @backstage/reviewers @kuangp

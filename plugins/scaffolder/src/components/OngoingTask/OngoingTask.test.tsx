@@ -16,10 +16,20 @@
 
 import { OngoingTask } from './OngoingTask';
 import React from 'react';
-import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+import {
+  renderInTestApp,
+  TestApiProvider,
+  MockPermissionApi,
+} from '@backstage/test-utils';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import { act, fireEvent, waitFor, within } from '@testing-library/react';
+import {
+  PermissionApi,
+  permissionApiRef,
+} from '@backstage/plugin-permission-react';
 import { rootRouteRef } from '../../routes';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { SWRConfig } from 'swr';
 
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
@@ -49,18 +59,29 @@ describe('OngoingTask', () => {
     getTask: jest.fn().mockImplementation(async () => {}),
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     jest.clearAllMocks();
   });
 
-  it('should trigger cancel api on "Cancel" click in context menu', async () => {
-    const cancelOptionLabel = 'Cancel';
-    const rendered = await renderInTestApp(
-      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
-        <OngoingTask />
-      </TestApiProvider>,
+  const render = (permissionApi?: PermissionApi) => {
+    // SWR used by the usePermission hook needs cache to be reset for each test
+    return renderInTestApp(
+      <SWRConfig value={{ provider: () => new Map() }}>
+        <TestApiProvider
+          apis={[
+            [scaffolderApiRef, mockScaffolderApi],
+            [permissionApiRef, permissionApi || new MockPermissionApi()],
+          ]}
+        >
+          <OngoingTask />
+        </TestApiProvider>
+      </SWRConfig>,
       { mountedRoutes: { '/': rootRouteRef } },
     );
+  };
+  it('should trigger cancel api on "Cancel" click in context menu', async () => {
+    const rendered = await render();
+    const cancelOptionLabel = 'Cancel';
     const { getByTestId } = rendered;
 
     await act(async () => {
@@ -84,13 +105,9 @@ describe('OngoingTask', () => {
   });
 
   it('should trigger cancel api on "Cancel" button click', async () => {
+    const rendered = await render();
     const cancelOptionLabel = 'Cancel';
-    const rendered = await renderInTestApp(
-      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
-        <OngoingTask />
-      </TestApiProvider>,
-      { mountedRoutes: { '/': rootRouteRef } },
-    );
+
     const { getByTestId } = rendered;
 
     await act(async () => {
@@ -114,27 +131,35 @@ describe('OngoingTask', () => {
   });
 
   it('should initially do not display logs', async () => {
-    const rendered = await renderInTestApp(
-      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
-        <OngoingTask />
-      </TestApiProvider>,
-      { mountedRoutes: { '/': rootRouteRef } },
-    );
+    const rendered = await render();
     await expect(rendered.findByText('Show Logs')).resolves.toBeInTheDocument();
   });
 
   it('should toggle logs visibility', async () => {
-    const rendered = await renderInTestApp(
-      <TestApiProvider apis={[[scaffolderApiRef, mockScaffolderApi]]}>
-        <OngoingTask />
-      </TestApiProvider>,
-      { mountedRoutes: { '/': rootRouteRef } },
-    );
+    const rendered = await render();
     await act(async () => {
       const element = await rendered.findByText('Show Logs');
       fireEvent.click(element);
     });
 
     await expect(rendered.findByText('Hide Logs')).resolves.toBeInTheDocument();
+  });
+
+  it('should have cancel and start over buttons be disabled without the proper permissions', async () => {
+    const mockAuthorize = jest
+      .fn()
+      .mockImplementation(async () => ({ result: AuthorizeResult.DENY }));
+    const permissionApi: PermissionApi = { authorize: mockAuthorize };
+    const rendered = await render(permissionApi);
+
+    const { getByTestId } = rendered;
+    expect(getByTestId('cancel-button')).toHaveClass('Mui-disabled');
+    expect(getByTestId('start-over-button')).toHaveClass('Mui-disabled');
+
+    await act(async () => {
+      fireEvent.click(getByTestId('menu-button'));
+    });
+    expect(getByTestId('cancel-task')).toHaveClass('Mui-disabled');
+    expect(getByTestId('start-over-task')).toHaveClass('Mui-disabled');
   });
 });

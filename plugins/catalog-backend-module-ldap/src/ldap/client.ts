@@ -19,7 +19,6 @@ import { readFile } from 'fs/promises';
 import ldap, { Client, SearchEntry, SearchOptions } from 'ldapjs';
 import { cloneDeep } from 'lodash';
 import tlsLib from 'tls';
-import { Logger } from 'winston';
 import { BindConfig, TLSConfig } from './config';
 import { createOptions, errorString } from './util';
 import {
@@ -29,6 +28,7 @@ import {
   FreeIpaVendor,
   LdapVendor,
 } from './vendors';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * Basic wrapper for the `ldapjs` library.
@@ -41,7 +41,7 @@ export class LdapClient {
   private vendor: Promise<LdapVendor> | undefined;
 
   static async create(
-    logger: Logger,
+    logger: LoggerService,
     target: string,
     bind?: BindConfig,
     tls?: TLSConfig,
@@ -89,7 +89,7 @@ export class LdapClient {
 
   constructor(
     private readonly client: Client,
-    private readonly logger: Logger,
+    private readonly logger: LoggerService,
   ) {}
 
   /**

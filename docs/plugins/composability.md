@@ -325,6 +325,33 @@ concrete routes directly. Although there can be some benefits to using the full
 routing system even in internal plugins. It can help you structure your routes,
 and as you will see further down it also helps you manage route parameters.
 
+You can also use static configuration to bind routes, removing the need to make
+changes to the app code. It does however mean that you won't get type safety
+when binding routes and compile-time validation of the bindings. Static
+configuration of route bindings is done under the `app.routes.bindings` key in
+`app-config.yaml`. It works the same way as [route bindings in the new frontend system](../frontend-system/architecture/07-routes.md#binding-external-route-references),
+for example:
+
+```yaml
+app:
+  routes:
+    bindings:
+      bar.headerLink: foo.root
+```
+
+### Default Targets for External Route References
+
+Following the `1.28` release of Backstage you can now define default targets for
+external route references. They work the same way as [default targets in the new frontend system](../frontend-system/architecture/07-routes.md#default-targets-for-external-route-references),
+for example:
+
+```ts
+export const createComponentExternalRouteRef = createExternalRouteRef({
+  // highlight-next-line
+  defaultTarget: 'scaffolder.createComponent',
+});
+```
+
 ### Optional External Routes
 
 When creating an `ExternalRouteRef` it is possible to mark it as optional:

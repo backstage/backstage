@@ -27,6 +27,7 @@ export async function command(opts: OptionValues): Promise<void> {
     checksEnabled: Boolean(opts.check),
     inspectEnabled: opts.inspect,
     inspectBrkEnabled: opts.inspectBrk,
+    require: opts.require,
   };
 
   switch (role) {

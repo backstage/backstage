@@ -31,9 +31,9 @@ import {
   LDAP_UUID_ANNOTATION,
 } from './constants';
 import { LdapVendor } from './vendors';
-import { Logger } from 'winston';
 import { GroupTransformer, UserTransformer } from './types';
 import { mapStringAttr } from './util';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**
  * The default implementation of the transformation from an LDAP entry to a
@@ -269,7 +269,7 @@ export async function readLdapOrg(
   options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
-    logger: Logger;
+    logger: LoggerService;
   },
 ): Promise<{
   users: UserEntity[];

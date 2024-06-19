@@ -25,7 +25,10 @@ import {
   LoggerService,
 } from '@backstage/backend-plugin-api';
 
-/** @internal */
+/**
+ * @internal
+ * @deprecated
+ */
 export class BackendLifecycleImpl implements RootLifecycleService {
   constructor(private readonly logger: LoggerService) {}
 
@@ -108,6 +111,7 @@ export class BackendLifecycleImpl implements RootLifecycleService {
  * Allows plugins to register shutdown hooks that are run when the process is about to exit.
  *
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootLifecycle` instead.
  */
 export const rootLifecycleServiceFactory = createServiceFactory({
   service: coreServices.rootLifecycle,

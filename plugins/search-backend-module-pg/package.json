@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-search-backend-module-pg",
-  "version": "0.5.27-next.1",
+  "version": "0.5.28",
   "description": "A module for the search backend that implements search using PostgreSQL",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "search",
+    "pluginPackage": "@backstage/plugin-search-backend"
   },
   "publishConfig": {
     "access": "public"
@@ -47,6 +49,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-common": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",

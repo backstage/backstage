@@ -16,3 +16,4 @@
 
 export * from './alpha/index';
 export { default } from './alpha/index';
+export { catalogTranslationRef } from './translation';

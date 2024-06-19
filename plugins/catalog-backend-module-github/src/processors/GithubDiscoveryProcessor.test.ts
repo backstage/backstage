@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   DefaultGithubCredentialsProvider,
@@ -23,6 +22,7 @@ import {
 import { LocationSpec } from '@backstage/plugin-catalog-node';
 import { GithubDiscoveryProcessor, parseUrl } from './GithubDiscoveryProcessor';
 import { getOrganizationRepositories } from '../lib';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('../lib');
 const mockGetOrganizationRepositories =
@@ -80,7 +80,7 @@ describe('GithubDiscoveryProcessor', () => {
       const githubCredentialsProvider =
         DefaultGithubCredentialsProvider.fromIntegrations(integrations);
       const processor = GithubDiscoveryProcessor.fromConfig(config, {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         githubCredentialsProvider,
       });
       const location: LocationSpec = {
@@ -105,7 +105,7 @@ describe('GithubDiscoveryProcessor', () => {
       const githubCredentialsProvider =
         DefaultGithubCredentialsProvider.fromIntegrations(integrations);
       const processor = GithubDiscoveryProcessor.fromConfig(config, {
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
         githubCredentialsProvider,
       });
       const location: LocationSpec = {
@@ -130,7 +130,7 @@ describe('GithubDiscoveryProcessor', () => {
     const githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     const processor = GithubDiscoveryProcessor.fromConfig(config, {
-      logger: getVoidLogger(),
+      logger: mockServices.logger.mock(),
       githubCredentialsProvider,
     });
 

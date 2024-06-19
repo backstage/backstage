@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
@@ -28,7 +29,6 @@ import {
 import { EventsService } from '@backstage/plugin-events-node';
 import { merge } from 'lodash';
 import * as uuid from 'uuid';
-import { LoggerService } from '@backstage/backend-plugin-api';
 
 import {
   GitLabClient,
@@ -133,7 +133,8 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       const integration = integrations.byHost(providerConfig.host);
 
       if (!providerConfig.orgEnabled) {
-        throw new Error(`Org not enabled for ${providerConfig.id}.`);
+        options.logger.info(`Org not enabled for ${providerConfig.id}.`);
+        return;
       }
 
       if (!integration) {

@@ -14,7 +14,13 @@ A `pending` entity has not been processed yet.
 yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-unprocessed
 ```
 
-### backend
+In `packages/backend/src/index.ts` add the module:
+
+```ts title="packages/backend/src/index.ts"
+backend.add(catalogModuleUnprocessedEntities());
+```
+
+### Legacy Backend
 
 In `packages/backend/src/plugins/catalog.ts` import the module and initialize it after invoking `CatalogBuilder.build()`:
 
@@ -29,13 +35,3 @@ const unprocessed = new UnprocessedEntitiesModule(
 );
 unprocessed.registerRoutes();
 ```
-
-### backend-next
-
-In `packages/backend-next/src/index.ts` add the module:
-
-```ts title="packages/backend-next/src/index.ts"
-backend.add(catalogModuleUnprocessedEntities());
-```
-
-_This plugin was created through the Backstage CLI_

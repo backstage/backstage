@@ -48,7 +48,9 @@ import { SignalsService } from '@backstage/plugin-signals-node';
 import {
   NewNotificationSignal,
   Notification,
+  NotificationPayload,
   NotificationReadSignal,
+  notificationSeverities,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
 import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
@@ -177,9 +179,46 @@ export async function createRouter(
     return users;
   };
 
-  const processOptions = async (opts: NotificationSendOptions) => {
-    let ret = opts;
+  const filterProcessors = (payload: NotificationPayload) => {
+    const result: NotificationProcessor[] = [];
+
     for (const processor of processors) {
+      if (processor.getNotificationFilters) {
+        const filters = processor.getNotificationFilters();
+        if (filters.minSeverity) {
+          if (
+            notificationSeverities.indexOf(payload.severity ?? 'normal') >
+            notificationSeverities.indexOf(filters.minSeverity)
+          ) {
+            continue;
+          }
+        }
+
+        if (filters.maxSeverity) {
+          if (
+            notificationSeverities.indexOf(payload.severity ?? 'normal') <
+            notificationSeverities.indexOf(filters.maxSeverity)
+          ) {
+            continue;
+          }
+        }
+
+        if (filters.excludedTopics && payload.topic) {
+          if (filters.excludedTopics.includes(payload.topic)) {
+            continue;
+          }
+        }
+      }
+      result.push(processor);
+    }
+
+    return result;
+  };
+
+  const processOptions = async (opts: NotificationSendOptions) => {
+    const filtered = filterProcessors(opts.payload);
+    let ret = opts;
+    for (const processor of filtered) {
       try {
         ret = processor.processOptions
           ? await processor.processOptions(ret)
@@ -197,8 +236,9 @@ export async function createRouter(
     notification: Notification,
     opts: NotificationSendOptions,
   ) => {
+    const filtered = filterProcessors(notification.payload);
     let ret = notification;
-    for (const processor of processors) {
+    for (const processor of filtered) {
       try {
         ret = processor.preProcess
           ? await processor.preProcess(ret, opts)
@@ -216,7 +256,8 @@ export async function createRouter(
     notification: Notification,
     opts: NotificationSendOptions,
   ) => {
-    for (const processor of processors) {
+    const filtered = filterProcessors(notification.payload);
+    for (const processor of filtered) {
       if (processor.postProcess) {
         try {
           await processor.postProcess(notification, opts);

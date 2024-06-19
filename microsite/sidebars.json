@@ -1,6 +1,8 @@
 {
   "releases": {
     "Release Notes": [
+      "releases/v1.28.0",
+      "releases/v1.27.0",
       "releases/v1.26.0",
       "releases/v1.25.0",
       "releases/v1.24.0",
@@ -68,19 +70,6 @@
       "getting-started/keeping-backstage-updated",
       "getting-started/concepts"
     ],
-    "Local Development": [
-      {
-        "type": "category",
-        "label": "CLI",
-        "items": [
-          "local-dev/cli-overview",
-          "local-dev/cli-build-system",
-          "local-dev/cli-commands"
-        ]
-      },
-      "local-dev/linking-local-packages",
-      "local-dev/debugging"
-    ],
     "Core Features": [
       {
         "type": "category",
@@ -129,7 +118,7 @@
           "features/software-templates/writing-tests-for-actions",
           "features/software-templates/writing-custom-field-extensions",
           "features/software-templates/writing-custom-step-layouts",
-          "features/software-templates/authorizing-parameters-steps-and-actions",
+          "features/software-templates/authorizing-scaffolder-template-details",
           "features/software-templates/migrating-to-rjsf-v5",
           "features/software-templates/migrating-from-v1beta2-to-v1beta3"
         ]
@@ -240,6 +229,11 @@
       },
       {
         "type": "category",
+        "label": "Harness",
+        "items": ["integrations/harness/locations"]
+      },
+      {
+        "type": "category",
         "label": "Google GCS",
         "items": ["integrations/google-cloud-storage/locations"]
       },
@@ -309,6 +303,7 @@
         "items": [
           "auth/auth0/provider",
           "auth/atlassian/provider",
+          "auth/aws-alb/provider",
           "auth/microsoft/provider",
           "auth/microsoft/easy-auth",
           "auth/bitbucket/provider",
@@ -351,6 +346,26 @@
           "permissions/plugin-authors/05-frontend-authorization"
         ]
       }
+    ],
+    "Tooling": [
+      {
+        "type": "category",
+        "label": "Backstage CLI",
+        "items": [
+          "tooling/cli/overview",
+          "tooling/cli/build-system",
+          "tooling/cli/commands"
+        ]
+      },
+      {
+        "type": "category",
+        "label": "Local Development",
+        "items": [
+          "tooling/local-dev/linking-local-packages",
+          "tooling/local-dev/debugging"
+        ]
+      },
+      "tooling/package-metadata"
     ],
     "Deployment": [
       "deployment/index",
@@ -493,7 +508,6 @@
       "api/deprecations"
     ],
     "Tutorials": [
-      "tutorials/journey",
       "tutorials/quickstart-app-plugin",
       "tutorials/react-router-stable-migration",
       "tutorials/react18-migration",

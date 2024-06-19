@@ -19,6 +19,7 @@ import { makeStyles, useTheme } from '@material-ui/core/styles';
 import { Circle } from 'rc-progress';
 import React, { ReactNode, useEffect, useState } from 'react';
 import Box from '@material-ui/core/Box';
+import classNames from 'classnames';
 
 /** @public */
 export type GaugeClassKey =
@@ -42,6 +43,9 @@ const useStyles = makeStyles(
       fontSize: theme.typography.pxToRem(45),
       fontWeight: theme.typography.fontWeightBold,
       color: theme.palette.textContrast,
+    },
+    overlaySmall: {
+      fontSize: theme.typography.pxToRem(25),
     },
     description: {
       fontSize: '100%',
@@ -68,8 +72,11 @@ export type GaugeProps = {
   inverse?: boolean;
   unit?: string;
   max?: number;
+  size?: 'normal' | 'small';
   description?: ReactNode;
   getColor?: GaugePropsGetColor;
+  relativeToMax?: boolean;
+  decimalDigits?: number;
 };
 
 /** @public */
@@ -88,6 +95,7 @@ const defaultGaugeProps = {
   inverse: false,
   unit: '%',
   max: 100,
+  relativeToMax: false,
 };
 
 export const getProgressColor: GaugePropsGetColor = ({
@@ -121,16 +129,39 @@ export const getProgressColor: GaugePropsGetColor = ({
 
 export function Gauge(props: GaugeProps) {
   const [hoverRef, setHoverRef] = useState<HTMLDivElement | null>(null);
-  const { getColor = getProgressColor } = props;
+  const { getColor = getProgressColor, size = 'normal' } = props;
   const classes = useStyles(props);
   const { palette } = useTheme();
-  const { value, fractional, inverse, unit, max, description } = {
+  const {
+    value,
+    fractional,
+    inverse,
+    unit,
+    max,
+    description,
+    relativeToMax,
+    decimalDigits,
+  } = {
     ...defaultGaugeProps,
     ...props,
   };
 
-  const asPercentage = fractional ? Math.round(value * max) : value;
-  const asActual = max !== 100 ? Math.round(value) : asPercentage;
+  let asPercentage: number;
+  if (relativeToMax) {
+    asPercentage = (value / max) * 100;
+  } else {
+    asPercentage = fractional ? Math.round(value * max) : value;
+  }
+  let asActual: number;
+  if (relativeToMax) {
+    asActual = value;
+  } else {
+    asActual = max !== 100 ? Math.round(value) : asPercentage;
+  }
+  const asDisplay =
+    decimalDigits === undefined
+      ? asActual.toString()
+      : asActual.toFixed(decimalDigits);
 
   const [isHovering, setIsHovering] = useState(false);
 
@@ -159,14 +190,23 @@ export function Gauge(props: GaugeProps) {
         percent={asPercentage}
         strokeWidth={12}
         trailWidth={12}
-        strokeColor={getColor({ palette, value: asActual, inverse, max })}
+        strokeColor={getColor({
+          palette,
+          value: asPercentage,
+          inverse,
+          max: relativeToMax ? 100 : max,
+        })}
         className={classes.circle}
       />
       {description && isHovering ? (
         <Box className={classes.description}>{description}</Box>
       ) : (
-        <Box className={classes.overlay}>
-          {isNaN(value) ? 'N/A' : `${asActual}${unit}`}
+        <Box
+          className={classNames(classes.overlay, {
+            [classes.overlaySmall]: size === 'small',
+          })}
+        >
+          {isNaN(value) ? 'N/A' : `${asDisplay}${unit}`}
         </Box>
       )}
     </Box>

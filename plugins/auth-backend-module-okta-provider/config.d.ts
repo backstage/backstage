@@ -29,7 +29,7 @@ export interface Config {
           authServerId?: string;
           idp?: string;
           callbackUrl?: string;
-          additionalScopes?: string;
+          additionalScopes?: string | string[];
         };
       };
     };

@@ -201,7 +201,7 @@ A service that hosts [packages](#package). The most prominent example is [NPM](h
 
 ## Package Role
 
-The declared role of a package, see [package roles](../local-dev/cli-build-system.md#package-roles).
+The declared role of a package, see [package roles](../tooling/cli/02-build-system.md#package-roles).
 
 ## Permission (core Backstage plugin)
 

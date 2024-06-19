@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
 import {
   GithubCredentialsProvider,
@@ -28,6 +27,7 @@ import {
 } from '@backstage/plugin-events-node';
 import { GithubOrgEntityProvider } from './GithubOrgEntityProvider';
 import { withLocations } from '../lib/withLocations';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('@octokit/graphql');
 
@@ -48,7 +48,7 @@ describe('GithubOrgEntityProvider', () => {
         refresh: jest.fn(),
       };
 
-      const logger = getVoidLogger();
+      const logger = mockServices.logger.mock();
       const gitHubConfig = {
         host: 'https://github.com',
       };
@@ -269,7 +269,7 @@ describe('GithubOrgEntityProvider', () => {
         refresh: jest.fn(),
       };
 
-      const logger = getVoidLogger();
+      const logger = mockServices.logger.mock();
       const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
@@ -356,7 +356,7 @@ describe('GithubOrgEntityProvider', () => {
         refresh: jest.fn(),
       };
 
-      const logger = getVoidLogger();
+      const logger = mockServices.logger.mock();
       const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
@@ -443,7 +443,7 @@ describe('GithubOrgEntityProvider', () => {
         refresh: jest.fn(),
       };
 
-      const logger = getVoidLogger();
+      const logger = mockServices.logger.mock();
       const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
@@ -536,7 +536,7 @@ describe('GithubOrgEntityProvider', () => {
         refresh: jest.fn(),
       };
 
-      const logger = getVoidLogger();
+      const logger = mockServices.logger.mock();
       const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
@@ -630,7 +630,7 @@ describe('GithubOrgEntityProvider', () => {
         refresh: jest.fn(),
       };
 
-      const logger = getVoidLogger();
+      const logger = mockServices.logger.mock();
       const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
@@ -881,7 +881,7 @@ describe('GithubOrgEntityProvider', () => {
         refresh: jest.fn(),
       };
 
-      const logger = getVoidLogger();
+      const logger = mockServices.logger.mock();
       const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',
@@ -1129,7 +1129,7 @@ describe('GithubOrgEntityProvider', () => {
         refresh: jest.fn(),
       };
 
-      const logger = getVoidLogger();
+      const logger = mockServices.logger.mock();
       const events = DefaultEventsService.create({ logger });
       const gitHubConfig: GithubIntegrationConfig = {
         host: 'github.com',

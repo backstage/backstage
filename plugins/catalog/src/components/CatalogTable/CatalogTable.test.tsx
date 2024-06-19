@@ -343,7 +343,7 @@ describe('CatalogTable component', () => {
     expect(screen.getByText('Should be rendered')).toBeInTheDocument();
   });
 
-  it('should render the label column with customised title and value as specified', async () => {
+  it('should render the label column with customized title and value as specified', async () => {
     const columns = [
       CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
       CatalogTable.columns.createLabelColumn('category', { title: 'Category' }),
@@ -381,7 +381,7 @@ describe('CatalogTable component', () => {
     expect(labelCellValue).toBeInTheDocument();
   });
 
-  it('should render the label column with customised title and value as specified using function', async () => {
+  it('should render the label column with customized title and value as specified using function', async () => {
     const columns: CatalogTableColumnsFunc = ({
       filters,
       entities: entities1,

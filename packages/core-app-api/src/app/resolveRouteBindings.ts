@@ -18,12 +18,63 @@ import {
   RouteRef,
   SubRouteRef,
   ExternalRouteRef,
+  BackstagePlugin,
+  AnyRoutes,
+  AnyExternalRoutes,
 } from '@backstage/core-plugin-api';
 import { AppOptions, AppRouteBinder } from './types';
+import { Config } from '@backstage/config';
+import { JsonObject } from '@backstage/types';
 
-export function resolveRouteBindings(bindRoutes: AppOptions['bindRoutes']) {
+/** @internal */
+export function collectRouteIds(
+  plugins: Iterable<
+    Pick<
+      BackstagePlugin<AnyRoutes, AnyExternalRoutes>,
+      'getId' | 'routes' | 'externalRoutes'
+    >
+  >,
+) {
+  const routesById = new Map<string, RouteRef | SubRouteRef>();
+  const externalRoutesById = new Map<string, ExternalRouteRef>();
+
+  for (const plugin of plugins) {
+    for (const [name, ref] of Object.entries(plugin.routes ?? {})) {
+      const refId = `${plugin.getId()}.${name}`;
+      if (routesById.has(refId)) {
+        throw new Error(`Unexpected duplicate route '${refId}'`);
+      }
+
+      routesById.set(refId, ref);
+    }
+    for (const [name, ref] of Object.entries(plugin.externalRoutes ?? {})) {
+      const refId = `${plugin.getId()}.${name}`;
+      if (externalRoutesById.has(refId)) {
+        throw new Error(`Unexpected duplicate external route '${refId}'`);
+      }
+
+      externalRoutesById.set(refId, ref);
+    }
+  }
+
+  return { routes: routesById, externalRoutes: externalRoutesById };
+}
+
+/** @internal */
+export function resolveRouteBindings(
+  bindRoutes: AppOptions['bindRoutes'],
+  config: Config,
+  plugins: Iterable<
+    Pick<
+      BackstagePlugin<AnyRoutes, AnyExternalRoutes>,
+      'getId' | 'routes' | 'externalRoutes'
+    >
+  >,
+) {
+  const routesById = collectRouteIds(plugins);
   const result = new Map<ExternalRouteRef, RouteRef | SubRouteRef>();
 
+  // Perform callback bindings first with highest priority
   if (bindRoutes) {
     const bind: AppRouteBinder = (
       externalRoutes,
@@ -45,6 +96,54 @@ export function resolveRouteBindings(bindRoutes: AppOptions['bindRoutes']) {
       }
     };
     bindRoutes({ bind });
+  }
+
+  // Then perform config based bindings with lower priority
+  const bindings = config
+    .getOptionalConfig('app.routes.bindings')
+    ?.get<JsonObject>();
+  if (bindings) {
+    for (const [externalRefId, targetRefId] of Object.entries(bindings)) {
+      if (typeof targetRefId !== 'string' || targetRefId === '') {
+        throw new Error(
+          `Invalid config at app.routes.bindings['${externalRefId}'], value must be a non-empty string`,
+        );
+      }
+
+      const externalRef = routesById.externalRoutes.get(externalRefId);
+      if (!externalRef) {
+        throw new Error(
+          `Invalid config at app.routes.bindings, '${externalRefId}' is not a valid external route`,
+        );
+      }
+      if (result.has(externalRef)) {
+        continue;
+      }
+      const targetRef = routesById.routes.get(targetRefId);
+      if (!targetRef) {
+        throw new Error(
+          `Invalid config at app.routes.bindings['${externalRefId}'], '${targetRefId}' is not a valid route`,
+        );
+      }
+
+      result.set(externalRef, targetRef);
+    }
+  }
+
+  // Finally fall back to attempting to map defaults, at lowest priority
+  for (const externalRef of routesById.externalRoutes.values()) {
+    if (!result.has(externalRef)) {
+      const defaultRefId =
+        'getDefaultTarget' in externalRef
+          ? (externalRef.getDefaultTarget as () => string | undefined)()
+          : undefined;
+      if (defaultRefId) {
+        const defaultRef = routesById.routes.get(defaultRefId);
+        if (defaultRef) {
+          result.set(externalRef, defaultRef);
+        }
+      }
+    }
   }
 
   return result;

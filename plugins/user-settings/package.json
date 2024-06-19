@@ -1,9 +1,15 @@
 {
   "name": "@backstage/plugin-user-settings",
-  "version": "0.8.6-next.1",
+  "version": "0.8.7",
   "description": "A Backstage plugin that provides a settings page",
   "backstage": {
-    "role": "frontend-plugin"
+    "role": "frontend-plugin",
+    "pluginId": "user-settings",
+    "pluginPackages": [
+      "@backstage/plugin-user-settings",
+      "@backstage/plugin-user-settings-backend",
+      "@backstage/plugin-user-settings-common"
+    ]
   },
   "publishConfig": {
     "access": "public"
@@ -56,6 +62,8 @@
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/plugin-signals-react": "workspace:^",
+    "@backstage/plugin-user-settings-common": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.2",

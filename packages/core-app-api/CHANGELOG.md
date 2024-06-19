@@ -1,5 +1,83 @@
 # @backstage/core-app-api
 
+## 1.12.6
+
+### Patch Changes
+
+- 35fbe09: Added support for configuration of route bindings through static configuration, and default targets for external route refs.
+
+  In addition to configuring route bindings through code, it is now also possible to configure route bindings under the `app.routes.bindings` key, for example:
+
+  ```yaml
+  app:
+    routes:
+      bindings:
+        catalog.createComponent: catalog-import.importPage
+  ```
+
+  Each key in the route binding object is of the form `<plugin-id>.<externalRouteName>`, where the route name is key used in the `externalRoutes` object passed to `createPlugin`. The value is of the same form, but with the name taken from the plugin `routes` option instead.
+
+  The equivalent of the above configuration in code is the following:
+
+  ```ts
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: catalogImportPlugin.routes.importPage,
+      });
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.12.6-next.0
+
+### Patch Changes
+
+- 35fbe09: Added support for configuration of route bindings through static configuration, and default targets for external route refs.
+
+  In addition to configuring route bindings through code, it is now also possible to configure route bindings under the `app.routes.bindings` key, for example:
+
+  ```yaml
+  app:
+    routes:
+      bindings:
+        catalog.createComponent: catalog-import.importPage
+  ```
+
+  Each key in the route binding object is of the form `<plugin-id>.<externalRouteName>`, where the route name is key used in the `externalRoutes` object passed to `createPlugin`. The value is of the same form, but with the name taken from the plugin `routes` option instead.
+
+  The equivalent of the above configuration in code is the following:
+
+  ```ts
+  const app = createApp({
+    // ...
+    bindRoutes({ bind }) {
+      bind(catalogPlugin.externalRoutes, {
+        createComponent: catalogImportPlugin.routes.importPage,
+      });
+    },
+  });
+  ```
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
+## 1.12.5
+
+### Patch Changes
+
+- 1bed9a3: The Backstage identity session expiration check will no longer fall back to using the provider expiration. This was introduced to smooth out the rollout of Backstage release 1.18, and is no longer needed.
+
 ## 1.12.4
 
 ### Patch Changes
@@ -539,8 +617,7 @@
 
   This change makes the dependence explicit, and removes the burden on
   OAuth2-based providers which require an ID token (e.g. this is done by various
-  default [auth
-  handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  default [auth handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
   `openid` to their default scopes. _That_ could carry another indirect benefit:
   by removing `openid` from the default scopes for a provider, grants for
   resource-specific access tokens can avoid requesting excess ID token-related
@@ -568,8 +645,7 @@
 
   This change makes the dependence explicit, and removes the burden on
   OAuth2-based providers which require an ID token (e.g. this is done by various
-  default [auth
-  handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
+  default [auth handlers](https://backstage.io/docs/auth/identity-resolver/#authhandler)) to add
   `openid` to their default scopes. _That_ could carry another indirect benefit:
   by removing `openid` from the default scopes for a provider, grants for
   resource-specific access tokens can avoid requesting excess ID token-related

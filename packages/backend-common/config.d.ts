@@ -112,6 +112,13 @@ export interface Config {
        */
       ensureExists?: boolean;
       /**
+       * Whether to ensure the given database schema exists by creating it if it does not.
+       * Defaults to false if unspecified.
+       *
+       * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
+       */
+      ensureSchemaExists?: boolean;
+      /**
        * How plugins databases are managed/divided in the provided database instance.
        *
        * `database` -> Plugins are each given their own database to manage their schemas/tables.
@@ -148,6 +155,13 @@ export interface Config {
            */
           ensureExists?: boolean;
           /**
+           * Whether to ensure the given database schema exists by creating it if it does not.
+           * Defaults to false if unspecified.
+           *
+           * NOTE: Currently only supported by the `pg` client when pluginDivisionMode: schema
+           */
+          ensureSchemaExists?: boolean;
+          /**
            * Arbitrary config object to pass to knex when initializing
            * (https://knexjs.org/#Installation-client). Most notable is the
            * debug and asyncStackTraces booleans.
@@ -177,6 +191,11 @@ export interface Config {
           connection: string;
           /** An optional default TTL (in milliseconds). */
           defaultTtl?: number;
+          /**
+           * Whether or not [useRedisSets](https://github.com/jaredwray/keyv/tree/main/packages/redis#useredissets) should be configured to this redis cache.
+           * Defaults to true if unspecified.
+           */
+          useRedisSets?: boolean;
         }
       | {
           store: 'memcache';

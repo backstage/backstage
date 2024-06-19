@@ -16,6 +16,7 @@
 
 import {
   CompoundEntityRef,
+  Entity,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import {
@@ -77,6 +78,7 @@ export type EntityRelationsGraphProps = {
   mergeRelations?: boolean;
   kinds?: string[];
   relations?: string[];
+  entityFilter?: (entity: Entity) => boolean;
   direction?: Direction;
   onNodeClick?: (value: EntityNode, event: MouseEvent<unknown>) => void;
   relationPairs?: RelationPairs;
@@ -101,6 +103,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     mergeRelations = true,
     kinds,
     relations,
+    entityFilter,
     direction = Direction.LEFT_RIGHT,
     onNodeClick,
     relationPairs = ALL_RELATION_PAIRS,
@@ -130,6 +133,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     mergeRelations,
     kinds,
     relations,
+    entityFilter,
     onNodeClick,
     relationPairs,
   });

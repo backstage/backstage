@@ -6,8 +6,7 @@ description: This section describes service to service authentication works, bot
 ---
 
 :::info
-This documentation is written for [the new backend
-system](../backend-system/index.md) which is the default since Backstage
+This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage
 [version 1.24](../releases/v1.24.0.md). If you are still on the old backend
 system, you may want to read [its own article](./service-to-service-auth--old.md)
 instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
@@ -28,6 +27,45 @@ any configuration. They generate self-signed tokens automatically for making
 requests to other Backstage backend plugins, and the receivers use the caller's
 public key set endpoint to be able to perform verification.
 
+A backend plugin wishing to make a request to another backend plugin acquires
+the required token as follows, where `auth` and `httpAuth` are assumed to be
+injected from `coreServices.auth` and `coreServices.httpAuth`, respectively:
+
+```ts
+const credentials = await httpAuth.credentials(req);
+const { token } = await auth.getPluginRequestToken({
+  onBehalfOf: credentials,
+  targetPluginId: '<plugin-id>', // e.g. 'catalog'
+});
+```
+
+In this example we are assuming that we are in an Express request handler, and
+we extract the caller credentials (typically a user or a service) out of its
+`req` and make the upstream request on-behalf-of that principal. Prefer to use
+this pattern wherever there's an incoming set of credentials to refer to.
+
+If you want to initiate a request entirely as your own service, not on behalf of
+anybody else, you can do so as follows:
+
+```ts
+const { token } = await auth.getPluginRequestToken({
+  onBehalfOf: await auth.getOwnServiceCredentials(),
+  targetPluginId: '<plugin-id>', // e.g. 'catalog'
+});
+```
+
+Callers pass along the tokens verbatim with requests in the `Authorization`
+header:
+
+```yaml
+Authorization: Bearer eyJhbG...
+```
+
+You may occasionally also see some code, e.g. clients to other systems, that
+accept a `credentials` argument directly instead of a token. For those, just
+pass in the credentials as acquired above, instead of making a token. The client
+code will know what to do with those credentials internally.
+
 This flow has only one configuration option to set in your app-config:
 `backend.auth.dangerouslyDisableDefaultAuthPolicy`, which can be set to `true`
 if you for some reason need to completely disable both the issuing and
@@ -37,6 +75,61 @@ and when your deployment is behind a secure ingress like a VPN.
 
 External callers cannot leverage this flow; it's only used internally by backend
 plugins calling other backend plugins.
+
+### Static Keys for Plugin-to-Plugin Auth
+
+In some special circumstances, such as when running worker nodes on readonly
+database replicas, you may wish to opt out of the standard database based
+public-key scheme. As an alternative, you can put static keys in your config
+that are used for token signing and validation.
+
+You can make keys using the `openssl` command line utility.
+
+- First generate a private key using the ES256 algorithm:
+
+  ```sh
+  openssl ecparam -name prime256v1 -genkey -out private.ec.key
+  ```
+
+- Convert it to PKCS#8 format:
+
+  ```sh
+  openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in private.ec.key -out private.key
+  ```
+
+- Extract the public key:
+
+  ```sh
+  openssl ec -inform PEM -outform PEM -pubout -in private.key -out public.key
+  ```
+
+After this you have the files `private.key` and `public.key`. Put them in a
+place where you know their absolute paths, and then set up your app-config
+accordingly:
+
+```yaml
+backend:
+  auth:
+    # This is the new section for configuring plugin-to-plugin key storage
+    pluginKeyStore:
+      type: static
+      static:
+        keys:
+          - publicKeyFile: /absolute/path/to/public.key
+            privateKeyFile: /absolute/path/to/private.key
+            keyId: some-custom-id
+```
+
+As long as all your nodes have this same config with the same set of keys, they
+will now be able to successfully communicate with each other without touching the
+database.
+
+You'll note that the `keys` value is an array, which is useful for key rotation.
+The first entry will always be used for signing, but any of the subsequent
+entries will also be used for token validation. This lets you have a period of
+time where tokens signed by the previous top entry are still accepted by
+receivers, by just inserting your new key pair as the top entry and leaving the
+old ones intact. You can remove old private keys however; those won't be used.
 
 ## Static Tokens
 
@@ -56,6 +149,9 @@ backend:
         options:
           token: ${CICD_TOKEN}
           subject: cicd-system-completion-events
+        # Restrictions are optional; see below
+        accessRestrictions:
+          - plugin: events
       - type: static
         options:
           token: ${ADMIN_CURL_TOKEN}
@@ -74,11 +170,63 @@ The subjects must be strings without whitespace. They are used for identifying
 each caller, and become part of the credentials object that request recipient
 plugins get.
 
-Callers pass along the tokens verbatim with requests in the `Authorization`
-header:
+Callers must pass along tokens verbatim with requests in the `Authorization`
+header when calling Backstage plugins:
 
 ```yaml
 Authorization: Bearer eZv5o+fW3KnR3kVabMW4ZcDNLPl8nmMW
+```
+
+## JWKS Token Auth
+
+This access method allows for external caller token authentication using configured
+JSON Web Key Sets (JWKS). This is useful for callers that are authenticating to our
+instance of Backstage with third-party tools, such as Auth0.
+
+You can configure this access method by adding one or more entries of type `jwks`
+to the `backend.auth.externalAccess` app-config key:
+
+```yaml title="in e.g. app-config.production.yaml"
+backend:
+  auth:
+    externalAccess:
+      - type: jwks
+        options:
+          url: https://example.com/.well-known/jwks.json
+          issuer: https://example.com
+          algorithm: RS256
+          audience: example, other-example
+          subjectPrefix: custom-prefix
+      - type: jwks
+        options:
+          url: https://another-example.com/.well-known/jwks.json
+          issuer: https://example.com
+```
+
+The URL should point at an unauthenticated endpoint that returns the JWKS.
+
+`issuer` specifies the issuer(s) of the JWT that the authenticating app will accept.
+Passed JWTs must have an `iss` claim which matches one of the specified issuers.
+
+`algorithm` specifies the algorithm(s) that are used to verify the JWT. The passed JWTs
+must have been signed using one of the listed algorithms.
+
+`audience` specifies the intended audience(s) of the JWT. The passed JWTs must have an "aud"
+claim that matches one of the audiences specified, or have no audience specified.
+
+For additional details regarding the JWKS configuration, please consult your authentication
+provider's documentation.
+
+The subject returned from the token verification will become part of the
+credentials object that the request recipient plugins get. All subjects will have the prefix
+`external:`, but you can also provide a custom subjectPrefix which will get appended before the
+subject returned from your JWKS service (ex. `external:custom-prefix:sub`).
+
+Callers must pass along tokens with requests in the `Authorization` header when
+calling Backstage plugins:
+
+```yaml
+Authorization: Bearer eyJhbG...
 ```
 
 ## Legacy Tokens
@@ -157,8 +305,12 @@ payload:
 - `sub`: the exact string "backstage-server"
 - `exp`: one hour from the time it was generated, in epoch seconds
 
-> NOTE: The JWT must encode the `alg` header as a protected header, such as with
-> [setProtectedHeader](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#setprotectedheader).
+:::note Note
+
+The JWT must encode the `alg` header as a protected header, such as with
+[setProtectedHeader](https://github.com/panva/jose/blob/main/docs/classes/jwt_sign.SignJWT.md#setprotectedheader).
+
+:::
 
 The caller then passes along the JWT token with requests in the `Authorization`
 header:
@@ -166,3 +318,97 @@ header:
 ```yaml
 Authorization: Bearer eZv5o+fW3KnR3kVabMW4ZcDNLPl8nmMW
 ```
+
+## Access Restrictions
+
+Each `externalAccess` entry may optionally have an `accessRestrictions` key,
+which limits what that particular access method can do. Let's look at an
+example:
+
+```yaml title="in e.g. app-config.production.yaml"
+backend:
+  auth:
+    externalAccess:
+      - type: static
+        options:
+          token: ${CICD_TOKEN}
+          subject: cicd-system-completion-events
+        accessRestrictions:
+          - plugin: events
+```
+
+In this short example there's only one entry. It says that for anyone trying to
+make access with the CICD token, they will be rejected if they try to contact
+anything but the `events` backend plugin. You could add additional entries to
+the array that allow targeting more plugins if that's what you want.
+
+:::note Note
+
+If no `accessRestrictions` are added, the access method has unlimited access to
+all functionality of all plugins. It is recommended that you try to specify
+access restrictions whenever possible, to reduce risk.
+
+:::
+
+Each entry has one or more of the following fields:
+
+- **`plugin`**: Required. A plugin ID as a string, for example `'catalog'`. Permits
+  access to make requests to this plugin. Can be further refined by setting
+  additional fields as per below.
+
+  Example:
+
+  ```yaml
+  accessRestrictions:
+    # access to any other plugin will be rejected
+    - plugin: my-plugin
+  ```
+
+- **`permission`**: Optional. A collection (comma/space separated string or
+  string array) of permission names. If given, this method is limited to only
+  performing actions with these named permissions in the plugin with the ID
+  given above.
+
+  Note that this only applies where permissions checks are enabled in the first
+  place. Endpoints that are not protected by the permissions system at all, are
+  not affected by this setting.
+
+  Example:
+
+  ```yaml
+  accessRestrictions:
+    - plugin: my-plugin
+      # Any other permission check will be rejected.
+      permission:
+        - my-plugin.add-item
+        - my-plugin.remove-item
+      # Also supports the shorthand form:
+      # permission: my-plugin.add-item, my-plugin.remove-item
+  ```
+
+- **`permissionAttribute`**: Optional. A key-value object of permission attributes
+  where each value is a collection (comma/space separated string or string
+  array) of allowed such values. If given, this method is limited to only
+  performing actions whose permissions have these attributes.
+
+  Note that this only applies where permissions checks are
+  enabled in the first place. Endpoints that are not protected by
+  the permissions system at all, are not affected by this
+  setting.
+
+  In practice, this is typically used to limit by the `action` attribute, for
+  `'create'`, `'read'`, `'update'`, or `'delete'` values.
+
+  Example:
+
+  ```yaml
+  accessRestrictions:
+    - plugin: my-plugin
+      permissionAttribute:
+        # Updates and deletes will be rejected.
+        action:
+          - create
+          - read
+        # Also supports the shorthand form:
+        # action: create, read
+  ```

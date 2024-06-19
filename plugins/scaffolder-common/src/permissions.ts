@@ -79,14 +79,39 @@ export const templateStepReadPermission = createPermission({
 });
 
 /**
- * List of all the scaffolder permissions
+ * This permission is used to authorize actions that involve reading one or more tasks in the scaffolder,
+ * and reading logs of tasks
+ *
  * @alpha
  */
-export const scaffolderPermissions = [
-  actionExecutePermission,
-  templateParameterReadPermission,
-  templateStepReadPermission,
-];
+export const taskReadPermission = createPermission({
+  name: 'scaffolder.task.read',
+  attributes: {
+    action: 'read',
+  },
+});
+
+/**
+ * This permission is used to authorize actions that involve the creation of tasks in the scaffolder.
+ *
+ * @alpha
+ */
+export const taskCreatePermission = createPermission({
+  name: 'scaffolder.task.create',
+  attributes: {
+    action: 'create',
+  },
+});
+
+/**
+ * This permission is used to authorize actions that involve the cancellation of tasks in the scaffolder.
+ *
+ * @alpha
+ */
+export const taskCancelPermission = createPermission({
+  name: 'scaffolder.task.cancel',
+  attributes: {},
+});
 
 /**
  * List of the scaffolder permissions that are associated with template steps and parameters.
@@ -102,3 +127,23 @@ export const scaffolderTemplatePermissions = [
  * @alpha
  */
 export const scaffolderActionPermissions = [actionExecutePermission];
+
+/**
+ * List of the scaffolder permissions that are associated with scaffolder tasks.
+ * @alpha
+ */
+export const scaffolderTaskPermissions = [
+  taskCancelPermission,
+  taskCreatePermission,
+  taskReadPermission,
+];
+
+/**
+ * List of all the scaffolder permissions
+ * @alpha
+ */
+export const scaffolderPermissions = [
+  ...scaffolderTemplatePermissions,
+  ...scaffolderActionPermissions,
+  ...scaffolderTaskPermissions,
+];

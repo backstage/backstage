@@ -11,6 +11,16 @@ import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
 import { PortableSchema } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+
+// @alpha (undocumented)
+export const catalogTranslationRef: TranslationRef<
+  'catalog',
+  {
+    readonly 'indexPage.title': '{{orgName}} Catalog';
+    readonly 'indexPage.createButtonTitle': 'Create';
+  }
+>;
 
 // @alpha (undocumented)
 export function createCatalogFilterExtension<

@@ -1,7 +1,7 @@
 {
   "name": "@techdocs/cli",
   "description": "Utility CLI for managing TechDocs sites in Backstage.",
-  "version": "1.8.11-next.1",
+  "version": "1.8.12",
   "publishConfig": {
     "access": "public"
   },
@@ -56,14 +56,12 @@
     "ext": "ts"
   },
   "dependencies": {
-    "@backstage/backend-common": "workspace:^",
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/cli-common": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
-    "@types/dockerode": "^3.3.0",
     "commander": "^12.0.0",
-    "dockerode": "^4.0.0",
     "fs-extra": "^11.0.0",
     "global-agent": "^3.0.0",
     "http-proxy": "^1.18.1",

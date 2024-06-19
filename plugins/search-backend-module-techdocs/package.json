@@ -1,9 +1,11 @@
 {
   "name": "@backstage/plugin-search-backend-module-techdocs",
-  "version": "0.1.23-next.1",
+  "version": "0.1.24",
   "description": "A module for the search backend that exports techdocs modules",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "search",
+    "pluginPackage": "@backstage/plugin-search-backend"
   },
   "publishConfig": {
     "access": "public"

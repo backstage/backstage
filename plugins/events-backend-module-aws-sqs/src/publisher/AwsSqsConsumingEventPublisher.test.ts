@@ -19,12 +19,12 @@ import {
   ReceiveMessageCommand,
   SQSClient,
 } from '@aws-sdk/client-sqs';
-import { getVoidLogger } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { ConfigReader } from '@backstage/config';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { mockClient } from 'aws-sdk-client-mock';
 import { AwsSqsConsumingEventPublisher } from './AwsSqsConsumingEventPublisher';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('AwsSqsConsumingEventPublisher', () => {
   it('creates one publisher instance per configured topic', async () => {
@@ -52,7 +52,7 @@ describe('AwsSqsConsumingEventPublisher', () => {
         },
       },
     });
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     const events = new TestEventsService();
     const scheduler = {
       scheduleTask: jest.fn(),
@@ -86,7 +86,7 @@ describe('AwsSqsConsumingEventPublisher', () => {
         },
       },
     });
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     const events = new TestEventsService();
     const scheduler = {
       scheduleTask: jest.fn(),
@@ -134,7 +134,7 @@ describe('AwsSqsConsumingEventPublisher', () => {
         },
       },
     });
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
     const events = new TestEventsService();
     let taskFn: (() => Promise<void>) | undefined = undefined;
     const scheduler = {

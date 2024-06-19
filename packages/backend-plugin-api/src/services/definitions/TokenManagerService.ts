@@ -15,9 +15,12 @@
  */
 
 /**
- * Interface for creating and validating tokens.
+ * This is the legacy service for creating and validating tokens. Please migrate to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
+ *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/token-manager | service documentation} for more details.
  *
  * @public
+ * @deprecated Please {@link https://backstage.io/docs/tutorials/auth-service-migration | migrate} to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
  */
 export interface TokenManagerService {
   /**

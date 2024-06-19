@@ -16,7 +16,7 @@
 
 import {
   errorHandler,
-  getVoidLogger,
+  loggerToWinstonLogger,
   PluginCacheManager,
   PluginEndpointDiscovery,
 } from '@backstage/backend-common';
@@ -33,6 +33,7 @@ import { DocsSynchronizer, DocsSynchronizerSyncOpts } from './DocsSynchronizer';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
+import { mockServices } from '@backstage/backend-test-utils';
 
 jest.mock('@backstage/catalog-client');
 jest.mock('@backstage/config');
@@ -126,7 +127,7 @@ describe('createRouter', () => {
     generators,
     publisher,
     config: new ConfigReader({}),
-    logger: getVoidLogger(),
+    logger: loggerToWinstonLogger(mockServices.logger.mock()),
     discovery,
     cache,
     docsBuildStrategy,
@@ -134,7 +135,7 @@ describe('createRouter', () => {
   const recommendedOptions = {
     publisher,
     config: new ConfigReader({}),
-    logger: getVoidLogger(),
+    logger: loggerToWinstonLogger(mockServices.logger.mock()),
     discovery,
     cache,
     docsBuildStrategy,

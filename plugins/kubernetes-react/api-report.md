@@ -16,10 +16,10 @@ import { DetectedErrorsByCluster } from '@backstage/plugin-kubernetes-common';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { Event as Event_2 } from 'kubernetes-models/v1';
+import { FetchApi } from '@backstage/core-plugin-api';
 import { GroupedResponses } from '@backstage/plugin-kubernetes-common';
 import { IContainer } from 'kubernetes-models/v1';
 import { IContainerStatus } from 'kubernetes-models/v1';
-import { IdentityApi } from '@backstage/core-plugin-api';
 import { IIoK8sApimachineryPkgApisMetaV1ObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import { JsonObject } from '@backstage/types';
@@ -33,10 +33,10 @@ import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { default as React_2 } from 'react';
 import * as React_3 from 'react';
 import { TypeMeta } from '@kubernetes-models/base';
-import { V1HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { V1Job } from '@kubernetes/client-node';
 import { V1ObjectMeta } from '@kubernetes/client-node';
 import { V1Pod } from '@kubernetes/client-node';
+import { V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { WorkloadsByEntityRequest } from '@backstage/plugin-kubernetes-common';
 
 // @public (undocumented)
@@ -285,7 +285,7 @@ export const GroupedResponsesContext: React_2.Context<GroupedResponses>;
 
 // @public (undocumented)
 export const HorizontalPodAutoscalerDrawer: (props: {
-  hpa: V1HorizontalPodAutoscaler;
+  hpa: V2HorizontalPodAutoscaler;
   expanded?: boolean;
   children?: React_2.ReactNode;
 }) => React_2.JSX.Element;
@@ -402,7 +402,7 @@ export const kubernetesAuthProvidersApiRef: ApiRef<KubernetesAuthProvidersApi>;
 export class KubernetesBackendClient implements KubernetesApi {
   constructor(options: {
     discoveryApi: DiscoveryApi;
-    identityApi: IdentityApi;
+    fetchApi: FetchApi;
     kubernetesAuthProvidersApi: KubernetesAuthProvidersApi;
   });
   // (undocumented)

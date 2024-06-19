@@ -187,9 +187,13 @@ export function createPublishAzureAction(options: {
         throw new InputError('No Id returned from create repository for Azure');
       }
 
-      // blam: Repo contents is serialized into the path,
-      // so it's just the base path I think
-      const repoContentsUrl = remoteUrl;
+      const repoContentsUrl = returnedRepo.webUrl;
+
+      if (!repoContentsUrl) {
+        throw new InputError(
+          'No web URL returned from create repository for Azure',
+        );
+      }
 
       const gitAuthorInfo = {
         name: gitAuthorName

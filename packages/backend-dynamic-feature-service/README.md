@@ -10,7 +10,7 @@ In order to test the dynamic backend plugins feature provided by this package, e
 
 The dynamic plugin manager is a service that scans a configured root directory (`dynamicPlugins.rootDirectory` in the app config) for dynamic plugin packages, and loads them dynamically.
 
-In the `backend-next` application, it can be enabled by adding the `backend-dynamic-feature-service` as a dependency in the `package.json` and the following lines in the `src/index.ts` file:
+In the `backend` application, it can be enabled by adding the `backend-dynamic-feature-service` as a dependency in the `package.json` and the following lines in the `src/index.ts` file:
 
 ```ts
 const backend = createBackend();

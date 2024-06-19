@@ -80,7 +80,7 @@ TODO:
 
 const homePageExtension = createExtension({
   name: 'myhomepage',
-  attachTo: { id: 'home', input: 'props' },
+  attachTo: { id: 'page:home', input: 'props' },
   output: {
     children: coreExtensionData.reactElement,
     title: titleExtensionDataRef,

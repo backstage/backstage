@@ -13,9 +13,14 @@ out-of-the box experience.
 
 ![TechDocs Architecture diagram](../../assets/techdocs/architecture-basic.drawio.svg)
 
-> Note: See below for our recommended deployment architecture which takes care
-> of stability, scalability and speed. Also look at the
-> [HOW TO migrate guide](how-to-guides.md#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach).
+:::note Note
+
+See below for our recommended deployment architecture which takes care
+of stability, scalability and speed. Also look at the
+[HOW TO migrate guide](how-to-guides
+md#how-to-migrate-from-techdocs-basic-to-recommended-deployment-approach).
+
+:::
 
 When you open a TechDocs site in Backstage, the
 [TechDocs Reader](./concepts.md#techdocs-reader) makes a request to

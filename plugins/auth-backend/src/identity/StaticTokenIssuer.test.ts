@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { getVoidLogger } from '@backstage/backend-common';
 import { StaticTokenIssuer } from './StaticTokenIssuer';
 import { createLocalJWKSet, jwtVerify } from 'jose';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { StaticKeyStore } from './StaticKeyStore';
+import { mockServices } from '@backstage/backend-test-utils';
 
-const logger = getVoidLogger();
+const logger = mockServices.logger.mock();
 const entityRef = stringifyEntityRef({
   kind: 'User',
   namespace: 'default',

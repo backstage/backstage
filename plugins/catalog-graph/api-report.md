@@ -115,6 +115,7 @@ export type EntityRelationsGraphProps = {
   mergeRelations?: boolean;
   kinds?: string[];
   relations?: string[];
+  entityFilter?: (entity: Entity) => boolean;
   direction?: Direction;
   onNodeClick?: (value: EntityNode, event: MouseEvent_2<unknown>) => void;
   relationPairs?: RelationPairs;

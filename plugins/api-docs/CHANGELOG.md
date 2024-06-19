@@ -1,5 +1,100 @@
 # @backstage/plugin-api-docs
 
+## 0.11.6
+
+### Patch Changes
+
+- 7f84039: The `registerComponent` external route will now by default bind to the catalog import page if it is available.
+- 9cdc651: Make sure that the toggle button state is properly reflected in API cards
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 96cd13e: `DefaultApiExplorerPage` now accepts an optional `ownerPickerMode` for toggling the behavior of the `EntityOwnerPicker`, exposing a new mode `<DefaultApiExplorerPage ownerPickerMode="all" />` particularly suitable for larger catalogs. In this new mode, `EntityOwnerPicker` will display all the users and groups present in the catalog.
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-compat-api@0.2.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-permission-react@0.4.23
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/plugin-catalog-react@1.12.1
+  - @backstage/plugin-catalog@1.21.0
+  - @backstage/frontend-plugin-api@0.6.6
+  - @backstage/catalog-model@1.5.0
+
+## 0.11.6-next.2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.2
+  - @backstage/plugin-permission-react@0.4.23-next.1
+  - @backstage/plugin-catalog-common@1.0.24-next.0
+  - @backstage/plugin-catalog-react@1.12.1-next.2
+  - @backstage/plugin-catalog@1.21.0-next.3
+  - @backstage/frontend-plugin-api@0.6.6-next.2
+  - @backstage/core-compat-api@0.2.6-next.2
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-plugin-api@1.9.3-next.0
+
+## 0.11.6-next.1
+
+### Patch Changes
+
+- 7f84039: The `registerComponent` external route will now by default bind to the catalog import page if it is available.
+- 9cdc651: Make sure that the toggle button state is properly reflected in API cards
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.1
+  - @backstage/core-compat-api@0.2.6-next.1
+  - @backstage/core-plugin-api@1.9.3-next.0
+  - @backstage/plugin-catalog@1.21.0-next.2
+  - @backstage/frontend-plugin-api@0.6.6-next.1
+  - @backstage/plugin-catalog-react@1.12.1-next.1
+  - @backstage/plugin-permission-react@0.4.23-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-catalog-common@1.0.23
+
+## 0.11.6-next.0
+
+### Patch Changes
+
+- 96cd13e: `DefaultApiExplorerPage` now accepts an optional `ownerPickerMode` for toggling the behavior of the `EntityOwnerPicker`, exposing a new mode `<DefaultApiExplorerPage ownerPickerMode="all" />` particularly suitable for larger catalogs. In this new mode, `EntityOwnerPicker` will display all the users and groups present in the catalog.
+- Updated dependencies
+  - @backstage/core-components@0.14.8-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/core-compat-api@0.2.6-next.0
+  - @backstage/core-plugin-api@1.9.2
+  - @backstage/frontend-plugin-api@0.6.6-next.0
+  - @backstage/plugin-catalog@1.20.1-next.0
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-catalog-react@1.12.1-next.0
+  - @backstage/plugin-permission-react@0.4.22
+
+## 0.11.5
+
+### Patch Changes
+
+- 5d99272: Update local development dependencies.
+- 725ff0b: Fix dark mode text color inside tables in `description:` from OpenAPI definitions
+- Updated dependencies
+  - @backstage/plugin-catalog@1.20.0
+  - @backstage/core-compat-api@0.2.5
+  - @backstage/core-components@0.14.7
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-catalog-react@1.12.0
+  - @backstage/frontend-plugin-api@0.6.5
+  - @backstage/plugin-catalog-common@1.0.23
+
+## 0.11.5-next.2
+
+### Patch Changes
+
+- 725ff0b: Fix dark mode text color inside tables in `description:` from OpenAPI definitions
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.12.0-next.2
+  - @backstage/plugin-catalog@1.20.0-next.2
+  - @backstage/core-components@0.14.7-next.2
+  - @backstage/core-compat-api@0.2.5-next.1
+  - @backstage/frontend-plugin-api@0.6.5-next.1
+
 ## 0.11.5-next.1
 
 ### Patch Changes
@@ -1337,8 +1432,7 @@
 ### Patch Changes
 
 - 8f7b1835df: Updated dependency `msw` to `^0.41.0`.
-- 811ff4bcf4: Updated `swagger-ui-react` to 4.11.1 in order to address a [XSS
-  vulnerability](https://github.com/advisories/GHSA-hqq7-2q2v-82xq) in `@braintree/sanitize-url`
+- 811ff4bcf4: Updated `swagger-ui-react` to 4.11.1 in order to address a [XSS vulnerability](https://github.com/advisories/GHSA-hqq7-2q2v-82xq) in `@braintree/sanitize-url`
 - Updated dependencies
   - @backstage/plugin-catalog@1.3.0
   - @backstage/plugin-catalog-react@1.1.1

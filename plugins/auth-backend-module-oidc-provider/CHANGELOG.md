@@ -1,5 +1,79 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.2.0
+
+### Minor Changes
+
+- 8efc6cf: **BREAKING**: The `scope` config option have been removed and replaced by the standard `additionalScopes` config. In addition, `openid`, `profile`, and `email` scopes have been set to required and will always be present.
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 4f21993: if oidc server do not provide revocation_endpoint，we should not call revoke function
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-auth-backend@0.22.6
+
+## 0.2.0-next.3
+
+### Minor Changes
+
+- 8efc6cf: **BREAKING**: The `scope` config option have been removed and replaced by the standard `additionalScopes` config. In addition, `openid`, `profile`, and `email` scopes have been set to required and will always be present.
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/plugin-auth-backend@0.22.6-next.3
+  - @backstage/backend-common@0.23.0-next.3
+
+## 0.1.10-next.2
+
+### Patch Changes
+
+- 4f21993: if oidc server do not provide revocation_endpoint，we should not call revoke function
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/plugin-auth-backend@0.22.6-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+
+## 0.1.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.1
+  - @backstage/backend-common@0.23.0-next.1
+  - @backstage/plugin-auth-backend@0.22.6-next.1
+  - @backstage/plugin-auth-node@0.4.14-next.1
+
+## 0.1.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.22.1-next.0
+  - @backstage/plugin-auth-backend@0.22.6-next.0
+  - @backstage/backend-plugin-api@0.6.19-next.0
+  - @backstage/plugin-auth-node@0.4.14-next.0
+
+## 0.1.9
+
+### Patch Changes
+
+- dd53bf3: Add nonce to authorize request to be added in ID token
+- Updated dependencies
+  - @backstage/backend-common@0.22.0
+  - @backstage/backend-plugin-api@0.6.18
+  - @backstage/plugin-auth-backend@0.22.5
+  - @backstage/plugin-auth-node@0.4.13
+
 ## 0.1.9-next.1
 
 ### Patch Changes

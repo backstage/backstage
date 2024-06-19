@@ -25,6 +25,7 @@ import { GerritIntegration } from './gerrit/GerritIntegration';
 import { GithubIntegration } from './github/GithubIntegration';
 import { GitLabIntegration } from './gitlab/GitLabIntegration';
 import { GiteaIntegration } from './gitea/GiteaIntegration';
+import { HarnessIntegration } from './harness/HarnessIntegration';
 
 /**
  * Holds all registered SCM integrations, of all types.
@@ -46,6 +47,7 @@ export interface ScmIntegrationRegistry
   github: ScmIntegrationsGroup<GithubIntegration>;
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
   gitea: ScmIntegrationsGroup<GiteaIntegration>;
+  harness: ScmIntegrationsGroup<HarnessIntegration>;
   /**
    * Resolves an absolute or relative URL in relation to a base URL.
    *

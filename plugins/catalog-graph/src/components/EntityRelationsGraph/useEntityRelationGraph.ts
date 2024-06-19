@@ -16,6 +16,7 @@
 import { Entity } from '@backstage/catalog-model';
 import { useEffect } from 'react';
 import { useEntityStore } from './useEntityStore';
+import { pickBy } from 'lodash';
 
 /**
  * Discover the graph of entities connected by relations, starting from a set of
@@ -24,13 +25,19 @@ import { useEntityStore } from './useEntityStore';
  */
 export function useEntityRelationGraph({
   rootEntityRefs,
-  filter: { maxDepth = Number.POSITIVE_INFINITY, relations, kinds } = {},
+  filter: {
+    maxDepth = Number.POSITIVE_INFINITY,
+    relations,
+    kinds,
+    entityFilter,
+  } = {},
 }: {
   rootEntityRefs: string[];
   filter?: {
     maxDepth?: number;
     relations?: string[];
     kinds?: string[];
+    entityFilter?: (entity: Entity) => boolean;
   };
 }): {
   entities?: { [ref: string]: Entity };
@@ -60,6 +67,11 @@ export function useEntityRelationGraph({
         processedEntityRefs.add(entityRef);
 
         if (entity && entity.relations) {
+          // If the entity is filtered out then no need to check any
+          // of its outgoing relationships to other entities
+          if (entityFilter && !entityFilter(entity)) {
+            continue;
+          }
           for (const rel of entity.relations) {
             if (
               (!relations || relations.includes(rel.type)) &&
@@ -81,12 +93,23 @@ export function useEntityRelationGraph({
 
       ++depth;
     }
-
     requestEntities([...expectedEntities]);
-  }, [entities, rootEntityRefs, maxDepth, relations, kinds, requestEntities]);
+  }, [
+    entities,
+    rootEntityRefs,
+    maxDepth,
+    relations,
+    kinds,
+    entityFilter,
+    requestEntities,
+  ]);
+
+  const filteredEntities = entityFilter
+    ? pickBy(entities, (value, _key) => entityFilter(value))
+    : entities;
 
   return {
-    entities,
+    entities: filteredEntities,
     loading,
     error,
   };

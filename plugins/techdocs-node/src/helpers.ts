@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { resolveSafeChildPath, UrlReader } from '@backstage/backend-common';
+import { UrlReader } from '@backstage/backend-common';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import {
   Entity,
   getEntitySourceLocation,

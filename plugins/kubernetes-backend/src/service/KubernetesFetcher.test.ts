@@ -15,7 +15,6 @@
  */
 
 import { ANNOTATION_KUBERNETES_AUTH_PROVIDER } from '@backstage/plugin-kubernetes-common';
-import { getVoidLogger } from '@backstage/backend-common';
 import { KubernetesClientBasedFetcher } from './KubernetesFetcher';
 import { ObjectToFetch } from '../types/types';
 import {
@@ -28,6 +27,7 @@ import {
 import { setupServer } from 'msw/node';
 import {
   createMockDirectory,
+  mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
 import { Config } from '@kubernetes/client-node';
@@ -115,7 +115,7 @@ describe('KubernetesFetcher', () => {
 
   describe('fetchObjectsForService', () => {
     let sut: KubernetesClientBasedFetcher;
-    const logger = getVoidLogger();
+    const logger = mockServices.logger.mock();
 
     const testErrorResponse = async (
       errorResponse: any,
@@ -1095,7 +1095,7 @@ describe('KubernetesFetcher', () => {
 
     beforeEach(() => {
       sut = new KubernetesClientBasedFetcher({
-        logger: getVoidLogger(),
+        logger: mockServices.logger.mock(),
       });
     });
 

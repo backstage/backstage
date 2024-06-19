@@ -23,7 +23,10 @@ import {
   RemoteConfigSourceOptions,
 } from '@backstage/config-loader';
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootConfig` instead.
+ */
 export interface RootConfigFactoryOptions {
   /**
    * Process arguments to use instead of the default `process.argv()`.
@@ -37,7 +40,10 @@ export interface RootConfigFactoryOptions {
   watch?: boolean;
 }
 
-/** @public */
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootConfig` instead.
+ */
 export const rootConfigServiceFactory = createServiceFactory(
   (options?: RootConfigFactoryOptions) => ({
     service: coreServices.rootConfig,
