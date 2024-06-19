@@ -3,7 +3,6 @@
 '@backstage/backend-dynamic-feature-service': patch
 '@backstage/plugin-techdocs-module-addons-contrib': patch
 '@backstage/plugin-catalog-unprocessed-entities': patch
-'techdocs-cli-embedded-app': patch
 '@backstage/plugin-scaffolder-node-test-utils': patch
 '@backstage/plugin-techdocs-addons-test-utils': patch
 'app-next-example-plugin': patch
@@ -76,7 +75,6 @@
 'example-app-next': patch
 '@backstage/cli-node': patch
 '@backstage/codemods': patch
-'e2e-test': patch
 '@backstage/plugin-auth-node': patch
 '@backstage/plugin-org-react': patch
 '@backstage/plugin-api-docs': patch
