@@ -1,12 +1,12 @@
 {
   "name": "@backstage/core-components",
-  "description": "Core components used by Backstage plugins and apps",
   "version": "0.14.8",
-  "publishConfig": {
-    "access": "public"
-  },
+  "description": "Core components used by Backstage plugins and apps",
   "backstage": {
     "role": "web-library"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "keywords": [
     "backstage"
@@ -117,7 +117,8 @@
     "history": "^5.0.0",
     "msw": "^1.0.0",
     "react": "^18.0.0",
-    "react-dom": "^18.0.0"
+    "react-dom": "^18.0.0",
+    "react-router-dom": "^6.3.0"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
