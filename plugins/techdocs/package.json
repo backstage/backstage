@@ -78,7 +78,6 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/styles": "^4.10.0",
     "@microsoft/fetch-event-source": "^2.0.1",
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "dompurify": "^3.0.0",
     "git-url-parse": "^14.0.0",
     "jss": "~10.10.0",
@@ -97,9 +96,17 @@
     "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0",
     "@types/dompurify": "^3.0.0",
+    "@types/event-source-polyfill": "^1.0.0",
+    "@types/react": "^18.0.0",
     "canvas": "^2.10.2"
   },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
   "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"

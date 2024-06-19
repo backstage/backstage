@@ -70,7 +70,6 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@octokit/rest": "^19.0.3",
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "git-url-parse": "^14.0.0",
     "js-base64": "^3.6.0",
     "lodash": "^4.17.21",
@@ -88,9 +87,16 @@
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^15.0.0",
     "@testing-library/user-event": "^14.0.0",
+    "@types/react": "^18.0.0",
     "msw": "^1.0.0"
   },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
   "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"

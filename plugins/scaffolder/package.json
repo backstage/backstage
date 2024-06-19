@@ -85,7 +85,6 @@
     "@rjsf/material-ui": "5.18.4",
     "@rjsf/utils": "5.18.4",
     "@rjsf/validator-ajv8": "5.18.4",
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "@uiw/react-codemirror": "^4.9.3",
     "classnames": "^2.2.6",
     "git-url-parse": "^14.0.0",
@@ -115,10 +114,17 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/humanize-duration": "^3.18.1",
     "@types/json-schema": "^7.0.9",
+    "@types/react": "^18.0.0",
     "msw": "^1.0.0",
     "swr": "^2.0.0"
   },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
   "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
