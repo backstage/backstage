@@ -77,8 +77,6 @@ import type {
 
 import {
   DiscoveryService,
-  LifecycleService,
-  PluginMetadataService,
   CacheService,
   CacheServiceOptions,
   CacheServiceSetOptions,
@@ -97,6 +95,8 @@ import {
   SearchResponse as _SearchResponse,
   SearchResponseFile as _SearchResponseFile,
   UrlReaderService as _UrlReaderService,
+  LifecycleService,
+  PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 
 export * from './hot';
@@ -125,7 +125,45 @@ export type PluginEndpointDiscovery = DiscoveryService;
  * @public
  * @deprecated Please import from `@backstage/backend-defaults/discovery` instead.
  */
-export const HostDiscovery = _HostDiscovery;
+export class HostDiscovery implements DiscoveryService {
+  /**
+   * Creates a new HostDiscovery discovery instance by reading
+   * from the `backend` config section, specifically the `.baseUrl` for
+   * discovering the external URL, and the `.listen` and `.https` config
+   * for the internal one.
+   *
+   * Can be overridden in config by providing a target and corresponding plugins in `discovery.endpoints`.
+   * eg.
+   * ```yaml
+   * discovery:
+   *  endpoints:
+   *    - target: https://internal.example.com/internal-catalog
+   *      plugins: [catalog]
+   *    - target: https://internal.example.com/secure/api/{{pluginId}}
+   *      plugins: [auth, permission]
+   *    - target:
+   *        internal: https://internal.example.com/search
+   *        external: https://example.com/search
+   *      plugins: [search]
+   * ```
+   *
+   * The basePath defaults to `/api`, meaning the default full internal
+   * path for the `catalog` plugin will be `http://localhost:7007/api/catalog`.
+   */
+  static fromConfig(config: Config, options?: { basePath?: string }) {
+    return new HostDiscovery(_HostDiscovery.fromConfig(config, options));
+  }
+
+  private constructor(private readonly impl: _HostDiscovery) {}
+
+  async getBaseUrl(pluginId: string): Promise<string> {
+    return this.impl.getBaseUrl(pluginId);
+  }
+
+  async getExternalBaseUrl(pluginId: string): Promise<string> {
+    return this.impl.getExternalBaseUrl(pluginId);
+  }
+}
 
 /**
  * SingleHostDiscovery is a basic PluginEndpointDiscovery implementation
@@ -138,13 +176,13 @@ export const HostDiscovery = _HostDiscovery;
  * @public
  * @deprecated Use `HostDiscovery` from `@backstage/backend-defaults/discovery` instead
  */
-export const SingleHostDiscovery = _HostDiscovery;
+export { HostDiscovery as SingleHostDiscovery };
 
 /**
  * @public
  * @deprecated Use `CacheManager` from the `@backstage/backend-defaults` package instead
  */
-export const CacheManager = _CacheManager;
+export class CacheManager extends _CacheManager {}
 
 /**
  * @public
@@ -257,79 +295,79 @@ export const isChildPath = _isChildPath;
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const AzureUrlReader = _AzureUrlReader;
+export class AzureUrlReader extends _AzureUrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const BitbucketCloudUrlReader = _BitbucketCloudUrlReader;
+export class BitbucketCloudUrlReader extends _BitbucketCloudUrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const BitbucketUrlReader = _BitbucketUrlReader;
+export class BitbucketUrlReader extends _BitbucketUrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const BitbucketServerUrlReader = _BitbucketServerUrlReader;
+export class BitbucketServerUrlReader extends _BitbucketServerUrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const GerritUrlReader = _GerritUrlReader;
+export class GerritUrlReader extends _GerritUrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const GithubUrlReader = _GithubUrlReader;
+export class GithubUrlReader extends _GithubUrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const GitlabUrlReader = _GitlabUrlReader;
+export class GitlabUrlReader extends _GitlabUrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const GiteaUrlReader = _GiteaUrlReader;
+export class GiteaUrlReader extends _GiteaUrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const HarnessUrlReader = _HarnessUrlReader;
+export class HarnessUrlReader extends _HarnessUrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const AwsS3UrlReader = _AwsS3UrlReader;
+export class AwsS3UrlReader extends _AwsS3UrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const FetchUrlReader = _FetchUrlReader;
+export class FetchUrlReader extends _FetchUrlReader {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const UrlReaders = _UrlReaders;
+export class UrlReaders extends _UrlReaders {}
 
 /**
  * @public
  * @deprecated Import from `@backstage/backend-defaults/urlReader` instead
  */
-export const ReadUrlResponseFactory = _ReadUrlResponseFactory;
+export class ReadUrlResponseFactory extends _ReadUrlResponseFactory {}
 
 /**
  * @public
