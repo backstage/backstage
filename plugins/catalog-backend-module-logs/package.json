@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "description": "A module that subscribes to catalog releated events and logs them.",
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public",
