@@ -64,10 +64,13 @@
     "react-json-view": "^1.21.3",
     "react-use": "^17.2.4"
   },
-  "peerDependenciesMeta": {
-    "@types/react": {
-      "optional": true
-    }
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/dev-utils": "workspace:^",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
   },
   "peerDependencies": {
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
@@ -75,10 +78,9 @@
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
-  "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@backstage/dev-utils": "workspace:^",
-    "@testing-library/jest-dom": "^6.0.0",
-    "@types/react": "^18.0.0"
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   }
 }

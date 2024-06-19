@@ -56,20 +56,11 @@
     "i18next": "^22.4.15",
     "lodash": "^4.17.21",
     "prop-types": "^15.7.2",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0",
     "zod": "^3.22.4"
-  },
-  "peerDependenciesMeta": {
-    "@types/react": {
-      "optional": true
-    }
-  },
-  "peerDependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -85,6 +76,17 @@
     "react-router-dom-beta": "npm:react-router-dom@6.0.0-beta.0",
     "react-router-dom-stable": "npm:react-router-dom@^6.3.0",
     "react-router-stable": "npm:react-router@^6.3.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "configSchema": "config.d.ts"
 }

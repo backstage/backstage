@@ -41,24 +41,30 @@
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "lodash": "^4.17.21",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "@material-ui/core": "^4.12.4",
+    "@material-ui/icons": "^4.11.3",
+    "lodash": "^4.17.21"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "@testing-library/jest-dom": "^6.0.0",
+    "@testing-library/react": "^15.0.0",
+    "@types/react": "^18.0.0",
+    "react": "^18.0.0",
+    "react-dom": "^18.0.0"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "peerDependenciesMeta": {
     "@types/react": {
       "optional": true
     }
-  },
-  "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@backstage/plugin-app": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
-    "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^16.0.0"
-  },
-  "peerDependencies": {
-    "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
   },
   "configSchema": "config.d.ts"
 }
