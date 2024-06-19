@@ -222,7 +222,7 @@ You should now see logs as the catalog emits events. Example:
 
 ### Custom Error Handling
 
-If you wish to handle catalog errors with logic the following should help you get started.
+If you wish to handle catalog errors with specific logic different from logging the errors the following should help you get started. For example, you may wish to send a notification or create a ticket for someone to investigate.
 
 Create a backend module that subscribes to the catalog error events. The topic is `experimental.catalog.errors`.
 
