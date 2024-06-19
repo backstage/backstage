@@ -88,27 +88,27 @@ export type AuthCallbackOptions = {
 // Warning: (ae-forgotten-export) The symbol "AwsS3UrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const AwsS3UrlReader: typeof AwsS3UrlReader_2;
+export class AwsS3UrlReader extends AwsS3UrlReader_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "AzureUrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const AzureUrlReader: typeof AzureUrlReader_2;
+export class AzureUrlReader extends AzureUrlReader_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "BitbucketCloudUrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const BitbucketCloudUrlReader: typeof BitbucketCloudUrlReader_2;
+export class BitbucketCloudUrlReader extends BitbucketCloudUrlReader_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "BitbucketServerUrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const BitbucketServerUrlReader: typeof BitbucketServerUrlReader_2;
+export class BitbucketServerUrlReader extends BitbucketServerUrlReader_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "BitbucketUrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const BitbucketUrlReader: typeof BitbucketUrlReader_2;
+export class BitbucketUrlReader extends BitbucketUrlReader_2 {}
 
 // @public @deprecated (undocumented)
 export type CacheClient = CacheService;
@@ -122,7 +122,7 @@ export type CacheClientSetOptions = CacheServiceSetOptions;
 // Warning: (ae-forgotten-export) The symbol "CacheManager_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const CacheManager: typeof CacheManager_2;
+export class CacheManager extends CacheManager_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "CacheManagerOptions_2" needs to be exported by the entry point index.d.ts
 //
@@ -242,7 +242,7 @@ export type ErrorHandlerOptions = {
 // Warning: (ae-forgotten-export) The symbol "FetchUrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const FetchUrlReader: typeof FetchUrlReader_2;
+export class FetchUrlReader extends FetchUrlReader_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "FromReadableArrayOptions_2" needs to be exported by the entry point index.d.ts
 //
@@ -252,7 +252,7 @@ export type FromReadableArrayOptions = FromReadableArrayOptions_2;
 // Warning: (ae-forgotten-export) The symbol "GerritUrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const GerritUrlReader: typeof GerritUrlReader_2;
+export class GerritUrlReader extends GerritUrlReader_2 {}
 
 // @public @deprecated
 export function getRootLogger(): winston.Logger;
@@ -339,27 +339,38 @@ export class Git {
 // Warning: (ae-forgotten-export) The symbol "GiteaUrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const GiteaUrlReader: typeof GiteaUrlReader_2;
+export class GiteaUrlReader extends GiteaUrlReader_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "GithubUrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const GithubUrlReader: typeof GithubUrlReader_2;
+export class GithubUrlReader extends GithubUrlReader_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "GitlabUrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const GitlabUrlReader: typeof GitlabUrlReader_2;
+export class GitlabUrlReader extends GitlabUrlReader_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "HarnessUrlReader_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const HarnessUrlReader: typeof HarnessUrlReader_2;
+export class HarnessUrlReader extends HarnessUrlReader_2 {}
 
-// Warning: (ae-forgotten-export) The symbol "HostDiscovery_2" needs to be exported by the entry point index.d.ts
-//
 // @public @deprecated
-export const HostDiscovery: typeof HostDiscovery_2;
+class HostDiscovery implements DiscoveryService {
+  static fromConfig(
+    config: Config,
+    options?: {
+      basePath?: string;
+    },
+  ): HostDiscovery;
+  // (undocumented)
+  getBaseUrl(pluginId: string): Promise<string>;
+  // (undocumented)
+  getExternalBaseUrl(pluginId: string): Promise<string>;
+}
+export { HostDiscovery };
+export { HostDiscovery as SingleHostDiscovery };
 
 // @public @deprecated (undocumented)
 export const isChildPath: typeof isChildPath_2;
@@ -525,7 +536,7 @@ export type ReadUrlResponse = ReadUrlResponse_2;
 // Warning: (ae-forgotten-export) The symbol "ReadUrlResponseFactory_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const ReadUrlResponseFactory: typeof ReadUrlResponseFactory_2;
+export class ReadUrlResponseFactory extends ReadUrlResponseFactory_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "ReadUrlResponseFactoryFromStreamOptions_2" needs to be exported by the entry point index.d.ts
 //
@@ -627,9 +638,6 @@ export type ServiceBuilder = {
 export function setRootLogger(newLogger: winston.Logger): void;
 
 // @public @deprecated
-export const SingleHostDiscovery: typeof HostDiscovery_2;
-
-// @public @deprecated
 export type StaticAuthOptions = {
   username?: string;
   password?: string;
@@ -664,7 +672,7 @@ export type UrlReaderPredicateTuple = UrlReaderPredicateTuple_2;
 // Warning: (ae-forgotten-export) The symbol "UrlReaders_2" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export const UrlReaders: typeof UrlReaders_2;
+export class UrlReaders extends UrlReaders_2 {}
 
 // Warning: (ae-forgotten-export) The symbol "UrlReadersOptions_2" needs to be exported by the entry point index.d.ts
 //
