@@ -208,8 +208,7 @@ export const loggerServiceFactory: () => ServiceFactory<
 export class MiddlewareFactory {
   compression(): RequestHandler;
   cors(): RequestHandler;
-  // Warning: (ae-forgotten-export) The symbol "MiddlewareFactory_2" needs to be exported by the entry point index.d.ts
-  static create(options: MiddlewareFactoryOptions): MiddlewareFactory_2;
+  static create(options: MiddlewareFactoryOptions): MiddlewareFactory;
   error(options?: MiddlewareFactoryErrorOptions): ErrorRequestHandler;
   helmet(): RequestHandler;
   logging(): RequestHandler;
