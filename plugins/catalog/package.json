@@ -97,8 +97,8 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/pluralize": "^0.0.33",
     "@types/react": "^18.0.0",
-    "react": "^18.0.0",
-    "react-dom": "^18.0.0",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0",
     "swr": "^2.2.5"
   },
