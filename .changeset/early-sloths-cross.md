@@ -1,4 +1,5 @@
 ---
+'@backstage/plugin-api-docs-module-protoc-gen-doc': patch
 '@backstage/plugin-techdocs-module-addons-contrib': patch
 '@backstage/plugin-catalog-unprocessed-entities': patch
 '@backstage/plugin-scaffolder-node-test-utils': patch
