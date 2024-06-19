@@ -1,0 +1,18 @@
+diff --git a/lib/interceptors/ClientRequest/NodeClientRequest.js b/lib/interceptors/ClientRequest/NodeClientRequest.js
+index 9bcc5a6adfd3c84541d686c3d0039f5e79dd34f5..f72d47b02a437eaefead4ec1543a0dd70dd1bb6f 100644
+--- a/lib/interceptors/ClientRequest/NodeClientRequest.js
++++ b/lib/interceptors/ClientRequest/NodeClientRequest.js
+@@ -382,6 +382,13 @@ var NodeClientRequest = /** @class */ (function (_super) {
+      */
+     NodeClientRequest.prototype.terminate = function () {
+         var _a;
++        const tempAgent = this.agent;
++        if (tempAgent && typeof tempAgent === 'object' && typeof tempAgent.destroy !== 'function') {
++          console.log(
++            `No agent to destroy, found '${typeof tempAgent}'->'${typeof tempAgent.destroy}':`,
++            tempAgent
++          );
++        }
+         // @ts-ignore
+         (_a = this.agent) === null || _a === void 0 ? void 0 : _a.destroy();
+     };
