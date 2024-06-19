@@ -14,6 +14,7 @@ Options:
 Commands:
   api-reports [options] [paths...]
   type-deps
+  peer-deps [options]
   generate-catalog-info [options]
   knip-reports [options] [paths...]
   package [command]
@@ -130,6 +131,16 @@ Options:
 Usage: backstage-repo-tools package schema openapi init [options]
 
 Options:
+  -h, --help
+```
+
+### `backstage-repo-tools peer-deps`
+
+```
+Usage: backstage-repo-tools peer-deps [options]
+
+Options:
+  --fix
   -h, --help
 ```
 
