@@ -1,5 +1,19 @@
 # @backstage/backend-app-api
 
+## 0.7.8
+
+### Patch Changes
+
+- ed70502: Fixing issue with `MiddlewareFactory` deprecation wrapping
+- Updated dependencies
+  - @backstage/backend-common@0.23.1
+  - @backstage/backend-plugin-api@0.6.20
+  - @backstage/backend-tasks@0.5.25
+  - @backstage/cli-node@0.2.6
+  - @backstage/config-loader@1.8.1
+  - @backstage/plugin-auth-node@0.4.15
+  - @backstage/plugin-permission-node@0.7.31
+
 ## 0.7.7
 
 ### Patch Changes
