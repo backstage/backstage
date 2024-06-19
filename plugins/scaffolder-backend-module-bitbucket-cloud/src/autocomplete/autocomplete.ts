@@ -17,11 +17,15 @@
 import { InputError } from '@backstage/errors';
 import { BitbucketCloudClient } from '@backstage/plugin-bitbucket-cloud-common';
 
-export async function handleAutocompleteRequest(
-  token: string,
-  resource: string,
-  parameters: Record<string, string>,
-): Promise<string[]> {
+export async function handleAutocompleteRequest({
+  resource,
+  token,
+  context,
+}: {
+  resource: string;
+  token: string;
+  context: Record<string, string>;
+}): Promise<{ results: { title: string }[] }> {
   const client = BitbucketCloudClient.fromConfig({
     host: 'bitbucket.org',
     apiBaseUrl: 'https://api.bitbucket.org/2.0',
@@ -37,41 +41,41 @@ export async function handleAutocompleteRequest(
         result.push(...slugs);
       }
 
-      return result;
+      return { results: result.map(title => ({ title })) };
     }
     case 'projects': {
-      if (!parameters.workspace)
-        throw new InputError('Missing workspace query parameter');
+      if (!context.workspace)
+        throw new InputError('Missing workspace context parameter');
 
       const result: string[] = [];
 
       for await (const page of client
-        .listProjectsByWorkspace(parameters.workspace)
+        .listProjectsByWorkspace(context.workspace)
         .iteratePages()) {
         const keys = [...page.values!].map(p => p.key!);
         result.push(...keys);
       }
 
-      return result;
+      return { results: result.map(title => ({ title })) };
     }
     case 'repositories': {
-      if (!parameters.workspace || !parameters.project)
+      if (!context.workspace || !context.project)
         throw new InputError(
-          'Missing workspace and/or project query parameter',
+          'Missing workspace and/or project context parameter',
         );
 
       const result: string[] = [];
 
       for await (const page of client
-        .listRepositoriesByWorkspace(parameters.workspace, {
-          q: `project.key="${parameters.project}"`,
+        .listRepositoriesByWorkspace(context.workspace, {
+          q: `project.key="${context.project}"`,
         })
         .iteratePages()) {
         const slugs = [...page.values!].map(p => p.slug!);
         result.push(...slugs);
       }
 
-      return result;
+      return { results: result.map(title => ({ title })) };
     }
     default:
       throw new InputError(`Invalid resource: ${resource}`);

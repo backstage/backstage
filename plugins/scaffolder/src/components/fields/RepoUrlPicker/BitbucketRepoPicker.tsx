@@ -72,14 +72,19 @@ export const BitbucketRepoPicker = (props: {
   useDebounce(
     () => {
       const updateAvailableWorkspaces = async () => {
-        if (host === 'bitbucket.org' && accessToken) {
-          const result = await scaffolderApi.autocomplete(
-            accessToken,
-            'bitbucketCloud',
-            'workspaces',
-          );
+        if (
+          host === 'bitbucket.org' &&
+          accessToken &&
+          scaffolderApi.autocomplete
+        ) {
+          const { results } = await scaffolderApi.autocomplete({
+            token: accessToken,
+            resource: 'workspaces',
+            context: {},
+            provider: 'bitbucket-cloud',
+          });
 
-          setAvailableWorkspaces(result);
+          setAvailableWorkspaces(results.map(r => r.title));
         } else {
           setAvailableWorkspaces([]);
         }
@@ -95,15 +100,20 @@ export const BitbucketRepoPicker = (props: {
   useDebounce(
     () => {
       const updateAvailableProjects = async () => {
-        if (host === 'bitbucket.org' && accessToken && workspace) {
-          const result = await scaffolderApi.autocomplete(
-            accessToken,
-            'bitbucketCloud',
-            'projects',
-            { workspace },
-          );
+        if (
+          host === 'bitbucket.org' &&
+          accessToken &&
+          workspace &&
+          scaffolderApi.autocomplete
+        ) {
+          const { results } = await scaffolderApi.autocomplete({
+            token: accessToken,
+            resource: 'projects',
+            context: { workspace },
+            provider: 'bitbucket-cloud',
+          });
 
-          setAvailableProjects(result);
+          setAvailableProjects(results.map(r => r.title));
         } else {
           setAvailableProjects([]);
         }
@@ -119,15 +129,21 @@ export const BitbucketRepoPicker = (props: {
   useDebounce(
     () => {
       const updateAvailableRepositories = async () => {
-        if (host === 'bitbucket.org' && accessToken && workspace && project) {
-          const availableRepos = await scaffolderApi.autocomplete(
-            accessToken,
-            'bitbucketCloud',
-            'repositories',
-            { workspace, project },
-          );
+        if (
+          host === 'bitbucket.org' &&
+          accessToken &&
+          workspace &&
+          project &&
+          scaffolderApi.autocomplete
+        ) {
+          const { results } = await scaffolderApi.autocomplete({
+            token: accessToken,
+            resource: 'repositories',
+            context: { workspace, project },
+            provider: 'bitbucket-cloud',
+          });
 
-          onChange({ availableRepos });
+          onChange({ availableRepos: results.map(r => r.title) });
         } else {
           onChange({ availableRepos: [] });
         }

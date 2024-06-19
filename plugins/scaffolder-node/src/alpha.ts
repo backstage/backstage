@@ -81,21 +81,31 @@ export const scaffolderTemplatingExtensionPoint =
   });
 
 /**
+ * Autocomplete handler for the scaffolder.
+ * @alpha
+ */
+export type AutocompleteHandler = ({
+  resource,
+  token,
+  context,
+}: {
+  resource: string;
+  token: string;
+  context: Record<string, string>;
+}) => Promise<{ results: { title: string }[] }>;
+
+/**
  * Extension point for adding autocomplete handler providers
  * @alpha
  */
 export interface ScaffolderAutocompleteExtensionPoint {
-  addAutocompleteProvider(
-    provider: ({
-      type,
-      token,
-      query,
-    }: {
-      type: string;
-      token: string;
-      query: Record<string, string>;
-    }) => Promise<{ results: { title: string }[] }>,
-  ): void;
+  addAutocompleteProvider({
+    id,
+    handler,
+  }: {
+    id: string;
+    handler: AutocompleteHandler;
+  }): void;
 }
 
 /**

@@ -15,10 +15,10 @@
  */
 
 import { BitbucketCloudClient } from '@backstage/plugin-bitbucket-cloud-common';
-import { handleBitbucketCloudRequest } from './autocomplete';
+import { handleAutocompleteRequest } from './autocomplete';
 import { InputError } from '@backstage/errors';
 
-describe('handleBitbucketCloudRequest', () => {
+describe('handleAutocompleteRequest', () => {
   const client: Partial<BitbucketCloudClient> = {
     listWorkspaces: jest.fn().mockReturnValue({
       iteratePages: jest
@@ -43,7 +43,7 @@ describe('handleBitbucketCloudRequest', () => {
 
   it('should pass the token to the client', async () => {
     const accessToken = 'foo';
-    await handleBitbucketCloudRequest(accessToken, 'workspaces', {});
+    await handleAutocompleteRequest(accessToken, 'workspaces', {});
 
     expect(fromConfig).toHaveBeenCalledWith(
       expect.objectContaining({ accessToken }),
@@ -51,13 +51,13 @@ describe('handleBitbucketCloudRequest', () => {
   });
 
   it('should return workspaces', async () => {
-    const result = await handleBitbucketCloudRequest('foo', 'workspaces', {});
+    const result = await handleAutocompleteRequest('foo', 'workspaces', {});
 
     expect(result).toEqual(['workspace1']);
   });
 
   it('should return projects', async () => {
-    const result = await handleBitbucketCloudRequest('foo', 'projects', {
+    const result = await handleAutocompleteRequest('foo', 'projects', {
       workspace: 'workspace1',
     });
 
@@ -65,7 +65,7 @@ describe('handleBitbucketCloudRequest', () => {
   });
 
   it('should return repositories', async () => {
-    const result = await handleBitbucketCloudRequest('foo', 'repositories', {
+    const result = await handleAutocompleteRequest('foo', 'repositories', {
       workspace: 'workspace1',
       project: 'project1',
     });
@@ -75,13 +75,13 @@ describe('handleBitbucketCloudRequest', () => {
 
   it('should throw an error when passing an invalid resource', async () => {
     await expect(
-      handleBitbucketCloudRequest('token', 'invalid', {}),
+      handleAutocompleteRequest('token', 'invalid', {}),
     ).rejects.toThrow(InputError);
   });
 
   it('should throw an error when there are missing parameters', async () => {
     await expect(
-      handleBitbucketCloudRequest('token', 'projects', {}),
+      handleAutocompleteRequest('token', 'projects', {}),
     ).rejects.toThrow(InputError);
   });
 });

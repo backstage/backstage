@@ -230,10 +230,10 @@ export interface ScaffolderApi {
 
   dryRun?(options: ScaffolderDryRunOptions): Promise<ScaffolderDryRunResponse>;
 
-  autocomplete(
-    token: string,
-    provider: string,
-    resource: string,
-    params?: Record<string, string>,
-  ): Promise<string[]>;
+  autocomplete?(options: {
+    token: string;
+    provider: string;
+    resource: string;
+    context?: Record<string, string>;
+  }): Promise<{ results: { title: string }[] }>;
 }
