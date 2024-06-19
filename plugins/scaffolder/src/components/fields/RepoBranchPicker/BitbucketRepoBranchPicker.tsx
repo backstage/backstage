@@ -24,6 +24,13 @@ import { useApi } from '@backstage/core-plugin-api';
 import { RepoBranchPickerState } from './types';
 import FormHelperText from '@material-ui/core/FormHelperText';
 
+/**
+ * The underlying component that is rendered in the form for the `BitbucketRepoBranchPicker`
+ * field extension.
+ *
+ * @public
+ *
+ */
 export const BitbucketRepoBranchPicker = ({
   onChange,
   state,
