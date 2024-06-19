@@ -1,5 +1,23 @@
 # @backstage/backend-app-api
 
+## 0.7.7
+
+### Patch Changes
+
+- d7cce61: Fixing exporting of classes properly from new packages
+- Updated dependencies
+  - @backstage/backend-common@0.23.1
+  - @backstage/backend-tasks@0.5.25
+  - @backstage/plugin-auth-node@0.4.15
+  - @backstage/plugin-permission-node@0.7.31
+  - @backstage/backend-plugin-api@0.6.20
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.6
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.7.6
 
 ### Patch Changes

@@ -1,5 +1,15 @@
 # @backstage/plugin-permission-backend-module-allow-all-policy
 
+## 0.1.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.15
+  - @backstage/plugin-permission-node@0.7.31
+  - @backstage/backend-plugin-api@0.6.20
+  - @backstage/plugin-permission-common@0.7.14
+
 ## 0.1.16
 
 ### Patch Changes

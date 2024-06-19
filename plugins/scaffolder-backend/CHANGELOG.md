@@ -1,5 +1,35 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.1
+  - @backstage/backend-tasks@0.5.25
+  - @backstage/plugin-auth-node@0.4.15
+  - @backstage/plugin-permission-node@0.7.31
+  - @backstage/plugin-scaffolder-backend-module-github@0.3.1
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.2
+  - @backstage/plugin-scaffolder-node@0.4.6
+  - @backstage/backend-plugin-api@0.6.20
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.12.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.18
+  - @backstage/plugin-catalog-node@1.12.2
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.12
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.10
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.10
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.10
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.12
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.10
+  - @backstage/plugin-scaffolder-common@1.5.3
+
 ## 1.22.9
 
 ### Patch Changes

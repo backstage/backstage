@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-backend-module-gcp
 
+## 0.1.21
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.1
+  - @backstage/backend-tasks@0.5.25
+  - @backstage/backend-plugin-api@0.6.20
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-node@1.12.2
+  - @backstage/plugin-kubernetes-common@0.8.0
+
 ## 0.1.20
 
 ### Patch Changes
