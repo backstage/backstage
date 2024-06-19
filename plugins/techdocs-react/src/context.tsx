@@ -62,6 +62,8 @@ export type TechDocsReaderPageValue = {
   metadata: AsyncState<TechDocsMetadata>;
   entityRef: CompoundEntityRef;
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
+  shadowRoot?: ShadowRoot;
+  setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
   shadowRootVersionHash?: string;
   setShadowRootVersionHash: Dispatch<SetStateAction<string | undefined>>;
   title: string;
@@ -79,6 +81,7 @@ const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   subtitle: '',
   setTitle: () => {},
   setSubtitle: () => {},
+  setShadowRoot: () => {},
   setShadowRootVersionHash: () => {},
   metadata: { loading: true },
   entityMetadata: { loading: true },
@@ -131,18 +134,21 @@ export const TechDocsReaderPageProvider = memo(
     const [subtitle, setSubtitle] = useState(
       defaultTechDocsReaderPageValue.subtitle,
     );
-    const [shadowRootVersionHash, setShadowRootVersionHash] = useState<
-      string | undefined
-    >(undefined);
+    const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
+      defaultTechDocsReaderPageValue.shadowRoot,
+    );
+    const [, setShadowRootVersionHash] = useState<string | undefined>(
+      undefined,
+    );
 
     useEffect(() => {
-      if (shadowRootVersionHash && !metadata.value && !metadata.loading) {
+      if (shadowRoot && !metadata.value && !metadata.loading) {
         metadata.retry();
       }
     }, [
       metadata.value,
       metadata.loading,
-      shadowRootVersionHash,
+      shadowRoot,
       metadata.retry,
       metadata,
     ]);
@@ -151,7 +157,8 @@ export const TechDocsReaderPageProvider = memo(
       metadata,
       entityRef: toLowercaseEntityRefMaybe(entityRef, config),
       entityMetadata,
-      shadowRootVersionHash,
+      shadowRoot,
+      setShadowRoot,
       setShadowRootVersionHash,
       title,
       setTitle,

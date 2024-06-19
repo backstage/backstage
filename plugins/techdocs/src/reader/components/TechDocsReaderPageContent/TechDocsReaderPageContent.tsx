@@ -81,6 +81,7 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
     const {
       entityMetadata: { value: entityMetadata, loading: entityMetadataLoading },
       entityRef,
+      setShadowRoot,
       setShadowRootVersionHash,
     } = useTechDocsReaderPage();
     const dom = useTechDocsReaderDom(entityRef);
@@ -106,12 +107,13 @@ export const TechDocsReaderPageContent = withTechDocsReaderProvider(
         const newShadowRootVersionHash = createHash('sha256')
           .update(newShadowRoot.innerHTML)
           .digest('hex');
+        setShadowRoot(newShadowRoot);
         setShadowRootVersionHash(newShadowRootVersionHash);
         if (onReady instanceof Function) {
           onReady();
         }
       },
-      [setShadowRootVersionHash, onReady],
+      [setShadowRoot, setShadowRootVersionHash, onReady],
     );
 
     // No entity metadata = 404. Don't render content at all.
