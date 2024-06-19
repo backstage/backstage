@@ -78,6 +78,6 @@ describe('<ErrorBoundary/>', () => {
       ),
       expect.stringMatching(/^ErrorBoundary/),
     ]);
-    expect(error.length).toEqual(5);
+    expect(error.length).toEqual(4);
   });
 });
