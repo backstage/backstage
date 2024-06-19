@@ -35,15 +35,19 @@
     "start": "backstage-cli package start",
     "test": "backstage-cli package test"
   },
-  "dependencies": {
-    "@types/react": "^16.13.1 || ^17.0.0"
-  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^16.0.0"
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "peerDependencies": {
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"

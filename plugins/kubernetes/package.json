@@ -70,7 +70,6 @@
     "@kubernetes-models/base": "^4.0.1",
     "@kubernetes/client-node": "0.20.0",
     "@material-ui/core": "^4.12.2",
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "cronstrue": "^2.2.0",
     "js-yaml": "^4.0.0",
     "kubernetes-models": "^4.1.0",
@@ -79,6 +78,11 @@
     "xterm": "^5.2.1",
     "xterm-addon-attach": "^0.9.0",
     "xterm-addon-fit": "^0.8.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -91,6 +95,8 @@
   "peerDependencies": {
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
-    "react-router-dom": "6.0.0-beta.0 || ^6.3.0"
+    "react-router-dom": "6.0.0-beta.0 || ^6.3.0",
+    "@testing-library/react": "^16.0.0",
+    "@types/react": "^18.0.0"
   }
 }

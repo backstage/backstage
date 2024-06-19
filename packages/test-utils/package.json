@@ -58,7 +58,6 @@
     "@backstage/types": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "cross-fetch": "^4.0.0",
     "i18next": "^22.4.15",
     "zen-observable": "^0.10.0"
@@ -66,10 +65,17 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
+    "@types/react": "^18.0.0",
     "msw": "^1.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "peerDependencies": {
     "@testing-library/react": "^16.0.0",
+    "@types/react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.13.1 || ^17.0.0 || ^18.0.0",
     "react-router-dom": "6.0.0-beta.0 || ^6.3.0"

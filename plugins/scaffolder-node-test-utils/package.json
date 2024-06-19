@@ -46,7 +46,6 @@
     "@backstage/types": "workspace:^"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^",
-    "@types/react": "*"
+    "@backstage/cli": "workspace:^"
   }
 }

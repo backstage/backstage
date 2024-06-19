@@ -44,6 +44,11 @@
     "lodash": "^4.17.21",
     "zod": "^3.22.4"
   },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-app": "workspace:^",
