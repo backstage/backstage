@@ -1,6 +1,3 @@
-import { mockServices } from '@backstage/backend-test-utils';
-import { DefaultRootHealthService } from './rootHealthServiceFactory';
-
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -16,6 +13,10 @@ import { DefaultRootHealthService } from './rootHealthServiceFactory';
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import { mockServices } from '@backstage/backend-test-utils';
+import { DefaultRootHealthService } from './rootHealthServiceFactory';
+
 describe('DefaultRootHealthService', () => {
   describe('readiness', () => {
     it(`should return a 500 response if the server hasn't started yet`, async () => {
@@ -32,11 +33,11 @@ describe('DefaultRootHealthService', () => {
     });
 
     it('should return 200 if the server has started', async () => {
-      const lifecycle = mockServices.rootLifecycle.mock();
       let mockServerStartedFn = () => {};
-      lifecycle.addStartupHook.mockImplementation(
-        fn => (mockServerStartedFn = fn),
-      );
+
+      const lifecycle = mockServices.rootLifecycle.mock({
+        addStartupHook: jest.fn(fn => (mockServerStartedFn = fn)),
+      });
 
       const service = new DefaultRootHealthService({
         lifecycle,
@@ -51,18 +52,16 @@ describe('DefaultRootHealthService', () => {
     });
 
     it(`should return a 500 response if the server has stopped`, async () => {
-      const lifecycle = mockServices.rootLifecycle.mock();
       let mockServerStartedFn = () => {};
       let mockServerStoppedFn = () => {};
-      lifecycle.addStartupHook.mockImplementation(
-        fn => (mockServerStartedFn = fn),
-      );
-      lifecycle.addShutdownHook.mockImplementation(
-        fn => (mockServerStoppedFn = fn),
-      );
+
+      const lifecycle = mockServices.rootLifecycle.mock({
+        addStartupHook: jest.fn(fn => (mockServerStartedFn = fn)),
+        addShutdownHook: jest.fn(fn => (mockServerStoppedFn = fn)),
+      });
 
       const service = new DefaultRootHealthService({
-        lifecycle: mockServices.rootLifecycle.mock(),
+        lifecycle,
       });
 
       mockServerStartedFn();
