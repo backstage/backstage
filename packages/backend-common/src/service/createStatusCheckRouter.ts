@@ -51,6 +51,6 @@ export async function createStatusCheckRouter(options: {
 
   router.use(path, await statusCheckHandler({ statusCheck }));
   router.use(errorHandler());
-
+   console.log(router);
   return router;
 }
