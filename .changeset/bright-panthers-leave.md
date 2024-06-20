@@ -4,4 +4,4 @@
 '@backstage/backend-app-api': patch
 ---
 
-Added a new health service which adds new endpoints for health checks.
+Added a new Root Health Service which adds new endpoints for health checks.
