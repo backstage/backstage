@@ -115,7 +115,18 @@ export const CatalogEntityPage: () => JSX.Element = catalogPlugin.provide(
   }),
 );
 
-/** @public */
+/**
+ * An example About card to show at the top of entity pages.
+ *
+ * @public
+ * @remarks
+ *
+ * This card collects some high level information about the entity, but is just
+ * an example component. Many organizations will want to replace it with a
+ * custom card that is more tailored to their specific needs. The card itself is
+ * not extremely customizable; feel free to make a copy of it as a starting
+ * point if you like.
+ */
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element =
   catalogPlugin.provide(
     createComponentExtension({
