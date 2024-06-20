@@ -9,11 +9,10 @@ The Root Health service provides some health check endpoints for the backend. By
 
 ## Configuring the service
 
-The following example is how you can override the health service implementation.
+The following example shows how you can override the root health service implementation.
 
 ```ts
 import { RootHealthService, coreServices } from '@backstage/backend-plugin-api';
-import { WinstonLogger } from '@backstage/backend-app-api';
 
 const backend = createBackend();
 
