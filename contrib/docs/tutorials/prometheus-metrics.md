@@ -64,6 +64,8 @@ This is a small tutorial that goes over how to setup your Backstage instance to 
 
 5. Now we will extend the router configuration with the `metricsHandler`:
 
+If using the old backend system:
+
    ```diff
    +import { metricsHandler } from './metrics';
 
@@ -76,8 +78,29 @@ This is a small tutorial that goes over how to setup your Backstage instance to 
        .addRouter('/api', apiRouter);
    ```
 
-6. You now have everything setup, from the `\packages\backend` folder run `yarn start` this will start up the backend
-7. Now in a browser load up `http://localhost:7007/metrics`, if everything went smoothly you should see metrics in your browser something like this:
+If using the new backend system:
+
+   ```diff
+   +import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
+   +import { metricsHandler } from './metrics';
+
+   ...
+
+   const backend = createBackend();
+
+   +backend.add(
+   +  rootHttpRouterServiceFactory({
+   +    configure(context) {
+   +      const { app, routes } = context;
+   +      app.use('/metrics', metricsHandler());
+   +      app.use(routes);
+   +    },
+   +  }),
+   +);
+   ```
+
+7. You now have everything setup, from the `\packages\backend` folder run `yarn start` this will start up the backend
+8. Now in a browser load up `http://localhost:7007/metrics`, if everything went smoothly you should see metrics in your browser something like this:
 
    ![Prometheus Metrics Example Output](prometheus-metrics-output.png)
 
