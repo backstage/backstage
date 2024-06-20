@@ -51,6 +51,13 @@ export const urlReadersFactoriesExtensionPoint =
 //     id: 'factories',
 //   });
 
+const [readSite, writeSide] = createExtensionPointFactory<ReaderFactory[]>({
+  extensionPoint: urlReadersFactoriesExtensionPoint,
+  async factory() {
+    const factories = new Array<ReaderFactory>();
+  },
+});
+
 // @backstage/backend-service-url-reader
 // @backstage/backend-defaults/url-reader
 export const urlReaderServiceFactory = createServiceFactory({
@@ -58,10 +65,24 @@ export const urlReaderServiceFactory = createServiceFactory({
   register(reg) {
     const factories = new Array<ReaderFactory>();
 
-    reg.registerExtensionPoint(urlReadersFactoriesExtensionPoint, {
+    reg.registerExtensionPoint(urlReadersFactoriesExtensionPoint, () => ({
       addReaderFactory(factory: ReaderFactory) {
         factories.push(factory);
       },
+    }));
+
+    const epInstanceRef = reg.registerExtensionPoint(urlReadersFactoriesExtensionPoint, () => {
+      const factories = new Array<ReaderFactory>();
+      return {
+        interface: {
+          addReaderFactory(factory: ReaderFactory) {
+            factories.push(factory);
+          },
+        },
+        result: () => {
+          factories;
+        },
+      };
     });
 
     reg.registerServiceFactory({
@@ -70,11 +91,11 @@ export const urlReaderServiceFactory = createServiceFactory({
         config: coreServices.rootConfig,
         logger: coreServices.logger,
       },
-      async factory({ config, logger, plugin }) {
+      async factory({ config, logger, plugin }, ctx, instance) {
         return UrlReaders.default({
           config,
           logger,
-          factories,
+          factories: p(instance),
         });
       },
     });
@@ -162,3 +183,56 @@ backend.add(
     },
   }),
 );
+
+
+
+// vincenzo last idea
+
+export const urlReaderFactoryServiceRef = createServiceRef<
+ReaderFactory
+>({ id: 'urlreader.factories', optional: true, singleton: false });
+
+
+// official implementation
+const vinzscamUrlReader = createServiceFactory({
+  service: coreServices.urlReader,
+  deps: {
+    config: coreServices.rootConfig,
+    logger: coreServices.logger,
+    customFactories: urlReaderFactoryServiceRef
+  },
+  async factory({ config, logger, customFactories }) {
+    return UrlReaders.default({
+      config,
+      logger,
+      factories: [customFactories],
+    });
+  },
+});
+
+// users who want to add a custom reader
+backend.add(createServiceFactory({
+  service: urlReaderFactoryServiceRef,
+  deps: {},
+  async factory(theInterface) {
+    return new ReaderFactory(...);
+  }
+}));
+
+
+
+
+
+
+backend.add(
+  createServiceModule({
+    extensionPoint: urlReaderServiceReadersExtensionPoint, // ServiceEp<UrlReaderImplWhatever, true, false>
+    deps: {
+      logger: coreServices.logger,
+    },
+    async factory({ logger }) {
+      return new CustomReader(logger);
+    }
+  })
+);
+
