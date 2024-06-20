@@ -359,7 +359,7 @@ export const detailsSubRouteRef = createSubRouteRef({
 
 Using subroutes in a page extension is as simple as this:
 
-```tsx title="plugins/catalog/src/components/IndexPage.ts"
+```tsx title="plugins/catalog/src/components/IndexPage.tsx"
 import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
@@ -402,7 +402,7 @@ export const IndexPage = () => {
 
 This is how you can get the parameters of a sub route URL:
 
-```tsx title="plugins/catalog/src/components/DetailsPage.ts"
+```tsx title="plugins/catalog/src/components/DetailsPage.tsx"
 import React from 'react';
 import { useParams } from 'react-router-dom';
 
@@ -426,7 +426,7 @@ export const DetailsPage = () => {
 
 Finally, see how a plugin can provide subroutes:
 
-```tsx title="plugins/catalog/src/plugin.ts"
+```tsx title="plugins/catalog/src/plugin.tsx"
 import React from 'react';
 import {
   createPlugin,
