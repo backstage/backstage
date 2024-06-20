@@ -107,7 +107,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private userTransformer: UserTransformer;
   private groupEntitiesTransformer: GroupEntitiesTransformer;
   private groupNameTransformer: GroupNameTransformer;
-  private readonly gitLabClient: GitLabClient;
+  public readonly gitLabClient: GitLabClient;
 
   static fromConfig(
     config: Config,
@@ -356,13 +356,14 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
     let groups;
     let users;
 
-    // Doesn't matter if we are on SaaS or not, we can either get the users from the defined group or from the root group.
+    // Self-hosted: Fetch the users either from the defined group (restrictUsersToGroup) or fetch all users from the GitLab instance
+    // SaaS: Fetch the users from the defined group (restrictUsersToGroup) or fetch all users from the root group.
     if (this.gitLabClient.isSelfManaged() && this.config.restrictUsersToGroup) {
       groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
         .items;
       users = paginated<GitLabUser>(
         options =>
-          this.gitLabClient.listGroupMembers(this.config.group, options),
+          this.gitLabClient.listGroupMembers(this.config.group, options), // calls /groups/<groupId>/members
         {
           page: 1,
           per_page: 100,
@@ -381,17 +382,18 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
         },
       );
       users = paginated<GitLabUser>(
-        options => this.gitLabClient.listUsers(options),
+        options => this.gitLabClient.listUsers(options), // calls /users?
         { page: 1, per_page: 100, active: true },
       );
     }
-    // For SaaS, the only difference is the root group
+    // SaaS: Fetch the users from the defined group (restrictUsersToGroup) or fetch all users from the root group.
     else {
       groups = (await this.gitLabClient.listDescendantGroups(this.config.group))
         .items;
+      const rootGroupSplit = this.config.group.split('/');
       const rootGroup = this.config.restrictUsersToGroup
-        ? this.config.group
-        : this.config.group.split('/')[0];
+        ? rootGroupSplit[rootGroupSplit.length - 1]
+        : rootGroupSplit[0];
       users = paginated<GitLabUser>(
         options => this.gitLabClient.listSaaSUsers(rootGroup, options),
         {
