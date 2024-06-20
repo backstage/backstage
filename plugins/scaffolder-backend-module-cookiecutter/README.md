@@ -23,7 +23,6 @@ const actions = [
   createFetchCookiecutterAction({
     integrations,
     reader: env.reader,
-    containerRunner,
   }),
   ...createBuiltInActions({
     ...
