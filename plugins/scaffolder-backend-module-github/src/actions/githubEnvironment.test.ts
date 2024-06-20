@@ -121,6 +121,7 @@ describe('github:environment:create', () => {
       },
     });
   });
+
   it('should work specify deploymentBranchPolicy custom', async () => {
     await action.handler({
       ...mockContext,
@@ -153,6 +154,7 @@ describe('github:environment:create', () => {
       repo: 'repository',
       environment_name: 'envname',
       name: 'main',
+      type: 'branch',
     });
     expect(
       mockOctokit.rest.repos.createDeploymentBranchPolicy,
@@ -161,6 +163,52 @@ describe('github:environment:create', () => {
       repo: 'repository',
       environment_name: 'envname',
       name: '*.*.*',
+      type: 'branch',
+    });
+  });
+
+  it('should work specify deploymentTagPolicy custom', async () => {
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        deploymentBranchPolicy: {
+          protected_branches: false,
+          custom_branch_policies: true,
+        },
+        customTagPolicyNames: ['main', '*.*.*'],
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createOrUpdateEnvironment,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      deployment_branch_policy: {
+        protected_branches: false,
+        custom_branch_policies: true,
+      },
+    });
+
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      name: 'main',
+      type: 'tag',
+    });
+    expect(
+      mockOctokit.rest.repos.createDeploymentBranchPolicy,
+    ).toHaveBeenCalledWith({
+      owner: 'owner',
+      repo: 'repository',
+      environment_name: 'envname',
+      name: '*.*.*',
+      type: 'tag',
     });
   });
 

@@ -171,6 +171,7 @@ describe('github:environment:create examples', () => {
       repo: 'repository',
       environment_name: 'envname',
       name: 'main',
+      type: 'branch',
     });
 
     expect(
@@ -180,6 +181,7 @@ describe('github:environment:create examples', () => {
       repo: 'repository',
       environment_name: 'envname',
       name: '*.*.*',
+      type: 'branch',
     });
 
     expect(
