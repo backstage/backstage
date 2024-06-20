@@ -347,7 +347,7 @@ export namespace mockServices {
 
   export namespace rootHealth {
     export const factory = rootHealthServiceFactory;
-    export const mock = simpleMock(coreServices.health, () => ({
+    export const mock = simpleMock(coreServices.rootHealth, () => ({
       getLiveness: jest.fn(),
       getReadiness: jest.fn(),
     }));

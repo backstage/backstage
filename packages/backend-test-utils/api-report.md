@@ -21,7 +21,6 @@ import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { EventsService } from '@backstage/plugin-events-node';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
-import { HealthService } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { HttpRouterFactoryOptions } from '@backstage/backend-defaults/httpRouter';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
@@ -33,6 +32,7 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
+import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterFactoryOptions } from '@backstage/backend-defaults/rootHttpRouter';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
@@ -200,15 +200,6 @@ export namespace mockServices {
         partialImpl?: Partial<EventsService> | undefined,
       ) => ServiceMock<EventsService>;
   }
-  // (undocumented)
-  export namespace health {
-    const // (undocumented)
-      factory: () => ServiceFactory<HealthService, 'root'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<HealthService> | undefined,
-      ) => ServiceMock<HealthService>;
-  }
   export function httpAuth(options?: {
     pluginId?: string;
     defaultCredentials?: BackstageCredentials;
@@ -288,6 +279,15 @@ export namespace mockServices {
       factory: (
         options?: Options | undefined,
       ) => ServiceFactory<RootConfigService, 'root'>;
+  }
+  // (undocumented)
+  export namespace rootHealth {
+    const // (undocumented)
+      factory: () => ServiceFactory<RootHealthService, 'root'>;
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RootHealthService> | undefined,
+      ) => ServiceMock<RootHealthService>;
   }
   // (undocumented)
   export namespace rootHttpRouter {

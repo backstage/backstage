@@ -77,7 +77,7 @@ export const rootHttpRouterServiceFactory = createServiceFactory(
       config: coreServices.rootConfig,
       rootLogger: coreServices.rootLogger,
       lifecycle: coreServices.rootLifecycle,
-      health: coreServices.health,
+      health: coreServices.rootHealth,
     },
     async factory({ config, rootLogger, lifecycle, health }) {
       const { indexPath, configure = defaultConfigure } = options ?? {};

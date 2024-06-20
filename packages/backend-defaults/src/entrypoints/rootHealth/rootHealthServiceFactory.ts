@@ -54,7 +54,7 @@ export class DefaultRootHealthService implements RootHealthService {
  * @public
  */
 export const rootHealthServiceFactory = createServiceFactory({
-  service: coreServices.health,
+  service: coreServices.rootHealth,
   deps: {
     lifecycle: coreServices.rootLifecycle,
   },
