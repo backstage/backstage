@@ -505,11 +505,11 @@ export interface RootConfigService extends Config {}
 export interface RootHealthService {
   getLiveness(): Promise<{
     status: number;
-    payload?: any;
+    payload?: JsonValue;
   }>;
   getReadiness(): Promise<{
     status: number;
-    payload?: any;
+    payload?: JsonValue;
   }>;
 }
 

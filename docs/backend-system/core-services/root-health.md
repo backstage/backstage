@@ -17,12 +17,12 @@ import { RootHealthService, coreServices } from '@backstage/backend-plugin-api';
 const backend = createBackend();
 
 class MyRootHealthService implements RootHealthService {
-  async getLiveness(): Promise<{ status: number; payload?: any }> {
+  async getLiveness() {
     // provide your own implementation
     return { status: 200, payload: { status: 'ok' } };
   }
 
-  async getReadiness(): Promise<{ status: number; payload?: any }> {
+  async getReadiness() {
     // provide your own implementation
     return { status: 200, payload: { status: 'ok' } };
   }

@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
+
 /**
  * @public
  */
@@ -21,9 +23,9 @@ export interface RootHealthService {
   /**
    * Get the liveness status of the backend.
    */
-  getLiveness(): Promise<{ status: number; payload?: any }>;
+  getLiveness(): Promise<{ status: number; payload?: JsonValue }>;
   /**
    * Get the readiness status of the backend.
    */
-  getReadiness(): Promise<{ status: number; payload?: any }>;
+  getReadiness(): Promise<{ status: number; payload?: JsonValue }>;
 }
