@@ -139,7 +139,7 @@ export const TechDocsReaderPageProvider = memo(
     const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
       defaultTechDocsReaderPageValue.shadowRoot,
     );
-    const [shadowRootVersion, { inc }] = useCounter(0);
+    const [shadowRootVersion, { inc: incShadowRootVersion }] = useCounter(0);
 
     useEffect(() => {
       if (shadowRoot && !metadata.value && !metadata.loading) {
@@ -160,7 +160,7 @@ export const TechDocsReaderPageProvider = memo(
       shadowRoot,
       setShadowRoot,
       shadowRootVersion,
-      incShadowRootVersion: inc,
+      incShadowRootVersion,
       title,
       setTitle,
       subtitle,
