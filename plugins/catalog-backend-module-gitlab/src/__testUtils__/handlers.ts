@@ -19,6 +19,7 @@ import {
   all_groups_response,
   all_projects_response,
   all_saas_users_response,
+  all_self_hosted_group1_members,
   subgroup_saas_users_response,
   all_users_response,
   apiBaseUrl,
@@ -63,6 +64,9 @@ const httpHandlers = [
 
   rest.get(`${apiBaseUrl}/groups/42`, (_, res, ctx) => {
     return res(ctx.status(500), ctx.json({ error: 'Internal Server Error' }));
+  }),
+  rest.get(`${apiBaseUrl}/groups/group1/members/all`, (_req, res, ctx) => {
+    return res(ctx.json(all_self_hosted_group1_members));
   }),
 
   rest.get(`${apiBaseUrlSaas}/groups/group1/members/all`, (_req, res, ctx) => {

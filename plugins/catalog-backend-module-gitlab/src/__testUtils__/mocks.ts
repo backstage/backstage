@@ -596,6 +596,127 @@ export const config_org_double_integration: MockObject = {
   },
 };
 
+export const config_org_group_saas = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'gitlab.com',
+        apiBaseUrl: 'https://gitlab.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'gitlab.com',
+          group: 'group1',
+          orgEnabled: true,
+          skipForkedRepos: true,
+        },
+      },
+    },
+  },
+};
+
+export const config_org_group_restrictUsers_false_saas = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'gitlab.com',
+        apiBaseUrl: 'https://gitlab.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'gitlab.com',
+          group: 'group1',
+          orgEnabled: true,
+          skipForkedRepos: true,
+        },
+      },
+    },
+  },
+};
+
+export const config_org_group_restrictUsers_true_saas = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'gitlab.com',
+        apiBaseUrl: 'https://gitlab.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'gitlab.com',
+          group: 'group1/subgroup1',
+          restrictUsersToGroup: true,
+          orgEnabled: true,
+          skipForkedRepos: true,
+        },
+      },
+    },
+  },
+};
+
+export const config_org_group_selfHosted = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          orgEnabled: true,
+          skipForkedRepos: true,
+        },
+      },
+    },
+  },
+};
+
+export const config_org_group_restrictUsers_true_selfHosted = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          group: 'group1',
+          orgEnabled: true,
+          skipForkedRepos: true,
+          restrictUsersToGroup: true,
+        },
+      },
+    },
+  },
+};
 /**
  * GitLab API responses
  */
@@ -1969,7 +2090,7 @@ export const expected_subgroup_org_scan_entities_saas: MockObject[] = [
 ];
 
 // Simulate return of all users but only with membership of the descendants of config.group
-export const expected_group_org_scan_entities: MockObject[] = [
+export const expected_full_members_group_org_scan_entities: MockObject[] = [
   {
     entity: {
       apiVersion: 'backstage.io/v1alpha1',
@@ -2091,5 +2212,79 @@ export const expected_group_org_scan_entities: MockObject[] = [
       },
     },
     locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+];
+
+export const expected_group_members_group_org_scan_entities: MockObject[] = [
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'User',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location': 'url:https://example.com/JohnDoe',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/JohnDoe',
+          'example.com/user-login': 'https://gitlab.example/john_doe',
+        },
+        name: 'JohnDoe',
+      },
+      spec: {
+        memberOf: ['subgroup1'],
+        profile: {
+          displayName: 'John Doe',
+          email: 'john.doe@company.com',
+          picture: 'https://secure.gravatar.com/',
+        },
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+  {
+    entity: {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Group',
+      metadata: {
+        annotations: {
+          'backstage.io/managed-by-location':
+            'url:https://example.com/group1/subgroup1',
+          'backstage.io/managed-by-origin-location':
+            'url:https://example.com/group1/subgroup1',
+          'example.com/team-path': 'group1/subgroup1',
+        },
+        name: 'subgroup1',
+        description: 'description1',
+      },
+      spec: {
+        children: [],
+        profile: {
+          displayName: 'subgroup1',
+        },
+        type: 'team',
+      },
+    },
+    locationKey: 'GitlabOrgDiscoveryEntityProvider:test-id',
+  },
+];
+
+export const all_self_hosted_group1_members: MockObject[] = [
+  {
+    id: 1,
+    username: 'JohnDoe',
+    name: 'John Doe',
+    state: 'active',
+    email: 'john.doe@company.com',
+    avatar_url: 'https://secure.gravatar.com/',
+    web_url: 'https://gitlab.example/john_doe',
+  },
+  // inactive
+  {
+    id: 5,
+    username: 'MarioMario',
+    name: 'Mario Mario',
+    state: 'inactive',
+    email: 'mario.mario-company.com',
+    avatar_url: 'https://secure.gravatar.com/',
+    web_url: 'https://gitlab.example/mario_mario',
   },
 ];

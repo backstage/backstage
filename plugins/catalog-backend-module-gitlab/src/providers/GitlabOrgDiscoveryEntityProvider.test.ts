@@ -175,220 +175,6 @@ describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
   });
 });
 
-// This should return all members of the SaaS Root group (group1) -> expected_full_org_scan_entities_saas
-it('SaaS: should get all saas root group users when restrictUsersToGroup is not set', async () => {
-  const config = new ConfigReader({
-    integrations: {
-      gitlab: [
-        {
-          host: 'gitlab.com',
-          apiBaseUrl: 'https://gitlab.com/api/v4',
-          token: '1234',
-        },
-      ],
-    },
-    catalog: {
-      providers: {
-        gitlab: {
-          'test-id': {
-            host: 'gitlab.com',
-            group: 'group1',
-            orgEnabled: true,
-            skipForkedRepos: true,
-          },
-        },
-      },
-    },
-  });
-  const schedule = new PersistingTaskRunner();
-  const entityProviderConnection: EntityProviderConnection = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
-  };
-  const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-    logger,
-    schedule,
-  })[0];
-  expect(provider.getProviderName()).toEqual(
-    'GitlabOrgDiscoveryEntityProvider:test-id',
-  );
-
-  await provider.connect(entityProviderConnection);
-
-  const taskDef = schedule.getTasks()[0];
-  expect(taskDef.id).toEqual(
-    'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
-  );
-  await (taskDef.fn as () => Promise<void>)();
-
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-    type: 'full',
-    entities: mock.expected_full_org_scan_entities_saas, //
-  });
-});
-
-// This should return all members of the SaaS Root group (group1) -> expected_full_org_scan_entities_saas
-it('SaaS: should get all saas root group users when restrictUsersToGroup is false', async () => {
-  const config = new ConfigReader({
-    integrations: {
-      gitlab: [
-        {
-          host: 'gitlab.com',
-          apiBaseUrl: 'https://gitlab.com/api/v4',
-          token: '1234',
-        },
-      ],
-    },
-    catalog: {
-      providers: {
-        gitlab: {
-          'test-id': {
-            host: 'gitlab.com',
-            group: 'group1',
-            orgEnabled: true,
-            skipForkedRepos: true,
-            restrictUsersToGroup: false,
-          },
-        },
-      },
-    },
-  });
-  const schedule = new PersistingTaskRunner();
-  const entityProviderConnection: EntityProviderConnection = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
-  };
-  const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-    logger,
-    schedule,
-  })[0];
-  expect(provider.getProviderName()).toEqual(
-    'GitlabOrgDiscoveryEntityProvider:test-id',
-  );
-
-  await provider.connect(entityProviderConnection);
-
-  const taskDef = schedule.getTasks()[0];
-  expect(taskDef.id).toEqual(
-    'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
-  );
-  await (taskDef.fn as () => Promise<void>)();
-
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-    type: 'full',
-    entities: mock.expected_full_org_scan_entities_saas, //
-  });
-});
-
-// This should return only members of the SaaS subgroup (group1/subgroup1) -> expected_subgroup_org_scan_entities_saas
-it('SaaS: should get only subgroup users when restrictUsersToGroup is true', async () => {
-  const config = new ConfigReader({
-    integrations: {
-      gitlab: [
-        {
-          host: 'gitlab.com',
-          apiBaseUrl: 'https://gitlab.com/api/v4',
-          token: '1234',
-        },
-      ],
-    },
-    catalog: {
-      providers: {
-        gitlab: {
-          'test-id': {
-            host: 'gitlab.com',
-            group: 'group1/subgroup1',
-            restrictUsersToGroup: true,
-            orgEnabled: true,
-            skipForkedRepos: true,
-          },
-        },
-      },
-    },
-  });
-  const schedule = new PersistingTaskRunner();
-  const entityProviderConnection: EntityProviderConnection = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
-  };
-  const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-    logger,
-    schedule,
-  })[0];
-  expect(provider.getProviderName()).toEqual(
-    'GitlabOrgDiscoveryEntityProvider:test-id',
-  );
-
-  await provider.connect(entityProviderConnection);
-
-  const taskDef = schedule.getTasks()[0];
-  expect(taskDef.id).toEqual(
-    'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
-  );
-  await (taskDef.fn as () => Promise<void>)();
-
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-    type: 'full',
-    entities: mock.expected_subgroup_org_scan_entities_saas,
-  });
-});
-
-// This should return all members of the self-hosted instance regardless of the group set -> expected_full_org_scan_entities
-it('Self-hosted: should get all instance users when restrictUsersToGroup is not set', async () => {
-  const config = new ConfigReader({
-    integrations: {
-      gitlab: [
-        {
-          host: 'example.com',
-          apiBaseUrl: 'https://example.com/api/v4',
-          token: '1234',
-        },
-      ],
-    },
-    catalog: {
-      providers: {
-        gitlab: {
-          'test-id': {
-            host: 'example.com',
-            group: 'group1',
-            orgEnabled: true,
-            skipForkedRepos: true,
-          },
-        },
-      },
-    },
-  });
-  const schedule = new PersistingTaskRunner();
-  const entityProviderConnection: EntityProviderConnection = {
-    applyMutation: jest.fn(),
-    refresh: jest.fn(),
-  };
-  const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
-    logger,
-    schedule,
-  })[0];
-  expect(provider.getProviderName()).toEqual(
-    'GitlabOrgDiscoveryEntityProvider:test-id',
-  );
-
-  await provider.connect(entityProviderConnection);
-
-  const taskDef = schedule.getTasks()[0];
-  expect(taskDef.id).toEqual(
-    'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
-  );
-  await (taskDef.fn as () => Promise<void>)();
-
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
-  expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-    type: 'full',
-    entities: mock.expected_group_org_scan_entities, // This should deliver all users but only their membership in subgroups of config.group
-  });
-});
-
 describe('GitlabOrgDiscoveryEntityProvider - refresh', () => {
   it('should apply full update on scheduled execution', async () => {
     const config = new ConfigReader(mock.config_org_integration);
@@ -514,6 +300,168 @@ describe('GitlabOrgDiscoveryEntityProvider - refresh', () => {
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
       type: 'full',
       entities: mock.expected_full_org_scan_entities_saas,
+    });
+  });
+
+  // This should return all members of the SaaS Root group (group1) -> expected_full_org_scan_entities_saas
+  it('SaaS: should get all saas root group users when restrictUsersToGroup is not set', async () => {
+    const config = new ConfigReader(mock.config_org_group_saas);
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
+    );
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_full_org_scan_entities_saas, //
+    });
+  });
+
+  // This should return all members of the SaaS Root group (group1) -> expected_full_org_scan_entities_saas
+  it('SaaS: should get all saas root group users when restrictUsersToGroup is false', async () => {
+    const config = new ConfigReader(
+      mock.config_org_group_restrictUsers_false_saas,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
+    );
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_full_org_scan_entities_saas, //
+    });
+  });
+
+  // This should return only members of the SaaS subgroup (group1/subgroup1) -> expected_subgroup_org_scan_entities_saas
+  it('SaaS: should get only subgroup users when restrictUsersToGroup is true', async () => {
+    const config = new ConfigReader(
+      mock.config_org_group_restrictUsers_true_saas,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
+    );
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_subgroup_org_scan_entities_saas,
+    });
+  });
+
+  // This should return all members of the self-hosted instance regardless of the group set -> expected_full_members_group_org_scan_entities
+  // All instance members, but only the group entities below the config.group
+  it('Self-hosted: should get all instance users when restrictUsersToGroup is not set', async () => {
+    const config = new ConfigReader(mock.config_org_group_selfHosted);
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
+    );
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_full_members_group_org_scan_entities, // This should deliver all users but only their membership in subgroups of config.group
+    });
+  });
+
+  // This should return all members of the self-hosted config.group and all group entities of config.group -> expected_full_members_group_org_scan_entities
+  it('Self-hosted: should get only groups users when restrictUsersToGroup is set', async () => {
+    const config = new ConfigReader(
+      mock.config_org_group_restrictUsers_true_selfHosted,
+    );
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+    expect(provider.getProviderName()).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id',
+    );
+
+    await provider.connect(entityProviderConnection);
+
+    const taskDef = schedule.getTasks()[0];
+    expect(taskDef.id).toEqual(
+      'GitlabOrgDiscoveryEntityProvider:test-id:refresh',
+    );
+    await (taskDef.fn as () => Promise<void>)();
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_group_members_group_org_scan_entities, // This should deliver all users but only their membership in subgroups of config.group
     });
   });
 });
