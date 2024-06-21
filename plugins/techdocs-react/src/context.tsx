@@ -25,6 +25,7 @@ import React, {
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/esm/useAsync';
 import useAsyncRetry from 'react-use/esm/useAsyncRetry';
+import useCounter from 'react-use/esm/useCounter';
 
 import {
   CompoundEntityRef,
@@ -64,6 +65,8 @@ export type TechDocsReaderPageValue = {
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
   shadowRoot?: ShadowRoot;
   setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
+  shadowRootVersion: number;
+  incShadowRootVersion: () => void;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
   subtitle: string;
@@ -80,6 +83,8 @@ const defaultTechDocsReaderPageValue: TechDocsReaderPageValue = {
   setTitle: () => {},
   setSubtitle: () => {},
   setShadowRoot: () => {},
+  shadowRootVersion: 0,
+  incShadowRootVersion: () => {},
   metadata: { loading: true },
   entityMetadata: { loading: true },
   entityRef: { kind: '', name: '', namespace: '' },
@@ -134,6 +139,7 @@ export const TechDocsReaderPageProvider = memo(
     const [shadowRoot, setShadowRoot] = useState<ShadowRoot | undefined>(
       defaultTechDocsReaderPageValue.shadowRoot,
     );
+    const [shadowRootVersion, { inc: incShadowRootVersion }] = useCounter(0);
 
     useEffect(() => {
       if (shadowRoot && !metadata.value && !metadata.loading) {
@@ -153,6 +159,8 @@ export const TechDocsReaderPageProvider = memo(
       entityMetadata,
       shadowRoot,
       setShadowRoot,
+      shadowRootVersion,
+      incShadowRootVersion,
       title,
       setTitle,
       subtitle,
@@ -190,6 +198,5 @@ export const useTechDocsReaderPage = () => {
   if (context === undefined) {
     throw new Error('No context found for version 1.');
   }
-
   return context;
 };
