@@ -19,12 +19,17 @@ import {
   TaskInvocationDefinition,
   TaskRunner,
 } from '@backstage/backend-tasks';
-import { ConfigReader } from '@backstage/config';
-import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
+import { Config, ConfigReader } from '@backstage/config';
+import {
+  DeferredEntity,
+  EntityProviderConnection,
+  locationSpecToMetadataName,
+} from '@backstage/plugin-catalog-node';
 import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
 import { EventParams } from '@backstage/plugin-events-node';
 import { mockServices } from '@backstage/backend-test-utils';
+import { Commit, PushEvent } from '@octokit/webhooks-types';
 
 jest.mock('../lib/github', () => {
   return {
@@ -47,62 +52,147 @@ class PersistingTaskRunner implements TaskRunner {
 const logger = mockServices.logger.mock();
 
 describe('GithubEntityProvider', () => {
-  afterEach(() => jest.clearAllMocks());
+  const createSingleProviderConfig = (options?: {
+    providerConfig?: object;
+    unwrapped?: boolean;
+  }): Config => {
+    const providerConfig = {
+      organization: 'test-org',
+      ...options?.providerConfig,
+    };
 
-  it('no provider config', () => {
+    return new ConfigReader({
+      catalog: {
+        providers: {
+          github: options?.unwrapped
+            ? providerConfig
+            : { myProvider: providerConfig },
+        },
+      },
+    });
+  };
+
+  const createProviders = (config: Config) => {
     const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader({});
-    const providers = GithubEntityProvider.fromConfig(config, {
+    return GithubEntityProvider.fromConfig(config, {
       logger,
       schedule,
     });
+  };
+
+  const createPushEvent = (options?: {
+    catalogFile?: { action?: 'added' | 'removed' | 'modified'; path?: string };
+    org?: string;
+    ref?: string;
+  }): EventParams<PushEvent> => {
+    const organization = options?.org ?? 'test-org';
+    const repo = {
+      default_branch: 'main',
+      master_branch: 'main',
+      name: 'test-repo',
+      organization,
+      topics: [],
+      url: `https://github.com/${organization}/test-repo`,
+    } as Partial<PushEvent['repository']>;
+
+    const catalogCommit = {
+      added: [] as string[],
+      modified: [] as string[],
+      removed: [] as string[],
+    };
+    catalogCommit[options?.catalogFile?.action ?? 'modified'] = [
+      options?.catalogFile?.path ?? 'catalog-info.yaml',
+    ];
+
+    const event = {
+      ref: options?.ref ?? 'refs/heads/main',
+      repository: repo as PushEvent['repository'],
+      created: true,
+      deleted: false,
+      forced: false,
+      commits: [
+        {
+          added: ['new-file.yaml'],
+          removed: [],
+          modified: [],
+        },
+        catalogCommit,
+      ] as Partial<Commit>[],
+    } as PushEvent;
+
+    return {
+      topic: 'github.push',
+      metadata: {
+        'x-github-event': 'push',
+      },
+      eventPayload: event,
+    };
+  };
+
+  const createExpectedEntitiesForUrl = (url: string): DeferredEntity[] => {
+    return [
+      {
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Location',
+          metadata: {
+            annotations: {
+              'backstage.io/managed-by-location': `url:${url}`,
+              'backstage.io/managed-by-origin-location': `url:${url}`,
+            },
+            name: locationSpecToMetadataName({ type: 'url', target: url }),
+          },
+          spec: {
+            presence: 'optional',
+            target: url,
+            type: 'url',
+          },
+        },
+        locationKey: 'github-provider:myProvider',
+      },
+    ];
+  };
+
+  const createExpectedEntitiesForEvent = (
+    event: EventParams<PushEvent>,
+    options?: { branch?: string; catalogFilePath?: string },
+  ): DeferredEntity[] => {
+    const url = `${event.eventPayload.repository.url}/blob/${
+      options?.branch ?? 'main'
+    }/${options?.catalogFilePath ?? 'catalog-info.yaml'}`;
+    return createExpectedEntitiesForUrl(url);
+  };
+
+  afterEach(() => jest.clearAllMocks());
+
+  it('no provider config', () => {
+    const config = new ConfigReader({});
+    const providers = createProviders(config);
 
     expect(providers).toHaveLength(0);
   });
 
   it('single simple provider config', () => {
-    const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-          },
-        },
-      },
-    });
-    const providers = GithubEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    });
+    const config = createSingleProviderConfig({ unwrapped: true });
+    const providers = createProviders(config);
 
     expect(providers).toHaveLength(1);
     expect(providers[0].getProviderName()).toEqual('github-provider:default');
   });
 
   it('throws when the integration config does not exist', () => {
-    const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-            host: 'ghe.internal.com',
-          },
-        },
+    const config = createSingleProviderConfig({
+      providerConfig: {
+        host: 'ghe.internal.com',
       },
     });
 
-    expect(() =>
-      GithubEntityProvider.fromConfig(config, {
-        logger,
-        schedule,
-      }),
-    ).toThrow(/There is no GitHub config that matches host ghe.internal.com/);
+    expect(() => createProviders(config)).toThrow(
+      /There is no GitHub config that matches host ghe.internal.com/,
+    );
   });
 
   it('multiple provider configs', () => {
-    const schedule = new PersistingTaskRunner();
     const config = new ConfigReader({
       catalog: {
         providers: {
@@ -117,10 +207,7 @@ describe('GithubEntityProvider', () => {
         },
       },
     });
-    const providers = GithubEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    });
+    const providers = createProviders(config);
 
     expect(providers).toHaveLength(2);
     expect(providers[0].getProviderName()).toEqual(
@@ -132,19 +219,12 @@ describe('GithubEntityProvider', () => {
   });
 
   it('apply full update on scheduled execution with basic filters', async () => {
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            myProvider: {
-              organization: 'test-org',
-              catalogPath: 'custom/path/catalog-custom.yaml',
-              filters: {
-                branch: 'main',
-                repository: 'test-.*',
-              },
-            },
-          },
+    const config = createSingleProviderConfig({
+      providerConfig: {
+        catalogPath: 'custom/path/catalog-custom.yaml',
+        filters: {
+          branch: 'main',
+          repository: 'test-.*',
         },
       },
     });
@@ -194,27 +274,7 @@ describe('GithubEntityProvider', () => {
     await (taskDef.fn as () => Promise<void>)();
 
     const url = `https://github.com/test-org/test-repo/blob/main/custom/path/catalog-custom.yaml`;
-    const expectedEntities = [
-      {
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Location',
-          metadata: {
-            annotations: {
-              'backstage.io/managed-by-location': `url:${url}`,
-              'backstage.io/managed-by-origin-location': `url:${url}`,
-            },
-            name: 'generated-5e4b9498097f15434e88c477cfba6c079aa8ca7f',
-          },
-          spec: {
-            presence: 'optional',
-            target: `${url}`,
-            type: 'url',
-          },
-        },
-        locationKey: 'github-provider:myProvider',
-      },
-    ];
+    const expectedEntities = createExpectedEntitiesForUrl(url);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -379,27 +439,7 @@ describe('GithubEntityProvider', () => {
     await (taskDef.fn as () => Promise<void>)();
 
     const url = `https://github.com/test-org/test-repo/blob/main/custom/path/catalog-custom.yaml`;
-    const expectedEntities = [
-      {
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Location',
-          metadata: {
-            annotations: {
-              'backstage.io/managed-by-location': `url:${url}`,
-              'backstage.io/managed-by-origin-location': `url:${url}`,
-            },
-            name: 'generated-5e4b9498097f15434e88c477cfba6c079aa8ca7f',
-          },
-          spec: {
-            presence: 'optional',
-            target: `${url}`,
-            type: 'url',
-          },
-        },
-        locationKey: 'github-provider:myProvider',
-      },
-    ];
+    const expectedEntities = createExpectedEntitiesForUrl(url);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -487,27 +527,7 @@ describe('GithubEntityProvider', () => {
     await (taskDef.fn as () => Promise<void>)();
 
     const url = `https://github.com/test-org/another-repo/blob/main/catalog-custom.yaml`;
-    const expectedEntities = [
-      {
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Location',
-          metadata: {
-            annotations: {
-              'backstage.io/managed-by-location': `url:${url}`,
-              'backstage.io/managed-by-origin-location': `url:${url}`,
-            },
-            name: 'generated-934f500db2ba2e8ea3524567926f45a73bb0b532',
-          },
-          spec: {
-            presence: 'optional',
-            target: `${url}`,
-            type: 'url',
-          },
-        },
-        locationKey: 'github-provider:myProvider',
-      },
-    ];
+    const expectedEntities = createExpectedEntitiesForUrl(url);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -636,27 +656,7 @@ describe('GithubEntityProvider', () => {
     await (taskDef.fn as () => Promise<void>)();
 
     const url = `https://github.com/test-org/test-repo/blob/main/custom/path/catalog-custom.yaml`;
-    const expectedEntities = [
-      {
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Location',
-          metadata: {
-            annotations: {
-              'backstage.io/managed-by-location': `url:${url}`,
-              'backstage.io/managed-by-origin-location': `url:${url}`,
-            },
-            name: 'generated-5e4b9498097f15434e88c477cfba6c079aa8ca7f',
-          },
-          spec: {
-            presence: 'optional',
-            target: `${url}`,
-            type: 'url',
-          },
-        },
-        locationKey: 'github-provider:myProvider',
-      },
-    ];
+    const expectedEntities = createExpectedEntitiesForUrl(url);
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
@@ -666,15 +666,7 @@ describe('GithubEntityProvider', () => {
   });
 
   it('fail without schedule and scheduler', () => {
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-          },
-        },
-      },
-    });
+    const config = createSingleProviderConfig();
 
     expect(() =>
       GithubEntityProvider.fromConfig(config, {
@@ -687,15 +679,7 @@ describe('GithubEntityProvider', () => {
     const scheduler = {
       createScheduledTaskRunner: (_: any) => jest.fn(),
     } as unknown as PluginTaskScheduler;
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-          },
-        },
-      },
-    });
+    const config = createSingleProviderConfig();
 
     expect(() =>
       GithubEntityProvider.fromConfig(config, {
@@ -703,7 +687,7 @@ describe('GithubEntityProvider', () => {
         scheduler,
       }),
     ).toThrow(
-      'No schedule provided neither via code nor config for github-provider:default',
+      'No schedule provided neither via code nor config for github-provider:myProvider',
     );
   });
 
@@ -712,18 +696,14 @@ describe('GithubEntityProvider', () => {
     const scheduler = {
       createScheduledTaskRunner: (_: any) => schedule,
     } as unknown as PluginTaskScheduler;
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-            schedule: {
-              frequency: 'P1M',
-              timeout: 'PT3M',
-            },
-          },
+    const config = createSingleProviderConfig({
+      providerConfig: {
+        schedule: {
+          frequency: 'P1M',
+          timeout: 'PT3M',
         },
       },
+      unwrapped: true,
     });
     const providers = GithubEntityProvider.fromConfig(config, {
       logger,
@@ -735,22 +715,12 @@ describe('GithubEntityProvider', () => {
   });
 
   it('apply delta update on added files from push event with glob catalog path', async () => {
-    const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-            catalogPath: '**/catalog-info.yaml',
-          },
-        },
+    const config = createSingleProviderConfig({
+      providerConfig: {
+        catalogPath: '**/catalog-info.yaml',
       },
     });
-
-    const provider = GithubEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    })[0];
+    const provider = createProviders(config)[0];
 
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
@@ -758,62 +728,15 @@ describe('GithubEntityProvider', () => {
     };
     await provider.connect(entityProviderConnection);
 
-    const event: EventParams = {
-      topic: 'github.push',
-      metadata: {
-        'x-github-event': 'push',
+    const event = createPushEvent({
+      catalogFile: {
+        action: 'added',
+        path: 'folder1/folder2/folder3/catalog-info.yaml',
       },
-      eventPayload: {
-        ref: 'refs/heads/main',
-        repository: {
-          name: 'teste-1',
-          url: 'https://github.com/test-org/test-repo',
-          default_branch: 'main',
-          stargazers: 0,
-          master_branch: 'main',
-          organization: 'test-org',
-          topics: [],
-        },
-        created: true,
-        deleted: false,
-        forced: false,
-        commits: [
-          {
-            added: ['new-file.yaml'],
-            removed: [],
-            modified: [],
-          },
-          {
-            added: ['folder1/folder2/folder3/catalog-info.yaml'],
-            removed: [],
-            modified: [],
-          },
-        ],
-      },
-    };
-    const url =
-      'https://github.com/test-org/test-repo/blob/main/folder1/folder2/folder3/catalog-info.yaml';
-    const expectedEntities = [
-      {
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Location',
-          metadata: {
-            annotations: {
-              'backstage.io/managed-by-location': `url:${url}`,
-              'backstage.io/managed-by-origin-location': `url:${url}`,
-            },
-            name: 'generated-c499bfb5e3f159d2bfefe26cac86a8a0b95b47f0',
-          },
-          spec: {
-            presence: 'optional',
-            target: `${url}`,
-            type: 'url',
-          },
-        },
-        locationKey: 'github-provider:default',
-      },
-    ];
+    });
+    const expectedEntities = createExpectedEntitiesForEvent(event, {
+      catalogFilePath: 'folder1/folder2/folder3/catalog-info.yaml',
+    });
 
     await provider.onEvent(event);
 
@@ -826,21 +749,8 @@ describe('GithubEntityProvider', () => {
   });
 
   it('apply delta update on added files from push event', async () => {
-    const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-          },
-        },
-      },
-    });
-
-    const provider = GithubEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    })[0];
+    const config = createSingleProviderConfig();
+    const provider = createProviders(config)[0];
 
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
@@ -848,62 +758,12 @@ describe('GithubEntityProvider', () => {
     };
     await provider.connect(entityProviderConnection);
 
-    const event: EventParams = {
-      topic: 'github.push',
-      metadata: {
-        'x-github-event': 'push',
+    const event = createPushEvent({
+      catalogFile: {
+        action: 'added',
       },
-      eventPayload: {
-        ref: 'refs/heads/main',
-        repository: {
-          name: 'teste-1',
-          url: 'https://github.com/test-org/test-repo',
-          default_branch: 'main',
-          stargazers: 0,
-          master_branch: 'main',
-          organization: 'test-org',
-          topics: [],
-        },
-        created: true,
-        deleted: false,
-        forced: false,
-        commits: [
-          {
-            added: ['new-file.yaml'],
-            removed: [],
-            modified: [],
-          },
-          {
-            added: ['catalog-info.yaml'],
-            removed: [],
-            modified: [],
-          },
-        ],
-      },
-    };
-    const url =
-      'https://github.com/test-org/test-repo/blob/main/catalog-info.yaml';
-    const expectedEntities = [
-      {
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Location',
-          metadata: {
-            annotations: {
-              'backstage.io/managed-by-location': `url:${url}`,
-              'backstage.io/managed-by-origin-location': `url:${url}`,
-            },
-            name: 'generated-8688630f57e421bc85f12b9828ed7dad6aff3bb3',
-          },
-          spec: {
-            presence: 'optional',
-            target: `${url}`,
-            type: 'url',
-          },
-        },
-        locationKey: 'github-provider:default',
-      },
-    ];
+    });
+    const expectedEntities = createExpectedEntitiesForEvent(event);
 
     await provider.onEvent(event);
 
@@ -916,21 +776,8 @@ describe('GithubEntityProvider', () => {
   });
 
   it('apply delta update on removed files from push event', async () => {
-    const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-          },
-        },
-      },
-    });
-
-    const provider = GithubEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    })[0];
+    const config = createSingleProviderConfig();
+    const provider = createProviders(config)[0];
 
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
@@ -938,62 +785,12 @@ describe('GithubEntityProvider', () => {
     };
     await provider.connect(entityProviderConnection);
 
-    const event: EventParams = {
-      topic: 'github.push',
-      metadata: {
-        'x-github-event': 'push',
+    const event = createPushEvent({
+      catalogFile: {
+        action: 'removed',
       },
-      eventPayload: {
-        ref: 'refs/heads/main',
-        repository: {
-          name: 'teste-1',
-          url: 'https://github.com/test-org/test-repo',
-          default_branch: 'main',
-          stargazers: 0,
-          master_branch: 'main',
-          organization: 'test-org',
-          topics: [],
-        },
-        created: true,
-        deleted: false,
-        forced: false,
-        commits: [
-          {
-            added: ['new-file.yaml'],
-            removed: [],
-            modified: [],
-          },
-          {
-            added: [],
-            removed: ['catalog-info.yaml'],
-            modified: [],
-          },
-        ],
-      },
-    };
-    const url =
-      'https://github.com/test-org/test-repo/blob/main/catalog-info.yaml';
-    const expectedEntities = [
-      {
-        entity: {
-          apiVersion: 'backstage.io/v1alpha1',
-          kind: 'Location',
-          metadata: {
-            annotations: {
-              'backstage.io/managed-by-location': `url:${url}`,
-              'backstage.io/managed-by-origin-location': `url:${url}`,
-            },
-            name: 'generated-8688630f57e421bc85f12b9828ed7dad6aff3bb3',
-          },
-          spec: {
-            presence: 'optional',
-            target: `${url}`,
-            type: 'url',
-          },
-        },
-        locationKey: 'github-provider:default',
-      },
-    ];
+    });
+    const expectedEntities = createExpectedEntitiesForEvent(event);
 
     await provider.onEvent(event);
 
@@ -1006,21 +803,8 @@ describe('GithubEntityProvider', () => {
   });
 
   it('apply refresh call on modified files from push event', async () => {
-    const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-          },
-        },
-      },
-    });
-
-    const provider = GithubEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    })[0];
+    const config = createSingleProviderConfig();
+    const provider = createProviders(config)[0];
 
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
@@ -1028,39 +812,7 @@ describe('GithubEntityProvider', () => {
     };
     await provider.connect(entityProviderConnection);
 
-    const event: EventParams = {
-      topic: 'github.push',
-      metadata: {
-        'x-github-event': 'push',
-      },
-      eventPayload: {
-        ref: 'refs/heads/main',
-        repository: {
-          name: 'teste-1',
-          url: 'https://github.com/test-org/test-repo',
-          default_branch: 'main',
-          stargazers: 0,
-          master_branch: 'main',
-          organization: 'test-org',
-          topics: [],
-        },
-        created: true,
-        deleted: false,
-        forced: false,
-        commits: [
-          {
-            added: ['new-file.yaml'],
-            removed: [],
-            modified: [],
-          },
-          {
-            added: [],
-            removed: [],
-            modified: ['catalog-info.yaml'],
-          },
-        ],
-      },
-    };
+    const event = createPushEvent();
 
     await provider.onEvent(event);
 
@@ -1075,7 +827,6 @@ describe('GithubEntityProvider', () => {
   });
 
   it('apply refresh call on modified files from push event when catalogPath contains a glob pattern', async () => {
-    const schedule = new PersistingTaskRunner();
     const config = new ConfigReader({
       catalog: {
         providers: {
@@ -1086,11 +837,7 @@ describe('GithubEntityProvider', () => {
         },
       },
     });
-
-    const provider = GithubEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    })[0];
+    const provider = createProviders(config)[0];
 
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
@@ -1098,39 +845,7 @@ describe('GithubEntityProvider', () => {
     };
     await provider.connect(entityProviderConnection);
 
-    const event: EventParams = {
-      topic: 'github.push',
-      metadata: {
-        'x-github-event': 'push',
-      },
-      eventPayload: {
-        ref: 'refs/heads/main',
-        repository: {
-          name: 'teste-1',
-          url: 'https://github.com/test-org/test-repo',
-          default_branch: 'main',
-          stargazers: 0,
-          master_branch: 'main',
-          organization: 'test-org',
-          topics: [],
-        },
-        created: true,
-        deleted: false,
-        forced: false,
-        commits: [
-          {
-            added: ['new-file.yaml'],
-            removed: [],
-            modified: [],
-          },
-          {
-            added: [],
-            removed: [],
-            modified: ['catalog-info.yaml'],
-          },
-        ],
-      },
-    };
+    const event = createPushEvent();
 
     await provider.onEvent(event);
 
@@ -1146,25 +861,15 @@ describe('GithubEntityProvider', () => {
   });
 
   it('should process repository when match filters from push event', async () => {
-    const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-            filters: {
-              branch: 'my-special-branch',
-              repository: 'test-repo',
-            },
-          },
+    const config = createSingleProviderConfig({
+      providerConfig: {
+        filters: {
+          branch: 'my-special-branch',
+          repository: 'test-repo',
         },
       },
     });
-
-    const provider = GithubEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    })[0];
+    const provider = createProviders(config)[0];
 
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
@@ -1172,39 +877,7 @@ describe('GithubEntityProvider', () => {
     };
     await provider.connect(entityProviderConnection);
 
-    const event: EventParams = {
-      topic: 'github.push',
-      metadata: {
-        'x-github-event': 'push',
-      },
-      eventPayload: {
-        ref: 'refs/heads/my-special-branch',
-        repository: {
-          name: 'test-repo',
-          url: 'https://github.com/test-org/test-repo',
-          default_branch: 'main',
-          stargazers: 0,
-          master_branch: 'main',
-          organization: 'test-org',
-          topics: [],
-        },
-        created: true,
-        deleted: false,
-        forced: false,
-        commits: [
-          {
-            added: ['new-file.yaml'],
-            removed: [],
-            modified: [],
-          },
-          {
-            added: [],
-            removed: [],
-            modified: ['catalog-info.yaml'],
-          },
-        ],
-      },
-    };
+    const event = createPushEvent({ ref: 'refs/heads/my-special-branch' });
 
     await provider.onEvent(event);
 
@@ -1219,24 +892,14 @@ describe('GithubEntityProvider', () => {
   });
 
   it("should skip process when didn't match filters from push event", async () => {
-    const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-            filters: {
-              repository: 'only-special-repository',
-            },
-          },
+    const config = createSingleProviderConfig({
+      providerConfig: {
+        filters: {
+          repository: 'only-special-repository',
         },
       },
     });
-
-    const provider = GithubEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    })[0];
+    const provider = createProviders(config)[0];
 
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
@@ -1244,39 +907,7 @@ describe('GithubEntityProvider', () => {
     };
     await provider.connect(entityProviderConnection);
 
-    const event: EventParams = {
-      topic: 'github.push',
-      metadata: {
-        'x-github-event': 'push',
-      },
-      eventPayload: {
-        ref: 'refs/heads/main',
-        repository: {
-          name: 'teste-1',
-          url: 'https://github.com/test-org/test-repo',
-          default_branch: 'main',
-          stargazers: 0,
-          master_branch: 'main',
-          organization: 'test-org',
-          topics: [],
-        },
-        created: true,
-        deleted: false,
-        forced: false,
-        commits: [
-          {
-            added: ['new-file.yaml'],
-            removed: [],
-            modified: [],
-          },
-          {
-            added: [],
-            removed: [],
-            modified: ['catalog-info.yaml'],
-          },
-        ],
-      },
-    };
+    const event = createPushEvent();
 
     await provider.onEvent(event);
 
@@ -1285,25 +916,15 @@ describe('GithubEntityProvider', () => {
   });
 
   it("should skip process when didn't match org from push event", async () => {
-    const schedule = new PersistingTaskRunner();
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
-            filters: {
-              branch: 'my-special-branch',
-              repository: 'test-repo',
-            },
-          },
+    const config = createSingleProviderConfig({
+      providerConfig: {
+        filters: {
+          branch: 'my-special-branch',
+          repository: 'test-repo',
         },
       },
     });
-
-    const provider = GithubEntityProvider.fromConfig(config, {
-      logger,
-      schedule,
-    })[0];
+    const provider = createProviders(config)[0];
 
     const entityProviderConnection: EntityProviderConnection = {
       applyMutation: jest.fn(),
@@ -1311,41 +932,10 @@ describe('GithubEntityProvider', () => {
     };
     await provider.connect(entityProviderConnection);
 
-    const event: EventParams = {
-      topic: 'github.push',
-      metadata: {
-        'x-github-event': 'push',
-      },
-      eventPayload: {
-        ref: 'refs/heads/my-special-branch',
-        repository: {
-          name: 'test-repo',
-          url: 'https://github.com/test-org/test-repo',
-          default_branch: 'main',
-          stargazers: 0,
-          master_branch: 'main',
-          organization: 'other-org',
-          topics: [],
-        },
-        created: true,
-        deleted: false,
-        forced: false,
-        commits: [
-          {
-            added: ['new-file.yaml'],
-            removed: [],
-            modified: [],
-          },
-          {
-            added: [],
-            removed: [],
-            modified: ['catalog-info.yaml'],
-          },
-        ],
-      },
-    };
-
-    await provider.onEvent(event);
+    const event = createPushEvent({
+      ref: 'refs/heads/my-special-branch',
+      org: 'other-org',
+    });
 
     await provider.onEvent(event);
 
