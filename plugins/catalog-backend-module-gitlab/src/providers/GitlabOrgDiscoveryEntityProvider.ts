@@ -107,7 +107,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
   private userTransformer: UserTransformer;
   private groupEntitiesTransformer: GroupEntitiesTransformer;
   private groupNameTransformer: GroupNameTransformer;
-  public readonly gitLabClient: GitLabClient;
+  private readonly gitLabClient: GitLabClient;
 
   static fromConfig(
     config: Config,
