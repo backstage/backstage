@@ -15,7 +15,7 @@
  */
 import React from 'react';
 import { StructuredMetadataTable } from '@backstage/core-components';
-import { JsonObject } from '@backstage/types';
+import { JsonObject, JsonValue } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
 
@@ -28,6 +28,39 @@ export type ReviewStateProps = {
   formState: JsonObject;
 };
 
+function flattenObject(
+  obj: JsonObject,
+  prefix: string,
+  schema: JSONSchema,
+  formState: JsonObject,
+): [string, JsonValue | undefined][] {
+  return Object.entries(obj).flatMap(([key, value]) => {
+    const prefixedKey = prefix ? `${prefix}/${key}` : key;
+
+    const definitionInSchema = schema.getSchema({
+      pointer: `#/${prefixedKey}`,
+      data: formState,
+    });
+
+    if (definitionInSchema) {
+      const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
+
+      // Recurse into nested objects
+      if (
+        backstageReviewOptions &&
+        backstageReviewOptions.explode &&
+        typeof value === 'object' &&
+        value !== null &&
+        !Array.isArray(value)
+      ) {
+        return flattenObject(value, prefixedKey, schema, formState);
+      }
+    }
+
+    return [[key, value]];
+  });
+}
+
 /**
  * The component used by the {@link Stepper} to render the review step.
  * @alpha
@@ -35,7 +68,7 @@ export type ReviewStateProps = {
 export const ReviewState = (props: ReviewStateProps) => {
   const reviewData = Object.fromEntries(
     Object.entries(props.formState)
-      .map(([key, value]) => {
+      .flatMap(([key, value]) => {
         for (const step of props.schemas) {
           const parsedSchema = new JSONSchema(step.mergedSchema);
           const definitionInSchema = parsedSchema.getSchema({
@@ -49,30 +82,42 @@ export const ReviewState = (props: ReviewStateProps) => {
 
             if (backstageReviewOptions) {
               if (backstageReviewOptions.mask) {
-                return [key, backstageReviewOptions.mask];
+                return [[key, backstageReviewOptions.mask]];
               }
               if (backstageReviewOptions.show === false) {
                 return [];
               }
+              if (
+                backstageReviewOptions.explode &&
+                typeof value === 'object' &&
+                value !== null &&
+                !Array.isArray(value)
+              ) {
+                return flattenObject(value, key, parsedSchema, props.formState);
+              }
             }
 
             if (definitionInSchema['ui:widget'] === 'password') {
-              return [key, '******'];
+              return [[key, '******']];
             }
 
             if (definitionInSchema.enum && definitionInSchema.enumNames) {
               return [
-                key,
-                definitionInSchema.enumNames[
-                  definitionInSchema.enum.indexOf(value)
-                ] || value,
+                [
+                  key,
+                  definitionInSchema.enumNames[
+                    definitionInSchema.enum.indexOf(value)
+                  ] || value,
+                ],
               ];
             }
           }
         }
-        return [key, value];
+
+        return [[key, value]];
       })
       .filter(prop => prop.length > 0),
   );
+
   return <StructuredMetadataTable metadata={reviewData} />;
 };
