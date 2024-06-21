@@ -143,26 +143,38 @@ const getOwners = async (
   return [stringifyEntityRef(entity)];
 };
 
-const getOwnedEntitiesByOwners = (
+const batchGetOwnedEntitiesByOwners = async (
   owners: string[],
   kinds: string[],
   catalogApi: CatalogApi,
-) =>
-  catalogApi.getEntities({
-    filter: [
-      {
-        kind: kinds,
-        'relations.ownedBy': owners,
-      },
-    ],
-    fields: [
-      'kind',
-      'metadata.name',
-      'metadata.namespace',
-      'spec.type',
-      'relations',
-    ],
-  });
+  batchSize: number = 100,
+) => {
+  const batches = [];
+
+  for (let i = 0; i < owners.length; i += batchSize) {
+    const batch = owners.slice(i, i + batchSize);
+    batches.push(
+      catalogApi.getEntities({
+        filter: [
+          {
+            kind: kinds,
+            'relations.ownedBy': batch,
+          },
+        ],
+        fields: [
+          'kind',
+          'metadata.name',
+          'metadata.namespace',
+          'spec.type',
+          'relations',
+        ],
+      }),
+    );
+  }
+
+  const results = await Promise.all(batches);
+  return results.flatMap(result => result.items);
+};
 
 export function useGetEntities(
   entity: Entity,
@@ -191,13 +203,13 @@ export function useGetEntities(
   } = useAsync(async () => {
     const owners = await getOwners(entity, relations, catalogApi);
 
-    const ownedEntitiesList = await getOwnedEntitiesByOwners(
+    const ownedEntitiesList = await batchGetOwnedEntitiesByOwners(
       owners,
       kinds,
       catalogApi,
     );
 
-    const counts = ownedEntitiesList.items.reduce(
+    const counts = ownedEntitiesList.reduce(
       (acc: EntityTypeProps[], ownedEntity) => {
         const match = acc.find(
           x => x.kind === ownedEntity.kind && x.type === ownedEntity.spec?.type,
