@@ -80,55 +80,6 @@ describe('GithubEntityProvider', () => {
     });
   };
 
-  const createPushEvent = (options?: {
-    catalogFile?: { action?: 'added' | 'removed' | 'modified'; path?: string };
-    org?: string;
-    ref?: string;
-  }): EventParams<PushEvent> => {
-    const organization = options?.org ?? 'test-org';
-    const repo = {
-      default_branch: 'main',
-      master_branch: 'main',
-      name: 'test-repo',
-      organization,
-      topics: [],
-      url: `https://github.com/${organization}/test-repo`,
-    } as Partial<PushEvent['repository']>;
-
-    const catalogCommit = {
-      added: [] as string[],
-      modified: [] as string[],
-      removed: [] as string[],
-    };
-    catalogCommit[options?.catalogFile?.action ?? 'modified'] = [
-      options?.catalogFile?.path ?? 'catalog-info.yaml',
-    ];
-
-    const event = {
-      ref: options?.ref ?? 'refs/heads/main',
-      repository: repo as PushEvent['repository'],
-      created: true,
-      deleted: false,
-      forced: false,
-      commits: [
-        {
-          added: ['new-file.yaml'],
-          removed: [],
-          modified: [],
-        },
-        catalogCommit,
-      ] as Partial<Commit>[],
-    } as PushEvent;
-
-    return {
-      topic: 'github.push',
-      metadata: {
-        'x-github-event': 'push',
-      },
-      eventPayload: event,
-    };
-  };
-
   const createExpectedEntitiesForUrl = (url: string): DeferredEntity[] => {
     return [
       {
@@ -151,16 +102,6 @@ describe('GithubEntityProvider', () => {
         locationKey: 'github-provider:myProvider',
       },
     ];
-  };
-
-  const createExpectedEntitiesForEvent = (
-    event: EventParams<PushEvent>,
-    options?: { branch?: string; catalogFilePath?: string },
-  ): DeferredEntity[] => {
-    const url = `${event.eventPayload.repository.url}/blob/${
-      options?.branch ?? 'main'
-    }/${options?.catalogFilePath ?? 'catalog-info.yaml'}`;
-    return createExpectedEntitiesForUrl(url);
   };
 
   afterEach(() => jest.clearAllMocks());
@@ -714,232 +655,298 @@ describe('GithubEntityProvider', () => {
     expect(providers[0].getProviderName()).toEqual('github-provider:default');
   });
 
-  it('apply delta update on added files from push event with glob catalog path', async () => {
-    const config = createSingleProviderConfig({
-      providerConfig: {
-        catalogPath: '**/catalog-info.yaml',
-      },
-    });
-    const provider = createProviders(config)[0];
-
-    const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
+  describe('on event', () => {
+    const createExpectedEntitiesForEvent = (
+      event: EventParams<PushEvent>,
+      options?: { branch?: string; catalogFilePath?: string },
+    ): DeferredEntity[] => {
+      const url = `${event.eventPayload.repository.url}/blob/${
+        options?.branch ?? 'main'
+      }/${options?.catalogFilePath ?? 'catalog-info.yaml'}`;
+      return createExpectedEntitiesForUrl(url);
     };
-    await provider.connect(entityProviderConnection);
 
-    const event = createPushEvent({
-      catalogFile: {
-        action: 'added',
-        path: 'folder1/folder2/folder3/catalog-info.yaml',
-      },
-    });
-    const expectedEntities = createExpectedEntitiesForEvent(event, {
-      catalogFilePath: 'folder1/folder2/folder3/catalog-info.yaml',
-    });
+    describe('on push event', () => {
+      const createPushEvent = (options?: {
+        catalogFile?: {
+          action?: 'added' | 'removed' | 'modified';
+          path?: string;
+        };
+        org?: string;
+        ref?: string;
+      }): EventParams<PushEvent> => {
+        const organization = options?.org ?? 'test-org';
+        const repo = {
+          default_branch: 'main',
+          master_branch: 'main',
+          name: 'test-repo',
+          organization,
+          topics: [],
+          url: `https://github.com/${organization}/test-repo`,
+        } as Partial<PushEvent['repository']>;
 
-    await provider.onEvent(event);
+        const catalogCommit = {
+          added: [] as string[],
+          modified: [] as string[],
+          removed: [] as string[],
+        };
+        catalogCommit[options?.catalogFile?.action ?? 'modified'] = [
+          options?.catalogFile?.path ?? 'catalog-info.yaml',
+        ];
 
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-      type: 'delta',
-      added: expectedEntities,
-      removed: [],
-    });
-  });
+        const event = {
+          ref: options?.ref ?? 'refs/heads/main',
+          repository: repo as PushEvent['repository'],
+          created: true,
+          deleted: false,
+          forced: false,
+          commits: [
+            {
+              added: ['new-file.yaml'],
+              removed: [],
+              modified: [],
+            },
+            catalogCommit,
+          ] as Partial<Commit>[],
+        } as PushEvent;
 
-  it('apply delta update on added files from push event', async () => {
-    const config = createSingleProviderConfig();
-    const provider = createProviders(config)[0];
+        return {
+          topic: 'github.push',
+          metadata: {
+            'x-github-event': 'push',
+          },
+          eventPayload: event,
+        };
+      };
 
-    const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
-    };
-    await provider.connect(entityProviderConnection);
-
-    const event = createPushEvent({
-      catalogFile: {
-        action: 'added',
-      },
-    });
-    const expectedEntities = createExpectedEntitiesForEvent(event);
-
-    await provider.onEvent(event);
-
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-      type: 'delta',
-      added: expectedEntities,
-      removed: [],
-    });
-  });
-
-  it('apply delta update on removed files from push event', async () => {
-    const config = createSingleProviderConfig();
-    const provider = createProviders(config)[0];
-
-    const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
-    };
-    await provider.connect(entityProviderConnection);
-
-    const event = createPushEvent({
-      catalogFile: {
-        action: 'removed',
-      },
-    });
-    const expectedEntities = createExpectedEntitiesForEvent(event);
-
-    await provider.onEvent(event);
-
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
-      type: 'delta',
-      added: [],
-      removed: expectedEntities,
-    });
-  });
-
-  it('apply refresh call on modified files from push event', async () => {
-    const config = createSingleProviderConfig();
-    const provider = createProviders(config)[0];
-
-    const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
-    };
-    await provider.connect(entityProviderConnection);
-
-    const event = createPushEvent();
-
-    await provider.onEvent(event);
-
-    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
-    expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
-      keys: [
-        'url:https://github.com/test-org/test-repo/tree/main/catalog-info.yaml',
-        'url:https://github.com/test-org/test-repo/blob/main/catalog-info.yaml',
-      ],
-    });
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
-  });
-
-  it('apply refresh call on modified files from push event when catalogPath contains a glob pattern', async () => {
-    const config = new ConfigReader({
-      catalog: {
-        providers: {
-          github: {
-            organization: 'test-org',
+      it('apply delta update on added files with glob catalog path', async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
             catalogPath: '**/catalog-info.yaml',
           },
-        },
-      },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          catalogFile: {
+            action: 'added',
+            path: 'folder1/folder2/folder3/catalog-info.yaml',
+          },
+        });
+        const expectedEntities = createExpectedEntitiesForEvent(event, {
+          catalogFilePath: 'folder1/folder2/folder3/catalog-info.yaml',
+        });
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: expectedEntities,
+          removed: [],
+        });
+      });
+
+      it('apply delta update on added files', async () => {
+        const config = createSingleProviderConfig();
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          catalogFile: {
+            action: 'added',
+          },
+        });
+        const expectedEntities = createExpectedEntitiesForEvent(event);
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: expectedEntities,
+          removed: [],
+        });
+      });
+
+      it('apply delta update on removed files', async () => {
+        const config = createSingleProviderConfig();
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          catalogFile: {
+            action: 'removed',
+          },
+        });
+        const expectedEntities = createExpectedEntitiesForEvent(event);
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+          type: 'delta',
+          added: [],
+          removed: expectedEntities,
+        });
+      });
+
+      it('apply refresh call on modified files', async () => {
+        const config = createSingleProviderConfig();
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent();
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
+          keys: [
+            'url:https://github.com/test-org/test-repo/tree/main/catalog-info.yaml',
+            'url:https://github.com/test-org/test-repo/blob/main/catalog-info.yaml',
+          ],
+        });
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+      });
+
+      it('apply refresh call on modified files with glob catalog path', async () => {
+        const config = new ConfigReader({
+          catalog: {
+            providers: {
+              github: {
+                organization: 'test-org',
+                catalogPath: '**/catalog-info.yaml',
+              },
+            },
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent();
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
+          keys: [
+            'url:https://github.com/test-org/test-repo/tree/main/catalog-info.yaml',
+            'url:https://github.com/test-org/test-repo/blob/main/catalog-info.yaml',
+            'url:https://github.com/test-org/test-repo/tree/main/**/catalog-info.yaml',
+          ],
+        });
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+      });
+
+      it('should process repository when match filters', async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            filters: {
+              branch: 'my-special-branch',
+              repository: 'test-repo',
+            },
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({ ref: 'refs/heads/my-special-branch' });
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
+        expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
+          keys: [
+            'url:https://github.com/test-org/test-repo/tree/my-special-branch/catalog-info.yaml',
+            'url:https://github.com/test-org/test-repo/blob/my-special-branch/catalog-info.yaml',
+          ],
+        });
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+      });
+
+      it("should skip process when didn't match filters", async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            filters: {
+              repository: 'only-special-repository',
+            },
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent();
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+      });
+
+      it("should skip process when didn't match org", async () => {
+        const config = createSingleProviderConfig({
+          providerConfig: {
+            filters: {
+              branch: 'my-special-branch',
+              repository: 'test-repo',
+            },
+          },
+        });
+        const provider = createProviders(config)[0];
+
+        const entityProviderConnection: EntityProviderConnection = {
+          applyMutation: jest.fn(),
+          refresh: jest.fn(),
+        };
+        await provider.connect(entityProviderConnection);
+
+        const event = createPushEvent({
+          ref: 'refs/heads/my-special-branch',
+          org: 'other-org',
+        });
+
+        await provider.onEvent(event);
+
+        expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
+        expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+      });
     });
-    const provider = createProviders(config)[0];
-
-    const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
-    };
-    await provider.connect(entityProviderConnection);
-
-    const event = createPushEvent();
-
-    await provider.onEvent(event);
-
-    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
-    expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
-      keys: [
-        'url:https://github.com/test-org/test-repo/tree/main/catalog-info.yaml',
-        'url:https://github.com/test-org/test-repo/blob/main/catalog-info.yaml',
-        'url:https://github.com/test-org/test-repo/tree/main/**/catalog-info.yaml',
-      ],
-    });
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
-  });
-
-  it('should process repository when match filters from push event', async () => {
-    const config = createSingleProviderConfig({
-      providerConfig: {
-        filters: {
-          branch: 'my-special-branch',
-          repository: 'test-repo',
-        },
-      },
-    });
-    const provider = createProviders(config)[0];
-
-    const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
-    };
-    await provider.connect(entityProviderConnection);
-
-    const event = createPushEvent({ ref: 'refs/heads/my-special-branch' });
-
-    await provider.onEvent(event);
-
-    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(1);
-    expect(entityProviderConnection.refresh).toHaveBeenCalledWith({
-      keys: [
-        'url:https://github.com/test-org/test-repo/tree/my-special-branch/catalog-info.yaml',
-        'url:https://github.com/test-org/test-repo/blob/my-special-branch/catalog-info.yaml',
-      ],
-    });
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
-  });
-
-  it("should skip process when didn't match filters from push event", async () => {
-    const config = createSingleProviderConfig({
-      providerConfig: {
-        filters: {
-          repository: 'only-special-repository',
-        },
-      },
-    });
-    const provider = createProviders(config)[0];
-
-    const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
-    };
-    await provider.connect(entityProviderConnection);
-
-    const event = createPushEvent();
-
-    await provider.onEvent(event);
-
-    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
-  });
-
-  it("should skip process when didn't match org from push event", async () => {
-    const config = createSingleProviderConfig({
-      providerConfig: {
-        filters: {
-          branch: 'my-special-branch',
-          repository: 'test-repo',
-        },
-      },
-    });
-    const provider = createProviders(config)[0];
-
-    const entityProviderConnection: EntityProviderConnection = {
-      applyMutation: jest.fn(),
-      refresh: jest.fn(),
-    };
-    await provider.connect(entityProviderConnection);
-
-    const event = createPushEvent({
-      ref: 'refs/heads/my-special-branch',
-      org: 'other-org',
-    });
-
-    await provider.onEvent(event);
-
-    expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
-    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
 });
