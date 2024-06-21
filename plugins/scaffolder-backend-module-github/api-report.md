@@ -108,6 +108,21 @@ export function createGithubIssuesLabelAction(options: {
 >;
 
 // @public
+export function createGithubPagesAction(options: {
+  integrations: ScmIntegrationRegistry;
+  githubCredentialsProvider?: GithubCredentialsProvider;
+}): TemplateAction<
+  {
+    repoUrl: string;
+    buildType?: 'legacy' | 'workflow' | undefined;
+    sourceBranch?: string | undefined;
+    sourcePath?: '/' | '/docs' | undefined;
+    token?: string | undefined;
+  },
+  JsonObject
+>;
+
+// @public
 export interface CreateGithubPullRequestActionOptions {
   clientFactory?: (input: {
     integrations: ScmIntegrationRegistry;
