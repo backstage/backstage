@@ -26876,15 +26876,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"file-entry-cache@npm:8.0.0":
-  version: 8.0.0
-  resolution: "file-entry-cache@npm:8.0.0"
-  dependencies:
-    flat-cache: ^4.0.0
-  checksum: f67802d3334809048c69b3d458f672e1b6d26daefda701761c81f203b80149c35dea04d78ea4238969dd617678e530876722a0634c43031a0957f10cc3ed190f
-  languageName: node
-  linkType: hard
-
 "file-entry-cache@npm:^6.0.1":
   version: 6.0.1
   resolution: "file-entry-cache@npm:6.0.1"
@@ -27082,16 +27073,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flat-cache@npm:^4.0.0":
-  version: 4.0.1
-  resolution: "flat-cache@npm:4.0.1"
-  dependencies:
-    flatted: ^3.2.9
-    keyv: ^4.5.4
-  checksum: 899fc86bf6df093547d76e7bfaeb900824b869d7d457d02e9b8aae24836f0a99fbad79328cfd6415ee8908f180699bf259dc7614f793447cb14f707caf5996f6
-  languageName: node
-  linkType: hard
-
 "flatstr@npm:^1.0.12":
   version: 1.0.12
   resolution: "flatstr@npm:1.0.12"
@@ -27099,7 +27080,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"flatted@npm:3.3.1, flatted@npm:^3.1.0, flatted@npm:^3.2.9":
+"flatted@npm:3.3.1, flatted@npm:^3.1.0":
   version: 3.3.1
   resolution: "flatted@npm:3.3.1"
   checksum: 85ae7181650bb728c221e7644cbc9f4bf28bc556f2fc89bb21266962bdf0ce1029cc7acc44bb646cd469d9baac7c317f64e841c4c4c00516afa97320cdac7f94
@@ -31317,7 +31298,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"json5@npm:^2.1.2, json5@npm:^2.1.3, json5@npm:^2.2.3":
+"json5@npm:^2.1.2, json5@npm:^2.1.3, json5@npm:^2.2.2, json5@npm:^2.2.3":
   version: 2.2.3
   resolution: "json5@npm:2.2.3"
   bin:
@@ -31622,7 +31603,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"keyv@npm:*, keyv@npm:^4.0.0, keyv@npm:^4.5.2, keyv@npm:^4.5.4":
+"keyv@npm:*, keyv@npm:^4.0.0, keyv@npm:^4.5.2":
   version: 4.5.4
   resolution: "keyv@npm:4.5.4"
   dependencies:
@@ -31701,15 +31682,14 @@ __metadata:
   linkType: hard
 
 "knip@npm:^5.0.0":
-  version: 5.19.0
-  resolution: "knip@npm:5.19.0"
+  version: 5.22.2
+  resolution: "knip@npm:5.22.2"
   dependencies:
     "@ericcornelissen/bash-parser": 0.5.3
     "@nodelib/fs.walk": 2.0.0
     "@snyk/github-codeowners": 1.1.0
     easy-table: 1.2.0
     fast-glob: ^3.3.2
-    file-entry-cache: 8.0.0
     jiti: ^1.21.0
     js-yaml: ^4.1.0
     minimist: ^1.2.8
@@ -31720,6 +31700,7 @@ __metadata:
     smol-toml: ^1.1.4
     strip-json-comments: 5.0.1
     summary: 2.1.0
+    tsconfig-paths: ^4.2.0
     zod: ^3.22.4
     zod-validation-error: ^3.0.3
   peerDependencies:
@@ -31728,7 +31709,7 @@ __metadata:
   bin:
     knip: bin/knip.js
     knip-bun: bin/knip-bun.js
-  checksum: de4c564e1242fff2d005ee5626c509b8ccf3b0b7e2402766363ac193b607d5742e7a336e321b964c38c143832839b3e361ef6cb8d83add7163ee48902dd6995c
+  checksum: 995924973618391af39ba6bfb324f1f4dac427879a944eeecbcf48b61ec165f10f18196f27a7d079076f351223ed067bb917bc863e0424153c3fae2dd65582d6
   languageName: node
   linkType: hard
 
@@ -42313,6 +42294,17 @@ __metadata:
     minimist: ^1.2.6
     strip-bom: ^3.0.0
   checksum: 59f35407a390d9482b320451f52a411a256a130ff0e7543d18c6f20afab29ac19fbe55c360a93d6476213cc335a4d76ce90f67df54c4e9037f7d240920832201
+  languageName: node
+  linkType: hard
+
+"tsconfig-paths@npm:^4.2.0":
+  version: 4.2.0
+  resolution: "tsconfig-paths@npm:4.2.0"
+  dependencies:
+    json5: ^2.2.2
+    minimist: ^1.2.6
+    strip-bom: ^3.0.0
+  checksum: 28c5f7bbbcabc9dabd4117e8fdc61483f6872a1c6b02a4b1c4d68c5b79d06896c3cc9547610c4c3ba64658531caa2de13ead1ea1bf321c7b53e969c4752b98c7
   languageName: node
   linkType: hard
 
