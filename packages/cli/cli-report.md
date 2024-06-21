@@ -442,6 +442,7 @@ Options:
 Usage: backstage-cli repo fix [options]
 
 Options:
+  --publish
   --check
   -h, --help
 ```

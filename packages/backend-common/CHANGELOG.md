@@ -1,5 +1,63 @@
 # @backstage/backend-common
 
+## 0.23.0
+
+### Minor Changes
+
+- 395b973: Implemented `readTree` for Harness provider to support TechDocs functionality
+- 02103be: Deprecated and moved over core services to `@backstage/backend-defaults`
+
+### Patch Changes
+
+- 9539a0b: Import utility functions from `backend-defaults` instead of `backend-app-api`
+- b2c4607: Removed accents on deprecation note
+- c6c0919: Updated configuration schema to include the `useRedisSets` cache config option.
+- ed3074e: The `database` types, helpers and implementations were moved to the package `@backstage/backend-defaults` and deprecated from the package `@backstage/backend-commons`.
+- 9cca724: The `TokenManager` has been deprecated in preparation for the [stable release of the New Backend System](https://github.com/backstage/backstage/issues/24493). Please [migrate](https://backstage.io/docs/tutorials/auth-service-migration) to the new `coreServices.auth`, `coreServices.httpAuth`, and `coreServices.userInfo` services as needed instead.
+- 1779188: In preparation to the new backend system stable release, the `isDatabaseConflictError` helper have been moved to the `@backstage/backend-plugin-api` package and deprecated from `@backstage/backend-common`.
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- e171620: Move `cache` implementation and types to the `@backstage/backend-defaults` package.
+- 1a6f38a: `ContainerRunner`, `DockerContainerRunner` and `KubernetesContainerRunner` are now deprecated
+- 8869b8e: We are deprecating the legacy `createServiceBuilder` factory, so if you are still using it, please checkout the migration guide and [migrate](https://backstage.io/docs/backend-system/building-plugins-and-modules/migrating) your plugin to use the new backend system.
+- 0634fdc: Deprecated `dropDatabase`
+- b2ee7f3: Moved over all URL reader functionality from `@backstage/backend-common` to `@backstage/backend-defaults/urlReader`. Please update your imports.
+- d94a477: Removed the circular dependency on `@backstage/backend-app-api`
+- 3bd04bb: We are deprecating the legacy router handlers and contexts in preparation for the new backend system stable release.
+- 23ee9ab: Fix AWS CodeCommit integration by allowing to change the host
+- e9a03c9: Finalizes the deprecation of legacy backend utilities. Deprecated utilities include the `ServiceBuilder` type, `notFoundHandler` and `redactWintonLogLine` functions.
+- 6a576dc: Deprecate legacy service logger helpers and stop using `getVoidLogger` in tests.
+- 032a7a6: Deprecate the legacy error and request logging handler types, respectively: `ErrorHandlerOptions` and `RequestLoggingHandlerFactory`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/integration@1.12.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config-loader@1.8.1
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
+## 0.23.0-next.3
+
+### Patch Changes
+
+- b2ee7f3: Moved over all URL reader functionality from `@backstage/backend-common` to `@backstage/backend-defaults/urlReader`. Please update your imports.
+- 23ee9ab: Fix AWS CodeCommit integration by allowing to change the host
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/cli-common@0.1.14-next.0
+  - @backstage/backend-app-api@0.7.6-next.3
+  - @backstage/config-loader@1.8.1-next.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.23.0-next.2
 
 ### Minor Changes

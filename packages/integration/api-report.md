@@ -35,6 +35,7 @@ export type AwsCodeCommitIntegrationConfig = {
   secretAccessKey?: string;
   roleArn?: string;
   externalId?: string;
+  region: string;
 };
 
 // @public
@@ -325,7 +326,7 @@ export type GerritIntegrationConfig = {
   host: string;
   baseUrl?: string;
   cloneUrl?: string;
-  gitilesBaseUrl?: string;
+  gitilesBaseUrl: string;
   username?: string;
   password?: string;
 };
@@ -479,9 +480,6 @@ export function getGiteaRequestOptions(config: GiteaIntegrationConfig): {
   headers?: Record<string, string>;
 };
 
-// @public @deprecated (undocumented)
-export const getGitHubFileFetchUrl: typeof getGithubFileFetchUrl;
-
 // @public
 export function getGithubFileFetchUrl(
   url: string,
@@ -604,15 +602,6 @@ export interface GithubCredentialsProvider {
 // @public
 export type GithubCredentialType = 'app' | 'token';
 
-// @public @deprecated (undocumented)
-export class GitHubIntegration extends GithubIntegration {
-  constructor(integrationConfig: GitHubIntegrationConfig);
-  // (undocumented)
-  get config(): GitHubIntegrationConfig;
-  // (undocumented)
-  static factory: ScmIntegrationsFactory<GitHubIntegration>;
-}
-
 // @public
 export class GithubIntegration implements ScmIntegration {
   constructor(integrationConfig: GithubIntegrationConfig);
@@ -635,9 +624,6 @@ export class GithubIntegration implements ScmIntegration {
   // (undocumented)
   get type(): string;
 }
-
-// @public @deprecated (undocumented)
-export type GitHubIntegrationConfig = GithubIntegrationConfig;
 
 // @public
 export type GithubIntegrationConfig = {
@@ -877,16 +863,10 @@ export function readGerritIntegrationConfigs(
 // @public
 export function readGiteaConfig(config: Config): GiteaIntegrationConfig;
 
-// @public @deprecated (undocumented)
-export const readGitHubIntegrationConfig: typeof readGithubIntegrationConfig;
-
 // @public
 export function readGithubIntegrationConfig(
   config: Config,
 ): GithubIntegrationConfig;
-
-// @public @deprecated (undocumented)
-export const readGitHubIntegrationConfigs: typeof readGithubIntegrationConfigs;
 
 // @public
 export function readGithubIntegrationConfigs(
@@ -910,9 +890,6 @@ export function readGoogleGcsIntegrationConfig(
 
 // @public
 export function readHarnessConfig(config: Config): HarnessIntegrationConfig;
-
-// @public @deprecated (undocumented)
-export const replaceGitHubUrlType: typeof replaceGithubUrlType;
 
 // @public
 export function replaceGithubUrlType(

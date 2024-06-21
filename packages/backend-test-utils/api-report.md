@@ -22,7 +22,7 @@ import { EventsService } from '@backstage/plugin-events-node';
 import { ExtendedHttpServer } from '@backstage/backend-app-api';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { HttpRouterFactoryOptions } from '@backstage/backend-app-api';
+import { HttpRouterFactoryOptions } from '@backstage/backend-defaults/httpRouter';
 import { HttpRouterService } from '@backstage/backend-plugin-api';
 import { IdentityService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -32,7 +32,7 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
-import { RootHttpRouterFactoryOptions } from '@backstage/backend-app-api';
+import { RootHttpRouterFactoryOptions } from '@backstage/backend-defaults/rootHttpRouter';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
@@ -45,8 +45,14 @@ import { UserInfoService } from '@backstage/backend-plugin-api';
 
 // @public
 export function createMockDirectory(
-  options?: MockDirectoryOptions,
+  options?: CreateMockDirectoryOptions,
 ): MockDirectory;
+
+// @public
+export interface CreateMockDirectoryOptions {
+  content?: MockDirectoryContent;
+  mockOsTmpDir?: boolean;
+}
 
 // @public (undocumented)
 export function isDockerDisabledForTests(): boolean;
@@ -136,11 +142,8 @@ export interface MockDirectoryContentOptions {
   shouldReadAsText?: boolean | ((path: string, buffer: Buffer) => boolean);
 }
 
-// @public
-export interface MockDirectoryOptions {
-  content?: MockDirectoryContent;
-  mockOsTmpDir?: boolean;
-}
+// @public @deprecated (undocumented)
+export type MockDirectoryOptions = CreateMockDirectoryOptions;
 
 // @public (undocumented)
 export namespace mockServices {

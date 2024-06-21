@@ -152,6 +152,11 @@ export interface Config {
        */
       baseUrl?: string;
       /**
+       * The gitiles base url.
+       * @visibility frontend
+       */
+      gitilesBaseUrl: string;
+      /**
        * The base url for cloning repos.
        * @visibility frontend
        */

@@ -24,6 +24,7 @@ export interface Config {
           organizationId: string;
           scope?: string;
           consoleEndpoint?: string;
+          additionalScopes?: string | string[];
         };
       };
     };

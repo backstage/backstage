@@ -74,6 +74,15 @@ export type {
   SearchOptions,
   SearchResponse,
   SearchResponseFile,
+  UrlReaderServiceReadTreeOptions,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadTreeResponseDirOptions,
+  UrlReaderServiceReadTreeResponseFile,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceSearchOptions,
+  UrlReaderServiceSearchResponse,
+  UrlReaderServiceSearchResponseFile,
   UrlReaderService,
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';

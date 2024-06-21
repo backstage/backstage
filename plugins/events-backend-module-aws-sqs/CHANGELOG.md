@@ -1,5 +1,32 @@
 # @backstage/plugin-events-backend-module-aws-sqs
 
+## 0.3.5
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-tasks@0.5.24
+  - @backstage/plugin-events-node@0.3.5
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
+## 0.3.5-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-events-node@0.3.5-next.2
+  - @backstage/backend-tasks@0.5.24-next.3
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.3.5-next.2
 
 ### Patch Changes

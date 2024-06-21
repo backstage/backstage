@@ -1,5 +1,37 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.2.0
+
+### Minor Changes
+
+- 8efc6cf: **BREAKING**: The `scope` config option have been removed and replaced by the standard `additionalScopes` config. In addition, `openid`, `profile`, and `email` scopes have been set to required and will always be present.
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 4f21993: if oidc server do not provide revocation_endpoint，we should not call revoke function
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-auth-backend@0.22.6
+
+## 0.2.0-next.3
+
+### Minor Changes
+
+- 8efc6cf: **BREAKING**: The `scope` config option have been removed and replaced by the standard `additionalScopes` config. In addition, `openid`, `profile`, and `email` scopes have been set to required and will always be present.
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/plugin-auth-backend@0.22.6-next.3
+  - @backstage/backend-common@0.23.0-next.3
+
 ## 0.1.10-next.2
 
 ### Patch Changes

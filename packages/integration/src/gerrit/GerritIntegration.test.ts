@@ -27,6 +27,8 @@ describe('GerritIntegration', () => {
               host: 'gerrit-review.example.com',
               username: 'gerrituser',
               baseUrl: 'https://gerrit-review.example.com/gerrit',
+              gitilesBaseUrl:
+                'https://gerrit-review.example.com/gerrit/plugins/gitiles',
               password: '1234',
             },
           ],

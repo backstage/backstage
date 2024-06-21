@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { BackendLifecycleImpl } from './rootLifecycleServiceFactory';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('lifecycleService', () => {
   it('should execute registered shutdown hook', async () => {
-    const service = new BackendLifecycleImpl(getVoidLogger());
+    const service = new BackendLifecycleImpl(mockServices.logger.mock());
     const hook = jest.fn();
     service.addShutdownHook(() => hook());
     // should not execute the hook more than once.
@@ -30,7 +30,7 @@ describe('lifecycleService', () => {
   });
 
   it('should not throw errors', async () => {
-    const service = new BackendLifecycleImpl(getVoidLogger());
+    const service = new BackendLifecycleImpl(mockServices.logger.mock());
     service.addShutdownHook(() => {
       throw new Error('oh no');
     });
@@ -38,7 +38,7 @@ describe('lifecycleService', () => {
   });
 
   it('should not throw async errors', async () => {
-    const service = new BackendLifecycleImpl(getVoidLogger());
+    const service = new BackendLifecycleImpl(mockServices.logger.mock());
     service.addShutdownHook(async () => {
       throw new Error('oh no');
     });
@@ -46,7 +46,7 @@ describe('lifecycleService', () => {
   });
 
   it('should reject hooks after trigger', async () => {
-    const service = new BackendLifecycleImpl(getVoidLogger());
+    const service = new BackendLifecycleImpl(mockServices.logger.mock());
     await service.startup();
     expect(() => {
       service.addStartupHook(() => {});

@@ -1,5 +1,30 @@
 # @backstage/plugin-auth-backend-module-aws-alb-provider
 
+## 0.1.11
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-auth-backend@0.22.6
+  - @backstage/errors@1.2.4
+
+## 0.1.11-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/plugin-auth-backend@0.22.6-next.3
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/errors@1.2.4
+
 ## 0.1.11-next.2
 
 ### Patch Changes

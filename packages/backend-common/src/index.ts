@@ -20,18 +20,7 @@
  * @packageDocumentation
  */
 
-export { legacyPlugin, makeLegacyPlugin } from './legacy';
-export type { LegacyCreateRouter } from './legacy';
-export * from './auth';
-export * from './cache';
-export { loadBackendConfig } from './config';
 export * from './deprecated';
-export * from './database';
-export * from './discovery';
-export * from './hot';
-export * from './logging';
+export * from './compat';
 export * from './middleware';
-export * from './reading';
 export * from './service';
-export * from './tokens';
-export * from './util';

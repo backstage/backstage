@@ -21,6 +21,8 @@ import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import { DatabaseUserSettingsStore } from '../database/DatabaseUserSettingsStore';
 import { UserSettingsStore } from '../database/UserSettingsStore';
+import { SignalsService } from '@backstage/plugin-signals-node';
+import { UserSettingsSignal } from '@backstage/plugin-user-settings-common';
 
 /**
  * @public
@@ -28,6 +30,7 @@ import { UserSettingsStore } from '../database/UserSettingsStore';
 export interface RouterOptions {
   database: PluginDatabaseManager;
   identity: IdentityApi;
+  signals?: SignalsService;
 }
 
 /**
@@ -45,12 +48,14 @@ export async function createRouter(
   return await createRouterInternal({
     userSettingsStore,
     identity: options.identity,
+    signals: options.signals,
   });
 }
 
 export async function createRouterInternal(options: {
   identity: IdentityApi;
   userSettingsStore: UserSettingsStore;
+  signals?: SignalsService;
 }): Promise<express.Router> {
   const router = Router();
   router.use(express.json());
@@ -104,6 +109,14 @@ export async function createRouterInternal(options: {
       key,
     });
 
+    if (options.signals) {
+      await options.signals.publish<UserSettingsSignal>({
+        recipients: { type: 'user', entityRef: userEntityRef },
+        channel: `user-settings`,
+        message: { type: 'key-changed', key },
+      });
+    }
+
     res.json(setting);
   });
 
@@ -113,6 +126,13 @@ export async function createRouterInternal(options: {
     const { bucket, key } = req.params;
 
     await options.userSettingsStore.delete({ userEntityRef, bucket, key });
+    if (options.signals) {
+      await options.signals.publish<UserSettingsSignal>({
+        recipients: { type: 'user', entityRef: userEntityRef },
+        channel: 'user-settings',
+        message: { type: 'key-deleted', key },
+      });
+    }
 
     res.status(204).end();
   });
