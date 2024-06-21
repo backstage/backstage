@@ -17,7 +17,7 @@
 exports.up = async function up(knex) {
   await knex.schema.createTable('notification_metadata', table => {
     table
-      .uuid('originating_id')
+      .uuid('notification_id')
       .references('id')
       .inTable('notification')
       .onDelete('CASCADE')
@@ -27,16 +27,19 @@ exports.up = async function up(knex) {
     table.string('type').notNullable();
     table.text('value').notNullable();
 
-    table.index(['name'], 'notification_metadata_name_idx');
+    table.string('name_lower', 255).notNullable();
+    table.text('value_lower').notNullable();
 
-    table.unique(['originating_id', 'name'], {
+    table.index(['name'], 'notification_metadata_name_lower_idx');
+
+    table.unique(['notification_id', 'name'], {
       indexName: 'notification_metadata_id_name_idx',
     });
   });
 
   await knex.schema.createTable('broadcast_metadata', table => {
     table
-      .uuid('originating_id')
+      .uuid('notification_id')
       .references('id')
       .inTable('broadcast')
       .onDelete('CASCADE')
@@ -46,9 +49,12 @@ exports.up = async function up(knex) {
     table.string('type').notNullable();
     table.text('value').notNullable();
 
-    table.index(['name'], 'broadcast_metadata_name_idx');
+    table.string('name_lower', 255).notNullable();
+    table.text('value_lower').notNullable();
 
-    table.unique(['originating_id', 'name'], {
+    table.index(['name'], 'broadcast_metadata_name_lower_idx');
+
+    table.unique(['notification_id', 'name'], {
       indexName: 'broadcast_metadata_id_name_idx',
     });
   });

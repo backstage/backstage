@@ -140,7 +140,9 @@ export class DatabaseNotificationsStore implements NotificationsStore {
   private mapNotificationToMetadataDbRows = (notification: Notification) => {
     return (
       notification.payload?.metadata?.map(metadata => ({
-        originating_id: notification.id,
+        notification_id: notification.id,
+        name_lower: metadata.name.toLowerCase(),
+        value_lower: metadata.value?.toString().toLowerCase(),
         ...metadata,
       })) ?? []
     );
@@ -237,17 +239,17 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       const count = Object.keys(options.metadata ?? {}).length;
 
       const notificationMetadataQuery = (tableName: string) => {
-        const mQuery = this.db(tableName).select('originating_id');
+        const mQuery = this.db(tableName).select('notification_id');
 
         Object.keys(options.metadata ?? {}).forEach(key => {
           const value = options.metadata?.[key];
-          mQuery.orWhereRaw(
-            `(LOWER(name) LIKE LOWER(?) AND LOWER(value) LIKE LOWER(?))`,
-            [key, `%${value}%`],
-          );
+          mQuery.orWhereRaw(`(name_lower LIKE ? AND value_lower LIKE ?)`, [
+            key,
+            `%${value?.toString().toLowerCase()}%`,
+          ]);
         });
         mQuery
-          .groupBy('originating_id')
+          .groupBy('notification_id')
           .having(this.db.raw(`COUNT(DISTINCT name) = ${count}`));
         return mQuery;
       };
@@ -294,7 +296,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     const query = this.db
       .select('*')
       .from(notificationQuery)
-      .leftJoin(metadataSubQuery, 'm.originating_id', 'n.id');
+      .leftJoin(metadataSubQuery, 'm.notification_id', 'n.id');
 
     const { orderField } = options;
     if (orderField && orderField.length > 0) {
@@ -433,7 +435,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       .where('user', notification.user);
 
     const notificationMetadataQuery = this.db('notification_metadata').where(
-      'originating_id',
+      'notification_id',
       id,
     );
 
@@ -469,7 +471,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
           .leftJoin(
             'notification_metadata',
             'notification.id',
-            'notification_metadata.originating_id',
+            'notification_metadata.notification_id',
           )
           .select([...NOTIFICATION_COLUMNS, ...METADATA_COLUMNS])
           .unionAll([
@@ -483,7 +485,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
               .leftJoin(
                 'broadcast_metadata',
                 'broadcast.id',
-                'broadcast_metadata.originating_id',
+                'broadcast_metadata.notification_id',
               )
               .select([...NOTIFICATION_COLUMNS, ...METADATA_COLUMNS]),
           ])
