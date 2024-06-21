@@ -49,6 +49,9 @@ import { useNavigateUrl } from './useNavigateUrl';
 
 const MOBILE_MEDIA_QUERY = 'screen and (max-width: 76.1875em)';
 
+interface TechDocsRedirectEvent extends Event {
+  detail?: string
+}
 /**
  * Hook that encapsulates the behavior of getting raw HTML and applying
  * transforms to it in order to make it function at a basic level in the
@@ -135,6 +138,32 @@ export const useTechDocsReaderDom = (
   }, [dom]);
 
   useEffect(() => {
+    if(!dom) return;
+    dom.addEventListener('techdocs_redirect', (event: TechDocsRedirectEvent) => {
+      if(event.detail){
+        const resolvedUrl = new URL(event.detail,window.location.href).href;
+        navigate(resolvedUrl);
+      }
+    }
+    );
+
+    for ( const elem of Array.from(dom.querySelectorAll('meta'))){
+        const metaContent = elem.getAttribute('content');
+        if(metaContent?.includes('url=') ) {
+          const redirectUrl = metaContent.split('url=')[1];
+          const redirectEvent = new CustomEvent('techdocs_redirect', { detail: redirectUrl });
+          dom.dispatchEvent(redirectEvent);
+      }
+    }
+
+    return () => {
+      dom.removeEventListener('techdocs_redirect', (event: TechDocsRedirectEvent) => {
+        console.log('removing listener techdocs_redirect', event.detail)
+      });
+    }
+  }, [dom]);
+
+  useEffect(() => {
     window.addEventListener('resize', updateFooterWidth);
     return () => {
       window.removeEventListener('resize', updateFooterWidth);
@@ -165,6 +194,7 @@ export const useTechDocsReaderDom = (
           entityId: entityRef,
           path: contentPath,
         }),
+        // transformMkdocsRedirects(),
         rewriteDocLinks(),
         addSidebarToggle(),
         removeMkdocsHeader(),

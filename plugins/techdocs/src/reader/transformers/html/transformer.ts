@@ -44,7 +44,7 @@ export const useSanitizerTransformer = (): Transformer => {
       const hosts = config?.getOptionalStringArray('allowedIframeHosts');
 
       DOMPurify.addHook('beforeSanitizeElements', removeUnsafeLinks);
-      const tags = ['link'];
+      const tags = ['link', 'meta'];
 
       if (hosts) {
         tags.push('iframe');
@@ -54,6 +54,7 @@ export const useSanitizerTransformer = (): Transformer => {
       // using outerHTML as we want to preserve the html tag attributes (lang)
       return DOMPurify.sanitize(dom.outerHTML, {
         ADD_TAGS: tags,
+        ADD_ATTR: ['content'],
         FORBID_TAGS: ['style'],
         WHOLE_DOCUMENT: true,
         RETURN_DOM: true,

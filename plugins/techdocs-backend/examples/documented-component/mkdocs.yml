@@ -6,7 +6,9 @@ nav:
   - Home: index.md
   - Subpage: sub-page.md
   - 'Code Sample': code/code-sample.md
-  - Extensions: extensions.md
 
 plugins:
+  - redirects:
+      redirect_maps:
+        "extensions.md": "sub-page.md"
   - techdocs-core
