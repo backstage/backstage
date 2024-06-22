@@ -29,7 +29,12 @@ import { GithubEntityProvider } from './GithubEntityProvider';
 import * as helpers from '../lib/github';
 import { EventParams } from '@backstage/plugin-events-node';
 import { mockServices } from '@backstage/backend-test-utils';
-import { Commit, PushEvent } from '@octokit/webhooks-types';
+import {
+  Commit,
+  PushEvent,
+  RepositoryEvent,
+  RepositoryRenamedEvent,
+} from '@octokit/webhooks-types';
 
 jest.mock('../lib/github', () => {
   return {
@@ -657,7 +662,7 @@ describe('GithubEntityProvider', () => {
 
   describe('on event', () => {
     const createExpectedEntitiesForEvent = (
-      event: EventParams<PushEvent>,
+      event: EventParams<PushEvent | RepositoryEvent>,
       options?: { branch?: string; catalogFilePath?: string },
     ): DeferredEntity[] => {
       const url = `${event.eventPayload.repository.url}/blob/${
@@ -946,6 +951,544 @@ describe('GithubEntityProvider', () => {
 
         expect(entityProviderConnection.refresh).toHaveBeenCalledTimes(0);
         expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+      });
+    });
+
+    describe('on repository event', () => {
+      const createRepoEvent = (
+        action: RepositoryEvent['action'],
+      ): EventParams<RepositoryEvent> => {
+        const repo = {
+          name: 'test-repo',
+          url: 'https://github.com/test-org/test-repo',
+          default_branch: 'main',
+          master_branch: 'main',
+          organization: 'test-org',
+          topics: [],
+          archived: action === 'archived',
+          private: action !== 'publicized',
+        } as Partial<RepositoryEvent['repository']>;
+
+        const event = {
+          action,
+          repository: repo as RepositoryEvent['repository'],
+        } as RepositoryEvent;
+
+        if (action === 'renamed') {
+          (event as RepositoryRenamedEvent).changes = {
+            repository: {
+              name: {
+                from: `old-${event.repository.name}`,
+              },
+            },
+          };
+        }
+
+        return {
+          topic: 'github.repository',
+          metadata: {
+            'x-github-event': 'repository',
+          },
+          eventPayload: event,
+        };
+      };
+
+      describe('on repository archived event', () => {
+        it('skip on non-matching org', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              organization: 'other-org',
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('archived');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+
+        it('apply delta update removing entities', async () => {
+          const config = createSingleProviderConfig();
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('archived');
+          const expectedEntities = createExpectedEntitiesForEvent(event);
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            1,
+          );
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+            type: 'delta',
+            added: [],
+            removed: expectedEntities,
+          });
+        });
+      });
+
+      describe('on repository created event', () => {
+        it('skip', async () => {
+          const config = createSingleProviderConfig();
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('created');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+      });
+
+      describe('on repository deleted event', () => {
+        it('skip on non-matching org', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              organization: 'other-org',
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('deleted');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+
+        it('apply delta update removing entities', async () => {
+          const config = createSingleProviderConfig();
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('deleted');
+          const expectedEntities = createExpectedEntitiesForEvent(event);
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            1,
+          );
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+            type: 'delta',
+            added: [],
+            removed: expectedEntities,
+          });
+        });
+      });
+
+      describe('on repository edited event', () => {
+        it('skip on non-matching org', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              organization: 'other-org',
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('edited');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+
+        it('apply delta update removing entities with non-matching filters', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              filters: {
+                topic: {
+                  include: ['backstage-include'],
+                },
+              },
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('edited');
+          const expectedEntities = createExpectedEntitiesForEvent(event);
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            1,
+          );
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+            type: 'delta',
+            added: [],
+            removed: expectedEntities,
+          });
+        });
+
+        it('apply no delta update with matching filters', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              filters: {
+                topic: {
+                  include: ['backstage-include'],
+                },
+              },
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('edited');
+          event.eventPayload.repository.topics = ['backstage-include'];
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+      });
+
+      describe('on repository privatized event', () => {
+        it('skip', async () => {
+          const config = createSingleProviderConfig();
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('privatized');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+      });
+
+      describe('on repository publicized event', () => {
+        it('skip', async () => {
+          const config = createSingleProviderConfig();
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('publicized');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+      });
+
+      describe('on repository renamed event', () => {
+        it('skip on non-matching org', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              organization: 'other-org',
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('renamed');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+
+        it('apply delta update removing entities with non-matching filters', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              filters: {
+                repository: 'other-.*',
+              },
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent(
+            'renamed',
+          ) as EventParams<RepositoryRenamedEvent>;
+          const urlOldRepo = `https://github.com/${event.eventPayload.repository.organization}/${event.eventPayload.changes.repository.name.from}/blob/main/catalog-info.yaml`;
+          const expectedEntitiesRemoved =
+            createExpectedEntitiesForUrl(urlOldRepo);
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            1,
+          );
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+            type: 'delta',
+            added: [],
+            removed: expectedEntitiesRemoved,
+          });
+        });
+
+        it('apply delta update removing and adding entities with matching filters', async () => {
+          const config = createSingleProviderConfig();
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent(
+            'renamed',
+          ) as EventParams<RepositoryRenamedEvent>;
+          const urlOldRepo = `https://github.com/${event.eventPayload.repository.organization}/${event.eventPayload.changes.repository.name.from}/blob/main/catalog-info.yaml`;
+          const expectedEntitiesRemoved =
+            createExpectedEntitiesForUrl(urlOldRepo);
+          const expectedEntitiesAdded = createExpectedEntitiesForEvent(event);
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            2,
+          );
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+            type: 'delta',
+            added: [],
+            removed: expectedEntitiesRemoved,
+          });
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+            type: 'delta',
+            added: expectedEntitiesAdded,
+            removed: [],
+          });
+        });
+      });
+
+      describe('on repository transferred event', () => {
+        it('skip on non-matching org', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              organization: 'other-org',
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('transferred');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+
+        it('apply no delta update with non-matching filters', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              filters: {
+                topic: {
+                  include: ['backstage-include'],
+                },
+              },
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('transferred');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+
+        it('apply delta update adding entities with matching filters', async () => {
+          const config = createSingleProviderConfig();
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('transferred');
+          const expectedEntitiesAdded = createExpectedEntitiesForEvent(event);
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            1,
+          );
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+            type: 'delta',
+            added: expectedEntitiesAdded,
+            removed: [],
+          });
+        });
+      });
+
+      describe('on repository unarchived event', () => {
+        it('skip on non-matching org', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              organization: 'other-org',
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('unarchived');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+
+        it('apply no delta update with non-matching filters', async () => {
+          const config = createSingleProviderConfig({
+            providerConfig: {
+              filters: {
+                topic: {
+                  include: ['backstage-include'],
+                },
+              },
+            },
+          });
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('unarchived');
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            0,
+          );
+        });
+
+        it('apply delta update adding entities with matching filters', async () => {
+          const config = createSingleProviderConfig();
+          const provider = createProviders(config)[0];
+
+          const entityProviderConnection: EntityProviderConnection = {
+            applyMutation: jest.fn(),
+            refresh: jest.fn(),
+          };
+          await provider.connect(entityProviderConnection);
+
+          const event = createRepoEvent('unarchived');
+          const expectedEntitiesAdded = createExpectedEntitiesForEvent(event);
+
+          await provider.onEvent(event);
+
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(
+            1,
+          );
+          expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+            type: 'delta',
+            added: expectedEntitiesAdded,
+            removed: [],
+          });
+        });
       });
     });
   });
