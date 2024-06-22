@@ -1,5 +1,16 @@
 # @backstage/plugin-config-schema
 
+## 0.1.56
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.1.56-next.2
 
 ### Patch Changes

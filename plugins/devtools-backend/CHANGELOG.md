@@ -1,5 +1,24 @@
 # @backstage/plugin-devtools-backend
 
+## 0.3.5
+
+### Patch Changes
+
+- 8869b8e: Updated local development setup.
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-permission-node@0.7.30
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-devtools-common@0.1.10
+  - @backstage/cli-common@0.1.14
+  - @backstage/config-loader@1.8.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.3.5-next.3
 
 ### Patch Changes

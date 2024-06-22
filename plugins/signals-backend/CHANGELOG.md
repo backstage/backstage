@@ -1,5 +1,21 @@
 # @backstage/plugin-signals-backend
 
+## 0.1.5
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- 6a576dc: Replace the usage of `getVoidLogger` with `mockServices.logger.mock` in order to remove the dependency with the soon-to-be-deprecated `backend-common` package.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-events-node@0.3.5
+  - @backstage/plugin-signals-node@0.1.5
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 0.1.5-next.3
 
 ### Patch Changes

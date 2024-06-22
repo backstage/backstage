@@ -1,5 +1,19 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.8.0
+
+### Minor Changes
+
+- 0177f75: Update kubernetes plugins to use autoscaling/v2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+
 ## 0.8.0-next.1
 
 ### Patch Changes

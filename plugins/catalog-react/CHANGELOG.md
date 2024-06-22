@@ -1,5 +1,25 @@
 # @backstage/plugin-catalog-react
 
+## 1.12.1
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- fa8560e: Prevents Autocomplete dropdown from overlapping sidebar on hovering it
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-permission-react@0.4.23
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/integration-react@1.1.28
+  - @backstage/frontend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/version-bridge@1.0.8
+
 ## 1.12.1-next.2
 
 ### Patch Changes

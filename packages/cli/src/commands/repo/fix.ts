@@ -277,7 +277,7 @@ export function fixPluginId(pkg: FixablePackage) {
 
   const currentId = pkg.packageJson.backstage?.pluginId;
   if (currentId !== undefined) {
-    if (typeof currentId !== 'string') {
+    if (typeof currentId !== 'string' && currentId !== null) {
       throw new Error(
         `Invalid 'backstage.pluginId' field in "${pkg.packageJson.name}", must be a string`,
       );
@@ -363,7 +363,8 @@ export function fixPluginPackages(
     if (
       role === 'common-library' ||
       role === 'web-library' ||
-      role === 'node-library'
+      role === 'node-library' ||
+      role === 'frontend-plugin-module' // TODO(Rugvip): Remove this once frontend modules are required to have a plugin ID
     ) {
       return;
     }

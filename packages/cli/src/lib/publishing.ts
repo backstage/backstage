@@ -30,8 +30,9 @@ export function publishPreflightCheck(pkg: BackstagePackage): void {
   if (
     role === 'backend-plugin' ||
     role === 'backend-plugin-module' ||
-    role === 'frontend-plugin' ||
-    role === 'frontend-plugin-module'
+    role === 'frontend-plugin'
+    // TODO(Rugvip): We currently support plugin-less frontend modules for the new frontend system, but it needs a different solution
+    // || role === 'frontend-plugin-module'
   ) {
     if (!backstage.pluginId) {
       throw new Error(
@@ -62,7 +63,8 @@ export function publishPreflightCheck(pkg: BackstagePackage): void {
   }
 
   if (role === 'backend-plugin-module' || role === 'frontend-plugin-module') {
-    if (!backstage.pluginPackage) {
+    // TODO(Rugvip): Remove this .pluginId check once frontend modules are required to have a plugin ID
+    if (backstage.pluginId && !backstage.pluginPackage) {
       throw new Error(
         `Plugin module package ${name} is missing a backstage.pluginPackage, please run 'backstage-cli repo fix --publish'`,
       );

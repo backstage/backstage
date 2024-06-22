@@ -14,51 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  UserInfoService,
-  BackstageUserInfo,
-  coreServices,
-  createServiceFactory,
-  BackstageCredentials,
-} from '@backstage/backend-plugin-api';
-import { decodeJwt } from 'jose';
-import { toInternalBackstageCredentials } from '../auth/helpers';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { userInfoServiceFactory as _userInfoServiceFactory } from '../../../../../backend-defaults/src/entrypoints/userInfo';
 
-// TODO: The intention is for this to eventually be replaced by a call to the auth-backend
-export class DefaultUserInfoService implements UserInfoService {
-  async getUserInfo(
-    credentials: BackstageCredentials,
-  ): Promise<BackstageUserInfo> {
-    const internalCredentials = toInternalBackstageCredentials(credentials);
-    if (internalCredentials.principal.type !== 'user') {
-      throw new Error('Only user credentials are supported');
-    }
-    if (!internalCredentials.token) {
-      throw new Error('User credentials is unexpectedly missing token');
-    }
-    const { sub: userEntityRef, ent: ownershipEntityRefs = [] } = decodeJwt(
-      internalCredentials.token,
-    );
-
-    if (typeof userEntityRef !== 'string') {
-      throw new Error('User entity ref must be a string');
-    }
-    if (
-      !Array.isArray(ownershipEntityRefs) ||
-      ownershipEntityRefs.some(ref => typeof ref !== 'string')
-    ) {
-      throw new Error('Ownership entity refs must be an array of strings');
-    }
-
-    return { userEntityRef, ownershipEntityRefs };
-  }
-}
-
-/** @public */
-export const userInfoServiceFactory = createServiceFactory({
-  service: coreServices.userInfo,
-  deps: {},
-  async factory() {
-    return new DefaultUserInfoService();
-  },
-});
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/userInfo` instead.
+ */
+export const userInfoServiceFactory = _userInfoServiceFactory;

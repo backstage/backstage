@@ -1,5 +1,25 @@
 # @backstage/plugin-search-backend-module-techdocs
 
+## 0.1.24
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-tasks@0.5.24
+  - @backstage/plugin-techdocs-node@1.12.5
+  - @backstage/plugin-catalog-node@1.12.1
+  - @backstage/plugin-search-backend-node@1.2.24
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/plugin-search-common@1.2.12
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+
 ## 0.1.24-next.3
 
 ### Patch Changes

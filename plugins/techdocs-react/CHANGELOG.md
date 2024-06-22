@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs-react
 
+## 1.2.5
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/version-bridge@1.0.8
+
 ## 1.2.5-next.2
 
 ### Patch Changes

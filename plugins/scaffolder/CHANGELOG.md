@@ -1,5 +1,79 @@
 # @backstage/plugin-scaffolder
 
+## 1.21.0
+
+### Minor Changes
+
+- d57ebbc: Changed the way to display entities in EntityPicker to use entityPresentationApi instead of humanizeEntityRef
+- 62bd9eb: Replace `ui:widget: password` with the a warning message stating that it's not secure and to use the build in `SecretField`.
+
+  You can do this by updating your `template.yaml` files that have the reference `ui:widget: password` to `ui:field: Secret` instead.
+
+  ```diff
+  apiVersion: backstage.io/v1alpha1
+  kind: Template
+  metadata:
+    ...
+
+  spec:
+    parameters:
+      - title: collect some information
+        schema:
+          type: object
+          properties:
+            password:
+              title: Password
+              type: string
+  -            ui:widget: password
+  +            ui:field: Secret
+    steps:
+      - id: collect-info
+        name: Collect some information
+        action: acme:do:something
+        input:
+  -        password: ${{ parameters.password }}
+  +        password: ${{ secrets.password }}
+  ```
+
+- 60085dd: Added the following default targets for external routes:
+
+  - `registerComponent` binds to the catalog import page.
+  - `viewTechDoc` binds to the TechDocs entity documentation page.
+
+### Patch Changes
+
+- cbebad1: Internal updates to allow reusing Backstage's `fetchApi` implementation for event source requests. This allows you to for example, override the `Authorization` header.
+- 1ea7679: Removed waiting for the workspace and repository fields to be filled in before requesting user credentials
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 6cb4886: Updated dependency `@rjsf/utils` to `5.18.4`.
+  Updated dependency `@rjsf/core` to `5.18.4`.
+  Updated dependency `@rjsf/material-ui` to `5.18.4`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.18.4`.
+- 75dcd7e: Fixing bug in `formData` type as it should be `optional` as it's possibly undefined
+- bcec60f: updated the ContextMenu, ActionsPage, OngoingTask and TemplateCard frontend components to support the new scaffolder permissions:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
+- 612a453: Change owner to project for azure host
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-compat-api@0.2.6
+  - @backstage/integration@1.12.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-scaffolder-react@1.9.0
+  - @backstage/plugin-scaffolder-common@1.5.3
+  - @backstage/plugin-permission-react@0.4.23
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/plugin-catalog-react@1.12.1
+  - @backstage/integration-react@1.1.28
+  - @backstage/frontend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.21.0-next.3
 
 ### Minor Changes

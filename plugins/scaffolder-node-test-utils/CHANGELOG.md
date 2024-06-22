@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.1.5
+
+### Patch Changes
+
+- 6a576dc: Replace the usage of `getVoidLogger` with `mockServices.logger.mock` in order to remove the dependency with the soon-to-be-deprecated `backend-common` package.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-test-utils@0.4.0
+  - @backstage/plugin-scaffolder-node@0.4.5
+  - @backstage/types@1.1.1
+
 ## 0.1.5-next.3
 
 ### Patch Changes
