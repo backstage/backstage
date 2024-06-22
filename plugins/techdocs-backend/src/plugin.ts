@@ -30,11 +30,14 @@ import {
   PreparerBase,
   Preparers,
   Publisher,
+  PublisherBase,
+  PublisherType,
   RemoteProtocol,
   techdocsBuildsExtensionPoint,
   TechdocsGenerator,
   techdocsGeneratorExtensionPoint,
   techdocsPreparerExtensionPoint,
+  techdocsPublisherExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
 import Docker from 'dockerode';
 import { createRouter } from '@backstage/plugin-techdocs-backend';
@@ -87,6 +90,16 @@ export const techdocsPlugin = createBackendPlugin({
       },
     });
 
+    let customTechdocsPublisher: PublisherBase | undefined;
+    env.registerExtensionPoint(techdocsPublisherExtensionPoint, {
+      registerPublisher(type: PublisherType, publisher: PublisherBase) {
+        if (customTechdocsPublisher) {
+          throw new Error(`Publisher for type ${type} is already registered`);
+        }
+        customTechdocsPublisher = publisher;
+      },
+    });
+
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
@@ -135,6 +148,7 @@ export const techdocsPlugin = createBackendPlugin({
         const publisher = await Publisher.fromConfig(config, {
           logger: winstonLogger,
           discovery: discovery,
+          customPublisher: customTechdocsPublisher,
         });
 
         // checks if the publisher is working and logs the result
