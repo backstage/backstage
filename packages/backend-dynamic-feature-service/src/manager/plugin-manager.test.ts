@@ -154,9 +154,9 @@ describe('backend-dynamic-feature-service', () => {
           const installer: NewBackendPluginInstaller = (
             plugins[0] as BackendDynamicPlugin
           ).installer as NewBackendPluginInstaller;
-          expect(installer.install()).toEqual<
-            BackendFeature | BackendFeature[]
-          >({ $$type: '@backstage/BackendFeature' });
+          expect((installer.install() as BackendFeature).$$type).toEqual(
+            '@backstage/BackendFeature',
+          );
         },
       },
       {
@@ -199,9 +199,9 @@ describe('backend-dynamic-feature-service', () => {
           const installer: NewBackendPluginInstaller = (
             plugins[0] as BackendDynamicPlugin
           ).installer as NewBackendPluginInstaller;
-          expect(installer.install()).toEqual<
-            BackendFeature | BackendFeature[]
-          >({ $$type: '@backstage/BackendFeature' });
+          expect((installer.install() as BackendFeature).$$type).toEqual(
+            '@backstage/BackendFeature',
+          );
         },
       },
       {

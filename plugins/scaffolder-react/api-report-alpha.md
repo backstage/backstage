@@ -33,6 +33,7 @@ import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
 import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UiSchema } from '@rjsf/utils';
+import { WidgetProps } from '@rjsf/utils';
 
 // @alpha (undocumented)
 export type BackstageOverrides = Overrides & {
@@ -148,6 +149,11 @@ export type ScaffolderReactComponentsNameToClassKey = {
 
 // @alpha (undocumented)
 export type ScaffolderReactTemplateCategoryPickerClassKey = 'root' | 'label';
+
+// @alpha
+export const SecretWidget: (
+  props: Pick<WidgetProps, 'name' | 'onChange' | 'schema'>,
+) => React_2.JSX.Element;
 
 // @alpha
 export const Stepper: (stepperProps: StepperProps) => React_2.JSX.Element;

@@ -22,6 +22,12 @@ import { ConfigReader } from '@backstage/config';
 import { DatabaseManager } from './DatabaseManager';
 
 /**
+ * Database access and management via `knex`.
+ *
+ * See {@link @backstage/code-plugin-api#DatabaseService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/database | the service docs}
+ * for more information.
+ *
  * @public
  */
 export const databaseServiceFactory = createServiceFactory({

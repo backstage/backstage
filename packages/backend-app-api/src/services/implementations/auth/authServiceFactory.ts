@@ -14,72 +14,11 @@
  * limitations under the License.
  */
 
-import {
-  coreServices,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
-import { DefaultAuthService } from './DefaultAuthService';
-import { ExternalTokenHandler } from './external/ExternalTokenHandler';
-import { PluginTokenHandler } from './plugin/PluginTokenHandler';
-import { createPluginKeySource } from './plugin/keys/createPluginKeySource';
-import { UserTokenHandler } from './user/UserTokenHandler';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { authServiceFactory as _authServiceFactory } from '../../../../../backend-defaults/src/entrypoints/auth';
 
-/** @public */
-export const authServiceFactory = createServiceFactory({
-  service: coreServices.auth,
-  deps: {
-    config: coreServices.rootConfig,
-    logger: coreServices.rootLogger,
-    discovery: coreServices.discovery,
-    plugin: coreServices.pluginMetadata,
-    database: coreServices.database,
-    // Re-using the token manager makes sure that we use the same generated keys for
-    // development as plugins that have not yet been migrated. It's important that this
-    // keeps working as long as there are plugins that have not been migrated to the
-    // new auth services in the new backend system.
-    tokenManager: coreServices.tokenManager,
-  },
-  async factory({ config, discovery, plugin, tokenManager, logger, database }) {
-    const disableDefaultAuthPolicy =
-      config.getOptionalBoolean(
-        'backend.auth.dangerouslyDisableDefaultAuthPolicy',
-      ) ?? false;
-
-    const keyDuration = { hours: 1 };
-
-    const keySource = await createPluginKeySource({
-      config,
-      database,
-      logger,
-      keyDuration,
-    });
-
-    const userTokens = UserTokenHandler.create({
-      discovery,
-    });
-
-    const pluginTokens = PluginTokenHandler.create({
-      ownPluginId: plugin.getId(),
-      logger,
-      keySource,
-      keyDuration,
-      discovery,
-    });
-
-    const externalTokens = ExternalTokenHandler.create({
-      ownPluginId: plugin.getId(),
-      config,
-      logger,
-    });
-
-    return new DefaultAuthService(
-      userTokens,
-      pluginTokens,
-      externalTokens,
-      tokenManager,
-      plugin.getId(),
-      disableDefaultAuthPolicy,
-      keySource,
-    );
-  },
-});
+/**
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/auth` instead.
+ */
+export const authServiceFactory = _authServiceFactory;

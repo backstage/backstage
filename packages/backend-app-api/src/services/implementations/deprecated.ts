@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
+export * from './auth';
+export * from './httpAuth';
+export * from './httpRouter';
+export * from './logger';
+export * from './rootHttpRouter';
+export * from './rootLogger';
 export * from './scheduler';
+export * from './userInfo';

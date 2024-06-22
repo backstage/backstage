@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.5.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- bcec60f: added the following new permissions to the scaffolder backend endpoints:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+
 ## 1.5.3-next.1
 
 ### Patch Changes

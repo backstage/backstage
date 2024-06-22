@@ -1,5 +1,11 @@
 # @backstage/plugin-api-docs-module-protoc-gen-doc
 
+## 0.1.7
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+
 ## 0.1.7-next.0
 
 ### Patch Changes

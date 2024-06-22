@@ -1,5 +1,19 @@
 # @backstage/plugin-devtools
 
+## 0.1.15
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-compat-api@0.2.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-permission-react@0.4.23
+  - @backstage/plugin-devtools-common@0.1.10
+  - @backstage/frontend-plugin-api@0.6.6
+  - @backstage/errors@1.2.4
+
 ## 0.1.15-next.2
 
 ### Patch Changes

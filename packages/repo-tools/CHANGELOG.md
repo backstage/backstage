@@ -1,5 +1,18 @@
 # @backstage/repo-tools
 
+## 0.9.1
+
+### Patch Changes
+
+- 8721a02: Add `--client-additional-properties` option to `openapi generate` command
+- Updated dependencies
+  - @backstage/cli-node@0.2.6
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/cli-common@0.1.14
+  - @backstage/config-loader@1.8.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+
 ## 0.9.1-next.3
 
 ### Patch Changes

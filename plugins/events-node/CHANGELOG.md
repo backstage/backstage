@@ -1,5 +1,14 @@
 # @backstage/plugin-events-node
 
+## 0.3.5
+
+### Patch Changes
+
+- 6a576dc: Replace the usage of `getVoidLogger` with `mockServices.logger.mock` in order to remove the dependency with the soon-to-be-deprecated `backend-common` package.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19
+
 ## 0.3.5-next.2
 
 ### Patch Changes

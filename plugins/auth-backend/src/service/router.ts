@@ -32,7 +32,12 @@ import {
 } from '@backstage/backend-common';
 import { NotFoundError } from '@backstage/errors';
 import { CatalogApi } from '@backstage/catalog-client';
-import { bindOidcRouter, KeyStores, TokenFactory } from '../identity';
+import {
+  bindOidcRouter,
+  KeyStores,
+  TokenFactory,
+  UserInfoDatabaseHandler,
+} from '../identity';
 import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
@@ -87,6 +92,10 @@ export async function createRouter(
     database: authDb,
   });
 
+  const userInfoDatabaseHandler = new UserInfoDatabaseHandler(
+    await authDb.get(),
+  );
+
   let tokenIssuer: TokenIssuer;
   if (keyStore instanceof StaticKeyStore) {
     tokenIssuer = new StaticTokenIssuer(
@@ -106,6 +115,7 @@ export async function createRouter(
       algorithm:
         tokenFactoryAlgorithm ??
         config.getOptionalString('auth.identityTokenAlgorithm'),
+      userInfoDatabaseHandler,
     });
   }
 
@@ -156,6 +166,7 @@ export async function createRouter(
     auth,
     tokenIssuer,
     baseUrl: authUrl,
+    userInfoDatabaseHandler,
   });
 
   // Gives a more helpful error message than a plain 404

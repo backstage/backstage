@@ -1,5 +1,31 @@
 # @backstage/integration
 
+## 1.12.0
+
+### Minor Changes
+
+- be1014d: **BREAKING** Removed deprecated code from when casing was changed from `GitHub` to `Github` nearly two years ago. The following items have been removed:
+
+  - `getGitHubFileFetchUrl` (use `getGithubFileFetchUrl` instead)
+  - `GitHubIntegrationConfig` (use `GithubIntegrationConfig` instead)
+  - `GitHubIntegration` (use `GithubIntegration` instead)
+  - `readGitHubIntegrationConfig` (use `readGithubIntegrationConfig` instead)
+  - `readGitHubIntegrationConfigs` (use `readGithubIntegrationConfigs` instead)
+  - `replaceGitHubUrlType` (use `replaceGithubUrlType` instead)
+
+- 395b973: Implemented `readTree` for Harness provider to support TechDocs functionality
+- 662dce8: **BREAKING**: `gitilesBaseUrl` is now mandatory for the Gerrit integration. The
+  ability to override this requirement using the `DISABLE_GERRIT_GITILES_REQUIREMENT`
+  environment variable has been removed.
+
+### Patch Changes
+
+- 509e08c: Updated function for getHarnessEditContentsUrl
+- 23ee9ab: Fix AWS CodeCommit integration by allowing to change the host
+- Updated dependencies
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.12.0-next.1
 
 ### Minor Changes

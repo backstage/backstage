@@ -14,37 +14,17 @@
  * limitations under the License.
  */
 
-import {
-  createServiceFactory,
-  coreServices,
-} from '@backstage/backend-plugin-api';
-import { WinstonLogger } from '../../../logging';
-import { transports, format } from 'winston';
-import { createConfigSecretEnumerator } from '../../../config';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { rootLoggerServiceFactory as _rootLoggerServiceFactory } from '../../../../../backend-defaults/src/entrypoints/rootLogger/rootLoggerServiceFactory';
 
-/** @public */
-export const rootLoggerServiceFactory = createServiceFactory({
-  service: coreServices.rootLogger,
-  deps: {
-    config: coreServices.rootConfig,
-  },
-  async factory({ config }) {
-    const logger = WinstonLogger.create({
-      meta: {
-        service: 'backstage',
-      },
-      level: process.env.LOG_LEVEL || 'info',
-      format:
-        process.env.NODE_ENV === 'production'
-          ? format.json()
-          : WinstonLogger.colorFormat(),
-      transports: [new transports.Console()],
-    });
-
-    const secretEnumerator = await createConfigSecretEnumerator({ logger });
-    logger.addRedactions(secretEnumerator(config));
-    config.subscribe?.(() => logger.addRedactions(secretEnumerator(config)));
-
-    return logger;
-  },
-});
+/**
+ * Root-level logging.
+ *
+ * See {@link @backstage/code-plugin-api#RootLoggerService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/root-logger | the service docs}
+ * for more information.
+ *
+ * @public
+ * @deprecated Please import from `@backstage/backend-defaults/rootLogger` instead.
+ */
+export const rootLoggerServiceFactory = _rootLoggerServiceFactory;

@@ -1,5 +1,20 @@
 # @backstage/plugin-permission-node
 
+## 0.7.30
+
+### Patch Changes
+
+- 9e63318: Ensure that service token access restrictions, when present, are taken into account
+- d44a20a: Added additional plugin metadata to `package.json`.
+- c7b0dd1: Import `tokenManager` definition from `@backstage/backend-plugin-api`
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.7.30-next.3
 
 ### Patch Changes

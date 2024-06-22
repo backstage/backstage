@@ -1,5 +1,22 @@
 # @backstage/plugin-catalog-graph
 
+## 0.4.6
+
+### Patch Changes
+
+- 8d474d3: Add function to `EntityRelationsGraph` filter that excludes entities from graph
+- d44a20a: Added additional plugin metadata to `package.json`.
+- cd6aeea: The `catalogEntity` external route will now by default bind to the catalog entity page if it is available.
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-compat-api@0.2.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-catalog-react@1.12.1
+  - @backstage/frontend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/types@1.1.1
+
 ## 0.4.6-next.2
 
 ### Patch Changes
