@@ -424,9 +424,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 
       let groupUsers: PagedResponse<GitLabUser> = { items: [] };
       try {
-        const relations = this.config.allowInherited
-          ? ['DIRECT', 'INHERITED']
-          : ['DIRECT'];
+        const relations = this.getRelations(this.config);
         groupUsers = await this.gitLabClient.getGroupMembers(
           group.full_path,
           relations,
@@ -703,9 +701,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       return;
     }
 
-    const relations = this.config.allowInherited
-      ? ['DIRECT', 'INHERITED']
-      : ['DIRECT'];
+    const relations = this.getRelations(this.config);
 
     // fetch group members from GitLab
     const groupMembers = await this.gitLabClient.getGroupMembers(
@@ -780,5 +776,14 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       },
       entity,
     ) as Entity;
+  }
+
+  private getRelations(config: any) {
+    return [
+      'DIRECT',
+      ...(config.allowInherited ? ['INHERITED'] : []),
+      ...(config.allowSharedFromGroups ? ['SHARED_FROM_GROUPS'] : []),
+      ...(config.allowDescendants ? ['DESCENDANTS'] : []),
+    ];
   }
 }

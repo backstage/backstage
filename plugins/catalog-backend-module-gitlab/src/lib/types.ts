@@ -184,9 +184,19 @@ export type GitlabProviderConfig = {
   groupPattern: RegExp;
 
   /**
-   * If true, the provider will also ingest add inherited users to the ingested groups
+   * If true, the provider will also add members of inherited groups (ascendant) to the ingested groups. See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
    */
   allowInherited?: boolean;
+
+  /**
+   * If true, the provider will also add members of descendant groups to the ingested groups. See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
+   */
+  allowDescendants?: boolean;
+
+  /**
+   * If true, the provider will also add members of invited groups to the ingested groups. See: https://docs.gitlab.com/ee/api/graphql/reference/#groupmemberrelation
+   */
+  allowSharedFromGroups?: boolean;
 
   orgEnabled?: boolean;
   schedule?: TaskScheduleDefinition;

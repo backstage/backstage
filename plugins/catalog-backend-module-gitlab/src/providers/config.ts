@@ -45,6 +45,11 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
   const allowInherited: boolean =
     config.getOptionalBoolean('allowInherited') ?? false;
+  const allowDescendants: boolean =
+    config.getOptionalBoolean('allowDescendants') ?? false;
+  const allowSharedFromGroups: boolean =
+    config.getOptionalBoolean('allowSharedFromGroups') ?? false;
+
   const skipForkedRepos: boolean =
     config.getOptionalBoolean('skipForkedRepos') ?? false;
 
@@ -65,6 +70,8 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     schedule,
     orgEnabled,
     allowInherited,
+    allowDescendants,
+    allowSharedFromGroups,
     skipForkedRepos,
   };
 }
