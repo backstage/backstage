@@ -32,13 +32,11 @@ import {
  * Uses `techdocs.publisher.type`.
  * @public
  */
-
-type CustomPublisherType = PublisherType | 'techdocs';
-
 export class Publisher implements PublisherBuilder {
-  private publishers: Map<CustomPublisherType, PublisherBase> = new Map();
+  private publishers: Map<PublisherType | 'techdocs', PublisherBase> =
+    new Map();
 
-  register(type: CustomPublisherType, publisher: PublisherBase): void {
+  register(type: PublisherType | 'techdocs', publisher: PublisherBase): void {
     this.publishers.set(type, publisher);
   }
 
