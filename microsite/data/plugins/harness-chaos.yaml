@@ -7,7 +7,6 @@ documentation: https://github.com/harness/backstage-plugins/tree/main/plugins/ha
 iconUrl: https://static.harness.io/ng-static/images/favicon.png
 npmPackageName: '@harnessio/backstage-plugin-harness-chaos'
 tags:
-  - chaos-experiments
+  - chaosexperiments
   - resiliency
-  - chaos-engineering
 addedDate: '2024-06-25'
