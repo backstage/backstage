@@ -785,6 +785,7 @@ export async function createRouter(
       if (!autocompleteHandlers[provider]) {
         throw new InputError(`Unsupported provider: ${provider}`);
       }
+
       const { results } = await autocompleteHandlers[provider]({
         resource,
         token,

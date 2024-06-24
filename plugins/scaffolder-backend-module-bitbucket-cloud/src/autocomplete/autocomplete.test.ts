@@ -43,7 +43,11 @@ describe('handleAutocompleteRequest', () => {
 
   it('should pass the token to the client', async () => {
     const accessToken = 'foo';
-    await handleAutocompleteRequest(accessToken, 'workspaces', {});
+    await handleAutocompleteRequest({
+      token: accessToken,
+      context: {},
+      resource: 'workspaces',
+    });
 
     expect(fromConfig).toHaveBeenCalledWith(
       expect.objectContaining({ accessToken }),
@@ -51,37 +55,57 @@ describe('handleAutocompleteRequest', () => {
   });
 
   it('should return workspaces', async () => {
-    const result = await handleAutocompleteRequest('foo', 'workspaces', {});
+    const result = await handleAutocompleteRequest({
+      token: 'foo',
+      context: {},
+      resource: 'workspaces',
+    });
 
-    expect(result).toEqual(['workspace1']);
+    expect(result).toEqual({ results: [{ title: 'workspace1' }] });
   });
 
   it('should return projects', async () => {
-    const result = await handleAutocompleteRequest('foo', 'projects', {
-      workspace: 'workspace1',
+    const result = await handleAutocompleteRequest({
+      token: 'foo',
+      context: {
+        workspace: 'workspace1',
+      },
+      resource: 'projects',
     });
 
-    expect(result).toEqual(['project1']);
+    expect(result).toEqual({ results: [{ title: 'project1' }] });
   });
 
   it('should return repositories', async () => {
-    const result = await handleAutocompleteRequest('foo', 'repositories', {
-      workspace: 'workspace1',
-      project: 'project1',
+    const result = await handleAutocompleteRequest({
+      token: 'foo',
+      resource: 'repositories',
+      context: {
+        workspace: 'workspace1',
+        project: 'project1',
+      },
     });
 
-    expect(result).toEqual(['repository1']);
+    expect(result).toEqual({ results: [{ title: 'repository1' }] });
   });
 
   it('should throw an error when passing an invalid resource', async () => {
     await expect(
-      handleAutocompleteRequest('token', 'invalid', {}),
+      handleAutocompleteRequest({
+        token: 'token',
+        resource: 'invalid',
+        context: {},
+      }),
     ).rejects.toThrow(InputError);
   });
 
   it('should throw an error when there are missing parameters', async () => {
     await expect(
-      handleAutocompleteRequest('token', 'projects', {}),
+      handleAutocompleteRequest({
+        token: 'token',
+        resource: 'projects',
+        context: {},
+      }),
     ).rejects.toThrow(InputError);
   });
 });

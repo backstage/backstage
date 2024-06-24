@@ -46,6 +46,8 @@ import {
   PermissionEvaluator,
 } from '@backstage/plugin-permission-common';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
+import { MiddlewareFactory } from '@backstage/backend-app-api';
 
 const mockAccess = jest.fn();
 
@@ -61,8 +63,6 @@ jest.mock('fs-extra', () => ({
   mkdir: jest.fn(),
   remove: jest.fn(),
 }));
-
-jest.mock('./autocomplete');
 
 function createDatabase(): PluginDatabaseManager {
   return DatabaseManager.fromConfig(
@@ -1465,26 +1465,72 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
     });
 
     describe('GET /v2/autocomplete/:provider/:resource', () => {
-      it('should handle requests for provider bitbucketCloud', async () => {
-        jest
-          .mocked(handleBitbucketCloudRequest)
-          .mockResolvedValue(['resource1']);
+      let handleAutocompleteRequest: AutocompleteHandler;
 
-        const bbToken = 'foo';
-        const resource = 'bar';
+      beforeEach(async () => {
+        handleAutocompleteRequest = jest.fn().mockResolvedValue({
+          results: [{ title: 'blob' }],
+        });
+
+        const logger = mockServices.logger.mock();
+        const middleware = MiddlewareFactory.create({ config, logger });
+        const router = await createRouter({
+          logger: loggerToWinstonLogger(mockServices.logger.mock()),
+          config: new ConfigReader({}),
+          database: createDatabase(),
+          catalogClient,
+          reader: mockUrlReader,
+          taskBroker,
+          permissions: permissionApi,
+          auth,
+          httpAuth,
+          discovery,
+          autocompleteHandlers: {
+            'test-provider': handleAutocompleteRequest,
+          },
+        });
+
+        app = express().use(router).use(middleware.error());
+      });
+
+      it('should throw an error when the provider is not registered', async () => {
+        const response = await request(app)
+          .post('/v2/autocomplete/unknown-provider/resource')
+          .send({
+            token: 'token',
+            context: {},
+          });
+
+        expect(response.status).toEqual(400);
+        expect(response.body).toEqual(
+          expect.objectContaining({
+            error: {
+              message: 'Unsupported provider: unknown-provider',
+              name: 'InputError',
+            },
+          }),
+        );
+      });
+
+      it('should call the autocomplete handler', async () => {
+        const context = { mock: 'context' };
+        const mockToken = 'mocktoken';
 
         const response = await request(app)
-          .get(`/v2/autocomplete/bitbucketCloud/${resource}`)
-          .query({ token: bbToken, workspace: 'workspace1' });
-
-        expect(handleBitbucketCloudRequest).toHaveBeenCalledWith(
-          bbToken,
-          resource,
-          { workspace: 'workspace1' },
-        );
+          .post('/v2/autocomplete/test-provider/resource')
+          .send({
+            token: mockToken,
+            context,
+          });
 
         expect(response.status).toEqual(200);
-        expect(response.body).toEqual(['resource1']);
+
+        expect(response.body).toEqual({ results: [{ title: 'blob' }] });
+        expect(handleAutocompleteRequest).toHaveBeenCalledWith({
+          token: mockToken,
+          context,
+          resource: 'resource',
+        });
       });
     });
   });
