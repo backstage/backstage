@@ -64,7 +64,7 @@ describe('useGetEntities', () => {
       ]),
     });
 
-  describe('given aggregated relationsType', () => {
+  describe('given aggregated relationAggregation', () => {
     const whenHookIsCalledWith = async (_entity: Entity) => {
       const { result } = renderHook(
         ({ entity }) => useGetEntities(entity, 'aggregated'),
@@ -205,7 +205,7 @@ describe('useGetEntities', () => {
     });
   });
 
-  describe('given direct relationsType', () => {
+  describe('given direct relationAggregation', () => {
     const whenHookIsCalledWith = async (_entity: Entity) => {
       const { result } = renderHook(
         ({ entity }) => useGetEntities(entity, 'direct'),
