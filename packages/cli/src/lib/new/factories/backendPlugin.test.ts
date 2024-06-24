@@ -27,10 +27,10 @@ import { backendPlugin } from './backendPlugin';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 
 const backendIndexTsContent = `
-import { createBackend } from '@backstage/backend-defaults';  
-  
-const backend = createBackend();  
-  
+import { createBackend } from '@backstage/backend-defaults';
+
+const backend = createBackend();
+
 backend.start();
 `;
 
@@ -112,11 +112,11 @@ describe('backendPlugin factory', () => {
     await expect(
       fs.readFile(mockDir.resolve('packages/backend/src/index.ts'), 'utf8'),
     ).resolves.toBe(`
-import { createBackend } from '@backstage/backend-defaults';  
+import { createBackend } from '@backstage/backend-defaults';
 
-const backend = createBackend();  
-  
-backend.add(import("backstage-plugin-test-backend"));  
+const backend = createBackend();
+
+backend.add(import('backstage-plugin-test-backend'));
 backend.start();
 `);
 
@@ -174,12 +174,13 @@ backend.start();
     await expect(
       fs.readFile(mockDir.resolve('packages/backend/src/index.ts'), 'utf8'),
     ).resolves.toBe(`
-import { createBackend } from '@backstage/backend-defaults';  
-  
-const backend = createBackend();  
-  
-backend.add(import("@internal/backstage-plugin-test-backend"));  
-backend.start();`);
+import { createBackend } from '@backstage/backend-defaults';
+
+const backend = createBackend();
+
+backend.add(import('@internal/backstage-plugin-test-backend'));
+backend.start();
+`);
 
     expect(Task.forCommand).toHaveBeenCalledTimes(2);
     expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {

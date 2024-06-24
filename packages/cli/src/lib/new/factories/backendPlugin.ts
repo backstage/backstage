@@ -86,29 +86,20 @@ export const backendPlugin = createFactory<Options>({
         if (!(await fs.pathExists(backendFilePath))) {
           return;
         }
+
         const content = await fs.readFile(backendFilePath, 'utf8');
-        const revLines = content.split('\n').reverse();
+        const lines = content.split('\n');
+        const backendAddLine = `backend.add(import('${name}'));`;
 
-        const lastImportIndex = revLines.findIndex(line =>
-          line.match(/ from ("|').*("|')/),
-        );
-        const lastBackendAddIndex = revLines.findIndex(line =>
-          line.match(/backend.add/),
+        const backendStartIndex = lines.findIndex(line =>
+          line.match(/backend.start/),
         );
 
-        const backendAddLine = `backend.add(import("${name}"));`;
+        if (backendStartIndex !== -1) {
+          const [indentation] = lines[backendStartIndex].match(/^\s*/) ?? [];
+          lines.splice(backendStartIndex, 0, indentation + backendAddLine);
 
-        if (lastImportIndex !== -1 && lastBackendAddIndex !== -1) {
-          if (!content.includes(backendAddLine)) {
-            const [indentation] =
-              revLines[lastBackendAddIndex + 1].match(/^\s*/) ?? [];
-            revLines.splice(
-              lastBackendAddIndex + 1,
-              0,
-              indentation + backendAddLine,
-            );
-          }
-          const newContent = revLines.reverse().join('\n');
+          const newContent = lines.join('\n');
           await fs.writeFile(backendFilePath, newContent, 'utf8');
         }
       });
