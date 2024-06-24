@@ -139,6 +139,7 @@ nav:
           - URL Reader: 'plugins/url-reader.md'
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
+          - Dry Run Testing: 'plugins/dry-run-testing.md'
       - Publishing:
           - Publish private: 'plugins/publish-private.md'
           - Add to Directory: 'plugins/add-to-directory.md'
