@@ -86,7 +86,7 @@ export const LDAP_UUID_ANNOTATION = 'backstage.io/ldap-uuid';
 
 // @public
 export class LdapClient {
-  constructor(client: Client, logger: L oggerService);
+  constructor(client: Client, logger: LoggerService);
   // (undocumented)
   static create(
     logger: LoggerService,
