@@ -53,8 +53,7 @@ export const repoPickerValidation = (
             'Incomplete repository location provided, project not provided',
           );
         }
-      }
-      if (integrationApi?.byHost(host)?.type === 'azure') {
+      } else if (integrationApi?.byHost(host)?.type === 'azure') {
         if (!searchParams.get('project')) {
           validation.addError(
             'Incomplete repository location provided, project not provided',
