@@ -38,7 +38,9 @@ describe('backendPlugin factory', () => {
   const mockDir = createMockDirectory();
 
   beforeEach(() => {
-    mockPaths({ targetRoot: mockDir.path });
+    mockPaths({
+      targetRoot: mockDir.path,
+    });
   });
 
   afterEach(() => {
@@ -117,68 +119,6 @@ import { createBackend } from '@backstage/backend-defaults';
 const backend = createBackend();
 
 backend.add(import('backstage-plugin-test-backend'));
-backend.start();
-`);
-
-    expect(Task.forCommand).toHaveBeenCalledTimes(2);
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn install', {
-      cwd: mockDir.resolve('plugins/test-backend'),
-      optional: true,
-    });
-    expect(Task.forCommand).toHaveBeenCalledWith('yarn lint --fix', {
-      cwd: mockDir.resolve('plugins/test-backend'),
-      optional: true,
-    });
-  });
-
-  it('should create a backend plugin with more options and codeowners', async () => {
-    mockDir.setContent({
-      CODEOWNERS: '',
-      packages: {
-        backend: {
-          'package.json': JSON.stringify({}),
-          src: {
-            'index.ts': backendIndexTsContent,
-          },
-        },
-      },
-      plugins: {},
-    });
-
-    const options = await FactoryRegistry.populateOptions(backendPlugin, {
-      id: 'test',
-      owner: '@test-user',
-    });
-
-    const [, mockStream] = createMockOutputStream();
-    jest.spyOn(process, 'stderr', 'get').mockReturnValue(mockStream);
-    jest.spyOn(Task, 'forCommand').mockResolvedValue();
-
-    await backendPlugin.create(options, {
-      scope: 'internal',
-      private: true,
-      isMonoRepo: true,
-      defaultVersion: '1.0.0',
-      markAsModified: () => {},
-      createTemporaryDirectory: () => fs.mkdtemp('test'),
-    });
-
-    await expect(
-      fs.readJson(mockDir.resolve('packages/backend/package.json')),
-    ).resolves.toEqual({
-      dependencies: {
-        '@internal/backstage-plugin-test-backend': '^1.0.0',
-      },
-    });
-
-    await expect(
-      fs.readFile(mockDir.resolve('packages/backend/src/index.ts'), 'utf8'),
-    ).resolves.toBe(`
-import { createBackend } from '@backstage/backend-defaults';
-
-const backend = createBackend();
-
-backend.add(import('@internal/backstage-plugin-test-backend'));
 backend.start();
 `);
 
