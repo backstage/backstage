@@ -21,6 +21,7 @@ import { NextFunction, Request, Response, RequestHandler } from 'express';
  * {@link createStatusCheckRouter}.
  *
  * @public
+ * @deprecated Migrate to the {@link https://backstage.io/docs/backend-system/ | new backend system} and use the {@link https://backstage.io/docs/backend-system/core-services/root-health | Root Health Service} instead.
  */
 export type StatusCheck = () => Promise<any>;
 
@@ -28,6 +29,7 @@ export type StatusCheck = () => Promise<any>;
  * Options passed to {@link statusCheckHandler}.
  *
  * @public
+ * @deprecated Migrate to the {@link https://backstage.io/docs/backend-system/ | new backend system} and use the {@link https://backstage.io/docs/backend-system/core-services/root-health | Root Health Service} instead.
  */
 export interface StatusCheckHandlerOptions {
   /**
@@ -44,6 +46,7 @@ export interface StatusCheckHandlerOptions {
  * @public
  * @param options - An optional configuration object.
  * @returns An Express error request handler
+ * @deprecated Migrate to the {@link https://backstage.io/docs/backend-system/ | new backend system} and use the {@link https://backstage.io/docs/backend-system/core-services/root-health | Root Health Service} instead.
  */
 export async function statusCheckHandler(
   options: StatusCheckHandlerOptions = {},
