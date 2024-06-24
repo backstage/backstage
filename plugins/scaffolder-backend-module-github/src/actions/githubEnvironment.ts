@@ -220,6 +220,8 @@ export function createGithubEnvironmentAction(options: {
 
           await client.rest.actions.createOrUpdateEnvironmentSecret({
             repository_id: repository.data.id,
+            owner: owner,
+            repo: repo,
             environment_name: name,
             secret_name: key,
             encrypted_value: encryptedBase64Secret,

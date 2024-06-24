@@ -245,6 +245,8 @@ describe('github:environment:create examples', () => {
       mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       secret_name: 'secret1',
       key_id: 'keyid',
@@ -254,6 +256,8 @@ describe('github:environment:create examples', () => {
       mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       secret_name: 'secret2',
       key_id: 'keyid',
