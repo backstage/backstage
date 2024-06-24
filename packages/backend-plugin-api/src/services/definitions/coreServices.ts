@@ -103,6 +103,13 @@ export namespace coreServices {
   >({ id: 'core.discovery' });
 
   /**
+   * The service reference for the plugin scoped {@link RootHealthService}.
+   */
+  export const rootHealth = createServiceRef<
+    import('./RootHealthService').RootHealthService
+  >({ id: 'core.rootHealth', scope: 'root' });
+
+  /**
    * Authentication of HTTP requests.
    *
    * See {@link HttpAuthService}
