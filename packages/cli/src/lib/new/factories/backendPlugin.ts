@@ -78,6 +78,40 @@ export const backendPlugin = createFactory<Options>({
           },
         );
       });
+
+      await Task.forItem('backend', 'adding import and plugin', async () => {
+        const backendFilePath = paths.resolveTargetRoot(
+          'packages/backend/src/index.ts',
+        );
+        if (!(await fs.pathExists(backendFilePath))) {
+          return;
+        }
+        const content = await fs.readFile(backendFilePath, 'utf8');
+        const revLines = content.split('\n').reverse();
+
+        const lastImportIndex = revLines.findIndex(line =>
+          line.match(/ from ("|').*("|')/),
+        );
+        const lastBackendAddIndex = revLines.findIndex(line =>
+          line.match(/backend.add/),
+        );
+
+        const backendAddLine = `backend.add(import("${name}"));`;
+
+        if (lastImportIndex !== -1 && lastBackendAddIndex !== -1) {
+          if (!content.includes(backendAddLine)) {
+            const [indentation] =
+              revLines[lastBackendAddIndex + 1].match(/^\s*/) ?? [];
+            revLines.splice(
+              lastBackendAddIndex + 1,
+              0,
+              indentation + backendAddLine,
+            );
+          }
+          const newContent = revLines.reverse().join('\n');
+          await fs.writeFile(backendFilePath, newContent, 'utf8');
+        }
+      });
     }
 
     if (options.owner) {
