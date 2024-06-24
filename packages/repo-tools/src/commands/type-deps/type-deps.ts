@@ -202,6 +202,14 @@ function findTypeDepErrors(typeDeps: string[], pkg: Package) {
   }
 
   for (const dep of deps) {
+    // Allow implicit declarations of these dependencies. For some packages, they may
+    //  not be declared as a `reference types="..."` or `import ... from '@types/...'
+    //  in the declaration file.
+    // Example being app-visualizer, it exports a plugin which comes from `@backstage/frontend-plugin-api`,
+    //  the react types come from that package, but are not explicitly declared in the declaration file.
+    if (['@types/react'].includes(dep)) {
+      continue;
+    }
     errors.push(
       mkErr('WrongDepError', `Should be dev dep ${dep}`, {
         dep,

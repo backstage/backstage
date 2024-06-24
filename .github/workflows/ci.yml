@@ -90,6 +90,9 @@ jobs:
       - name: verify local dependency ranges
         run: node scripts/verify-local-dependencies.js
 
+      - name: verify peer dependency ranges
+        run: yarn lint:peer-deps
+
       - name: check for missing repo fixes
         run: yarn fix --check
 
