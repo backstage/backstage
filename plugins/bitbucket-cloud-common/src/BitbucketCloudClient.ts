@@ -139,10 +139,9 @@ export class BitbucketCloudClient {
         'utf8',
       );
       headers.Authorization = `Basic ${buffer.toString('base64')}`;
+    } else if (this.config.token) {
+      headers.Authorization = `Bearer ${this.config.token}`;
     }
-
-    if (this.config.accessToken)
-      headers.Authorization = `Bearer ${this.config.accessToken}`;
 
     return headers;
   }

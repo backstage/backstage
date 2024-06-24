@@ -29,7 +29,7 @@ export async function handleAutocompleteRequest({
   const client = BitbucketCloudClient.fromConfig({
     host: 'bitbucket.org',
     apiBaseUrl: 'https://api.bitbucket.org/2.0',
-    accessToken: token,
+    token,
   });
 
   switch (resource) {

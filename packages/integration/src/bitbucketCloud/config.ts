@@ -50,7 +50,7 @@ export type BitbucketCloudIntegrationConfig = {
   /**
    * The access token to use for requests to Bitbucket Cloud (bitbucket.org).
    */
-  accessToken?: string;
+  token?: string;
 };
 
 /**

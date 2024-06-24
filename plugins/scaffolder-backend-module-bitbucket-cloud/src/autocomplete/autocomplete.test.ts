@@ -50,7 +50,7 @@ describe('handleAutocompleteRequest', () => {
     });
 
     expect(fromConfig).toHaveBeenCalledWith(
-      expect.objectContaining({ accessToken }),
+      expect.objectContaining({ token: accessToken }),
     );
   });
 
