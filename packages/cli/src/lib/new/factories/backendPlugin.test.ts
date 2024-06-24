@@ -98,7 +98,7 @@ describe('backendPlugin factory', () => {
       'Installing:',
       `moving        plugins${sep}test-backend`,
       'backend       adding dependency',
-      'backend       adding import and plugin',
+      'backend       adding plugin',
     ]);
 
     await expect(

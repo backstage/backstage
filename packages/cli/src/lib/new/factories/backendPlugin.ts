@@ -79,7 +79,7 @@ export const backendPlugin = createFactory<Options>({
         );
       });
 
-      await Task.forItem('backend', 'adding import and plugin', async () => {
+      await Task.forItem('backend', 'adding plugin', async () => {
         const backendFilePath = paths.resolveTargetRoot(
           'packages/backend/src/index.ts',
         );
