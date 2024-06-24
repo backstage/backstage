@@ -502,12 +502,21 @@ export class ScaffolderClient implements ScaffolderApi_2 {
     useLongPollingLogs?: boolean;
   });
   // (undocumented)
-  autocomplete(
-    token: string,
-    provider: string,
-    resource: string,
-    params?: Record<string, string>,
-  ): Promise<string[]>;
+  autocomplete({
+    token,
+    resource,
+    provider,
+    context,
+  }: {
+    token: string;
+    provider: string;
+    resource: string;
+    context?: Record<string, string>;
+  }): Promise<{
+    results: {
+      title: string;
+    }[];
+  }>;
   // (undocumented)
   cancelTask(taskId: string): Promise<void>;
   // (undocumented)
