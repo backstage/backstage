@@ -241,7 +241,11 @@ spec:
 
 ## Use placeholders to reference remote files
 
-#### Note: testing of this functionality is not yet supported using _create/edit_
+:::note
+
+Testing of this functionality is not yet supported using _create/edit_. In addition, this functionality only works for remote files and not local files. You also cannot nest files.
+
+:::
 
 ### template.yaml
 
