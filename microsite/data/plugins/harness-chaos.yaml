@@ -9,4 +9,5 @@ npmPackageName: '@harnessio/backstage-plugin-harness-chaos'
 tags:
   - chaos-experiments
   - resiliency
+  - chaos-engineering
 addedDate: '2024-06-25'
