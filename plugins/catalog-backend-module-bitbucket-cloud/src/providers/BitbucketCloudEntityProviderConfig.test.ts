@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Duration } from 'luxon';
 import { readProviderConfigs } from './BitbucketCloudEntityProviderConfig';
 
 describe('readProviderConfigs', () => {
@@ -130,7 +129,7 @@ describe('readProviderConfigs', () => {
         repoSlug: undefined,
       },
       schedule: {
-        frequency: Duration.fromISO('PT30M'),
+        frequency: { minutes: 30 },
         timeout: {
           minutes: 3,
         },

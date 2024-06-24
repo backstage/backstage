@@ -16,7 +16,6 @@
 
 import { ConfigReader } from '@backstage/config';
 import { readProviderConfigs } from './PuppetDbEntityProviderConfig';
-import { Duration } from 'luxon';
 
 describe('readProviderConfigs', () => {
   afterEach(() => jest.resetAllMocks());
@@ -120,10 +119,8 @@ describe('readProviderConfigs', () => {
 
     expect(providerConfigs).toHaveLength(1);
     expect(providerConfigs[0].schedule).toEqual({
-      frequency: Duration.fromISO('PT30M'),
-      timeout: {
-        minutes: 10,
-      },
+      frequency: { minutes: 30 },
+      timeout: { minutes: 10 },
     });
   });
 });

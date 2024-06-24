@@ -194,6 +194,7 @@ export namespace coreServices {
   const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
   const discovery: ServiceRef<DiscoveryService, 'plugin'>;
+  const rootHealth: ServiceRef<RootHealthService, 'root'>;
   const httpAuth: ServiceRef<HttpAuthService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
@@ -499,6 +500,18 @@ export function resolveSafeChildPath(base: string, path: string): string;
 
 // @public
 export interface RootConfigService extends Config {}
+
+// @public (undocumented)
+export interface RootHealthService {
+  getLiveness(): Promise<{
+    status: number;
+    payload?: JsonValue;
+  }>;
+  getReadiness(): Promise<{
+    status: number;
+    payload?: JsonValue;
+  }>;
+}
 
 // @public
 export interface RootHttpRouterService {

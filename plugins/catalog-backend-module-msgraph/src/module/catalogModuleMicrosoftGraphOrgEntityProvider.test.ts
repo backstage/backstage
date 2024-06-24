@@ -17,7 +17,6 @@
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { Duration } from 'luxon';
 import { catalogModuleMicrosoftGraphOrgEntityProvider } from './catalogModuleMicrosoftGraphOrgEntityProvider';
 import { MicrosoftGraphOrgEntityProvider } from '../processors';
 
@@ -67,8 +66,8 @@ describe('catalogModuleMicrosoftGraphOrgEntityProvider', () => {
       ],
     });
 
-    expect(usedSchedule?.frequency).toEqual(Duration.fromISO('PT30M'));
-    expect(usedSchedule?.timeout).toEqual(Duration.fromISO('PT3M'));
+    expect(usedSchedule?.frequency).toEqual({ minutes: 30 });
+    expect(usedSchedule?.timeout).toEqual({ minutes: 3 });
     expect(addedProviders?.length).toEqual(1);
     expect(addedProviders?.pop()?.getProviderName()).toEqual(
       'MicrosoftGraphOrgEntityProvider:customProviderId',
