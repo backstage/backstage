@@ -309,11 +309,11 @@ map:
 In case you want to customize the ingested entities, the provider allows to pass
 transformers for users and groups.
 
-Transformers can be configured by extending `ldapOrgEntityProviderTransformExtensionPoint`. Here is an example:
+Transformers can be configured by extending `ldapOrgEntityProviderTransformsExtensionPoint`. Here is an example:
 
 ```ts title="packages/backend/src/index.ts"
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { ldapOrgEntityProviderTransformExtensionPoint } from '@backstage/plugin-catalog-backend-module-ldap';
+import { ldapOrgEntityProviderTransformsExtensionPoint } from '@backstage/plugin-catalog-backend-module-ldap';
 import { myUserTransformer, myGroupTransformer } from './transformers';
 
 backend.add(
@@ -324,7 +324,7 @@ backend.add(
       env.registerInit({
         deps: {
           /* highlight-add-start */
-          ldapTransformers: ldapOrgEntityProviderTransformExtensionPoint,
+          ldapTransformers: ldapOrgEntityProviderTransformsExtensionPoint,
           /* highlight-add-end */
         },
         async init({ ldapTransformers }) {

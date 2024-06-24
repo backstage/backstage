@@ -15,23 +15,15 @@
  */
 
 import {
-  CacheService,
   CacheServiceOptions,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import Keyv from 'keyv';
 import { DefaultCacheClient } from './CacheClient';
-import { CacheManagerOptions } from './types';
+import { CacheManagerOptions, PluginCacheManager } from './types';
 
 type StoreFactory = (pluginId: string, defaultTtl: number | undefined) => Keyv;
-
-/*
- * TODO(freben): This class intentionally inlines the CacheManagerOptions and
- * PluginCacheManager types, to not break the api reports in backend-common
- * which re-exports it. When backend-common is deprecated, we can stop inlining
- * those types.
- */
 
 /**
  * Implements a Cache Manager which will automatically create new cache clients
@@ -66,18 +58,7 @@ export class CacheManager {
    */
   static fromConfig(
     config: Config,
-    options: {
-      /**
-       * An optional logger for use by the PluginCacheManager.
-       */
-      logger?: LoggerService;
-
-      /**
-       * An optional handler for connection errors emitted from the underlying data
-       * store.
-       */
-      onError?: (err: Error) => void;
-    } = {},
+    options: CacheManagerOptions = {},
   ): CacheManager {
     // If no `backend.cache` config is provided, instantiate the CacheManager
     // with an in-memory cache client.
@@ -126,9 +107,7 @@ export class CacheManager {
    * @param pluginId - The plugin that the cache manager should be created for.
    *        Plugin names should be unique.
    */
-  forPlugin(pluginId: string): {
-    getClient(options?: CacheServiceOptions): CacheService;
-  } {
+  forPlugin(pluginId: string): PluginCacheManager {
     return {
       getClient: (defaultOptions = {}) => {
         const clientFactory = (options: CacheServiceOptions) => {

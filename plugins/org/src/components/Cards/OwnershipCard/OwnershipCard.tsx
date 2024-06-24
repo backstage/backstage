@@ -67,31 +67,34 @@ export const OwnershipCard = (props: {
   variant?: InfoCardVariants;
   entityFilterKind?: string[];
   hideRelationsToggle?: boolean;
+  /** @deprecated Please use relationAggregation instead */
   relationsType?: EntityRelationAggregation;
+  relationAggregation?: EntityRelationAggregation;
   entityLimit?: number;
 }) => {
   const {
     variant,
     entityFilterKind,
     hideRelationsToggle,
-    relationsType,
     entityLimit = 6,
   } = props;
+  const relationAggregation = props.relationAggregation ?? props.relationsType;
   const relationsToggle =
     hideRelationsToggle === undefined ? false : hideRelationsToggle;
   const classes = useStyles();
   const { entity } = useEntity();
 
-  const defaultRelationsType = entity.kind === 'User' ? 'aggregated' : 'direct';
-  const [getRelationsType, setRelationsType] = useState(
-    relationsType ?? defaultRelationsType,
+  const defaultRelationAggregation =
+    entity.kind === 'User' ? 'aggregated' : 'direct';
+  const [getRelationAggregation, setRelationAggregation] = useState(
+    relationAggregation ?? defaultRelationAggregation,
   );
 
   useEffect(() => {
-    if (!relationsType) {
-      setRelationsType(defaultRelationsType);
+    if (!relationAggregation) {
+      setRelationAggregation(defaultRelationAggregation);
     }
-  }, [setRelationsType, defaultRelationsType, relationsType]);
+  }, [setRelationAggregation, defaultRelationAggregation, relationAggregation]);
 
   return (
     <InfoCard
@@ -112,16 +115,18 @@ export const OwnershipCard = (props: {
                 placement="top"
                 arrow
                 title={`${
-                  getRelationsType === 'direct' ? 'Direct' : 'Aggregated'
+                  getRelationAggregation === 'direct' ? 'Direct' : 'Aggregated'
                 } Relations`}
               >
                 <Switch
                   color="primary"
-                  checked={getRelationsType !== 'direct'}
+                  checked={getRelationAggregation !== 'direct'}
                   onChange={() => {
-                    const updatedRelationsType =
-                      getRelationsType === 'direct' ? 'aggregated' : 'direct';
-                    setRelationsType(updatedRelationsType);
+                    const updatedRelationAggregation =
+                      getRelationAggregation === 'direct'
+                        ? 'aggregated'
+                        : 'direct';
+                    setRelationAggregation(updatedRelationAggregation);
                   }}
                   name="pin"
                   inputProps={{ 'aria-label': 'Ownership Type Switch' }}
@@ -136,7 +141,7 @@ export const OwnershipCard = (props: {
         className={classes.grid}
         entity={entity}
         entityLimit={entityLimit}
-        relationsType={getRelationsType}
+        relationAggregation={getRelationAggregation}
         entityFilterKind={entityFilterKind}
       />
     </InfoCard>

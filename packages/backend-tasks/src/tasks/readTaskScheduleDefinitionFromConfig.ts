@@ -19,14 +19,14 @@ import { HumanDuration } from '@backstage/types';
 import { TaskScheduleDefinition } from './types';
 import { Duration } from 'luxon';
 
-function readDuration(config: Config, key: string): Duration | HumanDuration {
+function readDuration(config: Config, key: string): HumanDuration {
   if (typeof config.get(key) === 'string') {
     const value = config.getString(key);
     const duration = Duration.fromISO(value);
     if (!duration.isValid) {
       throw new Error(`Invalid duration: ${value}`);
     }
-    return duration;
+    return duration.toObject();
   }
 
   return readDurationFromConfig(config, { key });

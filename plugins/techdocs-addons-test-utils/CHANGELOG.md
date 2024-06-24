@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs-addons-test-utils
 
+## 1.0.33
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/plugin-techdocs@1.10.6
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-techdocs-react@1.2.5
+  - @backstage/plugin-catalog-react@1.12.1
+  - @backstage/plugin-search-react@1.7.12
+  - @backstage/plugin-catalog@1.21.0
+  - @backstage/core-app-api@1.12.6
+  - @backstage/integration-react@1.1.28
+  - @backstage/test-utils@1.5.6
+
 ## 1.0.33-next.2
 
 ### Patch Changes

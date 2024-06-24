@@ -1,5 +1,18 @@
 # @backstage/test-utils
 
+## 1.5.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-permission-react@0.4.23
+  - @backstage/core-app-api@1.12.6
+  - @backstage/config@1.2.0
+  - @backstage/types@1.1.1
+
 ## 1.5.6-next.2
 
 ### Patch Changes

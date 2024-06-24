@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { BackendFeature, BackendFeatureFactory } from '../types';
+import { BackendFeatureCompat } from '../types';
 import {
   BackendModuleRegistrationPoints,
   BackendPluginRegistrationPoints,
@@ -90,63 +90,57 @@ export interface CreateBackendPluginOptions {
  */
 export function createBackendPlugin(
   options: CreateBackendPluginOptions,
-): () => BackendFeature {
-  const factory: BackendFeatureFactory = () => {
-    let registrations: InternalBackendPluginRegistration[];
+): BackendFeatureCompat {
+  function getRegistrations() {
+    const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
+      [];
+    let init: InternalBackendPluginRegistration['init'] | undefined = undefined;
 
-    return {
-      $$type: '@backstage/BackendFeature',
-      version: 'v1',
-      getRegistrations() {
-        if (registrations) {
-          return registrations;
+    options.register({
+      registerExtensionPoint(ext, impl) {
+        if (init) {
+          throw new Error('registerExtensionPoint called after registerInit');
         }
-        const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
-          [];
-        let init: InternalBackendPluginRegistration['init'] | undefined =
-          undefined;
-
-        options.register({
-          registerExtensionPoint(ext, impl) {
-            if (init) {
-              throw new Error(
-                'registerExtensionPoint called after registerInit',
-              );
-            }
-            extensionPoints.push([ext, impl]);
-          },
-          registerInit(regInit) {
-            if (init) {
-              throw new Error('registerInit must only be called once');
-            }
-            init = {
-              deps: regInit.deps,
-              func: regInit.init,
-            };
-          },
-        });
-
-        if (!init) {
-          throw new Error(
-            `registerInit was not called by register in ${options.pluginId}`,
-          );
-        }
-
-        registrations = [
-          {
-            type: 'plugin',
-            pluginId: options.pluginId,
-            extensionPoints,
-            init,
-          },
-        ];
-        return registrations;
+        extensionPoints.push([ext, impl]);
       },
-    };
-  };
-  factory.$$type = '@backstage/BackendFeatureFactory';
+      registerInit(regInit) {
+        if (init) {
+          throw new Error('registerInit must only be called once');
+        }
+        init = {
+          deps: regInit.deps,
+          func: regInit.init,
+        };
+      },
+    });
 
-  return factory;
+    if (!init) {
+      throw new Error(
+        `registerInit was not called by register in ${options.pluginId}`,
+      );
+    }
+
+    return [
+      {
+        type: 'plugin',
+        pluginId: options.pluginId,
+        extensionPoints,
+        init,
+      },
+    ];
+  }
+
+  function backendFeatureCompatWrapper() {
+    return backendFeatureCompatWrapper;
+  }
+
+  Object.assign(backendFeatureCompatWrapper, {
+    $$type: '@backstage/BackendFeature' as const,
+    version: 'v1',
+    getRegistrations,
+  });
+
+  return backendFeatureCompatWrapper as BackendFeatureCompat;
 }
 
 /**
@@ -180,62 +174,56 @@ export interface CreateBackendModuleOptions {
  */
 export function createBackendModule(
   options: CreateBackendModuleOptions,
-): () => BackendFeature {
-  const factory: BackendFeatureFactory = () => {
-    let registrations: InternalBackendModuleRegistration[];
+): BackendFeatureCompat {
+  function getRegistrations() {
+    const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
+      [];
+    let init: InternalBackendModuleRegistration['init'] | undefined = undefined;
 
-    return {
-      $$type: '@backstage/BackendFeature',
-      version: 'v1',
-      getRegistrations() {
-        if (registrations) {
-          return registrations;
+    options.register({
+      registerExtensionPoint(ext, impl) {
+        if (init) {
+          throw new Error('registerExtensionPoint called after registerInit');
         }
-        const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
-          [];
-        let init: InternalBackendModuleRegistration['init'] | undefined =
-          undefined;
-
-        options.register({
-          registerExtensionPoint(ext, impl) {
-            if (init) {
-              throw new Error(
-                'registerExtensionPoint called after registerInit',
-              );
-            }
-            extensionPoints.push([ext, impl]);
-          },
-          registerInit(regInit) {
-            if (init) {
-              throw new Error('registerInit must only be called once');
-            }
-            init = {
-              deps: regInit.deps,
-              func: regInit.init,
-            };
-          },
-        });
-
-        if (!init) {
-          throw new Error(
-            `registerInit was not called by register in ${options.moduleId} module for ${options.pluginId}`,
-          );
-        }
-
-        registrations = [
-          {
-            type: 'module',
-            pluginId: options.pluginId,
-            moduleId: options.moduleId,
-            extensionPoints,
-            init,
-          },
-        ];
-        return registrations;
+        extensionPoints.push([ext, impl]);
       },
-    };
-  };
-  factory.$$type = '@backstage/BackendFeatureFactory';
+      registerInit(regInit) {
+        if (init) {
+          throw new Error('registerInit must only be called once');
+        }
+        init = {
+          deps: regInit.deps,
+          func: regInit.init,
+        };
+      },
+    });
 
-  return factory;
+    if (!init) {
+      throw new Error(
+        `registerInit was not called by register in ${options.moduleId} module for ${options.pluginId}`,
+      );
+    }
+
+    return [
+      {
+        type: 'module',
+        pluginId: options.pluginId,
+        moduleId: options.moduleId,
+        extensionPoints,
+        init,
+      },
+    ];
+  }
+
+  function backendFeatureCompatWrapper() {
+    return backendFeatureCompatWrapper;
+  }
+
+  Object.assign(backendFeatureCompatWrapper, {
+    $$type: '@backstage/BackendFeature' as const,
+    version: 'v1',
+    getRegistrations,
+  });
+
+  return backendFeatureCompatWrapper as BackendFeatureCompat;
 }

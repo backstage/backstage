@@ -1,5 +1,47 @@
 # @backstage/plugin-scaffolder-backend
 
+## 1.22.9
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- 5c65785: Fixing issues with log redaction in the scaffolder logs
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 7d30d95: Fixing issue with log meta fields possibly being circular refs
+- d617103: Updating the logger redaction message to something less dramatic
+- f4c8486: Increase max wait time in debug:wait action to 10 minutes
+- bcec60f: added the following new permissions to the scaffolder backend endpoints:
+
+  - `scaffolder.task.create`
+  - `scaffolder.task.cancel`
+  - `scaffolder.task.read`
+
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-tasks@0.5.24
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-scaffolder-backend-module-github@0.3.0
+  - @backstage/integration@1.12.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.1.17
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.1.9
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.1.9
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.2.9
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.1.11
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.4.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.1.11
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.1.9
+  - @backstage/plugin-catalog-node@1.12.1
+  - @backstage/plugin-permission-node@0.7.30
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-scaffolder-common@1.5.3
+  - @backstage/plugin-scaffolder-node@0.4.5
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.22.8-next.3
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @backstage/plugin-search-backend-node
 
+## 1.2.24
+
+### Patch Changes
+
+- 6a576dc: Replace the usage of `getVoidLogger` with `mockServices.logger.mock` in order to remove the dependency with the soon-to-be-deprecated `backend-common` package.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 5b6f979: Split backend search plugin startup into "init" and "start" stages to ensure necessary initialization has happened before startup
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-tasks@0.5.24
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-search-common@1.2.12
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 1.2.24-next.3
 
 ### Patch Changes

@@ -90,21 +90,22 @@ function buildEntityPickerUISchema(
     uiSchema?.['ui:options'] || {};
   const allowedKinds = uiOptions.allowedKinds;
 
-  const catalogFilter = {
-    ...uiOptions.catalogFilter,
-    ...(allowedKinds
-      ? {
-          kind: allowedKinds,
-          [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
-        }
-      : {
-          [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
-        }),
-  };
+  const catalogFilter = asArray(uiOptions.catalogFilter).map(e => ({
+    ...e,
+    ...(allowedKinds ? { kind: allowedKinds } : {}),
+    [`relations.${RELATION_OWNED_BY}`]: identityRefs || [],
+  }));
 
   return {
     'ui:options': {
       catalogFilter,
     },
   };
+}
+
+function asArray(catalogFilter: any): any[] {
+  if (catalogFilter) {
+    return Array.isArray(catalogFilter) ? catalogFilter : [catalogFilter];
+  }
+  return [{}];
 }

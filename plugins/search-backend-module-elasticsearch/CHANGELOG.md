@@ -1,5 +1,33 @@
 # @backstage/plugin-search-backend-module-elasticsearch
 
+## 1.5.0
+
+### Minor Changes
+
+- b186701: **BREAKING**: The ElasticSearch indexer will now delete stale indices matching the indexer's pattern.
+  The method `getAliases` of `ElasticSearchClientWrapper` has been deprecated and might be removed in future releases.
+
+  An indexer using the `some-type-index__*` pattern will remove indices matching this pattern after indexation
+  to prevent stale indices leading to shards exhaustion.
+
+  Before upgrading ensure that the index pattern doesn't match indices that are not managed by Backstage
+  and thus shouldn't be deleted.
+
+  Note: The ElasticSearch indexer already uses wildcards patterns to remove aliases on these indices.
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- 6a576dc: Replace the usage of `getVoidLogger` with `mockServices.logger.mock` in order to remove the dependency with the soon-to-be-deprecated `backend-common` package.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-search-backend-node@1.2.24
+  - @backstage/plugin-search-common@1.2.12
+  - @backstage/config@1.2.0
+  - @backstage/integration-aws-node@0.1.12
+
 ## 1.4.2-next.3
 
 ### Patch Changes

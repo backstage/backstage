@@ -15,8 +15,8 @@
  */
 
 import { Config } from '@backstage/config';
-import { readHttpServerOptions } from '@backstage/backend-app-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { readHttpServerOptions } from '../rootHttpRouter/http/config';
 
 type Target = string | { internal: string; external: string };
 

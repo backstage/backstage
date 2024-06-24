@@ -116,6 +116,8 @@ export type TechDocsReaderPageValue = {
   entityMetadata: AsyncState<TechDocsEntityMetadata>;
   shadowRoot?: ShadowRoot;
   setShadowRoot: Dispatch<SetStateAction<ShadowRoot | undefined>>;
+  shadowRootVersion: number;
+  incShadowRootVersion: () => void;
   title: string;
   setTitle: Dispatch<SetStateAction<string>>;
   subtitle: string;

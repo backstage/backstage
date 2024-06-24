@@ -194,4 +194,35 @@ describe('collectRouteIds', () => {
       'test.extRef': extRef,
     });
   });
+
+  it('can disable external routes that have defaults', () => {
+    const source = createExternalRouteRef({
+      id: 'test',
+      defaultTarget: 'test.target1',
+    });
+    const target1 = createRouteRef({ id: 'test' });
+    const plugin = createPlugin({
+      id: 'test',
+      routes: { target1 },
+      externalRoutes: { source },
+    });
+
+    // resolves normally with no config
+    let result = resolveRouteBindings(() => {}, new MockConfigApi({}), [
+      plugin,
+    ]);
+
+    expect(result.get(source)).toBe(target1);
+
+    // can be disabled
+    result = resolveRouteBindings(
+      () => {},
+      new MockConfigApi({
+        app: { routes: { bindings: { 'test.source': false } } },
+      }),
+      [plugin],
+    );
+
+    expect(result.get(source)).toBe(undefined);
+  });
 });

@@ -1,5 +1,21 @@
 # @backstage/plugin-notifications
 
+## 0.2.2
+
+### Patch Changes
+
+- 7f02684: Do not always show scrollbars in notification description
+- 6d196b4: Fixes performance issue with Notifications title counter.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/core-components@0.14.8
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/theme@0.5.6
+  - @backstage/plugin-notifications-common@0.0.4
+  - @backstage/plugin-signals-react@0.0.4
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.2.2-next.3
 
 ### Patch Changes
