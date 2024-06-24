@@ -221,6 +221,8 @@ describe('github:environment:create examples', () => {
       mockOctokit.rest.actions.createEnvironmentVariable,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       name: 'key1',
       value: 'val1',
@@ -229,6 +231,8 @@ describe('github:environment:create examples', () => {
       mockOctokit.rest.actions.createEnvironmentVariable,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       name: 'key2',
       value: 'val2',

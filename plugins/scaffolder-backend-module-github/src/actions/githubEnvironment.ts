@@ -187,6 +187,8 @@ export function createGithubEnvironmentAction(options: {
       for (const [key, value] of Object.entries(environmentVariables ?? {})) {
         await client.rest.actions.createEnvironmentVariable({
           repository_id: repository.data.id,
+          owner: owner,
+          repo: repo,
           environment_name: name,
           name: key,
           value,
