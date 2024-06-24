@@ -7151,6 +7151,7 @@ __metadata:
     "@types/humanize-duration": ^3.18.1
     "@types/json-schema": ^7.0.9
     "@types/react": ^16.13.1 || ^17.0.0 || ^18.0.0
+    "@types/react-window": ^1.8.8
     "@uiw/react-codemirror": ^4.9.3
     classnames: ^2.2.6
     git-url-parse: ^14.0.0
@@ -7163,6 +7164,7 @@ __metadata:
     msw: ^1.0.0
     qs: ^6.9.4
     react-use: ^17.2.4
+    react-window: ^1.8.10
     swr: ^2.0.0
     yaml: ^2.0.0
     zen-observable: ^0.10.0
@@ -18097,7 +18099,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-window@npm:^1.8.5":
+"@types/react-window@npm:^1.8.5, @types/react-window@npm:^1.8.8":
   version: 1.8.8
   resolution: "@types/react-window@npm:1.8.8"
   dependencies:
@@ -38306,7 +38308,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-window@npm:^1.8.6":
+"react-window@npm:^1.8.10, react-window@npm:^1.8.6":
   version: 1.8.10
   resolution: "react-window@npm:1.8.10"
   dependencies:
