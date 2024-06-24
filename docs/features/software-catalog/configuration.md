@@ -47,7 +47,7 @@ action is logged for further investigation.
 ### Local File (`type: file`) Configurations
 
 In addition to url locations, you can use the `file` location type to bring in content from the local file system. You should only use this for local development, test setups, and example data, not for production data.
-You are also not able to use placeholders in them like `$text`. `$json` or `$yaml`. You can however reference other files relative to the current file. See the full [catalog example data set here](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/app-config.yaml.hbs) for an extensive example.
+You are also not able to use placeholders in them like `$text`, `$json` or `$yaml`. You can however reference other files relative to the current file. See the full [catalog example data set here](https://github.com/backstage/backstage/blob/master/packages/create-app/templates/default-app/app-config.yaml.hbs) for an extensive example.
 
 Here is an example pulling in the `all.yaml` file from the examples folder. Note the use of `../../` to go up two levels from the current execution path of the backend. This is typically `packages/backend/`.
 
