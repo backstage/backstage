@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Duration } from 'luxon';
 import { readProviderConfigs } from './GithubEntityProviderConfig';
 
 describe('readProviderConfigs', () => {
@@ -270,7 +269,7 @@ describe('readProviderConfigs', () => {
         visibility: undefined,
       },
       schedule: {
-        frequency: Duration.fromISO('PT30M'),
+        frequency: { minutes: 30 },
         timeout: {
           minutes: 3,
         },

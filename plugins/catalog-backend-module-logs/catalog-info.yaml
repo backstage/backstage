@@ -1,0 +1,10 @@
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  name: backstage-plugin-catalog-backend-module-logs
+  title: '@backstage/plugin-catalog-backend-module-logs'
+  description: A module that subscribes to catalog releated events and logs them.
+spec:
+  lifecycle: experimental
+  type: backstage-backend-plugin-module
+  owner: maintainers

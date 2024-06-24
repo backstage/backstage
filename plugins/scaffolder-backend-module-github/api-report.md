@@ -77,6 +77,7 @@ export function createGithubEnvironmentAction(options: {
         }
       | undefined;
     customBranchPolicyNames?: string[] | undefined;
+    customTagPolicyNames?: string[] | undefined;
     environmentVariables?:
       | {
           [key: string]: string;

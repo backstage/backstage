@@ -150,6 +150,18 @@ microsoftGraphOrg:
       loadPhotos: false
 ```
 
+If you are using `userGroupMember`, the configuration for `loadPhotos` should still be managed under `users:` while omitting `search` and `filters`.
+
+```yaml
+microsoftGraphOrg:
+  providerId:
+    user:
+      loadPhotos: false
+    userGroupMember:
+      filter: "displayName eq 'Backstage Users'"
+      search: '"description:One" AND ("displayName:Video" OR "displayName:Drive")'
+```
+
 ## Customizing Transformation
 
 Ingested entities can be customized by providing custom transformers.

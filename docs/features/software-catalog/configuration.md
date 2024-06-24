@@ -177,3 +177,106 @@ here.
 Setting this value too low risks exhausting rate limits on external systems that
 are queried by processors, such as version control systems housing catalog-info
 files.
+
+## Subscribing to Catalog Errors
+
+Catalog errors are published to the [events plugin](https://github.com/backstage/backstage/tree/master/plugins/events-node): `@backstage/plugin-events-node`. You can subscribe to events and respond to errors, for example you may wish to log them.
+
+The first step is to add the events backend plugin to your Backstage application. Navigate to your Backstage application directory and add the plugin package.
+
+```ts
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-events-node
+```
+
+Now you can install the events backend plugin in your backend.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-events-backend/alpha'));
+```
+
+### Logging Errors
+
+If you want to log catalog errors you can install the `@backstage/plugin-catalog-backend-module-logs` module.
+
+Install the catalog logs module.
+
+```ts
+# From your Backstage root directory
+yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-logs
+```
+
+Add the module to your backend.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-catalog-backend-module-logs'));
+```
+
+This will log errors with a level of `warn`.
+
+You should now see logs as the catalog emits events. Example:
+
+```
+[1] 2024-06-07T00:00:28.787Z events warn Policy check failed for user:default/guest; caused by Error: Malformed envelope, /metadata/tags must be array entity=user:default/guest location=file:/Users/foobar/code/backstage-demo-instance/examples/org.yaml
+```
+
+### Custom Error Handling
+
+If you wish to handle catalog errors with specific logic different from logging the errors the following should help you get started. For example, you may wish to send a notification or create a ticket for someone to investigate.
+
+Create a backend module that subscribes to the catalog error events. The topic is `experimental.catalog.errors`.
+
+```ts title="packages/backend/src/index.ts"
+import { CATALOG_ERRORS_TOPIC } from '@backstage/plugin-catalog-backend';
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { eventsServiceRef, EventParams } from '@backstage/plugin-events-node';
+
+interface EventsPayload {
+  entity: string;
+  location?: string;
+  errors: Error[];
+}
+
+interface EventsParamsWithPayload extends EventParams {
+  eventPayload: EventsPayload;
+}
+
+const eventsModuleCatalogErrors = createBackendModule({
+  pluginId: 'events',
+  moduleId: 'catalog-errors',
+  register(env) {
+    env.registerInit({
+      deps: {
+        events: eventsServiceRef,
+        logger: coreServices.logger,
+      },
+      async init({ events, logger }) {
+        events.subscribe({
+          id: 'catalog',
+          topics: [CATALOG_ERRORS_TOPIC],
+          async onEvent(params: EventParams): Promise<void> {
+            const event = params as EventsParamsWithPayload;
+            const { entity, location, errors } = event.eventPayload;
+            // Add custom logic here for responding to errors
+            for (const error of errors) {
+              logger.warn(error.message, {
+                entity,
+                location,
+              });
+            }
+          },
+        });
+      },
+    });
+  },
+});
+```
+
+Now install your module.
+
+```ts title="packages/backend/src/index.ts"
+backend.add(eventsModuleCatalogErrors);
+```
