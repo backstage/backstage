@@ -4,4 +4,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Fixed a bug where the RepoUrlPicker would still require the 'owner' field after the usage was changed to 'repo'.
+Fixed a bug where the `RepoUrlPicker` would still require the `owner` field for `azure`
