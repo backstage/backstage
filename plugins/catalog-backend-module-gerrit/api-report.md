@@ -7,8 +7,8 @@ import { Config } from '@backstage/config';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { TaskRunner } from '@backstage/backend-tasks';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
 export class GerritEntityProvider implements EntityProvider {
@@ -19,8 +19,8 @@ export class GerritEntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): GerritEntityProvider[];
   // (undocumented)

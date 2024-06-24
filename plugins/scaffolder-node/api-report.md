@@ -16,7 +16,7 @@ import { ScmIntegrations } from '@backstage/integration';
 import { SpawnOptionsWithoutStdio } from 'child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'stream';
 import { z } from 'zod';
@@ -196,7 +196,7 @@ export type ExecuteShellCommandOptions = {
 
 // @public
 export function fetchContents(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
   baseUrl?: string;
   fetchUrl?: string;
@@ -206,7 +206,7 @@ export function fetchContents(options: {
 
 // @public
 export function fetchFile(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
   baseUrl?: string;
   fetchUrl?: string;

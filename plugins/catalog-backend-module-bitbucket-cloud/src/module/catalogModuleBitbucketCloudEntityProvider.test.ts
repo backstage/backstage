@@ -15,7 +15,7 @@
  */
 
 import { createServiceFactory } from '@backstage/backend-plugin-api';
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { startTestBackend, mockServices } from '@backstage/backend-test-utils';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
@@ -36,7 +36,7 @@ describe('catalogModuleBitbucketCloudEntityProvider', () => {
       },
     });
     let addedProviders: Array<BitbucketCloudEntityProvider> | undefined;
-    let usedSchedule: TaskScheduleDefinition | undefined;
+    let usedSchedule: SchedulerServiceTaskScheduleDefinition | undefined;
 
     const catalogExtensionPointImpl = {
       addEntityProvider: (providers: any) => {

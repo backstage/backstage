@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { NotFoundError } from '@backstage/errors';
 import { ScmIntegration } from '@backstage/integration';
 import 'core-js/features/promise'; // NOTE: This can be removed when ES2021 is implemented
@@ -22,7 +22,7 @@ import { resolveCodeOwner } from './resolve';
 import { scmCodeOwnersPaths } from './scm';
 
 export async function readCodeOwners(
-  reader: UrlReader,
+  reader: UrlReaderService,
   sourceUrl: string,
   codeownersPaths: string[],
 ): Promise<string | undefined> {
@@ -49,7 +49,7 @@ export async function readCodeOwners(
 }
 
 export async function findCodeOwnerByTarget(
-  reader: UrlReader,
+  reader: UrlReaderService,
   targetUrl: string,
   scmIntegration: ScmIntegration,
 ): Promise<string | undefined> {

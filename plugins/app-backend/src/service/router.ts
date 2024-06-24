@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import { notFoundHandler } from '@backstage/backend-common';
 import {
-  notFoundHandler,
-  PluginDatabaseManager,
-} from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+  DatabaseService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import { AppConfig, Config } from '@backstage/config';
 import helmet from 'helmet';
 import express from 'express';
@@ -59,7 +59,7 @@ export interface RouterOptions {
    *
    * This is a built-in alternative to using a `staticFallbackHandler`.
    */
-  database?: PluginDatabaseManager;
+  database?: DatabaseService;
 
   /**
    * The name of the app package that content should be served from. The same app package should be

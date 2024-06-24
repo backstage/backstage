@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskScheduleDefinitionConfig } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinitionConfig } from '@backstage/backend-plugin-api';
 
 export interface Config {
   search?: {
@@ -48,7 +48,7 @@ export interface Config {
         /**
          * The schedule for how often to run the collation job.
          */
-        schedule?: TaskScheduleDefinitionConfig;
+        schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
       };
     };
   };

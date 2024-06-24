@@ -54,7 +54,7 @@ import { RefreshOptions, RefreshService } from '../service/types';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { mockServices } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { DatabaseManager } from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 
 const voidLogger = mockServices.logger.mock();
 

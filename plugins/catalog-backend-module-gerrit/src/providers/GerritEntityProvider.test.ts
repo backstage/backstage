@@ -15,11 +15,6 @@
  */
 
 import {
-  PluginTaskScheduler,
-  TaskInvocationDefinition,
-  TaskRunner,
-} from '@backstage/backend-tasks';
-import {
   mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
@@ -30,6 +25,11 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { GerritEntityProvider } from './GerritEntityProvider';
+import {
+  SchedulerService,
+  SchedulerServiceTaskInvocationDefinition,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 const server = setupServer();
 
@@ -41,14 +41,14 @@ const getJsonFixture = (fileName: string) =>
     ),
   );
 
-class PersistingTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
+class PersistingTaskRunner implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
   getTasks() {
     return this.tasks;
   }
 
-  run(task: TaskInvocationDefinition): Promise<void> {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void> {
     this.tasks.push(task);
     return Promise.resolve(undefined);
   }
@@ -228,7 +228,7 @@ describe('GerritEntityProvider', () => {
   it('fail with scheduler but no schedule config', () => {
     const scheduler = {
       createScheduledTaskRunner: (_: any) => jest.fn(),
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
     expect(() =>
       GerritEntityProvider.fromConfig(config, {
         logger,
@@ -270,7 +270,7 @@ describe('GerritEntityProvider', () => {
     });
     const scheduler = {
       createScheduledTaskRunner: (_: any) => schedule,
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
 
     const repoBuffer = fs.readFileSync(
       path.resolve(__dirname, '__fixtures__/listProjectsBody.txt'),

@@ -8,6 +8,7 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogClient } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
 import { DefaultTechDocsCollatorFactory as DefaultTechDocsCollatorFactory_2 } from '@backstage/plugin-search-backend-module-techdocs';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { DocsBuildStrategy as DocsBuildStrategy_2 } from '@backstage/plugin-techdocs-node';
 import { Entity } from '@backstage/catalog-model';
 import express from 'express';
@@ -16,8 +17,7 @@ import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
 import { Permission } from '@backstage/plugin-permission-common';
-import { PluginCacheManager } from '@backstage/backend-common';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
+import { PluginCacheManager } from '@backstage/backend-defaults/cache';
 import { PreparerBuilder } from '@backstage/plugin-techdocs-node';
 import { PublisherBase } from '@backstage/plugin-techdocs-node';
 import type { TechDocsCollatorFactoryOptions as TechDocsCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-techdocs';
@@ -60,7 +60,7 @@ export type OutOfTheBoxDeploymentOptions = {
   generators: GeneratorBuilder;
   publisher: PublisherBase;
   logger: winston.Logger;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   database?: Knex;
   config: Config;
   cache: PluginCacheManager;
@@ -75,7 +75,7 @@ export type OutOfTheBoxDeploymentOptions = {
 export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
   logger: winston.Logger;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy_2;
@@ -100,7 +100,7 @@ export type TechDocsCollatorFactoryOptions = TechDocsCollatorFactoryOptions_2;
 
 // @public
 export type TechDocsCollatorOptions = {
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   logger: Logger;
   tokenManager: TokenManager;
   locationTemplate?: string;

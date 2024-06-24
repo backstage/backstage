@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  createLegacyAuthAdapters,
-  HostDiscovery,
-  PluginDatabaseManager,
-  UrlReader,
-} from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import {
   DefaultNamespaceEntityPolicy,
   Entity,
@@ -108,11 +102,15 @@ import { EventBroker, EventsService } from '@backstage/plugin-events-node';
 import { durationToMilliseconds } from '@backstage/types';
 import {
   AuthService,
+  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
   PermissionsService,
+  SchedulerService,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 
 /**
  * This is a duplicate of the alpha `CatalogPermissionRule` type, for use in the stable API.
@@ -126,11 +124,11 @@ export type CatalogPermissionRuleInput<
 /** @public */
 export type CatalogEnvironment = {
   logger: LoggerService;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;

@@ -15,9 +15,9 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { TaskRunner } from '@backstage/backend-tasks';
-import { UrlReader } from '@backstage/backend-common';
+import { SchedulerService } from '@backstage/backend-plugin-api';
+import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public
 export const ANNOTATION_AWS_ACCOUNT_ID: string;
@@ -75,7 +75,7 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
 
 // @public @deprecated
 export class AwsS3DiscoveryProcessor implements CatalogProcessor {
-  constructor(reader: UrlReader);
+  constructor(reader: UrlReaderService);
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)
@@ -96,8 +96,8 @@ export class AwsS3EntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): AwsS3EntityProvider[];
   // (undocumented)

@@ -13,11 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  PluginTaskScheduler,
-  TaskInvocationDefinition,
-  TaskRunner,
-} from '@backstage/backend-tasks';
+
 import { ConfigReader } from '@backstage/config';
 import {
   ANNOTATION_LOCATION,
@@ -36,6 +32,11 @@ import {
   withLocations,
 } from './MicrosoftGraphOrgEntityProvider';
 import { mockServices } from '@backstage/backend-test-utils';
+import {
+  SchedulerService,
+  SchedulerServiceTaskInvocationDefinition,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 jest.mock('../microsoftGraph', () => {
   return {
@@ -48,14 +49,14 @@ const readMicrosoftGraphOrgMocked = readMicrosoftGraphOrg as jest.Mock<
   Promise<{ users: UserEntity[]; groups: GroupEntity[] }>
 >;
 
-class PersistingTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
+class PersistingTaskRunner implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
   getTasks() {
     return this.tasks;
   }
 
-  run(task: TaskInvocationDefinition): Promise<void> {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void> {
     this.tasks.push(task);
     return Promise.resolve(undefined);
   }
@@ -102,7 +103,7 @@ describe('MicrosoftGraphOrgEntityProvider', () => {
   const taskRunner = new PersistingTaskRunner();
   const scheduler = {
     createScheduledTaskRunner: (_: any) => taskRunner,
-  } as unknown as PluginTaskScheduler;
+  } as unknown as SchedulerService;
   const entityProviderConnection: EntityProviderConnection = {
     applyMutation: jest.fn(),
     refresh: jest.fn(),

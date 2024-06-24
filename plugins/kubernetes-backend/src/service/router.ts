@@ -19,12 +19,11 @@ import { Logger } from 'winston';
 import { KubernetesClustersSupplier } from '../types/types';
 import express from 'express';
 import { KubernetesBuilder } from './KubernetesBuilder';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 /**
- *
  * @public
  */
 export interface RouterOptions {
@@ -32,7 +31,7 @@ export interface RouterOptions {
   config: Config;
   catalogApi: CatalogApi;
   clusterSupplier?: KubernetesClustersSupplier;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   permissions: PermissionEvaluator;
 }
 

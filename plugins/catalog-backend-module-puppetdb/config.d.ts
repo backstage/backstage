@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TaskScheduleDefinition } from '@backstage/backend-tasks';
+import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 
 /**
  * Represents the configuration for the Backstage.
@@ -44,7 +44,7 @@ export interface Config {
             /**
              * (Optional) Task schedule definition for the refresh.
              */
-            schedule?: TaskScheduleDefinition;
+            schedule?: SchedulerServiceTaskScheduleDefinition;
           }
         | {
             [name: string]: {
@@ -59,7 +59,7 @@ export interface Config {
               /**
                * (Optional) Task schedule definition for the refresh.
                */
-              schedule?: TaskScheduleDefinition;
+              schedule?: SchedulerServiceTaskScheduleDefinition;
             };
           };
     };

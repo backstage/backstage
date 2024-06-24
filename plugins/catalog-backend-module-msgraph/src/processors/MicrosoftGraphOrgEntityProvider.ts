@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
@@ -40,7 +39,11 @@ import {
   UserTransformer,
 } from '../microsoftGraph';
 import { readProviderConfigs } from '../microsoftGraph/config';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Options for {@link MicrosoftGraphOrgEntityProvider}.
@@ -64,16 +67,16 @@ export type MicrosoftGraphOrgEntityProviderOptions =
        * manually at some interval.
        *
        * But more commonly you will pass in the result of
-       * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+       * {@link @backstage/backend-defaults/scheduler#SchedulerService.createScheduledTaskRunner}
        * to enable automatic scheduling of tasks.
        */
-      schedule?: 'manual' | TaskRunner;
+      schedule?: 'manual' | SchedulerServiceTaskRunner;
 
       /**
        * Scheduler used to schedule refreshes based on
        * the schedule config.
        */
-      scheduler?: PluginTaskScheduler;
+      scheduler?: SchedulerService;
 
       /**
        * The function that transforms a user entry in msgraph to an entity.
@@ -133,10 +136,10 @@ export interface MicrosoftGraphOrgEntityProviderLegacyOptions {
    * manually at some interval.
    *
    * But more commonly you will pass in the result of
-   * {@link @backstage/backend-tasks#PluginTaskScheduler.createScheduledTaskRunner}
+   * {@link @backstage/backend-defaults/scheduler#SchedulerService.createScheduledTaskRunner}
    * to enable automatic scheduling of tasks.
    */
-  schedule: 'manual' | TaskRunner;
+  schedule: 'manual' | SchedulerServiceTaskRunner;
 
   /**
    * The function that transforms a user entry in msgraph to an entity.
@@ -338,7 +341,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     markCommitComplete();
   }
 
-  private schedule(taskRunner: TaskRunner) {
+  private schedule(taskRunner: SchedulerServiceTaskRunner) {
     this.scheduleFn = async () => {
       const id = `${this.getProviderName()}:refresh`;
       await taskRunner.run({

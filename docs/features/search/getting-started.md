@@ -355,10 +355,13 @@ the search plugin to use a non-distributed database such as
 [SQLite](../../tutorials/configuring-plugin-databases.md#postgresql-and-sqlite-3)):
 
 ```typescript
-import { TaskInvocationDefinition, TaskRunner } from '@backstage/backend-tasks';
+import {
+  SchedulerServiceTaskInvocationDefinition,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
-const schedule: TaskRunner = {
-  run: async (task: TaskInvocationDefinition) => {
+const schedule: SchedulerServiceTaskRunner = {
+  run: async (task: SchedulerServiceTaskInvocationDefinition) => {
     const startRefresh = async () => {
       while (!task.signal?.aborted) {
         try {

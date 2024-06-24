@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Entity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
@@ -36,7 +35,11 @@ import {
   BitbucketServerLocationParser,
   defaultBitbucketServerLocationParser,
 } from './BitbucketServerLocationParser';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 /**
  * Discovers catalog files located in Bitbucket Server.
@@ -59,8 +62,8 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     options: {
       logger: LoggerService;
       parser?: BitbucketServerLocationParser;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): BitbucketServerEntityProvider[] {
     const integrations = ScmIntegrations.fromConfig(config);
@@ -103,7 +106,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     config: BitbucketServerEntityProviderConfig,
     integration: BitbucketServerIntegration,
     logger: LoggerService,
-    taskRunner: TaskRunner,
+    taskRunner: SchedulerServiceTaskRunner,
     parser?: BitbucketServerLocationParser,
   ) {
     this.integration = integration;
@@ -115,7 +118,9 @@ export class BitbucketServerEntityProvider implements EntityProvider {
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({

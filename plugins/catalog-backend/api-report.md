@@ -26,6 +26,7 @@ import { CatalogProcessorRefreshKeysResult as CatalogProcessorRefreshKeysResult_
 import { CatalogProcessorRelationResult as CatalogProcessorRelationResult_2 } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorResult as CatalogProcessorResult_2 } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DefaultCatalogCollatorFactory as DefaultCatalogCollatorFactory_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DefaultCatalogCollatorFactoryOptions as DefaultCatalogCollatorFactoryOptions_2 } from '@backstage/plugin-search-backend-module-catalog';
 import { DeferredEntity as DeferredEntity_2 } from '@backstage/plugin-catalog-node';
@@ -56,14 +57,12 @@ import { PlaceholderResolver as PlaceholderResolver_2 } from '@backstage/plugin-
 import { PlaceholderResolverParams as PlaceholderResolverParams_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverRead as PlaceholderResolverRead_2 } from '@backstage/plugin-catalog-node';
 import { PlaceholderResolverResolveUrl as PlaceholderResolverResolveUrl_2 } from '@backstage/plugin-catalog-node';
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Router } from 'express';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { TokenManager } from '@backstage/backend-common';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Validators } from '@backstage/catalog-model';
 
 // @public @deprecated
@@ -195,11 +194,11 @@ export type CatalogCollatorEntityTransformer =
 // @public (undocumented)
 export type CatalogEnvironment = {
   logger: LoggerService;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   permissions: PermissionsService | PermissionAuthorizer;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   discovery?: DiscoveryService;
   auth?: AuthService;
   httpAuth?: HttpAuthService;
@@ -254,14 +253,14 @@ export class CodeOwnersProcessor implements CatalogProcessor_2 {
   constructor(options: {
     integrations: ScmIntegrationRegistry;
     logger: LoggerService;
-    reader: UrlReader;
+    reader: UrlReaderService;
   });
   // (undocumented)
   static fromConfig(
     config: Config,
     options: {
       logger: LoggerService;
-      reader: UrlReader;
+      reader: UrlReaderService;
     },
   ): CodeOwnersProcessor;
   // (undocumented)
@@ -279,7 +278,7 @@ export function createRandomProcessingInterval(options: {
 // @public @deprecated (undocumented)
 export class DefaultCatalogCollator {
   constructor(options: {
-    discovery: PluginEndpointDiscovery;
+    discovery: DiscoveryService;
     tokenManager: TokenManager;
     locationTemplate?: string;
     filter?: GetEntitiesRequest['filter'];
@@ -293,7 +292,7 @@ export class DefaultCatalogCollator {
   // (undocumented)
   protected readonly catalogClient: CatalogApi;
   // (undocumented)
-  protected discovery: PluginEndpointDiscovery;
+  protected discovery: DiscoveryService;
   // (undocumented)
   execute(): Promise<CatalogEntityDocument[]>;
   // (undocumented)
@@ -302,7 +301,7 @@ export class DefaultCatalogCollator {
   static fromConfig(
     _config: Config,
     options: {
-      discovery: PluginEndpointDiscovery;
+      discovery: DiscoveryService;
       tokenManager: TokenManager;
       filter?: GetEntitiesRequest['filter'];
     },
@@ -413,7 +412,7 @@ export class PlaceholderProcessor implements CatalogProcessor_2 {
 // @public (undocumented)
 export type PlaceholderProcessorOptions = {
   resolvers: Record<string, PlaceholderResolver_2>;
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrationRegistry;
 };
 
@@ -465,7 +464,7 @@ export function transformLegacyPolicyToProcessor(
 
 // @public (undocumented)
 export class UrlReaderProcessor implements CatalogProcessor_2 {
-  constructor(options: { reader: UrlReader; logger: LoggerService });
+  constructor(options: { reader: UrlReaderService; logger: LoggerService });
   // (undocumented)
   getProcessorName(): string;
   // (undocumented)

@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  HostDiscovery,
-  PluginDatabaseManager,
-  UrlReader,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
   CompoundEntityRef,
@@ -83,15 +77,19 @@ import { Duration } from 'luxon';
 import {
   AuthService,
   BackstageCredentials,
+  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LifecycleService,
   PermissionsService,
+  SchedulerService,
+  UrlReaderService,
 } from '@backstage/backend-plugin-api';
 import {
   IdentityApi,
   IdentityApiGetIdentityRequest,
 } from '@backstage/plugin-auth-node';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
 
@@ -139,11 +137,11 @@ function isActionPermissionRuleInput(
 export interface RouterOptions {
   logger: Logger;
   config: Config;
-  reader: UrlReader;
+  reader: UrlReaderService;
   lifecycle?: LifecycleService;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   catalogClient: CatalogApi;
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   actions?: TemplateAction<any, any>[];
   /**
    * @deprecated taskWorkers is deprecated in favor of concurrentTasksLimit option with a single TaskWorker

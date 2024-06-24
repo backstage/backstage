@@ -13,8 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+
+import {
+  DatabaseService,
+  resolvePackagePath,
+} from '@backstage/backend-plugin-api';
 import {
   NotificationGetOptions,
   NotificationModifyOptions,
@@ -68,7 +71,7 @@ export class DatabaseNotificationsStore implements NotificationsStore {
     database,
     skipMigrations,
   }: {
-    database: PluginDatabaseManager;
+    database: DatabaseService;
     skipMigrations?: boolean;
   }): Promise<DatabaseNotificationsStore> {
     const client = await database.getClient();

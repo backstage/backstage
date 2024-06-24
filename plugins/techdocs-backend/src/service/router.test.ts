@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  errorHandler,
-  loggerToWinstonLogger,
-  PluginCacheManager,
-  PluginEndpointDiscovery,
-} from '@backstage/backend-common';
+import { errorHandler, loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import {
   DocsBuildStrategy,
@@ -34,6 +29,8 @@ import { CachedEntityLoader } from './CachedEntityLoader';
 import { createEventStream, createRouter, RouterOptions } from './router';
 import { TechDocsCache } from '../cache';
 import { mockServices } from '@backstage/backend-test-utils';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { PluginCacheManager } from '@backstage/backend-defaults/cache';
 
 jest.mock('@backstage/catalog-client');
 jest.mock('@backstage/config');
@@ -112,7 +109,7 @@ describe('createRouter', () => {
     hasDocsBeenGenerated: jest.fn(),
     publish: jest.fn(),
   };
-  const discovery: jest.Mocked<PluginEndpointDiscovery> = {
+  const discovery: jest.Mocked<DiscoveryService> = {
     getBaseUrl: jest.fn(),
     getExternalBaseUrl: jest.fn(),
   };

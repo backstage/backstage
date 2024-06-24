@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  DatabaseManager,
-  loggerToWinstonLogger,
-} from '@backstage/backend-common';
+import { loggerToWinstonLogger } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
@@ -27,6 +24,7 @@ import {
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
 import { mockServices } from '@backstage/backend-test-utils';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(

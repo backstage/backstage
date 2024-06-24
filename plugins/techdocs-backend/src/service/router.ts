@@ -13,11 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  PluginEndpointDiscovery,
-  PluginCacheManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
+
+import { createLegacyAuthAdapters } from '@backstage/backend-common';
 import { CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
@@ -38,7 +35,12 @@ import { createCacheMiddleware, TechDocsCache } from '../cache';
 import { CachedEntityLoader } from './CachedEntityLoader';
 import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import {
+  AuthService,
+  DiscoveryService,
+  HttpAuthService,
+} from '@backstage/backend-plugin-api';
+import { PluginCacheManager } from '@backstage/backend-defaults/cache';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -51,7 +53,7 @@ export type OutOfTheBoxDeploymentOptions = {
   generators: GeneratorBuilder;
   publisher: PublisherBase;
   logger: winston.Logger;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
   cache: PluginCacheManager;
@@ -71,7 +73,7 @@ export type OutOfTheBoxDeploymentOptions = {
 export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
   logger: winston.Logger;
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   config: Config;
   cache: PluginCacheManager;
   docsBuildStrategy?: DocsBuildStrategy;

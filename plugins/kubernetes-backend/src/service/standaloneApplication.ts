@@ -18,7 +18,6 @@ import {
   errorHandler,
   notFoundHandler,
   requestLoggingHandler,
-  HostDiscovery,
 } from '@backstage/backend-common';
 import compression from 'compression';
 import cors from 'cors';
@@ -29,6 +28,7 @@ import { createRouter } from './router';
 import { ConfigReader } from '@backstage/config';
 import { CatalogClient } from '@backstage/catalog-client';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 
 export interface ApplicationOptions {
   enableCors: boolean;

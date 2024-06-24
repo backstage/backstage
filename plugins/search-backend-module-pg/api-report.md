@@ -5,11 +5,11 @@
 ```ts
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { Config } from '@backstage/config';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { Knex } from 'knex';
 import { Logger } from 'winston';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { SearchQuery } from '@backstage/plugin-search-common';
 
@@ -25,9 +25,7 @@ export class DatabaseDocumentStore implements DatabaseStore {
   // (undocumented)
   completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
   // (undocumented)
-  static create(
-    database: PluginDatabaseManager,
-  ): Promise<DatabaseDocumentStore>;
+  static create(database: DatabaseService): Promise<DatabaseDocumentStore>;
   // (undocumented)
   getTransaction(): Promise<Knex.Transaction>;
   // (undocumented)
@@ -88,7 +86,7 @@ export class PgSearchEngine implements SearchEngine {
   constructor(databaseStore: DatabaseStore, config: Config, logger?: Logger);
   // @deprecated (undocumented)
   static from(options: {
-    database: PluginDatabaseManager;
+    database: DatabaseService;
     config: Config;
     logger?: Logger;
   }): Promise<PgSearchEngine>;
@@ -104,7 +102,7 @@ export class PgSearchEngine implements SearchEngine {
   // (undocumented)
   setTranslator(translator: PgSearchQueryTranslator): void;
   // (undocumented)
-  static supported(database: PluginDatabaseManager): Promise<boolean>;
+  static supported(database: DatabaseService): Promise<boolean>;
   // (undocumented)
   translator(
     query: SearchQuery,
@@ -146,7 +144,7 @@ export type PgSearchHighlightOptions = {
 
 // @public
 export type PgSearchOptions = {
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   logger?: Logger;
 };
 

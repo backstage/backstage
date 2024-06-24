@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { UrlReaders } from '@backstage/backend-common';
 import { ConfigReader } from '@backstage/config';
 import { AwsS3DiscoveryProcessor } from './AwsS3DiscoveryProcessor';
 import {
@@ -34,6 +33,7 @@ import fs from 'fs';
 import path from 'path';
 import YAML from 'yaml';
 import { mockServices } from '@backstage/backend-test-utils';
+import { UrlReaders } from '@backstage/backend-defaults/urlReader';
 
 const s3Client = mockClient(S3Client);
 const object: Object = {

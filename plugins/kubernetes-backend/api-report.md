@@ -28,7 +28,6 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { RequestHandler } from 'http-proxy-middleware';
 import { TokenCredential } from '@azure/identity';
 
@@ -389,7 +388,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  discovery: PluginEndpointDiscovery;
+  discovery: DiscoveryService;
   // (undocumented)
   logger: Logger;
   // (undocumented)

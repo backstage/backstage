@@ -74,6 +74,7 @@
   },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "aws-sdk-client-mock": "^4.0.0",

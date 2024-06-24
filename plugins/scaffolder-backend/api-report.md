@@ -14,6 +14,7 @@ import * as bitbucketCloud from '@backstage/plugin-scaffolder-backend-module-bit
 import * as bitbucketServer from '@backstage/plugin-scaffolder-backend-module-bitbucket-server';
 import { CatalogApi } from '@backstage/catalog-client';
 import { Config } from '@backstage/config';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Duration } from 'luxon';
 import { executeShellCommand as executeShellCommand_2 } from '@backstage/plugin-scaffolder-node';
@@ -35,11 +36,10 @@ import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PluginDatabaseManager } from '@backstage/backend-common';
-import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { RESOURCE_TYPE_SCAFFOLDER_TEMPLATE } from '@backstage/plugin-scaffolder-common/alpha';
 import { ScaffolderEntitiesProcessor as ScaffolderEntitiesProcessor_2 } from '@backstage/plugin-catalog-backend-module-scaffolder-entity-model';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
@@ -62,7 +62,7 @@ import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ZodType } from 'zod';
 import { ZodTypeDef } from 'zod';
 
@@ -93,7 +93,7 @@ export interface CreateBuiltInActionsOptions {
   catalogClient: CatalogApi;
   config: Config;
   integrations: ScmIntegrations;
-  reader: UrlReader;
+  reader: UrlReaderService;
 }
 
 // @public
@@ -152,7 +152,7 @@ export function createFetchCatalogEntityAction(options: {
 
 // @public
 export function createFetchPlainAction(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
 }): TemplateAction_2<
   {
@@ -165,7 +165,7 @@ export function createFetchPlainAction(options: {
 
 // @public
 export function createFetchPlainFileAction(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
 }): TemplateAction_2<
   {
@@ -178,7 +178,7 @@ export function createFetchPlainFileAction(options: {
 
 // @public
 export function createFetchTemplateAction(options: {
-  reader: UrlReader;
+  reader: UrlReaderService;
   integrations: ScmIntegrations;
   additionalTemplateFilters?: Record<string, TemplateFilter_2>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
@@ -458,7 +458,7 @@ export class DatabaseTaskStore implements TaskStore {
 
 // @public
 export type DatabaseTaskStoreOptions = {
-  database: PluginDatabaseManager | Knex;
+  database: DatabaseService | Knex;
 };
 
 // @public @deprecated
@@ -483,7 +483,7 @@ export interface RouterOptions {
   // (undocumented)
   config: Config;
   // (undocumented)
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   // (undocumented)
   discovery?: DiscoveryService;
   // (undocumented)
@@ -501,9 +501,9 @@ export interface RouterOptions {
   // (undocumented)
   permissions?: PermissionsService;
   // (undocumented)
-  reader: UrlReader;
+  reader: UrlReaderService;
   // (undocumented)
-  scheduler?: PluginTaskScheduler;
+  scheduler?: SchedulerService;
   // (undocumented)
   taskBroker?: TaskBroker_2;
   // @deprecated (undocumented)

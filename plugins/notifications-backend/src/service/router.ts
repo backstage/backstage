@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { errorHandler, PluginDatabaseManager } from '@backstage/backend-common';
+
+import { errorHandler } from '@backstage/backend-common';
 import express, { Request } from 'express';
 import Router from 'express-promise-router';
 import {
@@ -39,6 +40,7 @@ import {
 import { InputError } from '@backstage/errors';
 import {
   AuthService,
+  DatabaseService,
   DiscoveryService,
   HttpAuthService,
   LoggerService,
@@ -58,7 +60,7 @@ import { parseEntityOrderFieldParams } from './parseEntityOrderFieldParams';
 /** @internal */
 export interface RouterOptions {
   logger: LoggerService;
-  database: PluginDatabaseManager;
+  database: DatabaseService;
   discovery: DiscoveryService;
   auth: AuthService;
   httpAuth: HttpAuthService;

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { PluginTaskScheduler, TaskRunner } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { InputError } from '@backstage/errors';
 import {
@@ -35,7 +34,11 @@ import * as uuid from 'uuid';
 
 import { readGerritConfigs } from './config';
 import { GerritProjectQueryResult, GerritProviderConfig } from './types';
-import { LoggerService } from '@backstage/backend-plugin-api';
+import {
+  LoggerService,
+  SchedulerService,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 /** @public */
 export class GerritEntityProvider implements EntityProvider {
@@ -49,8 +52,8 @@ export class GerritEntityProvider implements EntityProvider {
     configRoot: Config,
     options: {
       logger: LoggerService;
-      schedule?: TaskRunner;
-      scheduler?: PluginTaskScheduler;
+      schedule?: SchedulerServiceTaskRunner;
+      scheduler?: SchedulerService;
     },
   ): GerritEntityProvider[] {
     if (!options.schedule && !options.scheduler) {
@@ -95,7 +98,7 @@ export class GerritEntityProvider implements EntityProvider {
     config: GerritProviderConfig,
     integration: GerritIntegration,
     logger: LoggerService,
-    taskRunner: TaskRunner,
+    taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.config = config;
     this.integration = integration;
@@ -114,7 +117,9 @@ export class GerritEntityProvider implements EntityProvider {
     await this.scheduleFn();
   }
 
-  private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
+  private createScheduleFn(
+    taskRunner: SchedulerServiceTaskRunner,
+  ): () => Promise<void> {
     return async () => {
       const taskId = `${this.getProviderName()}:refresh`;
       return taskRunner.run({

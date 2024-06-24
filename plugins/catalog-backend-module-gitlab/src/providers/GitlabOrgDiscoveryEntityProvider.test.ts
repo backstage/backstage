@@ -15,11 +15,6 @@
  */
 
 import {
-  PluginTaskScheduler,
-  TaskInvocationDefinition,
-  TaskRunner,
-} from '@backstage/backend-tasks';
-import {
   mockServices,
   setupRequestMockHandlers,
 } from '@backstage/backend-test-utils';
@@ -31,19 +26,24 @@ import { handlers } from '../__testUtils__/handlers';
 import * as mock from '../__testUtils__/mocks';
 import { GroupNameTransformerOptions } from '../lib/types';
 import { GitlabOrgDiscoveryEntityProvider } from './GitlabOrgDiscoveryEntityProvider';
+import {
+  SchedulerService,
+  SchedulerServiceTaskInvocationDefinition,
+  SchedulerServiceTaskRunner,
+} from '@backstage/backend-plugin-api';
 
 const server = setupServer(...handlers);
 setupRequestMockHandlers(server);
 afterEach(() => jest.clearAllMocks());
 
-class PersistingTaskRunner implements TaskRunner {
-  private tasks: TaskInvocationDefinition[] = [];
+class PersistingTaskRunner implements SchedulerServiceTaskRunner {
+  private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 
   getTasks() {
     return this.tasks;
   }
 
-  run(task: TaskInvocationDefinition): Promise<void> {
+  run(task: SchedulerServiceTaskInvocationDefinition): Promise<void> {
     this.tasks.push(task);
     return Promise.resolve(undefined);
   }
@@ -113,7 +113,7 @@ describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
   it('should fail with scheduler but no schedule config', () => {
     const scheduler = {
       createScheduledTaskRunner: (_: any) => jest.fn(),
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
     const config = new ConfigReader(mock.config_org_integration_saas);
 
     expect(() =>
@@ -130,7 +130,7 @@ describe('GitlabOrgDiscoveryEntityProvider - configuration', () => {
     const schedule = new PersistingTaskRunner();
     const scheduler = {
       createScheduledTaskRunner: (_: any) => schedule,
-    } as unknown as PluginTaskScheduler;
+    } as unknown as SchedulerService;
     const config = new ConfigReader(mock.config_org_integration_saas_sched);
     const providers = GitlabOrgDiscoveryEntityProvider.fromConfig(config, {
       logger,

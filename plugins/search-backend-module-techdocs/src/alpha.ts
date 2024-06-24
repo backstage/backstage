@@ -23,8 +23,8 @@ import {
   coreServices,
   createBackendModule,
   createExtensionPoint,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
 } from '@backstage/backend-plugin-api';
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
 import {
   DefaultTechDocsCollatorFactory,
@@ -101,7 +101,7 @@ export default createBackendModule({
         };
 
         const schedule = config.has('search.collators.techdocs.schedule')
-          ? readTaskScheduleDefinitionFromConfig(
+          ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
               config.getConfig('search.collators.techdocs.schedule'),
             )
           : defaultSchedule;

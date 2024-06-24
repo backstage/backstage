@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { readTaskScheduleDefinitionFromConfig } from '@backstage/backend-tasks';
 import { Config } from '@backstage/config';
 import { GitlabProviderConfig } from '../lib';
+import { readSchedulerServiceTaskScheduleDefinitionFromConfig } from '@backstage/backend-plugin-api';
 
 /**
  * Extracts the gitlab config from a config object
@@ -49,7 +49,9 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     config.getOptionalBoolean('skipForkedRepos') ?? false;
 
   const schedule = config.has('schedule')
-    ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
+    ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+        config.getConfig('schedule'),
+      )
     : undefined;
 
   return {

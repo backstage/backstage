@@ -32,7 +32,6 @@ jest.mock('@octokit/rest', () => {
   return { Octokit };
 });
 
-import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { GithubLocationAnalyzer } from './GithubLocationAnalyzer';
 import {
   setupRequestMockHandlers,
@@ -41,11 +40,12 @@ import {
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
 import { ConfigReader } from '@backstage/config';
+import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 const server = setupServer();
 
 describe('GithubLocationAnalyzer', () => {
-  const mockDiscoveryApi: jest.Mocked<PluginEndpointDiscovery> = {
+  const mockDiscoveryApi: jest.Mocked<DiscoveryService> = {
     getBaseUrl: jest.fn().mockResolvedValue('http://localhost:7007'),
     getExternalBaseUrl: jest.fn(),
   };
