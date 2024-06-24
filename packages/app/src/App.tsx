@@ -83,6 +83,7 @@ import { customDevToolsPage } from './components/devtools/CustomDevToolsPage';
 import { DevToolsPage } from '@backstage/plugin-devtools';
 import { CatalogUnprocessedEntitiesPage } from '@backstage/plugin-catalog-unprocessed-entities';
 import { NotificationsPage } from '@backstage/plugin-notifications';
+import './fonttest.css';
 
 const app = createApp({
   apis,
