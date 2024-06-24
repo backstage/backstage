@@ -32,7 +32,6 @@ import React, { useEffect, useState } from 'react';
 
 import ClosedDropdown from './static/ClosedDropdown';
 import OpenedDropdown from './static/OpenedDropdown';
-import { string } from 'zod';
 
 /** @public */
 export type SelectInputBaseClassKey = 'root' | 'input';
