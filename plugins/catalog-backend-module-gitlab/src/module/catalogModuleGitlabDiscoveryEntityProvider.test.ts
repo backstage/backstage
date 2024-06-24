@@ -21,7 +21,6 @@ import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { Duration } from 'luxon';
 import { GitlabDiscoveryEntityProvider } from '../providers';
 import { catalogModuleGitlabDiscoveryEntityProvider } from './catalogModuleGitlabDiscoveryEntityProvider';
 
@@ -89,8 +88,8 @@ describe('catalogModuleGitlabDiscoveryEntityProvider', () => {
       ],
     });
 
-    expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));
-    expect(usedSchedule?.timeout).toEqual(Duration.fromISO('PT3M'));
+    expect(usedSchedule?.frequency).toEqual({ months: 1 });
+    expect(usedSchedule?.timeout).toEqual({ minutes: 3 });
     expect(addedProviders?.length).toEqual(1);
     expect(runner).not.toHaveBeenCalled();
 
