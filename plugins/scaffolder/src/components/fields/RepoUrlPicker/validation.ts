@@ -54,7 +54,14 @@ export const repoPickerValidation = (
           );
         }
       }
-      // For anything other than bitbucket and gerrit
+      if (integrationApi?.byHost(host)?.type === 'azure') {
+        if (!searchParams.get('project')) {
+          validation.addError(
+            'Incomplete repository location provided, project not provided',
+          );
+        }
+      }
+      // For anything other than bitbucket, azure, and gerrit
       else if (integrationApi?.byHost(host)?.type !== 'gerrit') {
         if (!searchParams.get('owner')) {
           validation.addError(
