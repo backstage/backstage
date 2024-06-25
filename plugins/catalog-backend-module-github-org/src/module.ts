@@ -121,7 +121,7 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
               userTransformer,
               teamTransformer,
               alwaysUseDefaultNamespace:
-                !definition.neverUseDefaultNamespace &&
+                !definition.namespacePerOrg &&
                 definitions.length === 1 &&
                 definition.orgs?.length === 1,
             }),
@@ -137,7 +137,7 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
   githubUrl: string;
   orgs?: string[];
   schedule: TaskScheduleDefinition;
-  neverUseDefaultNamespace?: boolean;
+  namespacePerOrg?: boolean;
 }> {
   const baseKey = 'catalog.providers.githubOrg';
   const baseConfig = rootConfig.getOptional(baseKey);
@@ -154,6 +154,6 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     githubUrl: c.getString('githubUrl'),
     orgs: c.getOptionalStringArray('orgs'),
     schedule: readTaskScheduleDefinitionFromConfig(c.getConfig('schedule')),
-    neverUseDefaultNamespace: c.getOptionalBoolean('neverUseDefaultNamespace'),
+    namespacePerOrg: c.getOptionalBoolean('namespacePerOrg'),
   }));
 }

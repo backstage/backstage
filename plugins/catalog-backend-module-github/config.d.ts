@@ -227,7 +227,7 @@ export interface Config {
              * is provided. By default, if not provided, a single org will use the
              * default namespace.
              */
-            neverUseDefaultNamespace?: boolean;
+            namespacePerOrg?: boolean;
           }
         | Array<{
             /**
@@ -263,7 +263,7 @@ export interface Config {
              * is provided. By default, if not provided, a single org will use the
              * default namespace.
              */
-            neverUseDefaultNamespace?: boolean;
+            namespacePerOrg?: boolean;
           }>;
     };
   };

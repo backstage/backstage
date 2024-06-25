@@ -3,4 +3,4 @@
 '@backstage/plugin-catalog-backend-module-github': patch
 ---
 
-Add `neverUseDefaultNamespace` config option to use GitHub org namespace when only single org is provided
+Add `namespacePerOrg` config option to use GitHub org namespace when only single org is provided
