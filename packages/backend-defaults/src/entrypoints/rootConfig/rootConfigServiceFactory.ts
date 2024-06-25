@@ -52,20 +52,21 @@ export const rootConfigServiceFactoryWithOptions = (
   createServiceFactory({
     service: coreServices.rootConfig,
     deps: {
+      logger: coreServices.rootLogger,
       redactions: coreServices.redactions,
     },
-    async factory({ redactions }) {
+    async factory({ logger, redactions }) {
       const source = ConfigSources.default({
         argv: options?.argv,
         remote: options?.remote,
         watch: options?.watch,
       });
 
-      console.log(`Loading config from ${source}`);
+      logger.info(`Loading config from ${source}`);
 
       const config = await ConfigSources.toConfig(source);
 
-      const secretEnumerator = await createConfigSecretEnumerator();
+      const secretEnumerator = await createConfigSecretEnumerator({ logger });
       redactions.addRedactions(secretEnumerator(config));
       config.subscribe?.(() =>
         redactions.addRedactions(secretEnumerator(config)),
