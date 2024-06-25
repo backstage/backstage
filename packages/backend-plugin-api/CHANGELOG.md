@@ -1,5 +1,19 @@
 # @backstage/backend-plugin-api
 
+## 0.6.21-next.0
+
+### Patch Changes
+
+- 53ced70: Added a new Root Health Service which adds new endpoints for health checks.
+- 083eaf9: Fix bug where ISO durations could no longer be used for schedules
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.14
+
 ## 0.6.19
 
 ### Patch Changes
