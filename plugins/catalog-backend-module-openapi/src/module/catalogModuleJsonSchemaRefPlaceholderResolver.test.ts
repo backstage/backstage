@@ -37,7 +37,7 @@ describe('catalogModuleJsonSchemaRefPlaceholderResolver', () => {
 
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
-      features: [catalogModuleJsonSchemaRefPlaceholderResolver()],
+      features: [catalogModuleJsonSchemaRefPlaceholderResolver],
     });
 
     expect(Object.keys(registeredPlaceholderResolvers)).toEqual([

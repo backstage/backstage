@@ -52,7 +52,7 @@ export default async function createPlugin(
   // The target parameter below needs to match the ldap.providers.target
   // value specified in your app-config.
   builder.addEntityProvider(
-    LdapOrgEntityProvider.fromConfig(env.config, {
+    LdapOrgEntityProvider.fromLegacyConfig(env.config, {
       id: 'our-ldap-master',
       target: 'ldaps://ds.example.net',
       logger: env.logger,
@@ -343,12 +343,15 @@ the group transformer.
 2. Configure the provider with the transformer:
 
    ```ts
-   const ldapEntityProvider = LdapOrgEntityProvider.fromConfig(env.config, {
-     id: 'our-ldap-master',
-     target: 'ldaps://ds.example.net',
-     logger: env.logger,
-     groupTransformer: myGroupTransformer,
-   });
+   const ldapEntityProvider = LdapOrgEntityProvider.fromLegacyConfig(
+     env.config,
+     {
+       id: 'our-ldap-master',
+       target: 'ldaps://ds.example.net',
+       logger: env.logger,
+       groupTransformer: myGroupTransformer,
+     },
+   );
    ```
 
 ## Using a Processor instead of a Provider
@@ -368,7 +371,7 @@ register it in the catalog plugin:
 
 ```typescript title="packages/backend/src/plugins/catalog.ts"
 builder.addProcessor(
-  LdapOrgReaderProcessor.fromConfig(env.config, {
+  LdapOrgReaderProcessor.fromLegacyConfig(env.config, {
     logger: env.logger,
   }),
 );

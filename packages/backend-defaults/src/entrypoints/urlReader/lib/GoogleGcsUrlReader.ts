@@ -17,10 +17,10 @@
 import * as GoogleCloud from '@google-cloud/storage';
 import {
   UrlReaderService,
-  UrlReaderReadTreeResponse,
-  UrlReaderReadUrlOptions,
-  UrlReaderReadUrlResponse,
-  UrlReaderSearchResponse,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import { ReaderFactory } from './types';
 import getRawBody from 'raw-body';
@@ -106,18 +106,18 @@ export class GoogleGcsUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    _options?: UrlReaderReadUrlOptions,
-  ): Promise<UrlReaderReadUrlResponse> {
+    _options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse> {
     // TODO etag is not implemented yet.
     const stream = this.readStreamFromUrl(url);
     return ReadUrlResponseFactory.fromReadable(stream);
   }
 
-  async readTree(): Promise<UrlReaderReadTreeResponse> {
+  async readTree(): Promise<UrlReaderServiceReadTreeResponse> {
     throw new Error('GcsUrlReader does not implement readTree');
   }
 
-  async search(url: string): Promise<UrlReaderSearchResponse> {
+  async search(url: string): Promise<UrlReaderServiceSearchResponse> {
     const { bucket, key: pattern } = parseURL(url);
 
     if (!pattern.endsWith('*') || pattern.indexOf('*') !== pattern.length - 1) {

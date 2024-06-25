@@ -20,7 +20,15 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 
-/** @public */
+/**
+ * Reading content from external systems.
+ *
+ * See {@link @backstage/code-plugin-api#UrlReaderService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/url-reader | the service docs}
+ * for more information.
+ *
+ * @public
+ */
 export const urlReaderServiceFactory = createServiceFactory({
   service: coreServices.urlReader,
   deps: {

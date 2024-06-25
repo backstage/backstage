@@ -15,9 +15,9 @@
  */
 
 import {
-  UrlReaderReadTreeResponse,
-  UrlReaderReadTreeResponseDirOptions,
-  UrlReaderReadTreeResponseFile,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadTreeResponseDirOptions,
+  UrlReaderServiceReadTreeResponseFile,
 } from '@backstage/backend-plugin-api';
 import archiver from 'archiver';
 import yauzl, { Entry } from 'yauzl';
@@ -30,7 +30,7 @@ import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 /**
  * Wraps a zip archive stream into a tree response reader.
  */
-export class ZipArchiveResponse implements UrlReaderReadTreeResponse {
+export class ZipArchiveResponse implements UrlReaderServiceReadTreeResponse {
   private read = false;
 
   constructor(
@@ -141,9 +141,9 @@ export class ZipArchiveResponse implements UrlReaderReadTreeResponse {
     });
   }
 
-  async files(): Promise<UrlReaderReadTreeResponseFile[]> {
+  async files(): Promise<UrlReaderServiceReadTreeResponseFile[]> {
     this.onlyOnce();
-    const files = Array<UrlReaderReadTreeResponseFile>();
+    const files = Array<UrlReaderServiceReadTreeResponseFile>();
     const temporary = await this.streamToTemporaryFile(this.stream);
 
     await this.forEveryZipEntry(temporary.fileName, async (entry, content) => {
@@ -184,7 +184,9 @@ export class ZipArchiveResponse implements UrlReaderReadTreeResponse {
     return archive;
   }
 
-  async dir(options?: UrlReaderReadTreeResponseDirOptions): Promise<string> {
+  async dir(
+    options?: UrlReaderServiceReadTreeResponseDirOptions,
+  ): Promise<string> {
     this.onlyOnce();
     const dir =
       options?.targetDir ??

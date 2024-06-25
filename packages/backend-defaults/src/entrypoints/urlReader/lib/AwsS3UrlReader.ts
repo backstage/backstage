@@ -16,11 +16,11 @@
 
 import {
   UrlReaderService,
-  UrlReaderReadTreeOptions,
-  UrlReaderReadTreeResponse,
-  UrlReaderReadUrlOptions,
-  UrlReaderReadUrlResponse,
-  UrlReaderSearchResponse,
+  UrlReaderServiceReadTreeOptions,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import {
@@ -252,8 +252,8 @@ export class AwsS3UrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: UrlReaderReadUrlOptions,
-  ): Promise<UrlReaderReadUrlResponse> {
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse> {
     const { etag, lastModifiedAfter } = options ?? {};
 
     try {
@@ -299,8 +299,8 @@ export class AwsS3UrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: UrlReaderReadTreeOptions,
-  ): Promise<UrlReaderReadTreeResponse> {
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse> {
     try {
       const { path, bucket, region } = parseUrl(url, this.integration.config);
       const s3Client = await this.buildS3Client(
@@ -356,7 +356,7 @@ export class AwsS3UrlReader implements UrlReaderService {
     }
   }
 
-  async search(): Promise<UrlReaderSearchResponse> {
+  async search(): Promise<UrlReaderServiceSearchResponse> {
     throw new Error('AwsS3Reader does not implement search');
   }
 

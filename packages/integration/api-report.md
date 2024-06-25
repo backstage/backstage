@@ -186,6 +186,7 @@ export type BitbucketCloudIntegrationConfig = {
   apiBaseUrl: string;
   username?: string;
   appPassword?: string;
+  token?: string;
 };
 
 // @public @deprecated
@@ -326,7 +327,7 @@ export type GerritIntegrationConfig = {
   host: string;
   baseUrl?: string;
   cloneUrl?: string;
-  gitilesBaseUrl?: string;
+  gitilesBaseUrl: string;
   username?: string;
   password?: string;
 };

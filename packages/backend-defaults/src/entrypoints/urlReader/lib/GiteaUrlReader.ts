@@ -16,11 +16,11 @@
 
 import {
   UrlReaderService,
-  UrlReaderReadTreeOptions,
-  UrlReaderReadTreeResponse,
-  UrlReaderReadUrlOptions,
-  UrlReaderReadUrlResponse,
-  UrlReaderSearchResponse,
+  UrlReaderServiceReadTreeOptions,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
 import {
   getGiteaFileContentsUrl,
@@ -74,8 +74,8 @@ export class GiteaUrlReader implements UrlReaderService {
 
   async readUrl(
     url: string,
-    options?: UrlReaderReadUrlOptions,
-  ): Promise<UrlReaderReadUrlResponse> {
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse> {
     let response: Response;
     const blobUrl = getGiteaFileContentsUrl(this.integration.config, url);
 
@@ -126,8 +126,8 @@ export class GiteaUrlReader implements UrlReaderService {
 
   async readTree(
     url: string,
-    options?: UrlReaderReadTreeOptions,
-  ): Promise<UrlReaderReadTreeResponse> {
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse> {
     const lastCommitHash = await this.getLastCommitHash(url);
     if (options?.etag && options.etag === lastCommitHash) {
       throw new NotModifiedError();
@@ -156,7 +156,7 @@ export class GiteaUrlReader implements UrlReaderService {
     });
   }
 
-  search(): Promise<UrlReaderSearchResponse> {
+  search(): Promise<UrlReaderServiceSearchResponse> {
     throw new Error('GiteaUrlReader search not implemented.');
   }
 

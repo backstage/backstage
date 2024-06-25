@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli",
-  "version": "0.26.7-next.2",
+  "version": "0.26.10-next.0",
   "description": "CLI for developing Backstage plugins and apps",
   "backstage": {
     "role": "cli"
@@ -90,7 +90,7 @@
     "css-loader": "^6.5.1",
     "ctrlc-windows": "^2.1.0",
     "diff": "^5.0.0",
-    "esbuild": "^0.20.0",
+    "esbuild": "^0.21.0",
     "esbuild-loader": "^4.0.0",
     "eslint": "^8.6.0",
     "eslint-config-prettier": "^9.0.0",
@@ -187,13 +187,13 @@
     "nodemon": "^3.0.1",
     "vite": "^4.4.9",
     "vite-plugin-html": "^3.2.0",
-    "vite-plugin-node-polyfills": "^0.21.0"
+    "vite-plugin-node-polyfills": "^0.22.0"
   },
   "peerDependencies": {
     "@vitejs/plugin-react": "^4.0.4",
     "vite": "^4.4.9",
     "vite-plugin-html": "^3.2.0",
-    "vite-plugin-node-polyfills": "^0.21.0"
+    "vite-plugin-node-polyfills": "^0.22.0"
   },
   "peerDependenciesMeta": {
     "@vitejs/plugin-react": {

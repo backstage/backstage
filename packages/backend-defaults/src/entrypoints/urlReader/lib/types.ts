@@ -18,7 +18,7 @@ import { Readable } from 'stream';
 import { Config } from '@backstage/config';
 import {
   UrlReaderService,
-  UrlReaderReadTreeResponse,
+  UrlReaderServiceReadTreeResponse,
   LoggerService,
 } from '@backstage/backend-plugin-api';
 
@@ -110,11 +110,11 @@ export interface ReadTreeResponseFactory {
        */
       stripFirstDirectory?: boolean;
     },
-  ): Promise<UrlReaderReadTreeResponse>;
+  ): Promise<UrlReaderServiceReadTreeResponse>;
   fromZipArchive(
     options: ReadTreeResponseFactoryOptions,
-  ): Promise<UrlReaderReadTreeResponse>;
+  ): Promise<UrlReaderServiceReadTreeResponse>;
   fromReadableArray(
     options: FromReadableArrayOptions,
-  ): Promise<UrlReaderReadTreeResponse>;
+  ): Promise<UrlReaderServiceReadTreeResponse>;
 }

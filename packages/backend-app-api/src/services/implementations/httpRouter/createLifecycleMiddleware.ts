@@ -14,26 +14,18 @@
  * limitations under the License.
  */
 
-import { LifecycleService } from '@backstage/backend-plugin-api';
-import { ServiceUnavailableError } from '@backstage/errors';
-import { HumanDuration, durationToMilliseconds } from '@backstage/types';
-import { RequestHandler } from 'express';
-
-export const DEFAULT_TIMEOUT = { seconds: 5 };
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import {
+  createLifecycleMiddleware as _createLifecycleMiddleware,
+  type LifecycleMiddlewareOptions as _LifecycleMiddlewareOptions,
+} from '../../../../../backend-defaults/src/entrypoints/httpRouter/createLifecycleMiddleware';
 
 /**
  * Options for {@link createLifecycleMiddleware}.
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/httpRouter` instead.
  */
-export interface LifecycleMiddlewareOptions {
-  lifecycle: LifecycleService;
-  /**
-   * The maximum time that paused requests will wait for the service to start, before returning an error.
-   *
-   * Defaults to 5 seconds.
-   */
-  startupRequestPauseTimeout?: HumanDuration;
-}
+export type LifecycleMiddlewareOptions = _LifecycleMiddlewareOptions;
 
 /**
  * Creates a middleware that pauses requests until the service has started.
@@ -48,59 +40,6 @@ export interface LifecycleMiddlewareOptions {
  * {@link @backstage/errors#ServiceUnavailableError}.
  *
  * @public
+ * @deprecated Please import from `@backstage/backend-defaults/httpRouter` instead.
  */
-export function createLifecycleMiddleware(
-  options: LifecycleMiddlewareOptions,
-): RequestHandler {
-  const { lifecycle, startupRequestPauseTimeout = DEFAULT_TIMEOUT } = options;
-
-  let state: 'init' | 'up' | 'down' = 'init';
-  const waiting = new Set<{
-    next: (err?: Error) => void;
-    timeout: NodeJS.Timeout;
-  }>();
-
-  lifecycle.addStartupHook(async () => {
-    if (state === 'init') {
-      state = 'up';
-      for (const item of waiting) {
-        clearTimeout(item.timeout);
-        item.next();
-      }
-      waiting.clear();
-    }
-  });
-
-  lifecycle.addShutdownHook(async () => {
-    state = 'down';
-
-    for (const item of waiting) {
-      clearTimeout(item.timeout);
-      item.next(new ServiceUnavailableError('Service is shutting down'));
-    }
-    waiting.clear();
-  });
-
-  const timeoutMs = durationToMilliseconds(startupRequestPauseTimeout);
-
-  return (_req, _res, next) => {
-    if (state === 'up') {
-      next();
-      return;
-    } else if (state === 'down') {
-      next(new ServiceUnavailableError('Service is shutting down'));
-      return;
-    }
-
-    const item = {
-      next,
-      timeout: setTimeout(() => {
-        if (waiting.delete(item)) {
-          next(new ServiceUnavailableError('Service has not started up yet'));
-        }
-      }, timeoutMs),
-    };
-
-    waiting.add(item);
-  };
-}
+export const createLifecycleMiddleware = _createLifecycleMiddleware;
