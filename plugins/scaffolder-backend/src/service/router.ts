@@ -94,7 +94,10 @@ import {
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
-import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  AutocompleteHandler,
+  WorkspaceProvider,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
  *
@@ -159,6 +162,7 @@ export interface RouterOptions {
   taskBroker?: TaskBroker;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
   permissionRules?: Array<
     TemplatePermissionRuleInput | ActionPermissionRuleInput
@@ -272,6 +276,7 @@ export async function createRouter(
     scheduler,
     additionalTemplateFilters,
     additionalTemplateGlobals,
+    additionalWorkspaceProviders,
     permissions,
     permissionRules,
     discovery = HostDiscovery.fromConfig(config),
@@ -297,7 +302,13 @@ export async function createRouter(
   let taskBroker: TaskBroker;
   if (!options.taskBroker) {
     const databaseTaskStore = await DatabaseTaskStore.create({ database });
-    taskBroker = new StorageTaskBroker(databaseTaskStore, logger, config, auth);
+    taskBroker = new StorageTaskBroker(
+      databaseTaskStore,
+      logger,
+      config,
+      auth,
+      additionalWorkspaceProviders,
+    );
 
     if (scheduler && databaseTaskStore.listStaleTasks) {
       await scheduler.scheduleTask({

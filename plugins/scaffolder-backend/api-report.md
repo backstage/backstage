@@ -64,6 +64,7 @@ import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
+import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import { ZodType } from 'zod';
 import { ZodTypeDef } from 'zod';
 
@@ -477,6 +478,8 @@ export interface RouterOptions {
   // (undocumented)
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
+  additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
+  // (undocumented)
   auth?: AuthService;
   // (undocumented)
   autocompleteHandlers?: Record<string, AutocompleteHandler>;
@@ -559,6 +562,7 @@ export class TaskManager implements TaskContext_2 {
     logger: Logger,
     auth?: AuthService,
     config?: Config,
+    additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;
