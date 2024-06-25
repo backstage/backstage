@@ -134,9 +134,11 @@ describe('gerrit core', () => {
         host: 'gerrit.com',
         username: 'U',
         password: 'P',
+        gitilesBaseUrl: 'https://gerrit.com/gerrit/plugins/gitiles',
       };
       const anonymousRequest: GerritIntegrationConfig = {
         host: 'gerrit.com',
+        gitilesBaseUrl: 'https://gerrit.com/gerrit/plugins/gitiles',
       };
       expect(
         (getGerritRequestOptions(authRequest).headers as any).Authorization,

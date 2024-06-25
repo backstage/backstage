@@ -254,19 +254,6 @@ describe('oidcAuthenticator', () => {
       expect(fakeSession['oidc:oidc.test'].code_verifier).toBeDefined();
     });
 
-    it('requests default scopes if none are provided in config', async () => {
-      const startResponse = await oidcAuthenticator.start(
-        startRequest,
-        implementation,
-      );
-      const { searchParams } = new URL(startResponse.url);
-      const scopes = searchParams.get('scope')?.split(' ') ?? [];
-
-      expect(scopes).toEqual(
-        expect.arrayContaining(['openid', 'profile', 'email']),
-      );
-    });
-
     it('encodes OAuth state in query param', async () => {
       const startResponse = await oidcAuthenticator.start(
         startRequest,

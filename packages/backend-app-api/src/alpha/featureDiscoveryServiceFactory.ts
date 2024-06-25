@@ -168,7 +168,7 @@ export const featureDiscoveryServiceFactory = createServiceFactory({
 function isBackendFeature(value: unknown): value is BackendFeature {
   return (
     !!value &&
-    typeof value === 'object' &&
+    ['object', 'function'].includes(typeof value) &&
     (value as BackendFeature).$$type === '@backstage/BackendFeature'
   );
 }

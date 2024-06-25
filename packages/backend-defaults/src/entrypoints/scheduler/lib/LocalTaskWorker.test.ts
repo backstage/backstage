@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { getVoidLogger } from '@backstage/backend-common';
 import { LocalTaskWorker } from './LocalTaskWorker';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('LocalTaskWorker', () => {
-  const logger = getVoidLogger();
+  const logger = mockServices.logger.mock();
 
   it('runs the happy path (with iso duration) and handles cancellation', async () => {
     const fn = jest.fn();

@@ -1,5 +1,53 @@
 # @backstage/plugin-app-backend
 
+## 0.3.70-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/plugin-app-node@0.1.21-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.68
+
+### Patch Changes
+
+- 8869b8e: Updated local development setup.
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- 82c2b90: Restore the support of external config schema in the router of the `app-backend` plugin, which was broken in release `1.26.0`.
+  This support is critical for dynamic frontend plugins to have access to their config values.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-app-node@0.1.19
+  - @backstage/config-loader@1.8.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.3.68-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/plugin-app-node@0.1.19-next.2
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/config-loader@1.8.1-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.3.68-next.2
 
 ### Patch Changes

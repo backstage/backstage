@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-export * from './mysql';
-export * from './postgres';
-export * from './sqlite3';
+export { MysqlConnector } from './mysql';
+export { PgConnector } from './postgres';
+export { Sqlite3Connector } from './sqlite3';

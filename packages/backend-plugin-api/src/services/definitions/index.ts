@@ -32,6 +32,7 @@ export type {
 export type { RootConfigService } from './RootConfigService';
 export type { DatabaseService } from './DatabaseService';
 export type { DiscoveryService } from './DiscoveryService';
+export type { RootHealthService } from './RootHealthService';
 export type {
   HttpRouterService,
   HttpRouterServiceAuthPolicy,
@@ -74,6 +75,15 @@ export type {
   SearchOptions,
   SearchResponse,
   SearchResponseFile,
+  UrlReaderServiceReadTreeOptions,
+  UrlReaderServiceReadTreeResponse,
+  UrlReaderServiceReadTreeResponseDirOptions,
+  UrlReaderServiceReadTreeResponseFile,
+  UrlReaderServiceReadUrlResponse,
+  UrlReaderServiceReadUrlOptions,
+  UrlReaderServiceSearchOptions,
+  UrlReaderServiceSearchResponse,
+  UrlReaderServiceSearchResponseFile,
   UrlReaderService,
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';

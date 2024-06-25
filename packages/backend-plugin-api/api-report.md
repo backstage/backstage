@@ -64,6 +64,12 @@ export interface BackendFeature {
 }
 
 // @public @deprecated (undocumented)
+export interface BackendFeatureCompat extends BackendFeature {
+  // @deprecated (undocumented)
+  (): this;
+}
+
+// @public @deprecated (undocumented)
 export type BackendModuleConfig = CreateBackendModuleOptions;
 
 // @public
@@ -188,6 +194,7 @@ export namespace coreServices {
   const rootConfig: ServiceRef<RootConfigService, 'root'>;
   const database: ServiceRef<DatabaseService, 'plugin'>;
   const discovery: ServiceRef<DiscoveryService, 'plugin'>;
+  const rootHealth: ServiceRef<RootHealthService, 'root'>;
   const httpAuth: ServiceRef<HttpAuthService, 'plugin'>;
   const httpRouter: ServiceRef<HttpRouterService, 'plugin'>;
   const lifecycle: ServiceRef<LifecycleService, 'plugin'>;
@@ -208,7 +215,7 @@ export namespace coreServices {
 // @public
 export function createBackendModule(
   options: CreateBackendModuleOptions,
-): () => BackendFeature;
+): BackendFeatureCompat;
 
 // @public
 export interface CreateBackendModuleOptions {
@@ -221,7 +228,7 @@ export interface CreateBackendModuleOptions {
 // @public
 export function createBackendPlugin(
   options: CreateBackendPluginOptions,
-): () => BackendFeature;
+): BackendFeatureCompat;
 
 // @public
 export interface CreateBackendPluginOptions {
@@ -466,54 +473,24 @@ export function readSchedulerServiceTaskScheduleDefinitionFromConfig(
   config: Config,
 ): SchedulerServiceTaskScheduleDefinition;
 
-// @public
-export type ReadTreeOptions = {
-  filter?(
-    path: string,
-    info?: {
-      size: number;
-    },
-  ): boolean;
-  etag?: string;
-  signal?: AbortSignal;
-  token?: string;
-};
+// @public @deprecated (undocumented)
+export type ReadTreeOptions = UrlReaderServiceReadTreeOptions;
 
-// @public
-export type ReadTreeResponse = {
-  files(): Promise<ReadTreeResponseFile[]>;
-  archive(): Promise<NodeJS.ReadableStream>;
-  dir(options?: ReadTreeResponseDirOptions): Promise<string>;
-  etag: string;
-};
+// @public @deprecated (undocumented)
+export type ReadTreeResponse = UrlReaderServiceReadTreeResponse;
 
-// @public
-export type ReadTreeResponseDirOptions = {
-  targetDir?: string;
-};
+// @public @deprecated (undocumented)
+export type ReadTreeResponseDirOptions =
+  UrlReaderServiceReadTreeResponseDirOptions;
 
-// @public
-export type ReadTreeResponseFile = {
-  path: string;
-  content(): Promise<Buffer>;
-  lastModifiedAt?: Date;
-};
+// @public @deprecated (undocumented)
+export type ReadTreeResponseFile = UrlReaderServiceReadTreeResponseFile;
 
-// @public
-export type ReadUrlOptions = {
-  etag?: string;
-  lastModifiedAfter?: Date;
-  signal?: AbortSignal;
-  token?: string;
-};
+// @public @deprecated (undocumented)
+export type ReadUrlOptions = UrlReaderServiceReadUrlOptions;
 
-// @public
-export type ReadUrlResponse = {
-  buffer(): Promise<Buffer>;
-  stream?(): Readable;
-  etag?: string;
-  lastModifiedAt?: Date;
-};
+// @public @deprecated (undocumented)
+export type ReadUrlResponse = UrlReaderServiceReadUrlResponse;
 
 // @public
 export function resolvePackagePath(name: string, ...paths: string[]): string;
@@ -523,6 +500,18 @@ export function resolveSafeChildPath(base: string, path: string): string;
 
 // @public
 export interface RootConfigService extends Config {}
+
+// @public (undocumented)
+export interface RootHealthService {
+  getLiveness(): Promise<{
+    status: number;
+    payload?: JsonValue;
+  }>;
+  getReadiness(): Promise<{
+    status: number;
+    payload?: JsonValue;
+  }>;
+}
 
 // @public
 export interface RootHttpRouterService {
@@ -617,25 +606,14 @@ export interface SchedulerServiceTaskScheduleDefinitionConfig {
   timeout: string | HumanDuration;
 }
 
-// @public
-export type SearchOptions = {
-  etag?: string;
-  signal?: AbortSignal;
-  token?: string;
-};
+// @public @deprecated (undocumented)
+export type SearchOptions = UrlReaderServiceSearchOptions;
 
-// @public
-export type SearchResponse = {
-  files: SearchResponseFile[];
-  etag: string;
-};
+// @public @deprecated (undocumented)
+export type SearchResponse = UrlReaderServiceSearchResponse;
 
-// @public
-export type SearchResponseFile = {
-  url: string;
-  content(): Promise<Buffer>;
-  lastModifiedAt?: Date;
-};
+// @public @deprecated (undocumented)
+export type SearchResponseFile = UrlReaderServiceSearchResponseFile;
 
 // @public (undocumented)
 export interface ServiceFactory<
@@ -682,10 +660,88 @@ export interface TokenManagerService {
 
 // @public
 export interface UrlReaderService {
-  readTree(url: string, options?: ReadTreeOptions): Promise<ReadTreeResponse>;
-  readUrl(url: string, options?: ReadUrlOptions): Promise<ReadUrlResponse>;
-  search(url: string, options?: SearchOptions): Promise<SearchResponse>;
+  readTree(
+    url: string,
+    options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse>;
+  readUrl(
+    url: string,
+    options?: UrlReaderServiceReadUrlOptions,
+  ): Promise<UrlReaderServiceReadUrlResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
 }
+
+// @public
+export type UrlReaderServiceReadTreeOptions = {
+  filter?(
+    path: string,
+    info?: {
+      size: number;
+    },
+  ): boolean;
+  etag?: string;
+  signal?: AbortSignal;
+  token?: string;
+};
+
+// @public
+export type UrlReaderServiceReadTreeResponse = {
+  files(): Promise<UrlReaderServiceReadTreeResponseFile[]>;
+  archive(): Promise<NodeJS.ReadableStream>;
+  dir(options?: UrlReaderServiceReadTreeResponseDirOptions): Promise<string>;
+  etag: string;
+};
+
+// @public
+export type UrlReaderServiceReadTreeResponseDirOptions = {
+  targetDir?: string;
+};
+
+// @public
+export type UrlReaderServiceReadTreeResponseFile = {
+  path: string;
+  content(): Promise<Buffer>;
+  lastModifiedAt?: Date;
+};
+
+// @public
+export type UrlReaderServiceReadUrlOptions = {
+  etag?: string;
+  lastModifiedAfter?: Date;
+  signal?: AbortSignal;
+  token?: string;
+};
+
+// @public
+export type UrlReaderServiceReadUrlResponse = {
+  buffer(): Promise<Buffer>;
+  stream?(): Readable;
+  etag?: string;
+  lastModifiedAt?: Date;
+};
+
+// @public
+export type UrlReaderServiceSearchOptions = {
+  etag?: string;
+  signal?: AbortSignal;
+  token?: string;
+};
+
+// @public
+export type UrlReaderServiceSearchResponse = {
+  files: UrlReaderServiceSearchResponseFile[];
+  etag: string;
+};
+
+// @public
+export type UrlReaderServiceSearchResponseFile = {
+  url: string;
+  content(): Promise<Buffer>;
+  lastModifiedAt?: Date;
+};
 
 // @public
 export interface UserInfoService {

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-test-utils",
-  "version": "0.4.0-next.2",
+  "version": "0.4.3-next.0",
   "description": "Test helpers library for Backstage backends",
   "backstage": {
     "role": "node-library"
@@ -46,6 +46,7 @@
   },
   "dependencies": {
     "@backstage/backend-app-api": "workspace:^",
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",

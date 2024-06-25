@@ -34,7 +34,7 @@ export function getHarnessEditContentsUrl(
   url: string,
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
-  return `${parsedUrl.baseUrl}/ng/account/${parsedUrl.accountId}/module/code/orgs/${parsedUrl.orgName}/projects/${parsedUrl.projectName}/${parsedUrl.repoName}/files/${parsedUrl.branch}/~/${parsedUrl.path}`;
+  return `${parsedUrl.baseUrl}/ng/account/${parsedUrl.accountId}/module/code/orgs/${parsedUrl.orgName}/projects/${parsedUrl.projectName}/repos/${parsedUrl.repoName}/files/${parsedUrl.branch}/~/${parsedUrl.path}`;
 }
 
 /**

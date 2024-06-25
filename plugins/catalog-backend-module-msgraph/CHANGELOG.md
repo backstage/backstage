@@ -1,5 +1,48 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.5.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/backend-tasks@0.5.26-next.0
+  - @backstage/plugin-catalog-node@1.12.3-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/plugin-catalog-common@1.0.24
+
+## 0.5.27
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- f7be17a: Added missing `userSelect` property in `readMicrosoftGraphOrg` method
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-tasks@0.5.24
+  - @backstage/plugin-catalog-node@1.12.1
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+
+## 0.5.27-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-catalog-common@1.0.24-next.0
+  - @backstage/plugin-catalog-node@1.12.1-next.2
+  - @backstage/backend-tasks@0.5.24-next.3
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+
 ## 0.5.27-next.2
 
 ### Patch Changes

@@ -114,10 +114,9 @@ Scope: Tooling and Community Repo Maintainers for the Backstage [Community Plugi
 
 | Name                 | Organization | GitHub                                      | Discord      |
 | -------------------- | ------------ | ------------------------------------------- | ------------ |
-| Bethany Griggs       | Red Hat      | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
-| Tomas Kral           | Red Hat      | [kadel](https://github.com/kadel)           | `tomkral`    |
 | André Wanlin         | Spotify      | [awanlin](https://github.com/awanlin)       | `ahhhndre`   |
-| Philipp Hugenroth    | Spotify      | [tudi2d](https://github.com/tudi2d)         | `tudi2d`     |
+| Bethany Griggs       | Red Hat      | [BethGriggs](https://github.com/BethGriggs) | `bethgriggs` |
+| Nick Boldt           | Red Hat      | [nickboldt](https://github.com/nickboldt)   | `nboldt`     |
 | Vincenzo Scamporlino | Spotify      | [vinzscam](https://github.com/vinzscam)     | `vinzscam`   |
 
 ### Events
@@ -188,6 +187,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Mark Avery                     | Cvent                     | [webark](https://github.com/webark)                   | `webark#8471`                  |
 | Miklós Kiss                    | Roadie.io                 | [kissmikijr](https://github.com/kissmikijr)           | `Miklos#7416`                  |
 | Patrick Jungermann             | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)         | `pjungermann#6933`             |
+| Peter Macdonald                | VodafoneZiggo             | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`                     |
 | Phil Kuang                     | FactSet Research Systems  | [kuangp](https://github.com/kuangp)                   | `pkuang#3202`                  |
 | Sebastian Poxhofer             | N26                       | [secustor](https://github.com/secustor)               | `secustor`                     |
 | Taras Mankovski                | Frontside                 | [taras](https://github.com/taras)                     | `tarasm#1256`                  |

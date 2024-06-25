@@ -67,11 +67,13 @@ describe('authModuleGithubProvider', () => {
       client_id: 'my-client-id',
       redirect_uri: `http://localhost:${server.port()}/api/auth/github/handler/frame`,
       state: expect.any(String),
+      scope: 'read:user',
     });
 
     expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({
       env: 'development',
       nonce: decodeURIComponent(nonceCookie.value),
+      scope: 'read:user',
     });
   });
 });

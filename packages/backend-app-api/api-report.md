@@ -12,6 +12,7 @@ import { CacheService } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
 import { CorsOptions } from 'cors';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ErrorRequestHandler } from 'express';
 import { Express as Express_2 } from 'express';
@@ -28,7 +29,6 @@ import { LifecycleService } from '@backstage/backend-plugin-api';
 import { LoadConfigOptionsRemote } from '@backstage/config-loader';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
-import { PluginDatabaseManager } from '@backstage/backend-common';
 import { RemoteConfigSourceOptions } from '@backstage/config-loader';
 import { RequestHandler } from 'express';
 import { RequestListener } from 'http';
@@ -42,10 +42,10 @@ import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceFactoryOrFunction } from '@backstage/backend-plugin-api';
 import { TokenManagerService } from '@backstage/backend-plugin-api';
 import { transport } from 'winston';
-import { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserInfoService } from '@backstage/backend-plugin-api';
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const authServiceFactory: () => ServiceFactory<AuthService, 'plugin'>;
 
 // @public (undocumented)
@@ -68,26 +68,20 @@ export interface Backend {
 // @public @deprecated (undocumented)
 export const cacheServiceFactory: () => ServiceFactory<CacheService, 'plugin'>;
 
-// @public (undocumented)
-export function createConfigSecretEnumerator(options: {
-  logger: LoggerService;
-  dir?: string;
-  schema?: ConfigSchema;
-}): Promise<(config: Config) => Iterable<string>>;
+// Warning: (ae-forgotten-export) The symbol "createConfigSecretEnumerator_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const createConfigSecretEnumerator: typeof createConfigSecretEnumerator_2;
 
-// @public
-export function createHttpServer(
-  listener: RequestListener,
-  options: HttpServerOptions,
-  deps: {
-    logger: LoggerService;
-  },
-): Promise<ExtendedHttpServer>;
+// Warning: (ae-forgotten-export) The symbol "createHttpServer_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const createHttpServer: typeof createHttpServer_2;
 
-// @public
-export function createLifecycleMiddleware(
-  options: LifecycleMiddlewareOptions,
-): RequestHandler;
+// Warning: (ae-forgotten-export) The symbol "createLifecycleMiddleware_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated
+export const createLifecycleMiddleware: typeof createLifecycleMiddleware_2;
 
 // @public (undocumented)
 export function createSpecializedBackend(
@@ -102,11 +96,11 @@ export interface CreateSpecializedBackendOptions {
 
 // @public @deprecated (undocumented)
 export const databaseServiceFactory: () => ServiceFactory<
-  PluginDatabaseManager,
+  DatabaseService,
   'plugin'
 >;
 
-// @public
+// @public @deprecated
 export class DefaultRootHttpRouter implements RootHttpRouterService {
   // (undocumented)
   static create(options?: DefaultRootHttpRouterOptions): DefaultRootHttpRouter;
@@ -116,10 +110,10 @@ export class DefaultRootHttpRouter implements RootHttpRouterService {
   use(path: string, handler: Handler): void;
 }
 
-// @public
-export interface DefaultRootHttpRouterOptions {
-  indexPath?: string | false;
-}
+// Warning: (ae-forgotten-export) The symbol "DefaultRootHttpRouterOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated
+export type DefaultRootHttpRouterOptions = DefaultRootHttpRouterOptions_2;
 
 // @public @deprecated (undocumented)
 export const discoveryServiceFactory: () => ServiceFactory<
@@ -127,15 +121,10 @@ export const discoveryServiceFactory: () => ServiceFactory<
   'plugin'
 >;
 
-// @public
-export interface ExtendedHttpServer extends http.Server {
-  // (undocumented)
-  port(): number;
-  // (undocumented)
-  start(): Promise<void>;
-  // (undocumented)
-  stop(): Promise<void>;
-}
+// Warning: (ae-forgotten-export) The symbol "ExtendedHttpServer_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type ExtendedHttpServer = ExtendedHttpServer_2;
 
 // @public @deprecated
 export class HostDiscovery implements DiscoveryService {
@@ -151,44 +140,31 @@ export class HostDiscovery implements DiscoveryService {
   getExternalBaseUrl(pluginId: string): Promise<string>;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const httpAuthServiceFactory: () => ServiceFactory<
   HttpAuthService,
   'plugin'
 >;
 
-// @public (undocumented)
-export interface HttpRouterFactoryOptions {
-  getPath?(pluginId: string): string;
-}
+// Warning: (ae-forgotten-export) The symbol "HttpRouterFactoryOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type HttpRouterFactoryOptions = HttpRouterFactoryOptions_2;
 
-// @public (undocumented)
+// @public @deprecated
 export const httpRouterServiceFactory: (
-  options?: HttpRouterFactoryOptions | undefined,
+  options?: HttpRouterFactoryOptions_2 | undefined,
 ) => ServiceFactory<HttpRouterService, 'plugin'>;
 
-// @public
-export type HttpServerCertificateOptions =
-  | {
-      type: 'pem';
-      key: string;
-      cert: string;
-    }
-  | {
-      type: 'generated';
-      hostname: string;
-    };
+// Warning: (ae-forgotten-export) The symbol "HttpServerCertificateOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type HttpServerCertificateOptions = HttpServerCertificateOptions_2;
 
-// @public
-export type HttpServerOptions = {
-  listen: {
-    port: number;
-    host: string;
-  };
-  https?: {
-    certificate: HttpServerCertificateOptions;
-  };
-};
+// Warning: (ae-forgotten-export) The symbol "HttpServerOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type HttpServerOptions = HttpServerOptions_2;
 
 // @public @deprecated
 export type IdentityFactoryOptions = {
@@ -201,12 +177,10 @@ export const identityServiceFactory: (
   options?: IdentityFactoryOptions | undefined,
 ) => ServiceFactory<IdentityService, 'plugin'>;
 
-// @public
-export interface LifecycleMiddlewareOptions {
-  // (undocumented)
-  lifecycle: LifecycleService;
-  startupRequestPauseTimeout?: HumanDuration;
-}
+// Warning: (ae-forgotten-export) The symbol "LifecycleMiddlewareOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated
+export type LifecycleMiddlewareOptions = LifecycleMiddlewareOptions_2;
 
 // @public @deprecated
 export const lifecycleServiceFactory: () => ServiceFactory<
@@ -214,7 +188,7 @@ export const lifecycleServiceFactory: () => ServiceFactory<
   'plugin'
 >;
 
-// @public
+// @public @deprecated
 export function loadBackendConfig(options: {
   remote?: LoadConfigOptionsRemote;
   argv: string[];
@@ -224,13 +198,13 @@ export function loadBackendConfig(options: {
   config: Config;
 }>;
 
-// @public (undocumented)
+// @public @deprecated
 export const loggerServiceFactory: () => ServiceFactory<
   LoggerService,
   'plugin'
 >;
 
-// @public
+// @public @deprecated (undocumented)
 export class MiddlewareFactory {
   compression(): RequestHandler;
   cors(): RequestHandler;
@@ -241,19 +215,15 @@ export class MiddlewareFactory {
   notFound(): RequestHandler;
 }
 
-// @public
-export interface MiddlewareFactoryErrorOptions {
-  logAllErrors?: boolean;
-  showStackTraces?: boolean;
-}
+// Warning: (ae-forgotten-export) The symbol "MiddlewareFactoryErrorOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type MiddlewareFactoryErrorOptions = MiddlewareFactoryErrorOptions_2;
 
-// @public
-export interface MiddlewareFactoryOptions {
-  // (undocumented)
-  config: RootConfigService;
-  // (undocumented)
-  logger: LoggerService;
-}
+// Warning: (ae-forgotten-export) The symbol "MiddlewareFactoryOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type MiddlewareFactoryOptions = MiddlewareFactoryOptions_2;
 
 // @public @deprecated (undocumented)
 export const permissionsServiceFactory: () => ServiceFactory<
@@ -261,14 +231,20 @@ export const permissionsServiceFactory: () => ServiceFactory<
   'plugin'
 >;
 
-// @public
-export function readCorsOptions(config?: Config): CorsOptions;
+// Warning: (ae-forgotten-export) The symbol "readCorsOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const readCorsOptions: typeof readCorsOptions_2;
 
-// @public
-export function readHelmetOptions(config?: Config): HelmetOptions;
+// Warning: (ae-forgotten-export) The symbol "readHelmetOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const readHelmetOptions: typeof readHelmetOptions_2;
 
-// @public
-export function readHttpServerOptions(config?: Config): HttpServerOptions;
+// Warning: (ae-forgotten-export) The symbol "readHttpServerOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export const readHttpServerOptions: typeof readHttpServerOptions_2;
 
 // @public @deprecated (undocumented)
 export interface RootConfigFactoryOptions {
@@ -283,35 +259,19 @@ export const rootConfigServiceFactory: (
   options?: RootConfigFactoryOptions | undefined,
 ) => ServiceFactory<RootConfigService, 'root'>;
 
-// @public (undocumented)
-export interface RootHttpRouterConfigureContext {
-  // (undocumented)
-  app: Express_2;
-  // (undocumented)
-  applyDefaults: () => void;
-  // (undocumented)
-  config: RootConfigService;
-  // (undocumented)
-  lifecycle: LifecycleService;
-  // (undocumented)
-  logger: LoggerService;
-  // (undocumented)
-  middleware: MiddlewareFactory;
-  // (undocumented)
-  routes: RequestHandler;
-  // (undocumented)
-  server: Server;
-}
+// Warning: (ae-forgotten-export) The symbol "RootHttpRouterConfigureContext_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type RootHttpRouterConfigureContext = RootHttpRouterConfigureContext_2;
 
-// @public (undocumented)
-export type RootHttpRouterFactoryOptions = {
-  indexPath?: string | false;
-  configure?(context: RootHttpRouterConfigureContext): void;
-};
+// Warning: (ae-forgotten-export) The symbol "RootHttpRouterFactoryOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated
+export type RootHttpRouterFactoryOptions = RootHttpRouterFactoryOptions_2;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const rootHttpRouterServiceFactory: (
-  options?: RootHttpRouterFactoryOptions | undefined,
+  options?: RootHttpRouterFactoryOptions_2 | undefined,
 ) => ServiceFactory<RootHttpRouterService, 'root'>;
 
 // @public @deprecated
@@ -320,7 +280,7 @@ export const rootLifecycleServiceFactory: () => ServiceFactory<
   'root'
 >;
 
-// @public (undocumented)
+// @public @deprecated
 export const rootLoggerServiceFactory: () => ServiceFactory<
   RootLoggerService,
   'root'
@@ -339,15 +299,18 @@ export const tokenManagerServiceFactory: () => ServiceFactory<
 >;
 
 // @public @deprecated (undocumented)
-export const urlReaderServiceFactory: () => ServiceFactory<UrlReader, 'plugin'>;
+export const urlReaderServiceFactory: () => ServiceFactory<
+  UrlReaderService,
+  'plugin'
+>;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const userInfoServiceFactory: () => ServiceFactory<
   UserInfoService,
   'plugin'
 >;
 
-// @public
+// @public @deprecated
 export class WinstonLogger implements RootLoggerService {
   // (undocumented)
   addRedactions(redactions: Iterable<string>): void;
@@ -369,15 +332,8 @@ export class WinstonLogger implements RootLoggerService {
   warn(message: string, meta?: JsonObject): void;
 }
 
-// @public (undocumented)
-export interface WinstonLoggerOptions {
-  // (undocumented)
-  format?: Format;
-  // (undocumented)
-  level?: string;
-  // (undocumented)
-  meta?: JsonObject;
-  // (undocumented)
-  transports?: transport[];
-}
+// Warning: (ae-forgotten-export) The symbol "WinstonLoggerOptions_2" needs to be exported by the entry point index.d.ts
+//
+// @public @deprecated (undocumented)
+export type WinstonLoggerOptions = WinstonLoggerOptions_2;
 ```

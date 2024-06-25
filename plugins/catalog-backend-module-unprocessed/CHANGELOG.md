@@ -1,5 +1,50 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.4.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/plugin-catalog-node@1.12.3-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.2
+  - @backstage/plugin-permission-common@0.7.14
+
+## 0.4.6
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-catalog-node@1.12.1
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.2
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+
+## 0.4.6-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.2-next.0
+  - @backstage/plugin-permission-common@0.7.14-next.0
+  - @backstage/plugin-catalog-node@1.12.1-next.2
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+
 ## 0.4.6-next.2
 
 ### Patch Changes

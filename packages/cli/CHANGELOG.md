@@ -1,5 +1,72 @@
 # @backstage/cli
 
+## 0.26.10-next.0
+
+### Patch Changes
+
+- e2e320c: - remove unused dependencies `winston` and `yn` from the template of backend plugins;
+  - update `msw` to version `2.3.1` in the template of backend plugins;
+    starting with v1 and switching later to v2 is tedious and not straight forward; it's easier to start with v2;
+- 0540c5a: Updated the scaffolding output message for `plugin-common` in `backstage-cli`. Now, when executing `backstage-cli new` to create a new `plugin-common` package, the output message accurately reflects the action by displaying `Creating common plugin package...` instead of the previous, less accurate `Creating backend plugin...`.
+- 7652db4: Only bootstrap global-agent if it's actually being used
+- f0c0039: Fix issue with CLI that was preventing upgrading from 1.28
+- d228862: Update default backend plugin created by the cli to use non-deprecated error handling middleware
+- da90cce: Updated dependency `esbuild` to `^0.21.0`.
+- a60d73b: Fix a few minor issues with the backend template that were causing failing linting checks in the main repo.
+- 0510d98: Subpath export `package.json` should be of a unique name to avoid typescript resolution issues
+- Updated dependencies
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.6
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.7
+
+### Patch Changes
+
+- 788eca7: Fix readme for new plugins created using cli
+- 90c5268: Add `peerDependencies` to `devDependencies` in `package.json.hbs` templates.
+- c00f7ee: Fix issue with `esm` loaded dependencies being different from the `cjs` import for Vite dependencies
+- b0f66e9: Updated dependency `vite-plugin-node-polyfills` to `^0.22.0`.
+- c328131: Added a new `--publish` flag to the `repo fix` command. This command will validate and if possible generate the metadata required for publishing packages with the Backstage CLI. In addition, a check has been added that the `backstage.pluginId` and `backstage.pluginPackage(s)` fields are present when packing a package for publishing.
+- 5afbe1d: Export default module for `scaffolder-action` cli template
+- 009da47: Fix `versions:check --fix` when `yarn.lock` has multiple joint versions in the same section
+- 9ee948a: Bump `esbuild` target for package builds to `ES2022`.
+- Updated dependencies
+  - @backstage/cli-node@0.2.6
+  - @backstage/integration@1.12.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config-loader@1.8.1
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
+## 0.26.7-next.3
+
+### Patch Changes
+
+- c328131: Added a new `--publish` flag to the `repo fix` command. This command will validate and if possible generate the metadata required for publishing packages with the Backstage CLI. In addition, a check has been added that the `backstage.pluginId` and `backstage.pluginPackage(s)` fields are present when packing a package for publishing.
+- Updated dependencies
+  - @backstage/cli-node@0.2.6-next.2
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/cli-common@0.1.14-next.0
+  - @backstage/config-loader@1.8.1-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/eslint-plugin@0.1.8
+  - @backstage/release-manifests@0.0.11
+  - @backstage/types@1.1.1
+
 ## 0.26.7-next.2
 
 ### Patch Changes

@@ -281,14 +281,14 @@ export async function createRouter(
       allow: ['user'],
     });
 
-    const userInfo = await userInfo.getUserInfo(credentials);
+    const user = await userInfo.getUserInfo(credentials);
 
     res.json({
       // The catalog entity ref of the user.
-      userEntityRef: userInfo.userEntityRef,
+      userEntityRef: user.userEntityRef,
 
       // The list of entities that this user or any teams this user is a part of owns.
-      ownershipEntityRefs: userInfo.ownershipEntityRefs,
+      ownershipEntityRefs: user.ownershipEntityRefs,
     });
   });
 

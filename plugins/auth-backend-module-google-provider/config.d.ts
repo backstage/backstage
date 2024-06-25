@@ -26,6 +26,7 @@ export interface Config {
            */
           clientSecret: string;
           callbackUrl?: string;
+          additionalScopes?: string | string[];
         };
       };
     };

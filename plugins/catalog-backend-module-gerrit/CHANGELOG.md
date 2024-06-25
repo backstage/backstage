@@ -1,5 +1,47 @@
 # @backstage/plugin-catalog-backend-module-gerrit
 
+## 0.1.38-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/backend-tasks@0.5.26-next.0
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/plugin-catalog-node@1.12.3-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.1.36
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-tasks@0.5.24
+  - @backstage/integration@1.12.0
+  - @backstage/plugin-catalog-node@1.12.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.1.36-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/plugin-catalog-node@1.12.1-next.2
+  - @backstage/backend-tasks@0.5.24-next.3
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.36-next.2
 
 ### Patch Changes

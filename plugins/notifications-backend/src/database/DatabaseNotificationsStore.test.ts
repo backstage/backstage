@@ -271,6 +271,20 @@ describe.each(databases.eachSupportedId())(
         expect(notifications.length).toBe(1);
         expect(notifications.at(0)?.id).toEqual(id2);
       });
+
+      it('should filter notifications based on topic', async () => {
+        await storage.saveNotification(testNotification1);
+        await storage.saveNotification(testNotification2);
+        await storage.saveNotification(testNotification3);
+
+        const notifications = await storage.getNotifications({
+          user,
+          topic: 'efgh-topic',
+        });
+
+        expect(notifications.length).toBe(1);
+        expect(notifications.at(0)?.id).toEqual(id1);
+      });
     });
 
     describe('getNotifications filters on severity', () => {

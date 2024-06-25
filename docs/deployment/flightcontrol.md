@@ -123,7 +123,7 @@ backend:
   # all interfaces, the most permissive setting. The right value depends on your specific deployment.
   listen: ':7007'
 
-  # config options: https://node-postgres.com/api/client
+  # config options: https://node-postgres.com/apis/client
   database:
     client: pg
     pluginDivisionMode: 'schema'

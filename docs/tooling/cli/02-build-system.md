@@ -617,7 +617,10 @@ A complete launch configuration for VS Code debugging may look like this:
 
 Package publishing is an optional part of the Backstage build system and not
 something you will need to worry about unless you are publishing packages to a
-registry. In order to publish a package, you first need to build it, which will
+registry. In addition to the documentation in the section, be sure to also read
+the section on [metadata for published packages](../package-metadata.md#metadata-for-published-packages).
+
+In order to publish a package, you first need to build it, which will
 populate the `dist` folder. Because the Backstage build system is optimized for
 local development along with our particular TypeScript and bundling setup, it is
 not possible to publish the package immediately at this point. This is because

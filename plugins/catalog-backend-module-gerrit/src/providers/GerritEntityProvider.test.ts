@@ -166,9 +166,11 @@ describe('GerritEntityProvider', () => {
         gerrit: [
           {
             host: 'gerrit1.com',
+            gitilesBaseUrl: 'https://gerrit1.com/gitiles',
           },
           {
             host: 'gerrit2.com',
+            gitilesBaseUrl: 'https://gerrit2.com/gitiles',
           },
         ],
       },
@@ -201,6 +203,7 @@ describe('GerritEntityProvider', () => {
         gerrit: [
           {
             host: 'gerrit1.com',
+            gitilesBaseUrl: 'https://gerrit1.com/gitiles',
           },
         ],
       },

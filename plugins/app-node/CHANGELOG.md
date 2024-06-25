@@ -1,5 +1,31 @@
 # @backstage/plugin-app-node
 
+## 0.1.21-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/config-loader@1.8.1
+
+## 0.1.19
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/config-loader@1.8.1
+
+## 0.1.19-next.2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/config-loader@1.8.1-next.0
+
 ## 0.1.19-next.1
 
 ### Patch Changes

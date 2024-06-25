@@ -105,7 +105,11 @@ export class BackendLifecycleImpl implements RootLifecycleService {
 }
 
 /**
- * Allows plugins to register shutdown hooks that are run when the process is about to exit.
+ * Registration of backend startup and shutdown lifecycle hooks.
+ *
+ * See {@link @backstage/code-plugin-api#RootLifecycleService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/root-lifecycle | the service docs}
+ * for more information.
  *
  * @public
  */
