@@ -97,7 +97,7 @@ export const backendPlugin = createFactory<Options>({
 
         if (backendStartIndex !== -1) {
           const [indentation] = lines[backendStartIndex].match(/^\s*/) ?? [];
-          lines.splice(backendStartIndex, 0, indentation + backendAddLine);
+          lines.splice(backendStartIndex, 0, `${indentation}${backendAddLine}`);
 
           const newContent = lines.join('\n');
           await fs.writeFile(backendFilePath, newContent, 'utf8');
