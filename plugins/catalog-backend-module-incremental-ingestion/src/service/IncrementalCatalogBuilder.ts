@@ -45,6 +45,12 @@ export class IncrementalCatalogBuilder {
     return new IncrementalCatalogBuilder(env, builder, client, manager);
   }
 
+  /**
+   * Creates the incremental catalog builder, which extends the regular catalog builder.
+   * @param env - PluginEnvironmentV2
+   * @param builder - CatalogBuilder
+   * @returns IncrementalCatalogBuilder
+   */
   static async createV2(env: PluginEnvironmentV2, builder: CoreCatalogBuilder) {
     const client = await env.database.getClient();
     const manager = new IncrementalIngestionDatabaseManager({ client });

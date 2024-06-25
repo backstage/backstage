@@ -7,6 +7,7 @@
 
 import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import type { Config } from '@backstage/config';
+import { DatabaseService } from '@backstage/backend-plugin-api';
 import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import type { DurationObjectUnits } from 'luxon';
 import { EventParams } from '@backstage/plugin-events-node';
@@ -16,7 +17,9 @@ import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import type { PluginDatabaseManager } from '@backstage/backend-common';
 import type { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { Router } from 'express';
+import { SchedulerService } from '@backstage/backend-plugin-api';
 import type { UrlReader } from '@backstage/backend-common';
+import { UrlReaderService } from '@backstage/backend-plugin-api';
 
 // @public
 export type EntityIteratorResult<T> =
@@ -42,8 +45,13 @@ export class IncrementalCatalogBuilder {
   build(): Promise<{
     incrementalAdminRouter: Router;
   }>;
+  // @deprecated
   static create(
     env: PluginEnvironment,
+    builder: CatalogBuilder,
+  ): Promise<IncrementalCatalogBuilder>;
+  static createV2(
+    env: PluginEnvironmentV2,
     builder: CatalogBuilder,
   ): Promise<IncrementalCatalogBuilder>;
 }
@@ -85,13 +93,23 @@ export interface IncrementalEntityProviderOptions {
   restLength: DurationObjectUnits;
 }
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export type PluginEnvironment = {
   logger: Logger;
   database: PluginDatabaseManager;
   scheduler: PluginTaskScheduler;
   config: Config;
   reader: UrlReader;
+  permissions: PermissionEvaluator;
+};
+
+// @public (undocumented)
+export type PluginEnvironmentV2 = {
+  logger: Logger;
+  database: DatabaseService;
+  scheduler: SchedulerService;
+  config: Config;
+  reader: UrlReaderService;
   permissions: PermissionEvaluator;
 };
 ```
