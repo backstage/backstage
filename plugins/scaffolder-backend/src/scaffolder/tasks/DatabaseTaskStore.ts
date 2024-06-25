@@ -43,7 +43,7 @@ import { intervalFromNowTill } from './dbUtil';
 import {
   restoreWorkspace,
   serializeWorkspace,
-} from '@backstage/plugin-scaffolder-node';
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 const migrationsDir = resolvePackagePath(
   '@backstage/plugin-scaffolder-backend',

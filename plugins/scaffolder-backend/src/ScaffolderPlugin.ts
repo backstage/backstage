@@ -86,17 +86,17 @@ export const scaffolderPlugin = createBackendPlugin({
       },
     });
 
-<<<<<<< HEAD
     const autocompleteHandlers: Record<string, AutocompleteHandler> = {};
     env.registerExtensionPoint(scaffolderAutocompleteExtensionPoint, {
       addAutocompleteProvider(provider) {
         autocompleteHandlers[provider.id] = provider.handler;
-=======
+      },
+    });
+
     const additionalWorkspaceProviders: Record<string, WorkspaceProvider> = {};
     env.registerExtensionPoint(scaffolderWorkspaceProviderExtensionPoint, {
       addProviders(provider) {
         Object.assign(additionalWorkspaceProviders, provider);
->>>>>>> 801e5ff2007a (Storing the serialized workspace into google cloud bucket)
       },
     });
 

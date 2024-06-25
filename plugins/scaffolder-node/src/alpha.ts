@@ -22,6 +22,8 @@ import {
   TaskBroker,
 } from '@backstage/plugin-scaffolder-node';
 
+export * from './tasks/alpha';
+
 /**
  * Extension point for managing scaffolder actions.
  *

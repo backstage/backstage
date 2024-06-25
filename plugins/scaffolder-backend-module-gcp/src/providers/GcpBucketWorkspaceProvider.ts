@@ -24,7 +24,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   serializeWorkspace,
   restoreWorkspace,
-} from '@backstage/plugin-scaffolder-node';
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
   static create(logger: LoggerService, config?: Config) {
