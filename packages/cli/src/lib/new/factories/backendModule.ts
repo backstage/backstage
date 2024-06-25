@@ -20,7 +20,7 @@ import camelCase from 'lodash/camelCase';
 import { paths } from '../../paths';
 import { addCodeownersEntry, getCodeownersFilePath } from '../../codeowners';
 import { CreateContext, createFactory } from '../types';
-import { addPackageDependency, Task } from '../../tasks';
+import { addPackageDependency, addToBackend, Task } from '../../tasks';
 import {
   moduleIdIdPrompt,
   ownerPrompt,
@@ -91,29 +91,9 @@ export const backendModule = createFactory<Options>({
       });
     }
 
-    await Task.forItem('backend', 'adding module', async () => {
-      const backendFilePath = paths.resolveTargetRoot(
-        'packages/backend/src/index.ts',
-      );
-      if (!(await fs.pathExists(backendFilePath))) {
-        return;
-      }
-
-      const content = await fs.readFile(backendFilePath, 'utf8');
-      const lines = content.split('\n');
-      const backendAddLine = `backend.add(import('${name}'));`;
-
-      const backendStartIndex = lines.findIndex(line =>
-        line.match(/backend.start/),
-      );
-
-      if (backendStartIndex !== -1) {
-        const [indentation] = lines[backendStartIndex].match(/^\s*/) ?? [];
-        lines.splice(backendStartIndex, 0, indentation + backendAddLine);
-
-        const newContent = lines.join('\n');
-        await fs.writeFile(backendFilePath, newContent, 'utf8');
-      }
+    await addToBackend(name, {
+      defaultVersion: ctx.defaultVersion,
+      type: 'module',
     });
 
     if (options.owner) {
