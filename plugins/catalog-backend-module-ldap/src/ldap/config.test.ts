@@ -115,38 +115,42 @@ describe('readLdapConfig', () => {
           frequency: { minutes: 3 },
           timeout: { minutes: 1 },
         },
-        users: {
-          dn: 'udn',
-          options: {
-            scope: 'one',
-            attributes: ['*', '+'],
+        users: [
+          {
+            dn: 'udn',
+            options: {
+              scope: 'one',
+              attributes: ['*', '+'],
+            },
+            set: undefined,
+            map: {
+              rdn: 'uid',
+              name: 'uid',
+              displayName: 'cn',
+              email: 'mail',
+              memberOf: 'memberOf',
+            },
           },
-          set: undefined,
-          map: {
-            rdn: 'uid',
-            name: 'uid',
-            displayName: 'cn',
-            email: 'mail',
-            memberOf: 'memberOf',
+        ],
+        groups: [
+          {
+            dn: 'gdn',
+            options: {
+              scope: 'one',
+              attributes: ['*', '+'],
+            },
+            set: undefined,
+            map: {
+              rdn: 'cn',
+              name: 'cn',
+              description: 'description',
+              type: 'groupType',
+              displayName: 'cn',
+              memberOf: 'memberOf',
+              members: 'member',
+            },
           },
-        },
-        groups: {
-          dn: 'gdn',
-          options: {
-            scope: 'one',
-            attributes: ['*', '+'],
-          },
-          set: undefined,
-          map: {
-            rdn: 'cn',
-            name: 'cn',
-            description: 'description',
-            type: 'groupType',
-            displayName: 'cn',
-            memberOf: 'memberOf',
-            members: 'member',
-          },
-        },
+        ],
       },
     ];
     expect(actual).toEqual(expected);
