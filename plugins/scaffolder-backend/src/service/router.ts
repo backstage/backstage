@@ -734,6 +734,14 @@ export async function createRouter(
         targetPluginId: 'catalog',
       });
 
+      const userEntityRef = auth.isPrincipal(credentials, 'user')
+        ? credentials.principal.userEntityRef
+        : undefined;
+
+      const userEntity = userEntityRef
+        ? await catalogClient.getEntityByRef(userEntityRef, { token })
+        : undefined;
+
       for (const parameters of [template.spec.parameters ?? []].flat()) {
         const result = validate(body.values, parameters);
         if (!result.valid) {
@@ -754,6 +762,10 @@ export async function createRouter(
           steps,
           output: template.spec.output ?? {},
           parameters: body.values as JsonObject,
+          user: {
+            entity: userEntity as UserEntity,
+            ref: userEntityRef,
+          },
         },
         directoryContents: (body.directoryContents ?? []).map(file => ({
           path: file.path,
