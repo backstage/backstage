@@ -63,7 +63,7 @@ export type ErrorHandlerOptions = {
  *
  * @public
  * @returns An Express error request handler
- * @deprecated Use {@link @backstage/backend-app-api#MiddlewareFactory.create.error} instead
+ * @deprecated Use {@link @backstage/backend-defaults/rootHttpRouter#MiddlewareFactory.create.error} instead
  */
 export function errorHandler(
   options: ErrorHandlerOptions = {},
