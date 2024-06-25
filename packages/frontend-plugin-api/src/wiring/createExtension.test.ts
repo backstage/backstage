@@ -291,4 +291,37 @@ describe('createExtension', () => {
       'ExtensionDefinition{namespace=test,attachTo=root@default}',
     );
   });
+
+  describe('override', () => {
+    it('should create an extension override', () => {
+      const extension = createExtension({
+        namespace: 'test',
+        attachTo: { id: 'root', input: 'default' },
+        output: {
+          foo: stringData,
+        },
+        factory() {
+          return {
+            foo: 'bar',
+          };
+        },
+      });
+
+      const override = extension.override({
+        attachTo: {
+          id: 'root',
+          input: 'default2',
+        },
+        factory() {
+          return {
+            foo: 'baz',
+          };
+        },
+      });
+
+      expect(String(override)).toBe(
+        'ExtensionDefinition{namespace=test,attachTo=root@default2}',
+      );
+    });
+  });
 });
