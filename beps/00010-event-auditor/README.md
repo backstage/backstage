@@ -45,6 +45,7 @@ This feature introduces a dedicated system for recording critical security-relat
 - Develop a backend service for the audit event stream to record security-critical events.
 - Ensure compliance with regulatory requirements through detailed audit event logging.
   - Refer to [NIST: Audit and Accountability](https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_1_1/home?element=AU)
+  - Refer to [NIST: Non-Repudiation](https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_1_1/home?element=AU-10)
 - Establish a standardized data format for audit events.
   - Refer to [NIST: Content of Audit Records](https://csrc.nist.gov/projects/cprt/catalog#/cprt/framework/version/SP_800_53_5_1_1/home?element=AU-03)
 - Provide access to the transport layer for customizable output options.
