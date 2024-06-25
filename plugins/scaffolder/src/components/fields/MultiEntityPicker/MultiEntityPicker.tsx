@@ -35,7 +35,6 @@ import Autocomplete, {
   AutocompleteChangeReason,
 } from '@material-ui/lab/Autocomplete';
 import React, { useCallback, useEffect } from 'react';
-import { FixedSizeList, ListChildComponentProps } from 'react-window';
 import useAsync from 'react-use/esm/useAsync';
 import { FieldValidation } from '@rjsf/utils';
 import {
@@ -44,40 +43,9 @@ import {
   MultiEntityPickerUiOptions,
   MultiEntityPickerFilterQuery,
 } from './schema';
+import { VirtualizedListbox } from '../VirtualizedListbox';
 
 export { MultiEntityPickerSchema } from './schema';
-
-const renderRow = (props: ListChildComponentProps) => {
-  const { data, index, style } = props;
-  return React.cloneElement(data[index], { style });
-};
-
-const ListboxComponent = React.forwardRef<
-  HTMLDivElement,
-  { children?: React.ReactNode }
->((props, ref) => {
-  const itemData = React.Children.toArray(props.children);
-  const itemCount = itemData.length;
-
-  const itemSize = 36;
-
-  const itemsToShow = Math.min(10, itemCount);
-  const height = Math.max(itemSize, itemsToShow * itemSize - 0.5 * itemSize);
-
-  return (
-    <div ref={ref}>
-      <FixedSizeList
-        height={height}
-        itemData={itemData}
-        itemCount={itemCount}
-        itemSize={itemSize}
-        width="100%"
-      >
-        {renderRow}
-      </FixedSizeList>
-    </div>
-  );
-});
 
 /**
  * The underlying component that is rendered in the form for the `MultiEntityPicker`
@@ -210,7 +178,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             }}
           />
         )}
-        ListboxComponent={ListboxComponent}
+        ListboxComponent={VirtualizedListbox}
       />
     </FormControl>
   );
