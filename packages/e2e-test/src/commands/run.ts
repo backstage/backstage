@@ -537,7 +537,9 @@ async function testBackendStart(appDir: string, ...args: string[]) {
 
   try {
     await waitFor(
-      () => stdout.includes('Listening on ') || filterStderr(stderr).length > 0,
+      () =>
+        stdout.includes('Plugin initialization complete') ||
+        filterStderr(stderr).length > 0,
     );
     const stderrLines = filterStderr(stderr);
     if (stderrLines.length > 0) {
