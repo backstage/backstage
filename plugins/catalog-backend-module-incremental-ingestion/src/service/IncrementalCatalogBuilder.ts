@@ -18,6 +18,7 @@ import {
   IncrementalEntityProvider,
   IncrementalEntityProviderOptions,
   PluginEnvironment,
+  PluginEnvironmentV2,
 } from '../types';
 import { CatalogBuilder as CoreCatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Duration } from 'luxon';
@@ -36,8 +37,15 @@ export class IncrementalCatalogBuilder {
    * @param env - PluginEnvironment
    * @param builder - CatalogBuilder
    * @returns IncrementalCatalogBuilder
+   * @deprecated Use the createV2 method with the PluginEnvironmentV2 type instead.
    */
   static async create(env: PluginEnvironment, builder: CoreCatalogBuilder) {
+    const client = await env.database.getClient();
+    const manager = new IncrementalIngestionDatabaseManager({ client });
+    return new IncrementalCatalogBuilder(env, builder, client, manager);
+  }
+
+  static async createV2(env: PluginEnvironmentV2, builder: CoreCatalogBuilder) {
     const client = await env.database.getClient();
     const manager = new IncrementalIngestionDatabaseManager({ client });
     return new IncrementalCatalogBuilder(env, builder, client, manager);
@@ -46,7 +54,7 @@ export class IncrementalCatalogBuilder {
   private ready: Deferred<void>;
 
   private constructor(
-    private env: PluginEnvironment,
+    private env: PluginEnvironment | PluginEnvironmentV2,
     private builder: CoreCatalogBuilder,
     private client: Knex,
     private manager: IncrementalIngestionDatabaseManager,
