@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { AppNode } from '../apis';
 import { PortableSchema } from '../schema';
 import { Expand } from '../types';
@@ -21,6 +20,7 @@ import {
   AnyExtensionDataMap,
   AnyExtensionInputMap,
   ExtensionDataValues,
+  ExtensionDefinition,
   ResolvedExtensionInputs,
   createExtension,
 } from './createExtension';
@@ -107,7 +107,7 @@ export class ExtensionKind<
       },
       options: TOptions,
     ): Expand<ExtensionDataValues<TOutput>>;
-  }) {
+  }): ExtensionDefinition<TConfig, TInputs> {
     return createExtension({
       kind: this.options.kind,
       namespace: args.namespace ?? this.options.namespace,

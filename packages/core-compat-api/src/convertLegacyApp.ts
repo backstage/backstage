@@ -26,6 +26,7 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
+  createExtensionKind,
   createExtensionOverrides,
 } from '@backstage/frontend-plugin-api';
 import { getComponentData } from '@backstage/core-plugin-api';
@@ -128,13 +129,19 @@ export function convertLegacyApp(
       };
     },
   });
-  const CoreNavOverride = createExtension({
-    namespace: 'app',
-    name: 'nav',
-    attachTo: { id: 'app/layout', input: 'nav' },
-    output: {},
+
+  const CoreNavOverride = CurrentCoreNav.override({
+    // namespace: 'app',
+    // name: 'nav',
+    // attachTo: { id: 'app/layout', input: 'nav' },
+    // output: {},
     factory: () => ({}),
     disabled: true,
+  });
+
+  createExtensionOverride({
+    extension: CurrentCoreNav,
+    factory: () => null,
   });
 
   const collectedRoutes = collectLegacyRoutes(routesEl);
@@ -142,7 +149,60 @@ export function convertLegacyApp(
   return [
     ...collectedRoutes,
     createExtensionOverrides({
-      extensions: [CoreLayoutOverride, CoreNavOverride],
+      extensions: [CoreNavOverride, CoreNavOverride],
     }),
   ];
 }
+
+const EntityCardExtension = createExtensionKind({
+  kind: 'entity-card',
+  attachTo: { id: 'entity-card', input: 'default' },
+  inputs: {
+    loader: createExtensionInput({
+      element: coreExtensionData.reactElement,
+    }),
+  },
+  output: {
+    element: coreExtensionData.reactElement,
+  },
+  factory({ inputs }, props: { title: string }) {
+    console.log(inputs.loader);
+    return {
+      element: React.createElement('h1'),
+    };
+  },
+});
+
+const GithubCard = EntityCardExtension.new({
+  props: {
+    title: 'GitHub Card',
+  },
+  factory({ inputs: { loader } }) {
+    console.log(loader);
+    return {
+      element: React.createElement('h2'),
+    };
+  },
+});
+
+GithubCard.override({
+  attachTo: { id: 'entity-card', input: 'github' },
+  inputs: {
+    loader: createExtensionInput(
+      {
+        element: coreExtensionData.reactElement,
+      },
+      { singleton: false },
+    ),
+    loader2: createExtensionInput({
+      element: coreExtensionData.reactElement,
+    }),
+  },
+  factory({ originalFactory, inputs }) {
+    inputs.loader2;
+    inputs.loader;
+    return originalFactory({
+      inputsOverride: inputs,
+    });
+  },
+});
