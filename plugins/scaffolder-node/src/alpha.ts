@@ -79,3 +79,41 @@ export const scaffolderTemplatingExtensionPoint =
   createExtensionPoint<ScaffolderTemplatingExtensionPoint>({
     id: 'scaffolder.templating',
   });
+
+/**
+ * Autocomplete handler for the scaffolder.
+ * @alpha
+ */
+export type AutocompleteHandler = ({
+  resource,
+  token,
+  context,
+}: {
+  resource: string;
+  token: string;
+  context: Record<string, string>;
+}) => Promise<{ results: { title: string }[] }>;
+
+/**
+ * Extension point for adding autocomplete handler providers
+ * @alpha
+ */
+export interface ScaffolderAutocompleteExtensionPoint {
+  addAutocompleteProvider({
+    id,
+    handler,
+  }: {
+    id: string;
+    handler: AutocompleteHandler;
+  }): void;
+}
+
+/**
+ * Extension point for adding template filters and globals.
+ *
+ * @alpha
+ */
+export const scaffolderAutocompleteExtensionPoint =
+  createExtensionPoint<ScaffolderAutocompleteExtensionPoint>({
+    id: 'scaffolder.autocomplete',
+  });

@@ -35,7 +35,7 @@ describe('searchModuleExploreCollator', () => {
         [searchIndexRegistryExtensionPoint, extensionPointMock],
       ],
       features: [
-        searchModuleExploreCollator(),
+        searchModuleExploreCollator,
         mockServices.rootConfig.factory({
           data: {
             search: {

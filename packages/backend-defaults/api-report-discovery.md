@@ -7,7 +7,7 @@ import { Config } from '@backstage/config';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
-// @public (undocumented)
+// @public
 export const discoveryServiceFactory: () => ServiceFactory<
   DiscoveryService,
   'plugin'

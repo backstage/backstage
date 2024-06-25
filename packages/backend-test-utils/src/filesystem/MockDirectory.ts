@@ -347,7 +347,7 @@ class MockDirectoryImpl {
  *
  * @public
  */
-export interface MockDirectoryOptions {
+export interface CreateMockDirectoryOptions {
   /**
    * In addition to creating a temporary directory, also mock `os.tmpdir()` to return the
    * mock directory path until the end of the test suite.
@@ -386,7 +386,7 @@ export interface MockDirectoryOptions {
  * ```
  */
 export function createMockDirectory(
-  options?: MockDirectoryOptions,
+  options?: CreateMockDirectoryOptions,
 ): MockDirectory {
   const tmpDir = process.env.RUNNER_TEMP || os.tmpdir(); // GitHub Actions
   const root = fs.mkdtempSync(joinPath(tmpDir, 'backstage-tmp-test-dir-'));

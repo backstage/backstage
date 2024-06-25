@@ -99,6 +99,7 @@ describe('MemberTab Test', () => {
         ] as Entity[],
       }),
   };
+  const getEntitiesSpy = jest.spyOn(catalogApi, 'getEntities');
 
   it('Display Profile Card', async () => {
     await renderInTestApp(
@@ -115,6 +116,12 @@ describe('MemberTab Test', () => {
         },
       },
     );
+    expect(getEntitiesSpy).toHaveBeenCalledWith({
+      filter: {
+        kind: 'User',
+        'relations.memberof': ['group:default/team-d'],
+      },
+    });
 
     expect(screen.getByAltText('Tara MacGovern')).toHaveAttribute(
       'src',
@@ -147,6 +154,29 @@ describe('MemberTab Test', () => {
     );
 
     expect(screen.getByText('Testers (1)')).toBeInTheDocument();
+  });
+
+  it('Can query a different relationship', async () => {
+    await renderInTestApp(
+      <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
+        <EntityProvider entity={groupEntity}>
+          <MembersListCard relationType="leaderOf" />
+        </EntityProvider>
+      </TestApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
+        },
+      },
+    );
+
+    expect(getEntitiesSpy).toHaveBeenCalledWith({
+      filter: {
+        kind: 'User',
+        'relations.leaderof': ['group:default/team-d'],
+      },
+    });
   });
 
   describe('Aggregate members toggle', () => {
@@ -346,7 +376,7 @@ describe('MemberTab Test', () => {
             <EntityLayout.Route path="/" title="Title">
               <MembersListCard
                 showAggregateMembersToggle
-                relationsType="aggregated"
+                relationAggregation="aggregated"
               />
             </EntityLayout.Route>
           </EntityLayout>
@@ -384,7 +414,7 @@ describe('MemberTab Test', () => {
         <EntityProvider entity={groupA}>
           <EntityLayout>
             <EntityLayout.Route path="/" title="Title">
-              <MembersListCard relationsType="aggregated" />
+              <MembersListCard relationAggregation="aggregated" />
             </EntityLayout.Route>
           </EntityLayout>
         </EntityProvider>

@@ -26,3 +26,4 @@ export * from './TaskLogStream';
 export * from './TemplateCategoryPicker';
 export * from './ScaffolderPageContextMenu';
 export * from './ScaffolderField';
+export * from './SecretWidget';

@@ -124,11 +124,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
     async () => {
       const { requestUserCredentials } = uiSchema?.['ui:options'] ?? {};
 
-      const workspace = state.owner ? state.owner : state.project;
-      if (
-        !requestUserCredentials ||
-        !(state.host && workspace && state.repoName)
-      ) {
+      if (!requestUserCredentials || !state.host) {
         return;
       }
 
@@ -137,19 +133,11 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
         return;
       }
 
-      // previously, we were encodeURI for state.host, workspace and state.repoName separately.
-      // That created an issue where GitLab workspace can be nested like groupA/subgroupB
-      // when we encodeURi separately and then join, the URL will be malformed and
-      // resulting in 400 request error from GitLab API
-      const [encodedHost, encodedRepoName] = [state.host, state.repoName].map(
-        encodeURIComponent,
-      );
-
       // user has requested that we use the users credentials
       // so lets grab them using the scmAuthApi and pass through
       // any additional scopes from the ui:options
       const { token } = await scmAuthApi.getCredentials({
-        url: `https://${encodedHost}/${workspace}/${encodedRepoName}`,
+        url: `https://${state.host}`,
         additionalScope: {
           repoWrite: true,
           customScopes: requestUserCredentials.additionalScopes,
@@ -215,6 +203,10 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           rawErrors={rawErrors}
           state={state}
           onChange={updateLocalState}
+          accessToken={
+            uiSchema?.['ui:options']?.requestUserCredentials?.secretsKey &&
+            secrets[uiSchema['ui:options'].requestUserCredentials.secretsKey]
+          }
         />
       )}
       {hostType === 'azure' && (
@@ -240,6 +232,7 @@ export const RepoUrlPicker = (props: RepoUrlPickerProps) => {
           setState(prevState => ({ ...prevState, repoName: repo }))
         }
         rawErrors={rawErrors}
+        availableRepos={state.availableRepos}
       />
     </>
   );

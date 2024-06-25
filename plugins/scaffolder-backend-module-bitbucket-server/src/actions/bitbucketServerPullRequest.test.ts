@@ -103,6 +103,14 @@ describe('publish:bitbucketServer:pull-request', () => {
     ],
     start: 0,
   };
+  const responseOfDefaultBranch = {
+    id: 'refs/heads/main',
+    displayId: 'main',
+    type: 'BRANCH',
+    latestCommit: '1245346tsdfgdf',
+    latestChangeset: 'wsdfgdh234',
+    isDefault: true,
+  };
   const responseOfPullRequests = {
     id: 19,
     version: 0,
@@ -187,6 +195,16 @@ describe('publish:bitbucketServer:pull-request', () => {
           ctx.status(200),
           ctx.set('Content-Type', 'application/json'),
           ctx.json(responseOfBranches),
+        );
+      },
+    ),
+    rest.get(
+      'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/default-branch',
+      (_, res, ctx) => {
+        return res(
+          ctx.status(200),
+          ctx.set('Content-Type', 'application/json'),
+          ctx.json(responseOfDefaultBranch),
         );
       },
     ),

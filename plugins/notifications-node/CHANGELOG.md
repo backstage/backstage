@@ -1,5 +1,36 @@
 # @backstage/plugin-notifications-node
 
+## 0.2.0
+
+### Minor Changes
+
+- 07a789b: add notifications filtering by processors
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 1354d81: Use `node-fetch` instead of native fetch, as per https://backstage.io/docs/architecture-decisions/adrs-adr013
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-notifications-common@0.0.4
+  - @backstage/plugin-signals-node@0.1.5
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+
+## 0.2.0-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-notifications-common@0.0.4-next.0
+  - @backstage/plugin-signals-node@0.1.5-next.3
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+
 ## 0.2.0-next.2
 
 ### Patch Changes

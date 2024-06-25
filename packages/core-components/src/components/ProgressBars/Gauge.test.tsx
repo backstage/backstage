@@ -47,6 +47,27 @@ describe('<Gauge />', () => {
     getByText('10m');
   });
 
+  it('handle relativeToMax prop', async () => {
+    const { getByText } = await renderInTestApp(
+      <Gauge value={7} max={10} relativeToMax fractional={false} unit=" pts" />,
+    );
+    getByText('7 pts');
+  });
+
+  it('handle decimalDigits prop', async () => {
+    const { getByText } = await renderInTestApp(
+      <Gauge
+        value={5.5}
+        max={10}
+        relativeToMax
+        decimalDigits={2}
+        fractional={false}
+        unit="/10"
+      />,
+    );
+    getByText('5.50/10');
+  });
+
   const ok = '#111';
   const warning = '#222';
   const error = '#333';

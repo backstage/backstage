@@ -152,7 +152,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
 export function parseDuration(
   frequency: SchedulerServiceTaskScheduleDefinition['frequency'],
 ): string {
-  if ('cron' in frequency) {
+  if (typeof frequency === 'object' && 'cron' in frequency) {
     return frequency.cron;
   }
 

@@ -19,13 +19,13 @@ import {
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import { Config, ConfigReader } from '@backstage/config';
-import { ForwardedError, InputError } from '@backstage/errors';
+import { ForwardedError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
 import { merge, omit } from 'lodash';
 import limiterFactory from 'p-limit';
 import { Client } from 'pg';
-import { Connector, DatabaseConnector } from '../types';
+import { Connector } from '../types';
 import defaultNameOverride from './defaultNameOverride';
 import defaultSchemaOverride from './defaultSchemaOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
@@ -232,16 +232,6 @@ export async function dropPgDatabase(
   }
 }
 
-export const pgConnector: DatabaseConnector = Object.freeze({
-  createClient: createPgDatabaseClient,
-  ensureDatabaseExists: ensurePgDatabaseExists,
-  ensureSchemaExists: ensurePgSchemaExists,
-  createNameOverride: defaultNameOverride,
-  createSchemaOverride: defaultSchemaOverride,
-  parseConnectionString: parsePgConnectionString,
-  dropDatabase: dropPgDatabase,
-});
-
 /**
  * Provides a config lookup path for a plugin's config block.
  */
@@ -251,43 +241,14 @@ function pluginPath(pluginId: string): string {
 
 function normalizeConnection(
   connection: Knex.StaticConnectionConfig | JsonObject | string | undefined,
-  client: string,
 ): Partial<Knex.StaticConnectionConfig> {
   if (typeof connection === 'undefined' || connection === null) {
     return {};
   }
 
   return typeof connection === 'string' || connection instanceof String
-    ? pgConnector.parseConnectionString(connection as string, client)
+    ? parsePgConnectionString(connection as string)
     : connection;
-}
-
-function createSchemaOverride(
-  client: string,
-  name: string,
-): Partial<Knex.Config | undefined> {
-  try {
-    return pgConnector.createSchemaOverride?.(name);
-  } catch (e) {
-    throw new InputError(
-      `Unable to create database schema override for '${client}' connector`,
-      e,
-    );
-  }
-}
-
-function createNameOverride(
-  client: string,
-  name: string,
-): Partial<Knex.Config> {
-  try {
-    return pgConnector.createNameOverride(name);
-  } catch (e) {
-    throw new InputError(
-      `Unable to create database name override for '${client}' connector`,
-      e,
-    );
-  }
 }
 
 export class PgConnector implements Connector {
@@ -298,7 +259,7 @@ export class PgConnector implements Connector {
 
   async getClient(
     pluginId: string,
-    deps?: {
+    _deps?: {
       lifecycle: LifecycleService;
       pluginMetadata: PluginMetadataService;
     },
@@ -310,7 +271,7 @@ export class PgConnector implements Connector {
     const databaseName = this.getDatabaseName(pluginId);
     if (databaseName && this.getEnsureExistsConfig(pluginId)) {
       try {
-        await pgConnector.ensureDatabaseExists!(pluginConfig, databaseName);
+        await ensurePgDatabaseExists(pluginConfig, databaseName);
       } catch (error) {
         throw new Error(
           `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
@@ -320,13 +281,13 @@ export class PgConnector implements Connector {
 
     let schemaOverrides;
     if (this.getPluginDivisionModeConfig() === 'schema') {
-      schemaOverrides = this.getSchemaOverrides(pluginId);
+      schemaOverrides = defaultSchemaOverride(pluginId);
       if (
         this.getEnsureSchemaExistsConfig(pluginId) ||
         this.getEnsureExistsConfig(pluginId)
       ) {
         try {
-          await pgConnector.ensureSchemaExists!(pluginConfig, pluginId);
+          await ensurePgSchemaExists(pluginConfig, pluginId);
         } catch (error) {
           throw new Error(
             `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
@@ -341,10 +302,9 @@ export class PgConnector implements Connector {
       schemaOverrides,
     );
 
-    const client = pgConnector.createClient(
+    const client = createPgDatabaseClient(
       pluginConfig,
       databaseClientOverrides,
-      deps,
     );
 
     return client;
@@ -465,12 +425,9 @@ export class PgConnector implements Connector {
    * unless `pluginDivisionMode` is set to `schema`.
    */
   private getConnectionConfig(pluginId: string): Knex.StaticConnectionConfig {
-    const { client, overridden } = this.getClientType(pluginId);
+    const { overridden } = this.getClientType(pluginId);
 
-    let baseConnection = normalizeConnection(
-      this.config.get('connection'),
-      this.config.getString('client'),
-    );
+    let baseConnection = normalizeConnection(this.config.get('connection'));
 
     // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`. The
     // `database` property from the base connection is omitted unless `pluginDivisionMode`
@@ -482,7 +439,6 @@ export class PgConnector implements Connector {
     // get and normalize optional plugin specific database connection
     const connection = normalizeConnection(
       this.config.getOptional(`${pluginPath(pluginId)}.connection`),
-      client,
     );
 
     (
@@ -517,17 +473,6 @@ export class PgConnector implements Connector {
   }
 
   /**
-   * Provides a partial `Knex.Config` database schema override for a given
-   * plugin.
-   *
-   * @param pluginId - Target plugin to get database schema override
-   * @returns Partial `Knex.Config` with database schema override
-   */
-  private getSchemaOverrides(pluginId: string): Knex.Config | undefined {
-    return createSchemaOverride(this.getClientType(pluginId).client, pluginId);
-  }
-
-  /**
    * Provides a partial `Knex.Config`• database name override for a given plugin.
    *
    * @param pluginId - Target plugin to get database name override
@@ -535,8 +480,6 @@ export class PgConnector implements Connector {
    */
   private getDatabaseOverrides(pluginId: string): Knex.Config {
     const databaseName = this.getDatabaseName(pluginId);
-    return databaseName
-      ? createNameOverride(this.getClientType(pluginId).client, databaseName)
-      : {};
+    return databaseName ? defaultNameOverride(databaseName) : {};
   }
 }

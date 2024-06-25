@@ -29,6 +29,7 @@ import { SignInResolverFactory } from '../sign-in/createSignInResolverFactory';
 /** @public */
 export function createOAuthProviderFactory<TProfile>(options: {
   authenticator: OAuthAuthenticator<unknown, TProfile>;
+  additionalScopes?: string[];
   stateTransform?: OAuthStateTransform;
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
@@ -57,6 +58,7 @@ export function createOAuthProviderFactory<TProfile>(options: {
         cookieConfigurer: ctx.cookieConfigurer,
         providerId: ctx.providerId,
         resolverContext: ctx.resolverContext,
+        additionalScopes: options.additionalScopes,
         stateTransform: options.stateTransform,
         profileTransform: options.profileTransform,
         signInResolver,

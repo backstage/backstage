@@ -35,6 +35,7 @@ export type NotificationGetOptions = {
   limit?: number;
   search?: string;
   orderField?: EntityOrder[];
+  topic?: string;
   read?: boolean;
   saved?: boolean;
   createdAfter?: Date;

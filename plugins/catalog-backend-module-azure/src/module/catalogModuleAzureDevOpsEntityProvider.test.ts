@@ -17,7 +17,6 @@
 import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import { Duration } from 'luxon';
 import { catalogModuleAzureDevOpsEntityProvider } from './catalogModuleAzureDevOpsEntityProvider';
 import { AzureDevOpsEntityProvider } from '../providers';
 
@@ -59,15 +58,15 @@ describe('catalogModuleAzureDevOpsEntityProvider', () => {
     await startTestBackend({
       extensionPoints: [[catalogProcessingExtensionPoint, extensionPoint]],
       features: [
-        catalogModuleAzureDevOpsEntityProvider(),
+        catalogModuleAzureDevOpsEntityProvider,
         mockServices.rootConfig.factory({ data: config }),
         mockServices.logger.factory(),
         scheduler.factory,
       ],
     });
 
-    expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));
-    expect(usedSchedule?.timeout).toEqual(Duration.fromISO('PT3M'));
+    expect(usedSchedule?.frequency).toEqual({ months: 1 });
+    expect(usedSchedule?.timeout).toEqual({ minutes: 3 });
     expect(addedProviders?.length).toEqual(1);
     expect(addedProviders?.pop()?.getProviderName()).toEqual(
       'AzureDevOpsEntityProvider:test',

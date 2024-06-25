@@ -21,7 +21,7 @@ import { examples } from './wait.examples';
 
 const id = 'debug:wait';
 
-const MAX_WAIT_TIME_IN_ISO = 'T00:00:30';
+const MAX_WAIT_TIME_IN_ISO = 'T00:10:00';
 
 /**
  * Waits for a certain period of time.

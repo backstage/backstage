@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolvePackagePath } from '@backstage/backend-common';
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { DB_MIGRATIONS_TABLE } from './tables';
 

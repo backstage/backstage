@@ -7,6 +7,7 @@
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
@@ -477,6 +478,8 @@ export interface RouterOptions {
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
   auth?: AuthService;
+  // (undocumented)
+  autocompleteHandlers?: Record<string, AutocompleteHandler>;
   // (undocumented)
   catalogClient: CatalogApi;
   concurrentTasksLimit?: number;

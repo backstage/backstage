@@ -4,7 +4,7 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
-import { BackendFeature } from '@backstage/backend-plugin-api';
+import { BackendFeatureCompat } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { EventsService } from '@backstage/plugin-events-node';
 import express from 'express';
@@ -38,7 +38,7 @@ export interface RouterOptions {
 }
 
 // @public
-const signalsPlugin: () => BackendFeature;
+const signalsPlugin: BackendFeatureCompat;
 export default signalsPlugin;
 
 // (No @packageDocumentation comment for this package)

@@ -25,6 +25,7 @@ export interface Config {
            * @visibility secret
            */
           clientSecret: string;
+          additionalScopes?: string | string[];
         };
       };
     };

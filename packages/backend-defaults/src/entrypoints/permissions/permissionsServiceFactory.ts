@@ -21,6 +21,12 @@ import {
 import { ServerPermissionClient } from '@backstage/plugin-permission-node';
 
 /**
+ * Permission system integration for authorization of user actions.
+ *
+ * See {@link @backstage/code-plugin-api#PermissionsService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/permissions | the service docs}
+ * for more information.
+ *
  * @public
  */
 export const permissionsServiceFactory = createServiceFactory({

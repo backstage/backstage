@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-import { DockerContainerRunner } from '@backstage/backend-common';
 import {
   createRouter,
   Generators,
   Preparers,
   Publisher,
 } from '@backstage/plugin-techdocs-backend';
-import Docker from 'dockerode';
 import { Router } from 'express';
 import { PluginEnvironment } from '../types';
 
@@ -34,14 +32,9 @@ export default async function createPlugin(
     reader: env.reader,
   });
 
-  // Docker client (conditionally) used by the generators, based on techdocs.generators config.
-  const dockerClient = new Docker();
-  const containerRunner = new DockerContainerRunner({ dockerClient });
-
   // Generators are used for generating documentation sites.
   const generators = await Generators.fromConfig(env.config, {
     logger: env.logger,
-    containerRunner,
   });
 
   // Publisher is used for

@@ -80,6 +80,7 @@ describe('scaffolderModule factory', () => {
       'copying       example.test.ts',
       'copying       example.ts',
       'copying       index.ts',
+      'copying       module.ts',
       'Installing:',
       `moving        plugins${sep}scaffolder-backend-module-test`,
     ]);

@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Duration } from 'luxon';
 import { readAwsS3Configs } from './config';
 
 describe('readAwsS3Configs', () => {
@@ -92,7 +91,7 @@ describe('readAwsS3Configs', () => {
       id: 'provider4',
       schedule: {
         ...provider4.schedule,
-        frequency: Duration.fromISO(provider4.schedule.frequency),
+        frequency: { minutes: 30 },
       },
     });
   });

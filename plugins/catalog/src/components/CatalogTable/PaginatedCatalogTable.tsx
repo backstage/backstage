@@ -29,7 +29,8 @@ type PaginatedCatalogTableProps = {
  * @internal
  */
 export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
-  const { columns, data, next, prev, title, isLoading, options } = props;
+  const { columns, data, next, prev, title, isLoading, options, ...restProps } =
+    props;
 
   return (
     <Table
@@ -60,6 +61,7 @@ export function PaginatedCatalogTable(props: PaginatedCatalogTableProps) {
       /* this will enable the next button accordingly */
       totalCount={next ? Number.MAX_VALUE : Number.MAX_SAFE_INTEGER}
       localization={{ pagination: { labelDisplayedRows: '' } }}
+      {...restProps}
     />
   );
 }

@@ -20,7 +20,15 @@ import {
 } from '@backstage/backend-plugin-api';
 import { HostDiscovery } from './HostDiscovery';
 
-/** @public */
+/**
+ * Service discovery for inter-plugin communication.
+ *
+ * See {@link @backstage/code-plugin-api#DiscoveryService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/discovery | the service docs}
+ * for more information.
+ *
+ * @public
+ */
 export const discoveryServiceFactory = createServiceFactory({
   service: coreServices.discovery,
   deps: {

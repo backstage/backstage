@@ -24,6 +24,12 @@ import {
 } from '@backstage/config-loader';
 
 /**
+ * Access to static configuration.
+ *
+ * See {@link @backstage/code-plugin-api#RootConfigService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/root-config | the service docs}
+ * for more information.
+ *
  * @public
  */
 export interface RootConfigFactoryOptions {

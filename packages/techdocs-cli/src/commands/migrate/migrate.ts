@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HostDiscovery } from '@backstage/backend-common';
+import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import { Publisher } from '@backstage/plugin-techdocs-node';
 import { OptionValues } from 'commander';
 import { createLogger } from '../../lib/utility';

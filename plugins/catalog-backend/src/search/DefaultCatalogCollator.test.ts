@@ -117,7 +117,7 @@ describe('DefaultCatalogCollator', () => {
       },
     });
     expect(documents[1]).toMatchObject({
-      title: expectedEntities[1].metadata.title,
+      title: `${expectedEntities[1].metadata.title} (${expectedEntities[1].metadata.name})`,
       location: '/catalog/default/component/test-entity-2',
       text: expectedEntities[1].metadata.description,
       namespace: 'default',

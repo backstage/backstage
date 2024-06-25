@@ -21,7 +21,11 @@ import {
 import { DefaultSchedulerService } from './lib/DefaultSchedulerService';
 
 /**
- * The default service factory for {@link @backstage/backend-plugin-api#coreServices.scheduler}.
+ * Scheduling of distributed background tasks.
+ *
+ * See {@link @backstage/code-plugin-api#SchedulerService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/scheduler | the service docs}
+ * for more information.
  *
  * @public
  */

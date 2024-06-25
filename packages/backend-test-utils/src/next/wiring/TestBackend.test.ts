@@ -144,7 +144,7 @@ describe('TestBackend', () => {
     });
 
     await startTestBackend({
-      features: [testModule(), sf()],
+      features: [testModule, sf()],
     });
 
     expect(testFn).toHaveBeenCalledWith('winning');
@@ -169,7 +169,7 @@ describe('TestBackend', () => {
     });
 
     const backend = await startTestBackend({
-      features: [testModule()],
+      features: [testModule],
     });
 
     expect(shutdownSpy).not.toHaveBeenCalled();
@@ -212,7 +212,7 @@ describe('TestBackend', () => {
     });
 
     await startTestBackend({
-      features: [testPlugin()],
+      features: [testPlugin],
     });
   });
 
@@ -233,7 +233,7 @@ describe('TestBackend', () => {
       },
     });
 
-    const { server } = await startTestBackend({ features: [testPlugin()] });
+    const { server } = await startTestBackend({ features: [testPlugin] });
 
     const res = await request(server)
       .get('/api/test/ping-me')

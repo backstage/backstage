@@ -104,24 +104,13 @@ const createStepLogger = ({
   step: TaskStep;
   rootLogger: winston.Logger;
 }) => {
-  const stepLogStream = new PassThrough();
-  stepLogStream.on('data', async data => {
-    const message = data.toString().trim();
-    if (message?.length > 1) {
-      await task.emitLog(message, { stepId: step.id });
-    }
-  });
-
   const taskLogger = WinstonLogger.create({
     level: process.env.LOG_LEVEL || 'info',
     format: winston.format.combine(
       winston.format.colorize(),
       winston.format.simple(),
     ),
-    transports: [
-      new winston.transports.Stream({ stream: stepLogStream }),
-      new BackstageLoggerTransport(rootLogger),
-    ],
+    transports: [new BackstageLoggerTransport(rootLogger, task, step.id)],
   });
 
   taskLogger.addRedactions(Object.values(task.secrets ?? {}));

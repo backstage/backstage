@@ -288,7 +288,7 @@ describe('OwnershipCard', () => {
     const { getByText } = await renderInTestApp(
       <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
         <EntityProvider entity={userEntity}>
-          <OwnershipCard relationsType="aggregated" />
+          <OwnershipCard relationAggregation="aggregated" />
         </EntityProvider>
       </TestApiProvider>,
       {

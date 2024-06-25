@@ -75,7 +75,8 @@ describe('authModuleAtlassianProvider', () => {
       nonce: decodeURIComponent(nonceCookie.value),
     });
   });
-  it('should start with and use custom scopes from scope config field', async () => {
+
+  it('should start with and use custom scopes from additionalScopes config field', async () => {
     const { server } = await startTestBackend({
       features: [
         import('@backstage/plugin-auth-backend'),
@@ -91,7 +92,10 @@ describe('authModuleAtlassianProvider', () => {
                   development: {
                     clientId: 'my-client-id',
                     clientSecret: 'my-client-secret',
-                    scope: 'offline_access read:filter:jira read:jira-work',
+                    additionalScopes: [
+                      'read:filter:jira',
+                      'read:jira-work', // already required
+                    ],
                   },
                 },
               },
@@ -123,7 +127,7 @@ describe('authModuleAtlassianProvider', () => {
       client_id: 'my-client-id',
       redirect_uri: `http://localhost:${server.port()}/api/auth/atlassian/handler/frame`,
       state: expect.any(String),
-      scope: 'offline_access read:filter:jira read:jira-work',
+      scope: 'offline_access read:jira-work read:jira-user read:filter:jira',
     });
 
     expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({
@@ -131,60 +135,35 @@ describe('authModuleAtlassianProvider', () => {
       nonce: decodeURIComponent(nonceCookie.value),
     });
   });
-  it('should start with and use custom scopes from scopes config field for backward compatibility', async () => {
-    const { server } = await startTestBackend({
-      features: [
-        import('@backstage/plugin-auth-backend'),
-        authModuleAtlassianProvider,
-        mockServices.rootConfig.factory({
-          data: {
-            app: {
-              baseUrl: 'http://localhost:3000',
-            },
-            auth: {
-              providers: {
-                atlassian: {
-                  development: {
-                    clientId: 'my-client-id',
-                    clientSecret: 'my-client-secret',
-                    scopes: 'offline_access read:filter:jira read:jira-work',
+
+  it('should fail to start with scope or scopes config', async () => {
+    await expect(
+      startTestBackend({
+        features: [
+          import('@backstage/plugin-auth-backend'),
+          authModuleAtlassianProvider,
+          mockServices.rootConfig.factory({
+            data: {
+              app: {
+                baseUrl: 'http://localhost:3000',
+              },
+              auth: {
+                providers: {
+                  atlassian: {
+                    development: {
+                      clientId: 'my-client-id',
+                      clientSecret: 'my-client-secret',
+                      scope: 'foo',
+                    },
                   },
                 },
               },
             },
-          },
-        }),
-      ],
-    });
-
-    const agent = request.agent(server);
-
-    const res = await agent.get('/api/auth/atlassian/start?env=development');
-
-    expect(res.status).toEqual(302);
-
-    const nonceCookie = agent.jar.getCookie('atlassian-nonce', {
-      domain: 'localhost',
-      path: '/api/auth/atlassian/handler',
-      script: false,
-      secure: false,
-    });
-    expect(nonceCookie).toBeDefined();
-
-    const startUrl = new URL(res.get('location'));
-    expect(startUrl.origin).toBe('https://auth.atlassian.com');
-    expect(startUrl.pathname).toBe('/authorize');
-    expect(Object.fromEntries(startUrl.searchParams)).toEqual({
-      response_type: 'code',
-      client_id: 'my-client-id',
-      redirect_uri: `http://localhost:${server.port()}/api/auth/atlassian/handler/frame`,
-      state: expect.any(String),
-      scope: 'offline_access read:filter:jira read:jira-work',
-    });
-
-    expect(decodeOAuthState(startUrl.searchParams.get('state')!)).toEqual({
-      env: 'development',
-      nonce: decodeURIComponent(nonceCookie.value),
-    });
+          }),
+        ],
+      }),
+    ).rejects.toThrow(
+      /atlassian provider no longer supports the "scope" or "scopes" configuration options/,
+    );
   });
 });
