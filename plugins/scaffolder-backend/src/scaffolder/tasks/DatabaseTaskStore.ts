@@ -520,7 +520,10 @@ export class DatabaseTaskStore implements TaskStore {
       .where({ id: options.taskId })
       .select('workspace');
 
-    await restoreWorkspace(options.targetPath, result.workspace);
+    await restoreWorkspace({
+      path: options.targetPath,
+      buffer: result.workspace,
+    });
   }
 
   async cleanWorkspace({ taskId }: { taskId: string }): Promise<void> {
@@ -537,7 +540,7 @@ export class DatabaseTaskStore implements TaskStore {
       await this.db<RawDbTaskRow>('tasks')
         .where({ id: options.taskId })
         .update({
-          workspace: await serializeWorkspace(options.path),
+          workspace: (await serializeWorkspace(options)).contents,
         });
     }
   }

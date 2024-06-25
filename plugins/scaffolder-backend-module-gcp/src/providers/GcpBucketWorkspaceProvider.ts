@@ -55,7 +55,7 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
     const fileCloud = this.storage
       .bucket(this.getGcpBucketName())
       .file(options.taskId);
-    const workspace = await serializeWorkspace(options.path);
+    const { contents: workspace } = await serializeWorkspace(options);
     try {
       await fileCloud.save(workspace, {
         contentType: 'application/x-tar',
@@ -80,8 +80,8 @@ export class GcpBucketWorkspaceProvider implements WorkspaceProvider {
     const file = bucket.file(options.taskId);
     const result = await file.exists();
     if (result[0]) {
-      const workspace = getRawBody(file.createReadStream());
-      await restoreWorkspace(options.targetPath, await workspace);
+      const workspace = await getRawBody(file.createReadStream());
+      await restoreWorkspace({ path: options.targetPath, buffer: workspace });
     }
   }
 
