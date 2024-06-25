@@ -17,7 +17,6 @@
 import {
   bufferFromFileOrString,
   Cluster,
-  Config,
   CoreV1Api,
   KubeConfig,
   Metrics,
