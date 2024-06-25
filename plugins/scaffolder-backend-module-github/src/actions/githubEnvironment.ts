@@ -162,6 +162,8 @@ export function createGithubEnvironmentAction(options: {
       for (const [key, value] of Object.entries(environmentVariables ?? {})) {
         await client.rest.actions.createEnvironmentVariable({
           repository_id: repository.data.id,
+          owner: owner,
+          repo: repo,
           environment_name: name,
           name: key,
           value,
@@ -193,6 +195,8 @@ export function createGithubEnvironmentAction(options: {
 
           await client.rest.actions.createOrUpdateEnvironmentSecret({
             repository_id: repository.data.id,
+            owner: owner,
+            repo: repo,
             environment_name: name,
             secret_name: key,
             encrypted_value: encryptedBase64Secret,
