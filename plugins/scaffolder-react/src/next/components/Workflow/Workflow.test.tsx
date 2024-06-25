@@ -36,6 +36,7 @@ const scaffolderApiMock: jest.Mocked<ScaffolderApi> = {
   streamLogs: jest.fn(),
   listActions: jest.fn(),
   listTasks: jest.fn(),
+  autocomplete: jest.fn(),
 };
 const catalogApiMock: jest.Mocked<CatalogApi> = {
   getEntityByRef: jest.fn(),

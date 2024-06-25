@@ -94,6 +94,7 @@ import {
 } from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
+import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
  *
@@ -166,6 +167,8 @@ export interface RouterOptions {
   httpAuth?: HttpAuthService;
   identity?: IdentityApi;
   discovery?: DiscoveryService;
+
+  autocompleteHandlers?: Record<string, AutocompleteHandler>;
 }
 
 function isSupportedTemplate(entity: TemplateEntityV1beta3) {
@@ -273,6 +276,7 @@ export async function createRouter(
     permissionRules,
     discovery = HostDiscovery.fromConfig(config),
     identity = buildDefaultIdentityClient(options),
+    autocompleteHandlers = {},
   } = options;
 
   const { auth, httpAuth } = createLegacyAuthAdapters({
@@ -771,6 +775,24 @@ export async function createRouter(
           base64Content: file.content.toString('base64'),
         })),
       });
+    })
+    .post('/v2/autocomplete/:provider/:resource', async (req, res) => {
+      const { token, context } = req.body;
+      const { provider, resource } = req.params;
+
+      if (!token) throw new InputError('Missing token query parameter');
+
+      if (!autocompleteHandlers[provider]) {
+        throw new InputError(`Unsupported provider: ${provider}`);
+      }
+
+      const { results } = await autocompleteHandlers[provider]({
+        resource,
+        token,
+        context,
+      });
+
+      res.status(200).json({ results });
     });
 
   const app = express();

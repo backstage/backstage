@@ -10,6 +10,21 @@ import { TemplateFilter } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal } from '@backstage/plugin-scaffolder-node';
 
 // @alpha
+export type AutocompleteHandler = ({
+  resource,
+  token,
+  context,
+}: {
+  resource: string;
+  token: string;
+  context: Record<string, string>;
+}) => Promise<{
+  results: {
+    title: string;
+  }[];
+}>;
+
+// @alpha
 export interface ScaffolderActionsExtensionPoint {
   // (undocumented)
   addActions(...actions: TemplateAction<any, any>[]): void;
@@ -17,6 +32,21 @@ export interface ScaffolderActionsExtensionPoint {
 
 // @alpha
 export const scaffolderActionsExtensionPoint: ExtensionPoint<ScaffolderActionsExtensionPoint>;
+
+// @alpha
+export interface ScaffolderAutocompleteExtensionPoint {
+  // (undocumented)
+  addAutocompleteProvider({
+    id,
+    handler,
+  }: {
+    id: string;
+    handler: AutocompleteHandler;
+  }): void;
+}
+
+// @alpha
+export const scaffolderAutocompleteExtensionPoint: ExtensionPoint<ScaffolderAutocompleteExtensionPoint>;
 
 // @alpha
 export interface ScaffolderTaskBrokerExtensionPoint {
