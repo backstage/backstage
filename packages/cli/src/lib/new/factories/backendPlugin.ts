@@ -79,10 +79,7 @@ export const backendPlugin = createFactory<Options>({
         );
       });
 
-      await addToBackend(name, {
-        defaultVersion: ctx.defaultVersion,
-        type: 'plugin',
-      });
+      await addToBackend(name, 'plugin');
     }
 
     if (options.owner) {

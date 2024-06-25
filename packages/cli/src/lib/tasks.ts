@@ -23,6 +23,7 @@ import { basename, dirname } from 'path';
 import recursive from 'recursive-readdir';
 import { exec as execCb } from 'child_process';
 import { assertError } from '@backstage/errors';
+import { paths } from './paths';
 
 const exec = promisify(execCb);
 
@@ -197,12 +198,9 @@ export async function addPackageDependency(
   }
 }
 
-export async function addToBackend(
-  name: string,
-  ctx: { defaultVersion: string; type: 'plugin' | 'module' },
-) {
+export async function addToBackend(name: string, type: 'plugin' | 'module') {
   if (await fs.pathExists(paths.resolveTargetRoot('packages/backend'))) {
-    await Task.forItem('backend', `adding ${ctx.type}`, async () => {
+    await Task.forItem('backend', `adding ${type}`, async () => {
       const backendFilePath = paths.resolveTargetRoot(
         'packages/backend/src/index.ts',
       );
