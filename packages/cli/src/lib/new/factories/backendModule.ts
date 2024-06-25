@@ -91,7 +91,9 @@ export const backendModule = createFactory<Options>({
       });
     }
 
-    await addToBackend(name, 'module');
+    await addToBackend(name, {
+      type: 'module',
+    });
 
     if (options.owner) {
       await addCodeownersEntry(`/plugins/${dirName}`, options.owner);

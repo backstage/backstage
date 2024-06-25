@@ -79,7 +79,9 @@ export const backendPlugin = createFactory<Options>({
         );
       });
 
-      await addToBackend(name, 'plugin');
+      await addToBackend(name, {
+        type: 'plugin',
+      });
     }
 
     if (options.owner) {
