@@ -1335,6 +1335,64 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
+      'should support negation of full text search, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        const names = ['lion', 'cat', 'atcatss', 'dog', 'dogcat', 'aa', 's'];
+        const entities: Entity[] = names.map(name => entityFrom(name));
+
+        const notFoundEntities: Entity[] = [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something' },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: { name: 'something else' },
+            spec: {},
+          },
+        ];
+
+        await Promise.all(
+          entities.concat(notFoundEntities).map(e => addEntityToSearch(e)),
+        );
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        const filter = {
+          key: 'spec.should_include_this',
+        };
+
+        const request: QueryEntitiesInitialRequest = {
+          filter,
+          limit: 100,
+
+          orderFields: [{ field: 'metadata.name', order: 'asc' }],
+          fullTextFilter: { not: { term: 'cAt ' } },
+          credentials: mockCredentials.none(),
+        };
+        const response = await catalog.queryEntities(request);
+        expect(response.items).toEqual([
+          entityFrom('aa'),
+          entityFrom('dog'),
+          entityFrom('lion'),
+          entityFrom('s'),
+        ]);
+        expect(response.pageInfo.nextCursor).toBeUndefined();
+        expect(response.pageInfo.prevCursor).toBeUndefined();
+        expect(response.totalItems).toBe(4);
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
       'should include totalItems and empty entities in the response in case limit is zero, %p',
       async databaseId => {
         await createDatabase(databaseId);

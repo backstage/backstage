@@ -198,11 +198,16 @@ export interface QueryEntitiesInitialRequest {
   limit?: number;
   filter?: EntityFilter;
   orderFields?: EntityOrder[];
-  fullTextFilter?: {
-    term: string;
-    fields?: string[];
-  };
+  fullTextFilter?: FullTextFilter | { not: FullTextFilter };
 }
+
+/**
+ * The structure of a full text filter.
+ */
+export type FullTextFilter = {
+  term: string;
+  fields?: string[];
+};
 
 /**
  * Request for {@link EntitiesCatalog.queryEntities} used to
@@ -264,10 +269,7 @@ export type Cursor = {
   /**
    * Used for performing full text filtering on the given fields.
    */
-  fullTextFilter?: {
-    term: string;
-    fields?: string[];
-  };
+  fullTextFilter?: FullTextFilter | { not: FullTextFilter };
   /**
    * The value of the fields of the first returned item used for paginating the data.
    * The catalog uses this field internally to understand if the beginning
