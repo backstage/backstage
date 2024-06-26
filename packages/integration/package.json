@@ -40,6 +40,8 @@
     "@azure/identity": "^4.0.0",
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/plugin-catalog-backend": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@octokit/auth-app": "^4.0.0",
     "@octokit/rest": "^19.0.3",
     "cross-fetch": "^4.0.0",

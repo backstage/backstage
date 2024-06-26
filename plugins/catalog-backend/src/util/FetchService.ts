@@ -15,9 +15,10 @@
  */
 
 import fetch, { Response, RequestInfo, RequestInit } from 'node-fetch';
-import { ThrottlingConfig } from '@backstage/integration';
 import pThrottle from 'p-throttle';
 import { durationToMilliseconds } from '@backstage/types';
+import { HumanDuration } from '@backstage/types';
+import { Config, readDurationFromConfig } from '@backstage/config';
 
 export type FetchFunction = (
   url: RequestInfo,
@@ -61,3 +62,15 @@ export class FetchService {
     return func;
   }
 }
+
+export function readThrottlingConfig(config: Config): ThrottlingConfig {
+  return {
+    count: config.getNumber('count'),
+    interval: readDurationFromConfig(config.getConfig('interval')),
+  };
+}
+
+export type ThrottlingConfig = {
+  count: number;
+  interval: HumanDuration;
+};

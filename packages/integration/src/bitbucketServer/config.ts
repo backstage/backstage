@@ -14,10 +14,13 @@
  * limitations under the License.
  */
 
-import { Config, readDurationFromConfig } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
 import { isValidHost } from '../helpers';
-import { HumanDuration } from '@backstage/types';
+import {
+  ThrottlingConfig,
+  readThrottlingConfig,
+} from '@backstage/plugin-catalog-backend';
 
 /**
  * The configuration parameters for a single Bitbucket Server API provider.
@@ -66,6 +69,11 @@ export type BitbucketServerIntegrationConfig = {
    */
   password?: string;
 
+  /**
+   * Throttling configuration for requests to the Bitbucket Server provider.
+   *
+   * If not specified, no throttling will be applied.
+   */
   throttling?: ThrottlingConfig;
 };
 
@@ -109,18 +117,6 @@ export function readBitbucketServerIntegrationConfig(
     throttling,
   };
 }
-
-function readThrottlingConfig(config: Config): ThrottlingConfig {
-  return {
-    count: config.getNumber('count'),
-    interval: readDurationFromConfig(config.getConfig('interval')),
-  };
-}
-
-export type ThrottlingConfig = {
-  count: number;
-  interval: HumanDuration;
-};
 
 /**
  * Reads a set of Bitbucket Server integration configs.
