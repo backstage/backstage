@@ -5242,9 +5242,11 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/integration": "workspace:^"
+    "@backstage/plugin-catalog-backend": "workspace:^"
     "@openapitools/openapi-generator-cli": ^2.4.26
-    cross-fetch: ^4.0.0
+    "@types/node-fetch": ^2.5.12
     msw: ^1.0.0
+    node-fetch: ^2.6.7
     ts-morph: ^22.0.0
   languageName: unknown
   linkType: soft
@@ -5347,7 +5349,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-catalog-backend-module-bitbucket-server@workspace:^, @backstage/plugin-catalog-backend-module-bitbucket-server@workspace:plugins/catalog-backend-module-bitbucket-server":
+"@backstage/plugin-catalog-backend-module-bitbucket-server@workspace:plugins/catalog-backend-module-bitbucket-server":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-backend-module-bitbucket-server@workspace:plugins/catalog-backend-module-bitbucket-server"
   dependencies:
@@ -26756,7 +26758,6 @@ __metadata:
     "@backstage/plugin-auth-node": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-backend-module-backstage-openapi": "workspace:^"
-    "@backstage/plugin-catalog-backend-module-bitbucket-server": "workspace:^"
     "@backstage/plugin-catalog-backend-module-openapi": "workspace:^"
     "@backstage/plugin-catalog-backend-module-scaffolder-entity-model": "workspace:^"
     "@backstage/plugin-catalog-backend-module-unprocessed": "workspace:^"
