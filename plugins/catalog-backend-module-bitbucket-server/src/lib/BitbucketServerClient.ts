@@ -73,11 +73,10 @@ export class BitbucketServerClient {
     path: string;
   }): Promise<Response> {
     const base = new URL(this.config.apiBaseUrl);
-    const uri = `${base.protocol}//${base.host}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`;
-
-    console.log(`getFile(${uri})`);
-
-    return this.fetch(uri, getBitbucketServerRequestOptions(this.config));
+    return this.fetch(
+      `${base.protocol}//${base.host}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
+      getBitbucketServerRequestOptions(this.config),
+    );
   }
 
   async getRepository(options: {

@@ -5362,12 +5362,10 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-backend": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
-    "@backstage/types": "workspace:^"
     "@types/node-fetch": ^2.5.12
     luxon: ^3.0.0
     msw: ^1.0.0
     node-fetch: ^2.6.7
-    p-throttle: ^4.1.1
     uuid: ^9.0.0
   languageName: unknown
   linkType: soft
@@ -17514,6 +17512,13 @@ __metadata:
     "@types/minimatch": ^5.1.2
     "@types/node": "*"
   checksum: 9101f3a9061e40137190f70626aa0e202369b5ec4012c3fabe6f5d229cce04772db9a94fa5a0eb39655e2e4ad105c38afbb4af56a56c0996a8c7d4fc72350e3d
+  languageName: node
+  linkType: hard
+
+"@types/global-agent@npm:^2.1.3":
+  version: 2.1.3
+  resolution: "@types/global-agent@npm:2.1.3"
+  checksum: 6129b6d5ba871b9d111ddf91e6f9a1725d3f28bf2aa6869ec83bebd14c688cde4275ebea6fa45b0b1c00d78109d022c935f952e9e4876d76289d4706484776c3
   languageName: node
   linkType: hard
 
@@ -39794,11 +39799,11 @@ __metadata:
     "@spotify/eslint-plugin": ^15.0.0
     "@spotify/prettier-config": ^15.0.0
     "@techdocs/cli": "workspace:*"
+    "@types/global-agent": ^2.1.3
     "@types/node": ^18.17.8
     "@types/webpack": ^5.28.0
     "@useoptic/optic": ^0.50.10
     array-to-table: ^1.0.1
-    bottleneck: ^2.19.5
     command-exists: ^1.2.9
     cross-env: ^7.0.0
     e2e-test: "workspace:*"

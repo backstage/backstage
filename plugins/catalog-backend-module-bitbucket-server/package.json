@@ -59,10 +59,8 @@
     "@backstage/integration": "workspace:^",
     "@backstage/plugin-catalog-backend": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
-    "@backstage/types": "workspace:^",
     "@types/node-fetch": "^2.5.12",
     "node-fetch": "^2.6.7",
-    "p-throttle": "^4.1.1",
     "uuid": "^9.0.0"
   },
   "devDependencies": {

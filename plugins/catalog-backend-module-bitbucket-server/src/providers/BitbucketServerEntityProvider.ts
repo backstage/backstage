@@ -174,8 +174,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   }
 
   private async findEntities(): Promise<Entity[]> {
-    this.logger.info('Finding entities in Bitbucket Server repositories');
-
     const client = BitbucketServerClient.fromConfig({
       config: this.integration.config,
     });
