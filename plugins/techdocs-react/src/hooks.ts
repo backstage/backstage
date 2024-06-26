@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import debounce from 'lodash/debounce';
 import { useTechDocsReaderPage } from './context';
 
@@ -39,9 +39,28 @@ export const useShadowRootElements = <
   selectors: string[],
 ): TReturnedElement[] => {
   const shadowRoot = useShadowRoot();
-  if (!shadowRoot) return [];
+  const [root, setRootNode] = useState(shadowRoot?.querySelector('html'));
+
+  useEffect(() => {
+    let observer: MutationObserver;
+    if (shadowRoot) {
+      observer = new MutationObserver(() => {
+        setRootNode(shadowRoot.querySelector('html'));
+      });
+      observer.observe(shadowRoot, {
+        attributes: true,
+        characterData: true,
+        childList: true,
+        subtree: true,
+      });
+    }
+    return () => observer?.disconnect();
+  }, [shadowRoot]);
+
+  if (!root) return [];
+
   return selectors
-    .map(selector => shadowRoot?.querySelectorAll<TReturnedElement>(selector))
+    .map(selector => root.querySelectorAll<TReturnedElement>(selector))
     .filter(nodeList => nodeList.length)
     .map(nodeList => Array.from(nodeList))
     .flat();
