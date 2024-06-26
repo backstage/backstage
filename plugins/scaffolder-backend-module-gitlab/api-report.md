@@ -29,8 +29,8 @@ export const createGitlabIssueAction: (options: {
 }) => TemplateAction<
   {
     title: string;
-    repoUrl: string;
     projectId: number;
+    repoUrl: string;
     labels?: string | undefined;
     description?: string | undefined;
     weight?: number | undefined;
@@ -57,8 +57,8 @@ export const createGitlabProjectAccessTokenAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    repoUrl: string;
     projectId: string | number;
+    repoUrl: string;
     name?: string | undefined;
     token?: string | undefined;
     scopes?: string[] | undefined;
@@ -76,8 +76,8 @@ export const createGitlabProjectDeployTokenAction: (options: {
 }) => TemplateAction<
   {
     name: string;
-    repoUrl: string;
     projectId: string | number;
+    repoUrl: string;
     username?: string | undefined;
     token?: string | undefined;
     scopes?: string[] | undefined;
@@ -95,8 +95,8 @@ export const createGitlabProjectVariableAction: (options: {
   {
     key: string;
     value: string;
-    repoUrl: string;
     projectId: string | number;
+    repoUrl: string;
     variableType: string;
     raw?: boolean | undefined;
     token?: string | undefined;
@@ -207,8 +207,8 @@ export const createTriggerGitlabPipelineAction: (options: {
 }) => TemplateAction<
   {
     branch: string;
-    repoUrl: string;
     projectId: number;
+    repoUrl: string;
     tokenDescription: string;
     token?: string | undefined;
   },
@@ -222,8 +222,8 @@ export const editGitlabIssueAction: (options: {
   integrations: ScmIntegrationRegistry;
 }) => TemplateAction<
   {
-    repoUrl: string;
     projectId: number;
+    repoUrl: string;
     issueIid: number;
     title?: string | undefined;
     labels?: string | undefined;
