@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.4.7
+
+### Patch Changes
+
+- 86bc439: Fixed a bug where the `RepoUrlPicker` would still require the `owner` field for `azure`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21
+  - @backstage/backend-common@0.23.2
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.12.0
+  - @backstage/types@1.1.1
+  - @backstage/plugin-scaffolder-common@1.5.3
+
 ## 0.4.6
 
 ### Patch Changes

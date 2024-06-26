@@ -1,5 +1,32 @@
 # @backstage/plugin-scaffolder
 
+## 1.22.0
+
+### Minor Changes
+
+- d6661d9: Use virtualization with `EntityPicker` as done earlier with `MultiEntityPicker` to fix performance issues with large data sets. `VirtualizedListbox` extracted into reusable component.
+- a86d841: Use virtualization with `MultiEntityPicker`. Fixes performance issues with large data sets.
+
+### Patch Changes
+
+- 86bc439: Fixed a bug where the `RepoUrlPicker` would still require the `owner` field for `azure`
+- Updated dependencies
+  - @backstage/core-compat-api@0.2.6
+  - @backstage/core-components@0.14.8
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/plugin-catalog-react@1.12.1
+  - @backstage/plugin-scaffolder-react@1.9.0
+  - @backstage/frontend-plugin-api@0.6.6
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+  - @backstage/integration@1.12.0
+  - @backstage/integration-react@1.1.28
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/plugin-permission-react@0.4.23
+  - @backstage/plugin-scaffolder-common@1.5.3
+
 ## 1.21.0
 
 ### Minor Changes

@@ -219,6 +219,8 @@ describe('github:environment:create examples', () => {
       mockOctokit.rest.actions.createEnvironmentVariable,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       name: 'key1',
       value: 'val1',
@@ -227,6 +229,8 @@ describe('github:environment:create examples', () => {
       mockOctokit.rest.actions.createEnvironmentVariable,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       name: 'key2',
       value: 'val2',
@@ -239,6 +243,8 @@ describe('github:environment:create examples', () => {
       mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       secret_name: 'secret1',
       key_id: 'keyid',
@@ -248,6 +254,8 @@ describe('github:environment:create examples', () => {
       mockOctokit.rest.actions.createOrUpdateEnvironmentSecret,
     ).toHaveBeenCalledWith({
       repository_id: 'repoid',
+      owner: 'owner',
+      repo: 'repository',
       environment_name: 'envname',
       secret_name: 'secret2',
       key_id: 'keyid',

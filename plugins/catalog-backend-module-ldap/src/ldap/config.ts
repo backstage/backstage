@@ -15,9 +15,9 @@
  */
 
 import {
-  readTaskScheduleDefinitionFromConfig,
-  TaskScheduleDefinition,
-} from '@backstage/backend-tasks';
+  SchedulerServiceTaskScheduleDefinition,
+  readSchedulerServiceTaskScheduleDefinitionFromConfig,
+} from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
 import { JsonValue } from '@backstage/types';
 import { SearchOptions } from 'ldapjs';
@@ -46,7 +46,7 @@ export type LdapProviderConfig = {
   // The settings that govern the reading and interpretation of groups
   groups: GroupConfig;
   // Schedule configuration for refresh tasks.
-  schedule?: TaskScheduleDefinition;
+  schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
 /**
@@ -380,7 +380,9 @@ export function readProviderConfigs(config: Config): LdapProviderConfig[] {
     const c = providersConfig.getConfig(id);
 
     const schedule = c.has('schedule')
-      ? readTaskScheduleDefinitionFromConfig(c.getConfig('schedule'))
+      ? readSchedulerServiceTaskScheduleDefinitionFromConfig(
+          c.getConfig('schedule'),
+        )
       : undefined;
 
     const newConfig = {
