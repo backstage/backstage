@@ -14,9 +14,9 @@ const TestExtensionKind = createExtensionKind({
   output: {
     element: coreExtensionData.reactElement,
   },
-  factory(_, props: { text: string }) {
+  factory(_, options: { text: string }) {
     return {
-      element: <h1>{props.text}</h1>,
+      element: <h1>{options.text}</h1>,
     };
   },
 });
