@@ -17,7 +17,7 @@ description: Support and Community Details and Links
 - [Blog](https://backstage.io/blog/) - Announcements and updates.
 - [Newsletter](https://info.backstage.spotify.com/newsletter_subscribe) - Subscribe to
   our email newsletter.
-- Give us a star ⭐️ - If you are using Backstage or think it is an interesting
+- Give us a star ⭐️ - If you are using Backstage or believe it is an interesting
   project, we would love a star! ❤️
 
 ## Community Hub
