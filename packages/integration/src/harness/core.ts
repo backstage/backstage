@@ -34,7 +34,12 @@ export function getHarnessEditContentsUrl(
   url: string,
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
-  return `${parsedUrl.baseUrl}/ng/account/${parsedUrl.accountId}/module/code/orgs/${parsedUrl.orgName}/projects/${parsedUrl.projectName}/repos/${parsedUrl.repoName}/files/${parsedUrl.branch}/~/${parsedUrl.path}`;
+
+  return `${parsedUrl.baseUrl}/ng/account/${parsedUrl.accountId}/module/code${
+    parsedUrl.orgName !== '' ? `/orgs/${parsedUrl.orgName}` : ''
+  }${
+    parsedUrl.projectName !== '' ? `/projects/${parsedUrl.projectName}` : ''
+  }/repos/${parsedUrl.repoName}/files/${parsedUrl.branch}/~/${parsedUrl.path}`;
 }
 
 /**
@@ -44,6 +49,7 @@ export function getHarnessEditContentsUrl(
  *
  * Converts
  * from: https://app.harness.io/ng/account/accountId/module/code/orgs/orgName/projects/projName/repos/repoName/files/refMain/~/all-apis.yaml
+ *       https://qa.harness.io/ng/account/bDCAuAjFSJCLFj_0ug3lCg/module/code/orgs/HiteshTest/repos/impoorter/files/main/~/catalog.yaml
  * to:   https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/+/content/all-apis.yaml?routingId=accountId&include_commit=false&ref=refMain
  *
  * @param url - A URL pointing to a file
@@ -55,7 +61,14 @@ export function getHarnessFileContentsUrl(
   url: string,
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
-  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/raw/${parsedUrl.path}?routingId=${parsedUrl.accountId}&git_ref=refs/heads/${parsedUrl.refString}`;
+
+  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${
+    parsedUrl.accountId
+  }/${parsedUrl.orgName}${
+    parsedUrl.projectName !== '' ? `/${parsedUrl.projectName}/` : '/'
+  }${parsedUrl.repoName}/+/raw/${parsedUrl.path}?routingId=${
+    parsedUrl.accountId
+  }&git_ref=refs/heads/${parsedUrl.refString}`;
 }
 
 /**
@@ -77,7 +90,13 @@ export function getHarnessArchiveUrl(
   url: string,
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
-  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/archive/${parsedUrl.branch}.zip?routingId=${parsedUrl.accountId}`;
+  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${
+    parsedUrl.accountId
+  }/${parsedUrl.orgName}${
+    parsedUrl.projectName !== '' ? `/${parsedUrl.projectName}/` : '/'
+  }${parsedUrl.repoName}/+/archive/${parsedUrl.branch}.zip?routingId=${
+    parsedUrl.accountId
+  }`;
 }
 
 /**
@@ -99,7 +118,13 @@ export function getHarnessLatestCommitUrl(
   url: string,
 ) {
   const parsedUrl = parseHarnessUrl(config, url);
-  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${parsedUrl.accountId}/${parsedUrl.orgName}/${parsedUrl.projectName}/${parsedUrl.repoName}/+/content?routingId=${parsedUrl.accountId}&include_commit=true&git_ref=refs/heads/${parsedUrl.branch}`;
+  return `${parsedUrl.baseUrl}/gateway/code/api/v1/repos/${
+    parsedUrl.accountId
+  }/${parsedUrl.orgName}${
+    parsedUrl.projectName !== '' ? `/${parsedUrl.projectName}/` : '/'
+  }${parsedUrl.repoName}/+/content?routingId=${
+    parsedUrl.accountId
+  }&include_commit=true&git_ref=refs/heads/${parsedUrl.branch}`;
 }
 
 /**
@@ -153,27 +178,30 @@ export function parseHarnessUrl(
       .split('/')
       .filter(segment => segment !== '');
     const urlParts = pathUrl.pathname.split('/');
-    const [
-      _ng,
-      _account,
-      accountId,
-      _module,
-      _moduleName,
-      _org,
-      orgName,
-      _projects,
-      projectName,
-      _repos,
-      repoName,
-      _files,
-      _ref,
-      _branch,
-      ..._path
-    ] = pathSegments;
+
+    const accountIdIndex =
+      pathSegments.findIndex(segment => segment === 'account') + 1;
+    const accountId = pathSegments[accountIdIndex];
+
+    const orgNameIndex = pathSegments.findIndex(segment => segment === 'orgs');
+    const orgName = orgNameIndex !== -1 ? pathSegments[orgNameIndex + 1] : '';
+
+    const projectNameIndex = pathSegments.findIndex(
+      segment => segment === 'projects',
+    );
+
+    const projectName =
+      projectNameIndex !== -1 ? pathSegments[projectNameIndex + 1] : '';
+
+    const repoNameIndex =
+      pathSegments.findIndex(segment => segment === 'repos') + 1;
+    const repoName = pathSegments[repoNameIndex];
+
     const refAndPath = urlParts.slice(
       urlParts.findIndex(i => i === 'files' || i === 'edit') + 1,
     );
     const refIndex = refAndPath.findIndex(item => item === '~');
+
     const refString = refAndPath.slice(0, refIndex).join('/');
     const pathWithoutSlash =
       refIndex !== -1
@@ -182,6 +210,7 @@ export function parseHarnessUrl(
             .join('/')
             .replace(/^\//, '')
         : '';
+
     return {
       baseUrl: baseUrl,
       accountId: accountId,
