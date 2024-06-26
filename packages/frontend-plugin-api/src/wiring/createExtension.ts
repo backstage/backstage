@@ -91,7 +91,7 @@ export interface CreateExtensionOptions<
   inputs?: TInputs;
   output: TOutput;
   configSchema?: PortableSchema<TConfig>;
-  factory(context: {
+  factory(options: {
     node: AppNode;
     config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
@@ -99,33 +99,7 @@ export interface CreateExtensionOptions<
 }
 
 /** @public */
-export interface ExtensionDefinitionOverrides<
-  TOriginalConfig,
-  TOriginalInputs extends AnyExtensionInputMap,
-  TOverrideInputs extends AnyExtensionInputMap,
-> {
-  readonly disabled?: boolean;
-  readonly attachTo?: { id: string; input: string };
-  // TODO: inputs (only adding to the list? or redefine arity and superset of old type on existing input?)
-  // TODO: config (any merging needed on there?)
-  inputs?: TOverrideInputs;
-  factory?(options: {
-    node: AppNode;
-    config: TOriginalConfig;
-    inputs: Expand<ResolvedExtensionInputs<TOriginalInputs & TOverrideInputs>>;
-    originalFactory: (originalFactoryOptions?: {
-      inputsOverride?: ResolvedExtensionInputs<
-        TOriginalInputs & TOverrideInputs
-      >;
-    }) => ExtensionDataValues<any>;
-  }): ExtensionDataValues<any>;
-}
-
-/** @public */
-export interface ExtensionDefinition<
-  TConfig,
-  TInputs extends AnyExtensionInputMap,
-> {
+export interface ExtensionDefinition<TConfig> {
   $$type: '@backstage/ExtensionDefinition';
   readonly kind?: string;
   readonly namespace?: string;
@@ -133,20 +107,15 @@ export interface ExtensionDefinition<
   readonly attachTo: { id: string; input: string };
   readonly disabled: boolean;
   readonly configSchema?: PortableSchema<TConfig>;
-  override<TOverrideInputs extends AnyExtensionInputMap>(
-    overrides: ExtensionDefinitionOverrides<TConfig, TInputs, TOverrideInputs>,
-  ): ExtensionDefinition<TConfig, TInputs>;
 }
 
 /** @internal */
-export interface InternalExtensionDefinition<
-  TConfig,
-  TInputs extends AnyExtensionInputMap,
-> extends ExtensionDefinition<TConfig, TInputs> {
+export interface InternalExtensionDefinition<TConfig>
+  extends ExtensionDefinition<TConfig> {
   readonly version: 'v1';
-  readonly inputs: TInputs;
+  readonly inputs: AnyExtensionInputMap;
   readonly output: AnyExtensionDataMap;
-  factory(context: {
+  factory(options: {
     node: AppNode;
     config: TConfig;
     inputs: ResolvedExtensionInputs<any>;
@@ -154,13 +123,10 @@ export interface InternalExtensionDefinition<
 }
 
 /** @internal */
-export function toInternalExtensionDefinition<
-  TConfig,
-  TInputs extends AnyExtensionInputMap,
->(
-  overrides: ExtensionDefinition<TConfig, TInputs>,
-): InternalExtensionDefinition<TConfig, TInputs> {
-  const internal = overrides as InternalExtensionDefinition<TConfig, TInputs>;
+export function toInternalExtensionDefinition<TConfig>(
+  overrides: ExtensionDefinition<TConfig>,
+): InternalExtensionDefinition<TConfig> {
+  const internal = overrides as InternalExtensionDefinition<TConfig>;
   if (internal.$$type !== '@backstage/ExtensionDefinition') {
     throw new Error(
       `Invalid extension definition instance, bad type '${internal.$$type}'`,
@@ -181,69 +147,38 @@ export function createExtension<
   TConfig = never,
 >(
   options: CreateExtensionOptions<TOutput, TInputs, TConfig>,
-): ExtensionDefinition<TConfig, TInputs> {
-  const {
-    kind,
-    namespace,
-    name,
-    attachTo,
-    disabled = false,
-    inputs = {} as TInputs,
-    output,
-    configSchema,
-    factory,
-  } = options;
-
+): ExtensionDefinition<TConfig> {
   return {
     $$type: '@backstage/ExtensionDefinition',
     version: 'v1',
-    kind,
-    namespace,
-    name,
-    attachTo,
-    disabled,
-    inputs,
-    output,
-    configSchema,
-    factory({ inputs: factoryInputs, ...rest }) {
+    kind: options.kind,
+    namespace: options.namespace,
+    name: options.name,
+    attachTo: options.attachTo,
+    disabled: options.disabled ?? false,
+    inputs: options.inputs ?? {},
+    output: options.output,
+    configSchema: options.configSchema,
+    factory({ inputs, ...rest }) {
       // TODO: Simplify this, but TS wouldn't infer the input type for some reason
-      return factory({
-        inputs: factoryInputs as Expand<ResolvedExtensionInputs<TInputs>>,
+      return options.factory({
+        inputs: inputs as Expand<ResolvedExtensionInputs<TInputs>>,
         ...rest,
       });
     },
     toString() {
       const parts: string[] = [];
-      if (kind) {
-        parts.push(`kind=${kind}`);
+      if (options.kind) {
+        parts.push(`kind=${options.kind}`);
       }
-      if (namespace) {
-        parts.push(`namespace=${namespace}`);
+      if (options.namespace) {
+        parts.push(`namespace=${options.namespace}`);
       }
-      if (name) {
-        parts.push(`name=${name}`);
+      if (options.name) {
+        parts.push(`name=${options.name}`);
       }
-      parts.push(`attachTo=${attachTo.id}@${attachTo.input}`);
+      parts.push(`attachTo=${options.attachTo.id}@${options.attachTo.input}`);
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
-    override<TOverrideInputs extends AnyExtensionInputMap>(
-      overrides: ExtensionDefinitionOverrides<
-        TConfig,
-        TInputs,
-        TOverrideInputs
-      >,
-    ): ExtensionDefinition<TConfig, TInputs> {
-      return createExtension({
-        kind,
-        namespace,
-        name,
-        attachTo: overrides.attachTo ?? attachTo,
-        disabled: overrides.disabled ?? disabled,
-        inputs: { ...inputs, ...overrides.inputs },
-        output,
-        configSchema,
-        factory,
-      });
-    },
-  } as InternalExtensionDefinition<TConfig, TInputs>;
+  } as InternalExtensionDefinition<TConfig>;
 }

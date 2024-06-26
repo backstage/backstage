@@ -49,7 +49,9 @@ export {
   type FrontendFeature,
 } from './types';
 export {
-  type CreateExtensionKindOptions as ExtensionKindOptions,
+  type CreateExtensionKindOptions,
+  type CreateExtensionKindInstanceOptions,
+  type CreateExtensionOverrideKindInstanceOptions,
   ExtensionKind,
   createExtensionKind,
 } from './createExtensionKind';
