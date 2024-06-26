@@ -28,31 +28,38 @@ export type FetchFunction = (
 export class FetchService {
   private static cache: Record<string, FetchFunction> = {};
   private constructor() {}
-  public static get(options: { host: string; throttling?: ThrottlingConfig }) {
+  public static get(options: {
+    host: string;
+    debug?: boolean;
+    throttling?: ThrottlingConfig;
+  }) {
     let func = this.cache[options.host];
     if (func !== undefined) {
       return func;
     }
 
+    const debug = options.debug ?? false;
+
     if (options.throttling === undefined) {
-      console.log('NO THROTTLING');
+      this.log('NO THROTTLING', debug);
+
       func = (url: RequestInfo, init?: RequestInit) => {
-        if (typeof url === 'string') console.log(`fetch(${url})`);
-        else if ('href' in url) console.log(`fetch(${url.href})`);
-        else if ('url' in url) console.log(`fetch(${url.url})`);
+        if (typeof url === 'string') this.log(`fetch(${url})`, debug);
+        else if ('href' in url) this.log(`fetch(${url.href})`, debug);
+        else if ('url' in url) this.log(`fetch(${url.url})`, debug);
 
         return fetch(url, init);
       };
     } else {
-      console.log('THROTTLING ENABLED');
+      this.log('THROTTLING ENABLED', debug);
       const throttle = pThrottle({
         limit: options.throttling.count,
         interval: durationToMilliseconds(options.throttling.interval),
       });
       func = throttle(async (url: RequestInfo, init?: RequestInit) => {
-        if (typeof url === 'string') console.log(`throttled_fetch(${url})`);
-        else if ('href' in url) console.log(`throttled_fetch(${url.href})`);
-        else if ('url' in url) console.log(`throttled_fetch(${url.url})`);
+        if (typeof url === 'string') this.log(`throttled_fetch(${url})`, debug);
+        else if ('href' in url) this.log(`throttled_fetch(${url.href})`, debug);
+        else if ('url' in url) this.log(`throttled_fetch(${url.url})`, debug);
 
         return fetch(url, init);
       });
@@ -60,6 +67,12 @@ export class FetchService {
 
     this.cache[options.host] = func;
     return func;
+  }
+
+  private static log(msg: string, debug: boolean) {
+    if (debug) {
+      console.log(msg);
+    }
   }
 }
 
