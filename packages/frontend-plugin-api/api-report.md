@@ -524,13 +524,13 @@ export function createExtensionInput<
 
 // @public
 export function createExtensionKind<
-  TProps,
+  TOptions,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
 >(
-  options: ExtensionKindOptions<TProps, TInputs, TOutput, TConfig>,
-): ExtensionKind<TProps, TInputs, TOutput, TConfig>;
+  options: ExtensionKindOptions<TOptions, TInputs, TOutput, TConfig>,
+): ExtensionKind<TOptions, TInputs, TOutput, TConfig>;
 
 // @public (undocumented)
 export interface CreateExtensionOptions<
@@ -548,7 +548,7 @@ export interface CreateExtensionOptions<
   // (undocumented)
   disabled?: boolean;
   // (undocumented)
-  factory(options: {
+  factory(context: {
     node: AppNode;
     config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
@@ -923,24 +923,24 @@ export interface ExtensionInput<
   extensionData: TExtensionData;
 }
 
-// @public (undocumented)
+// @public
 export class ExtensionKind<
-  TProps,
+  TOptions,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
 > {
   // (undocumented)
   static create<
-    TProps,
+    TOptions,
     TInputs extends AnyExtensionInputMap,
     TOutput extends AnyExtensionDataMap,
     TConfig,
   >(
-    options: ExtensionKindOptions<TProps, TInputs, TOutput, TConfig>,
-  ): ExtensionKind<TProps, TInputs, TOutput, TConfig>;
+    options: ExtensionKindOptions<TOptions, TInputs, TOutput, TConfig>,
+  ): ExtensionKind<TOptions, TInputs, TOutput, TConfig>;
   // (undocumented)
-  new(options: {
+  new(args: {
     namespace?: string;
     name?: string;
     attachTo?: {
@@ -951,29 +951,29 @@ export class ExtensionKind<
     inputs?: TInputs;
     output?: TOutput;
     configSchema?: PortableSchema<TConfig>;
-    props: TProps;
+    options: TOptions;
     factory?(
-      options: {
+      context: {
         node: AppNode;
         config: TConfig;
         inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         orignalFactory(
-          options?: {
+          context?: {
             node?: AppNode;
             config?: TConfig;
             inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
           },
-          props?: TProps,
+          options?: TOptions,
         ): Expand<ExtensionDataValues<TOutput>>;
       },
-      props: TProps,
+      options: TOptions,
     ): Expand<ExtensionDataValues<TOutput>>;
   }): ExtensionDefinition<TConfig>;
 }
 
 // @public (undocumented)
 export interface ExtensionKindOptions<
-  TProps,
+  TOptions,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
@@ -989,12 +989,12 @@ export interface ExtensionKindOptions<
   disabled?: boolean;
   // (undocumented)
   factory(
-    options: {
+    context: {
       node: AppNode;
       config: TConfig;
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     },
-    props: TProps,
+    options: TOptions,
   ): Expand<ExtensionDataValues<TOutput>>;
   // (undocumented)
   inputs?: TInputs;

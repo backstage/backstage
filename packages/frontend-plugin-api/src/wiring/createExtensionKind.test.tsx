@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import React from 'react';
 import { coreExtensionData } from './coreExtensionData';
 import { createExtensionKind } from './createExtensionKind';
@@ -26,16 +27,16 @@ describe('createExtensionKind', () => {
       output: {
         element: coreExtensionData.reactElement,
       },
-      factory(_, props: { text: string }) {
+      factory(_, options: { text: string }) {
         return {
-          element: <h1>{props.text}</h1>,
+          element: <h1>{options.text}</h1>,
         };
       },
     });
 
     const extension = TestExtension.new({
       name: 'my-extension',
-      props: {
+      options: {
         text: 'Hello, world!',
       },
     });
@@ -77,21 +78,21 @@ describe('createExtensionKind', () => {
       output: {
         element: coreExtensionData.reactElement,
       },
-      factory(_, props: { text: string }) {
+      factory(_, options: { text: string }) {
         return {
-          element: <h1>{props.text}</h1>,
+          element: <h1>{options.text}</h1>,
         };
       },
     });
 
     const extension = TestExtension.new({
       name: 'my-extension',
-      props: {
+      options: {
         text: 'Hello, world!',
       },
-      factory(_, props: { text: string }) {
+      factory(_, options: { text: string }) {
         return {
-          element: <h2>{props.text}</h2>,
+          element: <h2>{options.text}</h2>,
         };
       },
     });

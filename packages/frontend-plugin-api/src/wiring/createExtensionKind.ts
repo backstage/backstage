@@ -1,14 +1,3 @@
-import { AppNode } from '../apis';
-import { PortableSchema } from '../schema';
-import { Expand } from '../types';
-import {
-  AnyExtensionDataMap,
-  AnyExtensionInputMap,
-  ExtensionDataValues,
-  ResolvedExtensionInputs,
-  createExtension,
-} from './createExtension';
-
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -25,11 +14,22 @@ import {
  * limitations under the License.
  */
 
+import { AppNode } from '../apis';
+import { PortableSchema } from '../schema';
+import { Expand } from '../types';
+import {
+  AnyExtensionDataMap,
+  AnyExtensionInputMap,
+  ExtensionDataValues,
+  ResolvedExtensionInputs,
+  createExtension,
+} from './createExtension';
+
 /**
  * @public
  */
-export interface ExtensionKindOptions<
-  TProps,
+export interface CreateExtensionKindOptions<
+  TOptions,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
@@ -43,45 +43,46 @@ export interface ExtensionKindOptions<
   output: TOutput;
   configSchema?: PortableSchema<TConfig>;
   factory(
-    options: {
+    context: {
       node: AppNode;
       config: TConfig;
       inputs: Expand<ResolvedExtensionInputs<TInputs>>;
     },
-    props: TProps,
+    options: TOptions,
   ): Expand<ExtensionDataValues<TOutput>>;
 }
 
 /**
+ * TODO: should we export an interface instead of a concrete class?
  * @public
  */
 export class ExtensionKind<
-  TProps,
+  TOptions,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
 > {
   static create<
-    TProps,
+    TOptions,
     TInputs extends AnyExtensionInputMap,
     TOutput extends AnyExtensionDataMap,
     TConfig,
   >(
-    options: ExtensionKindOptions<TProps, TInputs, TOutput, TConfig>,
-  ): ExtensionKind<TProps, TInputs, TOutput, TConfig> {
+    options: CreateExtensionKindOptions<TOptions, TInputs, TOutput, TConfig>,
+  ): ExtensionKind<TOptions, TInputs, TOutput, TConfig> {
     return new ExtensionKind(options);
   }
 
   private constructor(
-    private readonly options: ExtensionKindOptions<
-      TProps,
+    private readonly options: CreateExtensionKindOptions<
+      TOptions,
       TInputs,
       TOutput,
       TConfig
     >,
   ) {}
 
-  public new(options: {
+  public new(args: {
     namespace?: string;
     name?: string;
     attachTo?: { id: string; input: string };
@@ -89,58 +90,58 @@ export class ExtensionKind<
     inputs?: TInputs;
     output?: TOutput;
     configSchema?: PortableSchema<TConfig>;
-    props: TProps;
+    options: TOptions;
     factory?(
-      options: {
+      context: {
         node: AppNode;
         config: TConfig;
         inputs: Expand<ResolvedExtensionInputs<TInputs>>;
         orignalFactory(
-          options?: {
+          context?: {
             node?: AppNode;
             config?: TConfig;
             inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
           },
-          props?: TProps,
+          options?: TOptions,
         ): Expand<ExtensionDataValues<TOutput>>;
       },
-      props: TProps,
+      options: TOptions,
     ): Expand<ExtensionDataValues<TOutput>>;
   }) {
     return createExtension({
       kind: this.options.kind,
-      namespace: options.namespace ?? this.options.namespace,
-      name: options.name ?? this.options.name,
-      attachTo: options.attachTo ?? this.options.attachTo,
-      disabled: options.disabled ?? this.options.disabled,
-      inputs: options.inputs ?? this.options.inputs,
-      output: options.output ?? this.options.output,
-      configSchema: options.configSchema ?? this.options.configSchema, // TODO: some config merging or smth
+      namespace: args.namespace ?? this.options.namespace,
+      name: args.name ?? this.options.name,
+      attachTo: args.attachTo ?? this.options.attachTo,
+      disabled: args.disabled ?? this.options.disabled,
+      inputs: args.inputs ?? this.options.inputs,
+      output: args.output ?? this.options.output,
+      configSchema: args.configSchema ?? this.options.configSchema, // TODO: some config merging or smth
       factory: ({ node, config, inputs }) => {
-        if (options.factory) {
-          return options.factory(
+        if (args.factory) {
+          return args.factory(
             {
               node,
               config,
               inputs,
               orignalFactory: (
-                innerOptions?: {
+                innerContext?: {
                   node?: AppNode;
                   config?: TConfig;
                   inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
                 },
-                innerProps?: TProps,
+                innerOptions?: TOptions,
               ) =>
                 this.options.factory(
                   {
-                    node: innerOptions?.node ?? node,
-                    config: innerOptions?.config ?? config,
-                    inputs: innerOptions?.inputs ?? inputs,
+                    node: innerContext?.node ?? node,
+                    config: innerContext?.config ?? config,
+                    inputs: innerContext?.inputs ?? inputs,
                   },
-                  innerProps ?? options.props,
+                  innerOptions ?? args.options,
                 ),
             },
-            options.props,
+            args.options,
           );
         }
 
@@ -150,7 +151,7 @@ export class ExtensionKind<
             config,
             inputs,
           },
-          options.props,
+          args.options,
         );
       },
     });
@@ -164,10 +165,10 @@ export class ExtensionKind<
  * @public
  */
 export function createExtensionKind<
-  TProps,
+  TOptions,
   TInputs extends AnyExtensionInputMap,
   TOutput extends AnyExtensionDataMap,
   TConfig,
->(options: ExtensionKindOptions<TProps, TInputs, TOutput, TConfig>) {
+>(options: CreateExtensionKindOptions<TOptions, TInputs, TOutput, TConfig>) {
   return ExtensionKind.create(options);
 }

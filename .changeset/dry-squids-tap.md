@@ -8,7 +8,7 @@ This allows the creation of extension with the following pattern:
 
 ```tsx
 // create the extension kind
-const TestExtension = createExtensionKind({
+const TestExtensionKind = createExtensionKind({
   kind: 'test-extension',
   attachTo: { id: 'test', input: 'default' },
   output: {
@@ -22,5 +22,10 @@ const TestExtension = createExtensionKind({
 });
 
 // create an instance of the extension kind with props
-const testExtension = TestExtension.create({ text: 'Hello World' });
+const testExtension = TestExtensionKind.new({
+  name: 'foo',
+  options: {
+    text: 'Hello World',
+  },
+});
 ```
