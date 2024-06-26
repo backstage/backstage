@@ -14,58 +14,13 @@
  * limitations under the License.
  */
 
-import fetch, { Request, Response, RequestInfo, RequestInit } from 'node-fetch';
+import { Request, Response } from 'node-fetch';
 import {
   BitbucketServerIntegrationConfig,
   getBitbucketServerRequestOptions,
-  ThrottlingConfig,
 } from '@backstage/integration';
 import { BitbucketServerProject, BitbucketServerRepository } from './types';
-import pThrottle from 'p-throttle';
-import { durationToMilliseconds } from '@backstage/types';
-
-declare type FetchFunction = (
-  url: RequestInfo,
-  init?: RequestInit,
-) => Promise<Response>;
-
-export class FetchService {
-  private static cache: Record<string, FetchFunction> = {};
-  private constructor() {}
-  public static get(options: { host: string; throttling?: ThrottlingConfig }) {
-    let func = this.cache[options.host];
-    if (func !== undefined) {
-      return func;
-    }
-
-    if (options.throttling === undefined) {
-      console.log('NO THROTTLING');
-      func = (url: RequestInfo, init?: RequestInit) => {
-        if (typeof url === 'string') console.log(`fetch(${url})`);
-        else if ('href' in url) console.log(`fetch(${url.href})`);
-        else if ('url' in url) console.log(`fetch(${url.url})`);
-
-        return fetch(url, init);
-      };
-    } else {
-      console.log('THROTTLING ENABLED');
-      const throttle = pThrottle({
-        limit: options.throttling.count,
-        interval: durationToMilliseconds(options.throttling.interval),
-      });
-      func = throttle(async (url: RequestInfo, init?: RequestInit) => {
-        if (typeof url === 'string') console.log(`throttled_fetch(${url})`);
-        else if ('href' in url) console.log(`throttled_fetch(${url.href})`);
-        else if ('url' in url) console.log(`throttled_fetch(${url.url})`);
-
-        return fetch(url, init);
-      });
-    }
-
-    this.cache[options.host] = func;
-    return func;
-  }
-}
+import { FetchFunction, FetchService } from '@backstage/plugin-catalog-backend';
 
 /**
  * A client for interacting with a Bitbucket Server instance
@@ -80,13 +35,10 @@ export class BitbucketServerClient {
   static fromConfig(options: {
     config: BitbucketServerIntegrationConfig;
   }): BitbucketServerClient {
-    console.log('BitbucketServerClient.fromConfig');
     return new BitbucketServerClient(options);
   }
 
   constructor(options: { config: BitbucketServerIntegrationConfig }) {
-    console.log('new BitbucketServerClient()');
-
     this.config = options.config;
     this.fetch = FetchService.get({
       host: this.config.host,

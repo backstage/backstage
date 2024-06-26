@@ -21,6 +21,10 @@ integrations:
     - host: bitbucket.mycompany.com
       apiBaseUrl: https://bitbucket.mycompany.com/rest/api/1.0
       token: ${BITBUCKET_SERVER_TOKEN}
+      throttling: # optional
+        count: 1 # number of requests per interval
+        # suppports ISO duration, "human duration" as used in code
+        interval: { seconds: 1 }
 ```
 
 or with Basic Auth
@@ -32,6 +36,10 @@ integrations:
       apiBaseUrl: https://bitbucket.mycompany.com/rest/api/1.0
       username: ${BITBUCKET_SERVER_USERNAME}
       password: ${BITBUCKET_SERVER_PASSWORD}
+      throttling: # optional
+        count: 1 # number of requests per interval
+        # suppports ISO duration, "human duration" as used in code
+        interval: { seconds: 1 }
 ```
 
 Directly under the `bitbucketServer` key is a list of provider configurations, where
@@ -49,3 +57,6 @@ a structure with the following elements:
   Note: a token can also be used as a substitute for the password, see [HTTP access tokens](https://confluence.atlassian.com/bitbucketserver/personal-access-tokens-939515499.html).
 - `apiBaseUrl` (optional): The URL of the Bitbucket Server API. For self-hosted
   installations, it is commonly at `https://<host>/rest/api/1.0`.
+- `throttling` (optional): The throttling configuration for the Bitbucket Server client.
+  - `count`: The number of requests per interval.
+  - `interval`: The interval for the throttling. Supports ISO duration, "human duration".

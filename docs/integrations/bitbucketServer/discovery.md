@@ -69,10 +69,6 @@ catalog:
           frequency: { minutes: 30 }
           # supports ISO duration, "human duration" as used in code
           timeout: { minutes: 3 }
-        throttling: # optional
-          count: 1 # number of requests per interval
-          # suppports ISO duration, "human duration" as used in code
-          interval: { seconds: 1 }
 ```
 
 - **`host`**:
