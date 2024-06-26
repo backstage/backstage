@@ -34,7 +34,7 @@ import qs from 'qs';
 import { EntityRelationAggregation } from '../types';
 import { uniq } from 'lodash';
 
-const limiter = limiterFactory(5);
+const limiter = limiterFactory(20);
 
 type EntityTypeProps = {
   kind: string;
