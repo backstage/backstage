@@ -20,14 +20,30 @@ import { durationToMilliseconds } from '@backstage/types';
 import { HumanDuration } from '@backstage/types';
 import { Config, readDurationFromConfig } from '@backstage/config';
 
+/**
+ * A function that is a wrapper for the `fetch` function in node-fetch.
+ * This will either be a direct call to `fetch` or a throttled version of it.
+ * @internal
+ */
 export type FetchFunction = (
   url: RequestInfo,
   init?: RequestInit,
 ) => Promise<Response>;
 
+/**
+ * A service that provides a `fetch` function that can be used to make HTTP requests.
+ * This service can be configured to throttle the number of requests that can be made.
+ * @internal
+ */
 export class FetchService {
   private static cache: Record<string, FetchFunction> = {};
   private constructor() {}
+
+  /**
+   * Get a `fetch` function that can be used to make HTTP requests.
+   * This function will either be a direct call to `fetch` or a throttled version of it.
+   * The function is cached based on the host of the URL that is being fetched, and will return the same function for the same host.
+   */
   public static get(options: {
     host: string;
     debug?: boolean;
@@ -41,8 +57,6 @@ export class FetchService {
     const debug = options.debug ?? false;
 
     if (options.throttling === undefined) {
-      this.log('NO THROTTLING', debug);
-
       func = (url: RequestInfo, init?: RequestInit) => {
         if (typeof url === 'string') this.log(`fetch(${url})`, debug);
         else if ('href' in url) this.log(`fetch(${url.href})`, debug);
@@ -51,7 +65,6 @@ export class FetchService {
         return fetch(url, init);
       };
     } else {
-      this.log('THROTTLING ENABLED', debug);
       const throttle = pThrottle({
         limit: options.throttling.count,
         interval: durationToMilliseconds(options.throttling.interval),
@@ -76,6 +89,10 @@ export class FetchService {
   }
 }
 
+/**
+ * Reads the throttling configuration from the provided config object.
+ * @internal
+ */
 export function readThrottlingConfig(config: Config): ThrottlingConfig {
   return {
     count: config.getNumber('count'),
@@ -83,6 +100,10 @@ export function readThrottlingConfig(config: Config): ThrottlingConfig {
   };
 }
 
+/**
+ * Configuration for the throttling of HTTP requests.
+ * @internal
+ */
 export type ThrottlingConfig = {
   count: number;
   interval: HumanDuration;

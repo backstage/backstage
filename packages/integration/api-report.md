@@ -6,6 +6,7 @@
 import { Config } from '@backstage/config';
 import { ConsumedResponse } from '@backstage/errors';
 import { RestEndpointMethodTypes } from '@octokit/rest';
+import { ThrottlingConfig } from '@backstage/plugin-catalog-backend';
 
 // @public
 export class AwsCodeCommitIntegration implements ScmIntegration {
@@ -187,6 +188,7 @@ export type BitbucketCloudIntegrationConfig = {
   username?: string;
   appPassword?: string;
   token?: string;
+  throttling?: ThrottlingConfig;
 };
 
 // @public @deprecated
@@ -247,6 +249,7 @@ export type BitbucketServerIntegrationConfig = {
   token?: string;
   username?: string;
   password?: string;
+  throttling?: ThrottlingConfig;
 };
 
 // @public
