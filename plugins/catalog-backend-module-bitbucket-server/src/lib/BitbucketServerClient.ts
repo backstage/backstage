@@ -40,10 +40,7 @@ export class BitbucketServerClient {
 
   constructor(options: { config: BitbucketServerIntegrationConfig }) {
     this.config = options.config;
-    this.fetch = FetchService.get({
-      host: this.config.host,
-      throttling: this.config.throttling,
-    });
+    this.fetch = FetchService.get(this.config);
   }
 
   async listProjects(options: {
