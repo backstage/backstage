@@ -42,42 +42,42 @@ There are two optional arguments:
 Copy and paste this section to your `packages/app/public/index.html`
 
 ```
-<% if (config.has('app.datadogRum')) { %> 
- <script> 
-   (function (h, o, u, n, d) { 
-     h = h[d] = h[d] || { 
-       q: [], 
-       onReady: function (c) { 
-         h.q.push(c); 
-       }, 
-     }; 
-     d = o.createElement(u); 
-     d.async = 1; 
-     d.src = n; 
-     n = o.getElementsByTagName(u)[0]; 
-     n.parentNode.insertBefore(d, n); 
-   })( 
-     window, 
-     document, 
-     'script', 
-     'https://www.datadoghq-browser-agent.com/datadog-rum-v3.js', 
-     'DD_RUM', 
-   ); 
-   DD_RUM.onReady(function () { 
-     DD_RUM.init({ 
-       clientToken: '<%= config.getString("app.datadogRum.clientToken") %>', 
-       applicationId: 
-         '<%= config.getString("app.datadogRum.applicationId") %>', 
-       site: '<%= config.getOptionalString("app.datadogRum.site") || "datadoghq.com" %>', 
-       service: 'backstage', 
-       env: '<%= config.getString("app.datadogRum.env") %>', 
-       sampleRate: 
-         '<%= config.getOptionalNumber("app.datadogRum.sessionSampleRate") || 100 %>', 
-       sessionReplaySampleRate: 
-         '<%= config.getOptionalNumber("app.datadogRum.sessionReplaySampleRate") || 0 %>', 
-       trackInteractions: true, 
-     }); 
-   }); 
- </script> 
- <% } %> 
+<% if (config.has('app.datadogRum')) { %>
+ <script>
+   (function (h, o, u, n, d) {
+     h = h[d] = h[d] || {
+       q: [],
+       onReady: function (c) {
+         h.q.push(c);
+       },
+     };
+     d = o.createElement(u);
+     d.async = 1;
+     d.src = n;
+     n = o.getElementsByTagName(u)[0];
+     n.parentNode.insertBefore(d, n);
+   })(
+     window,
+     document,
+     'script',
+     'https://www.datadoghq-browser-agent.com/datadog-rum-v3.js',
+     'DD_RUM',
+   );
+   DD_RUM.onReady(function () {
+     DD_RUM.init({
+       clientToken: '<%= config.getString("app.datadogRum.clientToken") %>',
+       applicationId:
+         '<%= config.getString("app.datadogRum.applicationId") %>',
+       site: '<%= config.getOptionalString("app.datadogRum.site") || "datadoghq.com" %>',
+       service: 'backstage',
+       env: '<%= config.getString("app.datadogRum.env") %>',
+       sampleRate:
+         '<%= config.getOptionalNumber("app.datadogRum.sessionSampleRate") || 100 %>',
+       sessionReplaySampleRate:
+         '<%= config.getOptionalNumber("app.datadogRum.sessionReplaySampleRate") || 0 %>',
+       trackInteractions: true,
+     });
+   });
+ </script>
+ <% } %>
 ```
