@@ -18,8 +18,7 @@ import {
   readTaskScheduleDefinitionFromConfig,
   TaskScheduleDefinition,
 } from '@backstage/backend-tasks';
-import { Config, readDurationFromConfig } from '@backstage/config';
-import { HumanDuration } from '@backstage/types';
+import { Config } from '@backstage/config';
 
 const DEFAULT_CATALOG_PATH = '/catalog-info.yaml';
 const DEFAULT_PROVIDER_ID = 'default';
@@ -34,12 +33,6 @@ export type BitbucketServerEntityProviderConfig = {
     skipArchivedRepos?: boolean;
   };
   schedule?: TaskScheduleDefinition;
-  throttling?: ThrottlingConfig;
-};
-
-export type ThrottlingConfig = {
-  count: number;
-  interval: HumanDuration;
 };
 
 export function readProviderConfigs(
@@ -80,10 +73,6 @@ function readProviderConfig(
     ? readTaskScheduleDefinitionFromConfig(config.getConfig('schedule'))
     : undefined;
 
-  const throttling = config.has('throttling')
-    ? readThrottlingConfig(config.getConfig('throttling'))
-    : undefined;
-
   return {
     id,
     host,
@@ -94,13 +83,5 @@ function readProviderConfig(
       skipArchivedRepos: skipArchivedReposFlag,
     },
     schedule,
-    throttling,
-  };
-}
-
-function readThrottlingConfig(config: Config): ThrottlingConfig {
-  return {
-    count: config.getNumber('count'),
-    interval: readDurationFromConfig(config.getConfig('interval')),
   };
 }

@@ -14,12 +14,58 @@
  * limitations under the License.
  */
 
-import fetch, { Request, Response } from 'node-fetch';
+import fetch, { Request, Response, RequestInfo, RequestInit } from 'node-fetch';
 import {
   BitbucketServerIntegrationConfig,
   getBitbucketServerRequestOptions,
+  ThrottlingConfig,
 } from '@backstage/integration';
 import { BitbucketServerProject, BitbucketServerRepository } from './types';
+import pThrottle from 'p-throttle';
+import { durationToMilliseconds } from '@backstage/types';
+
+declare type FetchFunction = (
+  url: RequestInfo,
+  init?: RequestInit,
+) => Promise<Response>;
+
+export class FetchService {
+  private static cache: Record<string, FetchFunction> = {};
+  private constructor() {}
+  public static get(options: { host: string; throttling?: ThrottlingConfig }) {
+    let func = this.cache[options.host];
+    if (func !== undefined) {
+      return func;
+    }
+
+    if (options.throttling === undefined) {
+      console.log('NO THROTTLING');
+      func = (url: RequestInfo, init?: RequestInit) => {
+        if (typeof url === 'string') console.log(`fetch(${url})`);
+        else if ('href' in url) console.log(`fetch(${url.href})`);
+        else if ('url' in url) console.log(`fetch(${url.url})`);
+
+        return fetch(url, init);
+      };
+    } else {
+      console.log('THROTTLING ENABLED');
+      const throttle = pThrottle({
+        limit: options.throttling.count,
+        interval: durationToMilliseconds(options.throttling.interval),
+      });
+      func = throttle(async (url: RequestInfo, init?: RequestInit) => {
+        if (typeof url === 'string') console.log(`throttled_fetch(${url})`);
+        else if ('href' in url) console.log(`throttled_fetch(${url.href})`);
+        else if ('url' in url) console.log(`throttled_fetch(${url.url})`);
+
+        return fetch(url, init);
+      });
+    }
+
+    this.cache[options.host] = func;
+    return func;
+  }
+}
 
 /**
  * A client for interacting with a Bitbucket Server instance
@@ -29,14 +75,23 @@ import { BitbucketServerProject, BitbucketServerRepository } from './types';
 export class BitbucketServerClient {
   private readonly config: BitbucketServerIntegrationConfig;
 
+  private readonly fetch: FetchFunction;
+
   static fromConfig(options: {
     config: BitbucketServerIntegrationConfig;
   }): BitbucketServerClient {
+    console.log('BitbucketServerClient.fromConfig');
     return new BitbucketServerClient(options);
   }
 
   constructor(options: { config: BitbucketServerIntegrationConfig }) {
+    console.log('new BitbucketServerClient()');
+
     this.config = options.config;
+    this.fetch = FetchService.get({
+      host: this.config.host,
+      throttling: this.config.throttling,
+    });
   }
 
   async listProjects(options: {
@@ -66,10 +121,11 @@ export class BitbucketServerClient {
     path: string;
   }): Promise<Response> {
     const base = new URL(this.config.apiBaseUrl);
-    return fetch(
-      `${base.protocol}//${base.host}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`,
-      getBitbucketServerRequestOptions(this.config),
-    );
+    const uri = `${base.protocol}//${base.host}/projects/${options.projectKey}/repos/${options.repo}/raw/${options.path}`;
+
+    console.log(`getFile(${uri})`);
+
+    return this.fetch(uri, getBitbucketServerRequestOptions(this.config));
   }
 
   async getRepository(options: {
@@ -77,7 +133,7 @@ export class BitbucketServerClient {
     repo: string;
   }): Promise<BitbucketServerRepository> {
     const request = `${this.config.apiBaseUrl}/projects/${options.projectKey}/repos/${options.repo}`;
-    const response = await fetch(
+    const response = await this.fetch(
       request,
       getBitbucketServerRequestOptions(this.config),
     );
@@ -118,7 +174,7 @@ export class BitbucketServerClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, getBitbucketServerRequestOptions(this.config)).then(
+    return this.fetch(req, getBitbucketServerRequestOptions(this.config)).then(
       (response: Response) => {
         if (!response.ok) {
           throw new Error(

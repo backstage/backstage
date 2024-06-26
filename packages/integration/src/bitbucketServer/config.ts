@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { trimEnd } from 'lodash';
 import { isValidHost } from '../helpers';
+import { HumanDuration } from '@backstage/types';
 
 /**
  * The configuration parameters for a single Bitbucket Server API provider.
@@ -64,6 +65,8 @@ export type BitbucketServerIntegrationConfig = {
    * See https://developer.atlassian.com/server/bitbucket/how-tos/command-line-rest/#authentication
    */
   password?: string;
+
+  throttling?: ThrottlingConfig;
 };
 
 /**
@@ -80,6 +83,10 @@ export function readBitbucketServerIntegrationConfig(
   const token = config.getOptionalString('token')?.trim();
   const username = config.getOptionalString('username');
   const password = config.getOptionalString('password');
+
+  const throttling = config.has('throttling')
+    ? readThrottlingConfig(config.getConfig('throttling'))
+    : undefined;
 
   if (!isValidHost(host)) {
     throw new Error(
@@ -99,8 +106,21 @@ export function readBitbucketServerIntegrationConfig(
     token,
     username,
     password,
+    throttling,
   };
 }
+
+function readThrottlingConfig(config: Config): ThrottlingConfig {
+  return {
+    count: config.getNumber('count'),
+    interval: readDurationFromConfig(config.getConfig('interval')),
+  };
+}
+
+export type ThrottlingConfig = {
+  count: number;
+  interval: HumanDuration;
+};
 
 /**
  * Reads a set of Bitbucket Server integration configs.

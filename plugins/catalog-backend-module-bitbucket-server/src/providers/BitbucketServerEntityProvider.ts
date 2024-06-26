@@ -25,7 +25,6 @@ import {
 import {
   EntityProvider,
   EntityProviderConnection,
-  LocationSpec,
 } from '@backstage/plugin-catalog-node';
 import * as uuid from 'uuid';
 import { BitbucketServerClient, paginated } from '../lib';
@@ -38,8 +37,6 @@ import {
   defaultBitbucketServerLocationParser,
 } from './BitbucketServerLocationParser';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import pThrottle from 'p-throttle';
-import { durationToMilliseconds } from '@backstage/types';
 
 /**
  * Discovers catalog files located in Bitbucket Server.
@@ -56,7 +53,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
   private readonly logger: LoggerService;
   private readonly scheduleFn: () => Promise<void>;
   private connection?: EntityProviderConnection;
-  private parseFunction: (opt: ParseOptions) => Promise<AsyncIterable<Entity>>;
 
   static fromConfig(
     config: Config,
@@ -117,21 +113,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       target: this.getProviderName(),
     });
     this.scheduleFn = this.createScheduleFn(taskRunner);
-
-    if (this.config.throttling) {
-      const throttle = pThrottle({
-        limit: this.config.throttling.count,
-        interval: durationToMilliseconds(this.config.throttling.interval),
-      });
-
-      this.parseFunction = throttle((opt: ParseOptions) => {
-        return this.parse(opt);
-      });
-    } else {
-      this.parseFunction = (opt: ParseOptions) => {
-        return Promise.resolve(this.parse(opt));
-      };
-    }
   }
 
   private createScheduleFn(taskRunner: TaskRunner): () => Promise<void> {
@@ -202,7 +183,6 @@ export class BitbucketServerEntityProvider implements EntityProvider {
       client.listProjects({ listOptions: options }),
     );
     const result: Entity[] = [];
-
     for await (const project of projects) {
       if (
         this.config?.filters?.projectKey &&
@@ -226,8 +206,7 @@ export class BitbucketServerEntityProvider implements EntityProvider {
         if (this.config?.filters?.skipArchivedRepos && repository.archived) {
           continue;
         }
-
-        const options: ParseOptions = {
+        for await (const entity of this.parser({
           client,
           logger: this.logger,
           location: {
@@ -235,31 +214,11 @@ export class BitbucketServerEntityProvider implements EntityProvider {
             target: `${repository.links.self[0].href}${this.config.catalogPath}`,
             presence: 'optional',
           },
-        };
-
-        await this.parseEntities(result, options, this.parseFunction);
+        })) {
+          result.push(entity);
+        }
       }
     }
     return result;
   }
-
-  private parse(options: ParseOptions) {
-    return this.parser(options);
-  }
-
-  private async parseEntities(
-    entities: Entity[],
-    options: ParseOptions,
-    parseFn: (opt: ParseOptions) => Promise<AsyncIterable<Entity>>,
-  ) {
-    for await (const entity of await parseFn(options)) {
-      entities.push(entity);
-    }
-  }
-}
-
-interface ParseOptions {
-  client: BitbucketServerClient;
-  location: LocationSpec;
-  logger: LoggerService;
 }
