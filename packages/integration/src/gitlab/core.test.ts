@@ -189,15 +189,30 @@ describe('gitlab core', () => {
 
   describe('getGitLabRequestOptions', () => {
     it('should return Authorization header when oauthToken is provided', () => {
-      const oauthToken = 'mock-oauth-token';
+      const token =
+        'de6780bc506a0446309bd9362820ba8aed28aa506c71eedbe1c5c4f9dd350e54';
       const result = getGitLabRequestOptions(
         configSelfHosteWithRelativePath,
-        oauthToken,
+        token,
       );
 
       expect(result).toEqual({
         headers: {
-          Authorization: `Bearer ${oauthToken}`,
+          Authorization: `Bearer ${token}`,
+        },
+      });
+    });
+
+    it('should return private-token header when gl-token is provided', () => {
+      const token = 'glpat-1234566';
+      const result = getGitLabRequestOptions(
+        configSelfHosteWithRelativePath,
+        token,
+      );
+
+      expect(result).toEqual({
+        headers: {
+          'PRIVATE-TOKEN': token,
         },
       });
     });
@@ -208,7 +223,6 @@ describe('gitlab core', () => {
         configSelfHosteWithRelativePath,
         oauthToken,
       );
-
       expect(result).toEqual({
         headers: {
           'PRIVATE-TOKEN': configSelfHosteWithRelativePath.token,

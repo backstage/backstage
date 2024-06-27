@@ -53,21 +53,21 @@ export async function getGitLabFileFetchUrl(
  */
 export function getGitLabRequestOptions(
   config: GitLabIntegrationConfig,
-  oauthToken?: string,
+  token?: string,
 ): { headers: Record<string, string> } {
-  if (oauthToken) {
+  if (token) {
+    // If token comes from the user and starts with "gl", it's a private token (see https://docs.gitlab.com/ee/security/token_overview.html#token-prefixes)
     return {
-      headers: {
-        Authorization: `Bearer ${oauthToken}`,
-      },
+      headers: token.startsWith('gl')
+        ? { 'PRIVATE-TOKEN': token }
+        : { Authorization: `Bearer ${token}` }, // Otherwise, it's a bearer token
     };
   }
 
-  const { token = '' } = config;
+  // If token not provided, fetch the integration token
+  const { token: configToken = '' } = config;
   return {
-    headers: {
-      'PRIVATE-TOKEN': token,
-    },
+    headers: { 'PRIVATE-TOKEN': configToken },
   };
 }
 
