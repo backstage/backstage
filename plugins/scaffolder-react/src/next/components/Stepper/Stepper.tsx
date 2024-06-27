@@ -231,7 +231,6 @@ export const Stepper = (stepperProps: StepperProps) => {
             onSubmit={handleNext}
             fields={fields}
             omitExtraData
-            liveOmit
             showErrorList="top"
             templates={{ ErrorListTemplate }}
             onChange={handleChange}
