@@ -4475,6 +4475,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/frontend-defaults@workspace:packages/frontend-defaults":
+  version: 0.0.0-use.local
+  resolution: "@backstage/frontend-defaults@workspace:packages/frontend-defaults"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@testing-library/jest-dom": ^6.0.0
+  languageName: unknown
+  linkType: soft
+
 "@backstage/frontend-plugin-api@npm:^0.6.5":
   version: 0.6.5
   resolution: "@backstage/frontend-plugin-api@npm:0.6.5"
