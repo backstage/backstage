@@ -1,7 +1,7 @@
 ---
-'@backstage/plugin-bitbucket-cloud-common': minor
-'@backstage/plugin-catalog-backend-module-bitbucket-server': minor
-'@backstage/backend-defaults': minor
+'@backstage/plugin-bitbucket-cloud-common': patch
+'@backstage/plugin-catalog-backend-module-bitbucket-server': patch
+'@backstage/backend-defaults': patch
 '@backstage/plugin-catalog-backend': minor
 '@backstage/integration': minor
 ---
