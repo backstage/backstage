@@ -142,8 +142,8 @@ export const EntityTagsPickerFieldExtension: FieldExtensionComponent_2<
   string[],
   {
     helperText?: string | undefined;
-    kinds?: string[] | undefined;
     showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
   }
 >;
 
@@ -152,8 +152,8 @@ export const EntityTagsPickerFieldSchema: FieldSchema<
   string[],
   {
     helperText?: string | undefined;
-    kinds?: string[] | undefined;
     showCounts?: boolean | undefined;
+    kinds?: string[] | undefined;
   }
 >;
 

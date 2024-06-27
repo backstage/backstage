@@ -42,7 +42,6 @@ import { EventBroker } from '@backstage/plugin-events-node';
 import { EventsService } from '@backstage/plugin-events-node';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
 import { HttpAuthService } from '@backstage/backend-plugin-api';
-import { HumanDuration } from '@backstage/types';
 import { LocationAnalyzer as LocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
 import { locationSpecToLocationEntity as locationSpecToLocationEntity_2 } from '@backstage/plugin-catalog-node';
@@ -60,9 +59,6 @@ import { PlaceholderResolverResolveUrl as PlaceholderResolverResolveUrl_2 } from
 import { PluginDatabaseManager } from '@backstage/backend-common';
 import { PluginEndpointDiscovery } from '@backstage/backend-common';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
-import { RequestInfo as RequestInfo_2 } from 'node-fetch';
-import { RequestInit as RequestInit_2 } from 'node-fetch';
-import { Response as Response_2 } from 'node-fetch';
 import { Router } from 'express';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
@@ -352,12 +348,6 @@ export type EntityProviderMutation = EntityProviderMutation_2;
 // @public @deprecated (undocumented)
 export type EntityRelationSpec = EntityRelationSpec_2;
 
-// @public
-export type FetchFunction = (
-  url: RequestInfo_2,
-  init?: RequestInit_2,
-) => Promise<Response_2>;
-
 // @public (undocumented)
 export class FileReaderProcessor implements CatalogProcessor_2 {
   // (undocumented)
@@ -465,17 +455,8 @@ export const processingResult: Readonly<{
   readonly refresh: (key: string) => CatalogProcessorResult_2;
 }>;
 
-// @public
-export function readThrottlingConfig(config: Config): ThrottlingConfig;
-
 // @public @deprecated (undocumented)
 export type ScmLocationAnalyzer = ScmLocationAnalyzer_2;
-
-// @public
-export type ThrottlingConfig = {
-  count: number;
-  interval: HumanDuration;
-};
 
 // @public
 export function transformLegacyPolicyToProcessor(
