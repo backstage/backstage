@@ -39,13 +39,13 @@ export const useShadowRootElements = <
   selectors: string[],
 ): TReturnedElement[] => {
   const shadowRoot = useShadowRoot();
-  const [root, setRootNode] = useState(shadowRoot?.querySelector('html'));
+  const [render, rerender] = useState(false);
 
   useEffect(() => {
     let observer: MutationObserver;
     if (shadowRoot) {
       observer = new MutationObserver(() => {
-        setRootNode(shadowRoot.querySelector('html'));
+        rerender(!render);
       });
       observer.observe(shadowRoot, {
         attributes: true,
@@ -55,12 +55,12 @@ export const useShadowRootElements = <
       });
     }
     return () => observer?.disconnect();
-  }, [shadowRoot]);
+  }, [shadowRoot, render, rerender]);
 
-  if (!root) return [];
+  if (!shadowRoot) return [];
 
   return selectors
-    .map(selector => root.querySelectorAll<TReturnedElement>(selector))
+    .map(selector => shadowRoot.querySelectorAll<TReturnedElement>(selector))
     .filter(nodeList => nodeList.length)
     .map(nodeList => Array.from(nodeList))
     .flat();
