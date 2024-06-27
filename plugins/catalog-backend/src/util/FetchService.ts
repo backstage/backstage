@@ -23,7 +23,7 @@ import { Config, readDurationFromConfig } from '@backstage/config';
 /**
  * A function that is a wrapper for the `fetch` function in node-fetch.
  * This will either be a direct call to `fetch` or a throttled version of it.
- * @internal
+ * @public
  */
 export type FetchFunction = (
   url: RequestInfo,
@@ -91,7 +91,7 @@ export class FetchService {
 
 /**
  * Reads the throttling configuration from the provided config object.
- * @internal
+ * @public
  */
 export function readThrottlingConfig(config: Config): ThrottlingConfig {
   return {
@@ -102,7 +102,7 @@ export function readThrottlingConfig(config: Config): ThrottlingConfig {
 
 /**
  * Configuration for the throttling of HTTP requests.
- * @internal
+ * @public
  */
 export type ThrottlingConfig = {
   count: number;
