@@ -1,5 +1,20 @@
 # @backstage/plugin-events-backend-test-utils
 
+## 0.1.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.7-next.0
+
+## 0.1.29
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/plugin-events-node@0.3.5
+
 ## 0.1.29-next.2
 
 ### Patch Changes

@@ -1,5 +1,31 @@
 # @backstage/plugin-scaffolder-backend-module-confluence-to-markdown
 
+## 0.2.22-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/plugin-scaffolder-node@0.4.7-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.2.20
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/integration@1.12.0
+  - @backstage/plugin-scaffolder-node@0.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.2.20-next.3
 
 ### Patch Changes

@@ -186,6 +186,7 @@ export type BitbucketCloudIntegrationConfig = {
   apiBaseUrl: string;
   username?: string;
   appPassword?: string;
+  token?: string;
 };
 
 // @public @deprecated

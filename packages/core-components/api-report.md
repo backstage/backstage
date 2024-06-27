@@ -450,6 +450,8 @@ export type GaugeProps = {
   size?: 'normal' | 'small';
   description?: ReactNode;
   getColor?: GaugePropsGetColor;
+  relativeToMax?: boolean;
+  decimalDigits?: number;
 };
 
 // @public (undocumented)

@@ -31,7 +31,7 @@ export type DatabaseManagerOptions = {
   logger?: LoggerService;
 };
 
-// @public (undocumented)
+// @public
 export const databaseServiceFactory: () => ServiceFactory<
   DatabaseService,
   'plugin'

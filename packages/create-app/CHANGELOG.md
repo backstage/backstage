@@ -1,5 +1,27 @@
 # @backstage/create-app
 
+## 0.5.17-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
+## 0.5.16
+
+### Patch Changes
+
+- cce0495: Bumped create-app version.
+- 77da22e: Bumped create-app version.
+- 2110d76: Removed `dockerode` dependency.
+- 34daaea: Fixed a broken link to the node-postgres documentation
+- 78363f6: Bumped TypeScript to version `5.4`.
+- 1a212f9: Remove Tech Radar menu item from sidebar of scaffolded app to align with removal of tech-radar plugin from backend
+- 81507c8: Updated `node-gyp` to v10
+- Updated dependencies
+  - @backstage/cli-common@0.1.14
+
 ## 0.5.16-next.3
 
 ### Patch Changes

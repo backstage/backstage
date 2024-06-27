@@ -161,4 +161,31 @@ describe('resolveRouteBindings', () => {
 
     expect(result.get(source)).toBe(target2);
   });
+
+  it('can disable external routes that have defaults', () => {
+    const source = createExternalRouteRef({ defaultTarget: 'target1' });
+    const target1 = createRouteRef();
+    const routesById = {
+      routes: new Map([['target1', target1]]),
+      externalRoutes: new Map([['source', source]]),
+    };
+
+    // resolves normally with no config
+    let result = resolveRouteBindings(
+      () => {},
+      new ConfigReader({}),
+      routesById,
+    );
+
+    expect(result.get(source)).toBe(target1);
+
+    // can be disabled
+    result = resolveRouteBindings(
+      () => {},
+      new ConfigReader({ app: { routes: { bindings: { source: false } } } }),
+      routesById,
+    );
+
+    expect(result.get(source)).toBe(undefined);
+  });
 });

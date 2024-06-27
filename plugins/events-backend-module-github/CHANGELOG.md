@@ -1,5 +1,25 @@
 # @backstage/plugin-events-backend-module-github
 
+## 0.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/plugin-events-node@0.3.7-next.0
+  - @backstage/config@1.2.0
+
+## 0.2.5
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-events-node@0.3.5
+  - @backstage/config@1.2.0
+
 ## 0.2.5-next.2
 
 ### Patch Changes

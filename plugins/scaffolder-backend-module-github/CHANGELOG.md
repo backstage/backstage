@@ -1,5 +1,41 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 70c4b36: Adds support for custom tag policies when creating GitHub environments.
+
+### Patch Changes
+
+- 4410fed: Fixed issue with octokit call missing owner and repo when creating environment variables and secrets using github:environment:create action
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/plugin-scaffolder-node@0.4.7-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 0.3.0
+
+### Minor Changes
+
+- 403394a: Allow empty author info in createPullRequest action for Github
+
+### Patch Changes
+
+- f145a04: Added handling for dry run to githubPullRequest and githubWebhook and added tests for this functionality
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/integration@1.12.0
+  - @backstage/plugin-scaffolder-node@0.4.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
 ## 0.3.0-next.3
 
 ### Patch Changes

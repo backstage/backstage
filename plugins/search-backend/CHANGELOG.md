@@ -1,5 +1,44 @@
 # @backstage/plugin-search-backend
 
+## 1.5.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-defaults@0.3.3-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/backend-openapi-utils@0.1.14-next.0
+  - @backstage/plugin-permission-node@0.7.32-next.0
+  - @backstage/plugin-search-backend-node@1.2.26-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-search-common@1.2.12
+
+## 1.5.10
+
+### Patch Changes
+
+- 8869b8e: Updated local development setup.
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- 5b6f979: Split backend search plugin startup into "init" and "start" stages to ensure necessary initialization has happened before startup
+- 34dc47d: Move @backstage/repo-tools to devDependencies
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-defaults@0.3.0
+  - @backstage/plugin-search-backend-node@1.2.24
+  - @backstage/plugin-permission-node@0.7.30
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-search-common@1.2.12
+  - @backstage/backend-openapi-utils@0.1.12
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 1.5.10-next.3
 
 ### Patch Changes

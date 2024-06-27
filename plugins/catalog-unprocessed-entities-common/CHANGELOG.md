@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-unprocessed-entities-common
 
+## 0.0.2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.7.14
+
 ## 0.0.2-next.0
 
 ### Patch Changes

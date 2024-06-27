@@ -425,7 +425,7 @@ export class UrlReaders {
   static default(options: UrlReadersOptions): UrlReaderService;
 }
 
-// @public (undocumented)
+// @public
 export const urlReaderServiceFactory: () => ServiceFactory<
   UrlReaderService,
   'plugin'
