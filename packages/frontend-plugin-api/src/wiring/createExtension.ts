@@ -91,7 +91,7 @@ export interface CreateExtensionOptions<
   inputs?: TInputs;
   output: TOutput;
   configSchema?: PortableSchema<TConfig>;
-  factory(context: {
+  factory(options: {
     node: AppNode;
     config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
@@ -115,7 +115,7 @@ export interface InternalExtensionDefinition<TConfig>
   readonly version: 'v1';
   readonly inputs: AnyExtensionInputMap;
   readonly output: AnyExtensionDataMap;
-  factory(context: {
+  factory(options: {
     node: AppNode;
     config: TConfig;
     inputs: ResolvedExtensionInputs<any>;

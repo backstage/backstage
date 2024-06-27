@@ -529,8 +529,90 @@ export function createExtensionKind<
   TOutput extends AnyExtensionDataMap,
   TConfig,
 >(
-  options: ExtensionKindOptions<TOptions, TInputs, TOutput, TConfig>,
+  options: CreateExtensionKindOptions<TOptions, TInputs, TOutput, TConfig>,
 ): ExtensionKind<TOptions, TInputs, TOutput, TConfig>;
+
+// @public (undocumented)
+export interface CreateExtensionKindInstanceOptions<
+  TOptions,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+> {
+  // (undocumented)
+  attachTo?: {
+    id: string;
+    input: string;
+  };
+  // (undocumented)
+  configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  factory?(
+    context: {
+      node: AppNode;
+      config: TConfig;
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+      originalFactory(
+        context?: {
+          node?: AppNode;
+          config?: TConfig;
+          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+        },
+        options?: TOptions,
+      ): Expand<ExtensionDataValues<TOutput>>;
+    },
+    options: TOptions,
+  ): Expand<ExtensionDataValues<TOutput>>;
+  // (undocumented)
+  inputs?: TInputs;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  namespace?: string;
+  // (undocumented)
+  options: TOptions;
+  // (undocumented)
+  output?: TOutput;
+}
+
+// @public (undocumented)
+export interface CreateExtensionKindOptions<
+  TOptions,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+> {
+  // (undocumented)
+  attachTo: {
+    id: string;
+    input: string;
+  };
+  // (undocumented)
+  configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  factory(
+    context: {
+      node: AppNode;
+      config: TConfig;
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+    },
+    options: TOptions,
+  ): Expand<ExtensionDataValues<TOutput>>;
+  // (undocumented)
+  inputs?: TInputs;
+  // (undocumented)
+  kind: string;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  namespace?: string;
+  // (undocumented)
+  output: TOutput;
+}
 
 // @public (undocumented)
 export interface CreateExtensionOptions<
@@ -548,7 +630,7 @@ export interface CreateExtensionOptions<
   // (undocumented)
   disabled?: boolean;
   // (undocumented)
-  factory(context: {
+  factory(options: {
     node: AppNode;
     config: TConfig;
     inputs: Expand<ResolvedExtensionInputs<TInputs>>;
@@ -563,6 +645,51 @@ export interface CreateExtensionOptions<
   namespace?: string;
   // (undocumented)
   output: TOutput;
+}
+
+// @public (undocumented)
+export interface CreateExtensionOverrideKindInstanceOptions<
+  TOptions,
+  TInputs extends AnyExtensionInputMap,
+  TOutput extends AnyExtensionDataMap,
+  TConfig,
+> {
+  // (undocumented)
+  attachTo?: {
+    id: string;
+    input: string;
+  };
+  // (undocumented)
+  configSchema?: PortableSchema<TConfig>;
+  // (undocumented)
+  disabled?: boolean;
+  // (undocumented)
+  factory?(
+    context: {
+      node: AppNode;
+      config: TConfig;
+      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
+      originalFactory(
+        context?: {
+          node?: AppNode;
+          config?: TConfig;
+          inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
+        },
+        options?: TOptions,
+      ): Expand<ExtensionDataValues<TOutput>>;
+    },
+    options: TOptions,
+  ): Expand<ExtensionDataValues<TOutput>>;
+  // (undocumented)
+  inputs?: TInputs;
+  // (undocumented)
+  name?: string;
+  // (undocumented)
+  namespace?: string;
+  // (undocumented)
+  options?: TOptions;
+  // (undocumented)
+  output?: TOutput;
 }
 
 // @public (undocumented)
@@ -937,75 +1064,26 @@ export class ExtensionKind<
     TOutput extends AnyExtensionDataMap,
     TConfig,
   >(
-    options: ExtensionKindOptions<TOptions, TInputs, TOutput, TConfig>,
+    options: CreateExtensionKindOptions<TOptions, TInputs, TOutput, TConfig>,
   ): ExtensionKind<TOptions, TInputs, TOutput, TConfig>;
   // (undocumented)
-  new(args: {
-    namespace?: string;
-    name?: string;
-    attachTo?: {
-      id: string;
-      input: string;
-    };
-    disabled?: boolean;
-    inputs?: TInputs;
-    output?: TOutput;
-    configSchema?: PortableSchema<TConfig>;
-    options: TOptions;
-    factory?(
-      context: {
-        node: AppNode;
-        config: TConfig;
-        inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-        orignalFactory(
-          context?: {
-            node?: AppNode;
-            config?: TConfig;
-            inputs?: Expand<ResolvedExtensionInputs<TInputs>>;
-          },
-          options?: TOptions,
-        ): Expand<ExtensionDataValues<TOutput>>;
-      },
-      options: TOptions,
-    ): Expand<ExtensionDataValues<TOutput>>;
-  }): ExtensionDefinition<TConfig>;
-}
-
-// @public (undocumented)
-export interface ExtensionKindOptions<
-  TOptions,
-  TInputs extends AnyExtensionInputMap,
-  TOutput extends AnyExtensionDataMap,
-  TConfig,
-> {
-  // (undocumented)
-  attachTo: {
-    id: string;
-    input: string;
+  new(
+    instanceProperties: CreateExtensionKindInstanceOptions<
+      TOptions,
+      TInputs,
+      TOutput,
+      TConfig
+    >,
+  ): ExtensionDefinition<TConfig> & {
+    override: (
+      overrides: CreateExtensionOverrideKindInstanceOptions<
+        TOptions,
+        TInputs,
+        TOutput,
+        TConfig
+      >,
+    ) => ExtensionDefinition<TConfig>;
   };
-  // (undocumented)
-  configSchema?: PortableSchema<TConfig>;
-  // (undocumented)
-  disabled?: boolean;
-  // (undocumented)
-  factory(
-    context: {
-      node: AppNode;
-      config: TConfig;
-      inputs: Expand<ResolvedExtensionInputs<TInputs>>;
-    },
-    options: TOptions,
-  ): Expand<ExtensionDataValues<TOutput>>;
-  // (undocumented)
-  inputs?: TInputs;
-  // (undocumented)
-  kind: string;
-  // (undocumented)
-  name?: string;
-  // (undocumented)
-  namespace?: string;
-  // (undocumented)
-  output: TOutput;
 }
 
 // @public (undocumented)
