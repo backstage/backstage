@@ -196,7 +196,7 @@ paths:
 paths:
   /.backstage/deploymentInfo/features/installed:
     get:
-      summary: Get a list of installed features for this instance.
+      summary: Get a list of installed features for this deployment.
       operationId: GetInstalledFeaturesByDeployment
       responses:
         '200':
