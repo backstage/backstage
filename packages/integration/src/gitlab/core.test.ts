@@ -17,7 +17,7 @@
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { GitLabIntegrationConfig } from './config';
-import { getGitLabFileFetchUrl } from './core';
+import { getGitLabFileFetchUrl, getGitLabRequestOptions } from './core';
 
 const worker = setupServer();
 
@@ -183,6 +183,36 @@ describe('gitlab core', () => {
         await expect(
           getGitLabFileFetchUrl(target, configWithNoToken),
         ).resolves.toBe(fetchUrl);
+      });
+    });
+  });
+
+  describe('getGitLabRequestOptions', () => {
+    it('should return Authorization header when oauthToken is provided', () => {
+      const oauthToken = 'mock-oauth-token';
+      const result = getGitLabRequestOptions(
+        configSelfHosteWithRelativePath,
+        oauthToken,
+      );
+
+      expect(result).toEqual({
+        headers: {
+          Authorization: `Bearer ${oauthToken}`,
+        },
+      });
+    });
+
+    it('should return private-token header when oauthToken is undefined', () => {
+      const oauthToken = undefined;
+      const result = getGitLabRequestOptions(
+        configSelfHosteWithRelativePath,
+        oauthToken,
+      );
+
+      expect(result).toEqual({
+        headers: {
+          'PRIVATE-TOKEN': configSelfHosteWithRelativePath.token,
+        },
       });
     });
   });

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
+import fetch from 'cross-fetch';
 import {
   getGitLabIntegrationRelativePath,
   GitLabIntegrationConfig,
 } from './config';
-import fetch from 'cross-fetch';
 
 /**
  * Given a URL pointing to a file on a provider, returns a URL that is suitable
@@ -51,9 +51,18 @@ export async function getGitLabFileFetchUrl(
  * @param config - The relevant provider config
  * @public
  */
-export function getGitLabRequestOptions(config: GitLabIntegrationConfig): {
-  headers: Record<string, string>;
-} {
+export function getGitLabRequestOptions(
+  config: GitLabIntegrationConfig,
+  oauthToken?: string,
+): { headers: Record<string, string> } {
+  if (oauthToken) {
+    return {
+      headers: {
+        Authorization: `Bearer ${oauthToken}`,
+      },
+    };
+  }
+
   const { token = '' } = config;
   return {
     headers: {
