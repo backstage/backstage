@@ -88,7 +88,7 @@ export const EntitySearchBar = () => {
           aria-label="search"
           id="input-with-icon-adornment"
           className={classes.input}
-          placeholder={t('entitySearchBarPlaceholder')}
+          placeholder={t('entitySearchBar.placeholder')}
           autoComplete="off"
           onChange={event => setSearch(event.target.value)}
           value={search}

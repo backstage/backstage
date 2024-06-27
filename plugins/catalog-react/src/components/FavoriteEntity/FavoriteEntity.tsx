@@ -56,7 +56,7 @@ export const FavoriteEntity = (props: FavoriteEntityProps) => {
       <Tooltip
         title={
           isStarredEntity
-            ? t('favoriteEntity.RemoveFromFavorites')
+            ? t('favoriteEntity.removeFromFavorites')
             : t('favoriteEntity.addToFavorites')
         }
       >

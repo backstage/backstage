@@ -41,7 +41,7 @@ export const EntityLifecyclePicker = (props: { initialFilter?: string[] }) => {
 
   return (
     <EntityAutocompletePicker
-      label={t('entityLifecyclePickerTitle')}
+      label={t('entityLifecyclePicker.title')}
       name="lifecycles"
       path="spec.lifecycle"
       Filter={EntityLifecycleFilter}

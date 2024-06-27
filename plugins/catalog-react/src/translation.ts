@@ -28,9 +28,21 @@ export const catalogReactTranslationRef = createTranslationRef({
       title: 'Kind',
       errorMessage: 'Failed to load entity kinds',
     },
-    entityLifecyclePickerTitle: 'Lifecycle',
-    entityNamespacePickerTitle: 'Namespace',
-    entityOwnerPickerTitle: 'Owner',
+    entityLifecyclePicker: {
+      title: 'Lifecycle',
+    },
+    entityNamespacePicker: {
+      title: 'Namespace',
+    },
+    entityOwnerPicker: {
+      title: 'Owner',
+    },
+    entityProcessingStatusPicker: {
+      title: 'Processing Status',
+    },
+    entityTagPicker: {
+      title: 'Tags',
+    },
     entityPeekAheadPopover: {
       title: 'Drill into the entity to see all of the tags.',
       emailCardAction: {
@@ -39,9 +51,9 @@ export const catalogReactTranslationRef = createTranslationRef({
       },
       entityCardActionsTitle: 'Show details',
     },
-    entityProcessingStatusPickerTitle: 'Processing Status',
-    entitySearchBarPlaceholder: 'Search',
-    entityTagPickerTitle: 'Tags',
+    entitySearchBar: {
+      placeholder: 'Search',
+    },
     entityTypePicker: {
       title: 'Type',
       errorMessage: 'Failed to load entity types',
@@ -49,7 +61,7 @@ export const catalogReactTranslationRef = createTranslationRef({
     },
     favoriteEntity: {
       addToFavorites: 'Add to favorites',
-      RemoveFromFavorites: 'Remove from favorites',
+      removeFromFavorites: 'Remove from favorites',
     },
     inspectEntityDialog: {
       title: 'Entity Inspector',

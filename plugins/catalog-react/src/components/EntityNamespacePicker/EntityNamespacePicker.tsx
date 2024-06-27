@@ -51,7 +51,7 @@ export const EntityNamespacePicker = (props: EntityNamespacePickerProps) => {
 
   return (
     <EntityAutocompletePicker
-      label={t('entityNamespacePickerTitle')}
+      label={t('entityNamespacePicker.title')}
       name="namespace"
       path="metadata.namespace"
       Filter={EntityNamespaceFilter}

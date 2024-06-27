@@ -41,7 +41,7 @@ export const EntityTagPicker = (props: EntityTagPickerProps) => {
 
   return (
     <EntityAutocompletePicker
-      label={t('entityTagPickerTitle')}
+      label={t('entityTagPicker.title')}
       name="tags"
       path="metadata.tags"
       Filter={EntityTagFilter}

@@ -179,7 +179,7 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
   return (
     <Box className={classes.root} pb={1} pt={1}>
       <Typography className={classes.label} variant="button" component="label">
-        {t('entityOwnerPickerTitle')}
+        {t('entityOwnerPicker.title')}
         <Autocomplete
           PopperComponent={popperProps => (
             <div {...popperProps}>{popperProps.children as ReactNode}</div>

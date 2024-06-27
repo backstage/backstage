@@ -74,7 +74,7 @@ export const EntityProcessingStatusPicker = () => {
   return (
     <Box className={classes.root} pb={1} pt={1}>
       <Typography className={classes.label} variant="button" component="label">
-        {t('entityProcessingStatusPickerTitle')}
+        {t('entityProcessingStatusPicker.title')}
         <Autocomplete<string, true>
           PopperComponent={popperProps => (
             <div {...popperProps}>{popperProps.children as ReactNode}</div>
