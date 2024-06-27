@@ -29,7 +29,6 @@ import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import {
   bufferFromFileOrString,
   Cluster,
-  Config,
   KubeConfig,
 } from '@kubernetes/client-node';
 import { createProxyMiddleware, RequestHandler } from 'http-proxy-middleware';
@@ -53,6 +52,8 @@ import {
 
 export const APPLICATION_JSON: string = 'application/json';
 
+export const SERVICEACCOUNT_CA_PATH: string =
+  '/var/run/secrets/kubernetes.io/serviceaccount/ca.crt';
 /**
  * The header that is used to specify the cluster name.
  *
@@ -263,7 +264,7 @@ export class KubernetesProxy {
 
     if (
       authProvider === 'serviceAccount' &&
-      fs.pathExistsSync(Config.SERVICEACCOUNT_CA_PATH) &&
+      fs.pathExistsSync(SERVICEACCOUNT_CA_PATH) &&
       !cluster.authMetadata.serviceAccountToken
     ) {
       const kc = new KubeConfig();
