@@ -3558,7 +3558,7 @@ __metadata:
     archiver: ^6.0.0
     aws-sdk-client-mock: ^4.0.0
     base64-stream: ^1.0.0
-    better-sqlite3: ^9.0.0
+    better-sqlite3: ^11.0.0
     compression: ^1.7.4
     concat-stream: ^2.0.0
     cors: ^2.8.5
@@ -3646,7 +3646,7 @@ __metadata:
     archiver: ^6.0.0
     aws-sdk-client-mock: ^4.0.0
     base64-stream: ^1.0.0
-    better-sqlite3: ^9.0.0
+    better-sqlite3: ^11.0.0
     compression: ^1.7.4
     concat-stream: ^2.0.0
     cookie: ^0.6.0
@@ -3817,7 +3817,7 @@ __metadata:
     "@keyv/redis": ^2.5.3
     "@types/keyv": ^4.2.0
     "@types/supertest": ^2.0.8
-    better-sqlite3: ^9.0.0
+    better-sqlite3: ^11.0.0
     cookie: ^0.6.0
     express: ^4.17.1
     fs-extra: ^11.0.0
@@ -5693,7 +5693,7 @@ __metadata:
     "@types/lodash": ^4.14.151
     "@types/supertest": ^2.0.8
     "@types/uuid": ^9.0.0
-    better-sqlite3: ^9.0.0
+    better-sqlite3: ^11.0.0
     codeowners-utils: ^1.0.2
     core-js: ^3.6.5
     express: ^4.17.1
@@ -21708,14 +21708,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"better-sqlite3@npm:^9.0.0":
-  version: 9.6.0
-  resolution: "better-sqlite3@npm:9.6.0"
+"better-sqlite3@npm:^11.0.0":
+  version: 11.0.0
+  resolution: "better-sqlite3@npm:11.0.0"
   dependencies:
     bindings: ^1.5.0
     node-gyp: latest
     prebuild-install: ^7.1.1
-  checksum: be3a1d2a3f6f9b5141be6607a38c0a51fa5849495b071955e507bc0c2a2fb08430852c1bf03796eec1a53344b25645807db48dcb51c71b0662b74c5a70420bb0
+  checksum: 7bf02ea6ba3253f53cb36bd872f86379ebf1a66cb103d39b91c610995c4396dde2b976bdf866f07eb7d67eb6f5433aa5490a6a4f4264244f83a53562f68832dc
   languageName: node
   linkType: hard
 
@@ -26714,7 +26714,7 @@ __metadata:
     "@types/express-serve-static-core": ^4.17.5
     "@types/luxon": ^3.0.0
     azure-devops-node-api: ^12.0.0
-    better-sqlite3: ^9.0.0
+    better-sqlite3: ^11.0.0
     dockerode: ^4.0.0
     example-app: "link:../app"
     express: ^4.17.1
