@@ -96,6 +96,9 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
       },
     };
   },
+  scopes: {
+    required: ['openid', 'offline_access'],
+  },
   initialize({ callbackUrl, config }) {
     const consoleEndpoint =
       config.getOptionalString('consoleEndpoint') ??
@@ -106,7 +109,12 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
     const clientSecret = '';
     const authorizationUrl = `${consoleEndpoint}/csp/gateway/discovery`;
     const tokenUrl = `${consoleEndpoint}/csp/gateway/am/api/auth/token`;
-    const scope = config.getOptionalString('scope') ?? 'openid offline_access';
+
+    if (config.has('scope')) {
+      throw new Error(
+        'The vmware-cloud provider no longer supports the "scope" configuration option. Please use the "additionalScopes" option instead.',
+      );
+    }
 
     const providerStrategy = new OAuth2Strategy(
       {
@@ -118,7 +126,6 @@ export const vmwareCloudAuthenticator = createOAuthAuthenticator<
         passReqToCallback: false,
         pkce: true,
         state: true,
-        scope: scope,
         customHeaders: {
           Authorization: `Basic ${encodeClientCredentials(
             clientId,

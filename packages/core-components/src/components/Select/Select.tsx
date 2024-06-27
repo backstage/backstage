@@ -78,7 +78,6 @@ const useStyles = makeStyles(
     createStyles({
       formControl: {
         margin: theme.spacing(1, 0),
-        maxWidth: 300,
       },
       label: {
         transform: 'initial',
@@ -255,7 +254,7 @@ export function SelectComponent(props: SelectProps) {
             getContentAnchorEl: null,
           }}
         >
-          {placeholder && !multiple && (
+          {!!placeholder && !multiple && (
             <MenuItem value={[]}>{placeholder}</MenuItem>
           )}
           {native

@@ -192,7 +192,11 @@ When defining a default factory for a service, it is possible for it to end up w
 
 ## Service Factory Options
 
-> NOTE: This pattern is discouraged, only use it when necessary. If possible you should prefer to make services configurable via static configuration instead.
+:::note Note
+
+This pattern is discouraged, only use it when necessary. If possible you should prefer to make services configurable via static configuration instead.
+
+:::
 
 When declaring a service factory it's possible to include an options callback. This allows you to customize the factory through code when installing it in the backend. For example, this is how you install an explicit factory instance in the backend without any options:
 

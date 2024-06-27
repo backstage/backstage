@@ -1,5 +1,72 @@
 # @backstage/backend-test-utils
 
+## 0.4.3-next.0
+
+### Patch Changes
+
+- fce7887: Added mock for the Root Health Service in `mockServices`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-defaults@0.3.3-next.0
+  - @backstage/backend-app-api@0.7.9-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/plugin-events-node@0.3.7-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.0
+
+### Minor Changes
+
+- 805cbe7: Added `TestCaches` that functions just like `TestDatabases`
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- 9e63318: Made it possible to give access restrictions to `mockCredentials.service`
+- 006b3e8: The type `MockDirectoryOptions` was renamed to `CreateMockDirectoryOptions` so that it's clear these options are exclusive to the mock directory factory.
+- 0634fdc: Refactored `TestDatabases` to no longer depend on `backend-common`
+- 6a576dc: Fix the logger service mock to prevent returning `undefined` from the `child` method.
+- 6c11f6e: Use imports from backend-defaults instead of the deprecated ones from backend-app-api
+- Updated dependencies
+  - @backstage/backend-app-api@0.7.6
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/backend-defaults@0.3.0
+  - @backstage/plugin-events-node@0.3.5
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.0-next.3
+
+### Patch Changes
+
+- 006b3e8: The type `MockDirectoryOptions` was renamed to `CreateMockDirectoryOptions` so that it's clear these options are exclusive to the mock directory factory.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/plugin-events-node@0.3.5-next.2
+  - @backstage/backend-app-api@0.7.6-next.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.4.0-next.2
+
+### Patch Changes
+
+- 0634fdc: Refactored `TestDatabases` to no longer depend on `backend-common`
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-app-api@0.7.6-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+  - @backstage/plugin-events-node@0.3.5-next.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.0-next.1
 
 ### Minor Changes

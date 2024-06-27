@@ -33,6 +33,39 @@ export interface Config {
        */
       dangerouslyDisableDefaultAuthPolicy?: boolean;
 
+      /** Controls how to store keys for plugin-to-plugin auth */
+      pluginKeyStore?:
+        | { type: 'database' }
+        | {
+            type: 'static';
+            static: {
+              /**
+               * Must be declared at least once and the first one will be used for signing.
+               */
+              keys: Array<{
+                /**
+                 * Path to the public key file in the SPKI format. Should be an absolute path.
+                 */
+                publicKeyFile: string;
+                /**
+                 * Path to the matching private key file in the PKCS#8 format. Should be an absolute path.
+                 *
+                 * The first array entry must specify a private key file, the rest must not.
+                 */
+                privateKeyFile?: string;
+                /**
+                 * ID to uniquely identify this key within the JWK set.
+                 */
+                keyId: string;
+                /**
+                 * JWS "alg" (Algorithm) Header Parameter value. Defaults to ES256.
+                 * Must match the algorithm used to generate the keys in the provided files
+                 */
+                algorithm?: string;
+              }>;
+            };
+          };
+
       /**
        * Configures methods of external access, ie ways for callers outside of
        * the Backstage ecosystem to get authorized for access to APIs that do

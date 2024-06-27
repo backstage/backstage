@@ -311,9 +311,36 @@ spec:
 ```
 
 If you have a feature flag `experimental-feature` active then
-your first step would be shown. The same goes for the nested properties in the
+your first set of parameter fields would be shown. The same goes for the nested properties in the
 spec. Make sure to use the key `backstage:featureFlag` in your templates if
 you want to use this functionality.
+
+Feature Flags cannot be used in `spec.steps[].if`(the conditional on whether to execute an step/action). But you can use feature flags to display parameters that allow for skipping steps.
+
+```yaml
+spec:
+  type: website
+  owner: team-a
+  parameters:
+    - name: Enter some stuff
+      description: Enter some stuff
+      backstage:featureFlag: experimental-feature
+      properties:
+        skipStep:
+          type: boolean
+          title: Whether or not to skip a step.
+          default: false
+        restOfParameters:
+          ...
+  steps:
+    - id: skipMe
+      name: A step to skip if the feature flag is turned on and the user selects true
+      action: debug:log
+      if: ${{ parameters.skipStep }}
+      input:
+        message: |
+        ...
+```
 
 ### The Repository Picker
 
@@ -709,7 +736,7 @@ an entity reference, such as the `kind`, `namespace`, and `name`.
 
 ### pick
 
-This `pick` filter allows you to select specific properties from an object.
+This `pick` filter allows you to select specific properties (`kind`, `namespace`, `name`) from an object.
 
 **Usage Example**
 

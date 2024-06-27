@@ -26,25 +26,15 @@ import {
 export const oktaAuthenticator = createOAuthAuthenticator({
   defaultProfileTransform:
     PassportOAuthAuthenticatorHelper.defaultProfileTransform,
+  scopes: {
+    required: ['openid', 'email', 'profile', 'offline_access'],
+  },
   initialize({ callbackUrl, config }) {
     const clientId = config.getString('clientId');
     const clientSecret = config.getString('clientSecret');
     const audience = config.getOptionalString('audience') || 'https://okta.com';
     const authServerId = config.getOptionalString('authServerId');
     const idp = config.getOptionalString('idp');
-    // default scopes are taken from
-    // https://developer.okta.com/docs/reference/api/oidc/#response-example-success-refresh-token
-    const defaultScopes = 'openid profile email';
-    // additional scopes can be configured in the config as a space separated string
-    const additionalScopes = config.getOptionalString('additionalScopes') || '';
-    // combine default and additional scopes and remove duplicates
-    const combineScopeStrings = (scopesA: string, scopesB: string) => {
-      const scopesAArray = scopesA.split(' ');
-      const scopesBArray = scopesB.split(' ');
-      const combinedScopes = new Set([...scopesAArray, ...scopesBArray]);
-      return Array.from(combinedScopes).join(' ');
-    };
-    const scope = combineScopeStrings(defaultScopes, additionalScopes);
 
     return PassportOAuthAuthenticatorHelper.from(
       new OktaStrategy(
@@ -57,7 +47,6 @@ export const oktaAuthenticator = createOAuthAuthenticator({
           idp: idp,
           passReqToCallback: false,
           response_type: 'code',
-          scope,
         },
         (
           accessToken: string,

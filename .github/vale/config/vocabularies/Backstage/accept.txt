@@ -161,6 +161,7 @@ hoc
 horizontalpodautoscalers
 Hostname
 hotspots
+howto
 http
 https
 Iain
@@ -268,6 +269,7 @@ Olausson
 Oldsberg
 onboarding
 Onboarding
+onelogin
 OpenSearch
 OpenShift
 openssl
@@ -290,6 +292,7 @@ Periskop
 permissioned
 permissioning
 pipx
+plaintext
 plantuml
 Platformize
 Podman

@@ -38,10 +38,15 @@ export class ExternalRouteRefImpl<
     private readonly id: string,
     readonly params: ParamKeys<Params>,
     readonly optional: Optional,
+    readonly defaultTarget: string | undefined,
   ) {}
 
   toString() {
     return `routeRef{type=external,id=${this.id}}`;
+  }
+
+  getDefaultTarget() {
+    return this.defaultTarget;
   }
 }
 
@@ -77,10 +82,19 @@ export function createExternalRouteRef<
    * if they aren't, `useRouteRef` will return `undefined`.
    */
   optional?: Optional;
+
+  /**
+   * The route (typically in another plugin) that this should map to by default.
+   *
+   * The string is expected to be on the standard `<plugin id>.<route id>` form,
+   * for example `techdocs.docRoot`.
+   */
+  defaultTarget?: string;
 }): ExternalRouteRef<OptionalParams<Params>, Optional> {
   return new ExternalRouteRefImpl(
     options.id,
     (options.params ?? []) as ParamKeys<OptionalParams<Params>>,
     Boolean(options.optional) as Optional,
+    options?.defaultTarget,
   );
 }

@@ -47,7 +47,6 @@ const actions = [
 
 // Create Scaffolder Router
 return await createRouter({
-  containerRunner,
   catalogClient,
   actions,
   logger: env.logger,

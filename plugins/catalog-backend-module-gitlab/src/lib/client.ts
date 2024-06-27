@@ -114,6 +114,16 @@ export class GitLabClient {
     return response;
   }
 
+  async listGroupMembers(
+    groupPath: string,
+    options?: CommonListOptions,
+  ): Promise<PagedResponse<GitLabUser>> {
+    return this.pagedRequest(
+      `/groups/${encodeURIComponent(groupPath)}/members/all`,
+      options,
+    );
+  }
+
   async listUsers(
     options?: UserListOptions,
   ): Promise<PagedResponse<GitLabUser>> {
@@ -128,13 +138,10 @@ export class GitLabClient {
     groupPath: string,
     options?: CommonListOptions,
   ): Promise<PagedResponse<GitLabUser>> {
-    return this.pagedRequest(
-      `/groups/${encodeURIComponent(groupPath)}/members/all`,
-      {
-        ...options,
-        show_seat_info: true,
-      },
-    ).then(resp => {
+    return this.listGroupMembers(groupPath, {
+      ...options,
+      show_seat_info: true,
+    }).then(resp => {
       resp.items = resp.items.filter(user => user.is_using_seat);
       return resp;
     });

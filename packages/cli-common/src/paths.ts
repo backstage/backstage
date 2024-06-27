@@ -141,7 +141,7 @@ export function findPaths(searchDir: string): Paths {
           try {
             const content = fs.readFileSync(path, 'utf8');
             const data = JSON.parse(content);
-            return Boolean(data.workspaces?.packages);
+            return Boolean(data.workspaces);
           } catch (error) {
             throw new Error(
               `Failed to parse package.json file while searching for root, ${error}`,

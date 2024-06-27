@@ -16,9 +16,6 @@
 
 import '@testing-library/jest-dom';
 
-const { EventSourcePolyfill } = jest.requireMock('event-source-polyfill');
-global.EventSource = EventSourcePolyfill;
-
 // Patch jsdom to add feature used by CodeMirror
 document.createRange = () => {
   const range = new Range();

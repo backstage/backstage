@@ -627,7 +627,7 @@ annotations:
 #### Adding the namespace annotation
 
 Entities can have the `backstage.io/kubernetes-namespace` annotation, this will cause the entity's Kubernetes resources
-to by looked up via that namespace.
+to be looked up via that namespace.
 
 ```yaml
 annotations:

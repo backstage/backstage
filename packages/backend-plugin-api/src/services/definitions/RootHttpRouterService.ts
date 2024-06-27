@@ -17,6 +17,10 @@
 import { Handler } from 'express';
 
 /**
+ * HTTP route registration for root services.
+ *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/root-http-router | service documentation} for more details.
+ *
  * @public
  */
 export interface RootHttpRouterService {

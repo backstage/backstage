@@ -30,7 +30,7 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, ReactNode } from 'react';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityOwnerFilter } from '../../filters';
 import { useDebouncedEffect } from '@react-hookz/web';
@@ -178,6 +178,9 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
       <Typography className={classes.label} variant="button" component="label">
         Owner
         <Autocomplete
+          PopperComponent={popperProps => (
+            <div {...popperProps}>{popperProps.children as ReactNode}</div>
+          )}
           multiple
           disableCloseOnSelect
           loading={loading}

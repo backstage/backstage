@@ -1,5 +1,48 @@
 # @backstage/plugin-auth-backend-module-azure-easyauth-provider
 
+## 0.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+
+## 0.1.2
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+
+## 0.1.2-next.2
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+
+## 0.1.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+  - @backstage/catalog-model@1.5.0
+  - @backstage/errors@1.2.4
+
 ## 0.1.2-next.0
 
 ### Patch Changes

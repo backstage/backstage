@@ -22,12 +22,14 @@ import {
 export const registerComponentRouteRef = createExternalRouteRef({
   id: 'register-component',
   optional: true,
+  defaultTarget: 'catalog-import.importPage',
 });
 
 export const viewTechDocRouteRef = createExternalRouteRef({
   id: 'view-techdoc',
   optional: true,
   params: ['namespace', 'kind', 'name'],
+  defaultTarget: 'techdocs.docRoot',
 });
 
 /**

@@ -43,6 +43,7 @@ import {
   MultiEntityPickerUiOptions,
   MultiEntityPickerFilterQuery,
 } from './schema';
+import { VirtualizedListbox } from '../VirtualizedListbox';
 
 export { MultiEntityPickerSchema } from './schema';
 
@@ -177,6 +178,7 @@ export const MultiEntityPicker = (props: MultiEntityPickerProps) => {
             }}
           />
         )}
+        ListboxComponent={VirtualizedListbox}
       />
     </FormControl>
   );

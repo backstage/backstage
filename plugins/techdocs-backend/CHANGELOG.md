@@ -1,5 +1,80 @@
 # @backstage/plugin-techdocs-backend
 
+## 1.10.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.26-next.0
+  - @backstage/plugin-techdocs-node@1.12.7-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/plugin-permission-common@0.7.14
+
+## 1.10.6
+
+### Patch Changes
+
+- e64bfb2: Allow defining custom build log transport for techdocs builder
+- 8869b8e: Updated local development setup.
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- 2110d76: Removed `dockerode` dependency.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-techdocs-node@1.12.5
+  - @backstage/integration@1.12.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.24
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.10.6-next.3
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/integration@1.12.0-next.1
+  - @backstage/plugin-search-backend-module-techdocs@0.1.24-next.3
+  - @backstage/plugin-permission-common@0.7.14-next.0
+  - @backstage/plugin-catalog-common@1.0.24-next.0
+  - @backstage/plugin-techdocs-node@1.12.5-next.3
+  - @backstage/backend-common@0.23.0-next.3
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+
+## 1.10.6-next.2
+
+### Patch Changes
+
+- e64bfb2: Allow defining custom build log transport for techdocs builder
+- Updated dependencies
+  - @backstage/plugin-techdocs-node@1.12.5-next.2
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/backend-common@0.23.0-next.2
+  - @backstage/integration@1.12.0-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.1.24-next.2
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/plugin-catalog-common@1.0.23
+  - @backstage/plugin-permission-common@0.7.13
+
 ## 1.10.6-next.1
 
 ### Patch Changes

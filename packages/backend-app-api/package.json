@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-app-api",
-  "version": "0.7.6-next.1",
+  "version": "0.7.9-next.0",
   "description": "Core API used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -79,6 +79,7 @@
     "minimatch": "^9.0.0",
     "minimist": "^1.2.5",
     "morgan": "^1.10.0",
+    "node-fetch": "^2.6.7",
     "node-forge": "^1.3.1",
     "path-to-regexp": "^6.2.1",
     "selfsigned": "^2.0.0",
@@ -89,6 +90,7 @@
     "winston-transport": "^4.5.0"
   },
   "devDependencies": {
+    "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/compression": "^1.7.0",

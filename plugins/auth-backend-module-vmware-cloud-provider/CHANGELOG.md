@@ -1,5 +1,52 @@
 # @backstage/plugin-auth-backend-module-vmware-cloud-provider
 
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/catalog-model@1.5.0
+
+## 0.2.0
+
+### Minor Changes
+
+- 8efc6cf: **BREAKING**: The `scope` config option have been removed and replaced by the standard `additionalScopes` config. In addition, `openid`, and `offline_access` scopes have been set to required and will always be present.
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/catalog-model@1.5.0
+
+## 0.2.0-next.2
+
+### Minor Changes
+
+- 8efc6cf: **BREAKING**: The `scope` config option have been removed and replaced by the standard `additionalScopes` config. In addition, `openid`, and `offline_access` scopes have been set to required and will always be present.
+
+### Patch Changes
+
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.3
+  - @backstage/plugin-auth-node@0.4.14-next.3
+  - @backstage/catalog-model@1.5.0
+
+## 0.1.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19-next.2
+  - @backstage/plugin-auth-node@0.4.14-next.2
+  - @backstage/catalog-model@1.5.0
+
 ## 0.1.11-next.0
 
 ### Patch Changes

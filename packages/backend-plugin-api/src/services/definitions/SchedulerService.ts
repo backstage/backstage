@@ -285,6 +285,8 @@ export interface SchedulerServiceTaskRunner {
 /**
  * Deals with the scheduling of distributed tasks, for a given plugin.
  *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/scheduler | service documentation} for more details.
+ *
  * @public
  */
 export interface SchedulerService {
@@ -346,14 +348,14 @@ export interface SchedulerService {
   getScheduledTasks(): Promise<SchedulerServiceTaskDescriptor[]>;
 }
 
-function readDuration(config: Config, key: string): Duration | HumanDuration {
+function readDuration(config: Config, key: string): HumanDuration {
   if (typeof config.get(key) === 'string') {
     const value = config.getString(key);
     const duration = Duration.fromISO(value);
     if (!duration.isValid) {
       throw new Error(`Invalid duration: ${value}`);
     }
-    return duration;
+    return duration.toObject();
   }
 
   return readDurationFromConfig(config, { key });
@@ -362,7 +364,7 @@ function readDuration(config: Config, key: string): Duration | HumanDuration {
 function readCronOrDuration(
   config: Config,
   key: string,
-): { cron: string } | Duration | HumanDuration {
+): { cron: string } | HumanDuration {
   const value = config.get(key);
   if (typeof value === 'object' && (value as { cron?: string }).cron) {
     return value as { cron: string };

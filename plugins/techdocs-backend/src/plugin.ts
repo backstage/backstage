@@ -16,7 +16,6 @@
 
 import {
   cacheToPluginCacheManager,
-  DockerContainerRunner,
   loggerToWinstonLogger,
 } from '@backstage/backend-common';
 import {
@@ -30,13 +29,15 @@ import {
   PreparerBase,
   Preparers,
   Publisher,
+  PublisherBase,
+  PublisherType,
   RemoteProtocol,
   techdocsBuildsExtensionPoint,
   TechdocsGenerator,
   techdocsGeneratorExtensionPoint,
   techdocsPreparerExtensionPoint,
+  techdocsPublisherExtensionPoint,
 } from '@backstage/plugin-techdocs-node';
-import Docker from 'dockerode';
 import { createRouter } from '@backstage/plugin-techdocs-backend';
 import * as winston from 'winston';
 
@@ -87,6 +88,16 @@ export const techdocsPlugin = createBackendPlugin({
       },
     });
 
+    let customTechdocsPublisher: PublisherBase | undefined;
+    env.registerExtensionPoint(techdocsPublisherExtensionPoint, {
+      registerPublisher(type: PublisherType, publisher: PublisherBase) {
+        if (customTechdocsPublisher) {
+          throw new Error(`Publisher for type ${type} is already registered`);
+        }
+        customTechdocsPublisher = publisher;
+      },
+    });
+
     env.registerInit({
       deps: {
         config: coreServices.rootConfig,
@@ -118,14 +129,9 @@ export const techdocsPlugin = createBackendPlugin({
           preparers.register(protocol, preparer);
         }
 
-        // Docker client (conditionally) used by the generators, based on techdocs.generators config.
-        const dockerClient = new Docker();
-        const containerRunner = new DockerContainerRunner({ dockerClient });
-
         // Generators are used for generating documentation sites.
         const generators = await Generators.fromConfig(config, {
           logger: winstonLogger,
-          containerRunner,
           customGenerator: customTechdocsGenerator,
         });
 
@@ -135,6 +141,7 @@ export const techdocsPlugin = createBackendPlugin({
         const publisher = await Publisher.fromConfig(config, {
           logger: winstonLogger,
           discovery: discovery,
+          customPublisher: customTechdocsPublisher,
         });
 
         // checks if the publisher is working and logs the result

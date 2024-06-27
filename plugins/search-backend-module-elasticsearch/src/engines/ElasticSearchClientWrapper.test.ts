@@ -39,6 +39,7 @@ jest.mock('@elastic/elasticsearch', () => ({
         .mockImplementation(async args => ({ client: 'es', args })),
     },
     indices: {
+      get: jest.fn().mockImplementation(async args => ({ client: 'es', args })),
       create: jest
         .fn()
         .mockImplementation(async args => ({ client: 'es', args })),
@@ -75,6 +76,7 @@ jest.mock('@opensearch-project/opensearch', () => ({
         .mockImplementation(async args => ({ client: 'os', args })),
     },
     indices: {
+      get: jest.fn().mockImplementation(async args => ({ client: 'os', args })),
       create: jest
         .fn()
         .mockImplementation(async args => ({ client: 'os', args })),
@@ -152,6 +154,16 @@ describe('ElasticSearchClientWrapper', () => {
       // Should call the ElasticSearch client with expected input.
       expect(result.client).toBe('es');
       expect(result.args).toStrictEqual(indexTemplate);
+    });
+
+    it('indexList', async () => {
+      const wrapper = ElasticSearchClientWrapper.fromClientOptions(esOptions);
+
+      const input = { index: 'xyz-*' };
+      const result = (await wrapper.listIndices(input)) as any;
+
+      expect(result.client).toBe('es');
+      expect(result.args).toStrictEqual(input);
     });
 
     it('indexExists', async () => {
@@ -280,6 +292,16 @@ describe('ElasticSearchClientWrapper', () => {
       // Should call the OpenSearch client with expected input.
       expect(result.client).toBe('os');
       expect(result.args).toStrictEqual(indexTemplate);
+    });
+
+    it('indexList', async () => {
+      const wrapper = ElasticSearchClientWrapper.fromClientOptions(osOptions);
+
+      const input = { index: 'xyz-*' };
+      const result = (await wrapper.listIndices(input)) as any;
+
+      expect(result.client).toBe('os');
+      expect(result.args).toStrictEqual(input);
     });
 
     it('indexExists', async () => {

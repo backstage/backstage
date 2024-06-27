@@ -353,6 +353,28 @@ describe('useEntityRelationGraph', () => {
     });
   });
 
+  test('should filter by func', async () => {
+    const { result, rerender } = renderHook(() =>
+      useEntityRelationGraph({
+        rootEntityRefs: ['b:d/c'],
+        filter: {
+          entityFilter: e => e.metadata.name !== 'c2',
+        },
+      }),
+    );
+
+    // Simulate rerendering as this is triggered automatically due to the mock
+    for (let i = 0; i < 5; ++i) {
+      rerender();
+    }
+
+    expect(result.current.entities).toEqual({
+      'b:d/c': expect.anything(),
+      'b:d/c1': expect.anything(),
+      'k:d/a1': expect.anything(),
+    });
+  });
+
   test('should support multiple roots by kind', async () => {
     const { result, rerender } = renderHook(() =>
       useEntityRelationGraph({

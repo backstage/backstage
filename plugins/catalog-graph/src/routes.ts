@@ -38,4 +38,5 @@ export const catalogEntityRouteRef = createExternalRouteRef({
   id: 'catalog-entity',
   params: ['namespace', 'kind', 'name'],
   optional: true,
+  defaultTarget: 'catalog.catalogEntity',
 });

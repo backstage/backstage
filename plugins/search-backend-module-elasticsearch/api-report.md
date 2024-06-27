@@ -153,7 +153,7 @@ export class ElasticSearchClientWrapper {
   static fromClientOptions(
     options: ElasticSearchClientOptions,
   ): ElasticSearchClientWrapper;
-  // (undocumented)
+  // @deprecated (undocumented)
   getAliases(options: {
     aliases: string[];
   }):
@@ -165,6 +165,12 @@ export class ElasticSearchClientWrapper {
   }):
     | TransportRequestPromise<ApiResponse<boolean, unknown>>
     | TransportRequestPromise_2<ApiResponse_2<boolean, unknown>>;
+  // (undocumented)
+  listIndices(options: {
+    index: string;
+  }):
+    | TransportRequestPromise<ApiResponse<Record<string, any>, unknown>>
+    | TransportRequestPromise_2<ApiResponse_2<Record<string, any>, unknown>>;
   // (undocumented)
   putIndexTemplate(
     template: ElasticSearchCustomIndexTemplate,

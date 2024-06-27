@@ -121,12 +121,12 @@ export const examples: TemplateExample[] = [
               {
                 name: 'dev',
                 create: true,
-                protected: true,
+                protect: true,
                 ref: 'master',
               },
               {
                 name: 'master',
-                protected: true,
+                protect: true,
               },
             ],
           },

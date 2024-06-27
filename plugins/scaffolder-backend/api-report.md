@@ -7,6 +7,7 @@
 
 import { ActionContext as ActionContext_2 } from '@backstage/plugin-scaffolder-node';
 import { AuthService } from '@backstage/backend-plugin-api';
+import { AutocompleteHandler } from '@backstage/plugin-scaffolder-node/alpha';
 import * as azure from '@backstage/plugin-scaffolder-backend-module-azure';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import * as bitbucket from '@backstage/plugin-scaffolder-backend-module-bitbucket';
@@ -63,6 +64,7 @@ import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
+import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import { ZodType } from 'zod';
 import { ZodTypeDef } from 'zod';
 
@@ -289,6 +291,7 @@ export const createPublishGithubPullRequestAction: (
     forceFork?: boolean | undefined;
     gitAuthorName?: string | undefined;
     gitAuthorEmail?: string | undefined;
+    forceEmptyGitAuthor?: boolean | undefined;
   },
   JsonObject
 >;
@@ -475,7 +478,11 @@ export interface RouterOptions {
   // (undocumented)
   additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
   // (undocumented)
+  additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
+  // (undocumented)
   auth?: AuthService;
+  // (undocumented)
+  autocompleteHandlers?: Record<string, AutocompleteHandler>;
   // (undocumented)
   catalogClient: CatalogApi;
   concurrentTasksLimit?: number;
@@ -555,6 +562,7 @@ export class TaskManager implements TaskContext_2 {
     logger: Logger,
     auth?: AuthService,
     config?: Config,
+    additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
   ): TaskManager;
   // (undocumented)
   get createdBy(): string | undefined;

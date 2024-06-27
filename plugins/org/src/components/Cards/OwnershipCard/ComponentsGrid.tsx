@@ -69,57 +69,72 @@ const EntityCountTile = ({
   counter: number;
   type?: string;
   kind: string;
-  url: string;
+  url?: string;
 }) => {
   const classes = useStyles({ type: type ?? kind });
 
   const rawTitle = type ?? kind;
   const isLongText = rawTitle.length > 10;
 
-  return (
-    <Link to={url} variant="body2">
-      <Box
-        className={`${classes.card} ${classes.entityTypeBox}`}
-        display="flex"
-        flexDirection="column"
-        alignItems="center"
-      >
-        <Typography className={classes.bold} variant="h6">
-          {counter}
+  const tile = (
+    <Box
+      className={`${classes.card} ${classes.entityTypeBox}`}
+      display="flex"
+      flexDirection="column"
+      alignItems="center"
+    >
+      <Typography className={classes.bold} variant="h6">
+        {counter}
+      </Typography>
+      <Box sx={{ width: '100%', textAlign: 'center' }}>
+        <Typography
+          className={`${classes.bold} ${isLongText && classes.smallFont}`}
+          variant="h6"
+        >
+          <OverflowTooltip
+            text={pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
+          />
         </Typography>
-        <Box sx={{ width: '100%', textAlign: 'center' }}>
-          <Typography
-            className={`${classes.bold} ${isLongText && classes.smallFont}`}
-            variant="h6"
-          >
-            <OverflowTooltip
-              text={pluralize(rawTitle.toLocaleUpperCase('en-US'), counter)}
-            />
-          </Typography>
-        </Box>
-        {type && <Typography variant="subtitle1">{kind}</Typography>}
       </Box>
-    </Link>
+      {type && <Typography variant="subtitle1">{kind}</Typography>}
+    </Box>
   );
+
+  if (url) {
+    return (
+      <Link to={url} variant="body2">
+        {tile}
+      </Link>
+    );
+  }
+  return tile;
 };
 
 export const ComponentsGrid = ({
   className,
   entity,
   relationsType,
+  relationAggregation,
   entityFilterKind,
   entityLimit = 6,
 }: {
   className?: string;
   entity: Entity;
-  relationsType: EntityRelationAggregation;
+  /** @deprecated Please use relationAggregation instead */
+  relationsType?: EntityRelationAggregation;
+  relationAggregation?: EntityRelationAggregation;
   entityFilterKind?: string[];
   entityLimit?: number;
 }) => {
   const catalogLink = useRouteRef(catalogIndexRouteRef);
+  if (!relationsType && !relationAggregation) {
+    throw new Error(
+      'The relationAggregation property must be set as an EntityRelationAggregation type.',
+    );
+  }
   const { componentsWithCounters, loading, error } = useGetEntities(
     entity,
-    relationsType,
+    (relationAggregation ?? relationsType)!, // we can safely use the non-null assertion here because of the run-time check above
     entityFilterKind,
     entityLimit,
   );
@@ -138,7 +153,7 @@ export const ComponentsGrid = ({
             counter={c.counter}
             kind={c.kind}
             type={c.type}
-            url={`${catalogLink()}/?${c.queryParams}`}
+            url={catalogLink && `${catalogLink()}/?${c.queryParams}`}
           />
         </Grid>
       ))}

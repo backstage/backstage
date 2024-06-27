@@ -87,8 +87,9 @@ export class TaskScheduler {
     databaseManager: LegacyRootDatabaseService,
     logger: LoggerService,
   );
+  // @deprecated
   forPlugin(pluginId: string): PluginTaskScheduler;
-  // (undocumented)
+  // @deprecated (undocumented)
   static forPlugin(opts: {
     pluginId: string;
     databaseManager: PluginDatabaseManager;

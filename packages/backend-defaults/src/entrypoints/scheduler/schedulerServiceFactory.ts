@@ -18,25 +18,24 @@ import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
-import { TaskScheduler } from './lib/TaskScheduler';
+import { DefaultSchedulerService } from './lib/DefaultSchedulerService';
 
 /**
- * The default service factory for {@link @backstage/backend-plugin-api#coreServices.scheduler}.
+ * Scheduling of distributed background tasks.
+ *
+ * See {@link @backstage/code-plugin-api#SchedulerService}
+ * and {@link https://backstage.io/docs/backend-system/core-services/scheduler | the service docs}
+ * for more information.
  *
  * @public
  */
 export const schedulerServiceFactory = createServiceFactory({
   service: coreServices.scheduler,
   deps: {
-    plugin: coreServices.pluginMetadata,
     database: coreServices.database,
     logger: coreServices.logger,
   },
-  async factory({ plugin, database, logger }) {
-    return TaskScheduler.forPlugin({
-      pluginId: plugin.getId(),
-      databaseManager: database,
-      logger,
-    });
+  async factory({ database, logger }) {
+    return DefaultSchedulerService.create({ database, logger });
   },
 });

@@ -19,7 +19,11 @@ The diagram below provides an overview of the different building blocks, and the
 
 ![backend system building blocks diagram](../../assets/backend-system/architecture-building-blocks.drawio.svg)
 
-> NOTE: These are all concepts that existed in our old backend system in one way or another, but they have now all been lifted up to be first class concerns.
+:::note Note
+
+These are all concepts that existed in our old backend system in one way or another, but they have now all been lifted up to be first class concerns.
+
+:::
 
 ### Backend
 

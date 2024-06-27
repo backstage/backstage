@@ -17,7 +17,9 @@
 import { Knex } from 'knex';
 
 /**
- * The DatabaseService manages access to databases that Plugins get.
+ * Manages access to databases that plugins get.
+ *
+ * See the {@link https://backstage.io/docs/backend-system/core-services/database | service documentation} for more details.
  *
  * @public
  */
