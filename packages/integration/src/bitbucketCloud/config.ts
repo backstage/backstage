@@ -15,10 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import {
-  ThrottlingConfig,
-  readThrottlingConfig,
-} from '@backstage/plugin-catalog-backend';
+import { ThrottlingConfig, readThrottlingConfig } from '../FetchService';
 
 const BITBUCKET_CLOUD_HOST = 'bitbucket.org';
 const BITBUCKET_CLOUD_API_BASE_URL = 'https://api.bitbucket.org/2.0';

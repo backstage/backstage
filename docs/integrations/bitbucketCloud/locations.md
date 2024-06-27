@@ -24,7 +24,6 @@ integrations:
         count: 1 # number of requests per interval
         # suppports ISO duration, "human duration" as used in code
         interval: { seconds: 1 }
-      debug: true # optional (true or false)
 ```
 
 :::note Note
@@ -52,4 +51,3 @@ This one entry will have the following elements:
 - `throttling` (optional): The throttling configuration for the Bitbucket Cloud client.
   - `count`: The number of requests per interval.
   - `interval`: The interval for the throttling. Supports ISO duration, "human duration".
-- `debug` (optional): Set to `true` to enable debug logging for the Bitbucket Cloud client.

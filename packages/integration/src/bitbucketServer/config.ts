@@ -17,10 +17,7 @@
 import { Config } from '@backstage/config';
 import { trimEnd } from 'lodash';
 import { isValidHost } from '../helpers';
-import {
-  ThrottlingConfig,
-  readThrottlingConfig,
-} from '@backstage/plugin-catalog-backend';
+import { ThrottlingConfig, readThrottlingConfig } from '../FetchService';
 
 /**
  * The configuration parameters for a single Bitbucket Server API provider.

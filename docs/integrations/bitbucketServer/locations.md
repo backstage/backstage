@@ -40,7 +40,6 @@ integrations:
         count: 1 # number of requests per interval
         # suppports ISO duration, "human duration" as used in code
         interval: { seconds: 1 }
-      debug: true # optional (true or false)
 ```
 
 Directly under the `bitbucketServer` key is a list of provider configurations, where
@@ -61,4 +60,3 @@ a structure with the following elements:
 - `throttling` (optional): The throttling configuration for the Bitbucket Server client.
   - `count`: The number of requests per interval.
   - `interval`: The interval for the throttling. Supports ISO duration, "human duration".
-- `debug` (optional): Set to `true` to enable debug logging for the Bitbucket Server client.

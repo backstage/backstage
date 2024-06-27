@@ -92,7 +92,6 @@
     "minimatch": "^9.0.0",
     "node-fetch": "^2.6.7",
     "p-limit": "^3.0.2",
-    "p-throttle": "^4.1.1",
     "prom-client": "^15.0.0",
     "uuid": "^9.0.0",
     "yaml": "^2.0.0",

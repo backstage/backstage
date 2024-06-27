@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
+import {
+  BitbucketCloudIntegrationConfig,
+  FetchFunction,
+  FetchService,
+} from '@backstage/integration';
 import { Request, Response } from 'node-fetch';
 import { Models } from './models';
 import { WithPagination } from './pagination';
@@ -23,7 +27,6 @@ import {
   PartialResponseOptions,
   RequestOptions,
 } from './types';
-import { FetchFunction, FetchService } from '@backstage/plugin-catalog-backend';
 
 /** @public */
 export class BitbucketCloudClient {

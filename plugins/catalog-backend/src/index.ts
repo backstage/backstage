@@ -26,4 +26,3 @@ export * from './search';
 export * from './service';
 export * from './deprecated';
 export * from './constants';
-export * from './util';

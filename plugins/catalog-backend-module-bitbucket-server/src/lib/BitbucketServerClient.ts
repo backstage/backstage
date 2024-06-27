@@ -17,10 +17,11 @@
 import { Request, Response } from 'node-fetch';
 import {
   BitbucketServerIntegrationConfig,
+  FetchFunction,
+  FetchService,
   getBitbucketServerRequestOptions,
 } from '@backstage/integration';
 import { BitbucketServerProject, BitbucketServerRepository } from './types';
-import { FetchFunction, FetchService } from '@backstage/plugin-catalog-backend';
 
 /**
  * A client for interacting with a Bitbucket Server instance

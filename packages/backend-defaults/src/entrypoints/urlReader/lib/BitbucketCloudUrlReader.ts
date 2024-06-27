@@ -26,6 +26,8 @@ import {
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   BitbucketCloudIntegration,
+  FetchFunction,
+  FetchService,
   getBitbucketCloudDefaultBranch,
   getBitbucketCloudDownloadUrl,
   getBitbucketCloudFileFetchUrl,
@@ -40,7 +42,6 @@ import { Readable } from 'stream';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { parseLastModified } from './util';
-import { FetchFunction, FetchService } from '@backstage/plugin-catalog-backend';
 
 /**
  * Implements a {@link @backstage/backend-plugin-api#UrlReaderService} for files from Bitbucket Cloud.
