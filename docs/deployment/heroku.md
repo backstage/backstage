@@ -5,40 +5,40 @@ sidebar_label: Heroku
 description: How to deploy Backstage to Heroku
 ---
 
-Heroku is a Platform as a Service (PaaS) designed to handle application
-deployment in a hands-off way. Heroku supports container deployment of Docker
-images, a natural fit for Backstage.
+Heroku is a Platform as a Service (PaaS) designed to simplify application deployment.
 
-## Configuring the CLI
+## Create App
 
-First, install the
-[heroku-cli](https://devcenter.heroku.com/articles/heroku-cli) and login:
+Start with an exisiting Backstage app or follow the [getting started guide](https://backstage.io/docs/getting-started/) to create a new one:
 
 ```shell
-$ heroku login
+$ npx @backstage/create-app@latest
+  Enter a name <your-app>
 ```
 
-If you have not yet created a project through the Heroku interface, you can create it through the CLI.
+Install the
+[Heroku CLI](https://devcenter.heroku.com/articles/heroku-cli) and create a new Heroku app:
 
 ```shell
-$ heroku create <your-app>
+$ cd your-app/
+$ heroku apps:create <your-app>
 ```
 
-You _might_ also need to set your Heroku app's stack to `container`:
+## Domain
 
-```bash
-$ heroku stack:set container -a <your-app>
+Get Heroku app URL:
+```shell
+$ heroku domains -a <your-app>
+<your-app-123>.herokuapp.com
 ```
 
-Configuring your `app-config.yaml`:
-
+Update `baseUrl` and `port` in `app-config.yaml`. The core [app-backend plugin](https://www.npmjs.com/package/@backstage/plugin-app-backend) allows a single Heroku app to serve the frontend and backend:
 ```yaml
 app:
-  # Should be the same as backend.baseUrl when using the `app-backend` plugin
-  baseUrl: https://<your-app>.herokuapp.com
+  baseUrl: https://<your-app-123>.herokuapp.com
 
 backend:
-  baseUrl: https://<your-app>.herokuapp.com
+  baseUrl: https://<your-app-123>.herokuapp.com
   listen:
     port:
       $env: PORT
@@ -46,28 +46,61 @@ backend:
       # https://devcenter.heroku.com/articles/dynos#web-dynos
 ```
 
-> Make sure your file is being copied into your container in the `Dockerfile`.
+## Build Script
 
-Before building the Docker image, run the [backstage host build commands](https://backstage.io/docs/deployment/docker#host-build). They must be run whenever you are going to publish a new image.
+Add a build script in `package.json` to compile frontend during deployment:
+```json
+"scripts": {
+  "build": "yarn build:backend --config ../../app-config.yaml"
+```
 
-Heroku runs a container registry on `registry.heroku.com`. To push Backstage
-Docker images, log in to the container registry also:
+## Start Command
+
+Create a [Procfile](https://devcenter.heroku.com/articles/procfile) in the app's root:
+```shell
+$ echo "web: yarn workspace backend start --config ../../app-config.yaml" > Procfile
+```
+
+## Database
+
+Provision a [Heroku Postgres](https://elements.heroku.com/addons/heroku-postgresql) database:
+```shell
+$ heroku addons:create heroku-postgresql -a <your-app>
+```
+
+Update `database` in `app-config.yaml`:
+```yaml
+backend:
+  database:
+    client: pg
+    pluginDivisionMode: schema
+    ensureExists: false
+    ensureSchemaExists: true
+    connection: ${DATABASE_URL}
+```
+
+Allow postgres self-signed certificates:
+```shell
+$ heroku config:set PGSSLMODE=no-verify -a <your-app>
+```
+
+## Deployment
+
+Commit changes and push to Heroku to build and deploy:
 
 ```shell
-$ heroku container:login
+$ git add Procfile && git commit -am "configure heroku"
+$ git push heroku main
 ```
 
-## Push and deploy a Docker image
+View the app in the browser:
 
-Now we can push a Backstage [Docker image](docker.md) to Heroku's container
-registry and release it to the `web` worker:
-
-```bash
-$ docker image build . -f packages/backend/Dockerfile --tag registry.heroku.com/<your-app>/web
-
-$ docker push registry.heroku.com/<your-app>/web
-
-$ heroku container:release web -a <your-app>
+```shell
+$ heroku open -a <your-app>
 ```
 
-Now you should have Backstage up and running! 🎉
+View logs:
+
+```shell
+$ heroku heroku -a <your-app>
+```
