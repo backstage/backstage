@@ -10225,11 +10225,11 @@ __metadata:
   linkType: hard
 
 "@jest-mock/express@npm:^2.0.1":
-  version: 2.0.2
-  resolution: "@jest-mock/express@npm:2.0.2"
+  version: 2.1.0
+  resolution: "@jest-mock/express@npm:2.1.0"
   dependencies:
-    "@types/express": ^4.17.17
-  checksum: 558feb47e7e9620a5e53b83c51b3802782ecf7ab32b8d81077b16f641b7e1a6dc6fffa652d2ab48b28ba0f0634fa6387bd21b08f62b92bd730dfca167a4c2795
+    "@types/express": ^4.17.21
+  checksum: 305b72c214c1e80ed16271aa48e4d6d906346f5221a4e873d1e8ae48c32c2316cb88bed819b195c934c339b9ab41d4b34c4e41ac66feefe980d2cd16bc0b6d20
   languageName: node
   linkType: hard
 
@@ -17562,7 +17562,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/express@npm:*, @types/express@npm:^4.17.14, @types/express@npm:^4.17.17, @types/express@npm:^4.17.21, @types/express@npm:^4.17.6":
+"@types/express@npm:*, @types/express@npm:^4.17.14, @types/express@npm:^4.17.21, @types/express@npm:^4.17.6":
   version: 4.17.21
   resolution: "@types/express@npm:4.17.21"
   dependencies:
