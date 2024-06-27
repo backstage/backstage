@@ -189,8 +189,7 @@ describe('gitlab core', () => {
 
   describe('getGitLabRequestOptions', () => {
     it('should return Authorization header when oauthToken is provided', () => {
-      const token =
-        'de6780bc506a0446309bd9362820ba8aed28aa506c71eedbe1c5c4f9dd350e54';
+      const token = '1234567890';
       const result = getGitLabRequestOptions(
         configSelfHosteWithRelativePath,
         token,
