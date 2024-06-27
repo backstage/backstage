@@ -49,6 +49,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { getAvailableFeatures } from './discovery';
 import {
+  ApiFactoryHolder,
   ApiFactoryRegistry,
   ApiProvider,
   ApiResolver,
@@ -108,6 +109,7 @@ import { stringifyError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { icons as defaultIcons } from '../../../app-defaults/src/defaults';
 import { getBasePath } from '../routing/getBasePath';
+import { createSpecializedApp } from '@backstage/frontend-app-api';
 
 const DefaultApis = defaultApis.map(factory => createApiExtension({ factory }));
 
@@ -217,11 +219,61 @@ export function createApp(options?: {
       }
     }
 
-    const app = createSpecializedApp({
-      icons: options?.icons,
+    const features = deduplicateFeatures([
+      ...discoveredFeatures,
+      ...providedFeatures,
+    ]);
+
+    const tree = createAppTree({
+      features,
+      builtinExtensions,
       config,
-      features: [...discoveredFeatures, ...providedFeatures],
-      bindRoutes: options?.bindRoutes,
+    });
+
+    const routeBindings = resolveRouteBindings(
+      options?.bindRoutes,
+      config,
+      collectRouteIds(features),
+    );
+
+    const appIdentityProxy = new AppIdentityProxy();
+
+    const routeInfo = extractRouteInfoFromAppNode(tree.root);
+
+    const apiFactories = createApiFactories(
+      tree,
+      config,
+      appIdentityProxy,
+      new RouteResolver(
+        routeInfo.routePaths,
+        routeInfo.routeParents,
+        routeInfo.routeObjects,
+        routeBindings,
+        getBasePath(config),
+      ),
+      options?.icons,
+    );
+
+    if (isProtectedApp()) {
+      const discoveryApi = apiFactories.get(discoveryApiRef);
+      const errorApi = apiFactories.get(errorApiRef);
+      const fetchApi = apiFactories.get(fetchApiRef);
+      if (!discoveryApi || !errorApi || !fetchApi) {
+        throw new Error(
+          'App is running in protected mode but missing required APIs',
+        );
+      }
+      appIdentityProxy.enableCookieAuth({
+        discoveryApi,
+        errorApi,
+        fetchApi,
+      });
+    }
+
+    const app = createSpecializedApp({
+      config,
+      apiFactories,
+      tree,
     }).createRoot();
 
     return { default: () => app };
@@ -239,143 +291,14 @@ export function createApp(options?: {
   };
 }
 
-/**
- * Synchronous version of {@link createApp}, expecting all features and
- * config to have been loaded already.
- *
- * @public
- */
-export function createSpecializedApp(options?: {
-  icons?: { [key in string]: IconComponent };
-  features?: FrontendFeature[];
-  config?: ConfigApi;
-  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-}): { createRoot(): JSX.Element } {
-  const {
-    features: duplicatedFeatures = [],
-    config = new ConfigReader({}, 'empty-config'),
-  } = options ?? {};
-
-  const features = deduplicateFeatures(duplicatedFeatures);
-
-  const tree = createAppTree({
-    features,
-    builtinExtensions,
-    config,
-  });
-
-  const routeInfo = extractRouteInfoFromAppNode(tree.root);
-  const routeBindings = resolveRouteBindings(
-    options?.bindRoutes,
-    config,
-    collectRouteIds(features),
-  );
-
-  const appIdentityProxy = new AppIdentityProxy();
-  const apiHolder = createApiHolder(
-    tree,
-    config,
-    appIdentityProxy,
-    new RouteResolver(
-      routeInfo.routePaths,
-      routeInfo.routeParents,
-      routeInfo.routeObjects,
-      routeBindings,
-      getBasePath(config),
-    ),
-    options?.icons,
-  );
-
-  if (isProtectedApp()) {
-    const discoveryApi = apiHolder.get(discoveryApiRef);
-    const errorApi = apiHolder.get(errorApiRef);
-    const fetchApi = apiHolder.get(fetchApiRef);
-    if (!discoveryApi || !errorApi || !fetchApi) {
-      throw new Error(
-        'App is running in protected mode but missing required APIs',
-      );
-    }
-    appIdentityProxy.enableCookieAuth({
-      discoveryApi,
-      errorApi,
-      fetchApi,
-    });
-  }
-
-  const featureFlagApi = apiHolder.get(featureFlagsApiRef);
-  if (featureFlagApi) {
-    for (const feature of features) {
-      if (feature.$$type === '@backstage/BackstagePlugin') {
-        toInternalBackstagePlugin(feature).featureFlags.forEach(flag =>
-          featureFlagApi.registerFlag({
-            name: flag.name,
-            pluginId: feature.id,
-          }),
-        );
-      }
-      if (feature.$$type === '@backstage/ExtensionOverrides') {
-        toInternalExtensionOverrides(feature).featureFlags.forEach(flag =>
-          featureFlagApi.registerFlag({ name: flag.name, pluginId: '' }),
-        );
-      }
-    }
-  }
-
-  const rootEl = tree.root.instance!.getData(coreExtensionData.reactElement);
-
-  const AppComponent = () => (
-    <ApiProvider apis={apiHolder}>
-      <AppThemeProvider>
-        <InternalAppContext.Provider
-          value={{ appIdentityProxy, routeObjects: routeInfo.routeObjects }}
-        >
-          {rootEl}
-        </InternalAppContext.Provider>
-      </AppThemeProvider>
-    </ApiProvider>
-  );
-
-  return {
-    createRoot() {
-      return <AppComponent />;
-    },
-  };
-}
-
-function createApiHolder(
+function createApiFactories(
   tree: AppTree,
   configApi: ConfigApi,
   appIdentityProxy: AppIdentityProxy,
   routeResolutionApi: RouteResolutionApi,
   icons?: { [key in string]: IconComponent },
-): ApiHolder {
+): ApiFactoryHolder {
   const factoryRegistry = new ApiFactoryRegistry();
-
-  const pluginApis =
-    tree.root.edges.attachments
-      .get('apis')
-      ?.map(e => e.instance?.getData(createApiExtension.factoryDataRef))
-      .filter((x): x is AnyApiFactory => !!x) ?? [];
-
-  const themeExtensions =
-    tree.root.edges.attachments
-      .get('themes')
-      ?.map(e => e.instance?.getData(createThemeExtension.themeDataRef))
-      .filter((x): x is AppTheme => !!x) ?? [];
-
-  const translationResources =
-    tree.root.edges.attachments
-      .get('translations')
-      ?.map(e =>
-        e.instance?.getData(createTranslationExtension.translationDataRef),
-      )
-      .filter(
-        (x): x is typeof createTranslationExtension.translationDataRef.T => !!x,
-      ) ?? [];
-
-  for (const factory of pluginApis) {
-    factoryRegistry.register('default', factory);
-  }
 
   // TODO: properly discovery feature flags, maybe rework the whole thing
   factoryRegistry.register('default', {
@@ -417,13 +340,6 @@ function createApiHolder(
   });
 
   factoryRegistry.register('static', {
-    api: appThemeApiRef,
-    deps: {},
-    // TODO: add extension for registering themes
-    factory: () => AppThemeSelector.createWithStorage(themeExtensions),
-  });
-
-  factoryRegistry.register('static', {
     api: appLanguageApiRef,
     deps: {},
     factory: () => AppLanguageSelector.createWithStorage(),
@@ -441,17 +357,5 @@ function createApiHolder(
     factory: () => AppLanguageSelector.createWithStorage(),
   });
 
-  factoryRegistry.register('static', {
-    api: translationApiRef,
-    deps: { languageApi: appLanguageApiRef },
-    factory: ({ languageApi }) =>
-      I18nextTranslationApi.create({
-        languageApi,
-        resources: translationResources,
-      }),
-  });
-
-  ApiResolver.validateFactories(factoryRegistry, factoryRegistry.getAllApis());
-
-  return new ApiResolver(factoryRegistry);
+  return factoryRegistry;
 }

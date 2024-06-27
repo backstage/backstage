@@ -27,6 +27,10 @@
     "@backstage/cli": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0"
   },
+  "dependencies": {
+    "@backstage/config": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^"
+  },
   "files": [
     "dist"
   ]

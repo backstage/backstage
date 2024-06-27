@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiFactory, ApiRef } from '@backstage/core-plugin-api';
+import { AnyApiRef, ApiFactory, ApiRef } from '@backstage/core-plugin-api';
 
 /**
  * @public
@@ -23,4 +23,6 @@ export type ApiFactoryHolder = {
   get<T>(
     api: ApiRef<T>,
   ): ApiFactory<T, T, { [key in string]: unknown }> | undefined;
+
+  getAllApis(): Set<AnyApiRef>;
 };

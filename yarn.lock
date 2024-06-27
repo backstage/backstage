@@ -4480,6 +4480,7 @@ __metadata:
   resolution: "@backstage/frontend-defaults@workspace:packages/frontend-defaults"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
     "@testing-library/jest-dom": ^6.0.0
   languageName: unknown
   linkType: soft

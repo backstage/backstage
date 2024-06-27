@@ -30,7 +30,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { MockConfigApi } from '@backstage/test-utils';
 import { createAppTree } from '../tree';
-import { builtinExtensions } from '../wiring/createApp';
+import { builtinExtensions } from '../wiring/createSpecializedApp';
 
 const ref1 = createRouteRef();
 const ref2 = createRouteRef();
