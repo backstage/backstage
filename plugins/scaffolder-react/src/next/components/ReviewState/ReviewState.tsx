@@ -47,11 +47,8 @@ function flattenObject(
 
       // Recurse into nested objects
       if (
-        backstageReviewOptions &&
-        backstageReviewOptions.explode &&
-        typeof value === 'object' &&
-        value !== null &&
-        !Array.isArray(value)
+        backstageReviewOptions?.explode &&
+        isJsonObject(value)
       ) {
         return flattenObject(value, prefixedKey, schema, formState);
       }
@@ -59,6 +56,14 @@ function flattenObject(
 
     return [[key, value]];
   });
+}
+
+function isJsonObject(value?: JsonValue): value is JsonObject {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    !Array.isArray(value)
+  );
 }
 
 /**
@@ -89,9 +94,7 @@ export const ReviewState = (props: ReviewStateProps) => {
               }
               if (
                 backstageReviewOptions.explode &&
-                typeof value === 'object' &&
-                value !== null &&
-                !Array.isArray(value)
+                isJsonObject(value)
               ) {
                 return flattenObject(value, key, parsedSchema, props.formState);
               }
@@ -106,7 +109,7 @@ export const ReviewState = (props: ReviewStateProps) => {
                 [
                   key,
                   definitionInSchema.enumNames[
-                    definitionInSchema.enum.indexOf(value)
+                  definitionInSchema.enum.indexOf(value)
                   ] || value,
                 ],
               ];
