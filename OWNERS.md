@@ -165,11 +165,11 @@ Team: @backstage/documentation-maintainers
 
 Scope: The Backstage Documentation
 
-| Name            | Organization  | GitHub                                                | Discord              |
-| --------------- | ------------- | ----------------------------------------------------- | -------------------- |
-| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`           |
-| Aramis Sennyey  |               | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984`        |
-| Peter Macdonald | VodafoneZiggo | [parsifal-m](https://github.com/Parsifal-M)           | `Peter "Parsifal-M"` |
+| Name            | Organization  | GitHub                                                | Discord       |
+| --------------- | ------------- | ----------------------------------------------------- | ------------- |
+| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
+| Aramis Sennyey  |               | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
+| Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
 
 ## Sponsors
 
