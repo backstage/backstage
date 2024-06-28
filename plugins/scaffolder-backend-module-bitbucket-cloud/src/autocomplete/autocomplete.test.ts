@@ -95,12 +95,16 @@ describe('handleAutocompleteRequest', () => {
   });
 
   it('should return branches', async () => {
-    const result = await handleBitbucketCloudRequest('foo', 'branches', {
-      workspace: 'workspace1',
-      repository: 'repository1',
+    const result = await handleAutocompleteRequest({
+      token: 'foo',
+      resource: 'branches',
+      context: {
+        workspace: 'workspace1',
+        repository: 'repository1',
+      },
     });
 
-    expect(result).toEqual(['branch1']);
+    expect(result).toEqual({ results: [{ title: 'branch1' }] });
   });
 
   it('should throw an error when passing an invalid resource', async () => {

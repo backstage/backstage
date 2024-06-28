@@ -57,16 +57,17 @@ export const BitbucketRepoBranchPicker = ({
           host === 'bitbucket.org' &&
           accessToken &&
           workspace &&
-          repository
+          repository &&
+          scaffolderApi.autocomplete
         ) {
-          const result = await scaffolderApi.autocomplete(
-            accessToken,
-            'bitbucketCloud',
-            'branches',
-            { workspace, repository },
-          );
+          const { results } = await scaffolderApi.autocomplete({
+            token: accessToken,
+            resource: 'branches',
+            context: { workspace, repository },
+            provider: 'bitbucket-cloud',
+          });
 
-          setAvailableBranches(result);
+          setAvailableBranches(results.map(r => r.title));
         } else {
           setAvailableBranches([]);
         }
