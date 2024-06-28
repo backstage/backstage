@@ -46,10 +46,7 @@ function flattenObject(
       const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
 
       // Recurse into nested objects
-      if (
-        backstageReviewOptions?.explode &&
-        isJsonObject(value)
-      ) {
+      if (backstageReviewOptions?.explode && isJsonObject(value)) {
         return flattenObject(value, prefixedKey, schema, formState);
       }
     }
@@ -59,11 +56,7 @@ function flattenObject(
 }
 
 function isJsonObject(value?: JsonValue): value is JsonObject {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    !Array.isArray(value)
-  );
+  return typeof value === 'object' && value !== null && !Array.isArray(value);
 }
 
 /**
@@ -92,10 +85,7 @@ export const ReviewState = (props: ReviewStateProps) => {
               if (backstageReviewOptions.show === false) {
                 return [];
               }
-              if (
-                backstageReviewOptions.explode &&
-                isJsonObject(value)
-              ) {
+              if (backstageReviewOptions.explode && isJsonObject(value)) {
                 return flattenObject(value, key, parsedSchema, props.formState);
               }
             }
@@ -109,7 +99,7 @@ export const ReviewState = (props: ReviewStateProps) => {
                 [
                   key,
                   definitionInSchema.enumNames[
-                  definitionInSchema.enum.indexOf(value)
+                    definitionInSchema.enum.indexOf(value)
                   ] || value,
                 ],
               ];
