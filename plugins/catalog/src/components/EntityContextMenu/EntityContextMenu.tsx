@@ -58,14 +58,13 @@ interface ExtraContextMenuItem {
   onClick: () => void;
 }
 
-interface EntityContextMenuProps {
+/** @public */
+export function EntityContextMenu(props: {
   UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
   UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
-}
-
-export function EntityContextMenu(props: EntityContextMenuProps) {
+}) {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
