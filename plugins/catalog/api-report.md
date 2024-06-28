@@ -339,8 +339,14 @@ export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
 // @public (undocumented)
 export function EntityContextMenu(props: {
-  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
-  UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
+  UNSTABLE_extraContextMenuItems?: Array<{
+    title: string;
+    Icon: IconComponent;
+    onClick: () => void;
+  }>;
+  UNSTABLE_contextMenuOptions?: {
+    disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
+  };
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
 }): React_2.JSX.Element;
@@ -413,10 +419,10 @@ export interface EntityLayoutProps {
   //
   // (undocumented)
   UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
-  // Warning: (ae-forgotten-export) The symbol "ExtraContextMenuItem_2" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "ExtraContextMenuItem" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem_2[];
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
 }
 
 // @public (undocumented)
@@ -645,9 +651,4 @@ export type SystemDiagramCardClassKey =
   | 'componentNode'
   | 'apiNode'
   | 'resourceNode';
-
-// Warnings were encountered during analysis:
-//
-// src/components/EntityContextMenu/EntityContextMenu.d.ts:13:5 - (ae-forgotten-export) The symbol "ExtraContextMenuItem" needs to be exported by the entry point index.d.ts
-// src/components/EntityContextMenu/EntityContextMenu.d.ts:14:5 - (ae-forgotten-export) The symbol "UnregisterEntityOptions" needs to be exported by the entry point index.d.ts
 ```
