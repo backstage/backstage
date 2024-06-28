@@ -385,6 +385,28 @@ export const OwnerPickerFieldSchema: FieldSchema<
 export type OwnerPickerUiOptions = typeof OwnerPickerFieldSchema.uiOptionsType;
 
 // @public
+export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
+  string,
+  {
+    requestUserCredentials?:
+      | {
+          secretsKey: string;
+          additionalScopes?:
+            | {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+                gitea?: string[] | undefined;
+              }
+            | undefined;
+        }
+      | undefined;
+  }
+>;
+
+// @public
 export const repoPickerValidation: (
   value: string,
   validation: FieldValidation,
