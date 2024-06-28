@@ -24,7 +24,7 @@ import {
   createTemplateAction,
   parseRepoUrl,
 } from '@backstage/plugin-scaffolder-node';
-import { examples } from './githubPages.examples';
+import { examples } from './githubPagesEnable.examples';
 import { getOctokitOptions } from '@backstage/plugin-scaffolder-backend-module-github';
 
 /**
@@ -32,7 +32,7 @@ import { getOctokitOptions } from '@backstage/plugin-scaffolder-backend-module-g
  *
  * @public
  */
-export function createGithubPagesAction(options: {
+export function createGithubPagesEnableAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }) {
@@ -45,7 +45,7 @@ export function createGithubPagesAction(options: {
     sourcePath?: '/' | '/docs';
     token?: string;
   }>({
-    id: 'github:pages',
+    id: 'github:pages:enable',
     examples,
     description: 'Enables GitHub Pages for a repository.',
     schema: {

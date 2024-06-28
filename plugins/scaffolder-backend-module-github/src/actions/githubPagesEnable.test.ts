@@ -22,7 +22,7 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { createGithubPagesAction } from './githubPages';
+import { createGithubPagesEnableAction } from './githubPagesEnable';
 
 const mockOctokit = {
   request: jest.fn(),
@@ -63,7 +63,7 @@ describe('github:pages', () => {
   beforeEach(() => {
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-    action = createGithubPagesAction({
+    action = createGithubPagesEnableAction({
       integrations,
       githubCredentialsProvider,
     });

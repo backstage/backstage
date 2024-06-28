@@ -27,6 +27,6 @@ export {
 } from './githubPullRequest';
 export { createPublishGithubAction } from './github';
 export { createGithubAutolinksAction } from './githubAutolinks';
-export { createGithubPagesAction } from './githubPages';
+export { createGithubPagesEnableAction } from './githubPagesEnable';
 
 export { getOctokitOptions } from './helpers';

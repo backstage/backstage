@@ -108,7 +108,7 @@ export function createGithubIssuesLabelAction(options: {
 >;
 
 // @public
-export function createGithubPagesAction(options: {
+export function createGithubPagesEnableAction(options: {
   integrations: ScmIntegrationRegistry;
   githubCredentialsProvider?: GithubCredentialsProvider;
 }): TemplateAction<

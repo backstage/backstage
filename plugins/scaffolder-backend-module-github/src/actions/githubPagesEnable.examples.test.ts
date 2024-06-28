@@ -22,8 +22,8 @@ import {
   GithubCredentialsProvider,
   ScmIntegrations,
 } from '@backstage/integration';
-import { createGithubPagesAction } from './githubPages';
-import { examples } from './githubPages.examples';
+import { createGithubPagesEnableAction } from './githubPagesEnable';
+import { examples } from './githubPagesEnable.examples';
 import yaml from 'yaml';
 
 const mockOctokit = {
@@ -60,7 +60,7 @@ describe('github:pages', () => {
   beforeEach(() => {
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
-    action = createGithubPagesAction({
+    action = createGithubPagesEnableAction({
       integrations,
       githubCredentialsProvider,
     });
