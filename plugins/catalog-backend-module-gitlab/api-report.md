@@ -98,6 +98,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
 export type GitlabProviderConfig = {
   host: string;
   group: string;
+  restrictUsersToGroup?: boolean;
   id: string;
   branch?: string;
   fallbackBranch: string;
@@ -122,6 +123,7 @@ export type GitLabUser = {
   avatar_url: string;
   groups?: GitLabGroup[];
   group_saml_identity?: GitLabGroupSamlIdentity;
+  is_using_seat?: boolean;
 };
 
 // @public

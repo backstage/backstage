@@ -270,6 +270,10 @@ export class DatabaseNotificationsStore implements NotificationsStore {
       query.whereNull('read');
     } // or match both if undefined
 
+    if (options.topic) {
+      query.where('topic', '=', options.topic);
+    }
+
     if (options.saved) {
       query.whereNotNull('saved');
     } else if (options.saved === false) {

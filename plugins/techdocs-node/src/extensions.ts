@@ -15,7 +15,13 @@
  */
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import { DocsBuildStrategy } from './techdocsTypes';
-import { PreparerBase, RemoteProtocol, TechdocsGenerator } from './stages';
+import {
+  PreparerBase,
+  PublisherBase,
+  PublisherType,
+  RemoteProtocol,
+  TechdocsGenerator,
+} from './stages';
 import * as winston from 'winston';
 
 /**
@@ -74,4 +80,23 @@ export interface TechdocsPreparerExtensionPoint {
 export const techdocsPreparerExtensionPoint =
   createExtensionPoint<TechdocsPreparerExtensionPoint>({
     id: 'techdocs.preparer',
+  });
+
+/**
+ * Extension point type for configuring a custom Techdocs publisher
+ *
+ * @public
+ */
+export interface TechdocsPublisherExtensionPoint {
+  registerPublisher(type: PublisherType, publisher: PublisherBase): void;
+}
+
+/**
+ * Extension point for configuring a custom Techdocs publisher
+ *
+ * @public
+ */
+export const techdocsPublisherExtensionPoint =
+  createExtensionPoint<TechdocsPublisherExtensionPoint>({
+    id: 'techdocs.publisher',
   });
