@@ -90,51 +90,54 @@ export class DatabaseNotificationsStore implements NotificationsStore {
 
   private mapToNotifications = (rows: any[]): Notification[] => {
     let order = 0;
-    const res = [
-      ...rows
-        .reduce((acc, row) => {
-          const metadata = row.name
-            ? {
-                name: row.name,
-                value: row.value,
-                type: row.type,
-              }
-            : undefined;
-          if (acc.has(row.id)) {
-            if (metadata) {
-              acc.get(row.id).notification.payload.metadata?.push(metadata);
-            }
-          } else {
-            order += 1;
-            acc.set(row.id, {
-              order,
-              notification: {
-                id: row.id,
-                user: row.user,
-                created: new Date(row.created),
-                saved: row.saved,
-                read: row.read,
-                updated: row.updated,
-                origin: row.origin,
-                payload: {
-                  title: row.title,
-                  description: row.description,
-                  link: row.link,
-                  topic: row.topic,
-                  severity: row.severity,
-                  scope: row.scope,
-                  icon: row.icon,
-                  ...(metadata && { metadata: [metadata] }),
-                },
-              },
-            });
+    const idToNotification = new Map<
+      string,
+      { order: number; notification: Notification }
+    >();
+    for (const row of rows) {
+      const metadata = row.name
+        ? {
+            name: row.name,
+            value: row.value,
+            type: row.type,
           }
-          return acc;
-        }, new Map<string, { order: number; notification: Notification }>())
-        .values(),
-    ] as { order: number; notification: Notification }[];
+        : undefined;
+      if (idToNotification.has(row.id)) {
+        if (metadata) {
+          idToNotification
+            .get(row.id)
+            ?.notification.payload.metadata?.push(metadata);
+        }
+      } else {
+        order += 1;
+        idToNotification.set(row.id, {
+          order,
+          notification: {
+            id: row.id,
+            user: row.user,
+            created: new Date(row.created),
+            saved: row.saved,
+            read: row.read,
+            updated: row.updated,
+            origin: row.origin,
+            payload: {
+              title: row.title,
+              description: row.description,
+              link: row.link,
+              topic: row.topic,
+              severity: row.severity,
+              scope: row.scope,
+              icon: row.icon,
+              ...(metadata && { metadata: [metadata] }),
+            },
+          },
+        });
+      }
+    }
 
-    return res.sort((a, b) => a.order - b.order).map(e => e.notification);
+    return [...idToNotification.values()]
+      .sort((a, b) => a.order - b.order)
+      .map(e => e.notification);
   };
 
   private mapNotificationToMetadataDbRows = (notification: Notification) => {
