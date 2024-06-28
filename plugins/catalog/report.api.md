@@ -347,13 +347,13 @@ export interface DependsOnResourcesCardProps {
 // @public
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "EntityContextMenuProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntityContextMenu" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export function EntityContextMenu(
-  props: EntityContextMenuProps,
-): React_2.JSX.Element;
+export function EntityContextMenu(props: {
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
+  onUnregisterEntity: () => void;
+  onInspectEntity: () => void;
+}): React_2.JSX.Element;
 
 // @public (undocumented)
 export type EntityContextMenuClassKey = 'button';
@@ -731,6 +731,9 @@ export type SystemDiagramCardClassKey =
 // src/components/DependsOnResourcesCard/DependsOnResourcesCard.d.ts:8:5 - (ae-undocumented) Missing documentation for "columns".
 // src/components/DependsOnResourcesCard/DependsOnResourcesCard.d.ts:9:5 - (ae-undocumented) Missing documentation for "tableOptions".
 // src/components/EntityContextMenu/EntityContextMenu.d.ts:5:1 - (ae-undocumented) Missing documentation for "EntityContextMenuClassKey".
+// src/components/EntityContextMenu/EntityContextMenu.d.ts:12:1 - (ae-undocumented) Missing documentation for "EntityContextMenu".
+// src/components/EntityContextMenu/EntityContextMenu.d.ts:13:5 - (ae-forgotten-export) The symbol "ExtraContextMenuItem" needs to be exported by the entry point index.d.ts
+// src/components/EntityContextMenu/EntityContextMenu.d.ts:14:5 - (ae-forgotten-export) The symbol "UnregisterEntityOptions" needs to be exported by the entry point index.d.ts
 // src/components/EntityLabelsCard/EntityLabelsCard.d.ts:4:1 - (ae-undocumented) Missing documentation for "EntityLabelsCardProps".
 // src/components/EntityLabelsCard/EntityLabelsCard.d.ts:5:5 - (ae-undocumented) Missing documentation for "variant".
 // src/components/EntityLabelsCard/EntityLabelsCard.d.ts:6:5 - (ae-undocumented) Missing documentation for "title".
