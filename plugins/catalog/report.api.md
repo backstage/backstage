@@ -349,8 +349,14 @@ export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
 // @public (undocumented)
 export function EntityContextMenu(props: {
-  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
-  UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
+  UNSTABLE_extraContextMenuItems?: Array<{
+    title: string;
+    Icon: IconComponent;
+    onClick: () => void;
+  }>;
+  UNSTABLE_contextMenuOptions?: {
+    disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
+  };
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
 }): React_2.JSX.Element;
@@ -426,10 +432,10 @@ export interface EntityLayoutProps {
   //
   // (undocumented)
   UNSTABLE_contextMenuOptions?: EntityContextMenuOptions;
-  // Warning: (ae-forgotten-export) The symbol "ExtraContextMenuItem_2" needs to be exported by the entry point index.d.ts
+  // Warning: (ae-forgotten-export) The symbol "ExtraContextMenuItem" needs to be exported by the entry point index.d.ts
   //
   // (undocumented)
-  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem_2[];
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
 }
 
 // @public (undocumented)
@@ -730,10 +736,8 @@ export type SystemDiagramCardClassKey =
 // src/components/DependsOnResourcesCard/DependsOnResourcesCard.d.ts:7:5 - (ae-undocumented) Missing documentation for "title".
 // src/components/DependsOnResourcesCard/DependsOnResourcesCard.d.ts:8:5 - (ae-undocumented) Missing documentation for "columns".
 // src/components/DependsOnResourcesCard/DependsOnResourcesCard.d.ts:9:5 - (ae-undocumented) Missing documentation for "tableOptions".
-// src/components/EntityContextMenu/EntityContextMenu.d.ts:5:1 - (ae-undocumented) Missing documentation for "EntityContextMenuClassKey".
-// src/components/EntityContextMenu/EntityContextMenu.d.ts:12:1 - (ae-undocumented) Missing documentation for "EntityContextMenu".
-// src/components/EntityContextMenu/EntityContextMenu.d.ts:13:5 - (ae-forgotten-export) The symbol "ExtraContextMenuItem" needs to be exported by the entry point index.d.ts
-// src/components/EntityContextMenu/EntityContextMenu.d.ts:14:5 - (ae-forgotten-export) The symbol "UnregisterEntityOptions" needs to be exported by the entry point index.d.ts
+// src/components/EntityContextMenu/EntityContextMenu.d.ts:4:1 - (ae-undocumented) Missing documentation for "EntityContextMenuClassKey".
+// src/components/EntityContextMenu/EntityContextMenu.d.ts:6:1 - (ae-undocumented) Missing documentation for "EntityContextMenu".
 // src/components/EntityLabelsCard/EntityLabelsCard.d.ts:4:1 - (ae-undocumented) Missing documentation for "EntityLabelsCardProps".
 // src/components/EntityLabelsCard/EntityLabelsCard.d.ts:5:5 - (ae-undocumented) Missing documentation for "variant".
 // src/components/EntityLabelsCard/EntityLabelsCard.d.ts:6:5 - (ae-undocumented) Missing documentation for "title".

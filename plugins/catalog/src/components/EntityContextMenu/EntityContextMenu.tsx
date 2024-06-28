@@ -30,7 +30,7 @@ import React, { useEffect, useState } from 'react';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityDeletePermission } from '@backstage/plugin-catalog-common/alpha';
-import { UnregisterEntity, UnregisterEntityOptions } from './UnregisterEntity';
+import { UnregisterEntity } from './UnregisterEntity';
 import { useApi, alertApiRef } from '@backstage/core-plugin-api';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { catalogTranslationRef } from '../../alpha/translation';
@@ -50,18 +50,16 @@ const useStyles = makeStyles(
   { name: 'PluginCatalogEntityContextMenu' },
 );
 
-// NOTE(freben): Intentionally not exported at this point, since it's part of
-// the unstable extra context menu items concept below
-interface ExtraContextMenuItem {
-  title: string;
-  Icon: IconComponent;
-  onClick: () => void;
-}
-
 /** @public */
 export function EntityContextMenu(props: {
-  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
-  UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
+  UNSTABLE_extraContextMenuItems?: Array<{
+    title: string;
+    Icon: IconComponent;
+    onClick: () => void;
+  }>;
+  UNSTABLE_contextMenuOptions?: {
+    disableUnregister: boolean | 'visible' | 'hidden' | 'disable';
+  };
   onUnregisterEntity: () => void;
   onInspectEntity: () => void;
 }) {
