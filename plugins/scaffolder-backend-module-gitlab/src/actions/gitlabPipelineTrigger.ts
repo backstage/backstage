@@ -34,7 +34,7 @@ const pipelineInputProperties = z.object({
     .record(z.string(), z.string())
     .optional()
     .describe(
-      'A map/object of key-valued strings containing the pipeline variables.',
+      'A object/record of key-valued strings containing the pipeline variables.',
     ),
 });
 
@@ -90,7 +90,7 @@ export const createTriggerGitlabPipelineAction = (options: {
             projectId,
             branch,
             pipelineTokenResponse.token,
-            variables,
+            { variables },
           )) as ExpandedPipelineSchema;
 
         if (!pipelineTriggerResponse.id) {
