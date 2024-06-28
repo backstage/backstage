@@ -337,13 +337,13 @@ export interface DependsOnResourcesCardProps {
 // @public
 export const EntityAboutCard: (props: AboutCardProps) => JSX.Element;
 
-// Warning: (ae-forgotten-export) The symbol "EntityContextMenuProps" needs to be exported by the entry point index.d.ts
-// Warning: (ae-missing-release-tag) "EntityContextMenu" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
-//
 // @public (undocumented)
-export function EntityContextMenu(
-  props: EntityContextMenuProps,
-): React_2.JSX.Element;
+export function EntityContextMenu(props: {
+  UNSTABLE_extraContextMenuItems?: ExtraContextMenuItem[];
+  UNSTABLE_contextMenuOptions?: UnregisterEntityOptions;
+  onUnregisterEntity: () => void;
+  onInspectEntity: () => void;
+}): React_2.JSX.Element;
 
 // @public (undocumented)
 export type EntityContextMenuClassKey = 'button';
@@ -630,4 +630,9 @@ export type SystemDiagramCardClassKey =
   | 'componentNode'
   | 'apiNode'
   | 'resourceNode';
+
+// Warnings were encountered during analysis:
+//
+// src/components/EntityContextMenu/EntityContextMenu.d.ts:13:5 - (ae-forgotten-export) The symbol "ExtraContextMenuItem" needs to be exported by the entry point index.d.ts
+// src/components/EntityContextMenu/EntityContextMenu.d.ts:14:5 - (ae-forgotten-export) The symbol "UnregisterEntityOptions" needs to be exported by the entry point index.d.ts
 ```
