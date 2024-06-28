@@ -1,5 +1,27 @@
 # @backstage/plugin-catalog-backend
 
+## 1.23.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/backend-tasks@0.5.26-next.0
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/backend-openapi-utils@0.1.14-next.0
+  - @backstage/plugin-catalog-node@1.12.3-next.0
+  - @backstage/plugin-events-node@0.3.7-next.0
+  - @backstage/plugin-permission-node@0.7.32-next.0
+  - @backstage/plugin-search-backend-module-catalog@0.1.27-next.0
+  - @backstage/catalog-client@1.6.5
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.24
+  - @backstage/plugin-permission-common@0.7.14
+
 ## 1.23.0
 
 ### Minor Changes

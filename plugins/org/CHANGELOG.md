@@ -1,5 +1,22 @@
 # @backstage/plugin-org
 
+## 0.6.27-next.0
+
+### Patch Changes
+
+- c307ef4: Added `relationType` property to EntityMembersListCard component that allows for display users related to a group via some other relationship aside from `memberOf`.
+
+  Also, as a side effect, the `relationsType` property has been deprecated in favor of a more accurately named `relationAggregation` property.
+
+- Updated dependencies
+  - @backstage/core-components@0.14.9-next.0
+  - @backstage/plugin-catalog-react@1.12.2-next.0
+  - @backstage/frontend-plugin-api@0.6.7-next.0
+  - @backstage/core-compat-api@0.2.7-next.0
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/catalog-model@1.5.0
+  - @backstage/plugin-catalog-common@1.0.24
+
 ## 0.6.26
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.14.9-next.0
+
+### Patch Changes
+
+- d4ffdbb: Fixed bug where `<Select>` component with empty string as placeholder gave an error
+- Updated dependencies
+  - @backstage/core-plugin-api@1.9.3
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/theme@0.5.6
+  - @backstage/version-bridge@1.0.8
+
 ## 0.14.8
 
 ### Patch Changes

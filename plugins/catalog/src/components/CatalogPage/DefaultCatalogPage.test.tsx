@@ -121,6 +121,26 @@ describe('DefaultCatalogPage', () => {
         ],
       },
     })),
+    getEntitiesByRefs: jest.fn().mockImplementation(async () => ({
+      items: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Group',
+          metadata: {
+            name: 'not-tools',
+            namespace: 'default',
+          },
+        },
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Group',
+          metadata: {
+            name: 'tools',
+            namespace: 'default',
+          },
+        },
+      ],
+    })),
     queryEntities: jest
       .fn()
       .mockImplementation(async (request: QueryEntitiesInitialRequest) => {

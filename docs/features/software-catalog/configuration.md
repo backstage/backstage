@@ -186,7 +186,7 @@ The first step is to add the events backend plugin to your Backstage application
 
 ```ts
 # From your Backstage root directory
-yarn --cwd packages/backend add @backstage/plugin-events-node
+yarn --cwd packages/backend add @backstage/plugin-events-backend
 ```
 
 Now you can install the events backend plugin in your backend.

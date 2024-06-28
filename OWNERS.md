@@ -187,6 +187,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Mark Avery                     | Cvent                     | [webark](https://github.com/webark)                   | `webark#8471`                  |
 | Miklós Kiss                    | Roadie.io                 | [kissmikijr](https://github.com/kissmikijr)           | `Miklos#7416`                  |
 | Patrick Jungermann             | Bonial International GmbH | [pjungermann](https://github.com/pjungermann)         | `pjungermann#6933`             |
+| Peter Macdonald                | VodafoneZiggo             | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`                     |
 | Phil Kuang                     | FactSet Research Systems  | [kuangp](https://github.com/kuangp)                   | `pkuang#3202`                  |
 | Sebastian Poxhofer             | N26                       | [secustor](https://github.com/secustor)               | `secustor`                     |
 | Taras Mankovski                | Frontside                 | [taras](https://github.com/taras)                     | `tarasm#1256`                  |

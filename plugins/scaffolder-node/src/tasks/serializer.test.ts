@@ -72,8 +72,11 @@ describe('serializer', () => {
   const restoredWorkspaceDir = createMockDirectory();
 
   it('should be able to archive and restore the workspace', async () => {
-    const workspaceBuffer = await serializeWorkspace(workspaceDir.path);
-    await restoreWorkspace(restoredWorkspaceDir.path, workspaceBuffer);
+    const workspaceBuffer = await serializeWorkspace(workspaceDir);
+    await restoreWorkspace({
+      path: restoredWorkspaceDir.path,
+      buffer: workspaceBuffer.contents,
+    });
 
     expect(
       fs.existsSync(`${restoredWorkspaceDir.path}/\$\{ESCAPE_ME\}.txt`),

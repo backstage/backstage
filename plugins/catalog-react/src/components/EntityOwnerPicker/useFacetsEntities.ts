@@ -17,7 +17,8 @@ import { useApi } from '@backstage/core-plugin-api';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import { catalogApiRef } from '../../api';
 import { useState } from 'react';
-import { Entity, parseEntityRef } from '@backstage/catalog-model';
+import { Entity } from '@backstage/catalog-model';
+import get from 'lodash/get';
 
 type FacetsCursor = {
   start: number;
@@ -48,29 +49,37 @@ export function useFacetsEntities({ enabled }: { enabled: boolean }) {
       return [];
     }
     const facet = 'relations.ownedBy';
+    const facetsResponse = await catalogApi.getEntityFacets({
+      facets: [facet],
+    });
+    const entityRefs = facetsResponse.facets[facet].map(e => e.value);
+
     return catalogApi
-      .getEntityFacets({ facets: [facet] })
-      .then(response =>
-        response.facets[facet]
-          .map(e => e.value)
-          .map<Entity>(ref => {
-            const { kind, name, namespace } = parseEntityRef(ref);
-            return {
-              apiVersion: 'backstage.io/v1beta1',
-              kind,
-              metadata: { name, namespace },
-            };
-          })
+      .getEntitiesByRefs({ entityRefs })
+      .then(resp =>
+        resp.items
+          .filter(entity => entity !== undefined)
+          .map(entity => entity as Entity)
           .sort(
             (a, b) =>
               (a.metadata.namespace || '').localeCompare(
                 b.metadata.namespace || '',
                 'en-US',
               ) ||
-              a.metadata.name.localeCompare(b.metadata.name, 'en-US') ||
+              (
+                get(a, 'spec.profile.displayName') ||
+                a.metadata.title ||
+                a.metadata.name
+              ).localeCompare(
+                get(b, 'spec.profile.displayName') ||
+                  b.metadata.title ||
+                  b.metadata.name,
+                'en-US',
+              ) ||
               a.kind.localeCompare(b.kind, 'en-US'),
           ),
       )
+      .then(entities => entities)
       .catch(() => []);
   });
 
@@ -149,6 +158,10 @@ function filterEntity(text: string, entity: Entity) {
   return (
     entity.kind.includes(normalizedText) ||
     entity.metadata.namespace?.includes(normalizedText) ||
-    entity.metadata.name.includes(normalizedText)
+    entity.metadata.name.includes(normalizedText) ||
+    entity.metadata.title?.includes(normalizedText) ||
+    (get(entity, 'spec.profile.displayName') as unknown as string)?.includes(
+      normalizedText,
+    )
   );
 }

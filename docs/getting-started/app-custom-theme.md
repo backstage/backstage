@@ -64,7 +64,7 @@ const app = createApp({
 })
 ```
 
-Note that your list of custom themes overrides the default themes. If you still want to use the default themes, they are exported as `themes.light` and `themes.light` from [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme).
+Note that your list of custom themes overrides the default themes. If you still want to use the default themes, they are exported as `themes.light` and `themes.dark` from [`@backstage/theme`](https://www.npmjs.com/package/@backstage/theme).
 
 ## Example of a custom theme
 

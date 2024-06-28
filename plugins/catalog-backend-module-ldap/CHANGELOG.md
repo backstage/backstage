@@ -1,5 +1,20 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.6.2-next.0
+
+### Patch Changes
+
+- 083eaf9: Fix bug where ISO durations could no longer be used for schedules
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-tasks@0.5.26-next.0
+  - @backstage/plugin-catalog-node@1.12.3-next.0
+  - @backstage/catalog-model@1.5.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-catalog-common@1.0.24
+
 ## 0.6.0
 
 ### Minor Changes
