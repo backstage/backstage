@@ -197,8 +197,8 @@ export type LdapProviderConfig = {
   target: string;
   tls?: TLSConfig;
   bind?: BindConfig;
-  users: UserConfig;
-  groups: GroupConfig;
+  users: UserConfig[];
+  groups: GroupConfig[];
   schedule?: SchedulerServiceTaskScheduleDefinition;
 };
 
@@ -223,8 +223,8 @@ export function readLdapLegacyConfig(config: Config): LdapProviderConfig[];
 // @public
 export function readLdapOrg(
   client: LdapClient,
-  userConfig: UserConfig,
-  groupConfig: GroupConfig,
+  userConfig: UserConfig[],
+  groupConfig: GroupConfig[],
   options: {
     groupTransformer?: GroupTransformer;
     userTransformer?: UserTransformer;
