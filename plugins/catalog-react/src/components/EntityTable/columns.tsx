@@ -29,6 +29,8 @@ import {
   humanizeEntityRef,
 } from '../EntityRefLink';
 
+// TODO: column title support i18n
+
 /** @public */
 export const columnFactories = Object.freeze({
   createEntityRefColumn<T extends Entity>(options: {
