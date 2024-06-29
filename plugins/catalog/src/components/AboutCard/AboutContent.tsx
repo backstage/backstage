@@ -28,10 +28,12 @@ import { JsonArray } from '@backstage/types';
 import Chip from '@material-ui/core/Chip';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
-import { MarkdownContent } from '@backstage/core-components';
+import { Link, MarkdownContent } from '@backstage/core-components';
 import React from 'react';
 import { AboutField } from './AboutField';
 import { LinksGridList } from '../EntityLinksCard/LinksGridList';
+import { useRouteRef } from '@backstage/core-plugin-api';
+import { rootRouteRef } from '../../routes';
 
 const useStyles = makeStyles({
   description: {
@@ -84,6 +86,8 @@ export function AboutContent(props: AboutContentProps) {
   const isLocation = entity.kind.toLocaleLowerCase('en-US') === 'location';
   const isGroup = entity.kind.toLocaleLowerCase('en-US') === 'group';
 
+  const catalogIndexPath = useRouteRef(rootRouteRef);
+
   const partOfSystemRelations = getEntityRelations(entity, RELATION_PART_OF, {
     kind: 'system',
   });
@@ -98,6 +102,16 @@ export function AboutContent(props: AboutContentProps) {
     kind: 'domain',
   });
   const ownedByRelations = getEntityRelations(entity, RELATION_OWNED_BY);
+
+  function getPathForFilter(filter: string, value: string) {
+    const basePath = catalogIndexPath();
+
+    const searchParams = new URLSearchParams();
+    searchParams.append('filters[kind]', entity.kind);
+    searchParams.append(`filters[${filter}]`, value);
+
+    return `${basePath}?${searchParams.toString()}`;
+  }
 
   let entitySourceLocation:
     | {
@@ -178,20 +192,29 @@ export function AboutContent(props: AboutContentProps) {
         isGroup ||
         isLocation ||
         typeof entity?.spec?.type === 'string') && (
-        <AboutField
-          label="Type"
-          value={entity?.spec?.type as string}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-        />
+        <AboutField label="Type" gridSizes={{ xs: 12, sm: 6, lg: 4 }}>
+          {entity?.spec?.type && (
+            <Link to={getPathForFilter('type', entity?.spec?.type as string)}>
+              {entity?.spec?.type as string}
+            </Link>
+          )}
+        </AboutField>
       )}
       {(isAPI ||
         isComponent ||
         typeof entity?.spec?.lifecycle === 'string') && (
-        <AboutField
-          label="Lifecycle"
-          value={entity?.spec?.lifecycle as string}
-          gridSizes={{ xs: 12, sm: 6, lg: 4 }}
-        />
+        <AboutField label="Lifecycle" gridSizes={{ xs: 12, sm: 6, lg: 4 }}>
+          {entity?.spec?.lifecycle && (
+            <Link
+              to={getPathForFilter(
+                'lifecycles',
+                entity?.spec?.lifecycle as string,
+              )}
+            >
+              {entity?.spec?.lifecycle as string}
+            </Link>
+          )}
+        </AboutField>
       )}
       <AboutField
         label="Tags"
@@ -199,7 +222,14 @@ export function AboutContent(props: AboutContentProps) {
         gridSizes={{ xs: 12, sm: 6, lg: 4 }}
       >
         {(entity?.metadata?.tags || []).map(t => (
-          <Chip key={t} size="small" label={t} />
+          <Chip
+            component={(_props: any) => (
+              <Link {..._props} to={getPathForFilter('tags', t)} />
+            )}
+            key={t}
+            size="small"
+            label={t}
+          />
         ))}
       </AboutField>
       {isLocation && (entity?.spec?.targets || entity?.spec?.target) && (

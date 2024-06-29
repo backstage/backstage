@@ -24,6 +24,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import React from 'react';
 import { AboutContent } from './AboutContent';
+import { rootRouteRef } from '../../routes';
 
 describe('<AboutContent />', () => {
   describe('An unknown entity', () => {
@@ -66,6 +67,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -96,6 +98,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -151,6 +154,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -188,6 +192,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -256,6 +261,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -296,6 +302,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -352,6 +359,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -379,6 +387,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -424,6 +433,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -456,6 +466,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -512,6 +523,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -545,6 +557,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -603,6 +616,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
@@ -634,6 +648,7 @@ describe('<AboutContent />', () => {
       await renderInTestApp(<AboutContent entity={entity} />, {
         mountedRoutes: {
           '/catalog/:namespace/:kind/:name': entityRouteRef,
+          '/catalog': rootRouteRef,
         },
       });
 
