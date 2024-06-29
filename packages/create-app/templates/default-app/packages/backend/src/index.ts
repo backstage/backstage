@@ -38,4 +38,8 @@ backend.add(import('@backstage/plugin-search-backend/alpha'));
 backend.add(import('@backstage/plugin-search-backend-module-catalog/alpha'));
 backend.add(import('@backstage/plugin-search-backend-module-techdocs/alpha'));
 
+// notifications and signals
+backend.add(import('@backstage/plugin-signals-backend'));
+backend.add(import('@backstage/plugin-notifications-backend'));
+
 backend.start();
