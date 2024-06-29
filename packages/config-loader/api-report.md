@@ -87,7 +87,7 @@ export interface ConfigSourcesDefaultOptions extends BaseConfigSourcesOptions {
   // (undocumented)
   argv?: string[];
   // (undocumented)
-  env?: Record<string, string>;
+  env?: Record<string, string | undefined>;
 }
 
 // @public
