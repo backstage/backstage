@@ -300,9 +300,19 @@ export const catalogModuleFrobsProvider = createBackendModule({
       deps: {
         catalog: catalogProcessingExtensionPoint,
         reader: coreServices.urlReader,
+        scheduler: coreServices.scheduler,
       },
-      async init({ catalog, reader }) {
-        catalog.addEntityProvider(new FrobsProvider('dev', reader));
+      async init({ catalog, reader, scheduler }) {
+        const frobs = new FrobsProvider('dev', reader);
+        catalog.addEntityProvider(frobs);
+        await scheduler.scheduleTask({
+          id: 'run_frobs_refresh',
+          fn: async () => {
+            await frobs.run();
+          },
+          frequency: { minutes: 30 },
+          timeout: { minutes: 10 },
+        });
       },
     });
   },
