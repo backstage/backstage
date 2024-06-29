@@ -18,7 +18,6 @@ import { TaskScheduleDefinition } from '@backstage/backend-tasks';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { catalogModuleBitbucketServerEntityProvider } from './catalogModuleBitbucketServerEntityProvider';
-import { Duration } from 'luxon';
 import { BitbucketServerEntityProvider } from '../providers';
 
 describe('catalogModuleBitbucketServerEntityProvider', () => {
@@ -70,8 +69,8 @@ describe('catalogModuleBitbucketServerEntityProvider', () => {
       ],
     });
 
-    expect(usedSchedule?.frequency).toEqual(Duration.fromISO('P1M'));
-    expect(usedSchedule?.timeout).toEqual(Duration.fromISO('PT3M'));
+    expect(usedSchedule?.frequency).toEqual({ months: 1 });
+    expect(usedSchedule?.timeout).toEqual({ minutes: 3 });
     expect(addedProviders?.length).toEqual(1);
     expect(addedProviders?.pop()?.getProviderName()).toEqual(
       'bitbucketServer-provider:default',

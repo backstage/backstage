@@ -184,7 +184,7 @@ export function createRootLogger(
 // @public @deprecated
 export function createServiceBuilder(_module: NodeModule): ServiceBuilder;
 
-// @public
+// @public @deprecated
 export function createStatusCheckRouter(options: {
   logger: LoggerService;
   path?: string;
@@ -645,15 +645,15 @@ export type StaticAuthOptions = {
   logger?: LoggerService;
 };
 
-// @public
+// @public @deprecated
 export type StatusCheck = () => Promise<any>;
 
-// @public
+// @public @deprecated
 export function statusCheckHandler(
   options?: StatusCheckHandlerOptions,
 ): Promise<RequestHandler>;
 
-// @public
+// @public @deprecated
 export interface StatusCheckHandlerOptions {
   statusCheck?: StatusCheck;
 }

@@ -1,5 +1,20 @@
 # @backstage/backend-test-utils
 
+## 0.4.3-next.0
+
+### Patch Changes
+
+- fce7887: Added mock for the Root Health Service in `mockServices`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-defaults@0.3.3-next.0
+  - @backstage/backend-app-api@0.7.9-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/plugin-events-node@0.3.7-next.0
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.4.0
 
 ### Minor Changes

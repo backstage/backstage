@@ -98,8 +98,15 @@ describe('RepoUrlPicker', () => {
       const [ownerInput, repoInput] = getAllByRole('textbox');
       const submitButton = getByRole('button');
 
-      fireEvent.change(ownerInput, { target: { value: 'backstage' } });
-      fireEvent.change(repoInput, { target: { value: 'repo123' } });
+      act(() => {
+        ownerInput.focus();
+        fireEvent.change(ownerInput, { target: { value: 'backstage' } });
+        ownerInput.blur();
+
+        repoInput.focus();
+        fireEvent.change(repoInput, { target: { value: 'repo123' } });
+        repoInput.blur();
+      });
 
       fireEvent.click(submitButton);
 

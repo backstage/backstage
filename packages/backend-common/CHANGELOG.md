@@ -1,5 +1,25 @@
 # @backstage/backend-common
 
+## 0.23.2-next.0
+
+### Patch Changes
+
+- 8c09c97: Deprecate legacy status check factory, handler and types.
+- d228862: Update default backend plugin created by the cli to use non-deprecated error handling middleware
+- c964a3d: Add dependencies that are needed by cross-imports from backend-defaults
+- b60db08: Fixing exporting of classes properly from new packages
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/integration@1.13.0-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/backend-dev-utils@0.1.4
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/integration-aws-node@0.1.12
+  - @backstage/types@1.1.1
+
 ## 0.23.0
 
 ### Minor Changes

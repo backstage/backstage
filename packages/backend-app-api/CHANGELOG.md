@@ -1,5 +1,24 @@
 # @backstage/backend-app-api
 
+## 0.7.9-next.0
+
+### Patch Changes
+
+- b60db08: Fixing exporting of classes properly from new packages
+- a63c4b6: Fixing issue with `MiddlewareFactory` deprecation wrapping
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/backend-tasks@0.5.26-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/plugin-permission-node@0.7.32-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.6
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.7.6
 
 ### Patch Changes
