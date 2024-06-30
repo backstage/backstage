@@ -7382,6 +7382,7 @@ __metadata:
     luxon: ^3.0.0
     msw: ^1.0.0
     qs: ^6.9.4
+    ramda: ^0.30.1
     react-resizable: ^3.0.5
     react-use: ^17.2.4
     react-window: ^1.8.10
@@ -38384,7 +38385,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ramda@npm:~0.30.0":
+"ramda@npm:^0.30.1, ramda@npm:~0.30.0":
   version: 0.30.1
   resolution: "ramda@npm:0.30.1"
   checksum: ce6f4b6b967a84a4e65c01ab1b1cdd73d46b8efe71aeccf5d1443c56c4e31a0ea82ece7df6510453dd3d83b92cabf8a6b4d50d189a1b35c08a6f44b281bebf79

@@ -456,7 +456,58 @@ export type TemplateExample = {
 export type TemplateFilter = (...args: JsonValue[]) => JsonValue | undefined;
 
 // @public (undocumented)
+export type TemplateFilterMetadata = {
+  description?: string;
+  schema?: TemplateFilterSchema;
+  examples?: {
+    description?: string;
+    example: string;
+    notes?: string;
+  }[];
+};
+
+// @public (undocumented)
+export type TemplateFilterSchema = {
+  input?: Schema;
+  arguments?: Schema[];
+  output?: Schema;
+};
+
+// @public (undocumented)
 export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
+
+// @public (undocumented)
+export type TemplateGlobalElement = {
+  name: string;
+} & (
+  | TemplateGlobalValueMetadata
+  | (TemplateGlobalFunctionMetadata & {
+      fn: Exclude<TemplateGlobal, JsonValue>;
+    })
+);
+
+// @public (undocumented)
+export type TemplateGlobalFunctionMetadata = {
+  description?: string;
+  schema?: TemplateGlobalFunctionSchema;
+  examples?: {
+    description?: string;
+    example: string;
+    notes?: string;
+  }[];
+};
+
+// @public (undocumented)
+export type TemplateGlobalFunctionSchema = {
+  arguments?: Schema[];
+  output?: Schema;
+};
+
+// @public (undocumented)
+export type TemplateGlobalValueMetadata = {
+  description?: string;
+  value: JsonValue;
+};
 ```

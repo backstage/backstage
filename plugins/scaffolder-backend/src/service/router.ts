@@ -20,6 +20,14 @@ import {
   PluginDatabaseManager,
   UrlReader,
 } from '@backstage/backend-common';
+import {
+  AuthService,
+  BackstageCredentials,
+  DiscoveryService,
+  HttpAuthService,
+  LifecycleService,
+  PermissionsService,
+} from '@backstage/backend-plugin-api';
 import { PluginTaskScheduler } from '@backstage/backend-tasks';
 import { CatalogApi } from '@backstage/catalog-client';
 import {
@@ -32,7 +40,16 @@ import {
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { InputError, NotFoundError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
-import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
+import {
+  IdentityApi,
+  IdentityApiGetIdentityRequest,
+} from '@backstage/plugin-auth-node';
+import { PermissionRuleParams } from '@backstage/plugin-permission-common';
+import {
+  createConditionAuthorizer,
+  createPermissionIntegrationRouter,
+  PermissionRule,
+} from '@backstage/plugin-permission-node';
 import {
   TaskSpec,
   TemplateEntityStepV1beta3,
@@ -52,9 +69,16 @@ import {
   templateParameterReadPermission,
   templateStepReadPermission,
 } from '@backstage/plugin-scaffolder-common/alpha';
+import {
+  AutocompleteHandler,
+  WorkspaceProvider,
+} from '@backstage/plugin-scaffolder-node/alpha';
+import { HumanDuration, JsonObject, JsonValue } from '@backstage/types';
 import express from 'express';
 import Router from 'express-promise-router';
 import { validate } from 'jsonschema';
+import { omit } from 'lodash';
+import { Duration } from 'luxon';
 import { Logger } from 'winston';
 import { z } from 'zod';
 import {
@@ -62,8 +86,11 @@ import {
   TaskStatus,
   TemplateAction,
   TemplateFilter,
+  TemplateFilterMetadata,
   TemplateGlobal,
+  TemplateGlobalElement,
 } from '@backstage/plugin-scaffolder-node';
+import { createDefaultDocumentedFilters } from '../lib/templating/filters';
 import {
   createBuiltinActions,
   DatabaseTaskStore,
@@ -72,33 +99,17 @@ import {
 } from '../scaffolder';
 import { createDryRunner } from '../scaffolder/dryrun';
 import { StorageTaskBroker } from '../scaffolder/tasks/StorageTaskBroker';
-import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
-import { PermissionRuleParams } from '@backstage/plugin-permission-common';
-import {
-  createConditionAuthorizer,
-  createPermissionIntegrationRouter,
-  PermissionRule,
-} from '@backstage/plugin-permission-node';
-import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
-import { Duration } from 'luxon';
-import {
-  AuthService,
-  BackstageCredentials,
-  DiscoveryService,
-  HttpAuthService,
-  LifecycleService,
-  PermissionsService,
-} from '@backstage/backend-plugin-api';
-import {
-  IdentityApi,
-  IdentityApiGetIdentityRequest,
-} from '@backstage/plugin-auth-node';
 import { InternalTaskSecrets } from '../scaffolder/tasks/types';
 import { checkPermission } from '../util/checkPermissions';
 import {
-  AutocompleteHandler,
-  WorkspaceProvider,
-} from '@backstage/plugin-scaffolder-node/alpha';
+  templateFilterImpls,
+  templateFilterMetadata,
+  templateGlobalFunctionMetadata,
+  templateGlobalValueMetadata,
+  templateGlobals,
+} from '../util/templating';
+import { findTemplate, getEntityBaseUrl, getWorkingDirectory } from './helpers';
+import { scaffolderActionRules, scaffolderTemplateRules } from './rules';
 
 /**
  *
@@ -161,8 +172,13 @@ export interface RouterOptions {
    */
   concurrentTasksLimit?: number;
   taskBroker?: TaskBroker;
-  additionalTemplateFilters?: Record<string, TemplateFilter>;
-  additionalTemplateGlobals?: Record<string, TemplateGlobal>;
+  additionalTemplateFilters?: Record<
+    string,
+    TemplateFilter | (TemplateFilterMetadata & { impl: TemplateFilter })
+  >;
+  additionalTemplateGlobals?:
+    | Record<string, TemplateGlobal>
+    | TemplateGlobalElement[];
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   permissions?: PermissionsService;
   permissionRules?: Array<
@@ -344,6 +360,11 @@ export async function createRouter(
 
   const actionRegistry = new TemplateActionRegistry();
 
+  const additionalTemplate = {
+    filters: templateFilterImpls(additionalTemplateFilters),
+    globals: templateGlobals(additionalTemplateGlobals),
+  };
+
   const workers: TaskWorker[] = [];
   if (concurrentTasksLimit !== 0) {
     for (let i = 0; i < (taskWorkers || 1); i++) {
@@ -353,8 +374,8 @@ export async function createRouter(
         integrations,
         logger,
         workingDirectory,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
+        additionalTemplateFilters: additionalTemplate.filters,
+        additionalTemplateGlobals: additionalTemplate.globals,
         concurrentTasksLimit,
         permissions,
       });
@@ -369,8 +390,8 @@ export async function createRouter(
         catalogClient,
         reader,
         config,
-        additionalTemplateFilters,
-        additionalTemplateGlobals,
+        additionalTemplateFilters: additionalTemplate.filters,
+        additionalTemplateGlobals: additionalTemplate.globals,
         auth,
       });
 
@@ -394,8 +415,8 @@ export async function createRouter(
     integrations,
     logger,
     workingDirectory,
-    additionalTemplateFilters,
-    additionalTemplateGlobals,
+    additionalTemplateFilters: additionalTemplate.filters,
+    additionalTemplateGlobals: additionalTemplate.globals,
     permissions,
   });
 
@@ -826,6 +847,40 @@ export async function createRouter(
       });
 
       res.status(200).json({ results });
+    })
+    .get('/v2/template-filters/built-in', async (_req, res) => {
+      let builtIn = createDefaultDocumentedFilters({ integrations });
+      if (Object.keys(additionalTemplateFilters ?? {}).length) {
+        builtIn = omit(builtIn, Object.keys(additionalTemplateFilters!));
+      }
+      if (Object.keys(builtIn).length) {
+        res.status(200).json(templateFilterMetadata(builtIn));
+      } else {
+        res.status(204).end();
+      }
+    })
+    .get('/v2/template-filters/additional', async (_req, res) => {
+      if (Object.keys(additionalTemplateFilters ?? {}).length) {
+        res.status(200).json(templateFilterMetadata(additionalTemplateFilters));
+      } else {
+        res.status(204).end();
+      }
+    })
+    .get('/v2/template-global/functions', async (_req, res) => {
+      const m = templateGlobalFunctionMetadata(additionalTemplateGlobals);
+      if (Object.keys(m ?? {}).length) {
+        res.status(200).json(m);
+      } else {
+        res.status(204).end();
+      }
+    })
+    .get('/v2/template-global/values', async (_req, res) => {
+      const m = templateGlobalValueMetadata(additionalTemplateGlobals);
+      if (Object.keys(m ?? {}).length) {
+        res.status(200).json(m);
+      } else {
+        res.status(204).end();
+      }
     });
 
   const app = express();

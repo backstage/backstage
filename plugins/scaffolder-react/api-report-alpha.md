@@ -140,6 +140,9 @@ export type ScaffolderPageContextMenuProps = {
   onActionsClicked?: () => void;
   onTasksClicked?: () => void;
   onCreateClicked?: () => void;
+  onTemplateFiltersClicked?: () => void;
+  onTemplateGlobalsClicked?: () => void;
+  additionalItems?: ReactNode[];
 };
 
 // @alpha (undocumented)

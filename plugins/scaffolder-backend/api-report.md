@@ -61,7 +61,9 @@ import { TemplateAction as TemplateAction_2 } from '@backstage/plugin-scaffolder
 import { TemplateActionOptions } from '@backstage/plugin-scaffolder-node';
 import { TemplateEntityStepV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
+import { TemplateFilterMetadata } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
+import { TemplateGlobalElement } from '@backstage/plugin-scaffolder-node';
 import { TemplateParametersV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { UrlReader } from '@backstage/backend-common';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
@@ -474,9 +476,17 @@ export interface RouterOptions {
   // (undocumented)
   actions?: TemplateAction_2<any, any>[];
   // (undocumented)
-  additionalTemplateFilters?: Record<string, TemplateFilter_2>;
+  additionalTemplateFilters?: Record<
+    string,
+    | TemplateFilter_2
+    | (TemplateFilterMetadata & {
+        impl: TemplateFilter_2;
+      })
+  >;
   // (undocumented)
-  additionalTemplateGlobals?: Record<string, TemplateGlobal_2>;
+  additionalTemplateGlobals?:
+    | Record<string, TemplateGlobal_2>
+    | TemplateGlobalElement[];
   // (undocumented)
   additionalWorkspaceProviders?: Record<string, WorkspaceProvider>;
   // (undocumented)

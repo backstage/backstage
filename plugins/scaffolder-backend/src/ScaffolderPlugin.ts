@@ -25,7 +25,9 @@ import {
   TaskBroker,
   TemplateAction,
   TemplateFilter,
+  TemplateFilterMetadata,
   TemplateGlobal,
+  TemplateGlobalElement,
 } from '@backstage/plugin-scaffolder-node';
 import {
   AutocompleteHandler,
@@ -49,6 +51,7 @@ import {
   createWaitAction,
 } from './scaffolder';
 import { createRouter } from './service/router';
+import { templateFilterImpls, templateGlobals } from './util/templating';
 
 /**
  * Scaffolder plugin
@@ -75,14 +78,25 @@ export const scaffolderPlugin = createBackendPlugin({
       },
     });
 
-    const additionalTemplateFilters: Record<string, TemplateFilter> = {};
-    const additionalTemplateGlobals: Record<string, TemplateGlobal> = {};
+    const additionalTemplateFilters: Record<
+      string,
+      TemplateFilter | (TemplateFilterMetadata & { impl: TemplateFilter })
+    > = {};
+    let additionalTemplateGlobals:
+      | Record<string, TemplateGlobal>
+      | TemplateGlobalElement[]
+      | undefined = undefined;
+
     env.registerExtensionPoint(scaffolderTemplatingExtensionPoint, {
       addTemplateFilters(newFilters) {
         Object.assign(additionalTemplateFilters, newFilters);
       },
       addTemplateGlobals(newGlobals) {
-        Object.assign(additionalTemplateGlobals, newGlobals);
+        if (Array.isArray(newGlobals)) {
+          additionalTemplateGlobals = [...newGlobals];
+        } else {
+          additionalTemplateGlobals = Object.assign({}, newGlobals);
+        }
       },
     });
 
@@ -146,8 +160,12 @@ export const scaffolderPlugin = createBackendPlugin({
           createFetchTemplateAction({
             integrations,
             reader,
-            additionalTemplateFilters,
-            additionalTemplateGlobals,
+            additionalTemplateFilters: templateFilterImpls(
+              additionalTemplateFilters,
+            ),
+            additionalTemplateGlobals: templateGlobals(
+              additionalTemplateGlobals,
+            ),
           }),
           createDebugLogAction(),
           createWaitAction(),

@@ -22,29 +22,32 @@ import {
 } from '@backstage/core-plugin-api';
 import { ResponseError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { Observable } from '@backstage/types';
-import qs from 'qs';
-import ObservableImpl from 'zen-observable';
 import {
   ListActionsResponse,
+  ListTemplateFiltersResponse,
+  ListTemplateGlobalFunctionsResponse,
+  ListTemplateGlobalValuesResponse,
   LogEvent,
   ScaffolderApi,
+  ScaffolderDryRunOptions,
+  ScaffolderDryRunResponse,
+  ScaffolderGetIntegrationsListOptions,
+  ScaffolderGetIntegrationsListResponse,
   ScaffolderScaffoldOptions,
   ScaffolderScaffoldResponse,
   ScaffolderStreamLogsOptions,
-  ScaffolderGetIntegrationsListOptions,
-  ScaffolderGetIntegrationsListResponse,
   ScaffolderTask,
-  ScaffolderDryRunOptions,
-  ScaffolderDryRunResponse,
   TemplateParameterSchema,
 } from '@backstage/plugin-scaffolder-react';
+import { Observable } from '@backstage/types';
+import qs from 'qs';
+import ObservableImpl from 'zen-observable';
 
-import queryString from 'qs';
 import {
   EventSourceMessage,
   fetchEventSource,
 } from '@microsoft/fetch-event-source';
+import queryString from 'qs';
 
 /**
  * An API to interact with the scaffolder backend.
@@ -321,6 +324,62 @@ export class ScaffolderClient implements ScaffolderApi {
     }
 
     return await response.json();
+  }
+
+  async listBuiltInTemplateFilters(): Promise<ListTemplateFiltersResponse> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await this.fetchApi.fetch(
+      `${baseUrl}/v2/template-filters/built-in`,
+    );
+    if (!response.ok) {
+      throw ResponseError.fromResponse(response);
+    }
+    if (response.status === 204) {
+      return {};
+    }
+    return response.json();
+  }
+
+  async listAdditionalTemplateFilters(): Promise<ListTemplateFiltersResponse> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await this.fetchApi.fetch(
+      `${baseUrl}/v2/template-filters/additional`,
+    );
+    if (!response.ok) {
+      throw ResponseError.fromResponse(response);
+    }
+    if (response.status === 204) {
+      return {};
+    }
+    return response.json();
+  }
+
+  async listTemplateGlobalFunctions(): Promise<ListTemplateGlobalFunctionsResponse> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await this.fetchApi.fetch(
+      `${baseUrl}/v2/template-global/functions`,
+    );
+    if (!response.ok) {
+      throw ResponseError.fromResponse(response);
+    }
+    if (response.status === 204) {
+      return {};
+    }
+    return response.json();
+  }
+
+  async listTemplateGlobalValues(): Promise<ListTemplateGlobalValuesResponse> {
+    const baseUrl = await this.discoveryApi.getBaseUrl('scaffolder');
+    const response = await this.fetchApi.fetch(
+      `${baseUrl}/v2/template-global/values`,
+    );
+    if (!response.ok) {
+      throw ResponseError.fromResponse(response);
+    }
+    if (response.status === 204) {
+      return {};
+    }
+    return response.json();
   }
 
   async cancelTask(taskId: string): Promise<void> {

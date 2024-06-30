@@ -38,7 +38,13 @@ import {
   TaskStatusColumn,
   TemplateTitleColumn,
 } from './columns';
-import { actionsRouteRef, editRouteRef, rootRouteRef } from '../../routes';
+import {
+  actionsRouteRef,
+  editRouteRef,
+  rootRouteRef,
+  templateFiltersRouteRef,
+  templateGlobalsRouteRef,
+} from '../../routes';
 import { ScaffolderPageContextMenu } from '@backstage/plugin-scaffolder-react/alpha';
 import { useNavigate } from 'react-router-dom';
 
@@ -141,12 +147,16 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
   const editorLink = useRouteRef(editRouteRef);
   const actionsLink = useRouteRef(actionsRouteRef);
   const createLink = useRouteRef(rootRouteRef);
+  const templateFiltersLink = useRouteRef(templateFiltersRouteRef);
+  const templateGlobalsLink = useRouteRef(templateGlobalsRouteRef);
 
   const scaffolderPageContextMenuProps = {
     onEditorClicked: () => navigate(editorLink()),
     onActionsClicked: () => navigate(actionsLink()),
     onTasksClicked: undefined,
     onCreateClicked: () => navigate(createLink()),
+    onTemplateFiltersClicked: () => navigate(templateFiltersLink()),
+    onTemplateGlobalsClicked: () => navigate(templateGlobalsLink()),
   };
   return (
     <Page themeId="home">
