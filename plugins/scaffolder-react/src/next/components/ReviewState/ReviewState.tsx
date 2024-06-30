@@ -15,9 +15,10 @@
  */
 import React from 'react';
 import { StructuredMetadataTable } from '@backstage/core-components';
-import { JsonObject, JsonValue } from '@backstage/types';
+import { JsonObject } from '@backstage/types';
 import { Draft07 as JSONSchema } from 'json-schema-library';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
+import { flattenObject, isJsonObject } from './util';
 
 /**
  * The props for the {@link ReviewState} component.
@@ -27,37 +28,6 @@ export type ReviewStateProps = {
   schemas: ParsedTemplateSchema[];
   formState: JsonObject;
 };
-
-function flattenObject(
-  obj: JsonObject,
-  prefix: string,
-  schema: JSONSchema,
-  formState: JsonObject,
-): [string, JsonValue | undefined][] {
-  return Object.entries(obj).flatMap(([key, value]) => {
-    const prefixedKey = prefix ? `${prefix}/${key}` : key;
-
-    const definitionInSchema = schema.getSchema({
-      pointer: `#/${prefixedKey}`,
-      data: formState,
-    });
-
-    if (definitionInSchema) {
-      const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
-
-      // Recurse into nested objects
-      if (backstageReviewOptions?.explode && isJsonObject(value)) {
-        return flattenObject(value, prefixedKey, schema, formState);
-      }
-    }
-
-    return [[key, value]];
-  });
-}
-
-function isJsonObject(value?: JsonValue): value is JsonObject {
-  return typeof value === 'object' && value !== null && !Array.isArray(value);
-}
 
 /**
  * The component used by the {@link Stepper} to render the review step.
