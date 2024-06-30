@@ -1,5 +1,25 @@
 # @backstage/plugin-auth-backend-module-oauth2-proxy-provider
 
+## 0.1.14-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/errors@1.2.4
+
+## 0.1.12
+
+### Patch Changes
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- d44a20a: Added additional plugin metadata to `package.json`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/errors@1.2.4
+
 ## 0.1.12-next.2
 
 ### Patch Changes

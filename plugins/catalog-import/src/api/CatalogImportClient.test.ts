@@ -43,7 +43,14 @@ jest.mock('@octokit/rest', () => {
       return octokit;
     }
   }
+
   return { Octokit };
+});
+
+jest.mock('./AzureRepoApiClient', () => {
+  return {
+    createAzurePullRequest: jest.fn(),
+  };
 });
 
 import { ConfigReader, UrlPatternDiscovery } from '@backstage/core-app-api';
@@ -55,6 +62,11 @@ import { Octokit } from '@octokit/rest';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { CatalogImportClient } from './CatalogImportClient';
+import {
+  AzurePrOptions,
+  AzurePrResult,
+  createAzurePullRequest,
+} from './AzureRepoApiClient';
 
 describe('CatalogImportClient', () => {
   const server = setupServer();
@@ -262,7 +274,7 @@ describe('CatalogImportClient', () => {
       });
     });
 
-    it('should reject for integrations that are not github ones', async () => {
+    it('should reject for integrations that are not github or azure', async () => {
       await expect(
         catalogImportClient.analyzeUrl(
           'https://registered-but-not-github.com/backstage/backstage',
@@ -281,7 +293,7 @@ describe('CatalogImportClient', () => {
         ),
       ).rejects.toThrow(
         new Error(
-          'This URL was not recognized as a valid GitHub URL because there was no configured integration that matched the given host name. You could try to paste the full URL to a catalog-info.yaml file instead.',
+          'This URL was not recognized as a valid git URL because there was no configured integration that matched the given host name. Currently GitHub and Azure DevOps are supported. You could try to paste the full URL to a catalog-info.yaml file instead.',
         ),
       );
     });
@@ -611,6 +623,61 @@ describe('CatalogImportClient', () => {
         body: 'A body',
         base: 'main',
       });
+    });
+    it('should create AzureDevops pull request', async () => {
+      catalogApi.validateEntity.mockResolvedValueOnce({
+        valid: true,
+      });
+      const azureMock = createAzurePullRequest as jest.Mock;
+      azureMock.mockResolvedValueOnce({
+        repository: {
+          name: 'backstage',
+          webUrl: 'https://dev.azure.com/spotify/backstage/_git/backstage',
+        },
+        pullRequestId: '01',
+      } satisfies AzurePrResult);
+      const expectedPrOptions: AzurePrOptions = {
+        title: 'A title/message',
+        description: 'A body',
+        repository: 'backstage',
+        fileName: 'catalog-info.yaml',
+        project: 'backstage',
+        tenantUrl: 'https://dev.azure.com/spotify',
+        branchName: 'backstage-integration',
+        token: 'token',
+        fileContent: `
+            {
+                "apiVersion": "backstage.io/v1alpha1",
+                "kind": "Component",
+                "metadata": {
+                  "name": "valid-name",
+                  "annotations": {
+                      "github.com/project-slug": "backstage/example-repo"
+                }
+              },
+              "spec": {
+                  "type": "other",
+                  "lifecycle": "unknown",
+                  "owner": "backstage"
+              }
+            }
+          `,
+      };
+      await expect(
+        catalogImportClient.submitPullRequest({
+          repositoryUrl:
+            'https://dev.azure.com/spotify/backstage/_git/backstage',
+          fileContent: expectedPrOptions.fileContent,
+          title: expectedPrOptions.title,
+          body: expectedPrOptions.description,
+        }),
+      ).resolves.toEqual({
+        link: 'https://dev.azure.com/spotify/backstage/_git/backstage/pullrequest/01',
+        location:
+          'https://dev.azure.com/spotify/backstage/_git/backstage?path=/catalog-info.yaml',
+      });
+
+      expect(azureMock).toHaveBeenCalledWith(expectedPrOptions);
     });
     it('Submit Pull Request with invalid component name', async () => {
       const ErrorMessage =

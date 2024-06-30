@@ -15,7 +15,6 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { Duration } from 'luxon';
 import { readGitlabConfigs } from './config';
 
 describe('config', () => {
@@ -61,6 +60,7 @@ describe('config', () => {
         allowInherited: false,
         schedule: undefined,
         skipForkedRepos: false,
+        restrictUsersToGroup: false,
       }),
     );
   });
@@ -99,6 +99,7 @@ describe('config', () => {
         allowInherited: false,
         schedule: undefined,
         skipForkedRepos: false,
+        restrictUsersToGroup: false,
       }),
     );
   });
@@ -137,6 +138,7 @@ describe('config', () => {
         orgEnabled: false,
         allowInherited: false,
         schedule: undefined,
+        restrictUsersToGroup: false,
         skipForkedRepos: true,
       }),
     );
@@ -178,8 +180,9 @@ describe('config', () => {
         orgEnabled: false,
         allowInherited: false,
         skipForkedRepos: false,
+        restrictUsersToGroup: false,
         schedule: {
-          frequency: Duration.fromISO('PT30M'),
+          frequency: { minutes: 30 },
           timeout: {
             minutes: 3,
           },

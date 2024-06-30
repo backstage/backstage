@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
+import { bootstrap } from 'global-agent';
+
+if (shouldUseGlobalAgent()) {
+  bootstrap();
+}
+
 import fs from 'fs-extra';
 import chalk from 'chalk';
 import ora from 'ora';
@@ -38,9 +44,21 @@ import {
   getManifestByVersion,
   ReleaseManifest,
 } from '@backstage/release-manifests';
-import 'global-agent/bootstrap';
 import { PackageGraph } from '@backstage/cli-node';
 import { migrateMovedPackages } from './migrate';
+
+function shouldUseGlobalAgent(): boolean {
+  // see https://www.npmjs.com/package/global-agent
+  const namespace =
+    process.env.GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE ?? 'GLOBAL_AGENT_';
+  if (
+    process.env[`${namespace}HTTP_PROXY`] ||
+    process.env[`${namespace}HTTPS_PROXY`]
+  ) {
+    return true;
+  }
+  return false;
+}
 
 const DEP_TYPES = [
   'dependencies',

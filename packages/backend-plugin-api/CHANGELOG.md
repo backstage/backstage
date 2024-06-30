@@ -1,5 +1,66 @@
 # @backstage/backend-plugin-api
 
+## 0.6.21-next.0
+
+### Patch Changes
+
+- 53ced70: Added a new Root Health Service which adds new endpoints for health checks.
+- 083eaf9: Fix bug where ISO durations could no longer be used for schedules
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+  - @backstage/plugin-permission-common@0.7.14
+
+## 0.6.19
+
+### Patch Changes
+
+- 78a0b08: **DEPRECATION**: You should no longer do a function call on backend features when adding them to backends. The support for doing that is deprecated, and you should remove all trailing `()` parentheses after plugins and modules where you add them to your backend or test backends (e.g. when using `startTestBackend`).
+
+  The background for this is that `createBackendPlugin` and `createBackendModule` function now effectively return a `BackendFeature` rather than a `() => BackendFeature`. This is part of the cleanup efforts for New Backend System 1.0. In the short run this is non-breaking because the feature type has been given a callback signature that returns itself. But we strongly recommend that you remove all now-redundant calls made to feature objects, because that callback signature will be removed in a future release.
+
+  Service factories are still callbacks at this point.
+
+  Example change:
+
+  ```diff
+   await startTestBackend({
+     features: [
+       eventsServiceFactory(), // service - stays unchanged
+  -    catalogModuleBitbucketCloudEntityProvider(), // module - remove parentheses
+  +    catalogModuleBitbucketCloudEntityProvider,
+  ```
+
+- 9bdc3e8: In tests, return `null` rather than throwing an error when trying to get the `ExtensionPoint.T` property, so that tests asserting the property are not easily broken.
+- 9e63318: Added an optional `accessRestrictions` to external access service tokens and service principals in general, such that you can limit their access to certain plugins or permissions.
+- 3aa3fc7: Marked the `TokenManagerService` and `IdentityService` types as deprecated
+- b2ee7f3: Deprecated all of the `UrlReader` related type names and replaced them with prefixed versions. Please update your imports.
+
+  - `ReadTreeOptions` was renamed to `UrlReaderServiceReadTreeOptions`
+  - `ReadTreeResponse` was renamed to `UrlReaderServiceReadTreeResponse`
+  - `ReadTreeResponseDirOptions` was renamed to `UrlReaderServiceReadTreeResponseDirOptions`
+  - `ReadTreeResponseFile` was renamed to `UrlReaderServiceReadTreeResponseFile`
+  - `ReadUrlResponse` was renamed to `UrlReaderServiceReadUrlResponse`
+  - `ReadUrlOptions` was renamed to `UrlReaderServiceReadUrlOptions`
+  - `SearchOptions` was renamed to `UrlReaderServiceSearchOptions`
+  - `SearchResponse` was renamed to `UrlReaderServiceSearchResponse`
+  - `SearchResponseFile` was renamed to `UrlReaderServiceSearchResponseFile`
+
+- 9539a0b: Improved `coreServices` doc comments
+- 6551b3d: Moved the declaration of the `SchedulerService` here, along with prefixed versions of all of the types it depends on, from `@backstage/backend-tasks`
+- 0665b7e: Renamed `BackendPluginConfig`, `BackendModuleConfig`, and `ExtensionPointConfig` respectively to `CreateBackendPluginOptions`, `CreateBackendModuleOptions`, and `CreateExtensionPointOptions` to standardize frontend and backend factories signatures.
+- 1779188: Start using the `isDatabaseConflictError` helper from the `@backstage/backend-plugin-api` package in order to avoid dependency with the soon to deprecate `@backstage/backend-common` package.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-permission-common@0.7.14
+  - @backstage/cli-common@0.1.14
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.6.19-next.3
 
 ### Patch Changes

@@ -25,22 +25,22 @@ import {
   GeneralSign,
   KeyLike,
 } from 'jose';
+import { omit } from 'lodash';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { TokenParams, tokenTypes } from '@backstage/plugin-auth-node';
 import { AnyJWK, KeyStore, TokenIssuer } from './types';
 import { JsonValue } from '@backstage/types';
+import { UserInfoDatabaseHandler } from './UserInfoDatabaseHandler';
 
 const MS_IN_S = 1000;
 const MAX_TOKEN_LENGTH = 32768; // At 64 bytes per entity ref this still leaves room for about 500 entities
 
 /**
  * The payload contents of a valid Backstage JWT token
- *
- * @internal
  */
-interface BackstageTokenPayload {
+export interface BackstageTokenPayload {
   /**
    * The issuer of the token, currently the discovery URL of the auth backend
    */
@@ -94,11 +94,6 @@ interface BackstageUserIdentityProofPayload {
   sub: string;
 
   /**
-   * The ownership entity refs of the user
-   */
-  ent?: string[];
-
-  /**
    * Standard expiry in epoch seconds
    */
   exp: number;
@@ -124,6 +119,7 @@ type Options = {
    * If not, add a knex migration file in the migrations folder.
    * More info on supported algorithms: https://github.com/panva/jose */
   algorithm?: string;
+  userInfoDatabaseHandler: UserInfoDatabaseHandler;
 };
 
 /**
@@ -146,6 +142,7 @@ export class TokenFactory implements TokenIssuer {
   private readonly keyStore: KeyStore;
   private readonly keyDurationSeconds: number;
   private readonly algorithm: string;
+  private readonly userInfoDatabaseHandler: UserInfoDatabaseHandler;
 
   private keyExpiry?: Date;
   private privateKeyPromise?: Promise<JWK>;
@@ -156,6 +153,7 @@ export class TokenFactory implements TokenIssuer {
     this.keyStore = options.keyStore;
     this.keyDurationSeconds = options.keyDurationSeconds;
     this.algorithm = options.algorithm ?? 'ES256';
+    this.userInfoDatabaseHandler = options.userInfoDatabaseHandler;
   }
 
   async issueToken(params: TokenParams): Promise<string> {
@@ -190,7 +188,7 @@ export class TokenFactory implements TokenIssuer {
         alg: key.alg,
         kid: key.kid,
       },
-      payload: { sub, ent, iat, exp },
+      payload: { sub, iat, exp },
       key: signingKey,
     });
 
@@ -220,6 +218,12 @@ export class TokenFactory implements TokenIssuer {
         )}'`,
       );
     }
+
+    // Store the user info in the database upon successful token
+    // issuance so that it can be retrieved later by limited user tokens
+    await this.userInfoDatabaseHandler.addUserInfo({
+      claims: omit(claims, ['aud', 'iat', 'iss', 'uip']),
+    });
 
     return token;
   }
@@ -342,7 +346,6 @@ export class TokenFactory implements TokenIssuer {
 
     const payload = {
       sub: options.payload.sub,
-      ent: options.payload.ent,
       iat: options.payload.iat,
       exp: options.payload.exp,
     };

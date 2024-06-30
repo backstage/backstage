@@ -43,7 +43,7 @@ describe('gitlabWebhookEventsModule', () => {
     await startTestBackend({
       extensionPoints: [[eventsExtensionPoint, extensionPoint]],
       features: [
-        eventsModuleGitlabWebhook(),
+        eventsModuleGitlabWebhook,
         mockServices.rootConfig.factory({
           data: {
             events: {

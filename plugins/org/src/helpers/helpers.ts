@@ -31,6 +31,7 @@ import {
 export const getMembersFromGroups = async (
   groups: CompoundEntityRef[],
   catalogApi: CatalogApi,
+  relationship = 'memberof',
 ) => {
   const membersList =
     groups.length === 0
@@ -38,13 +39,14 @@ export const getMembersFromGroups = async (
       : await catalogApi.getEntities({
           filter: {
             kind: 'User',
-            'relations.memberof': groups.map(group =>
-              stringifyEntityRef({
-                kind: 'group',
-                namespace: group.namespace.toLocaleLowerCase('en-US'),
-                name: group.name.toLocaleLowerCase('en-US'),
-              }),
-            ),
+            [`relations.${relationship.toLocaleLowerCase('en-US')}`]:
+              groups.map(group =>
+                stringifyEntityRef({
+                  kind: 'group',
+                  namespace: group.namespace.toLocaleLowerCase('en-US'),
+                  name: group.name.toLocaleLowerCase('en-US'),
+                }),
+              ),
           },
         });
 
@@ -99,10 +101,12 @@ export const getDescendantGroupsFromGroup = async (
 export const getAllDesendantMembersForGroupEntity = async (
   groupEntity: GroupEntity,
   catalogApi: CatalogApi,
+  relationship = 'memberof',
 ) =>
   getMembersFromGroups(
     await getDescendantGroupsFromGroup(groupEntity, catalogApi),
     catalogApi,
+    relationship,
   );
 
 export const removeDuplicateEntitiesFrom = (entityArray: Entity[]) => {

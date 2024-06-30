@@ -1,5 +1,93 @@
 # @backstage/backend-app-api
 
+## 0.7.9-next.0
+
+### Patch Changes
+
+- b60db08: Fixing exporting of classes properly from new packages
+- a63c4b6: Fixing issue with `MiddlewareFactory` deprecation wrapping
+- Updated dependencies
+  - @backstage/backend-plugin-api@0.6.21-next.0
+  - @backstage/backend-common@0.23.2-next.0
+  - @backstage/backend-tasks@0.5.26-next.0
+  - @backstage/plugin-auth-node@0.4.16-next.0
+  - @backstage/plugin-permission-node@0.7.32-next.0
+  - @backstage/cli-common@0.1.14
+  - @backstage/cli-node@0.2.6
+  - @backstage/config@1.2.0
+  - @backstage/config-loader@1.8.1
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
+## 0.7.6
+
+### Patch Changes
+
+- b7de623: Fixed a potential crash when passing an object with a `null` prototype as log meta.
+- 9539a0b: Deprecated `authServiceFactory`, `httpAuthServiceFactory`, and `userInfoServiceFactory`. Please import them from `@backstage/backend-defaults/auth`, `@backstage/backend-defaults/httpAuth`, and `@backstage/backend-defaults/userInfo` respectively instead.
+- 3e823d3: Limited user tokens will no longer include the `ent` field in its payload. Ownership claims will now be fetched from the user info service.
+
+  NOTE: Limited tokens issued prior to this change will no longer be valid. Users may have to clear their browser cookies in order to refresh their auth tokens.
+
+- 78a0b08: Internal refactor to handle `BackendFeature` contract change.
+- 398b82a: Add support for JWKS tokens in ExternalTokenHandler.
+- 9e63318: Added an optional `accessRestrictions` to external access service tokens and service principals in general, such that you can limit their access to certain plugins or permissions.
+- e25e467: Added a new static key based method for plugin-to-plugin auth. This is useful for example if you are running readonly service nodes that cannot use a database for the default public-key signature scheme outlined in [BEP-0003](https://github.com/backstage/backstage/tree/master/beps/0003-auth-architecture-evolution). Most users should want to stay on the more secure zero-config database signature scheme.
+
+  You can generate a public and private key pair using `openssl`.
+
+  - First generate a private key using the ES256 algorithm
+
+    ```sh
+    openssl ecparam -name prime256v1 -genkey -out private.ec.key
+    ```
+
+  - Convert it to PKCS#8 format
+
+    ```sh
+    openssl pkcs8 -topk8 -inform PEM -outform PEM -nocrypt -in private.ec.key -out private.key
+    ```
+
+  - Extract the public key
+
+    ```sh
+    openssl ec -inform PEM -outform PEM -pubout -in private.key -out public.key
+    ```
+
+  After this you have the files `private.key` and `public.key`. Put them in a place where you know their absolute paths, and then set up your app-config accordingly:
+
+  ```yaml
+  backend:
+    auth:
+      keyStore:
+        type: static
+        static:
+          keys:
+            - publicKeyFile: /absolute/path/to/public.key
+              privateKeyFile: /absolute/path/to/private.key
+              keyId: some-custom-id
+  ```
+
+- 7d30d95: Fixing issue with log meta fields possibly being circular refs
+- 6a576dc: Stop using `getVoidLogger` in tests to reduce the dependency on the soon-to-deprecate `backstage-common` package.
+- 6551b3d: Deprecated core service factories and implementations and moved them over to
+  subpath exports on `@backstage/backend-defaults` instead. E.g.
+  `@backstage/backend-defaults/scheduler` is where the service factory and default
+  implementation of `coreServices.scheduler` now lives.
+- d617103: Updating the logger redaction message to something less dramatic
+- Updated dependencies
+  - @backstage/cli-node@0.2.6
+  - @backstage/backend-common@0.23.0
+  - @backstage/backend-plugin-api@0.6.19
+  - @backstage/backend-tasks@0.5.24
+  - @backstage/plugin-auth-node@0.4.14
+  - @backstage/plugin-permission-node@0.7.30
+  - @backstage/cli-common@0.1.14
+  - @backstage/config-loader@1.8.1
+  - @backstage/config@1.2.0
+  - @backstage/errors@1.2.4
+  - @backstage/types@1.1.1
+
 ## 0.7.6-next.3
 
 ### Patch Changes

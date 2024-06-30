@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { ContainerRunner } from '@backstage/backend-common';
 import { Config } from '@backstage/config';
 import path from 'path';
 import { Logger } from 'winston';
@@ -43,6 +42,8 @@ import {
   GeneratorRunOptions,
 } from './types';
 import { ForwardedError } from '@backstage/errors';
+import { DockerContainerRunner } from './DockerContainerRunner';
+import { ContainerRunner } from '@backstage/backend-common';
 
 /**
  * Generates documentation files
@@ -53,7 +54,7 @@ export class TechdocsGenerator implements GeneratorBase {
    * The default docker image (and version) used to generate content. Public
    * and static so that techdocs-node consumers can use the same version.
    */
-  public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.3';
+  public static readonly defaultDockerImage = 'spotify/techdocs:v1.2.4';
   private readonly logger: Logger;
   private readonly containerRunner?: ContainerRunner;
   private readonly options: GeneratorConfig;
@@ -155,13 +156,10 @@ export class TechdocsGenerator implements GeneratorBase {
             `Successfully generated docs from ${inputDir} into ${outputDir} using local mkdocs`,
           );
           break;
-        case 'docker':
-          if (this.containerRunner === undefined) {
-            throw new Error(
-              "Invalid state: containerRunner cannot be undefined when runIn is 'docker'",
-            );
-          }
-          await this.containerRunner.runContainer({
+        case 'docker': {
+          const containerRunner =
+            this.containerRunner || new DockerContainerRunner();
+          await containerRunner.runContainer({
             imageName:
               this.options.dockerImage ?? TechdocsGenerator.defaultDockerImage,
             args: ['build', '-d', '/output'],
@@ -178,6 +176,7 @@ export class TechdocsGenerator implements GeneratorBase {
             `Successfully generated docs from ${inputDir} into ${outputDir} using techdocs-container`,
           );
           break;
+        }
         default:
           throw new Error(
             `Invalid config value "${this.options.runIn}" provided in 'techdocs.generators.techdocs'.`,
