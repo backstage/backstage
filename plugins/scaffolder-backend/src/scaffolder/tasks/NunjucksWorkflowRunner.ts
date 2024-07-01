@@ -508,11 +508,11 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const output = this.render(task.spec.output, context, renderTemplate);
       await taskTrack.markSuccessful();
+      await task.cleanWorkspace?.();
 
       return { output };
     } finally {
       if (workspacePath) {
-        await task.cleanWorkspace?.();
         await fs.remove(workspacePath);
       }
     }
@@ -554,10 +554,13 @@ function scaffoldingTracker() {
       step: TaskStep,
       action: TemplateAction<JsonObject>,
     ) {
-      task.emitLog(`Skipping because ${action.id} does not support dry-run`, {
-        stepId: step.id,
-        status: 'skipped',
-      });
+      await task.emitLog(
+        `Skipping because ${action.id} does not support dry-run`,
+        {
+          stepId: step.id,
+          status: 'skipped',
+        },
+      );
     }
 
     async function markSuccessful() {

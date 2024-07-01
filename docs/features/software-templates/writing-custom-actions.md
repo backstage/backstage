@@ -145,6 +145,8 @@ When the action `handler` is called, we provide you a `context` as the only
 argument. It looks like the following:
 
 - `ctx.baseUrl` - a string where the template is located
+- `ctx.checkpoint` - _Experimental_ allows to implement idempotency of the actions by not re-running the same function again if it was
+  executed successfully on the previous run.
 - `ctx.logger` - a Winston logger for additional logging inside your action
 - `ctx.logStream` - a stream version of the logger if needed
 - `ctx.workspacePath` - a string of the working directory of the template run
@@ -153,7 +155,7 @@ argument. It looks like the following:
 - `ctx.output` - a function which you can call to set outputs that match the
   JSON schema or `zod` in `schema.output` for ex. `ctx.output('downloadUrl', myDownloadUrl)`
 - `createTemporaryDirectory` a function to call to give you a temporary
-  directory somewhere on the runner so you can store some files there rather
+  directory somewhere on the runner, so you can store some files there rather
   than polluting the `workspacePath`
 - `ctx.metadata` - an object containing a `name` field, indicating the template
   name. More metadata fields may be added later.
@@ -216,6 +218,28 @@ import {
         );
     })
 ```
+
+### Using Checkpoints in Custom Actions (Experimental)
+
+Idempotent action could be achieved via the usage of checkpoints.
+
+Example:
+
+```ts
+const res = await ctx.checkpoint?.('create.projects', async () => {
+  const projectStgId = createStagingProjectId();
+  const projectProId = createProductionProjectId();
+
+  return {
+    projectStgId,
+    projectProId,
+  };
+});
+```
+
+You have to define the unique key in scope of the scaffolder task for your checkpoint. During the execution task engine
+will check if the checkpoint with such key was already executed or not, if yes, and the run was successful, the callback
+will be skipped and instead the stored value will be returned.
 
 ### Register Custom Actions with the Legacy Backend System
 
