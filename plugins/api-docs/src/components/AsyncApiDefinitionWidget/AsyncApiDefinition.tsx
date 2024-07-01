@@ -19,7 +19,14 @@ import '@asyncapi/react-component/styles/default.css';
 import { makeStyles, alpha, darken } from '@material-ui/core/styles';
 import React from 'react';
 import { useTheme } from '@material-ui/core/styles';
-import { AsyncApiResolver } from './AsyncApiDefinitionWidget';
+
+/** @public */
+export type AsyncApiResolver = {
+  schema: string;
+  order: number;
+  canRead: boolean;
+  read(uri: any): Promise<string>;
+};
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -164,16 +171,6 @@ const httpFetchResolver: AsyncApiResolver = {
   },
 };
 
-const config = {
-  parserOptions: {
-    __unstable: {
-      resolver: {
-        resolvers: [httpsFetchResolver, httpFetchResolver],
-      },
-    },
-  },
-};
-
 type Props = {
   definition: string;
   resolvers?: AsyncApiResolver[];
@@ -188,6 +185,16 @@ export const AsyncApiDefinition = ({
   const classNames = `${classes.root} ${
     theme.palette.type === 'dark' ? classes.dark : ''
   }`;
+
+  const config = {
+    parserOptions: {
+      __unstable: {
+        resolver: {
+          resolvers: [httpsFetchResolver, httpFetchResolver],
+        },
+      },
+    },
+  };
 
   // Overwrite default resolvers if custom ones are set
   if (resolvers) {
