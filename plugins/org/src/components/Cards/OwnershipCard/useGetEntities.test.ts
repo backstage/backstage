@@ -266,7 +266,9 @@ describe('useGetEntities', () => {
         },
       );
 
-      await waitFor(() => expect(result.current.loading).toBe(false));
+      await waitFor(() => expect(result.current.loading).toBe(false), {
+        timeout: 5000,
+      });
 
       const callArgs = (catalogApiMock.getEntities as jest.Mock).mock
         .calls[0][0];
@@ -318,7 +320,9 @@ describe('useGetEntities', () => {
         },
       );
 
-      await waitFor(() => expect(result.current.loading).toBe(false));
+      await waitFor(() => expect(result.current.loading).toBe(false), {
+        timeout: 5000,
+      });
       const callArgs = (catalogApiMock.getEntities as jest.Mock).mock
         .calls[0][0];
 

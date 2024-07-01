@@ -32,7 +32,7 @@ import { useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import qs from 'qs';
 import { EntityRelationAggregation } from '../types';
-import { uniq } from 'lodash';
+import { uniq, uniqBy } from 'lodash';
 
 const limiter = limiterFactory(5);
 
@@ -143,37 +143,41 @@ const getOwners = async (
   return [stringifyEntityRef(entity)];
 };
 
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+
 const batchGetOwnedEntitiesByOwners = async (
   owners: string[],
   kinds: string[],
   catalogApi: CatalogApi,
   batchSize: number = 100,
+  delayMs: number = 100,
 ) => {
-  const batches = [];
+  const results = [];
 
   for (let i = 0; i < owners.length; i += batchSize) {
     const batch = owners.slice(i, i + batchSize);
-    batches.push(
-      catalogApi.getEntities({
-        filter: [
-          {
-            kind: kinds,
-            'relations.ownedBy': batch,
-          },
-        ],
-        fields: [
-          'kind',
-          'metadata.name',
-          'metadata.namespace',
-          'spec.type',
-          'relations',
-        ],
-      }),
-    );
+    const response = await catalogApi.getEntities({
+      filter: [
+        {
+          kind: kinds,
+          'relations.ownedBy': batch,
+        },
+      ],
+      fields: [
+        'kind',
+        'metadata.name',
+        'metadata.namespace',
+        'spec.type',
+        'relations',
+      ],
+    });
+
+    results.push(...response.items);
+
+    if (i + batchSize < owners.length) await delay(delayMs);
   }
 
-  const results = await Promise.all(batches);
-  return results.flatMap(result => result.items);
+  return uniqBy(results, stringifyEntityRef);
 };
 
 export function useGetEntities(
