@@ -17,7 +17,7 @@ yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-unproce
 In `packages/backend/src/index.ts` add the module:
 
 ```ts title="packages/backend/src/index.ts"
-backend.add(catalogModuleUnprocessedEntities());
+backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 ```
 
 ### Legacy Backend
