@@ -1,5 +1,5 @@
 ---
-'@backstage/plugin-scaffolder-backend-module-gitlab': minor
+'@backstage/plugin-scaffolder-backend-module-gitlab': patch
 ---
 
-Fixed trigger pipeline accepting input variables
+Added support for passing `variables` to `gitlab:pipeline:trigger`
