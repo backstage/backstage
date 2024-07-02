@@ -31,6 +31,7 @@ import {
   InfoCardVariants,
   Link,
   Progress,
+  TableColumn,
   WarningPanel,
 } from '@backstage/core-components';
 
@@ -39,8 +40,10 @@ import {
  */
 export const ConsumingComponentsCard = (props: {
   variant?: InfoCardVariants;
+  columns?: TableColumn<ComponentEntity>[];
 }) => {
-  const { variant = 'gridItem' } = props;
+  const { variant = 'gridItem', columns = EntityTable.componentEntityColumns } =
+    props;
   const { entity } = useEntity();
   const { entities, loading, error } = useRelatedEntities(entity, {
     type: RELATION_API_CONSUMED_BY,
@@ -82,7 +85,7 @@ export const ConsumingComponentsCard = (props: {
           </Typography>
         </div>
       }
-      columns={EntityTable.componentEntityColumns}
+      columns={columns}
       entities={entities as ComponentEntity[]}
     />
   );
