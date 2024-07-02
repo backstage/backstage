@@ -59,10 +59,18 @@ export class AwsOrganizationCloudAccountProcessor implements CatalogProcessor {
   static async fromConfig(config: Config, options: { logger: LoggerService }) {
     const c = config.getOptionalConfig('catalog.processors.awsOrganization');
     const orgConfig = c ? readAwsOrganizationConfig(c) : undefined;
+
+    if (orgConfig?.roleArn) {
+      options.logger.warn(
+        'The roleArn configuration for AwsOrganizationCloudAccountProcessor ignores the role name, use accountId configuration instead',
+      );
+    }
+
     const awsCredentialsManager =
       DefaultAwsCredentialsManager.fromConfig(config);
     const credProvider = await awsCredentialsManager.getCredentialProvider({
       arn: orgConfig?.roleArn,
+      accountId: orgConfig?.accountId,
     });
     return new AwsOrganizationCloudAccountProcessor(
       credProvider,
