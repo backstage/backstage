@@ -66,14 +66,13 @@ RUN --mount=type=cache,target=/var/cache/apk,sharing=locked,uid=65532,gid=65532 
         tini
 
 WORKDIR /app
+
+COPY package.json app-config.yaml ./
+ADD packages/backend/dist/skeleton.tar.gz packages/backend/dist/bundle.tar.gz ./
+
 RUN chown -R 65532:65532 /app
-USER nonroot
-
-COPY --chown=65532:65532 package.json packages/backend/dist/skeleton.tar.gz ./
-RUN tar xzf skeleton.tar.gz && rm skeleton.tar.gz
-
-COPY --chown=65532:65532 packages/backend/dist/bundle.tar.gz app-config*.yaml ./
-RUN tar xzf bundle.tar.gz && rm bundle.tar.gz
+RUN chown -R 65532:65532 /tmp
+USER 65532:65532
 
 COPY --from=node-builder --chown=65532:65532 /app/node_modules ./node_modules
 COPY --from=python-builder --chown=65532:65532 /home/nonroot/venv /home/nonroot/venv
