@@ -139,15 +139,20 @@ export class PostgresEngine implements Engine {
     this.#stopContainer = stopContainer;
   }
 
+  private which = 0;
   async createDatabaseInstance(): Promise<Knex> {
-    const adminConnection = this.#connectAdmin();
+    const start = Date.now();
+    this.which += 1;
+    let adminConnection: Knex | undefined;
+    let knexInstance: Knex | undefined;
     try {
+      adminConnection = this.#connectAdmin();
       const databaseName = `db${randomBytes(16).toString('hex')}`;
 
       await adminConnection.raw('CREATE DATABASE ??', [databaseName]);
       this.#databaseNames.push(databaseName);
 
-      const knexInstance = knexFactory({
+      knexInstance = knexFactory({
         client: this.#properties.driver,
         connection: {
           ...this.#connection,
@@ -157,9 +162,28 @@ export class PostgresEngine implements Engine {
       });
       this.#knexInstances.push(knexInstance);
 
+      console.log('DONE CREATE DB', new Date().toISOString());
       return knexInstance;
+    } catch (e) {
+      console.log(
+        '###############################################################',
+      );
+      console.log('CREATE DB ERROR', this.which, Date.now() - start);
+      console.log('e', e);
+      console.log('stack', e.stack);
+      console.log('adminConnection', adminConnection);
+      console.log(
+        'pool',
+        adminConnection?.client.pool,
+        adminConnection?.client.pool.numUsed(),
+        adminConnection?.client.pool.numFree(),
+      );
+      console.log(
+        '###############################################################',
+      );
+      throw e;
     } finally {
-      await adminConnection.destroy();
+      await adminConnection?.destroy();
     }
   }
 
