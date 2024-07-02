@@ -38,6 +38,7 @@ import {
   createSendmailTransport,
   createSesTransport,
   createSmtpTransport,
+  createStreamTransport,
 } from './transports';
 import { UserEntity } from '@backstage/catalog-model';
 import { compact } from 'lodash';
@@ -129,6 +130,8 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       );
     } else if (transport === 'sendmail') {
       this.transporter = createSendmailTransport(this.transportConfig);
+    } else if (transport === 'stream') {
+      this.transporter = createStreamTransport();
     } else {
       throw new Error(`Unsupported transport: ${transport}`);
     }
@@ -229,6 +232,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
 
   private async sendMail(options: Mail.Options) {
     try {
+      this.logger.debug(`Sending notification email to ${options.to}`);
       await this.transporter.sendMail(options);
     } catch (e) {
       this.logger.error(`Failed to send email to ${options.to}: ${e}`);
